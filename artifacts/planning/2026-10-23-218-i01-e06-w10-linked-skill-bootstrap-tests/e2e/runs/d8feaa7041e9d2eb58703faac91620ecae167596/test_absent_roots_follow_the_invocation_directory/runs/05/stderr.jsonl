@@ -1,0 +1,1 @@
+{"severity": "warning", "message": "the entry reference 'Defaults' resolves to the destination 'defaults-1', which the bundle's entry line links it to", "code": "W_ENTRY_DESTINATION", "reference": "Defaults", "resolved": "defaults-1"}

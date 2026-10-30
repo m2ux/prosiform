@@ -1,0 +1,1 @@
+{"severity": "error", "message": "prosiform.group-depth must be an integer from 1 through 6", "code": "E_INVALID_CONVERSION_METADATA", "reference": "tail.md", "chain": ["../skills/pf-bootstrap-specimen/modes/defaults.md", "leaf.md", "tail.md"], "location": {"file": "tail.md", "line": 4, "column": 16}}

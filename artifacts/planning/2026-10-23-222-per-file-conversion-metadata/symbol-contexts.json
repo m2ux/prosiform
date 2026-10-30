@@ -1,0 +1,6370 @@
+[
+  {
+    "id": "Section:README.md:L1: Prosiform",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:README.md:L1: Prosiform",
+        "name": " Prosiform",
+        "filePath": "README.md",
+        "startLine": 1,
+        "endLine": 64
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:README.md:L14: Overview",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:README.md:L14: Overview",
+        "name": " Overview",
+        "filePath": "README.md",
+        "startLine": 14,
+        "endLine": 40
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:README.md:L29:How It Works",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:README.md:L29:How It Works",
+        "name": "How It Works",
+        "filePath": "README.md",
+        "startLine": 29,
+        "endLine": 40
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/README.md:L1:Documentation",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/README.md:L1:Documentation",
+        "name": "Documentation",
+        "filePath": "docs/README.md",
+        "startLine": 1,
+        "endLine": 13
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/diagram-renderer.md:L1:Diagram Renderer",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/diagram-renderer.md:L1:Diagram Renderer",
+        "name": "Diagram Renderer",
+        "filePath": "docs/diagram-renderer.md",
+        "startLine": 1,
+        "endLine": 43
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/diagram-renderer.md:L5:Run",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/diagram-renderer.md:L5:Run",
+        "name": "Run",
+        "filePath": "docs/diagram-renderer.md",
+        "startLine": 5,
+        "endLine": 33
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/glossary.md:L1:Glossary",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/glossary.md:L1:Glossary",
+        "name": "Glossary",
+        "filePath": "docs/glossary.md",
+        "startLine": 1,
+        "endLine": 85
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/glossary.md:L16:Sources",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/glossary.md:L16:Sources",
+        "name": "Sources",
+        "filePath": "docs/glossary.md",
+        "startLine": 16,
+        "endLine": 26
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/glossary.md:L41:Selection and arrangement",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/glossary.md:L41:Selection and arrangement",
+        "name": "Selection and arrangement",
+        "filePath": "docs/glossary.md",
+        "startLine": 41,
+        "endLine": 54
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:docs/glossary.md:L75:Terms deliberately not used",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:docs/glossary.md:L75:Terms deliberately not used",
+        "name": "Terms deliberately not used",
+        "filePath": "docs/glossary.md",
+        "startLine": 75,
+        "endLine": 85
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L1:Worked examples",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L1:Worked examples",
+        "name": "Worked examples",
+        "filePath": "example/README.md",
+        "startLine": 1,
+        "endLine": 86
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L14:Prerequisites",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L14:Prerequisites",
+        "name": "Prerequisites",
+        "filePath": "example/README.md",
+        "startLine": 14,
+        "endLine": 40
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L30:Output",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L30:Output",
+        "name": "Output",
+        "filePath": "example/README.md",
+        "startLine": 30,
+        "endLine": 40
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L41:Prerequisites",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L41:Prerequisites",
+        "name": "Prerequisites",
+        "filePath": "example/README.md",
+        "startLine": 41,
+        "endLine": 54
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L87:Artifacts",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L87:Artifacts",
+        "name": "Artifacts",
+        "filePath": "example/README.md",
+        "startLine": 87,
+        "endLine": 130
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L89:Operations",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L89:Operations",
+        "name": "Operations",
+        "filePath": "example/README.md",
+        "startLine": 89,
+        "endLine": 105
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L91:*Record* Epic Delivery",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L91:*Record* Epic Delivery",
+        "name": "*Record* Epic Delivery",
+        "filePath": "example/README.md",
+        "startLine": 91,
+        "endLine": 105
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L106:Declare groups per file",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L106:Declare groups per file",
+        "name": "Declare groups per file",
+        "filePath": "example/README.md",
+        "startLine": 106,
+        "endLine": 130
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L108:Above-depth prose",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L108:Above-depth prose",
+        "name": "Above-depth prose",
+        "filePath": "example/README.md",
+        "startLine": 108,
+        "endLine": 130
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L131:Artifacts",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L131:Artifacts",
+        "name": "Artifacts",
+        "filePath": "example/README.md",
+        "startLine": 131,
+        "endLine": 160
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L145:Operations",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L145:Operations",
+        "name": "Operations",
+        "filePath": "example/README.md",
+        "startLine": 145,
+        "endLine": 160
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L150:Named members beneath the group",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L150:Named members beneath the group",
+        "name": "Named members beneath the group",
+        "filePath": "example/README.md",
+        "startLine": 150,
+        "endLine": 160
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L161:Rules",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L161:Rules",
+        "name": "Rules",
+        "filePath": "example/README.md",
+        "startLine": 161,
+        "endLine": 195
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/README.md:L180:More fixture examples",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/README.md:L180:More fixture examples",
+        "name": "More fixture examples",
+        "filePath": "example/README.md",
+        "startLine": 180,
+        "endLine": 191
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:example/my-skill/VISUAL-CASES.md:L1:Visual validation examples",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:example/my-skill/VISUAL-CASES.md:L1:Visual validation examples",
+        "name": "Visual validation examples",
+        "filePath": "example/my-skill/VISUAL-CASES.md",
+        "startLine": 1,
+        "endLine": 6
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:invocation.md:L1:Invocation",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:invocation.md:L1:Invocation",
+        "name": "Invocation",
+        "filePath": "invocation.md",
+        "startLine": 1,
+        "endLine": 101
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:invocation.md:L9:Options",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:invocation.md:L9:Options",
+        "name": "Options",
+        "filePath": "invocation.md",
+        "startLine": 9,
+        "endLine": 34
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:invocation.md:L35:Examples",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:invocation.md:L35:Examples",
+        "name": "Examples",
+        "filePath": "invocation.md",
+        "startLine": 35,
+        "endLine": 45
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:invocation.md:L46:Conversion metadata",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:invocation.md:L46:Conversion metadata",
+        "name": "Conversion metadata",
+        "filePath": "invocation.md",
+        "startLine": 46,
+        "endLine": 68
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:invocation.md:L69:Bundling rules",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:invocation.md:L69:Bundling rules",
+        "name": "Bundling rules",
+        "filePath": "invocation.md",
+        "startLine": 69,
+        "endLine": 76
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:invocation.md:L77:Output",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:invocation.md:L77:Output",
+        "name": "Output",
+        "filePath": "invocation.md",
+        "startLine": 77,
+        "endLine": 97
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:scripts/render-diagram.py:main",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:scripts/render-diagram.py:main",
+        "name": "main",
+        "kind": "Function",
+        "filePath": "scripts/render-diagram.py",
+        "startLine": 238,
+        "endLine": 432
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "File:scripts/render-diagram.py",
+            "name": "render-diagram.py",
+            "filePath": "scripts/render-diagram.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:scripts/render-diagram.py:main.git@284:4",
+            "name": "git",
+            "filePath": "scripts/render-diagram.py"
+          },
+          {
+            "uid": "Function:scripts/render-diagram.py:split_entry_points",
+            "name": "split_entry_points",
+            "filePath": "scripts/render-diagram.py"
+          },
+          {
+            "uid": "Function:scripts/render-diagram.py:svg",
+            "name": "svg",
+            "filePath": "scripts/render-diagram.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_50_main",
+          "name": "Main → Lines",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_51_main",
+          "name": "Main → Txt",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_75_main",
+          "name": "Main → Compact_markdown",
+          "step_index": 1,
+          "step_count": 3
+        },
+        {
+          "id": "proc_76_main",
+          "name": "Main → Branch",
+          "step_index": 1,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Section:src/README.md:L13:Environment",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:src/README.md:L13:Environment",
+        "name": "Environment",
+        "filePath": "src/README.md",
+        "startLine": 13,
+        "endLine": 44
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Section:src/README.md:L33:Runtime dependencies",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Section:src/README.md:L33:Runtime dependencies",
+        "name": "Runtime dependencies",
+        "filePath": "src/README.md",
+        "startLine": 33,
+        "endLine": 44
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/candidate.py:placement",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/candidate.py:placement",
+        "name": "placement",
+        "kind": "Function",
+        "filePath": "src/prosiform/candidate.py",
+        "startLine": 619,
+        "endLine": 680
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/candidate.py:validate",
+            "name": "validate",
+            "filePath": "src/prosiform/candidate.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/candidate.py:above",
+            "name": "above",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "Function:src/prosiform/candidate.py:absorbing",
+            "name": "absorbing",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "Function:src/prosiform/candidate.py:sourced",
+            "name": "sourced",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.ancestors#0",
+            "name": "ancestors",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.paths#0",
+            "name": "paths",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.placed#0",
+            "name": "placed",
+            "filePath": "src/prosiform/provenance.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_146_validate",
+          "name": "Validate → Level",
+          "step_index": 2,
+          "step_count": 5
+        },
+        {
+          "id": "proc_23_validate",
+          "name": "Validate → Regions",
+          "step_index": 2,
+          "step_count": 5
+        },
+        {
+          "id": "proc_55_validate",
+          "name": "Validate → Placed",
+          "step_index": 2,
+          "step_count": 4
+        },
+        {
+          "id": "proc_80_validate",
+          "name": "Validate → Ancestors",
+          "step_index": 2,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/candidate.py:coverage",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/candidate.py:coverage",
+        "name": "coverage",
+        "kind": "Function",
+        "filePath": "src/prosiform/candidate.py",
+        "startLine": 704,
+        "endLine": 734
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/candidate.py:validate",
+            "name": "validate",
+            "filePath": "src/prosiform/candidate.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/cli.py:GROUP_DEPTH_CONFLICT",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/cli.py:GROUP_DEPTH_CONFLICT",
+        "name": "GROUP_DEPTH_CONFLICT",
+        "kind": "Variable",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 300,
+        "endLine": 300
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/cli.py:CODES",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/cli.py:CODES",
+        "name": "CODES",
+        "kind": "Variable",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 314,
+        "endLine": 338
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:usage_failure",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:usage_failure",
+        "name": "usage_failure",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 364,
+        "endLine": 380
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:entry",
+            "name": "entry",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:execute",
+            "name": "execute",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Method:src/prosiform/cli.py:Parser.error#1",
+            "name": "error",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:parser",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:parser",
+        "name": "parser",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 494,
+        "endLine": 579
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:execute",
+            "name": "execute",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_budget_flags_select_the_planned_limit",
+            "name": "test_budget_flags_select_the_planned_limit",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:read_document",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:read_document",
+        "name": "read_document",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 710,
+        "endLine": 813
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:traverse",
+            "name": "traverse",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_crlf_source_is_read_without_newline_translation",
+            "name": "test_a_crlf_source_is_read_without_newline_translation",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+            "name": "test_capture_hash_covers_frontmatter_and_body",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/access.py:read_source",
+            "name": "read_source",
+            "filePath": "src/prosiform/access.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:canonical",
+            "name": "canonical",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:input_failure",
+            "name": "input_failure",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:location",
+            "name": "location",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:unindexable",
+            "name": "unindexable",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/profile.py:is_markdown",
+            "name": "is_markdown",
+            "filePath": "src/prosiform/profile.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:content",
+            "name": "content",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:hashed",
+            "name": "hashed",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.of#1",
+            "name": "of",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.of#1",
+            "name": "of",
+            "filePath": "src/prosiform/limits.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:recheck",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:recheck",
+        "name": "recheck",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 912,
+        "endLine": 949
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:execute",
+            "name": "execute",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+            "name": "test_a_source_nothing_wrote_passes_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+            "name": "test_a_source_removed_after_the_read_fails_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_resolving_elsewhere_fails_the_recheck",
+            "name": "test_a_source_resolving_elsewhere_fails_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+            "name": "test_a_source_written_after_the_read_fails_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+            "name": "test_capture_hash_covers_frontmatter_and_body",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/access.py:read_source",
+            "name": "read_source",
+            "filePath": "src/prosiform/access.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:canonical",
+            "name": "canonical",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:changed",
+            "name": "changed",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:hashed",
+            "name": "hashed",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_166_recheck",
+          "name": "Recheck → Input_failure",
+          "step_index": 1,
+          "step_count": 3
+        },
+        {
+          "id": "proc_25_recheck",
+          "name": "Recheck → Refusal",
+          "step_index": 1,
+          "step_count": 5
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:traverse",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:traverse",
+        "name": "traverse",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1200,
+        "endLine": 1333
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:execute",
+            "name": "execute",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:confirm",
+            "name": "confirm",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:contributing",
+            "name": "contributing",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:declined",
+            "name": "declined",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:generated",
+            "name": "generated",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:read_document",
+            "name": "read_document",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:refused",
+            "name": "refused",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:required",
+            "name": "required",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:selection",
+            "name": "selection",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:unindexable",
+            "name": "unindexable",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:withheld",
+            "name": "withheld",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/profile.py:refusals",
+            "name": "refusals",
+            "filePath": "src/prosiform/profile.py"
+          },
+          {
+            "uid": "Function:src/prosiform/rewrite.py:definitions",
+            "name": "definitions",
+            "filePath": "src/prosiform/rewrite.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:lines",
+            "name": "lines",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:nesting",
+            "name": "nesting",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:occurrences",
+            "name": "occurrences",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:regions",
+            "name": "regions",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:within",
+            "name": "within",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.of#1",
+            "name": "of",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.of#1",
+            "name": "of",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/profile.py:Watched.parse#4",
+            "name": "parse",
+            "filePath": "src/prosiform/profile.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:confirm",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:confirm",
+        "name": "confirm",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1336,
+        "endLine": 1370
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:traverse",
+            "name": "traverse",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:input_failure",
+            "name": "input_failure",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:index",
+            "name": "index",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_105_confirm",
+          "name": "Confirm → Slug",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_143_confirm",
+          "name": "Confirm → Shown",
+          "step_index": 1,
+          "step_count": 5
+        },
+        {
+          "id": "proc_163_confirm",
+          "name": "Confirm → Headings",
+          "step_index": 1,
+          "step_count": 3
+        },
+        {
+          "id": "proc_189_confirm",
+          "name": "Confirm → Level",
+          "step_index": 1,
+          "step_count": 4
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:group_depths",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:group_depths",
+        "name": "group_depths",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1373,
+        "endLine": 1413
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:compose",
+            "name": "compose",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/cli.py:group_depths.members@1376:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/cli.py:group_depths.members@1376:4",
+        "name": "members",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1377,
+        "endLine": 1377
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/cli.py:group_depths.depths@1381:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/cli.py:group_depths.depths@1381:4",
+        "name": "depths",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1382,
+        "endLine": 1382
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:unambiguous",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:unambiguous",
+        "name": "unambiguous",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1416,
+        "endLine": 1440
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:compose",
+            "name": "compose",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/bundle.py:heading_text",
+            "name": "heading_text",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:input_failure",
+            "name": "input_failure",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_125_compose",
+          "name": "Compose → Title_cased",
+          "step_index": 2,
+          "step_count": 4
+        },
+        {
+          "id": "proc_133_compose",
+          "name": "Compose → Input_failure",
+          "step_index": 2,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:assembled",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:assembled",
+        "name": "assembled",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1443,
+        "endLine": 1500
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:compose",
+            "name": "compose",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_candidate.py:built",
+            "name": "built",
+            "filePath": "src/tests/test_candidate.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/bundle.py:group",
+            "name": "group",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:overflowing",
+            "name": "overflowing",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:selection",
+            "name": "selection",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/grouping.py:merged",
+            "name": "merged",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Function:src/prosiform/grouping.py:prepared",
+            "name": "prepared",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:lines",
+            "name": "lines",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_114_assembled",
+          "name": "Assembled → Regions",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_155_assembled",
+          "name": "Assembled → Escaped",
+          "step_index": 1,
+          "step_count": 3
+        },
+        {
+          "id": "proc_177_assembled",
+          "name": "Assembled → Headings",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_56_assembled",
+          "name": "Assembled → Title_cased",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_57_assembled",
+          "name": "Assembled → Headings",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_5_assembled",
+          "name": "Assembled → Shown",
+          "step_index": 1,
+          "step_count": 7
+        },
+        {
+          "id": "proc_81_assembled",
+          "name": "Assembled → Input_failure",
+          "step_index": 1,
+          "step_count": 3
+        },
+        {
+          "id": "proc_8_assembled",
+          "name": "Assembled → Level",
+          "step_index": 1,
+          "step_count": 6
+        },
+        {
+          "id": "proc_9_assembled",
+          "name": "Assembled → Slug",
+          "step_index": 1,
+          "step_count": 6
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:compose",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:compose",
+        "name": "compose",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1563,
+        "endLine": 1619
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:execute",
+            "name": "execute",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/bundle.py:assemble",
+            "name": "assemble",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "Function:src/prosiform/bundle.py:entry_line",
+            "name": "entry_line",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "Function:src/prosiform/candidate.py:validate",
+            "name": "validate",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:assembled",
+            "name": "assembled",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:contributing",
+            "name": "contributing",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:destination_map",
+            "name": "destination_map",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:entries_named",
+            "name": "entries_named",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:group_depths",
+            "name": "group_depths",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:reaching",
+            "name": "reaching",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:unambiguous",
+            "name": "unambiguous",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:unsafe",
+            "name": "unsafe",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:fragments",
+            "name": "fragments",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.of#1",
+            "name": "of",
+            "filePath": "src/prosiform/limits.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_125_compose",
+          "name": "Compose → Title_cased",
+          "step_index": 1,
+          "step_count": 4
+        },
+        {
+          "id": "proc_133_compose",
+          "name": "Compose → Input_failure",
+          "step_index": 1,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/cli.py:execute",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/cli.py:execute",
+        "name": "execute",
+        "kind": "Function",
+        "filePath": "src/prosiform/cli.py",
+        "startLine": 1711,
+        "endLine": 1800
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:main",
+            "name": "main",
+            "filePath": "src/prosiform/cli.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:budgets",
+            "name": "budgets",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:compose",
+            "name": "compose",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:crossing",
+            "name": "crossing",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:entered",
+            "name": "entered",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:entry",
+            "name": "entry",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:input_failure",
+            "name": "input_failure",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:parser",
+            "name": "parser",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:publish",
+            "name": "publish",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:publish_file",
+            "name": "publish_file",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:recheck",
+            "name": "recheck",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:resourced",
+            "name": "resourced",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:rewrite_sources",
+            "name": "rewrite_sources",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:sources",
+            "name": "sources",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:traverse",
+            "name": "traverse",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:usage_failure",
+            "name": "usage_failure",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/closure.py:identity",
+            "name": "identity",
+            "filePath": "src/prosiform/closure.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Reporter.emit#1",
+            "name": "emit",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Reporter.emit#1",
+            "name": "emit",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.hold#2",
+            "name": "hold",
+            "filePath": "src/prosiform/limits.py"
+          },
+          {
+            "uid": "Method:src/prosiform/limits.py:Limits.of#1",
+            "name": "of",
+            "filePath": "src/prosiform/limits.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_24_main",
+          "name": "Main → Fields",
+          "step_index": 2,
+          "step_count": 5
+        },
+        {
+          "id": "proc_82_main",
+          "name": "Main → Hold",
+          "step_index": 2,
+          "step_count": 3
+        },
+        {
+          "id": "proc_83_main",
+          "name": "Main → Of",
+          "step_index": 2,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Class:src/prosiform/diagnostics.py:Location",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/diagnostics.py:Location",
+        "name": "Location",
+        "kind": "Class",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 47,
+        "endLine": 52
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "extends": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:RelatedLocation",
+            "name": "RelatedLocation",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ],
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/metadata.py",
+            "name": "metadata.py",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_diagnostics.py",
+            "name": "test_diagnostics.py",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Location.column",
+            "name": "column",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Location.file",
+            "name": "file",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Location.line",
+            "name": "line",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "typed_properties": [
+        {
+          "uid": "Property:src/prosiform/metadata.py:_Node.location",
+          "name": "location",
+          "filePath": "src/prosiform/metadata.py",
+          "declaredType": "Location"
+        }
+      ],
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/diagnostics.py:Location.file",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/diagnostics.py:Location.file",
+        "name": "file",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 50,
+        "endLine": 50
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Location",
+            "name": "Location",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/diagnostics.py:Location.line",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/diagnostics.py:Location.line",
+        "name": "line",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 51,
+        "endLine": 51
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Location",
+            "name": "Location",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/diagnostics.py:Location.column",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/diagnostics.py:Location.column",
+        "name": "column",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 52,
+        "endLine": 52
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Location",
+            "name": "Location",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/diagnostics.py:RelatedLocation",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/diagnostics.py:RelatedLocation",
+        "name": "RelatedLocation",
+        "kind": "Class",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 56,
+        "endLine": 59
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/metadata.py",
+            "name": "metadata.py",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_diagnostics.py",
+            "name": "test_diagnostics.py",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "extends": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Location",
+            "name": "Location",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ],
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:RelatedLocation.message",
+            "name": "message",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/diagnostics.py:RelatedLocation.message",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/diagnostics.py:RelatedLocation.message",
+        "name": "message",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 59,
+        "endLine": 59
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:RelatedLocation",
+            "name": "RelatedLocation",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/diagnostics.py:Diagnostic",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/diagnostics.py:Diagnostic",
+        "name": "Diagnostic",
+        "kind": "Class",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 63,
+        "endLine": 117
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/metadata.py",
+            "name": "metadata.py",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_diagnostics.py",
+            "name": "test_diagnostics.py",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_method": [
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.as_json#0",
+            "name": "as_json",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.as_text#0",
+            "name": "as_text",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.fields#0",
+            "name": "fields",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ],
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.chain",
+            "name": "chain",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.code",
+            "name": "code",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.location",
+            "name": "location",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.message",
+            "name": "message",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.reference",
+            "name": "reference",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.related",
+            "name": "related",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.remedy",
+            "name": "remedy",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.resolved",
+            "name": "resolved",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.severity",
+            "name": "severity",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.source",
+            "name": "source",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/diagnostics.py:Diagnostic.location",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.location",
+        "name": "location",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 74,
+        "endLine": 74
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Diagnostic",
+            "name": "Diagnostic",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/diagnostics.py:Diagnostic.related",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/diagnostics.py:Diagnostic.related",
+        "name": "related",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 75,
+        "endLine": 75
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Diagnostic",
+            "name": "Diagnostic",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Method:src/prosiform/diagnostics.py:Diagnostic.fields#0",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.fields#0",
+        "name": "fields",
+        "kind": "Method",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 77,
+        "endLine": 91
+      },
+      "epistemic": "lower-bound",
+      "boundaries": [
+        "1 call site invoking `fields` was dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result — actual impact may be higher."
+      ],
+      "causes": {
+        "scopeExtractionFiles": 0,
+        "receiverTyping": 1,
+        "dispatchBoundary": 0,
+        "externalBoundary": 0,
+        "undecidedSatisfaction": 0,
+        "callableValueReferences": 0
+      },
+      "incoming": {
+        "has_method": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Diagnostic",
+            "name": "Diagnostic",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ],
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_diagnostics.py:test_a_diagnostic_carries_only_the_fields_it_was_given",
+            "name": "test_a_diagnostic_carries_only_the_fields_it_was_given",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "Function:src/tests/test_diagnostics.py:test_the_fields_are_ordered_as_the_contract_names_them",
+            "name": "test_the_fields_are_ordered_as_the_contract_names_them",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.as_json#0",
+            "name": "as_json",
+            "filePath": "src/prosiform/diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.as_text#0",
+            "name": "as_text",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": [
+        {
+          "id": "proc_24_main",
+          "name": "Main → Fields",
+          "step_index": 5,
+          "step_count": 5
+        }
+      ]
+    }
+  },
+  {
+    "id": "Method:src/prosiform/diagnostics.py:Diagnostic.as_text#0",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.as_text#0",
+        "name": "as_text",
+        "kind": "Method",
+        "filePath": "src/prosiform/diagnostics.py",
+        "startLine": 93,
+        "endLine": 113
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_method": [
+          {
+            "uid": "Class:src/prosiform/diagnostics.py:Diagnostic",
+            "name": "Diagnostic",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ],
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_diagnostics.py:test_a_diagnostic_reaching_nothing_renders_no_chain",
+            "name": "test_a_diagnostic_reaching_nothing_renders_no_chain",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+            "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+            "filePath": "src/tests/test_diagnostics.py"
+          },
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Reporter.emit#1",
+            "name": "emit",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Method:src/prosiform/diagnostics.py:Diagnostic.fields#0",
+            "name": "fields",
+            "filePath": "src/prosiform/diagnostics.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/grouping.py:states",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/grouping.py:states",
+        "name": "states",
+        "kind": "Function",
+        "filePath": "src/prosiform/grouping.py",
+        "startLine": 127,
+        "endLine": 136
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/grouping.py:member_headings",
+            "name": "member_headings",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Function:src/tests/test_grouping.py:test_a_group_heading_states_the_kind_its_members_are",
+            "name": "test_a_group_heading_states_the_kind_its_members_are",
+            "filePath": "src/tests/test_grouping.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/source.py:slug",
+            "name": "slug",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_190_member_headings",
+          "name": "Member_headings → Slug",
+          "step_index": 2,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Class:src/prosiform/grouping.py:Member",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/grouping.py:Member",
+        "name": "Member",
+        "kind": "Class",
+        "filePath": "src/prosiform/grouping.py",
+        "startLine": 186,
+        "endLine": 212
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/tests/test_grouping.py",
+            "name": "test_grouping.py",
+            "filePath": "src/tests/test_grouping.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_method": [
+          {
+            "uid": "Method:src/prosiform/grouping.py:Member.shift#1",
+            "name": "shift",
+            "filePath": "src/prosiform/grouping.py"
+          }
+        ],
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.absorbing",
+            "name": "absorbing",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.ancestors",
+            "name": "ancestors",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.chains",
+            "name": "chains",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.emitting",
+            "name": "emitting",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.items",
+            "name": "items",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.named",
+            "name": "named",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.path",
+            "name": "path",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.removed",
+            "name": "removed",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.targets",
+            "name": "targets",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.text",
+            "name": "text",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.title",
+            "name": "title",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.tokens",
+            "name": "tokens",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "Property:src/prosiform/grouping.py:Member.written",
+            "name": "written",
+            "filePath": "src/prosiform/grouping.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/limits.py:NESTING",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/limits.py:NESTING",
+        "name": "NESTING",
+        "kind": "Variable",
+        "filePath": "src/prosiform/limits.py",
+        "startLine": 61,
+        "endLine": 67
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:INVALID_FRONTMATTER",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:INVALID_FRONTMATTER",
+        "name": "INVALID_FRONTMATTER",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 30,
+        "endLine": 30
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:INVALID_CONVERSION_METADATA",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:INVALID_CONVERSION_METADATA",
+        "name": "INVALID_CONVERSION_METADATA",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 31,
+        "endLine": 31
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:RESOURCE_LIMIT",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:RESOURCE_LIMIT",
+        "name": "RESOURCE_LIMIT",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 32,
+        "endLine": 32
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:GROUP",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:GROUP",
+        "name": "GROUP",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:DEPTH",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:DEPTH",
+        "name": "DEPTH",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 34,
+        "endLine": 34
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:PREFIX",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:PREFIX",
+        "name": "PREFIX",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 35,
+        "endLine": 35
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/metadata.py:PATTERNS",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/metadata.py:PATTERNS",
+        "name": "PATTERNS",
+        "kind": "Variable",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 36,
+        "endLine": 44
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/metadata.py:_MarkedScanner",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/metadata.py:_MarkedScanner",
+        "name": "_MarkedScanner",
+        "kind": "Class",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 47,
+        "endLine": 63
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/source.py",
+            "name": "source.py",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_method": [
+          {
+            "uid": "Method:src/prosiform/metadata.py:_MarkedScanner.scan_flow_scalar_non_spaces#2",
+            "name": "scan_flow_scalar_non_spaces",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Method:src/prosiform/metadata.py:_MarkedScanner.scan_flow_scalar_non_spaces#2",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Method:src/prosiform/metadata.py:_MarkedScanner.scan_flow_scalar_non_spaces#2",
+        "name": "scan_flow_scalar_non_spaces",
+        "kind": "Method",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 50,
+        "endLine": 63
+      },
+      "epistemic": "lower-bound",
+      "boundaries": [
+        "1 call site invoking `scan_flow_scalar_non_spaces` was dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result — actual impact may be higher."
+      ],
+      "causes": {
+        "scopeExtractionFiles": 0,
+        "receiverTyping": 1,
+        "dispatchBoundary": 0,
+        "externalBoundary": 0,
+        "undecidedSatisfaction": 0,
+        "callableValueReferences": 0
+      },
+      "incoming": {
+        "has_method": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:_MarkedScanner",
+            "name": "_MarkedScanner",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/metadata.py:Conversion",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/metadata.py:Conversion",
+        "name": "Conversion",
+        "kind": "Class",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 67,
+        "endLine": 73
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/source.py",
+            "name": "source.py",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/metadata.py:Conversion.depth",
+            "name": "depth",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:Conversion.depth_location",
+            "name": "depth_location",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:Conversion.group",
+            "name": "group",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:Conversion.group_location",
+            "name": "group_location",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "typed_properties": [
+        {
+          "uid": "Property:src/prosiform/source.py:Source.conversion",
+          "name": "conversion",
+          "filePath": "src/prosiform/source.py",
+          "declaredType": "Conversion"
+        }
+      ],
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:Conversion.group",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:Conversion.group",
+        "name": "group",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 70,
+        "endLine": 70
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:Conversion",
+            "name": "Conversion",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ],
+        "accesses": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_group_and_marks",
+            "name": "test_group_and_marks",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_settings_and_body_share_physical_coordinates",
+            "name": "test_settings_and_body_share_physical_coordinates",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:Conversion.depth",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:Conversion.depth",
+        "name": "depth",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 71,
+        "endLine": 71
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:Conversion",
+            "name": "Conversion",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:Conversion.group_location",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:Conversion.group_location",
+        "name": "group_location",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 72,
+        "endLine": 72
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:Conversion",
+            "name": "Conversion",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:Conversion.depth_location",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:Conversion.depth_location",
+        "name": "depth_location",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 73,
+        "endLine": 73
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:Conversion",
+            "name": "Conversion",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/metadata.py:InvalidMetadata",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/metadata.py:InvalidMetadata",
+        "name": "InvalidMetadata",
+        "kind": "Class",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 76,
+        "endLine": 81
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/source.py",
+            "name": "source.py",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_method": [
+          {
+            "uid": "Method:src/prosiform/metadata.py:InvalidMetadata.__init__#1",
+            "name": "__init__",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Method:src/prosiform/metadata.py:InvalidMetadata.__init__#1",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Method:src/prosiform/metadata.py:InvalidMetadata.__init__#1",
+        "name": "__init__",
+        "kind": "Method",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 79,
+        "endLine": 81
+      },
+      "epistemic": "lower-bound",
+      "boundaries": [
+        "11 call sites invoking `__init__` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result — actual impact may be higher."
+      ],
+      "causes": {
+        "scopeExtractionFiles": 0,
+        "receiverTyping": 11,
+        "dispatchBoundary": 0,
+        "externalBoundary": 0,
+        "undecidedSatisfaction": 0,
+        "callableValueReferences": 0
+      },
+      "incoming": {
+        "has_method": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:InvalidMetadata",
+            "name": "InvalidMetadata",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/metadata.py:_Node",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/metadata.py:_Node",
+        "name": "_Node",
+        "kind": "Class",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 85,
+        "endLine": 90
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/source.py",
+            "name": "source.py",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "File:src/tests/test_metadata.py",
+            "name": "test_metadata.py",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/metadata.py:_Node.children",
+            "name": "children",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:_Node.identity",
+            "name": "identity",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:_Node.kind",
+            "name": "kind",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:_Node.location",
+            "name": "location",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Property:src/prosiform/metadata.py:_Node.value",
+            "name": "value",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:_Node.kind",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:_Node.kind",
+        "name": "kind",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 86,
+        "endLine": 86
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:_Node",
+            "name": "_Node",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:_Node.location",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:_Node.location",
+        "name": "location",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 87,
+        "endLine": 87
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:_Node",
+            "name": "_Node",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:_Node.value",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:_Node.value",
+        "name": "value",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 88,
+        "endLine": 88
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:_Node",
+            "name": "_Node",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:_Node.children",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:_Node.children",
+        "name": "children",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 89,
+        "endLine": 89
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:_Node",
+            "name": "_Node",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ],
+        "accesses": [
+          {
+            "uid": "Function:src/prosiform/profile.py:unlink_marker",
+            "name": "unlink_marker",
+            "filePath": "src/prosiform/profile.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:_Node.identity",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:_Node.identity",
+        "name": "identity",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 90,
+        "endLine": 90
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/metadata.py:_Node",
+            "name": "_Node",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/metadata.py:_fail",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/metadata.py:_fail",
+        "name": "_fail",
+        "kind": "Function",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 93,
+        "endLine": 107
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:_scalar",
+            "name": "_scalar",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": [
+        {
+          "id": "proc_87_decode",
+          "name": "Decode → _fail",
+          "step_index": 3,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/metadata.py:_scalar",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/metadata.py:_scalar",
+        "name": "_scalar",
+        "kind": "Function",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 110,
+        "endLine": 147
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:_fail",
+            "name": "_fail",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Function:src/prosiform/metadata.py:_finite_float",
+            "name": "_finite_float",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_87_decode",
+          "name": "Decode → _fail",
+          "step_index": 2,
+          "step_count": 3
+        },
+        {
+          "id": "proc_88_decode",
+          "name": "Decode → _finite_float",
+          "step_index": 2,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:_scalar.canonical@129:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:_scalar.canonical@129:4",
+        "name": "canonical",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 130,
+        "endLine": 130
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/metadata.py:_finite_float",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/metadata.py:_finite_float",
+        "name": "_finite_float",
+        "kind": "Function",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 150,
+        "endLine": 168
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:_scalar",
+            "name": "_scalar",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": [
+        {
+          "id": "proc_88_decode",
+          "name": "Decode → _finite_float",
+          "step_index": 3,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/metadata.py:decode",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/metadata.py:decode",
+        "name": "decode",
+        "kind": "Function",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 171,
+        "endLine": 370
+      },
+      "epistemic": "lower-bound",
+      "boundaries": [
+        "3 call sites invoking `decode` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result — actual impact may be higher."
+      ],
+      "causes": {
+        "scopeExtractionFiles": 0,
+        "receiverTyping": 3,
+        "dispatchBoundary": 0,
+        "externalBoundary": 0,
+        "undecidedSatisfaction": 0,
+        "callableValueReferences": 0
+      },
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/source.py:content",
+            "name": "content",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_byte_limit_precedes_decoding",
+            "name": "test_byte_limit_precedes_decoding",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_single_line_bom_coordinate",
+            "name": "test_single_line_bom_coordinate",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:_fail",
+            "name": "_fail",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Function:src/prosiform/metadata.py:_scalar",
+            "name": "_scalar",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode.at@199:4",
+            "name": "at",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode.finish@209:4",
+            "name": "finish",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": [
+        {
+          "id": "proc_87_decode",
+          "name": "Decode → _fail",
+          "step_index": 1,
+          "step_count": 3
+        },
+        {
+          "id": "proc_88_decode",
+          "name": "Decode → _finite_float",
+          "step_index": 1,
+          "step_count": 3
+        }
+      ]
+    }
+  },
+  {
+    "id": "Function:src/prosiform/metadata.py:decode.at@199:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/metadata.py:decode.at@199:4",
+        "name": "at",
+        "kind": "Function",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 200,
+        "endLine": 203
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.stack@204:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.stack@204:4",
+        "name": "stack",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 205,
+        "endLine": 205
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.root@205:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.root@205:4",
+        "name": "root",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 206,
+        "endLine": 206
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.identities@206:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.identities@206:4",
+        "name": "identities",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 207,
+        "endLine": 207
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/metadata.py:decode.finish@209:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/metadata.py:decode.finish@209:4",
+        "name": "finish",
+        "kind": "Function",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 210,
+        "endLine": 217
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.canonical@252:16",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.canonical@252:16",
+        "name": "canonical",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 253,
+        "endLine": 253
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.seen@254:20",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.seen@254:20",
+        "name": "seen",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 255,
+        "endLine": 255
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.metadata@303:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.metadata@303:4",
+        "name": "metadata",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 304,
+        "endLine": 304
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/metadata.py:decode.fields@321:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/metadata.py:decode.fields@321:4",
+        "name": "fields",
+        "filePath": "src/prosiform/metadata.py",
+        "startLine": 322,
+        "endLine": 322
+      },
+      "epistemic": "lower-bound",
+      "boundaries": [
+        "1 call site invoking `fields` was dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result — actual impact may be higher."
+      ],
+      "causes": {
+        "scopeExtractionFiles": 0,
+        "receiverTyping": 1,
+        "dispatchBoundary": 0,
+        "externalBoundary": 0,
+        "undecidedSatisfaction": 0,
+        "callableValueReferences": 0
+      },
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/provenance.py:Generated",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/provenance.py:Generated",
+        "name": "Generated",
+        "kind": "Class",
+        "filePath": "src/prosiform/provenance.py",
+        "startLine": 99,
+        "endLine": 114
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/bundle.py",
+            "name": "bundle.py",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "File:src/prosiform/candidate.py",
+            "name": "candidate.py",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "File:src/prosiform/grouping.py",
+            "name": "grouping.py",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "File:src/tests/test_bundle.py",
+            "name": "test_bundle.py",
+            "filePath": "src/tests/test_bundle.py"
+          },
+          {
+            "uid": "File:src/tests/test_candidate.py",
+            "name": "test_candidate.py",
+            "filePath": "src/tests/test_candidate.py"
+          },
+          {
+            "uid": "File:src/tests/test_grouping.py",
+            "name": "test_grouping.py",
+            "filePath": "src/tests/test_grouping.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/provenance.py:Generated.answers",
+            "name": "answers",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Property:src/prosiform/provenance.py:Generated.kind",
+            "name": "kind",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Property:src/prosiform/provenance.py:Generated.level",
+            "name": "level",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Property:src/prosiform/provenance.py:Generated.text",
+            "name": "text",
+            "filePath": "src/prosiform/provenance.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/provenance.py:Record",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/provenance.py:Record",
+        "name": "Record",
+        "kind": "Class",
+        "filePath": "src/prosiform/provenance.py",
+        "startLine": 172,
+        "endLine": 232
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/bundle.py",
+            "name": "bundle.py",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "File:src/prosiform/candidate.py",
+            "name": "candidate.py",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "File:src/prosiform/grouping.py",
+            "name": "grouping.py",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "File:src/tests/test_bundle.py",
+            "name": "test_bundle.py",
+            "filePath": "src/tests/test_bundle.py"
+          },
+          {
+            "uid": "File:src/tests/test_candidate.py",
+            "name": "test_candidate.py",
+            "filePath": "src/tests/test_candidate.py"
+          },
+          {
+            "uid": "File:src/tests/test_grouping.py",
+            "name": "test_grouping.py",
+            "filePath": "src/tests/test_grouping.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_method": [
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.ancestors#0",
+            "name": "ancestors",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.carried#0",
+            "name": "carried",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.paths#0",
+            "name": "paths",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.placed#0",
+            "name": "placed",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Method:src/prosiform/provenance.py:Record.ranges#0",
+            "name": "ranges",
+            "filePath": "src/prosiform/provenance.py"
+          }
+        ],
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/provenance.py:Record.headings",
+            "name": "headings",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Property:src/prosiform/provenance.py:Record.merged",
+            "name": "merged",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Property:src/prosiform/provenance.py:Record.parts",
+            "name": "parts",
+            "filePath": "src/prosiform/provenance.py"
+          },
+          {
+            "uid": "Property:src/prosiform/provenance.py:Record.path",
+            "name": "path",
+            "filePath": "src/prosiform/provenance.py"
+          }
+        ]
+      },
+      "typed_properties": [
+        {
+          "uid": "Property:src/prosiform/bundle.py:Group.record",
+          "name": "record",
+          "filePath": "src/prosiform/bundle.py",
+          "declaredType": "Record"
+        }
+      ],
+      "processes": []
+    }
+  },
+  {
+    "id": "Variable:src/prosiform/source.py:CODES",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Variable:src/prosiform/source.py:CODES",
+        "name": "CODES",
+        "kind": "Variable",
+        "filePath": "src/prosiform/source.py",
+        "startLine": 126,
+        "endLine": 132
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/source.py:Source",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/source.py:Source",
+        "name": "Source",
+        "kind": "Class",
+        "filePath": "src/prosiform/source.py",
+        "startLine": 183,
+        "endLine": 192
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/bundle.py",
+            "name": "bundle.py",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "File:src/prosiform/candidate.py",
+            "name": "candidate.py",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/closure.py",
+            "name": "closure.py",
+            "filePath": "src/prosiform/closure.py"
+          },
+          {
+            "uid": "File:src/prosiform/grouping.py",
+            "name": "grouping.py",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "File:src/prosiform/rewrite.py",
+            "name": "rewrite.py",
+            "filePath": "src/prosiform/rewrite.py"
+          },
+          {
+            "uid": "File:src/tests/test_bundle.py",
+            "name": "test_bundle.py",
+            "filePath": "src/tests/test_bundle.py"
+          },
+          {
+            "uid": "File:src/tests/test_candidate.py",
+            "name": "test_candidate.py",
+            "filePath": "src/tests/test_candidate.py"
+          },
+          {
+            "uid": "File:src/tests/test_cli.py",
+            "name": "test_cli.py",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "File:src/tests/test_grouping.py",
+            "name": "test_grouping.py",
+            "filePath": "src/tests/test_grouping.py"
+          },
+          {
+            "uid": "File:src/tests/test_rewrite.py",
+            "name": "test_rewrite.py",
+            "filePath": "src/tests/test_rewrite.py"
+          },
+          {
+            "uid": "File:src/tests/test_source.py",
+            "name": "test_source.py",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_method": [
+          {
+            "uid": "Method:src/prosiform/source.py:Source.line#1",
+            "name": "line",
+            "filePath": "src/prosiform/source.py"
+          }
+        ],
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/source.py:Source.conversion",
+            "name": "conversion",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Property:src/prosiform/source.py:Source.first_line",
+            "name": "first_line",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Property:src/prosiform/source.py:Source.text",
+            "name": "text",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "typed_properties": [
+        {
+          "uid": "Property:src/prosiform/cli.py:Opened.source",
+          "name": "source",
+          "filePath": "src/prosiform/cli.py",
+          "declaredType": "Source"
+        }
+      ],
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/source.py:Source.conversion",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/source.py:Source.conversion",
+        "name": "conversion",
+        "filePath": "src/prosiform/source.py",
+        "startLine": 188,
+        "endLine": 188
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/source.py:Source",
+            "name": "Source",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Class:src/prosiform/source.py:Capture",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Class:src/prosiform/source.py:Capture",
+        "name": "Capture",
+        "kind": "Class",
+        "filePath": "src/prosiform/source.py",
+        "startLine": 196,
+        "endLine": 209
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "imports": [
+          {
+            "uid": "File:src/prosiform/bundle.py",
+            "name": "bundle.py",
+            "filePath": "src/prosiform/bundle.py"
+          },
+          {
+            "uid": "File:src/prosiform/candidate.py",
+            "name": "candidate.py",
+            "filePath": "src/prosiform/candidate.py"
+          },
+          {
+            "uid": "File:src/prosiform/cli.py",
+            "name": "cli.py",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "File:src/prosiform/closure.py",
+            "name": "closure.py",
+            "filePath": "src/prosiform/closure.py"
+          },
+          {
+            "uid": "File:src/prosiform/grouping.py",
+            "name": "grouping.py",
+            "filePath": "src/prosiform/grouping.py"
+          },
+          {
+            "uid": "File:src/prosiform/rewrite.py",
+            "name": "rewrite.py",
+            "filePath": "src/prosiform/rewrite.py"
+          },
+          {
+            "uid": "File:src/tests/test_bundle.py",
+            "name": "test_bundle.py",
+            "filePath": "src/tests/test_bundle.py"
+          },
+          {
+            "uid": "File:src/tests/test_candidate.py",
+            "name": "test_candidate.py",
+            "filePath": "src/tests/test_candidate.py"
+          },
+          {
+            "uid": "File:src/tests/test_cli.py",
+            "name": "test_cli.py",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "File:src/tests/test_grouping.py",
+            "name": "test_grouping.py",
+            "filePath": "src/tests/test_grouping.py"
+          },
+          {
+            "uid": "File:src/tests/test_rewrite.py",
+            "name": "test_rewrite.py",
+            "filePath": "src/tests/test_rewrite.py"
+          },
+          {
+            "uid": "File:src/tests/test_source.py",
+            "name": "test_source.py",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "File:src/tests/test_source_metadata.py",
+            "name": "test_source_metadata.py",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "has_property": [
+          {
+            "uid": "Property:src/prosiform/source.py:Capture.chain",
+            "name": "chain",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Property:src/prosiform/source.py:Capture.digest",
+            "name": "digest",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Property:src/prosiform/source.py:Capture.identity",
+            "name": "identity",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "typed_properties": [
+        {
+          "uid": "Property:src/prosiform/cli.py:Opened.capture",
+          "name": "capture",
+          "filePath": "src/prosiform/cli.py",
+          "declaredType": "Capture"
+        }
+      ],
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/prosiform/source.py:Capture.chain",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/prosiform/source.py:Capture.chain",
+        "name": "chain",
+        "filePath": "src/prosiform/source.py",
+        "startLine": 209,
+        "endLine": 209
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "has_property": [
+          {
+            "uid": "Class:src/prosiform/source.py:Capture",
+            "name": "Capture",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/prosiform/source.py:content",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/prosiform/source.py:content",
+        "name": "content",
+        "kind": "Function",
+        "filePath": "src/prosiform/source.py",
+        "startLine": 250,
+        "endLine": 286
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:read_document",
+            "name": "read_document",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_blank_line_before_the_delimiter_makes_it_body",
+            "name": "test_a_blank_line_before_the_delimiter_makes_it_body",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_block_closed_by_three_dots_is_removed",
+            "name": "test_a_block_closed_by_three_dots_is_removed",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_block_closed_by_three_hyphens_is_removed",
+            "name": "test_a_block_closed_by_three_hyphens_is_removed",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_block_closing_on_the_last_line_leaves_no_content",
+            "name": "test_a_block_closing_on_the_last_line_leaves_no_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_block_whose_closer_carries_no_terminator_leaves_no_content",
+            "name": "test_a_block_whose_closer_carries_no_terminator_leaves_no_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_crlf_body_reaches_the_content_spelled_as_the_file_spells_it",
+            "name": "test_a_crlf_body_reaches_the_content_spelled_as_the_file_spells_it",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_document_carrying_no_transport_metadata_is_its_own_content",
+            "name": "test_a_document_carrying_no_transport_metadata_is_its_own_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_first_line_that_is_not_the_delimiter_opens_no_block",
+            "name": "test_a_first_line_that_is_not_the_delimiter_opens_no_block",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_mark_before_the_opener_is_removed_with_the_block",
+            "name": "test_a_mark_before_the_opener_is_removed_with_the_block",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_mark_elsewhere_in_the_document_is_content",
+            "name": "test_a_mark_elsewhere_in_the_document_is_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_mark_shifts_no_coordinate",
+            "name": "test_a_mark_shifts_no_coordinate",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_recognized_opener_with_no_closer_fails",
+            "name": "test_a_recognized_opener_with_no_closer_fails",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_second_mark_is_content",
+            "name": "test_a_second_mark_is_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_thematic_break_below_the_first_line_is_content",
+            "name": "test_a_thematic_break_below_the_first_line_is_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_a_yaml_example_inside_a_code_block_is_content",
+            "name": "test_a_yaml_example_inside_a_code_block_is_content",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_an_empty_block_is_removed",
+            "name": "test_an_empty_block_is_removed",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_an_empty_document_opens_no_block",
+            "name": "test_an_empty_document_opens_no_block",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_an_unstripped_source_maps_each_location_to_itself",
+            "name": "test_an_unstripped_source_maps_each_location_to_itself",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_crlf_terminated_delimiters_are_recognized_and_their_closer_removed",
+            "name": "test_crlf_terminated_delimiters_are_recognized_and_their_closer_removed",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_one_leading_mark_is_removed",
+            "name": "test_one_leading_mark_is_removed",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_the_blank_lines_following_a_block_are_preserved",
+            "name": "test_the_blank_lines_following_a_block_are_preserved",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_the_body_after_a_removal_is_byte_identical_to_its_source",
+            "name": "test_the_body_after_a_removal_is_byte_identical_to_its_source",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_the_first_closing_delimiter_closes_the_block",
+            "name": "test_the_first_closing_delimiter_closes_the_block",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source.py:test_the_recorded_line_maps_a_parsed_location_to_the_file",
+            "name": "test_the_recorded_line_maps_a_parsed_location_to_the_file",
+            "filePath": "src/tests/test_source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_duplicate_key_reports_original_locations",
+            "name": "test_duplicate_key_reports_original_locations",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_settings_and_body_share_physical_coordinates",
+            "name": "test_settings_and_body_share_physical_coordinates",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_settings_are_per_source_and_not_inherited",
+            "name": "test_settings_are_per_source_and_not_inherited",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:bare",
+            "name": "bare",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:lines",
+            "name": "lines",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_the_codes_reported_are_the_codes_the_build_declares",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_the_codes_reported_are_the_codes_the_build_declares",
+        "name": "test_the_codes_reported_are_the_codes_the_build_declares",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 169,
+        "endLine": 194
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_every_option_the_contract_declares_is_accepted",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_every_option_the_contract_declares_is_accepted",
+        "name": "test_every_option_the_contract_declares_is_accepted",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 273,
+        "endLine": 286
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+        "name": "test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 325,
+        "endLine": 331
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+        "name": "test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 334,
+        "endLine": 344
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+        "name": "test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 347,
+        "endLine": 354
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_usage_failure_is_reported_before_an_input_failure",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_usage_failure_is_reported_before_an_input_failure",
+        "name": "test_a_usage_failure_is_reported_before_an_input_failure",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 364,
+        "endLine": 366
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_failing_run_writes_its_diagnostics_as_data",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_failing_run_writes_its_diagnostics_as_data",
+        "name": "test_a_failing_run_writes_its_diagnostics_as_data",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 464,
+        "endLine": 475
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_failing_run_writes_its_diagnostics_as_text",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_failing_run_writes_its_diagnostics_as_text",
+        "name": "test_a_failing_run_writes_its_diagnostics_as_text",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 478,
+        "endLine": 481
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:conversion",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:conversion",
+        "name": "conversion",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 484,
+        "endLine": 492
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+            "name": "test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+            "name": "test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_actual_bundle_reuse_is_refused",
+            "name": "test_actual_bundle_reuse_is_refused",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+            "name": "test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+            "name": "test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_conflicting_depths_are_stable_and_atomic",
+            "name": "test_conflicting_depths_are_stable_and_atomic",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_deferred_only_metadata_does_not_join_or_conflict",
+            "name": "test_deferred_only_metadata_does_not_join_or_conflict",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+            "name": "test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_exact_group_strings_are_distinct",
+            "name": "test_exact_group_strings_are_distinct",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_group_and_file_heading_identities_remain_distinct",
+            "name": "test_group_and_file_heading_identities_remain_distinct",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_group_names_have_no_directory_requirement",
+            "name": "test_group_names_have_no_directory_requirement",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          },
+          {
+            "uid": "Function:src/tests/test_conversion_compilation.py:test_linked_destination_owns_its_settings",
+            "name": "test_linked_destination_owns_its_settings",
+            "filePath": "src/tests/test_conversion_compilation.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_usage_failure_reaching_no_document_carries_no_chain",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_usage_failure_reaching_no_document_carries_no_chain",
+        "name": "test_a_usage_failure_reaching_no_document_carries_no_chain",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 540,
+        "endLine": 543
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_crlf_source_is_read_without_newline_translation",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_crlf_source_is_read_without_newline_translation",
+        "name": "test_a_crlf_source_is_read_without_newline_translation",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 771,
+        "endLine": 777
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:read_document",
+            "name": "read_document",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/closure.py:resolve",
+            "name": "resolve",
+            "filePath": "src/prosiform/closure.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+        "name": "test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 899,
+        "endLine": 927
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:captured_for",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:captured_for",
+        "name": "captured_for",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 1682,
+        "endLine": 1686
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+            "name": "test_a_source_nothing_wrote_passes_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+            "name": "test_a_source_removed_after_the_read_fails_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_resolving_elsewhere_fails_the_recheck",
+            "name": "test_a_source_resolving_elsewhere_fails_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+            "name": "test_a_source_written_after_the_read_fails_the_recheck",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/access.py:read_source",
+            "name": "read_source",
+            "filePath": "src/prosiform/access.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:canonical",
+            "name": "canonical",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:hashed",
+            "name": "hashed",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+        "name": "test_a_source_nothing_wrote_passes_the_recheck",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 1689,
+        "endLine": 1690
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:recheck",
+            "name": "recheck",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:captured_for",
+            "name": "captured_for",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+        "name": "test_a_source_written_after_the_read_fails_the_recheck",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 1693,
+        "endLine": 1699
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:recheck",
+            "name": "recheck",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:captured_for",
+            "name": "captured_for",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+        "name": "test_a_source_removed_after_the_read_fails_the_recheck",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 1702,
+        "endLine": 1707
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:recheck",
+            "name": "recheck",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:captured_for",
+            "name": "captured_for",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_a_source_resolving_elsewhere_fails_the_recheck",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_a_source_resolving_elsewhere_fails_the_recheck",
+        "name": "test_a_source_resolving_elsewhere_fails_the_recheck",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 1710,
+        "endLine": 1722
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:recheck",
+            "name": "recheck",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:captured_for",
+            "name": "captured_for",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_cli.py:test_actual_bundle_reuse_is_refused",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_cli.py:test_actual_bundle_reuse_is_refused",
+        "name": "test_actual_bundle_reuse_is_refused",
+        "kind": "Function",
+        "filePath": "src/tests/test_cli.py",
+        "startLine": 1913,
+        "endLine": 1928
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_linked_destination_owns_its_settings",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_linked_destination_owns_its_settings",
+        "name": "test_linked_destination_owns_its_settings",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 12,
+        "endLine": 32
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+        "name": "test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 35,
+        "endLine": 62
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_deferred_only_metadata_does_not_join_or_conflict",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_deferred_only_metadata_does_not_join_or_conflict",
+        "name": "test_deferred_only_metadata_does_not_join_or_conflict",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 66,
+        "endLine": 83
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_conflicting_depths_are_stable_and_atomic",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_conflicting_depths_are_stable_and_atomic",
+        "name": "test_conflicting_depths_are_stable_and_atomic",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 88,
+        "endLine": 115
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_group_names_have_no_directory_requirement",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_group_names_have_no_directory_requirement",
+        "name": "test_group_names_have_no_directory_requirement",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 121,
+        "endLine": 129
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_group_and_file_heading_identities_remain_distinct",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_group_and_file_heading_identities_remain_distinct",
+        "name": "test_group_and_file_heading_identities_remain_distinct",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 132,
+        "endLine": 138
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_exact_group_strings_are_distinct",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_exact_group_strings_are_distinct",
+        "name": "test_exact_group_strings_are_distinct",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 141,
+        "endLine": 146
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:conversion",
+            "name": "conversion",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_cli.py:written",
+            "name": "written",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_conversion_compilation.py:test_structural_cli_arguments_are_usage_errors",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_conversion_compilation.py:test_structural_cli_arguments_are_usage_errors",
+        "name": "test_structural_cli_arguments_are_usage_errors",
+        "kind": "Function",
+        "filePath": "src/tests/test_conversion_compilation.py",
+        "startLine": 150,
+        "endLine": 154
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:parse",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:parse",
+        "name": "parse",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 16,
+        "endLine": 26
+      },
+      "epistemic": "lower-bound",
+      "boundaries": [
+        "5 call sites invoking `parse` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result — actual impact may be higher."
+      ],
+      "causes": {
+        "scopeExtractionFiles": 0,
+        "receiverTyping": 5,
+        "dispatchBoundary": 0,
+        "externalBoundary": 0,
+        "undecidedSatisfaction": 0,
+        "callableValueReferences": 0
+      },
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_absent_settings",
+            "name": "test_absent_settings",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_core_key_types_are_distinct",
+            "name": "test_core_key_types_are_distinct",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_depth_boundary_and_early_stop",
+            "name": "test_depth_boundary_and_early_stop",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_depth_grammar",
+            "name": "test_depth_grammar",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_depth_values",
+            "name": "test_depth_values",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_duplicate_diagnostic_formats",
+            "name": "test_duplicate_diagnostic_formats",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_error_marks_and_no_related",
+            "name": "test_error_marks_and_no_related",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_escaped_null_in_unrelated_field",
+            "name": "test_escaped_null_in_unrelated_field",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_extreme_canonical_duplicates",
+            "name": "test_extreme_canonical_duplicates",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_frontmatter_failures",
+            "name": "test_frontmatter_failures",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_group_and_marks",
+            "name": "test_group_and_marks",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_group_grammar",
+            "name": "test_group_grammar",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_invalid_unicode_escape",
+            "name": "test_invalid_unicode_escape",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_large_integer",
+            "name": "test_large_integer",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_out_of_range_escape_mark_survives_parser_cleanup",
+            "name": "test_out_of_range_escape_mark_survives_parser_cleanup",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_reader_error_coordinate",
+            "name": "test_reader_error_coordinate",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_schema_failures",
+            "name": "test_schema_failures",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_tab_and_unicode_column",
+            "name": "test_tab_and_unicode_column",
+            "filePath": "src/tests/test_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_metadata.py:test_yaml_marked_syntax_error",
+            "name": "test_yaml_marked_syntax_error",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_absent_settings",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_absent_settings",
+        "name": "test_absent_settings",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 41,
+        "endLine": 42
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_group_and_marks",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_group_and_marks",
+        "name": "test_group_and_marks",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 45,
+        "endLine": 56
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ],
+        "accesses": [
+          {
+            "uid": "Property:src/prosiform/metadata.py:Conversion.group",
+            "name": "group",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_frontmatter_failures",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_frontmatter_failures",
+        "name": "test_frontmatter_failures",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 87,
+        "endLine": 90
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_schema_failures",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_schema_failures",
+        "name": "test_schema_failures",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 107,
+        "endLine": 110
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_group_grammar",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_group_grammar",
+        "name": "test_group_grammar",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 128,
+        "endLine": 134
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_depth_grammar",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_depth_grammar",
+        "name": "test_depth_grammar",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 138,
+        "endLine": 144
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_depth_values",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_depth_values",
+        "name": "test_depth_values",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 148,
+        "endLine": 154
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_core_key_types_are_distinct",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_core_key_types_are_distinct",
+        "name": "test_core_key_types_are_distinct",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 157,
+        "endLine": 161
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_byte_limit_precedes_decoding",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_byte_limit_precedes_decoding",
+        "name": "test_byte_limit_precedes_decoding",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 164,
+        "endLine": 170
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_depth_boundary_and_early_stop",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_depth_boundary_and_early_stop",
+        "name": "test_depth_boundary_and_early_stop",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 173,
+        "endLine": 180
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_duplicate_diagnostic_formats",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_duplicate_diagnostic_formats",
+        "name": "test_duplicate_diagnostic_formats",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 183,
+        "endLine": 198
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_error_marks_and_no_related",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_error_marks_and_no_related",
+        "name": "test_error_marks_and_no_related",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 201,
+        "endLine": 205
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_large_integer",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_large_integer",
+        "name": "test_large_integer",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 208,
+        "endLine": 209
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_extreme_canonical_duplicates",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_extreme_canonical_duplicates",
+        "name": "test_extreme_canonical_duplicates",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 221,
+        "endLine": 224
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_tab_and_unicode_column",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_tab_and_unicode_column",
+        "name": "test_tab_and_unicode_column",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 227,
+        "endLine": 230
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_yaml_marked_syntax_error",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_yaml_marked_syntax_error",
+        "name": "test_yaml_marked_syntax_error",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 233,
+        "endLine": 236
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_single_line_bom_coordinate",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_single_line_bom_coordinate",
+        "name": "test_single_line_bom_coordinate",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 239,
+        "endLine": 243
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/metadata.py:decode",
+            "name": "decode",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_reader_error_coordinate",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_reader_error_coordinate",
+        "name": "test_reader_error_coordinate",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 246,
+        "endLine": 249
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_invalid_unicode_escape",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_invalid_unicode_escape",
+        "name": "test_invalid_unicode_escape",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 253,
+        "endLine": 258
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_escaped_null_in_unrelated_field",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_escaped_null_in_unrelated_field",
+        "name": "test_escaped_null_in_unrelated_field",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 261,
+        "endLine": 262
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_metadata.py:test_out_of_range_escape_mark_survives_parser_cleanup",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_metadata.py:test_out_of_range_escape_mark_survives_parser_cleanup",
+        "name": "test_out_of_range_escape_mark_survives_parser_cleanup",
+        "kind": "Function",
+        "filePath": "src/tests/test_metadata.py",
+        "startLine": 265,
+        "endLine": 268
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_metadata.py:parse",
+            "name": "parse",
+            "filePath": "src/tests/test_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:settings",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:settings",
+        "name": "settings",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 18,
+        "endLine": 19
+      },
+      "epistemic": "exact",
+      "incoming": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+            "name": "test_capture_hash_covers_frontmatter_and_body",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain",
+            "name": "test_deferred_metadata_change_is_rechecked_with_its_chain",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain.read@175:4",
+            "name": "read",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing",
+            "name": "test_deferred_source_is_captured_once_and_contributes_nothing",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_settings_and_body_share_physical_coordinates",
+            "name": "test_settings_and_body_share_physical_coordinates",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:test_settings_are_per_source_and_not_inherited",
+            "name": "test_settings_are_per_source_and_not_inherited",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_settings_and_body_share_physical_coordinates",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_settings_and_body_share_physical_coordinates",
+        "name": "test_settings_and_body_share_physical_coordinates",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 25,
+        "endLine": 38
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/source.py:content",
+            "name": "content",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:settings",
+            "name": "settings",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Method:src/prosiform/source.py:Source.line#1",
+            "name": "line",
+            "filePath": "src/prosiform/source.py"
+          }
+        ],
+        "accesses": [
+          {
+            "uid": "Property:src/prosiform/metadata.py:Conversion.group",
+            "name": "group",
+            "filePath": "src/prosiform/metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_settings_are_per_source_and_not_inherited",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_settings_are_per_source_and_not_inherited",
+        "name": "test_settings_are_per_source_and_not_inherited",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 41,
+        "endLine": 44
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/source.py:content",
+            "name": "content",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:settings",
+            "name": "settings",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_duplicate_key_reports_original_locations",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_duplicate_key_reports_original_locations",
+        "name": "test_duplicate_key_reports_original_locations",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 47,
+        "endLine": 53
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/source.py:content",
+            "name": "content",
+            "filePath": "src/prosiform/source.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+        "name": "test_capture_hash_covers_frontmatter_and_body",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 56,
+        "endLine": 69
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/cli.py:read_document",
+            "name": "read_document",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/cli.py:recheck",
+            "name": "recheck",
+            "filePath": "src/prosiform/cli.py"
+          },
+          {
+            "uid": "Function:src/prosiform/closure.py:resolve",
+            "name": "resolve",
+            "filePath": "src/prosiform/closure.py"
+          },
+          {
+            "uid": "Function:src/prosiform/source.py:hashed",
+            "name": "hashed",
+            "filePath": "src/prosiform/source.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:settings",
+            "name": "settings",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_metadata_is_not_a_markdown_dependency",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_metadata_is_not_a_markdown_dependency",
+        "name": "test_metadata_is_not_a_markdown_dependency",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 72,
+        "endLine": 81
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_metadata_error_preserves_output_and_coordinates",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_metadata_error_preserves_output_and_coordinates",
+        "name": "test_metadata_error_preserves_output_and_coordinates",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 85,
+        "endLine": 100
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_raw_byte_budget_precedes_yaml_and_encoding",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_raw_byte_budget_precedes_yaml_and_encoding",
+        "name": "test_raw_byte_budget_precedes_yaml_and_encoding",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 104,
+        "endLine": 111
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_yaml_collection_depth_is_bounded",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_yaml_collection_depth_is_bounded",
+        "name": "test_yaml_collection_depth_is_bounded",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 114,
+        "endLine": 119
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing",
+        "name": "test_deferred_source_is_captured_once_and_contributes_nothing",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 122,
+        "endLine": 142
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:settings",
+            "name": "settings",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Property:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing.reads@129:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Property:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing.reads@129:4",
+        "name": "reads",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 130,
+        "endLine": 130
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {},
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing.read@131:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing.read@131:4",
+        "name": "read",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 132,
+        "endLine": 134
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/access.py:read_source",
+            "name": "read_source",
+            "filePath": "src/prosiform/access.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_counts_towards_raw_budgets",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_deferred_source_counts_towards_raw_budgets",
+        "name": "test_deferred_source_counts_towards_raw_budgets",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 146,
+        "endLine": 156
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_failure_is_an_input_failure",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_failure_is_an_input_failure",
+        "name": "test_deferred_metadata_failure_is_an_input_failure",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 159,
+        "endLine": 166
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain",
+        "name": "test_deferred_metadata_change_is_rechecked_with_its_chain",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 169,
+        "endLine": 190
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/tests/test_cli.py:invoke",
+            "name": "invoke",
+            "filePath": "src/tests/test_cli.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:settings",
+            "name": "settings",
+            "filePath": "src/tests/test_source_metadata.py"
+          },
+          {
+            "uid": "Method:src/tests/test_cli.py:Run.diagnostics#0",
+            "name": "diagnostics",
+            "filePath": "src/tests/test_cli.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  },
+  {
+    "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain.read@175:4",
+    "result": {
+      "status": "found",
+      "symbol": {
+        "uid": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain.read@175:4",
+        "name": "read",
+        "kind": "Function",
+        "filePath": "src/tests/test_source_metadata.py",
+        "startLine": 176,
+        "endLine": 182
+      },
+      "epistemic": "exact",
+      "incoming": {},
+      "outgoing": {
+        "calls": [
+          {
+            "uid": "Function:src/prosiform/access.py:read_source",
+            "name": "read_source",
+            "filePath": "src/prosiform/access.py"
+          },
+          {
+            "uid": "Function:src/tests/test_source_metadata.py:settings",
+            "name": "settings",
+            "filePath": "src/tests/test_source_metadata.py"
+          }
+        ]
+      },
+      "processes": []
+    }
+  }
+]

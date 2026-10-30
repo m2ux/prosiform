@@ -1,0 +1,1 @@
+{"severity": "warning", "message": "the entry reference 'Assemble' resolves to the destination 'assemble', which the bundle's entry line links it to", "code": "W_ENTRY_DESTINATION", "reference": "Assemble", "resolved": "assemble"}

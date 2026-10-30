@@ -1,0 +1,10 @@
+{
+  "command": "pf",
+  "executable": "/tmp/pf-bootstrap-install-gv7t3a19/environment/bin/pf",
+  "wheel": "prosiform-0.9.0-py3-none-any.whl",
+  "installed_outside_repository": true,
+  "version_stdout": "pf 0.9.0 (skill-markdown-v1)\n",
+  "version_stderr": "",
+  "version_exit_status": 0,
+  "source_commit": "d8feaa7041e9d2eb58703faac91620ecae167596"
+}

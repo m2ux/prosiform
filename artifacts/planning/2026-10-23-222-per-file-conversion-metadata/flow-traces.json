@@ -1,0 +1,3143 @@
+[
+  {
+    "flow": {
+      "id": "proc_5_assembled",
+      "name": "Assembled → Shown",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 2.6,
+        "bm25": 80.5,
+        "merge": 0.1,
+        "symbol_lookup": 13.7,
+        "ranking": 0.2,
+        "formatting": 0.1,
+        "wall": 95.1
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| selection | src/prosiform/cli.py | 1003 | 1085 | 2 |\n| section | src/prosiform/source.py | 411 | 449 | 3 |\n| index | src/prosiform/source.py | 383 | 385 | 4 |\n| headed | src/prosiform/source.py | 373 | 380 | 5 |\n| visible | src/prosiform/source.py | 288 | 290 | 6 |\n| shown | src/prosiform/source.py | 293 | 309 | 7 |",
+      "row_count": 7
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_8_assembled",
+      "name": "Assembled → Level",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 74.3,
+        "merge": 0.1,
+        "symbol_lookup": 13.4,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 88
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| selection | src/prosiform/cli.py | 1003 | 1085 | 2 |\n| section | src/prosiform/source.py | 411 | 449 | 3 |\n| index | src/prosiform/source.py | 383 | 385 | 4 |\n| headed | src/prosiform/source.py | 373 | 380 | 5 |\n| level | src/prosiform/source.py | 351 | 353 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_9_assembled",
+      "name": "Assembled → Slug",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.4,
+        "bm25": 68.8,
+        "merge": 0.1,
+        "symbol_lookup": 14,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 82.9
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| selection | src/prosiform/cli.py | 1003 | 1085 | 2 |\n| section | src/prosiform/source.py | 411 | 449 | 3 |\n| index | src/prosiform/source.py | 383 | 385 | 4 |\n| headed | src/prosiform/source.py | 373 | 380 | 5 |\n| slug | src/prosiform/source.py | 312 | 314 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_23_validate",
+      "name": "Validate → Regions",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Class:src/tests/test_candidate.py:Built",
+          "name": "Built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 55,
+          "endLine": 78
+        },
+        {
+          "id": "Method:src/tests/test_candidate.py:Built.validate#0",
+          "name": "validate",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 66,
+          "endLine": 78,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:test_a_candidate_agreeing_with_its_provenance_validates",
+          "name": "test_a_candidate_agreeing_with_its_provenance_validates",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 185,
+          "endLine": 186,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_complete_manifest_validates",
+          "name": "test_a_complete_manifest_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 97,
+          "endLine": 98,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_declaring_a_warning_validates",
+          "name": "test_a_manifest_declaring_a_warning_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 132,
+          "endLine": 133,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_awaiting_nothing_validates",
+          "name": "test_a_manifest_awaiting_nothing_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 333,
+          "endLine": 335,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:checks/tests/test_invocation.py:HELP",
+          "name": "HELP",
+          "filePath": "checks/tests/test_invocation.py",
+          "startLine": 42,
+          "endLine": 65
+        },
+        {
+          "id": "File:checks/tests/test_invocation.py",
+          "name": "test_invocation.py",
+          "filePath": "checks/tests/test_invocation.py"
+        },
+        {
+          "id": "File:checks/manifests.py",
+          "name": "manifests.py",
+          "filePath": "checks/manifests.py"
+        },
+        {
+          "id": "Variable:checks/tests/test_independence.py:GLOSSARY",
+          "name": "GLOSSARY",
+          "filePath": "checks/tests/test_independence.py",
+          "startLine": 48,
+          "endLine": 62
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 96,
+        "merge": 0.1,
+        "symbol_lookup": 14.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 110.2
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| validate | src/prosiform/candidate.py | 1050 | 1098 | 1 |\n| placement | src/prosiform/candidate.py | 618 | 679 | 2 |\n| above | src/prosiform/candidate.py | 575 | 590 | 3 |\n| ancestry | src/prosiform/bundle.py | 486 | 512 | 4 |\n| regions | src/prosiform/source.py | 388 | 398 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_24_main",
+      "name": "Main → Fields",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "fields",
+          "step": 5
+        },
+        {
+          "symbol": "execute",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.6,
+        "bm25": 86.6,
+        "merge": 0.1,
+        "symbol_lookup": 14.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 100.9
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | src/prosiform/cli.py | 1802 | 1825 | 1 |\n| execute | src/prosiform/cli.py | 1710 | 1799 | 2 |\n| emit | src/prosiform/diagnostics.py | 126 | 130 | 3 |\n| as_json | src/prosiform/diagnostics.py | 114 | 116 | 4 |\n| fields | src/prosiform/diagnostics.py | 76 | 90 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_25_recheck",
+      "name": "Recheck → Refusal",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "recheck",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_166_recheck",
+          "summary": "Recheck → Input_failure",
+          "priority": 0.094,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:recheck",
+          "name": "recheck",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 912,
+          "endLine": 949,
+          "module": "Tests",
+          "process_id": "proc_166_recheck",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+          "name": "test_a_source_nothing_wrote_passes_the_recheck",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1689,
+          "endLine": 1690,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+          "name": "test_a_source_written_after_the_read_fails_the_recheck",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1693,
+          "endLine": 1699,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+          "name": "test_a_source_removed_after_the_read_fails_the_recheck",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1702,
+          "endLine": 1707,
+          "module": "Tests"
+        },
+        {
+          "id": "Class:src/prosiform/cli.py:Opened",
+          "name": "Opened",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 683,
+          "endLine": 696
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:rewrite_sources",
+          "name": "rewrite_sources",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 956,
+          "endLine": 968,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+          "name": "test_capture_hash_covers_frontmatter_and_body",
+          "filePath": "src/tests/test_source_metadata.py",
+          "startLine": 56,
+          "endLine": 69,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing",
+          "name": "test_deferred_source_is_captured_once_and_contributes_nothing",
+          "filePath": "src/tests/test_source_metadata.py",
+          "startLine": 122,
+          "endLine": 142,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain",
+          "name": "test_deferred_metadata_change_is_rechecked_with_its_chain",
+          "filePath": "src/tests/test_source_metadata.py",
+          "startLine": 169,
+          "endLine": 190,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 67.1,
+        "merge": 0.1,
+        "symbol_lookup": 14.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 82
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| recheck | src/prosiform/cli.py | 911 | 948 | 1 |\n| read_source | src/prosiform/access.py | 129 | 132 | 2 |\n| opened | src/prosiform/access.py | 98 | 126 | 3 |\n| descend | src/prosiform/access.py | 90 | 95 | 4 |\n| refusal | src/prosiform/access.py | 70 | 87 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_50_main",
+      "name": "Main → Lines",
+      "process_type": "intra_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 2,
+        "bm25": 96.2,
+        "merge": 0.1,
+        "symbol_lookup": 17.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 113.5
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | scripts/render-diagram.py | 237 | 431 | 1 |\n| svg | scripts/render-diagram.py | 168 | 234 | 2 |\n| card | scripts/render-diagram.py | 65 | 84 | 3 |\n| lines | scripts/render-diagram.py | 27 | 62 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_51_main",
+      "name": "Main → Txt",
+      "process_type": "intra_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.7,
+        "bm25": 93.8,
+        "merge": 0,
+        "symbol_lookup": 12.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 106.7
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | scripts/render-diagram.py | 237 | 431 | 1 |\n| svg | scripts/render-diagram.py | 168 | 234 | 2 |\n| card | scripts/render-diagram.py | 65 | 84 | 3 |\n| txt | scripts/render-diagram.py | 20 | 24 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_55_validate",
+      "name": "Validate → Placed",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Class:src/tests/test_candidate.py:Built",
+          "name": "Built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 55,
+          "endLine": 78
+        },
+        {
+          "id": "Method:src/tests/test_candidate.py:Built.validate#0",
+          "name": "validate",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 66,
+          "endLine": 78,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:test_a_candidate_agreeing_with_its_provenance_validates",
+          "name": "test_a_candidate_agreeing_with_its_provenance_validates",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 185,
+          "endLine": 186,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_complete_manifest_validates",
+          "name": "test_a_complete_manifest_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 97,
+          "endLine": 98,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_declaring_a_warning_validates",
+          "name": "test_a_manifest_declaring_a_warning_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 132,
+          "endLine": 133,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_awaiting_nothing_validates",
+          "name": "test_a_manifest_awaiting_nothing_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 333,
+          "endLine": 335,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:checks/tests/test_invocation.py:HELP",
+          "name": "HELP",
+          "filePath": "checks/tests/test_invocation.py",
+          "startLine": 42,
+          "endLine": 65
+        },
+        {
+          "id": "File:checks/tests/test_invocation.py",
+          "name": "test_invocation.py",
+          "filePath": "checks/tests/test_invocation.py"
+        },
+        {
+          "id": "File:checks/manifests.py",
+          "name": "manifests.py",
+          "filePath": "checks/manifests.py"
+        },
+        {
+          "id": "Variable:checks/tests/test_independence.py:GLOSSARY",
+          "name": "GLOSSARY",
+          "filePath": "checks/tests/test_independence.py",
+          "startLine": 48,
+          "endLine": 62
+        }
+      ],
+      "timing": {
+        "vector": 1.4,
+        "bm25": 96.4,
+        "merge": 0,
+        "symbol_lookup": 16.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 113.3
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| validate | src/prosiform/candidate.py | 1050 | 1098 | 1 |\n| placement | src/prosiform/candidate.py | 618 | 679 | 2 |\n| paths | src/prosiform/provenance.py | 214 | 231 | 3 |\n| placed | src/prosiform/provenance.py | 200 | 208 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_56_assembled",
+      "name": "Assembled → Title_cased",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 77.3,
+        "merge": 0,
+        "symbol_lookup": 14,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 91.4
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| group | src/prosiform/bundle.py | 612 | 757 | 2 |\n| heading_text | src/prosiform/bundle.py | 260 | 272 | 3 |\n| title_cased | src/prosiform/bundle.py | 249 | 257 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_57_assembled",
+      "name": "Assembled → Headings",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 73.9,
+        "merge": 0,
+        "symbol_lookup": 13.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 87.7
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| selection | src/prosiform/cli.py | 1003 | 1085 | 2 |\n| section | src/prosiform/source.py | 411 | 449 | 3 |\n| headings | src/prosiform/source.py | 356 | 360 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_75_main",
+      "name": "Main → Compact_markdown",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 92.7,
+        "merge": 0,
+        "symbol_lookup": 15.3,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 108.2
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | scripts/render-diagram.py | 237 | 431 | 1 |\n| svg | scripts/render-diagram.py | 168 | 234 | 2 |\n| compact_markdown | scripts/render-diagram.py | 96 | 134 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_76_main",
+      "name": "Main → Branch",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.8,
+        "bm25": 113,
+        "merge": 0,
+        "symbol_lookup": 14.6,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 127.8
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | scripts/render-diagram.py | 237 | 431 | 1 |\n| svg | scripts/render-diagram.py | 168 | 234 | 2 |\n| branch | scripts/render-diagram.py | 189 | 195 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_80_validate",
+      "name": "Validate → Ancestors",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Class:src/tests/test_candidate.py:Built",
+          "name": "Built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 55,
+          "endLine": 78
+        },
+        {
+          "id": "Method:src/tests/test_candidate.py:Built.validate#0",
+          "name": "validate",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 66,
+          "endLine": 78,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:test_a_candidate_agreeing_with_its_provenance_validates",
+          "name": "test_a_candidate_agreeing_with_its_provenance_validates",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 185,
+          "endLine": 186,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_complete_manifest_validates",
+          "name": "test_a_complete_manifest_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 97,
+          "endLine": 98,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_declaring_a_warning_validates",
+          "name": "test_a_manifest_declaring_a_warning_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 132,
+          "endLine": 133,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_awaiting_nothing_validates",
+          "name": "test_a_manifest_awaiting_nothing_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 333,
+          "endLine": 335,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:checks/tests/test_invocation.py:HELP",
+          "name": "HELP",
+          "filePath": "checks/tests/test_invocation.py",
+          "startLine": 42,
+          "endLine": 65
+        },
+        {
+          "id": "File:checks/tests/test_invocation.py",
+          "name": "test_invocation.py",
+          "filePath": "checks/tests/test_invocation.py"
+        },
+        {
+          "id": "File:checks/manifests.py",
+          "name": "manifests.py",
+          "filePath": "checks/manifests.py"
+        },
+        {
+          "id": "Variable:checks/tests/test_independence.py:GLOSSARY",
+          "name": "GLOSSARY",
+          "filePath": "checks/tests/test_independence.py",
+          "startLine": 48,
+          "endLine": 62
+        }
+      ],
+      "timing": {
+        "vector": 1,
+        "bm25": 99.9,
+        "merge": 0,
+        "symbol_lookup": 14.5,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 114.6
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| validate | src/prosiform/candidate.py | 1050 | 1098 | 1 |\n| placement | src/prosiform/candidate.py | 618 | 679 | 2 |\n| ancestors | src/prosiform/provenance.py | 210 | 212 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_81_assembled",
+      "name": "Assembled → Input_failure",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.3,
+        "bm25": 64.4,
+        "merge": 0,
+        "symbol_lookup": 13.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 78.2
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| overflowing | src/prosiform/cli.py | 1503 | 1516 | 2 |\n| input_failure | src/prosiform/cli.py | 382 | 410 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_82_main",
+      "name": "Main → Hold",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "execute",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.8,
+        "bm25": 98.6,
+        "merge": 0,
+        "symbol_lookup": 15.2,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 114
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | src/prosiform/cli.py | 1802 | 1825 | 1 |\n| execute | src/prosiform/cli.py | 1710 | 1799 | 2 |\n| hold | src/prosiform/limits.py | 112 | 116 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_83_main",
+      "name": "Main → Of",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "execute",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_18_main",
+          "summary": "Main → Succeeded",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/smoke.py:main",
+          "name": "main",
+          "filePath": "checks/smoke.py",
+          "startLine": 253,
+          "endLine": 264,
+          "module": "Checks",
+          "process_id": "proc_18_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_a_corpus_holding_an_unexpected_pass_fails",
+          "name": "test_a_corpus_holding_an_unexpected_pass_fails",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 223,
+          "endLine": 228,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_corpus_run.py:test_an_empty_corpus_fails_the_run",
+          "name": "test_an_empty_corpus_fails_the_run",
+          "filePath": "checks/tests/test_corpus_run.py",
+          "startLine": 249,
+          "endLine": 254,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/tests/test_corpus_run.py",
+          "name": "test_corpus_run.py",
+          "filePath": "checks/tests/test_corpus_run.py"
+        },
+        {
+          "id": "Function:checks/layout.py:main",
+          "name": "main",
+          "filePath": "checks/layout.py",
+          "startLine": 32,
+          "endLine": 51,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/layout.py",
+          "name": "layout.py",
+          "filePath": "checks/layout.py"
+        },
+        {
+          "id": "File:checks/smoke.py",
+          "name": "smoke.py",
+          "filePath": "checks/smoke.py"
+        },
+        {
+          "id": "File:checks/corpus.py",
+          "name": "corpus.py",
+          "filePath": "checks/corpus.py"
+        }
+      ],
+      "timing": {
+        "vector": 2.1,
+        "bm25": 124.9,
+        "merge": 0,
+        "symbol_lookup": 23,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 148.1
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| main | src/prosiform/cli.py | 1802 | 1825 | 1 |\n| execute | src/prosiform/cli.py | 1710 | 1799 | 2 |\n| of | src/prosiform/limits.py | 118 | 120 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_87_decode",
+      "name": "Decode → _fail",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "decode",
+          "step": 1
+        },
+        {
+          "symbol": "_scalar",
+          "step": 2
+        },
+        {
+          "symbol": "_fail",
+          "step": 3
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_139_withheld",
+          "summary": "Withheld → Decoded",
+          "priority": 0.114,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/closure.py:decoded",
+          "name": "decoded",
+          "filePath": "src/prosiform/closure.py",
+          "startLine": 189,
+          "endLine": 220,
+          "module": "Tests",
+          "process_id": "proc_139_withheld",
+          "step_index": 7
+        },
+        {
+          "id": "Function:src/prosiform/closure.py:segment",
+          "name": "segment",
+          "filePath": "src/prosiform/closure.py",
+          "startLine": 234,
+          "endLine": 248,
+          "module": "Tests",
+          "process_id": "proc_139_withheld",
+          "step_index": 6
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_source.py:test_valid_utf8_decodes_to_the_text_it_encodes",
+          "name": "test_valid_utf8_decodes_to_the_text_it_encodes",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 211,
+          "endLine": 212,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source.py:test_a_mark_decodes_to_one_character",
+          "name": "test_a_mark_decodes_to_one_character",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 215,
+          "endLine": 216,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source.py:test_bytes_that_are_not_valid_utf8_fail_rather_than_decoding",
+          "name": "test_bytes_that_are_not_valid_utf8_fail_rather_than_decoding",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 223,
+          "endLine": 225,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_closure.py:test_an_escape_is_decoded_exactly_once",
+          "name": "test_an_escape_is_decoded_exactly_once",
+          "filePath": "src/tests/test_closure.py",
+          "startLine": 53,
+          "endLine": 54,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_closure.py:test_a_fragment_is_decoded_and_looked_up_as_it_is_spelled",
+          "name": "test_a_fragment_is_decoded_and_looked_up_as_it_is_spelled",
+          "filePath": "src/tests/test_closure.py",
+          "startLine": 61,
+          "endLine": 62,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_closure.py:test_a_separator_a_segment_decodes_to_is_refused",
+          "name": "test_a_separator_a_segment_decodes_to_is_refused",
+          "filePath": "src/tests/test_closure.py",
+          "startLine": 129,
+          "endLine": 131,
+          "module": "Tests"
+        },
+        {
+          "id": "Class:src/prosiform/closure.py:Components",
+          "name": "Components",
+          "filePath": "src/prosiform/closure.py",
+          "startLine": 164,
+          "endLine": 169
+        },
+        {
+          "id": "Function:src/tests/test_metadata.py:test_byte_limit_precedes_decoding",
+          "name": "test_byte_limit_precedes_decoding",
+          "filePath": "src/tests/test_metadata.py",
+          "startLine": 164,
+          "endLine": 170,
+          "module": "Prosiform"
+        }
+      ],
+      "timing": {
+        "vector": 1.8,
+        "bm25": 81,
+        "merge": 0,
+        "symbol_lookup": 14.4,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 95.5
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| decode | src/prosiform/metadata.py | 170 | 369 | 1 |\n| _scalar | src/prosiform/metadata.py | 109 | 146 | 2 |\n| _fail | src/prosiform/metadata.py | 92 | 106 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_88_decode",
+      "name": "Decode → _finite_float",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "decode",
+          "step": 1
+        },
+        {
+          "symbol": "_finite_float",
+          "step": 3
+        },
+        {
+          "symbol": "_scalar",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_139_withheld",
+          "summary": "Withheld → Decoded",
+          "priority": 0.114,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/closure.py:decoded",
+          "name": "decoded",
+          "filePath": "src/prosiform/closure.py",
+          "startLine": 189,
+          "endLine": 220,
+          "module": "Tests",
+          "process_id": "proc_139_withheld",
+          "step_index": 7
+        },
+        {
+          "id": "Function:src/prosiform/closure.py:segment",
+          "name": "segment",
+          "filePath": "src/prosiform/closure.py",
+          "startLine": 234,
+          "endLine": 248,
+          "module": "Tests",
+          "process_id": "proc_139_withheld",
+          "step_index": 6
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_source.py:test_valid_utf8_decodes_to_the_text_it_encodes",
+          "name": "test_valid_utf8_decodes_to_the_text_it_encodes",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 211,
+          "endLine": 212,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source.py:test_a_mark_decodes_to_one_character",
+          "name": "test_a_mark_decodes_to_one_character",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 215,
+          "endLine": 216,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source.py:test_bytes_that_are_not_valid_utf8_fail_rather_than_decoding",
+          "name": "test_bytes_that_are_not_valid_utf8_fail_rather_than_decoding",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 223,
+          "endLine": 225,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_closure.py:test_an_escape_is_decoded_exactly_once",
+          "name": "test_an_escape_is_decoded_exactly_once",
+          "filePath": "src/tests/test_closure.py",
+          "startLine": 53,
+          "endLine": 54,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_closure.py:test_a_fragment_is_decoded_and_looked_up_as_it_is_spelled",
+          "name": "test_a_fragment_is_decoded_and_looked_up_as_it_is_spelled",
+          "filePath": "src/tests/test_closure.py",
+          "startLine": 61,
+          "endLine": 62,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_closure.py:test_a_separator_a_segment_decodes_to_is_refused",
+          "name": "test_a_separator_a_segment_decodes_to_is_refused",
+          "filePath": "src/tests/test_closure.py",
+          "startLine": 129,
+          "endLine": 131,
+          "module": "Tests"
+        },
+        {
+          "id": "Class:src/prosiform/closure.py:Components",
+          "name": "Components",
+          "filePath": "src/prosiform/closure.py",
+          "startLine": 164,
+          "endLine": 169
+        },
+        {
+          "id": "Function:src/tests/test_metadata.py:test_byte_limit_precedes_decoding",
+          "name": "test_byte_limit_precedes_decoding",
+          "filePath": "src/tests/test_metadata.py",
+          "startLine": 164,
+          "endLine": 170,
+          "module": "Prosiform"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 77.7,
+        "merge": 0,
+        "symbol_lookup": 16.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 93.9
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| decode | src/prosiform/metadata.py | 170 | 369 | 1 |\n| _scalar | src/prosiform/metadata.py | 109 | 146 | 2 |\n| _finite_float | src/prosiform/metadata.py | 149 | 167 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_105_confirm",
+      "name": "Confirm → Slug",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_138_withheld",
+          "summary": "Withheld → Admissible",
+          "priority": 0.075,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:withheld",
+          "name": "withheld",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1164,
+          "endLine": 1197,
+          "module": "Prosiform",
+          "process_id": "proc_138_withheld",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "name": "test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1296,
+          "endLine": 1300,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_heading_a_container_carries_confirms_a_deferral",
+          "name": "test_a_heading_a_container_carries_confirms_a_deferral",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1328,
+          "endLine": 1333,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 2.3,
+        "bm25": 63.9,
+        "merge": 0,
+        "symbol_lookup": 18.5,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 82.5
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| confirm | src/prosiform/cli.py | 1335 | 1369 | 1 |\n| index | src/prosiform/source.py | 383 | 385 | 2 |\n| headed | src/prosiform/source.py | 373 | 380 | 3 |\n| slug | src/prosiform/source.py | 312 | 314 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_114_assembled",
+      "name": "Assembled → Regions",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 70.7,
+        "merge": 0,
+        "symbol_lookup": 14.2,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 85.1
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| group | src/prosiform/bundle.py | 612 | 757 | 2 |\n| absorbed | src/prosiform/bundle.py | 405 | 424 | 3 |\n| regions | src/prosiform/source.py | 388 | 398 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_125_compose",
+      "name": "Compose → Title_cased",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "compose",
+          "step": 1
+        },
+        {
+          "symbol": "unambiguous",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_42_check",
+          "summary": "Check → Reported_status",
+          "priority": 0.104,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/links.py:reported_status",
+          "name": "reported_status",
+          "filePath": "checks/links.py",
+          "startLine": 237,
+          "endLine": 247,
+          "module": "Tests",
+          "process_id": "proc_42_check",
+          "step_index": 4
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_error_the_contract_does_not_name_is_an_internal_error_as_data",
+          "name": "test_an_error_the_contract_does_not_name_is_an_internal_error_as_data",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1657,
+          "endLine": 1666,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_error_the_contract_does_not_name_is_an_internal_error_as_text",
+          "name": "test_an_error_the_contract_does_not_name_is_an_internal_error_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1669,
+          "endLine": 1679,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/links.py",
+          "name": "links.py",
+          "filePath": "checks/links.py"
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:traverse",
+          "name": "traverse",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1200,
+          "endLine": 1333,
+          "module": "Prosiform"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 61.9,
+        "merge": 0.1,
+        "symbol_lookup": 16.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 78.8
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| compose | src/prosiform/cli.py | 1562 | 1618 | 1 |\n| unambiguous | src/prosiform/cli.py | 1415 | 1439 | 2 |\n| heading_text | src/prosiform/bundle.py | 260 | 272 | 3 |\n| title_cased | src/prosiform/bundle.py | 249 | 257 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_133_compose",
+      "name": "Compose → Input_failure",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compose",
+          "step": 1
+        },
+        {
+          "symbol": "unambiguous",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_42_check",
+          "summary": "Check → Reported_status",
+          "priority": 0.104,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/links.py:reported_status",
+          "name": "reported_status",
+          "filePath": "checks/links.py",
+          "startLine": 237,
+          "endLine": 247,
+          "module": "Tests",
+          "process_id": "proc_42_check",
+          "step_index": 4
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_error_the_contract_does_not_name_is_an_internal_error_as_data",
+          "name": "test_an_error_the_contract_does_not_name_is_an_internal_error_as_data",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1657,
+          "endLine": 1666,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_error_the_contract_does_not_name_is_an_internal_error_as_text",
+          "name": "test_an_error_the_contract_does_not_name_is_an_internal_error_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1669,
+          "endLine": 1679,
+          "module": "Tests"
+        },
+        {
+          "id": "File:checks/links.py",
+          "name": "links.py",
+          "filePath": "checks/links.py"
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:traverse",
+          "name": "traverse",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1200,
+          "endLine": 1333,
+          "module": "Prosiform"
+        }
+      ],
+      "timing": {
+        "vector": 1.3,
+        "bm25": 72.5,
+        "merge": 0,
+        "symbol_lookup": 21,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 93.7
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| compose | src/prosiform/cli.py | 1562 | 1618 | 1 |\n| unambiguous | src/prosiform/cli.py | 1415 | 1439 | 2 |\n| input_failure | src/prosiform/cli.py | 382 | 410 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_143_confirm",
+      "name": "Confirm → Shown",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_138_withheld",
+          "summary": "Withheld → Admissible",
+          "priority": 0.075,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:withheld",
+          "name": "withheld",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1164,
+          "endLine": 1197,
+          "module": "Prosiform",
+          "process_id": "proc_138_withheld",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "name": "test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1296,
+          "endLine": 1300,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_heading_a_container_carries_confirms_a_deferral",
+          "name": "test_a_heading_a_container_carries_confirms_a_deferral",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1328,
+          "endLine": 1333,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 64.9,
+        "merge": 0,
+        "symbol_lookup": 15.8,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 80.8
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| confirm | src/prosiform/cli.py | 1335 | 1369 | 1 |\n| index | src/prosiform/source.py | 383 | 385 | 2 |\n| headed | src/prosiform/source.py | 373 | 380 | 3 |\n| visible | src/prosiform/source.py | 288 | 290 | 4 |\n| shown | src/prosiform/source.py | 293 | 309 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_146_validate",
+      "name": "Validate → Level",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Class:src/tests/test_candidate.py:Built",
+          "name": "Built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 55,
+          "endLine": 78
+        },
+        {
+          "id": "Method:src/tests/test_candidate.py:Built.validate#0",
+          "name": "validate",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 66,
+          "endLine": 78,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:test_a_candidate_agreeing_with_its_provenance_validates",
+          "name": "test_a_candidate_agreeing_with_its_provenance_validates",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 185,
+          "endLine": 186,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_complete_manifest_validates",
+          "name": "test_a_complete_manifest_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 97,
+          "endLine": 98,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_declaring_a_warning_validates",
+          "name": "test_a_manifest_declaring_a_warning_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 132,
+          "endLine": 133,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_manifest_schema.py:test_a_manifest_awaiting_nothing_validates",
+          "name": "test_a_manifest_awaiting_nothing_validates",
+          "filePath": "checks/tests/test_manifest_schema.py",
+          "startLine": 333,
+          "endLine": 335,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:checks/tests/test_invocation.py:HELP",
+          "name": "HELP",
+          "filePath": "checks/tests/test_invocation.py",
+          "startLine": 42,
+          "endLine": 65
+        },
+        {
+          "id": "File:checks/tests/test_invocation.py",
+          "name": "test_invocation.py",
+          "filePath": "checks/tests/test_invocation.py"
+        },
+        {
+          "id": "File:checks/manifests.py",
+          "name": "manifests.py",
+          "filePath": "checks/manifests.py"
+        },
+        {
+          "id": "Variable:checks/tests/test_independence.py:GLOSSARY",
+          "name": "GLOSSARY",
+          "filePath": "checks/tests/test_independence.py",
+          "startLine": 48,
+          "endLine": 62
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 109.2,
+        "merge": 0.1,
+        "symbol_lookup": 14.8,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 124.3
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| validate | src/prosiform/candidate.py | 1050 | 1098 | 1 |\n| placement | src/prosiform/candidate.py | 618 | 679 | 2 |\n| above | src/prosiform/candidate.py | 575 | 590 | 3 |\n| ancestry | src/prosiform/bundle.py | 486 | 512 | 4 |\n| level | src/prosiform/source.py | 351 | 353 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_155_assembled",
+      "name": "Assembled → Escaped",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.7,
+        "bm25": 75.2,
+        "merge": 0,
+        "symbol_lookup": 15.4,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 90.7
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| group | src/prosiform/bundle.py | 612 | 757 | 2 |\n| escaped | src/prosiform/bundle.py | 280 | 290 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_163_confirm",
+      "name": "Confirm → Headings",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_138_withheld",
+          "summary": "Withheld → Admissible",
+          "priority": 0.075,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:withheld",
+          "name": "withheld",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1164,
+          "endLine": 1197,
+          "module": "Prosiform",
+          "process_id": "proc_138_withheld",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "name": "test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1296,
+          "endLine": 1300,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_heading_a_container_carries_confirms_a_deferral",
+          "name": "test_a_heading_a_container_carries_confirms_a_deferral",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1328,
+          "endLine": 1333,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.3,
+        "bm25": 65.5,
+        "merge": 0,
+        "symbol_lookup": 19.3,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 84.9
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| confirm | src/prosiform/cli.py | 1335 | 1369 | 1 |\n| index | src/prosiform/source.py | 383 | 385 | 2 |\n| headings | src/prosiform/source.py | 356 | 360 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_166_recheck",
+      "name": "Recheck → Input_failure",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "recheck",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_166_recheck",
+          "summary": "Recheck → Input_failure",
+          "priority": 0.094,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:recheck",
+          "name": "recheck",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 912,
+          "endLine": 949,
+          "module": "Tests",
+          "process_id": "proc_166_recheck",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+          "name": "test_a_source_nothing_wrote_passes_the_recheck",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1689,
+          "endLine": 1690,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+          "name": "test_a_source_written_after_the_read_fails_the_recheck",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1693,
+          "endLine": 1699,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+          "name": "test_a_source_removed_after_the_read_fails_the_recheck",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1702,
+          "endLine": 1707,
+          "module": "Tests"
+        },
+        {
+          "id": "Class:src/prosiform/cli.py:Opened",
+          "name": "Opened",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 683,
+          "endLine": 696
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:rewrite_sources",
+          "name": "rewrite_sources",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 956,
+          "endLine": 968,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+          "name": "test_capture_hash_covers_frontmatter_and_body",
+          "filePath": "src/tests/test_source_metadata.py",
+          "startLine": 56,
+          "endLine": 69,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing",
+          "name": "test_deferred_source_is_captured_once_and_contributes_nothing",
+          "filePath": "src/tests/test_source_metadata.py",
+          "startLine": 122,
+          "endLine": 142,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain",
+          "name": "test_deferred_metadata_change_is_rechecked_with_its_chain",
+          "filePath": "src/tests/test_source_metadata.py",
+          "startLine": 169,
+          "endLine": 190,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.7,
+        "bm25": 60.9,
+        "merge": 0,
+        "symbol_lookup": 13.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 74.7
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| recheck | src/prosiform/cli.py | 911 | 948 | 1 |\n| changed | src/prosiform/cli.py | 878 | 888 | 2 |\n| input_failure | src/prosiform/cli.py | 382 | 410 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_177_assembled",
+      "name": "Assembled → Headings",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_79_boundaries",
+          "summary": "Boundaries → Lines",
+          "priority": 0.102,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/bundle.py:openings",
+          "name": "openings",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 773,
+          "endLine": 788,
+          "module": "Tests",
+          "process_id": "proc_79_boundaries",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "name": "test_a_bundle_closes_with_the_newline_its_final_part_carries",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 239,
+          "endLine": 241,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_bundle_ends_in_exactly_one_newline",
+          "name": "test_a_bundle_ends_in_exactly_one_newline",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 334,
+          "endLine": 336,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_the_parts_of_two_groups_open_in_bundle_order",
+          "name": "test_the_parts_of_two_groups_open_in_bundle_order",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 358,
+          "endLine": 367,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "name": "test_a_candidate_disagreeing_with_its_provenance_publishes_nothing",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1625,
+          "endLine": 1649,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_candidate_disagreeing_with_its_provenance_publishes_nothing.dropping@1631:4",
+          "name": "dropping",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1632,
+          "endLine": 1633,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:assemble",
+          "name": "assemble",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 761,
+          "endLine": 770,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_candidate.py:built",
+          "name": "built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 81,
+          "endLine": 116,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.4,
+        "bm25": 71.1,
+        "merge": 0,
+        "symbol_lookup": 14.2,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 85.5
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| assembled | src/prosiform/cli.py | 1442 | 1499 | 1 |\n| group | src/prosiform/bundle.py | 612 | 757 | 2 |\n| absorbed | src/prosiform/bundle.py | 405 | 424 | 3 |\n| headings | src/prosiform/bundle.py | 239 | 241 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_189_confirm",
+      "name": "Confirm → Level",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_138_withheld",
+          "summary": "Withheld → Admissible",
+          "priority": 0.075,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:withheld",
+          "name": "withheld",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1164,
+          "endLine": 1197,
+          "module": "Prosiform",
+          "process_id": "proc_138_withheld",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "name": "test_a_deferred_reference_leaving_the_root_is_not_confirmed",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1296,
+          "endLine": 1300,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_heading_a_container_carries_confirms_a_deferral",
+          "name": "test_a_heading_a_container_carries_confirms_a_deferral",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1328,
+          "endLine": 1333,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.4,
+        "bm25": 58.9,
+        "merge": 0.1,
+        "symbol_lookup": 14.3,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 73.3
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| confirm | src/prosiform/cli.py | 1335 | 1369 | 1 |\n| index | src/prosiform/source.py | 383 | 385 | 2 |\n| headed | src/prosiform/source.py | 373 | 380 | 3 |\n| level | src/prosiform/source.py | 351 | 353 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_190_member_headings",
+      "name": "Member_headings → Slug",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "states",
+          "step": 2
+        }
+      ]
+    },
+    "result": {
+      "processes": [
+        {
+          "id": "proc_135_merged",
+          "summary": "Merged → Words",
+          "priority": 0.098,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/grouping.py:merged",
+          "name": "merged",
+          "filePath": "src/prosiform/grouping.py",
+          "startLine": 404,
+          "endLine": 440,
+          "module": "Prosiform",
+          "process_id": "proc_135_merged",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/prosiform/grouping.py:contributed",
+          "name": "contributed",
+          "filePath": "src/prosiform/grouping.py",
+          "startLine": 461,
+          "endLine": 502,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_grouping.py:test_a_group_heading_states_the_kind_its_members_are",
+          "name": "test_a_group_heading_states_the_kind_its_members_are",
+          "filePath": "src/tests/test_grouping.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_grouping.py:answering",
+          "name": "answering",
+          "filePath": "src/tests/test_grouping.py",
+          "startLine": 213,
+          "endLine": 219,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_grouping.py:test_a_heading_text_one_member_carries_is_that_member_s_destination",
+          "name": "test_a_heading_text_one_member_carries_is_that_member_s_destination",
+          "filePath": "src/tests/test_grouping.py",
+          "startLine": 235,
+          "endLine": 245,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:src/prosiform/provenance.py:GROUP_HEADING",
+          "name": "GROUP_HEADING",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 56,
+          "endLine": 56
+        },
+        {
+          "id": "Variable:src/prosiform/provenance.py:MEMBER_OVERVIEW",
+          "name": "MEMBER_OVERVIEW",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 58,
+          "endLine": 58
+        },
+        {
+          "id": "Property:src/prosiform/provenance.py:Record.headings",
+          "name": "headings",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 189,
+          "endLine": 189
+        },
+        {
+          "id": "Variable:checks/conformance.py:HEADING",
+          "name": "HEADING",
+          "filePath": "checks/conformance.py",
+          "startLine": 102,
+          "endLine": 102
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 93.9,
+        "merge": 0.1,
+        "symbol_lookup": 14,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 108.2
+      }
+    },
+    "exact": {
+      "markdown": "| n.name | n.filePath | n.startLine | n.endLine | r.step |\n| --- | --- | --- | --- | --- |\n| member_headings | src/prosiform/grouping.py | 138 | 173 | 1 |\n| states | src/prosiform/grouping.py | 126 | 135 | 2 |\n| slug | src/prosiform/source.py | 312 | 314 | 3 |",
+      "row_count": 3
+    }
+  }
+]

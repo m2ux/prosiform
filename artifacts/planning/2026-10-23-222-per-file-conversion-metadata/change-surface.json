@@ -1,0 +1,1623 @@
+{
+  "summary": {
+    "changed_count": 173,
+    "affected_count": 31,
+    "changed_files": 127,
+    "risk_level": "critical"
+  },
+  "changed_symbols": [
+    {
+      "id": "Section:README.md:L1: Prosiform",
+      "name": " Prosiform",
+      "type": "Section",
+      "filePath": "README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:README.md:L14: Overview",
+      "name": " Overview",
+      "type": "Section",
+      "filePath": "README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:README.md:L29:How It Works",
+      "name": "How It Works",
+      "type": "Section",
+      "filePath": "README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/README.md:L1:Documentation",
+      "name": "Documentation",
+      "type": "Section",
+      "filePath": "docs/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/diagram-renderer.md:L1:Diagram Renderer",
+      "name": "Diagram Renderer",
+      "type": "Section",
+      "filePath": "docs/diagram-renderer.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/diagram-renderer.md:L5:Run",
+      "name": "Run",
+      "type": "Section",
+      "filePath": "docs/diagram-renderer.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/glossary.md:L1:Glossary",
+      "name": "Glossary",
+      "type": "Section",
+      "filePath": "docs/glossary.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/glossary.md:L16:Sources",
+      "name": "Sources",
+      "type": "Section",
+      "filePath": "docs/glossary.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/glossary.md:L41:Selection and arrangement",
+      "name": "Selection and arrangement",
+      "type": "Section",
+      "filePath": "docs/glossary.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:docs/glossary.md:L75:Terms deliberately not used",
+      "name": "Terms deliberately not used",
+      "type": "Section",
+      "filePath": "docs/glossary.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L1:Worked examples",
+      "name": "Worked examples",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L14:Prerequisites",
+      "name": "Prerequisites",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L30:Output",
+      "name": "Output",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L41:Prerequisites",
+      "name": "Prerequisites",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L87:Artifacts",
+      "name": "Artifacts",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L89:Operations",
+      "name": "Operations",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L91:*Record* Epic Delivery",
+      "name": "*Record* Epic Delivery",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L106:Declare groups per file",
+      "name": "Declare groups per file",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L108:Above-depth prose",
+      "name": "Above-depth prose",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L131:Artifacts",
+      "name": "Artifacts",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L145:Operations",
+      "name": "Operations",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L150:Named members beneath the group",
+      "name": "Named members beneath the group",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L161:Rules",
+      "name": "Rules",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/README.md:L180:More fixture examples",
+      "name": "More fixture examples",
+      "type": "Section",
+      "filePath": "example/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:example/my-skill/VISUAL-CASES.md:L1:Visual validation examples",
+      "name": "Visual validation examples",
+      "type": "Section",
+      "filePath": "example/my-skill/VISUAL-CASES.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:invocation.md:L1:Invocation",
+      "name": "Invocation",
+      "type": "Section",
+      "filePath": "invocation.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:invocation.md:L9:Options",
+      "name": "Options",
+      "type": "Section",
+      "filePath": "invocation.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:invocation.md:L35:Examples",
+      "name": "Examples",
+      "type": "Section",
+      "filePath": "invocation.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:invocation.md:L46:Conversion metadata",
+      "name": "Conversion metadata",
+      "type": "Section",
+      "filePath": "invocation.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:invocation.md:L69:Bundling rules",
+      "name": "Bundling rules",
+      "type": "Section",
+      "filePath": "invocation.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:invocation.md:L77:Output",
+      "name": "Output",
+      "type": "Section",
+      "filePath": "invocation.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:scripts/render-diagram.py:main",
+      "name": "main",
+      "type": "Function",
+      "filePath": "scripts/render-diagram.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:src/README.md:L13:Environment",
+      "name": "Environment",
+      "type": "Section",
+      "filePath": "src/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:src/README.md:L33:Runtime dependencies",
+      "name": "Runtime dependencies",
+      "type": "Section",
+      "filePath": "src/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/candidate.py:placement",
+      "name": "placement",
+      "type": "Function",
+      "filePath": "src/prosiform/candidate.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/candidate.py:coverage",
+      "name": "coverage",
+      "type": "Function",
+      "filePath": "src/prosiform/candidate.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/cli.py:GROUP_DEPTH_CONFLICT",
+      "name": "GROUP_DEPTH_CONFLICT",
+      "type": "Variable",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/cli.py:CODES",
+      "name": "CODES",
+      "type": "Variable",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:usage_failure",
+      "name": "usage_failure",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:parser",
+      "name": "parser",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:read_document",
+      "name": "read_document",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:recheck",
+      "name": "recheck",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:traverse",
+      "name": "traverse",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:confirm",
+      "name": "confirm",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:group_depths",
+      "name": "group_depths",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/cli.py:group_depths.members@1376:4",
+      "name": "members",
+      "type": "Property",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/cli.py:group_depths.depths@1381:4",
+      "name": "depths",
+      "type": "Property",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:unambiguous",
+      "name": "unambiguous",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:assembled",
+      "name": "assembled",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:compose",
+      "name": "compose",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/cli.py:execute",
+      "name": "execute",
+      "type": "Function",
+      "filePath": "src/prosiform/cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/diagnostics.py:Location",
+      "name": "Location",
+      "type": "Class",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/diagnostics.py:Location.file",
+      "name": "file",
+      "type": "Property",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/diagnostics.py:Location.line",
+      "name": "line",
+      "type": "Property",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/diagnostics.py:Location.column",
+      "name": "column",
+      "type": "Property",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/diagnostics.py:RelatedLocation",
+      "name": "RelatedLocation",
+      "type": "Class",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/diagnostics.py:RelatedLocation.message",
+      "name": "message",
+      "type": "Property",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/diagnostics.py:Diagnostic",
+      "name": "Diagnostic",
+      "type": "Class",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/diagnostics.py:Diagnostic.location",
+      "name": "location",
+      "type": "Property",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/diagnostics.py:Diagnostic.related",
+      "name": "related",
+      "type": "Property",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:src/prosiform/diagnostics.py:Diagnostic.fields#0",
+      "name": "fields",
+      "type": "Method",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:src/prosiform/diagnostics.py:Diagnostic.as_text#0",
+      "name": "as_text",
+      "type": "Method",
+      "filePath": "src/prosiform/diagnostics.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/grouping.py:states",
+      "name": "states",
+      "type": "Function",
+      "filePath": "src/prosiform/grouping.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/grouping.py:Member",
+      "name": "Member",
+      "type": "Class",
+      "filePath": "src/prosiform/grouping.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/limits.py:NESTING",
+      "name": "NESTING",
+      "type": "Variable",
+      "filePath": "src/prosiform/limits.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:INVALID_FRONTMATTER",
+      "name": "INVALID_FRONTMATTER",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:INVALID_CONVERSION_METADATA",
+      "name": "INVALID_CONVERSION_METADATA",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:RESOURCE_LIMIT",
+      "name": "RESOURCE_LIMIT",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:GROUP",
+      "name": "GROUP",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:DEPTH",
+      "name": "DEPTH",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:PREFIX",
+      "name": "PREFIX",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/metadata.py:PATTERNS",
+      "name": "PATTERNS",
+      "type": "Variable",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/metadata.py:_MarkedScanner",
+      "name": "_MarkedScanner",
+      "type": "Class",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:src/prosiform/metadata.py:_MarkedScanner.scan_flow_scalar_non_spaces#2",
+      "name": "scan_flow_scalar_non_spaces",
+      "type": "Method",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/metadata.py:Conversion",
+      "name": "Conversion",
+      "type": "Class",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:Conversion.group",
+      "name": "group",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:Conversion.depth",
+      "name": "depth",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:Conversion.group_location",
+      "name": "group_location",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:Conversion.depth_location",
+      "name": "depth_location",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/metadata.py:InvalidMetadata",
+      "name": "InvalidMetadata",
+      "type": "Class",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:src/prosiform/metadata.py:InvalidMetadata.__init__#1",
+      "name": "__init__",
+      "type": "Method",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/metadata.py:_Node",
+      "name": "_Node",
+      "type": "Class",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:_Node.kind",
+      "name": "kind",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:_Node.location",
+      "name": "location",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:_Node.value",
+      "name": "value",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:_Node.children",
+      "name": "children",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:_Node.identity",
+      "name": "identity",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/metadata.py:_fail",
+      "name": "_fail",
+      "type": "Function",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/metadata.py:_scalar",
+      "name": "_scalar",
+      "type": "Function",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:_scalar.canonical@129:4",
+      "name": "canonical",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/metadata.py:_finite_float",
+      "name": "_finite_float",
+      "type": "Function",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/metadata.py:decode",
+      "name": "decode",
+      "type": "Function",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/metadata.py:decode.at@199:4",
+      "name": "at",
+      "type": "Function",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.stack@204:4",
+      "name": "stack",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.root@205:4",
+      "name": "root",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.identities@206:4",
+      "name": "identities",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/metadata.py:decode.finish@209:4",
+      "name": "finish",
+      "type": "Function",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.canonical@252:16",
+      "name": "canonical",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.seen@254:20",
+      "name": "seen",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.metadata@303:4",
+      "name": "metadata",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/metadata.py:decode.fields@321:4",
+      "name": "fields",
+      "type": "Property",
+      "filePath": "src/prosiform/metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/provenance.py:Generated",
+      "name": "Generated",
+      "type": "Class",
+      "filePath": "src/prosiform/provenance.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/provenance.py:Record",
+      "name": "Record",
+      "type": "Class",
+      "filePath": "src/prosiform/provenance.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:src/prosiform/source.py:CODES",
+      "name": "CODES",
+      "type": "Variable",
+      "filePath": "src/prosiform/source.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/source.py:Source",
+      "name": "Source",
+      "type": "Class",
+      "filePath": "src/prosiform/source.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/source.py:Source.conversion",
+      "name": "conversion",
+      "type": "Property",
+      "filePath": "src/prosiform/source.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:src/prosiform/source.py:Capture",
+      "name": "Capture",
+      "type": "Class",
+      "filePath": "src/prosiform/source.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/prosiform/source.py:Capture.chain",
+      "name": "chain",
+      "type": "Property",
+      "filePath": "src/prosiform/source.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/prosiform/source.py:content",
+      "name": "content",
+      "type": "Function",
+      "filePath": "src/prosiform/source.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_the_codes_reported_are_the_codes_the_build_declares",
+      "name": "test_the_codes_reported_are_the_codes_the_build_declares",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_every_option_the_contract_declares_is_accepted",
+      "name": "test_every_option_the_contract_declares_is_accepted",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+      "name": "test_an_entry_naming_a_member_of_one_heading_opens_on_its_subsection",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+      "name": "test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_its_subsection",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+      "name": "test_a_reference_into_a_member_of_one_heading_reaches_its_subsection",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_usage_failure_is_reported_before_an_input_failure",
+      "name": "test_a_usage_failure_is_reported_before_an_input_failure",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_failing_run_writes_its_diagnostics_as_data",
+      "name": "test_a_failing_run_writes_its_diagnostics_as_data",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_failing_run_writes_its_diagnostics_as_text",
+      "name": "test_a_failing_run_writes_its_diagnostics_as_text",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:conversion",
+      "name": "conversion",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_usage_failure_reaching_no_document_carries_no_chain",
+      "name": "test_a_usage_failure_reaching_no_document_carries_no_chain",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_crlf_source_is_read_without_newline_translation",
+      "name": "test_a_crlf_source_is_read_without_newline_translation",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+      "name": "test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:captured_for",
+      "name": "captured_for",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_source_nothing_wrote_passes_the_recheck",
+      "name": "test_a_source_nothing_wrote_passes_the_recheck",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_source_written_after_the_read_fails_the_recheck",
+      "name": "test_a_source_written_after_the_read_fails_the_recheck",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_source_removed_after_the_read_fails_the_recheck",
+      "name": "test_a_source_removed_after_the_read_fails_the_recheck",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_a_source_resolving_elsewhere_fails_the_recheck",
+      "name": "test_a_source_resolving_elsewhere_fails_the_recheck",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_cli.py:test_actual_bundle_reuse_is_refused",
+      "name": "test_actual_bundle_reuse_is_refused",
+      "type": "Function",
+      "filePath": "src/tests/test_cli.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_linked_destination_owns_its_settings",
+      "name": "test_linked_destination_owns_its_settings",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+      "name": "test_diamond_cycle_and_unannotated_sibling_keep_source_ownership",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_deferred_only_metadata_does_not_join_or_conflict",
+      "name": "test_deferred_only_metadata_does_not_join_or_conflict",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_conflicting_depths_are_stable_and_atomic",
+      "name": "test_conflicting_depths_are_stable_and_atomic",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_group_names_have_no_directory_requirement",
+      "name": "test_group_names_have_no_directory_requirement",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_group_and_file_heading_identities_remain_distinct",
+      "name": "test_group_and_file_heading_identities_remain_distinct",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_exact_group_strings_are_distinct",
+      "name": "test_exact_group_strings_are_distinct",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_conversion_compilation.py:test_structural_cli_arguments_are_usage_errors",
+      "name": "test_structural_cli_arguments_are_usage_errors",
+      "type": "Function",
+      "filePath": "src/tests/test_conversion_compilation.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:parse",
+      "name": "parse",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_absent_settings",
+      "name": "test_absent_settings",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_group_and_marks",
+      "name": "test_group_and_marks",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_frontmatter_failures",
+      "name": "test_frontmatter_failures",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_schema_failures",
+      "name": "test_schema_failures",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_group_grammar",
+      "name": "test_group_grammar",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_depth_grammar",
+      "name": "test_depth_grammar",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_depth_values",
+      "name": "test_depth_values",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_core_key_types_are_distinct",
+      "name": "test_core_key_types_are_distinct",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_byte_limit_precedes_decoding",
+      "name": "test_byte_limit_precedes_decoding",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_depth_boundary_and_early_stop",
+      "name": "test_depth_boundary_and_early_stop",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_duplicate_diagnostic_formats",
+      "name": "test_duplicate_diagnostic_formats",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_error_marks_and_no_related",
+      "name": "test_error_marks_and_no_related",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_large_integer",
+      "name": "test_large_integer",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_extreme_canonical_duplicates",
+      "name": "test_extreme_canonical_duplicates",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_tab_and_unicode_column",
+      "name": "test_tab_and_unicode_column",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_yaml_marked_syntax_error",
+      "name": "test_yaml_marked_syntax_error",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_single_line_bom_coordinate",
+      "name": "test_single_line_bom_coordinate",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_reader_error_coordinate",
+      "name": "test_reader_error_coordinate",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_invalid_unicode_escape",
+      "name": "test_invalid_unicode_escape",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_escaped_null_in_unrelated_field",
+      "name": "test_escaped_null_in_unrelated_field",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_metadata.py:test_out_of_range_escape_mark_survives_parser_cleanup",
+      "name": "test_out_of_range_escape_mark_survives_parser_cleanup",
+      "type": "Function",
+      "filePath": "src/tests/test_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:settings",
+      "name": "settings",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_settings_and_body_share_physical_coordinates",
+      "name": "test_settings_and_body_share_physical_coordinates",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_settings_are_per_source_and_not_inherited",
+      "name": "test_settings_are_per_source_and_not_inherited",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_duplicate_key_reports_original_locations",
+      "name": "test_duplicate_key_reports_original_locations",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_capture_hash_covers_frontmatter_and_body",
+      "name": "test_capture_hash_covers_frontmatter_and_body",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_metadata_is_not_a_markdown_dependency",
+      "name": "test_metadata_is_not_a_markdown_dependency",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_metadata_error_preserves_output_and_coordinates",
+      "name": "test_metadata_error_preserves_output_and_coordinates",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_raw_byte_budget_precedes_yaml_and_encoding",
+      "name": "test_raw_byte_budget_precedes_yaml_and_encoding",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_yaml_collection_depth_is_bounded",
+      "name": "test_yaml_collection_depth_is_bounded",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing",
+      "name": "test_deferred_source_is_captured_once_and_contributes_nothing",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing.reads@129:4",
+      "name": "reads",
+      "type": "Property",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_is_captured_once_and_contributes_nothing.read@131:4",
+      "name": "read",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_deferred_source_counts_towards_raw_budgets",
+      "name": "test_deferred_source_counts_towards_raw_budgets",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_failure_is_an_input_failure",
+      "name": "test_deferred_metadata_failure_is_an_input_failure",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain",
+      "name": "test_deferred_metadata_change_is_rechecked_with_its_chain",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:src/tests/test_source_metadata.py:test_deferred_metadata_change_is_rechecked_with_its_chain.read@175:4",
+      "name": "read",
+      "type": "Function",
+      "filePath": "src/tests/test_source_metadata.py",
+      "change_type": "touched"
+    }
+  ],
+  "affected_processes": [
+    {
+      "id": "proc_5_assembled",
+      "name": "Assembled → Shown",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_8_assembled",
+      "name": "Assembled → Level",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_9_assembled",
+      "name": "Assembled → Slug",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_23_validate",
+      "name": "Validate → Regions",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_24_main",
+      "name": "Main → Fields",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "fields",
+          "step": 5
+        },
+        {
+          "symbol": "execute",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_25_recheck",
+      "name": "Recheck → Refusal",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "recheck",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_50_main",
+      "name": "Main → Lines",
+      "process_type": "intra_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_51_main",
+      "name": "Main → Txt",
+      "process_type": "intra_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_55_validate",
+      "name": "Validate → Placed",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_56_assembled",
+      "name": "Assembled → Title_cased",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_57_assembled",
+      "name": "Assembled → Headings",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_75_main",
+      "name": "Main → Compact_markdown",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_76_main",
+      "name": "Main → Branch",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_80_validate",
+      "name": "Validate → Ancestors",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_81_assembled",
+      "name": "Assembled → Input_failure",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_82_main",
+      "name": "Main → Hold",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "execute",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_83_main",
+      "name": "Main → Of",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "execute",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_87_decode",
+      "name": "Decode → _fail",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "decode",
+          "step": 1
+        },
+        {
+          "symbol": "_scalar",
+          "step": 2
+        },
+        {
+          "symbol": "_fail",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "id": "proc_88_decode",
+      "name": "Decode → _finite_float",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "decode",
+          "step": 1
+        },
+        {
+          "symbol": "_finite_float",
+          "step": 3
+        },
+        {
+          "symbol": "_scalar",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_105_confirm",
+      "name": "Confirm → Slug",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_114_assembled",
+      "name": "Assembled → Regions",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_125_compose",
+      "name": "Compose → Title_cased",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "compose",
+          "step": 1
+        },
+        {
+          "symbol": "unambiguous",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_133_compose",
+      "name": "Compose → Input_failure",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compose",
+          "step": 1
+        },
+        {
+          "symbol": "unambiguous",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_143_confirm",
+      "name": "Confirm → Shown",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_146_validate",
+      "name": "Validate → Level",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "placement",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_155_assembled",
+      "name": "Assembled → Escaped",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_163_confirm",
+      "name": "Confirm → Headings",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_166_recheck",
+      "name": "Recheck → Input_failure",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "recheck",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_177_assembled",
+      "name": "Assembled → Headings",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "assembled",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_189_confirm",
+      "name": "Confirm → Level",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "confirm",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_190_member_headings",
+      "name": "Member_headings → Slug",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "states",
+          "step": 2
+        }
+      ]
+    }
+  ]
+}
