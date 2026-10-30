@@ -635,6 +635,8 @@ Use stable error codes for individual defects and the following exit-status cate
 
 `W_EARLIER_SET_RETAINED` reports a published run whose earlier set, moved aside, could not be removed, naming that path in its message and remedy.
 
+`W_MOCK_SUBSTITUTED` reports each distinct target a substitution mapping redirected: one warning per substitute, emitted at the first reference that redirects it, however many references a key served. It names that link as `location`, the destination the author wrote as `source`, and the substitute's identity as `resolved`, and its message states the identity the reference would have resolved to. `W_MOCK_UNUSED` reports each mapping key no reference named, carrying the key's authored spelling as `source` and no `location`, because it states a fact about the invocation rather than about a source. Both accompany a successful run and leave it at `0`, and a run given no mapping raises neither.
+
 An unexpected internal error carries `E_UNEXPECTED_INTERNAL_ERROR`. It names the run rather than any document the run read, so a caller reading it is not sent to look at its sources.
 
 Every failing outcome this contract names carries a code, so a diagnostic without one reports a defect the contract does not define.
