@@ -18,6 +18,7 @@ import pytest
 from workflow import (
     AUTHORED_FORM,
     COMPILED_FORM,
+    COMPILED_STEP,
     DIAGRAM,
     DISPATCH_FORMS,
     ENTRY,
@@ -85,7 +86,7 @@ def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
             target.partition("#")[0].split("/")[-1]
             for section in workflow.sections[form].values()
             for _, targets in dispatched(
-                section.body, section.path.parent, workflow.form(form)
+                section.body, section.path.parent, workflow.form(form), form
             )
             for target in targets
         }
@@ -161,11 +162,15 @@ def step_faults(workflow: Workflow, form: str) -> list[str]:
         listed = [
             line
             for line in section.body.splitlines()
-            if STEP_ONE.match(line) or STEP_SET.match(line)
+            if (
+                COMPILED_STEP.match(line)
+                if form == COMPILED_FORM
+                else STEP_ONE.match(line) or STEP_SET.match(line)
+            )
         ]
         steps += len(listed)
         try:
-            dispatched(section.body, section.path.parent, root)
+            dispatched(section.body, section.path.parent, root, form)
         except CorpusError as error:
             faults.append(f"{state}: {error}")
     if form == COMPILED_FORM and not steps:
@@ -516,6 +521,58 @@ def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
     assert len(faults) == len(DISPATCH_FORMS) and all(
         "parallel-set: the" in fault for fault in faults
     )
+
+
+def test_a_compiled_step_stating_its_dispatch_in_prose_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    """The operator is the statement, so a sentence beside it states it twice."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-chain",
+        f"{COMPILED_FORM}/{document('Request')}",
+        "1. [⇉ plan](../plan.md#work).",
+        "1. Hand the plan to a sub-agent: [⇉ plan](../plan.md#work).",
+    )
+    assert step_faults(workflow, COMPILED_FORM) == [
+        "Request: a compiled step states 'sub-agent', which its protocol states,"
+        " rather than its operators alone: '1. Hand the plan to a sub-agent:"
+        " [⇉ plan](../plan.md#work).'"
+    ]
+
+
+def test_a_compiled_step_carrying_an_unmarked_link_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    """A compiled step dispatches by its marks, so an unmarked link dispatches none."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-set",
+        f"{COMPILED_FORM}/{document('Survey')}",
+        "1. [⫽ source](../review.md#source) and [⫽ tests](../review.md#tests).",
+        "1. [⫽ source](../review.md#source) and [tests](../review.md#tests).",
+    )
+    assert step_faults(workflow, COMPILED_FORM) == [
+        "Survey: a compiled step carries an unmarked link: '1. [⫽ source]"
+        "(../review.md#source) and [tests](../review.md#tests).'"
+    ]
+
+
+def test_a_compiled_step_repeating_its_protocol_is_a_fault(tmp_path: Path) -> None:
+    """A step dispatching a set states nothing the parallel protocol does not."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-set",
+        f"{COMPILED_FORM}/{document('Survey')}",
+        "1. [⫽ source](../review.md#source) and [⫽ tests](../review.md#tests).",
+        "1. [⫽ source](../review.md#source) and [⫽ tests](../review.md#tests)"
+        " together.",
+    )
+    assert step_faults(workflow, COMPILED_FORM) == [
+        "Survey: a compiled step states 'together', which its protocol states,"
+        " rather than its operators alone: '1. [⫽ source](../review.md#source)"
+        " and [⫽ tests](../review.md#tests) together.'"
+    ]
 
 
 def test_a_prose_section_edited_beyond_its_transition_is_a_fault(
