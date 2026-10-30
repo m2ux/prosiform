@@ -76,7 +76,7 @@ A run in which every session took `errored` is **refused**. No session entered a
 
 ## Login
 
-Sessions run on the eval's own Claude login, kept apart from yours in `<eval-root>/config`, where the eval root defaults to `~/projects/eval/prosiform`. Log in once:
+Sessions run on an agent CLI the run names, `--harness claude` or `--harness cursor`, and each harness states what confines its sessions. The Claude harness runs on the eval's own login, kept apart from yours in `<eval-root>/config`, where the eval root defaults to `~/projects/eval/prosiform`. Log in once:
 
 ```bash
 CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude
@@ -117,8 +117,8 @@ The command starts paid agent sessions, so no other target depends on it and `ma
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--budget-usd` | 100 under `make eval-diagrams`; required otherwise | The run's spending cap, at least the sessions times `--session-budget-usd`. A later value in `ARGS` overrides the default. |
-| `--session-budget-usd` | 0.50 | Each session's spending cap. |
+| `--budget-tokens` | required | The run's token cap, at least the sessions times `--session-budget-tokens`. A later value in `ARGS` overrides the default. |
+| `--session-budget-tokens` | 60 000 | Each session's token cap. |
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
@@ -126,14 +126,15 @@ The command starts paid agent sessions, so no other target depends on it and `ma
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
-| `--agent-command` | `claude` | The agent's command line. |
+| `--harness` | `claude` | The agent CLI the run drives: `claude` or `cursor`. |
+| `--agent-command` | the harness's own command | The agent's command line, overriding the harness. |
 | `--results` | `results/` beside this file | Where runs are recorded. |
 | `--run-id` | the start time, as `YYYYMMDDTHHMMSSZ` | The run's directory name. |
 
 For example, one model over one workflow:
 
 ```bash
-make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-usd 2'
+make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-tokens 2000'
 ```
 
 ### Default matrix and cost
@@ -157,7 +158,7 @@ A run writes its records under `results/<run-id>/`, which git ignores: per sessi
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
 ```
 
-The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens (input, output, cache write and cache read) and the mean cost over the sessions recording them. The report opens with the run's cost and the count of sessions not started, and closes with those sessions listed.
+The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens and the count of sessions not started, and closes with those sessions listed.
 
 A refused run — one every session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` refuses a refused run, since it has no cells to write.
 

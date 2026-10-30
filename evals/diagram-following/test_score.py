@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 
 import pytest
+from harness import Claude
 from score import (
     ACTIONS,
     SUBAGENTS,
@@ -19,8 +20,6 @@ from score import (
     Failure,
     Start,
     Verdict,
-    answered,
-    calls,
     read_starts,
     read_trace,
     record_starts,
@@ -460,18 +459,17 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
     )
     records = tmp_path / "records"
     records.mkdir()
-    record_starts(held, records)
+    record_starts(held, records, Claude())
     assert read_starts(records) == (
         Start("plan#work", "done", False),
         Start("review#source", "question", False),
         Start("review#tests", "done", True),
     )
-    assert calls(held) == {
-        "a": ("plan#work", False),
-        "b": ("review#source", False),
-        "c": ("review#tests", True),
-    }
-    assert answered(held) == {"a": "done", "b": "question", "c": "done"}
+    assert Claude().starts(held) == (
+        Start("plan#work", "done", False),
+        Start("review#source", "question", False),
+        Start("review#tests", "done", True),
+    )
 
 
 def test_a_start_naming_its_compiled_bundle_names_the_same_section(
@@ -493,6 +491,6 @@ def test_an_absent_transcript_records_no_start(tmp_path: Path) -> None:
     """A session that dispatched nothing, or wrote no transcript, records none."""
     records = tmp_path / "records"
     records.mkdir()
-    assert record_starts(tmp_path / "absent.jsonl", records) == ()
+    assert record_starts(tmp_path / "absent.jsonl", records, Claude()) == ()
     assert read_starts(records) == ()
     assert read_starts(tmp_path / "unwritten") == ()
