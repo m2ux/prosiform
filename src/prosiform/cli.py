@@ -253,7 +253,8 @@ pf -o <folder> <destination>
 ```
 
 - `<destination>`  The link's destination as written.
-- `<folder>`  An existing working directory outside the repository.
+- `<folder>`  An existing working directory outside the repository. Create \
+it first: the run writes into it and does not make it.
 
 The run writes its bundles into `<folder>/<name>.bundles/`, where `<name>` is \
 the destination's path without its Markdown suffix, each `/` written as `_` \

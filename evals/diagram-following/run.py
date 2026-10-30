@@ -91,7 +91,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO, Any
 
-from harness import HARNESSES, Claude, Cursor, harness_named
+from harness import HARNESSES, Harness, harness_named
 from report import (
     BASELINE,
     COMPLETED,
@@ -311,7 +311,7 @@ def matrix(
     models: list[str],
     forms: list[str],
     repetitions: int,
-    harness: Claude | Cursor = HARNESSES["claude"],
+    harness: Harness = HARNESSES["claude"],
 ) -> list[Session]:
     """Every session a run starts when its budget allows, in start order.
 
@@ -334,7 +334,7 @@ def matrix(
     ]
 
 
-def runnable(form: str, harness: Claude | Cursor) -> bool:
+def runnable(form: str, harness: Harness) -> bool:
     """Whether a harness can read this form at all.
 
     A form whose material a session must compile needs a command to run, so a
@@ -345,7 +345,7 @@ def runnable(form: str, harness: Claude | Cursor) -> bool:
 
 
 def observable(
-    workflow: Workflow, scenario: Scenario, form: str, harness: Claude | Cursor
+    workflow: Workflow, scenario: Scenario, form: str, harness: Harness
 ) -> bool:
     """Whether a scenario's trace is one this harness reports.
 
@@ -510,7 +510,7 @@ def start(
     workspace: Path,
     env: dict[str, str],
     timeout: float,
-    harness: Claude | Cursor,
+    harness: Harness,
 ) -> int | None:
     """Run one session in a fresh workspace, record it, and return its tokens."""
     records.mkdir(parents=True)
@@ -582,7 +582,7 @@ def place_pf(workspace: Path) -> Path:
     return workspace / BIN
 
 
-def compiled_by(harness: Claude | Cursor, transcript: Path, form: str) -> bool | None:
+def compiled_by(harness: Harness, transcript: Path, form: str) -> bool | None:
     """Whether a session compiled its material, for a form that must.
 
     A form outside the shell forms needs no compile, so nothing is asked. A

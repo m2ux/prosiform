@@ -69,7 +69,7 @@ from dataclasses import asdict, dataclass
 from enum import StrEnum
 from pathlib import Path
 
-from harness import Claude, Cursor, Start
+from harness import Harness, Start
 
 __all__ = [
     "ACTIONS",
@@ -192,7 +192,7 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
 
 
 def record_starts(
-    transcript: Path, records: Path, harness: Claude | Cursor
+    transcript: Path, records: Path, harness: Harness
 ) -> tuple[Start, ...]:
     """Read a session's transcript for its sub-agent starts and record them.
 

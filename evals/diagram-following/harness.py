@@ -461,7 +461,8 @@ class Cursor:
         for held in messages(transcript):
             if held.get("type") != TOOL_CALL:
                 continue
-            tool = (held.get(TOOL_CALL) or {}).get(SHELL_CALL)
+            held_call = held.get(TOOL_CALL)
+            tool = held_call.get(SHELL_CALL) if isinstance(held_call, dict) else None
             if not isinstance(tool, dict):
                 continue
             args = tool.get(ARGS)
@@ -680,10 +681,13 @@ def _tokens(
     return int(sum(count for count in counts if isinstance(count, int | float)))
 
 
+Harness = Claude | Cursor | Opencode
+"""Any declared harness, as the runner and the scorer accept one."""
+
 HARNESSES = {harness.name: harness for harness in (Claude(), Cursor(), Opencode())}
 
 
-def harness_named(name: str) -> Claude | Cursor | Opencode:
+def harness_named(name: str) -> Harness:
     """The declared harness with the supplied name."""
     if name not in HARNESSES:
         raise KeyError(f"the harnesses are {', '.join(HARNESSES)}, not {name}")
