@@ -239,9 +239,12 @@ def names(target: str, section: str) -> bool:
     A compiled form hands over `pf`'s bundle for the section, named
     `<document>__<heading>` and written beside the entry; an authored form
     hands over the section itself, named `<document>#<heading>`. Both spell
-    one section, since the bundle's name is compiled from it. A start's
-    target is the text the dispatching call carried, so the section may sit
-    within a sentence.
+    one section, since the bundle's name is compiled from it.
+
+    A session's call text is its own wording, so the section may be named by
+    its heading alone: an agent handing over `plan#work` writes "the Plan
+    Work section" as readily as the path. The heading is therefore matched as
+    a word of the text, beside the two spellings that pin it exactly.
     """
     document, _, heading = section.partition("#")
     for spelled in (
@@ -250,7 +253,7 @@ def names(target: str, section: str) -> bool:
     ):
         if re.search(rf"{re.escape(spelled)}(?![\w#-])", target):
             return True
-    return False
+    return re.search(rf"\b{re.escape(heading)}\b", target, re.IGNORECASE) is not None
 
 
 def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
