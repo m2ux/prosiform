@@ -132,3 +132,47 @@ and exit `0` after, `30 statement(s)`, up from the 29 W00 recorded. This is the 
 **Observed:** pass; `src/tests` 1339 passed, `make corpus` 351 pass, and `invocation`, `conformance` and `independence` unchanged. The defect was found after #428 merged, and a fix belongs to the branch whose code it fixes, so it was raised as #429 against the same base rather than left on the branch.
 
 `cli.file_named` read a document's file heading without the mapping, so a title carrying a withheld link whose target only the mapping supplied resolved to nothing there and was compared as a heading it is not. Both the warning and the emission now read the mapping.
+
+## T13 — The code redirects a citation, as the clause promises
+
+**Ran:** `src/tests/test_mock.py` at `7806ec28`, and the fixture `fixtures/mock/a-citation-outside-the-root-is-redirected` through `make corpus`.
+
+**Observed:** the four citation cases pass:
+
+- `test_a_citation_outside_the_root_is_redirected_by_a_key` — `inside("docs/guide.md", "../notes.md", "docs")` returns `../stand-in.md`, which `covers("docs", …)` refuses, so the substitute is the target and is exempt from the writing source's root.
+- `test_an_unmapped_citation_outside_the_root_is_still_refused` — the same reference with no key, and with a key naming another identity, both raise `OutsideRoot`.
+- `test_the_mapping_is_consulted_on_the_authored_identity_not_the_substitute` — the assertion that `covers` refuses the substitution's returned path is the one that fails if the mapping is ever applied after the root check.
+- `test_only_the_authored_identity_is_matched_not_the_substitute_path` — a substitute that is also a key is read from disk rather than followed again.
+
+The fixture's `guide.md` sits under `root: "."` and links `../notes.md`; `-m ../notes.md=../stand-in.md` compiles `# Stand-in` and rewrites the link to `#stand-in`. **Stashing the `closure.py` change and re-running the same invocation left `[the notes](../notes.md)` as text**, so the fixture fails against the pre-change code and holds the change rather than the tree.
+
+What the change does not do is widen confinement. The substitute is opened through the bounded no-follow walk from the invocation working directory, the access a positional entry already takes. A remote reference returns before the mapping is consulted, and the docstring states why: a key is a local path identity, and a remote reference has none.
+
+## T14 — The corrected clause, and the pin that reaches it
+    160|
+**Ran:** `make conformance`, `make independence`, `make invocation`, `make corpus` and every other target of `make check` at branch head `7806ec28`, with `README.md` pinned to `a59b62fca8ad2a155e4e32ac7857761b871cf304`.
+
+**Observed:** before the correction, at `9f58475d`: `305 clause(s)`, `55 covered by no fixture`, `3 fixture(s)` naming `Link classification and resource handling — The substitution mapping`. After, at `a59b62fc`: `305 clause(s)`, `55 covered by no fixture`, `4 fixture(s)` naming it, `0 declaration(s) naming no clause`.
+
+The clause count and the uncovered count are unchanged, which is what a prose correction must show: the correction changes what the clause says and adds no clause. The fixture count rose by one, the citation fixture.
+
+The clause's rendered name was read back from the pinned design through `checks/conformance.py`'s own `clauses()` and compared byte for byte with `Link classification and resource handling — The substitution mapping`: it matches, so every later mock fixture's declaration still resolves.
+
+- `conformance` — exit `0`, the counts above.
+- `independence` — exit `0`, `every shaped term of every fixture declaration and every report entry is one the contract names`.
+- `invocation` — exit `0`, `30 statement(s)`.
+- `corpus` — exit `0`, `352 fixture(s), 352 pass`.
+- `test` — 1342 passed; `harness` — 965 passed.
+- `lint`, `format-check`, `typecheck`, `lock-check`, `authoring`, `smoke`, `layout`, `tables`, `links --online`, `vocabulary`, `steps` — each green. `vocabulary` reports `46 contract term(s) ... on a59b62fca8ad2a155e4e32ac7857761b871cf304`.
+
+## T15 — Delivery of the correction
+
+**Ran:** `gh api` against #430 and the epic base.
+
+**Observed:** #430 merged to `i05/e09/main` at `164a5200e378cafa6efd75e764a2e3a2ed95ef63`, its `Checks` run `success` on `7806ec28`, and it holds a Development link to #414 verified through `closingIssuesReferences`.
+
+The first `Checks` run on `7806ec28` failed — `checks/tests/test_catalogue.py` resolving the pin — because the design commit `a59b62fc` was pushed to `engineering` after the branch. Pushing it and re-running the same tree gave `success`, so the failure was a missing ref rather than the change. The branch head carries one run, `success`. The empty commit raised to re-trigger it was dropped and the branch's own history restored, so the pull request's commits are the four substantive ones.
+
+The corrected design is `a59b62fc`, and the pin names it rather than `9f58475d`.
+
+**The placement asked for was not available.** The correction was to be folded into open pull request #429. #429 had already merged to `i05/e09/main` at `d0eced6f` at 17:10, three hours before the instruction arrived, so it could not be extended. The correction went to #430 against the same base instead, titled `[I05:E09] Redirect a Citation and State the Seam` to state what it carries.
