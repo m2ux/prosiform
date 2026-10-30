@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 # Review
 
-1. Hand the record to a sub-agent: [record](#dispatch-record).
+1. [record](#dispatch-record).
 
 ## Dispatch record
 

@@ -8,7 +8,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ### Run
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. [plan](#dispatch-plan).
 
 #### Dispatch plan
 

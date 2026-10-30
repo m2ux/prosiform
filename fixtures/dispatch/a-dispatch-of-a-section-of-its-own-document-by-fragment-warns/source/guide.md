@@ -1,6 +1,6 @@
 # Guide
 
-1. Hand the steps to a sub-agent: [⇉ the steps](#steps).
+1. [⇉ the steps](#steps).
 
 ## Steps
 

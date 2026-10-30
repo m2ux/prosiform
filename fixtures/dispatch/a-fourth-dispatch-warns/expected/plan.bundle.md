@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 # Plan
 
-1. Hand the next step to a sub-agent: [review](#dispatch-review).
+1. [review](#dispatch-review).
 
 ## Dispatch review
 
