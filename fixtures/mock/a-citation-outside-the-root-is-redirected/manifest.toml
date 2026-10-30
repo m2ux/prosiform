@@ -1,0 +1,15 @@
+description = "A citation outside its author's root is redirected by a mapping key, so a reference the run would otherwise carry as text compiles the substitute and is rewritten to its destination."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE, both sides read from the working directory",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "../notes.md=../stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

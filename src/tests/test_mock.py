@@ -28,6 +28,7 @@ from prosiform.closure import (
     Reference,
     Substitution,
     bundled,
+    covers,
     identity,
     inside,
     withholding_target,
@@ -90,11 +91,55 @@ def test_a_substitute_outside_the_writing_source_root_is_reached() -> None:
     assert inside("docs/guide.md", "rules.md", "docs", mapped).path == "../s.md"
 
 
-def test_the_root_is_held_against_the_authored_path_before_the_mapping() -> None:
-    """A mapping read before `covers` would exempt a reference the root refuses."""
-    mapped = Substitution({("rules.md", None): Reference("s.md", "s.md")})
+def test_a_citation_outside_the_root_is_redirected_by_a_key() -> None:
+    """A reference the root refuses can name a stand-in.
+
+    Which is the case the parameter exists for: a substitute kept beside
+    the tree under test is reached from a source whose root excludes it.
+    """
+    mapped = Substitution(
+        {("notes.md", None): Reference("../stand-in.md", "../stand-in.md")}
+    )
+    found = inside("docs/guide.md", "../notes.md", "docs", mapped)
+    assert found.path == "../stand-in.md"
+    assert is_markdown(found.path)
+
+
+def test_an_unmapped_citation_outside_the_root_is_still_refused() -> None:
+    """The mapping names what an identity becomes; it never widens the root."""
     with pytest.raises(OutsideRoot):
-        inside("docs/guide.md", "../rules.md", "docs", mapped)
+        inside("docs/guide.md", "../notes.md", "docs")
+    with pytest.raises(OutsideRoot):
+        inside("docs/guide.md", "../notes.md", "docs", WHOLE)
+
+
+def test_the_mapping_is_consulted_on_the_authored_identity_not_the_substitute() -> None:
+    """A key is the identity the reference normalized to.
+
+    The substitute is exempt from the writing source's root, so holding
+    the substitute's path to `covers` — or refusing the authored path
+    before asking the mapping — would refuse the case the parameter
+    exists for.
+    """
+    mapped = Substitution(
+        {("notes.md", None): Reference("../stand-in.md", "../stand-in.md")}
+    )
+    citation = inside("docs/guide.md", "../notes.md", "docs", mapped)
+    assert not covers("docs", citation.path)
+    assert citation.path == "../stand-in.md"
+
+
+def test_only_the_authored_identity_is_matched_not_the_substitute_path() -> None:
+    """A substitute that is also a key is read from disk rather than followed again."""
+    mapped = Substitution(
+        {
+            ("notes.md", None): Reference("../stand-in.md", "../stand-in.md"),
+            ("../stand-in.md", None): Reference("../other.md", "../other.md"),
+        }
+    )
+    assert (
+        inside("docs/guide.md", "../notes.md", "docs", mapped).path == "../stand-in.md"
+    )
 
 
 def test_an_external_reference_is_not_redirected() -> None:
