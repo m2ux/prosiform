@@ -27,7 +27,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [Glossary](glossary.md) | Every term the contract uses, defined once |
 | [Versioning](versioning.md) | What the contract's and each build's version numbers assert |
 | [Diagram Renderer](diagram-renderer.md) | Render one entry and its dependencies as a diagram |
-| [The output budget, measured](output-budget.md) | The bundled size of a measured closure, and how to re-take it |
+| [Output budget](output-budget.md) | The bundled size of a measured closure, and how to re-take it |
 
 ## Commands
 
