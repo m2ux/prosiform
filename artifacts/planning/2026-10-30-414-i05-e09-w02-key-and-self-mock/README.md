@@ -12,6 +12,9 @@ All three are decided where the whole mapping is known — after every entry has
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The three mapping refusals, the fixtures that show each, and the review's two additions |
+| [Validation](validation.md) | The checks T1–T11 at the revisions they ran, with their observations |
+| [Change list](change-list.md) | Every plan change this session applied, and every one it held |
 
 ## Links
 
