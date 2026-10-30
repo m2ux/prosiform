@@ -75,8 +75,7 @@ def test_the_declared_harnesses_are_named() -> None:
     )
 
 
-def test_a_harness_without_a_shell_is_offered_every_form_bundled(
-) -> None:
+def test_a_harness_without_a_shell_is_offered_every_form_bundled() -> None:
     """AC5: a form needing a command goes to a harness with a shell only.
 
     The bootstrap form has the session run `pf`, so a harness without a shell
