@@ -29,14 +29,6 @@ Every term the contract uses has one meaning, defined once in the [glossary](glo
 | **bundle** | the single Markdown file a run produces |
 | **run** | one invocation, which produces a folder of bundles |
 
-## The shape of a result
-
-Two files and one link between them are enough to show what a run does. `SKILL.md` links a procedure; the procedure links the rules it is held to.
-
-![SKILL.md, modes/review.md and rules.md on the left. On the right, one bundle: Work Planner, Review Mode with its Procedure, and Rules with Tests. Every link now points inside the bundle.](images/run.svg)
-
-*Three files read, one bundle written. The links that named other files now name headings in this one, which is what the rest of these pages explains.*
-
 ## Source
 
 The run's raw material is Markdown files on disk. Each one it opens is a [**source**](sources.md), read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it — which is how a mode in one directory can cite a rules file in the directory above, and why the frontmatter itself never reaches the bundle.

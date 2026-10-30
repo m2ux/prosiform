@@ -4,6 +4,14 @@ One command can produce more than one file. A bundle that dispatches work hands 
 
 That set is a **bundle set**: one bundle for the entry, and one for each target the run's dispatches reach. The run writes them into a folder of its own, and the folder is what a reader is pointed at.
 
+## The shape of a result
+
+Two files and one link between them are enough to show what a run does. `SKILL.md` links a procedure; the procedure links the rules it is held to.
+
+![SKILL.md, modes/review.md and rules.md on the left. On the right, one bundle: Work Planner, Review Mode with its Procedure, and Rules with Tests. Every link now points inside the bundle.](images/run.svg)
+
+*Three files read, one bundle written. The links that named other files now name headings in this one.*
+
 ```mermaid
 flowchart TD
   Run["pf modes/plan-mode.md"] --> Folder["modes_plan-mode.bundles/"]

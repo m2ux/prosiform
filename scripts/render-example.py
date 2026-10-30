@@ -131,24 +131,29 @@ def draw(root: Path, sources: list[str], bundles: list[str]) -> str:
         SOURCE_X, SOURCE_Y, TREE_WIDTH, "Files", tree_of(sources, root.name)
     )
     left = [block]
-    at = SOURCE_Y + tree_height + 22
+    left_at = SOURCE_Y + tree_height
     for path in sources:
+        left_at += 22
         block, height = card(
-            SOURCE_X, at, COLUMN, path, (root / path).read_text(encoding="utf-8")
+            SOURCE_X, left_at, COLUMN, path, (root / path).read_text(encoding="utf-8")
         )
         left.append(block)
-        at += height + 22
+        left_at += height
     right = []
-    at = SOURCE_Y
+    right_at = SOURCE_Y
     if not bundles:
         right.append(txt(OUTPUT_X + 24, 116, "nothing published", 21, MUTED))
     for name in bundles:
         block, height = card(
-            OUTPUT_X, at, PANEL_WIDTH, name, (root / name).read_text(encoding="utf-8")
+            OUTPUT_X,
+            right_at,
+            PANEL_WIDTH,
+            name,
+            (root / name).read_text(encoding="utf-8"),
         )
         right.append(block)
-        at += height + 22
-    height = max(at, SOURCE_Y + tree_height) + 65
+        right_at += height + 22
+    height = max(left_at, right_at) + 40
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{height}" '
         f'viewBox="0 0 {WIDTH} {height}" role="img" aria-labelledby="title desc">'
