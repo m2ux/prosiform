@@ -16,6 +16,6 @@ exit_status = 1
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["two ways for one sub-agent"]
-reference = "⫽ ⇉ the reviews"
+reference = "⫽⇉ the reviews"
 source = "guide.md:3"
 chain = ["guide.md", "plan.md#reviews"]

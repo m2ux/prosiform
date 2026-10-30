@@ -2,4 +2,4 @@
 
 ## Run
 
-Defer [¬ ⫽ the reviews](plan.md#reviews) for later.
+Defer [¬⫽ the reviews](plan.md#reviews) for later.

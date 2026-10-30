@@ -1,3 +1,3 @@
 # Guide
 
-1. Run [⫽ ⇉ the reviews](plan.md#reviews).
+1. Run [⫽⇉ the reviews](plan.md#reviews).

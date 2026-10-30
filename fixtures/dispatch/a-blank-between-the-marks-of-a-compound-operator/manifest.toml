@@ -1,0 +1,21 @@
+description = "A link whose text opens with the deferral mark and then the dispatch mark, with a blank between them, is refused with a diagnostic naming the link, because the marks of the one operator that defers a dispatch are written together."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["written together"]
+reference = "¬ ⇉ the shared rules"
+source = "guide.md:3"
+chain = ["guide.md", "rules.md"]

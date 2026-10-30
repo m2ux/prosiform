@@ -69,6 +69,7 @@ from prosiform.closure import (
     operators,
     resolvable,
     resolve,
+    spaced,
     withholding,
     withholding_target,
 )
@@ -1035,11 +1036,30 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if conflicting(use.opening):
-            stated = list(dict.fromkeys(operators(use.opening)))
+        if spaced(use.opening) and DEFERRAL_MARK in operators(use.opening):
+            first = operators(use.opening)
+            second = operators(use.opening[len(first) :].lstrip())
             raise input_failure(
                 f"the link {use.opening!r} opens with "
-                + " and ".join(f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in stated)
+                + " and ".join(
+                    f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in first + second
+                )
+                + ", which state one compilation only when the marks are written "
+                "together",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="write the marks of the combined operator with no space "
+                "between them",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if conflicting(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} opens with "
+                + "".join(
+                    f"{OPERATOR_NAMES[mark]} {mark!r}"
+                    for mark in operators(use.opening)
+                )
                 + ", which state two ways for one sub-agent to run",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="open the link's text with the one operator that states how "

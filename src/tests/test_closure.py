@@ -28,6 +28,7 @@ from prosiform.closure import (
     parallel,
     rebased,
     resolve,
+    spaced,
     unmarked,
     withholding,
     withholding_target,
@@ -174,17 +175,18 @@ def test_a_mark_opening_the_text_with_no_space_after_it_is_no_operator() -> None
     assert not deferred("¬\tRecord Epic Delivery")
 
 
-def test_two_dispatch_marks_opening_one_text_conflict_however_they_are_spaced() -> None:
-    assert conflicting("⇉ ⫽ the rules")
-    assert conflicting("⫽  ⇉ the rules")
-    assert conflicting(" ⇉ \t⫽ the rules")
+def test_two_dispatch_marks_opening_one_text_conflict() -> None:
+    assert conflicting("⇉⫽ the rules")
+    assert conflicting("⫽⇉ the rules")
+    assert conflicting(" ⇉⫽⇉ the rules")
 
 
-def test_a_deferral_beside_a_dispatch_mark_states_one_compilation() -> None:
+def test_a_deferral_and_a_dispatch_mark_written_together_are_admitted() -> None:
     """A deferral says when, a dispatch says who, so together they agree."""
-    assert not conflicting("¬ ⇉ the rules")
-    assert not conflicting("¬ ⫽ the rules")
-    assert conflicting("¬ ⇉ ⫽ the rules")
+    assert not conflicting("¬⇉ the rules")
+    assert not conflicting("¬⫽ the rules")
+    assert conflicting("⇉⫽ the rules")
+    assert conflicting("¬⇉⫽ the rules")
 
 
 def test_one_operator_alone_does_not_conflict() -> None:
@@ -194,15 +196,21 @@ def test_one_operator_alone_does_not_conflict() -> None:
 
 
 def test_a_mark_with_no_space_after_it_ends_the_operators_a_text_opens_with() -> None:
-    assert operators("¬⇉ the rules") == ()
-    assert operators("⇉¬ the rules") == ()
-    assert operators("¬  ⇉the rules") == ("¬",)
+    assert operators("¬⇉the rules") == ()
+    assert operators("⇉¬the rules") == ()
+    assert operators("¬ ⫽the rules") == ("¬",)
 
 
 def test_operators_are_each_operator_one_text_opens_with() -> None:
-    assert operators("¬ ⇉ the rules") == ("¬", "⇉")
+    assert operators("¬ the rules") == ("¬",)
     assert operators("⇉ the rules") == ("⇉",)
     assert operators("the ¬ rules") == ()
+
+
+def test_the_marks_of_a_compound_operator_are_one_group() -> None:
+    assert operators("¬⇉ the rules") == ("¬", "⇉")
+    assert operators("¬⫽ the rules") == ("¬", "⫽")
+    assert operators(" ¬⫽  the reviews") == ("¬", "⫽")
 
 
 def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
@@ -213,12 +221,10 @@ def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
     assert unmarked("⫽the rules") == "⫽the rules"
 
 
-def test_only_the_marks_that_are_operators_are_taken_off() -> None:
-    """A second mark with no space after it is text the author wrote."""
-    assert unmarked("¬ ⇉ the rules") == "the rules"
-    assert unmarked("¬ ⫽ the rules") == "the rules"
-    assert unmarked("¬ ⇉Rules") == "⇉Rules"
-    assert unmarked("¬ ⫽the reviews") == "⫽the reviews"
+def test_the_marks_of_one_operator_go_together() -> None:
+    assert unmarked("¬⇉ the rules") == "the rules"
+    assert unmarked("¬⫽ the rules") == "the rules"
+    assert unmarked("¬⇉Rules") == "¬⇉Rules"
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
@@ -407,13 +413,20 @@ def test_a_parallel_dispatch_withholds_its_target() -> None:
 def test_a_parallel_mark_with_no_space_after_it_is_no_operator() -> None:
     assert not parallel("⫽the reviews")
     assert not parallel("the ⫽ reviews")
-    assert operators("⫽⇉ the reviews") == ()
+    assert operators("⫽⇉the reviews") == ()
 
 
-@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "⇉ ⫽ the reviews"])
+@pytest.mark.parametrize("opening", ["⫽⇉ the reviews", "⇉⫽ the reviews"])
 def test_the_parallel_mark_conflicts_with_the_dispatch_mark(opening: str) -> None:
     assert conflicting(opening)
 
 
 def test_the_parallel_mark_beside_a_deferral_states_one_compilation() -> None:
-    assert not conflicting("¬ ⫽ the reviews")
+    assert not conflicting("¬⫽ the reviews")
+
+
+@pytest.mark.parametrize("opening", ["¬ ⇉ the rules", "¬ ⫽ the reviews"])
+def test_a_blank_between_the_marks_of_a_compound_operator_is_refused(
+    opening: str,
+) -> None:
+    assert spaced(opening)

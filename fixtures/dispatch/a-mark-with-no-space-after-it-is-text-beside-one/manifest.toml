@@ -1,4 +1,4 @@
-description = "A deferral followed by a mark with no space after it publishes the second mark as the author's text, because a mark with no space after it opens no operator and ends the run of operators a link's text opens with."
+description = "A run of operator marks with no space after it opens no operator, so the link is compiled like any other and its text is published as the author wrote it."
 
 clauses = [
   "Link classification and resource handling — Operators that combine",
