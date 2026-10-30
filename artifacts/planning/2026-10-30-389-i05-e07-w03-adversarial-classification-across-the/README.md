@@ -23,5 +23,7 @@ This record holds the delivery of W03: each departure the stub agent states, run
 | Epic | [I05:E07 Dispatch Following](https://github.com/m2ux/prosiform/issues/389) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic record | [Dispatch Following design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-29-389-i05-e07-dispatch-following) — the design, the W03 work item |
+| Pull request | [Adversarial Classification Across the Dispatch Corpus](https://github.com/m2ux/prosiform/pull/415) — merged into `i05/e07/main` as `d4da261c` |
+| Review pull request | [#412](https://github.com/m2ux/prosiform/pull/412) — the base this row merges into |
 | Preceding rows | [W01](https://github.com/m2ux/prosiform/pull/411) and [W02](https://github.com/m2ux/prosiform/pull/413) — the scenarios and the checks this row exercises |
 | Moved row | The measured baseline, now I05:E08 W02 — one run covering every form |

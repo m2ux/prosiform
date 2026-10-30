@@ -42,7 +42,7 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 | --- | --- | --- |
 | W01 | Dispatch scenarios in both forms | [#411](https://github.com/m2ux/prosiform/pull/411) |
 | W02 | Sub-agent record and dispatch scorer checks | [#413](https://github.com/m2ux/prosiform/pull/413) |
-| W03 | Adversarial classification across the dispatch corpus | pending |
+| W03 | Adversarial classification across the dispatch corpus | [#415](https://github.com/m2ux/prosiform/pull/415) |
 
 ## Decisions
 
@@ -97,6 +97,8 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
 - **Delivery, 2026-10-29.**
   W02 merged into `i05/e07/main` as [#413](https://github.com/m2ux/prosiform/pull/413), merge commit `8905b2e3`, with AC3 ticked. Its session held six plan changes and applied none. The scorer reads a session's sub-agent starts from `subagents.json` written beside the trace and the cost, and the three dispatch classes are read after the completion check, so a trace that stopped short is still `unfinished`. No paid session ran and `EVAL_BUDGET_USD` is still USD 100.
 - **The baseline leaves the epic.** The dispatch scenarios' measured baseline moves to I05:E08, whose W02 runs one default matrix over the hardened corpus and commits the one `baseline.json` that covers every form the matrix runs. A separate dispatch run would be replaced by that run, because `report.py` writes the baseline file whole, so one baseline covers both and E07 closes without it. (User, 2026-10-30.)
+- **Delivery, 2026-10-30.**
+  W03 merged into `i05/e07/main` as [#415](https://github.com/m2ux/prosiform/pull/415), merge commit `d4da261c`, with AC4 ticked. Its session held six plan changes and applied none. Each departing stub script runs the four dispatch scenarios in both forms once, and every cell reads the class that script predicts; a scenario the departure leaves as the scenario states reads a pass, so a class firing where its cause is absent fails the same assertion. `STUB_AGENT_STOP` reads `unfinished` in all eight cells, holding the completion check ahead of every dispatch check across the corpus. No paid session ran, no baseline was written, and `EVAL_BUDGET_USD` is still USD 100.
 
 ## Links
 
