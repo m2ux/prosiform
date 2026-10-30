@@ -13,6 +13,8 @@ The row lands the seam, the option, the identity matching, and the design's own 
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | The mapping value, the option and the identity they match on |
+| [Validation](validation.md) | The checks T1–T12 at the revisions they ran, with their observations |
+| [Change list](change-list.md) | Every plan change this session applied, and every one it held |
 
 ## Links
 
@@ -22,3 +24,6 @@ The row lands the seam, the option, the identity matching, and the design's own 
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
 | Predecessor | [W00 Design clause, invocation rules and pin](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-w00-design-clause-invocation-rules) |
+| Pull request | [#428 Mapping, Option and Identity](https://github.com/m2ux/prosiform/pull/428) |
+| Correction pull request | [#429 Correction: A File Heading Under the Mapping](https://github.com/m2ux/prosiform/pull/429) |
+| Design amendment | [9f58475d](https://github.com/m2ux/prosiform/commit/9f58475d439693b04d4b84aa59527d6839eaf281) |
