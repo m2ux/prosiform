@@ -48,7 +48,7 @@ ERROR = "error"
 PROTOCOL = "\n## Dispatch\n"
 
 INSTRUCTION = re.compile(
-    r"^Dispatch `([^`]+)` to a sub-agent, as \[Dispatch\]\(#dispatch\) states\.$",
+    r"^\[Dispatch\]\(#dispatch\) `([^`]+)` to a sub-agent\.$",
     re.MULTILINE,
 )
 

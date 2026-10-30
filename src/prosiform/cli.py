@@ -69,6 +69,7 @@ from prosiform.closure import (
     operators,
     resolvable,
     resolve,
+    spaced,
     withholding,
     withholding_target,
 )
@@ -1017,11 +1018,13 @@ def refusals_of_operators(
     chosen: Selection | None,
     chain: Sequence[str],
 ) -> None:
-    """Refuse a link whose operator states nothing the run can carry out.
+    """Refuse a link whose operators state no one compilation the run can carry out.
 
-    Each operator states how one compilation is carried out — by a later
-    run, by a sub-agent, or by a sub-agent alongside others — so a link
-    stating two states two contradictory things. An operator names the
+    A deferral says when the material is compiled and a dispatch says who
+    compiles it, so the two are carried out together. Two dispatch marks
+    say who, differently — one sub-agent, or one beside its section's
+    others — so a link stating both states two ways for one sub-agent to
+    run, and the run says so rather than choosing. An operator names the
     compilation of a Markdown document or section under the source root,
     so one opening a link or an image naming anything else — a remote
     address, a resource, a document outside the root — states a
@@ -1033,12 +1036,31 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if conflicting(use.opening):
-            stated = list(dict.fromkeys(operators(use.opening)))
+        if spaced(use.opening) and DEFERRAL_MARK in operators(use.opening):
+            first = operators(use.opening)
+            second = operators(use.opening[len(first) :].lstrip())
             raise input_failure(
                 f"the link {use.opening!r} opens with "
-                + " and ".join(f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in stated)
-                + ", which state different things for one compilation",
+                + " and ".join(
+                    f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in first + second
+                )
+                + ", which state one compilation only when the marks are written "
+                "together",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="write the marks of the combined operator with no space "
+                "between them",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if conflicting(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} opens with "
+                + "".join(
+                    f"{OPERATOR_NAMES[mark]} {mark!r}"
+                    for mark in operators(use.opening)
+                )
+                + ", which state two ways for one sub-agent to run",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="open the link's text with the one operator that states how "
                 "the material is compiled",

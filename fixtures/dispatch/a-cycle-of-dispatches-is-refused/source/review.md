@@ -1,3 +1,3 @@
 # Review
 
-1. Revise the plan in a sub-agent: [⇉ plan](plan.md).
+1. Apply: [⇉ plan](plan.md).

@@ -1,5 +1,5 @@
 # Guide
 
-Run [⇉ the shared
+Apply [⇉ the shared
 rules](rules.md), then [⇉ the plan\
 steps](plan.md), then [⇉ the review ](review.md).

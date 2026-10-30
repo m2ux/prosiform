@@ -1,3 +1,3 @@
 # Guide
 
-1. Hand the fields to a sub-agent: [⇉ the fields](plan.md#fields).
+1. Apply: [⇉ the fields](plan.md#fields).

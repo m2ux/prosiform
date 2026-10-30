@@ -4,7 +4,7 @@ A [picture ![of the [shared notes](#notes) it names](plan.png) of the rules](#ru
 
 # Rules
 
-Every rule the procedure requires.
+Every rule this guide requires.
 
 # Notes
 

@@ -1,3 +1,3 @@
 # Review
 
-1. Hand the record to a sub-agent: [⇉ record](record.md).
+1. Apply: [⇉ record](record.md).

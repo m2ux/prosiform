@@ -2,20 +2,20 @@
 
 ## Dispatch
 
-Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
 
 # Guide
 
-1. Hand the run to a sub-agent: [Run](#dispatch-run).
+1. Apply: [Run](#dispatch-run).
 
 ## Dispatch Run
 
-Dispatch `guide__run.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `guide__run.bundle.md` to a sub-agent.
 
 ## Run
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. Apply: [plan](#dispatch-plan).
 
 ### Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.

@@ -79,7 +79,14 @@ from prosiform.bundle import (
     carried_headings,
     escaped,
 )
-from prosiform.closure import Reference, dispatched, identity, parallel, unmarked
+from prosiform.closure import (
+    Reference,
+    deferred,
+    dispatched,
+    identity,
+    parallel,
+    unmarked,
+)
 from prosiform.closure import withholding_target as withheld
 from prosiform.diagnostics import (
     ERROR,
@@ -127,33 +134,32 @@ DISPATCH = "Dispatch"
 PARALLEL_DISPATCH = "Parallel dispatch"
 
 DISPATCH_PROTOCOL = (
-    "Hand the named bundle to one sub-agent, with the inputs the invoking step "
-    "names, to follow from its start, and continue with the result it returns. "
-    "A dispatched run puts no question to the user: it returns each question, "
-    "with its context paragraph and options, unanswered. The dispatching "
-    "session puts each returned question to the user, or returns it in turn "
-    "when itself dispatched, then dispatches again with the answers."
+    "Hand the named bundle to one sub-agent with the invoking step's inputs, to "
+    "follow from its start, and continue with its result. A dispatched run asks "
+    "nothing: it returns each question, with its context and options, "
+    "unanswered. The dispatching session puts that question to the user, or "
+    "returns it in turn when itself dispatched, then dispatches again with the "
+    "answers."
 )
 
 
-def protocol_link(name: str) -> str:
-    """A link to one protocol sub-section of the Prosiform section."""
-    return f"[{name}](#{slug(name)})"
+def rules_link(name: str, text: str) -> str:
+    """A link to one protocol sub-section, carrying its own link text."""
+    return f"[{text}](#{slug(name)})"
 
 
 PARALLEL_PROTOCOL = (
-    "Dispatch every listed bundle at once, each to a sub-agent of its own as "
-    f"{protocol_link(DISPATCH)} states; an item the invoking step applies "
+    "Dispatch every listed bundle at once, each to a sub-agent of its own per "
+    f"{rules_link(DISPATCH, 'dispatch')}; an item the invoking step applies "
     '"for each" of several values is dispatched once per value, together. '
-    "Continue when every item has returned. A failed item cancels nothing: the "
-    "set returns every failure together as blockers. Questions items return "
-    "are put to the user together once every item has returned, and only the "
-    "items that asked are dispatched again."
+    "Continue when every item has returned; a failed item cancels nothing, and "
+    "every failure returns together as blockers. Questions return together once "
+    "all items have, and only the items that asked are dispatched again."
 )
 
 TOGETHER = (
-    "Dispatch these bundles together, each to a sub-agent, as "
-    f"{protocol_link(PARALLEL_DISPATCH)} states:"
+    "Dispatch these bundles together, each to a sub-agent, per "
+    f"{rules_link(PARALLEL_DISPATCH, 'parallel dispatch')}:"
 )
 
 LINK_CLOSE = "link_close"
@@ -420,7 +426,9 @@ def written_in(
             if child.type != LINK_OPEN:
                 continue
             opening = opening_text(children, at)
-            if not dispatched(opening):
+            if not dispatched(opening) or deferred(opening):
+                # A deferred dispatch belongs to the run that compiles it
+                # later, so this bundle names no sub-section for it.
                 continue
             destination = str(child.attrGet("href") or "")
             target = withheld(path, destination, opening, source.root)
@@ -441,9 +449,7 @@ def written_in(
 
 def instruction(bundle_file: str) -> str:
     """The one line a dispatch sub-section carries."""
-    return (
-        f"Dispatch `{bundle_file}` to a sub-agent, as {protocol_link(DISPATCH)} states."
-    )
+    return f"{rules_link(DISPATCH, 'Dispatch')} `{bundle_file}` to a sub-agent."
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:

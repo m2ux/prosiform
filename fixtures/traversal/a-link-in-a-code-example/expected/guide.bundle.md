@@ -1,6 +1,6 @@
 # Guide
 
-The procedure requires [the shared rules](#rules).
+Require [the shared rules](#rules).
 
 A dependency is written `[the draft](draft.md)` inline, and
 
@@ -12,4 +12,4 @@ in a fenced example. Neither is a link, so neither names a dependency.
 
 # Rules
 
-Every rule the procedure requires.
+Every rule this guide requires.

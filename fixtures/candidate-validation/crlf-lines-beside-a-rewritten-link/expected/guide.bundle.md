@@ -1,6 +1,6 @@
 # Guide
 
-The procedure requires [the notes](#notes).
+Require [the notes](#notes).
 
 ```text
 a code example the source terminated with CRLF

@@ -1,3 +1,3 @@
 # Plan
 
-1. Hand the next step to a sub-agent: [⇉ review](review.md).
+1. Apply: [⇉ review](review.md).

@@ -715,10 +715,7 @@ def test_a_link_inside_image_alternative_content_the_bundle_altered_fails() -> N
 
 def instructing(destination: str) -> None:
     """Hold one instruction linking one destination to the Prosiform protocols."""
-    line = (
-        f"Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch]({destination}) "
-        "states."
-    )
+    line = f"[Dispatch]({destination}) `plan.bundle.md` to a sub-agent."
     text = f"# Prosiform\n\n## Dispatch\n\nProtocol.\n\n# Guide\n\n{line}\n"
     tokens = parse(text, BUDGET)
     headings = (

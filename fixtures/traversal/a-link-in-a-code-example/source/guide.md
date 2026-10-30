@@ -1,6 +1,6 @@
 # Guide
 
-The procedure requires [the shared rules](rules.md).
+Require [the shared rules](rules.md).
 
 A dependency is written `[the draft](draft.md)` inline, and
 

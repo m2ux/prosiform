@@ -1,0 +1,15 @@
+description = "A deferred dispatch inside a document reached by an ordinary chain of links publishes the path the later run follows and compiles no bundle of its own, so the deferral takes precedence however deep the link sits."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+  "Link classification and resource handling — A deferred link's destination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

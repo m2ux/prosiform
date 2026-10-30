@@ -1,6 +1,6 @@
 # Guide
 
-The procedure requires [the note's step](#step) and
+Require [the note's step](#step) and
 [the rule's step](#step-1), which carry one heading text
 between them.
 

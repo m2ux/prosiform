@@ -52,6 +52,17 @@ FRAGMENT_PART = "fragment"
 
 OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK)
 
+# The operator groups one link may state. A deferral carries the dispatch
+# that the run compiling the material later finds, and the marks of one
+# group are written together.
+ADMITTED = (
+    (DEFERRAL_MARK,),
+    (DISPATCH_MARK,),
+    (PARALLEL_MARK,),
+    (DEFERRAL_MARK, DISPATCH_MARK),
+    (DEFERRAL_MARK, PARALLEL_MARK),
+)
+
 
 class Unresolvable(Exception):
     """A reference the sequence resolves to no document under the root.
@@ -224,38 +235,58 @@ def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -
 def operators(opening: str) -> tuple[str, ...]:
     """Each operator one link's text opens with, in the order it is written.
 
-    An operator is its mark followed by a space, and it opens the text,
-    so text a mark sits inside, or opens with no space after it, names a
-    document the way any prose does. The blanks between two operators are
-    the spacing an operator is written with, so text opening with one and
-    then the other carries both.
+    An operator is a run of operator marks followed by a space, and it
+    opens the text, so text a mark sits inside, or opens with no space
+    after it, names a document the way any prose does. One link states
+    both a deferral and a dispatch by writing the two marks adjacent, as
+    `¬⇉ target`, and the blanks before the run are its spacing.
     """
-    found: list[str] = []
     at = 0
-    while True:
-        while at < len(opening) and opening[at] in BLANKS:
-            at += 1
-        if not opens(opening, at):
-            break
-        found.append(opening[at])
+    while at < len(opening) and opening[at] in BLANKS:
         at += 1
-    return tuple(found)
+    end = at
+    while end < len(opening) and opening[end] in OPERATORS:
+        end += 1
+    if end == at or opening[end : end + 1] != SPACE:
+        return ()
+    return tuple(opening[at:end])
 
 
-def opens(text: str, at: int) -> bool:
-    """Whether an operator starts at one position of a link's text."""
-    return text[at : at + 1] in OPERATORS and text[at + 1 : at + 2] == SPACE
+def spaced(opening: str) -> bool:
+    """Whether a link's text states two operator groups separated by a blank.
+
+    The marks of a compound operator are written together, so a blank
+    between two of them states two operators rather than one, and the
+    author who meant `¬⇉ target` wrote something else.
+    """
+    at = 0
+    while at < len(opening) and opening[at] in BLANKS:
+        at += 1
+    end = at
+    while end < len(opening) and opening[end] in OPERATORS:
+        end += 1
+    if end == at or opening[end : end + 1] != SPACE:
+        return False
+    after = end
+    while after < len(opening) and opening[after] in BLANKS:
+        after += 1
+    return opening[after : after + 1] in OPERATORS
 
 
 def conflicting(opening: str) -> bool:
-    """Whether a link's text opens with more than one operator.
+    """Whether a link's text states operators the run cannot carry out together.
 
-    Each operator states how one compilation is carried out — by a later
-    run, by a sub-agent, or by a sub-agent alongside others — so a link
-    stating two states two contradictory things and the run says so
-    rather than choosing.
+    A deferral says when the material is compiled and a dispatch says who
+    compiles it, so the two are written together as `¬⇉` or `¬⫽` and
+    state one compilation: the material is deferred, and the run that
+    later compiles it finds a dispatch. Two dispatch marks state two ways
+    for one sub-agent to run, which is why the refusal outlives the
+    deferral.
     """
-    return len(set(operators(opening))) > 1
+    found = operators(opening)
+    if not found:
+        return False
+    return found not in ADMITTED
 
 
 def deferred(opening: str) -> bool:
@@ -297,13 +328,14 @@ def withholding(opening: str) -> bool:
 
 
 def unmarked(text: str) -> str:
-    """One link's text as the bundle publishes it, with its operator's mark taken off.
+    """One link's text as the bundle publishes it, with its operator's marks taken off.
 
     A deferral states when the material is compiled, and its destination
     states that already; a dispatch states who compiles it, and the
     sub-section its link points at states that. Every mark is authoring
-    syntax rather than content, so it goes with the blanks written
-    around it, which are its spacing.
+    syntax rather than content, so they go with the blanks that are their
+    spacing. The marks of a compound operator go together, because a mark
+    with no space after it is the author's text and ends the run.
 
     Text opening with no operator is the author's prose and is returned
     as written.
@@ -314,12 +346,14 @@ def unmarked(text: str) -> str:
     at = 0
     while at < len(text) and text[at] in BLANKS:
         at += 1
-    if not opens(text, at):
+    end = at
+    while end < len(text) and text[end] in OPERATORS:
+        end += 1
+    if end == at or text[end : end + 1] != SPACE:
         return text
-    at += 1
-    while at < len(text) and text[at] in BLANKS:
-        at += 1
-    return text[at:]
+    while end < len(text) and text[end] in BLANKS:
+        end += 1
+    return text[end:]
 
 
 def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:

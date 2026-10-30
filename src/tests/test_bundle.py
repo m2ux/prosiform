@@ -548,10 +548,10 @@ def test_a_diagram_click_outside_the_selection_keeps_its_source_path() -> None:
 
 DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"
 TOGETHER = f"## Parallel dispatch\n\n{PARALLEL_PROTOCOL}\n\n"
-PLAN = "Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states."
+PLAN = "[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent."
 SET = (
-    "Dispatch these bundles together, each to a sub-agent, as "
-    "[Parallel dispatch](#parallel-dispatch) states:"
+    "Dispatch these bundles together, each to a sub-agent, per "
+    "[parallel dispatch](#parallel-dispatch):"
 )
 PROTOCOL = re.compile(r"^## (?:Parallel d|D)ispatch\n\n[^\n]*\n", re.MULTILINE)
 

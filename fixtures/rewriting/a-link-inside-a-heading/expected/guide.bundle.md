@@ -6,4 +6,4 @@ The body of the section whose heading carries the dependency.
 
 # Rules
 
-Every rule the procedure requires.
+Every rule this guide requires.

@@ -2,17 +2,17 @@
 
 ## Dispatch
 
-Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
 
 # Guide
 
-The procedure dispatches [the shared rules](#dispatch-the-shared-rules)
+Dispatch [the shared rules](#dispatch-the-shared-rules)
 and [the draft](#dispatch-the-draft) to a sub-agent.
 
 ## Dispatch the shared rules
 
-Dispatch `shared_rules__every-rule.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `shared_rules__every-rule.bundle.md` to a sub-agent.
 
 ## Dispatch the draft
 
-Dispatch `shared_my rules__run.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `shared_my rules__run.bundle.md` to a sub-agent.

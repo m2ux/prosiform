@@ -128,7 +128,7 @@ from prosiform.source import (
 
 def instructed(bundle_file: str) -> str:
     """The line a dispatch sub-section carries for one bundle file."""
-    return f"Dispatch `{bundle_file}` to a sub-agent, as [Dispatch](#dispatch) states."
+    return f"[Dispatch](#dispatch) `{bundle_file}` to a sub-agent."
 
 
 DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"
@@ -1678,15 +1678,14 @@ def test_a_mark_with_no_space_after_it_opens_an_ordinary_link(
     assert run.diagnostics() == []
 
 
-def test_marks_opening_a_link_with_no_space_between_them_open_no_operator(
-    root: Path,
-) -> None:
+def test_the_marks_of_a_compound_operator_are_written_together(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\nSee [\u00ac\u21c9 Rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [\u00ac\u21c9 Rules](#rules)." in run.bundle
+    assert "See [Rules](rules.md)." in run.bundle
     assert run.diagnostics() == []
+    assert sorted(run.bundles) == ["guide.bundle.md"]
 
 
 def test_a_deferral_stands_where_another_reference_carried_its_target(
@@ -1888,21 +1887,21 @@ def test_an_empty_dispatch_reached_through_a_link_names_the_route(root: Path) ->
     assert diagnostic["chain"] == ["guide.md", "steps.md", "plan.md"]
 
 
-def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nRead [\u00ac \u21c9 the rules](rules.md).\n")
+def test_a_link_opening_with_two_dispatch_marks_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [\u21c9\u2afd the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundle == ""
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["reference"] == "\u00ac \u21c9 the rules"
+    assert diagnostic["reference"] == "\u21c9\u2afd the rules"
 
 
-def test_a_link_opening_with_both_operators_is_refused_where_it_names_nothing(
+def test_a_link_opening_with_two_dispatch_marks_is_refused_where_it_names_nothing(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\nRead [\u21c9 \u00ac a picture](plan.png).\n")
+    written(root, "guide.md", "# Guide\n\nRead [\u21c9\u2afd a picture](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -2874,8 +2873,8 @@ def test_a_parallel_target_of_any_shape_publishes_with_no_diagnostic(
     assert sorted(run.bundles) == ["guide.bundle.md", "plan__reviews.bundle.md"]
 
 
-@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "¬ ⫽ the reviews"])
-def test_a_parallel_mark_with_another_operator_is_refused(
+@pytest.mark.parametrize("opening", ["⫽⇉ the reviews", "⇉⫽ the reviews"])
+def test_a_parallel_mark_with_the_dispatch_mark_is_refused(
     root: Path, opening: str
 ) -> None:
     written(root, "guide.md", f"# Guide\n\nRun [{opening}](plan.md).\n")
@@ -2886,7 +2885,7 @@ def test_a_parallel_mark_with_another_operator_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
     assert diagnostic["reference"] == opening
-    assert "one compilation" in diagnostic["message"]
+    assert "two ways for one sub-agent" in diagnostic["message"]
 
 
 @pytest.mark.parametrize(
