@@ -20,6 +20,15 @@ And beside it, `protocols_publish.bundle.md`, compiled from `protocols/publish.m
 
 *The bundle keeping the link is unchanged apart from the mark and the sub-section, and `Publish` is compiled as if it had been asked for on its own.*
 
+That `#dispatch` needs a target, and the protocol it names is the bundle's first section. Every bundle that dispatches opens with it, in wording the profile fixes:
+
+| The Prosiform section, opening `modes_review.bundle.md` | |
+| --- | --- |
+| `# Prosiform` | |
+| `## Dispatch` | `Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.` |
+
+*The anchor resolves to the first heading to take that slug, and this section is the bundle's first heading. A later heading producing `dispatch` — an author's lowercase `## dispatch`, say — takes `dispatch-1` instead, so the protocol link keeps pointing at the protocol.*
+
 ## What a dispatch changes
 
 A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no content, no dependency through the link, no group membership. Its target is required to exist and to name the heading it names, because a sub-agent will follow it and the compilation must be able to succeed.
@@ -60,7 +69,17 @@ A dispatch in a level-6 section leaves no level for its sub-section, so the run 
 
 A bundle carrying a dispatch sub-section or a parallel dispatch sub-section opens with a **Prosiform section**: `# Prosiform`, then `## Dispatch` whenever the bundle dispatches, and `## Parallel dispatch` when it carries a set.
 
-The section is the bundle's first heading, ahead of any file heading. A parallel dispatch is dispatch done together, so a bundle carrying only sets carries both protocols, the parallel protocol linking the Dispatch one.
+These headings are what the generated links point at, so their slugs matter as much as their wording:
+
+| Heading | Destination | Reached by |
+| --- | --- | --- |
+| `# Prosiform` | `#prosiform` | nothing; it names the section |
+| `## Dispatch` | `#dispatch` | each dispatch sub-section's one line |
+| `## Parallel dispatch` | `#parallel-dispatch` | each parallel dispatch sub-section's one line |
+
+A parallel dispatch sub-section's own heading gives `#dispatch-in-parallel`, which its section's `⫽` links point at.
+
+The section is the bundle's first heading, ahead of any file heading, and that position is what keeps the destinations unambiguous: a slug goes to the first heading to take it, so a later heading producing `dispatch` takes `dispatch-1`. A parallel dispatch is dispatch done together, so a bundle carrying only sets carries both protocols, the parallel protocol linking the Dispatch one.
 
 Each protocol is one paragraph in wording the profile fixes, so the sub-section is byte-identical in every bundle that carries it. A bundle dispatching nothing carries no Prosiform section.
 
@@ -86,7 +105,9 @@ A dispatched link naming the document that writes it warns where it closes no cy
 
 ## Generated headings
 
-An authored heading whose text equals one the run emits in the same bundle would give two sections one name. `Prosiform`, `Dispatch in parallel`, a protocol heading, and any dispatch sub-section's heading are all reserved where the bundle emits them, and a source using one of those names fails the run.
+An authored heading whose text equals one the run emits in the same bundle would give two sections one name. `Prosiform`, `Dispatch`, `Parallel dispatch`, `Dispatch in parallel`, and any dispatch sub-section's heading are refused where the bundle emits them, and the run names the heading and the text it equals.
+
+The comparison is exact, and case-sensitive: `## dispatch` is not `## Dispatch`, so it publishes. It takes `dispatch-1` rather than `dispatch`, because the Prosiform section's heading is the earlier one — which is why the protocol links keep reaching the protocol.
 
 A heading the run does not emit in that bundle is the author's there: a bundle dispatching nothing may carry `Prosiform`, and one carrying no set may carry `Dispatch in parallel`.
 
