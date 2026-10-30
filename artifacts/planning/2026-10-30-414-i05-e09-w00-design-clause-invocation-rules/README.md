@@ -24,4 +24,6 @@ This record holds the delivery of W00, which states the mapping in the contract'
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
 | Pull request | [#425 Design Clause, Invocation Rules and Pin](https://github.com/m2ux/prosiform/pull/425) |
+| Correction pull request | [#427 Design Clause Correction: An Absent Key and Check Mode](https://github.com/m2ux/prosiform/pull/427) |
 | Design amendment | [57809368](https://github.com/m2ux/prosiform/commit/578093687a55c7ed2dc1110b7347fa80a4f6f0ce) |
+| Corrected amendment | [f723a85d](https://github.com/m2ux/prosiform/commit/f723a85dbe5fd2a3e379b951c2dfb5c58670f5e6) |

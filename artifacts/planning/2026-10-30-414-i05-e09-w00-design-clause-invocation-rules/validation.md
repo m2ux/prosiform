@@ -83,3 +83,21 @@ The design states the same rules with their refusals and their field names, at `
 **Ran:** a read of every passage in `design.md` and `invocation.md` that states what a reference resolves to, at the pinned revision.
 
 **Observed:** the passages that say a reference resolves from its author's directory within its author's root remain true and are unchanged by the mapping — a mapping entry is applied to the reference a caller authored, and an entry bounded to a root would refuse the case the parameter exists for. The one place resolution is described as deciding what a reference names now carries the mapping beside it, so the clause's own introduction states that the mapping is read before the root and the operator rather than after either. No sentence was found that claims resolution reads only the authored path.
+
+## T9 — The correction on an absent key and check mode
+
+**Ran:** a read of the clause against the epic's pinned capabilities, then `make vocabulary`, `make conformance` and `make check` at corrected branch head `c14b2814`, which pins `f723a85d`.
+
+**Observed:** the clause as merged refused "a key naming no document". That contradicts the epic's decision that a key may name a document that does not exist — what makes an artifact under authoring testable before it lands, which the AC18 fixture shows — and it contradicts AC23, whose refusal is of a key carrying *no* document, a fragment alone. The clause now refuses "a key carrying no document", states that a key naming an absent document redirects like any other because the reference is redirected before any source is read, and states that the mapping is read wherever a reference is resolved, so `-c` applies it.
+
+The checks at the corrected head:
+
+- `make vocabulary` — exit `0`, `46 contract term(s) ... on f723a85d`, every one defined in `docs/glossary.md`.
+- `make conformance` — exit `0`, `304 clause(s)`, `56 covered by no fixture`, `0 declaration(s) naming no clause`.
+- `make check` — exit `0` throughout: `1308 passed` on the unit suite, `962 passed` on the harness suite, `348 fixture(s), 348 pass`, `link check: every reference in 212 document(s) resolved`, `invocation check: 29 statement(s)`, and `independence check: every shaped term ... is one the contract names`.
+
+## T10 — The corrected clause is pinned and merged
+
+**Ran:** `gh api` against pull requests #425 and #427, and `git log origin/i05/e09/main`.
+
+**Observed:** #425 merged to `i05/e09/main` at `2746ed198e39e704955a0288b0cbc955a7565482`; #427 merged to the same base at `bd6b5cfcef292e9f0909a5af1fdbfddc27bd4fd9`, its `Checks` run reported `success` on `c14b2814`. Both hold a Development link to #414. `README.md` on the base pins `f723a85d`, the corrected clause.
