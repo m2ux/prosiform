@@ -70,6 +70,6 @@ A mocked bundle is otherwise the same kind of output as a real one, so the run s
 
 | Resource | Link |
 | --- | --- |
-| Epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/418) |
+| Epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
