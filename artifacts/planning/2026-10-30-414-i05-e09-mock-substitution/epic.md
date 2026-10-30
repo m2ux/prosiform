@@ -7,7 +7,7 @@ A link in a Markdown source names one document, and `pf` compiles whichever docu
 A caller who needs a bundle built against other material than the tree holds has no way to say so.
 
 - **The only lever is editing the tree.**
-  A test that needs a stand-in dependency copies the skill and edits the copy, so what it measures is a modified tree rather than the one that ships. Resolution is reached through `inside`, `resolvable`, `bundled` and `withholding_target` in [closure.py](https://github.com/m2ux/prosiform/blob/9851615028ea489c48f6b3fa5ddbe0d917438cf2/src/prosiform/closure.py), and each call site in `cli.py`, `bundle.py` and `candidate.py` opens the authored path.
+  A test that needs a stand-in dependency copies the skill and edits the copy, so what it measures is a modified tree rather than the one that ships. Resolution is reached through `inside`, `resolvable`, `bundled` and `withholding_target` in [closure.py](https://github.com/m2ux/prosiform/blob/9851615028ea489c48f6b3fa5ddbe0d917438cf2/src/prosiform/closure.py), each call site in `cli.py`, `bundle.py` and `candidate.py` opens the authored path, and `entry` normalizes the command line's own references through `resolve` before any source is read.
 - **A stand-in cannot be kept beside the work.**
   Test material that must not ship has nowhere to live, because every document the run reaches is one the shipped tree holds, and the closure follows links rather than a list a caller supplies.
 - **A source's declared root excludes the stand-in.**
@@ -17,8 +17,8 @@ A caller who needs a bundle built against other material than the tree holds has
 
 ## Proposal
 
-- **Substitution at the resolution seam.**
-  `closure.inside` is the one function every stage reaches resolution through, and the mapping is a parameter beside the `root` each call site already passes. No stage carries a rule of its own, so discovery, emission, candidate validation, the withheld-target check and entry normalization cannot disagree.
+- **Substitution at a resolution seam.**
+  `closure.inside` is where a link's own path is resolved, and the mapping is a parameter beside the `root` each call site already passes. Discovery, emission, the withheld-target check and candidate validation all reach `inside` through `resolvable`, `bundled` and `withholding_target`, so none carries a rule of its own. A positional reference and `-f` are normalized by `entry` before any source is read, and the mapping is applied there too, so the two paths agree.
 - **Redirect, not overlay.**
   The substitute becomes the target outright. Its title, its `group` and `group-depth`, its `root` and its own links are the ones the run uses, and the bundle reads as if the author had written the substitute's path in the link. One file owns each identity.
 - **A repeatable option.**
@@ -45,12 +45,12 @@ A caller who needs a bundle built against other material than the tree holds has
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, invocation rules and pin | AC16, AC17 | | | |
-| W01 | Resolution seam and mapping identity | AC1, AC11, AC14 | W00 | | |
-| W02 | Option grammar and its refusals | AC9, AC10, AC15 | W01 | | |
+| W01 | Mapping, option and identity | AC1, AC11, AC15 | W00 | | |
+| W02 | Key and self-mock refusals | AC9, AC10 | W01 | | |
 | W03 | Entry redirect and derived name | AC2, AC13 | W01 | | |
 | W04 | Substitution warnings | AC7, AC8 | W01 | | |
 | W05 | Withheld and dispatched targets | AC4 | W01 | | |
-| W06 | Section keys and no chaining | AC3, AC12 | W01 | | |
+| W06 | Section keys and no chaining | AC3, AC12, AC14 | W01 | | |
 | W07 | Substitute as a full source | AC5, AC6 | W01 | | |
 
 ## Acceptance Criteria
@@ -74,8 +74,6 @@ A caller who needs a bundle built against other material than the tree holds has
 - [ ] **AC17.** The design states the mapping as a thing deciding what a reference names, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
 
 ## Open Questions
-
-- **Which document amends first, the design or the corpus?** W00 pins the design at a commit that carries the new clause, so the pin can only be bumped once the amendment exists on `engineering`. Recommended: W00 lands the amendment on `engineering`, then bumps the pin on `main` in the same row, linking both pull requests.
 
 ## References
 

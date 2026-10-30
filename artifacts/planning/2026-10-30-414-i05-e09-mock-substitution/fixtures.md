@@ -11,22 +11,21 @@ Two family-wide obligations:
 - **Every fixture names the clause W00 lands,** or `make conformance` refuses the declaration.
 - **Both warning codes need a fixture declaring them,** because `make conformance` reads `pf -C` and reports a code the contract declares and no manifest names as a failure.
 
-## W01 — Resolution seam and mapping identity
+## W01 — Mapping, option and identity
 
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
 | `a-mocked-dependency-is-compiled` | AC1 | A compiled link resolves to the substitute, which is bundled under its own file heading, with `W_MOCK_SUBSTITUTED` naming the link. |
 | `a-substitute-outside-the-writing-root-is-reachable` | AC11 | A source declaring `root: .` reaches a substitute beside its tree, which the same run without `-m` refuses as `E_TARGET_NOT_FOUND`. This is the feature's justification, and no unit test can show it. |
-| `a-document-key-and-a-section-key-together` | AC14 | Both keys of one document serve their references, and the narrower takes the section it names. |
 
-## W02 — Option grammar and its refusals
+AC15 is the option's row in `invocation.md`, held to the help output by `make invocation` rather than by a corpus fixture.
+
+## W02 — Key and self-mock refusals
 
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
 | `a-duplicate-key-is-refused` | AC9 | Two spellings of one identity on the command line: `E_INVALID_USAGE`, exit `2`, nothing published. |
 | `a-self-mock-is-refused` | AC10 | A key and value normalizing to one identity: `E_INVALID_USAGE`, exit `2`, nothing published. |
-
-AC15 is the option's row in `invocation.md`, held to the help output by `make invocation` rather than by a corpus fixture.
 
 ## W03 — Entry redirect and derived name
 
@@ -53,6 +52,7 @@ AC15 is the option's row in `invocation.md`, held to the help output by `make in
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
 | `a-fragment-key-redirects-one-section` | AC3 | One section compiles the substitute while the rest of its document compiles as it ships. |
+| `a-document-key-and-a-section-key-together` | AC14 | Both keys of one document serve their references, and the narrower takes the section it names. |
 | `a-substitute-that-is-a-key-is-not-redirected-again` | AC12 | The substitute is read from disk, and the key naming it is reported unused rather than followed. |
 
 ## W07 — The substitute as a source

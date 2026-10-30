@@ -6,7 +6,7 @@
 
 This record holds the plan for I05:E09: a `-m ORIGINAL=ALTERNATIVE` invocation parameter that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It is the ninth epic of I05, the standing initiative for ad hoc feature enhancements.
 
-The epic is eight tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 puts the mapping at the resolution seam and threads it through every helper; W02 adds the option and its two refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; and W07 treats the substitute as a source in its own right.
+The epic is eight tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the two mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; and W07 treats the substitute as a source in its own right.
 
 Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Fourteen fixtures across a new `fixtures/mock/` family, and every one names the clause W00 lands.
 
@@ -69,6 +69,21 @@ A mocked bundle is otherwise the same kind of output as a real one, so the run s
 - **A key redirecting a document to itself is refused as invalid usage.** (User, 2026-10-30.)
 - **An epic under I05, not a new initiative.** I05 exists to hold ad hoc enhancements, and this is one self-contained addition to link resolution. (User, 2026-10-30.)
 - **Priority 5.** The epic has no prerequisite epic and no component contention, so it can start at any time; 5 places it behind the epics already in flight. (User, 2026-10-30.)
+- **The mapping and the option are one row.** A mapping nothing can be passed is unobservable and an option with nowhere to put its pairs is unused, so W01 carries both and declares `closure.py` as its component with `cli.py` named in its body. The grain rule bends for a row that must be invocable. (User, 2026-10-30.)
+- **The design clause merges to `engineering` before the pin moves.** Conformance reads the design at the pinned commit, so the amendment must exist before the pin can name it. The Open Question is settled. (User, 2026-10-30.)
+
+## Review
+
+Six findings from a review against the source, all resolved.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| W01 placed the mapping "after normalization and before the Markdown-suffix test", which would have put it before `inside`'s `covers` check and refused every substitute outside the writing source's root — the case the feature exists for. | Critical | The mapping is applied to the reference `inside` returns, after `covers` is held against the authored path. |
+| The epic claimed `inside` is "the one function every stage reaches resolution through". `entry` normalizes positional references and `-f` through `resolve` directly, so there are two paths. | High | Both the Problem and the Proposal state the two paths, and W01 owns both. |
+| AC15 was cited by W02, a row whose design, implementation and test never mention `invocation.md`. | High | AC15 moved to W01, which lands the option row. |
+| W01 and W06 both implemented the two-step lookup, and both claimed AC14. | Medium | W01 owns the lookup and AC14; W06 owns what a section key means and the fixture that makes precedence observable. |
+| W01 extended both `closure.py` and `cli.py`, against the one-component rule. | Medium | Merged with W02 at the user's decision; AC14 moved to W06 to stay within the three-criterion grain. |
+| The epic carried an Open Question, which planning requires resolved before work starts. | Medium | Settled: design first, then the pin. |
 
 ## Links
 
