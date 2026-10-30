@@ -6,9 +6,7 @@ So the run checks its own work before anyone sees it, and publishes nothing unle
 
 What a check catches is easiest to see in the failure:
 
-| A source that will not compile | What the run says |
-| --- | --- |
-| **`SKILL.md`**<br>`# Entry`<br><br>`Follow [Tests](rules/tests.md#tests) and [Reviews](rules/quality.md#reviews).`<br><br>**`rules/quality.md`**<br>`# Quality`<br><br>`## Findings`<br><br>`A review lands with its findings recorded.` | `E_TARGET_NOT_FOUND: the reference`<br>`'rules/quality.md#reviews' names no heading`<br>`of the document it selects from`<br>`  reference: rules/quality.md#reviews`<br>`  resolved: rules/quality.md`<br>`  source: SKILL.md:3`<br>`  chain: SKILL.md → rules/quality.md#reviews`<br>`  remedy: name a heading the document carries` |
+![SKILL.md, rules/tests.md and rules/quality.md on the left. On the right, one Diagnostics panel carrying E_TARGET_NOT_FOUND for rules/quality.md#reviews, with its reference, resolved path, source line, chain and remedy.](images/refused.svg)
 
 *A link naming a heading that does not exist is refused before anything is written. The run names the link, the document it resolved to, the line it was written on and what to do about it — and publishes nothing, so the reader never sees a broken link.*
 

@@ -27,11 +27,9 @@ A selection's name is its path relative to the working directory, without the Ma
 
 A run of several selections joins their names with `+`, in the order the command line first names each; equivalent references count once. The joined name names the run's folder with `.bundles` appended, and the entry's bundle with `.bundle.md` appended.
 
-The example is a real run of a small skill: one mode that dispatches one protocol.
+The example is a real run of a small skill: one mode that dispatches one protocol. Each panel's header is the file's path, so the bundle panels show the folder each one was written into.
 
-| Written | On disk |
-| --- | --- |
-| **`modes/review.md`** (the entry)<br>`# Review Mode`<br><br>`## Procedure`<br><br>`1. Read the [Rules](../rules.md#tests).`<br>`2. Follow [⇉ Publish](../protocols/publish.md).`<br><br>**`protocols/publish.md`** (dispatched, no content here) | `modes_review.bundles/`<br>`  modes_review.bundle.md`<br>`  protocols_publish.bundle.md` |
+![modes/review.md, rules.md and protocols/publish.md on the left. On the right, two panels titled modes_review.bundles/modes_review.bundle.md and modes_review.bundles/protocols_publish.bundle.md.](images/dispatch.svg)
 
 *The entry names the folder. The dispatched target sits beside it under its own selection's name, with no `+` in it.*
 

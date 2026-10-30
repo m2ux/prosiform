@@ -4,9 +4,7 @@ Following a link is the whole of what a bundler does. A procedure says "adhering
 
 Every link inside a source is a **reference**, and the run answers that question for each one before it compiles anything. Here one procedure carries four kinds of link, and only the first survives as a link into the bundle:
 
-| Written, in `modes/review.md` | Compiled |
-| --- | --- |
-| `# Review Mode`<br><br>`Follow the rules.`<br><br>`- Read the rules: [Rules](rules.md#tests).`<br>`- Keep the diagram: ![flow](diagram.png).`<br>`- Read the upstream notes: [Notes](https://example.com/notes).`<br>`- See the library: [Library](../library/guide.md).` | `# Review Mode`<br><br>`Follow the rules.`<br><br>`- Read the rules: [Rules](#tests).`<br>`- Keep the diagram: ![flow](diagram.png).`<br>`- Read the upstream notes: [Notes](https://example.com/notes).`<br>`- See the library: [Library](../library/guide.md).` |
+![modes/review.md and modes/rules.md on the left. On the right, the bundle: the first link rewritten to #tests, and the image, remote address and outside-root link carried exactly as written.](images/references.svg)
 
 *The first link resolved and was rewritten. The other three are text, carried byte for byte, and the run warned once that the bundle names a resource.*
 
@@ -56,13 +54,11 @@ An operator is a mark opening a link's text, followed by a space. It states how 
 
 An operator withholds what the link would otherwise add: the target contributes no content, no dependency through that link, and no group membership. Its target must still exist and must still name the heading it names, because a compilation an agent will follow is one that can succeed.
 
-A mark on its own changes nothing but the link's own text. Placing one on the link above turns it into a dispatch, and the run publishes a second bundle rather than the rules file:
+A mark on its own changes nothing but the link's own text. Placing one on the same link turns it into a dispatch, and the run publishes a second bundle rather than carrying the rules file:
 
-| Written, in `modes/review.md` | Compiled |
-| --- | --- |
-| `## Procedure`<br><br>`1. Read the [Rules](../rules.md#tests).`<br>`2. Dispatch [⇉ Publish](../protocols/publish.md).` | `## Procedure`<br><br>`1. Read the [Rules](#tests).`<br>`2. Dispatch [Publish](#dispatch-publish).`<br><br>`### Dispatch Publish`<br><br>`Dispatch protocols_publish.bundle.md to a sub-agent, as [Dispatch](#dispatch) states.` |
+![modes/review.md, rules.md and protocols/publish.md on the left. On the right, two bundles: the entry's, with a Dispatch Publish sub-section naming protocols_publish.bundle.md, and that bundle on its own holding Publish.](images/dispatch.svg)
 
-*The mark is gone, a sub-section the author never wrote names the bundle to follow, and `protocols_publish.md` appears nowhere in this bundle's content.*
+*The mark is gone, a sub-section the author never wrote names the bundle to follow, and `publish.md` contributes no content to the bundle that linked it.*
 
 A mark with no space after it opens no operator. `[⇉Sync](sync.md)` is an ordinary link whose text happens to begin with an arrow, and the mark stays in the published text. Marks are read in order and the first one written without a space ends the reading, so `[¬⇉ Rules](rules.md)` is an ordinary link too.
 

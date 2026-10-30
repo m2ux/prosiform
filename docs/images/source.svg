@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1119" viewBox="0 0 2142 1119" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1119" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
+<path d="M32 134 H1032" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">tmp336c5lki/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">│  └─ review.md</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">└─ rules.md</text><rect x="32" y="342" width="1000" height="474" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="378" font-size="21" fill="#b1c6df" font-weight="400">modes/review.md</text>
+<path d="M32 396 H1032" stroke="#303b49"/>
+<text x="70" y="453" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="490" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="527" font-size="20" fill="#e6edf3" font-weight="400">  root: &quot;..&quot;</text>
+<text x="70" y="564" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="611" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="611" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="70" y="659" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules.</text>
+<text x="44" y="713" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="713" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="761" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
+<text x="70" y="798" font-size="20" fill="#e6edf3" font-weight="400">2. Report the findings.</text><rect x="32" y="838" width="1000" height="241" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="874" font-size="21" fill="#b1c6df" font-weight="400">rules.md</text>
+<path d="M32 892 H1032" stroke="#303b49"/>
+<text x="44" y="959" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="959" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="44" y="1013" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1013" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="70" y="1061" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="80" width="1000" height="483" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/modes_review.bundle.md</text>
+<path d="M1110 134 H2110" stroke="#303b49"/>
+<text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="1148" y="249" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules.</text>
+<text x="1122" y="303" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="303" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="351" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
+<text x="1148" y="388" font-size="20" fill="#e6edf3" font-weight="400">2. Report the findings.</text>
+<text x="1122" y="446" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="446" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1122" y="497" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="497" font-size="23" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="1148" y="545" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

@@ -4,11 +4,9 @@ A run's raw material is Markdown files on disk: a skill's entry point, the proce
 
 Each file is opened once, and everything the run decides about it is decided from that one reading: which of its links may be followed, which parts of it the bundle takes, and what its metadata declares.
 
-The file below declares its root and its group in leading frontmatter, then links a sibling document:
+The file below declares its root in leading frontmatter, then links a sibling document. The run reads the metadata and drops it, and resolves the `..` before the link is rewritten:
 
-| Written, in `modes/review.md` | Compiled |
-| --- | --- |
-| `---`<br>`prosiform:`<br>`  root: ".."`<br>`---`<br>`# Review Mode`<br><br>`Checks a change against the [Rules](../rules.md#tests).` | `# Review Mode`<br><br>`Checks a change against the [Rules](#tests).` |
+![modes/review.md and rules.md on the left, the latter with frontmatter declaring its root. On the right, the bundle: Review Mode with no frontmatter, and its link now pointing at #tests.](images/source.svg)
 
 *The frontmatter is read and dropped, and the `..` in the link is resolved before it disappears.*
 

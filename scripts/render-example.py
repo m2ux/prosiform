@@ -18,6 +18,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 from pathlib import Path
@@ -125,8 +126,10 @@ def arrow(x: int, y: int) -> str:
     )
 
 
-def draw(root: Path, sources: list[str], bundles: list[str]) -> str:
-    """The drawing of one run: the sources it read and the bundles it wrote."""
+def draw(
+    root: Path, sources: list[str], bundles: list[str], diagnostics: str = ""
+) -> str:
+    """The drawing of one run: the sources it read, and the bundles or refusal."""
     block, tree_height = card(
         SOURCE_X, SOURCE_Y, TREE_WIDTH, "Files", tree_of(sources, root.name)
     )
@@ -142,7 +145,11 @@ def draw(root: Path, sources: list[str], bundles: list[str]) -> str:
     right = []
     right_at = SOURCE_Y
     if not bundles:
-        right.append(txt(OUTPUT_X + 24, 116, "nothing published", 21, MUTED))
+        title = "Diagnostics" if diagnostics.strip() else "Compiler output"
+        body = diagnostics.strip() or "nothing published"
+        block, height = card(OUTPUT_X, right_at, PANEL_WIDTH, title, body)
+        right.append(block)
+        right_at += height + 22
     for name in bundles:
         block, height = card(
             OUTPUT_X,
@@ -187,14 +194,18 @@ def render(name: str, case: dict, build: list[str], output: Path) -> int:
             for path in work.rglob("*.md")
             if path.relative_to(work).as_posix() not in bundles
         )
-        drawn = draw(work, sources, bundles)
+        drawn = draw(work, sources, bundles, result.stderr)
         ElementTree.fromstring(drawn)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(drawn)
-        print(f"{name}: {output}, exit {result.returncode}, {len(bundles)} bundle(s)")
-        if result.returncode != 0:
-            print(result.stderr.rstrip())
-        return result.returncode
+        expected = case.get("status", 0)
+        print(
+            f"{name}: {output}, exit {result.returncode}, {len(bundles)} bundle(s)"
+        )
+        if result.returncode != expected:
+            print(f"{name}: expected exit {expected}", file=sys.stderr)
+            return 1
+        return 0
     finally:
         shutil.rmtree(work)
 

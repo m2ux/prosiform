@@ -55,6 +55,12 @@ flowchart TD
 
 *Figure 1. The Generated Sub-Sections Sit Between a Section's Own Content and Its Child Sections.*
 
+A run carrying both kinds shows them together. Two `⫽` links form one set and publish one bundle each; a `⇉` link on its own publishes a third:
+
+![modes/review.md and three protocol files on the left. On the right, four panels: the entry's bundle with a Dispatch Publish sub-section and a Dispatch in parallel sub-section listing two bundles, then code, tests and publish each as a bundle of their own.](images/parallel.svg)
+
+*The entry's bundle names what to hand over; the three procedures are compiled as if each had been asked for on its own.*
+
 The links are published without their marks and point at these sub-sections. Links in one section naming one target share one sub-section, named by the first.
 
 A dispatch in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark leaves its sub-section nothing to be named by, and is refused too.
