@@ -2,11 +2,35 @@
 
 The documentation this repository owns, published with the build.
 
-- [Diagram Renderer](diagram-renderer.md) — render one Markdown entry document and its dependencies, with optional compact content.
+## Architecture
 
-- [Glossary](glossary.md) — every term the contract uses, defined once. The design, the acceptance criteria, the fixture corpus and the tool's diagnostics draw their vocabulary from it.
-- [Versioning](versioning.md) — what the contract's and each build's version numbers assert, how a major, a minor and a patch are told apart, and why a build's major and minor are the contract revision it implements.
-- [The output budget, measured](output-budget.md) — the bundled size of the closure the proposal measured, recorded against the configured output budget, with the procedure that re-takes it.
+Each page covers one part of a run, and they read in the order a run happens.
 
-- [Fixture corpus](../fixtures/README.md). The behavioural contract.
-- [Design contract](https://github.com/m2ux/prosiform/blob/d26ae99b7e989f0978d20f7d9bdc098c16319797/artifacts/planning/2026-10-23-218-i01-e06-w04-per-file-compilation-settings/design.md). The original design.
+| Page | Answers |
+| --- | --- |
+| [Architecture](architecture.md) | The whole run, and where each of the pages below fits |
+| [Sources](sources.md) | What a source is, how its root confines it, and what its frontmatter declares |
+| [References](references.md) | Which links are dependencies, which are text, and what an operator states |
+| [Selection](selection.md) | How the closure is reached, consolidated and ordered |
+| [Hierarchy](hierarchy.md) | File headings, groups, member names and the level shift |
+| [Destinations](destinations.md) | How a heading is named and how each link is rewritten |
+| [Dispatch](dispatch.md) | How dispatched material becomes a bundle of its own |
+| [Bundles](bundles.md) | Derived names, publication and delivery |
+| [Checking](checking.md) | The invariants, the diagnostics and the budgets |
+
+## Reference
+
+| Page | What it is |
+| --- | --- |
+| [Invocation](../invocation.md) | The command line, its options and its exit statuses |
+| [Fixture corpus](../fixtures/README.md) | The behavioural contract, stated as cases |
+| [Glossary](glossary.md) | Every term the contract uses, defined once |
+| [Versioning](versioning.md) | What the contract's and each build's version numbers assert |
+| [Diagram Renderer](diagram-renderer.md) | Render one entry and its dependencies as a diagram |
+| [The output budget, measured](output-budget.md) | The bundled size of a measured closure, and how to re-take it |
+
+## Commands
+
+[Checks](../checks.md) states each target the [Makefile](../Makefile) declares and what it asserts. `make check` runs the set, stopping at the first failure.
+
+The design the contract implements is stated on the [engineering branch](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md).
