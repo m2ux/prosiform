@@ -12,6 +12,7 @@ The row lands the seam, the option, the identity matching, and the design's own 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The mapping value, the option and the identity they match on |
 
 ## Links
 
