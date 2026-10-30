@@ -136,9 +136,31 @@ LINK_TARGET = re.compile(
 The link's text may open with a dispatch operator, which the compiled form
 writes and the authored form does not, so both forms' steps read alike.
 """
-LINKS = r"((?:\[[^\]]*\]\([^)]*\))(?: and \[[^\]]*\]\([^)]*\))*)\."
+LINKS = r"((?:\[[^\]]*\]\([^)]*\))(?:\s+and\s+\[[^\]]*\]\([^)]*\))*)\."
+"""One step's links, joined by `and` where a set states several."""
+OPERATOR_LINK_SRC = rf"\[(?:{DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\("
+"""A link of a compiled step that states its operator."""
+COMPILED_STEP = re.compile(rf"^\d+\. .*(?:{OPERATOR_LINK_SRC})")
+"""A compiled step: a numbered step whose links carry the operator it dispatches by.
+
+The compiled form's steps state no dispatch in prose, since the operator a
+link carries and the protocol `pf` publishes from it are the statement. A
+step may carry instruction beyond its links; what it may not do is say what
+the operator says.
+"""
+OPERATOR_LINK = re.compile(rf"\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\(")
+"""Every link of a compiled step that states its operator, with the operator."""
+RESTATES = "sub-agent"
+"""The word a compiled step may not use, since it states its operators twice."""
 STEP_ONE = re.compile(rf"^\d+\. Hand the .+? to a sub-agent: {LINKS}")
 STEP_SET = re.compile(rf"^\d+\. Hand the .+? to sub-agents of their own: {LINKS}")
+"""An authored step: the protocol it states, then the links it applies to.
+
+The authored form has no operator and no published protocol, so its prose is
+the whole statement of what a sub-agent follows and how a returned question
+is relayed."""
+OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
+"""The operator a link's text opens with, where it opens with one."""
 LABEL_STATEMENT = re.compile(
     r"^The transition labelled `([^`]+)` applies\.$", re.MULTILINE
 )
@@ -486,7 +508,9 @@ def section_body(directory: Path, document: str, heading: str) -> str:
     return rest if end is None else rest[: end.start()]
 
 
-def dispatched(body: str, directory: Path, root: Path) -> list[tuple[bool, list[str]]]:
+def dispatched(
+    body: str, directory: Path, root: Path, form: str
+) -> list[tuple[bool, list[str]]]:
     """The targets a section's steps dispatch, each step's in order.
 
     A step hands one document to a sub-agent, or several to sub-agents of
@@ -497,14 +521,35 @@ def dispatched(body: str, directory: Path, root: Path) -> list[tuple[bool, list[
     though the step writes its link from `directory`, the directory of the
     section writing it. A link resolving to no document, or to a document
     holding no such heading, is a fault.
+
+    A compiled step is read from its operators alone: its links are the
+    statement, so a sentence beside them states the dispatch a second time
+    and is a fault. An authored step is read from its prose, which is the
+    form's only statement of the dispatch.
     """
     steps: list[tuple[bool, list[str]]] = []
     for line in body.splitlines():
-        found = STEP_ONE.match(line) or STEP_SET.match(line)
-        if found is None:
-            continue
+        if form == COMPILED_FORM:
+            if COMPILED_STEP.match(line) is None:
+                continue
+            if RESTATES in line:
+                raise CorpusError(
+                    f"a compiled step states the dispatch in prose, not by its"
+                    f" operators alone: {line!r}"
+                )
+            named = LINK_TARGET.findall(line)
+            marks = OPERATOR_LINK.findall(line)
+            if len(marks) != len(named):
+                raise CorpusError(f"a compiled step carries an unmarked link: {line!r}")
+            together = PARALLEL_OPERATOR in marks
+        else:
+            found = STEP_ONE.match(line) or STEP_SET.match(line)
+            if found is None:
+                continue
+            named = LINK_TARGET.findall(found.group(1))
+            together = STEP_SET.match(line) is not None
         targets: list[str] = []
-        for _, document, heading in LINK_TARGET.findall(found.group(1)):
+        for _, document, heading in named:
             written = (directory / document).resolve()
             if not written.is_file():
                 raise CorpusError(f"a step dispatches {document}, which is no document")
@@ -518,7 +563,6 @@ def dispatched(body: str, directory: Path, root: Path) -> list[tuple[bool, list[
             targets.append(f"{named.as_posix()}#{heading.lower()}")
         if not targets:
             raise CorpusError(f"a dispatch step names no document: {line!r}")
-        together = STEP_SET.match(line) is not None
         if together and len(targets) < 2:
             raise CorpusError(f"a set states one target: {line!r}")
         steps.append((together, targets))
@@ -540,7 +584,7 @@ def dispatch_walk(
     trace: list[tuple[str, bool]] = []
 
     def follow(body: str, directory: Path) -> None:
-        for together, targets in dispatched(body, directory, root):
+        for together, targets in dispatched(body, directory, root, form):
             for index, target in enumerate(targets):
                 trace.append((target, together and index > 0))
                 document, _, heading = target.partition("#")
