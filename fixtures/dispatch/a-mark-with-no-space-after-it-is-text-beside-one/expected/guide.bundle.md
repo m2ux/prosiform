@@ -1,6 +1,6 @@
 # Guide
 
-The procedure applies [¬⇉Rules](#rules).
+Apply [¬⇉Rules](#rules).
 
 # Rules
 

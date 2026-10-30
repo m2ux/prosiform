@@ -2,9 +2,9 @@
 
 ### Procedure
 
-The procedure requires [the review step](#review), a section of this
+Require [the review step](#review), a section of this
 same document.
 
 ### Review
 
-The section the procedure requires.
+The section this guide requires.

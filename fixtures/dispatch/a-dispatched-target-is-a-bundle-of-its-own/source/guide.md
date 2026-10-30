@@ -1,3 +1,3 @@
 # Guide
 
-The procedure applies [⇉ the shared rules](rules.md).
+Apply [⇉ the shared rules](rules.md).

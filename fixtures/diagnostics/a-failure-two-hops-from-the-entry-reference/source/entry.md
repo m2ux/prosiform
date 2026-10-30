@@ -1,3 +1,3 @@
 # Entry
 
-The procedure requires [the notes](docs/notes.md#detail).
+Require [the notes](docs/notes.md#detail).

@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-Run [the plan](#dispatch-the-plan).
+Apply [the plan](#dispatch-the-plan).
 
 ## Dispatch the plan
 

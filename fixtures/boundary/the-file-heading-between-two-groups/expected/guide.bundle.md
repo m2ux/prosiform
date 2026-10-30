@@ -1,6 +1,6 @@
 # Guide
 
-The procedure refers to [other](#other).
+Refer to [other](#other).
 
 - The item this group ends on.
 

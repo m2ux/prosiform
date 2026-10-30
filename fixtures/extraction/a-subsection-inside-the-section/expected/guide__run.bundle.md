@@ -6,7 +6,7 @@ Carry the procedure out.
 
 #### Detail
 
-The detail the procedure needs.
+The detail this guide needs.
 
 ##### Finer
 

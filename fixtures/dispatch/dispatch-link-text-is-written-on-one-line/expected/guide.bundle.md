@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-Run [the shared
+Apply [the shared
 rules](#dispatch-the-shared-rules), then [the plan\
 steps](#dispatch-the-plan-steps), then [the review ](#dispatch-the-review).
 

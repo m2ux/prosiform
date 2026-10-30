@@ -1,3 +1,3 @@
 # Rules
 
-1. Apply every rule the procedure follows.
+1. Apply every rule this guide follows.

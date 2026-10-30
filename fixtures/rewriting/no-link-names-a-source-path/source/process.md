@@ -2,4 +2,4 @@
 
 ## Review
 
-The section the procedure requires.
+The section this guide requires.

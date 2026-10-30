@@ -10,7 +10,7 @@ Dispatch every listed bundle at once, each to a sub-agent of its own per [dispat
 
 # Guide
 
-Run [the shared
+Apply [the shared
 rules](#dispatch-in-parallel) and [the review ](#dispatch-in-parallel).
 
 ## Dispatch in parallel

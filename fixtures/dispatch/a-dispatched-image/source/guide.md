@@ -1,3 +1,3 @@
 # Guide
 
-The procedure applies ![⇉ the architecture](plan.png).
+Apply ![⇉ the architecture](plan.png).

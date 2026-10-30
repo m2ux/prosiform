@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-The procedure dispatches [the shared rules](#dispatch-the-shared-rules)
+Dispatch [the shared rules](#dispatch-the-shared-rules)
 and [the draft](#dispatch-the-draft) to a sub-agent.
 
 ## Dispatch the shared rules

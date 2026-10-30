@@ -1,6 +1,6 @@
 # Rules
 
-Every rule the procedure keeps.
+Every rule this guide keeps.
 
 # Guide
 

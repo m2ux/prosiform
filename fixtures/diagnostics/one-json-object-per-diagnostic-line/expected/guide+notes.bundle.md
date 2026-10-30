@@ -1,7 +1,7 @@
 # Guide
 
-The procedure needs [the diagram](diagram.png).
+Require [the diagram](diagram.png).
 
 # Notes
 
-A note the procedure refers to.
+A note this guide refers to.

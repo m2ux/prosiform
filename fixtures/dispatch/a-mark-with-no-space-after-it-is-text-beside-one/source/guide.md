@@ -1,3 +1,3 @@
 # Guide
 
-The procedure applies [¬⇉Rules](rules.md).
+Apply [¬⇉Rules](rules.md).

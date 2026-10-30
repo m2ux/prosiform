@@ -4,4 +4,4 @@ The run reads this document during discovery and reads it again before it publis
 
 ## Procedure
 
-Follow [the steps](steps.md) the procedure names.
+Follow [the steps](steps.md) this guide names.

@@ -2,4 +2,4 @@
 
 ## Every rule
 
-Every rule the procedure requires.
+Every rule this guide requires.

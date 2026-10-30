@@ -6,4 +6,4 @@ See [Steps](#steps).
 
 ## Later
 
-The procedure applies [the rules](rules.md).
+Apply [the rules](rules.md).

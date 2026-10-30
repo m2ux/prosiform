@@ -1,6 +1,6 @@
 # Guide
 
-Run [⇉ the plan](plan.md).
+Apply [⇉ the plan](plan.md).
 
 ## Dispatch in parallel
 

@@ -241,10 +241,10 @@ def test_a_link_the_emission_cannot_edit_is_refused() -> None:
 
 
 def test_a_rewrite_reports_one_entry_for_each_line_it_was_given() -> None:
-    text = "The procedure requires\n[the shared rules](rules.md) whole.\n"
+    text = "Require\n[the shared rules](rules.md) whole.\n"
     written = rewritten(lines(text), inline_of(text), ["#rules"], {})
     assert written == [
-        "The procedure requires\n",
+        "Require\n",
         "[the shared rules](#rules) whole.\n",
     ]
 
@@ -279,8 +279,8 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
-        ("The procedure requires [rules](rules.md).", [("rules.md", "rules")]),
-        ("The procedure defers [¬ rules](rules.md).", [("rules.md", "¬ rules")]),
+        ("Require [rules](rules.md).", [("rules.md", "rules")]),
+        ("Defer [¬ rules](rules.md).", [("rules.md", "¬ rules")]),
         ("A fragment [alpha](#alpha) of its own.", [("#alpha", "alpha")]),
         ("An example `[draft](draft.md)` of one.", []),
         ("A picture ![of it](plan.png) names no link.", []),
