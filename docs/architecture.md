@@ -31,7 +31,7 @@ Every term the contract uses has one meaning, defined once in the [glossary](glo
 
 ## Source
 
-The run's raw material is Markdown files on disk. Each one it opens is a **source**, read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it — which is how a mode in one directory can cite a rules file in the directory above, and why the frontmatter itself never reaches the bundle.
+The run's raw material is Markdown files on disk. Each one it opens is a [**source**](sources.md), read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it — which is how a mode in one directory can cite a rules file in the directory above, and why the frontmatter itself never reaches the bundle.
 
 ```mermaid
 flowchart LR
@@ -44,11 +44,9 @@ flowchart LR
 
 *Figure 2. A Source Is Read Once, and Its Root Decides What It May Reach.*
 
-[Sources](sources.md) covers capture, roots, frontmatter and the Markdown profile.
-
 ## Reference
 
-The links inside a source are what the run follows. Each is a **reference**. Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together.
+The links inside a source are what the run follows. Each is a [**reference**](references.md). Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together.
 
 ```mermaid
 flowchart LR
@@ -63,11 +61,9 @@ flowchart LR
 
 *Figure 3. A Reference Is Either Followed, Carried, or Withheld.*
 
-[References](references.md) covers each class, the operators, and what is never followed.
-
 ## Selection
 
-Following the links answers which files join the bundle. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and orders the documents by where they were first named.
+Following the links answers which files join the bundle. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and settles them into one [**selection**](selection.md), ordered by where each document was first named.
 
 ```mermaid
 flowchart LR
@@ -80,11 +76,9 @@ flowchart LR
 
 *Figure 4. Overlapping References Settle into One Selection, in a Stated Order.*
 
-[Selection](selection.md) covers closure, consolidation and order.
-
 ## Hierarchy
 
-A bundle is one Markdown document, so everything in it shares one heading tree. Every contributing source becomes one top-level division, headed by its title. Documents that declare one **group** in their metadata are merged under a single heading instead, and source headings move down a level beneath whichever heading they land under.
+A bundle is one Markdown document, so everything in it shares one heading tree. Every contributing source becomes one top-level division, headed by its title, following the [**hierarchy**](hierarchy.md) rules for grouping and depth. Documents that declare one **group** in their metadata are merged under a single heading instead, and source headings move down a level beneath whichever heading they land under.
 
 ```mermaid
 flowchart TB
@@ -98,11 +92,9 @@ flowchart TB
 
 *Figure 5. Every Source Becomes One Division, Unless It Declares a Group.*
 
-[Hierarchy](hierarchy.md) covers file headings, grouping, variants and depth.
-
 ## Destination
 
-A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a **destination** — the fragment a Markdown renderer generates for it — and each compiled link is rewritten to the destination of what it named. Nothing else is rewritten.
+A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a [**destination**](destinations.md) — the fragment a Markdown renderer generates for it — and each compiled link is rewritten to the destination of what it named. Nothing else is rewritten.
 
 ```mermaid
 flowchart LR
@@ -121,11 +113,9 @@ flowchart LR
 
 *Figure 6. The Heading Is Renamed Where It Lands, and the Link Follows It.*
 
-[Destinations](destinations.md) covers slugs, ordinals and rewriting.
-
 ## Dispatch
 
-Some material is meant for a different agent rather than for the reader of this bundle. A **dispatch** hands it over: the target is compiled as a bundle of its own in the same run folder, and the section that dispatched it says which bundle to follow.
+Some material is meant for a different agent rather than for the reader of this bundle. A [**dispatch**](dispatch.md) hands it over: the target is compiled as a bundle of its own in the same run folder, and the section that dispatched it says which bundle to follow.
 
 ```mermaid
 flowchart LR
@@ -136,11 +126,9 @@ flowchart LR
 
 *Figure 7. Withheld Here, Compiled There, Followed by Another Agent.*
 
-[Dispatch](dispatch.md) covers sub-sections, the protocol, depth and cycles.
-
 ## Bundle
 
-The run's output reaches disk as files. The run writes them into one folder of its own, named for its entry, and swaps that folder in whole, so a reader sees one run's output or the previous one, never a mixture. Nothing else in the output folder is touched.
+The run's output reaches disk as files. It writes its [**bundles**](bundles.md) into one folder of its own, named for its entry, and swaps that folder in whole, so a reader sees one run's output or the previous one, never a mixture. Nothing else in the output folder is touched.
 
 ```mermaid
 flowchart LR
@@ -152,11 +140,9 @@ flowchart LR
 
 *Figure 8. The Whole Set Is Written, Then Swapped In.*
 
-[Bundles](bundles.md) covers derived names, publication and delivery.
-
 ## Validation
 
-A bundle that is subtly wrong is worse than no bundle, because a reader has no way to notice. Nothing is therefore published before every bundle of the run has been built and checked. A run that fails writes nothing and reports a diagnostic on standard error, with a stable code and an exit status that says what kind of failure it was.
+A bundle that is subtly wrong is worse than no bundle, because a reader has no way to notice. Nothing is therefore published before every bundle of the run has been built and passed [**validation**](validation.md). A run that fails writes nothing and reports a diagnostic on standard error, with a stable code and an exit status that says what kind of failure it was.
 
 ```mermaid
 flowchart TB
@@ -166,5 +152,3 @@ flowchart TB
 ```
 
 *Figure 9. Checked Before Written, and a Failure Writes Nothing.*
-
-[Validation](validation.md) covers the invariants, the diagnostics and the budgets.
