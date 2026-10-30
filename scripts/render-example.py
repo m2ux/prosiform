@@ -36,6 +36,10 @@ SOURCE_X, SOURCE_Y = 32, 80
 COLUMN, TREE_WIDTH, PANEL_WIDTH = 1000, 1000, 1000
 OUTPUT_X = 1110
 
+# The tree's name in every drawing. A run's working directory is a temporary
+# directory whose name would otherwise appear in the picture.
+ROOT_LABEL = "skill"
+
 
 def txt(
     x: int, y: int, value: str, size: int = 20, color: str = TEXT, weight: int = 400
@@ -98,7 +102,11 @@ def card(x: int, y: int, width: int, title: str, body: str) -> tuple[str, int]:
 
 
 def tree_of(paths: list[str], root: str) -> str:
-    """One file tree, every directory a path implies."""
+    """One file tree, every directory a path implies.
+
+    The root is the name the drawing shows, not the directory the run happened
+    to use, so a picture states the same tree wherever it was rendered.
+    """
     nodes: dict = {}
     for path in sorted(paths):
         node = nodes
@@ -131,7 +139,7 @@ def draw(
 ) -> str:
     """The drawing of one run: the sources it read, and the bundles or refusal."""
     block, tree_height = card(
-        SOURCE_X, SOURCE_Y, TREE_WIDTH, "Files", tree_of(sources, root.name)
+        SOURCE_X, SOURCE_Y, TREE_WIDTH, "Files", tree_of(sources, ROOT_LABEL)
     )
     left = [block]
     left_at = SOURCE_Y + tree_height

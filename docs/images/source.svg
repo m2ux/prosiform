@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1119" viewBox="0 0 2142 1119" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1119" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
 <path d="M32 134 H1032" stroke="#303b49"/>
-<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">tmp336c5lki/</text>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
 <text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
 <text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">│  └─ review.md</text>
 <text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">└─ rules.md</text><rect x="32" y="342" width="1000" height="474" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
