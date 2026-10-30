@@ -1494,7 +1494,11 @@ class Named:
 
 
 def file_named(
-    path: str, source: Source, tokens: Sequence[Token], wrapped: bool
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    wrapped: bool,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Named | None:
     """One document's file heading, located at the title it carries or at the document.
 
@@ -1505,6 +1509,11 @@ def file_named(
     which names the document as a whole, so the heading is located at
     the document's first position; a parent the bundle opens without a
     file heading and without a single title is headed by nothing.
+
+    The text is the one the group emits, so it is read under the same
+    mapping: a title carrying a withheld link whose target the mapping
+    redirected publishes without its mark, and the heading this warning
+    compares is the heading a reader meets.
     """
     title = document_title(tokens)
     if title is None and not wrapped:
@@ -1512,7 +1521,7 @@ def file_named(
     at = None if title is None or title.map is None else title.map[0] + 1
     line = source.line(at)
     return Named(
-        file_heading(path, tokens, source.root),
+        file_heading(path, tokens, source.root, substitution),
         Location(path, 1 if line is None else line, 1),
     )
 
@@ -1552,6 +1561,7 @@ def coincident(
     selected: Mapping[str, Sequence[Reference]],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Diagnostic]:
     """One warning for each set of generated headings that coincide.
 
@@ -1576,7 +1586,9 @@ def coincident(
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
-            heading = file_named(named, read[named], parsed[named], one.filed)
+            heading = file_named(
+                named, read[named], parsed[named], one.filed, substitution
+            )
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
@@ -1871,7 +1883,7 @@ def compose(
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, coincident(groups, selected, read, parsed)
+    return bundled, coincident(groups, selected, read, parsed, substitution)
 
 
 def resource(destination: str, embedded: bool) -> bool:

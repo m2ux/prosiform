@@ -198,3 +198,39 @@ def test_a_mapping_before_d_does_not_hide_the_diagnostic_format(tree: Path) -> N
         os.chdir(previous)
     assert status == 1
     assert json.loads(err.getvalue())["code"] == "E_TARGET_NOT_FOUND"
+
+
+def test_a_title_carrying_a_withheld_link_is_headed_by_the_text_it_emits(
+    tree: Path,
+) -> None:
+    """A heading compared for coincidence is the text the emission publishes.
+
+    The title's link names a document the tree lacks, so it is the mapping
+    that makes its target exist and the mark that is dropped. A second
+    document titled plainly reads the same once the mark is gone, which is
+    what the run warns about.
+    """
+    (tree / "guide.md").write_text("# [\u00ac the rules](missing.md)\n\nSee.\n")
+    (tree / "sibling.md").write_text("# the rules\n\nAlso.\n")
+    out, err = io.StringIO(), io.StringIO()
+    previous = Path.cwd()
+    try:
+        os.chdir(tree)
+        status = main(
+            [
+                "-m",
+                "missing.md=stand-in.md",
+                "-d",
+                "json",
+                "guide.md",
+                "sibling.md",
+            ],
+            out,
+            err,
+        )
+    finally:
+        os.chdir(previous)
+    assert status == 0
+    voices = [json.loads(line) for line in err.getvalue().splitlines() if line]
+    assert [one["code"] for one in voices] == ["W_COINCIDENT_HEADING"]
+    assert "read 'the rules'" in voices[0]["message"]
