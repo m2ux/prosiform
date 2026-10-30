@@ -1,8 +1,9 @@
-description = "A link under its author's root naming a mocked identity compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry."
+description = "A link under its author's root naming a mocked identity compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract — -m ORIGINAL=ALTERNATIVE, a key naming a dependency redirects the reference the run reads in its place",
+  "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
@@ -12,4 +13,14 @@ arguments = ["-m", "rules.md=stand-in.md", "guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "stand-in.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1

@@ -198,6 +198,35 @@ def test_a_bundle_path_leaving_the_fixture_fails() -> None:
     assert errors(manifest)
 
 
+def test_a_diagnostic_location_is_declarable() -> None:
+    """A warning whose defect stands at a link states the coordinate it stands at."""
+    manifest = succeeding()
+    manifest["expected"]["diagnostics"][0]["location"] = {
+        "file": "guide.md",
+        "line": 3,
+        "column": 1,
+    }
+    assert errors(manifest) == []
+
+
+@pytest.mark.parametrize(
+    "coordinate",
+    [
+        {"file": "guide.md", "line": 3},
+        {"file": "guide.md", "line": 0, "column": 1},
+        {"file": "guide.md", "line": 3, "column": 0},
+        {"file": "../outside.md", "line": 3, "column": 1},
+        {"file": "guide.md", "line": 3, "column": 1, "offset": 4},
+    ],
+)
+def test_a_location_that_is_no_source_coordinate_fails(
+    coordinate: dict[str, object],
+) -> None:
+    manifest = succeeding()
+    manifest["expected"]["diagnostics"][0]["location"] = coordinate
+    assert errors(manifest), f"{coordinate} passed as a source coordinate"
+
+
 @pytest.mark.parametrize(
     "name",
     [

@@ -1,8 +1,9 @@
-description = "A mock value carrying a parent segment reaches a substitute beside the source tree whose declared root cannot contain it, which is what the parameter exists for."
+description = "A mock value carrying a parent segment reaches a substitute beside the source tree whose declared root cannot contain it, which is what the parameter exists for, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract — -m ORIGINAL=ALTERNATIVE, both sides read from the working directory",
+  "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
@@ -12,4 +13,14 @@ arguments = ["-m", "rules.md=../stand-in.md", "guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "../stand-in.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 8
+column = 1

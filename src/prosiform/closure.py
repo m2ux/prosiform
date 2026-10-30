@@ -19,7 +19,7 @@ syntax, and the bundle drops it."""
 import posixpath
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from types import MappingProxyType
 from urllib.parse import quote
 
@@ -130,6 +130,74 @@ def identity(reference: Reference, base: str = "") -> str:
 
 
 @dataclass(frozen=True)
+class Redirect:
+    """One substitution a run performed, as the warning stating it reports.
+
+    `resolved` is the substitute the served key names, which is the target
+    one record serves however many references that key served. `would` is
+    the identity the first reference to reach it was written to name,
+    `source` the destination that reference was written as, and `origin`
+    the source position it stands at, absent where the reference is a
+    command-line entry and stands in no source.
+    """
+
+    resolved: str
+    would: str
+    source: str
+    origin: str | None
+
+
+class Redirects:
+    """Every substitution one run performed, and every key a reference named.
+
+    A mapping is a value the run cannot rewrite, and the record of what a
+    run did with it belongs to the run: each stage that resolves a
+    reference again writes the same record, so the mapping holds one and
+    the run reads it after traversal rather than inferring it from the
+    bundle.
+
+    A record is kept under the key that served the reference, so a key
+    naming one target states one substitution however many references
+    named it, and the first of them is the one whose position and
+    destination the record carries. A key is marked served by any
+    reference that named it, whether or not the record it wrote was the
+    first. The position is the caller's to supply, because the lookup
+    knows a reference was redirected and only the traversal knows where
+    the link that wrote it stands; a record re-reached by a caller that
+    knows no position keeps the one already recorded.
+    """
+
+    def __init__(self) -> None:
+        self._records: dict[tuple[str, str | None], Redirect] = {}
+        self._served: set[tuple[str, str | None]] = set()
+
+    def record(
+        self,
+        key: tuple[str, str | None],
+        substitute: Reference,
+        found: Reference,
+        origin: str | None = None,
+    ) -> None:
+        """Note one redirect: its key, target and the position it was written at."""
+        self._served.add(key)
+        earlier = self._records.get(key)
+        if earlier is None:
+            self._records[key] = Redirect(
+                identity(substitute), identity(found), found.original, origin
+            )
+        elif earlier.origin is None and origin is not None:
+            self._records[key] = replace(earlier, origin=origin)
+
+    def served(self, key: tuple[str, str | None]) -> bool:
+        """Whether any reference of the run named this key."""
+        return key in self._served
+
+    def targets(self) -> tuple[Redirect, ...]:
+        """Each substitution the run performed, in the order it first reached one."""
+        return tuple(self._records.values())
+
+
+@dataclass(frozen=True)
 class Substitution:
     """The mapping from an authored identity to the reference the run reads instead.
 
@@ -146,13 +214,20 @@ class Substitution:
 
     The keys are held behind a read-only view, so a mapping is a value:
     the same pairs name the same substitution however many stages read
-    it.
+    it. What a run did with it is kept beside it, in `redirects`, because
+    that is where a reference is known to have been redirected and which
+    key served it. A key's authored spelling is kept for the warning that
+    states a key no reference named, and a mapping given none writes the
+    key's identity back, which is the spelling the caller wrote.
     """
 
     keys: Mapping[tuple[str, str | None], Reference]
+    spellings: Mapping[tuple[str, str | None], str] = MappingProxyType({})
+    redirects: Redirects = field(default_factory=Redirects, compare=False, repr=False)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "keys", MappingProxyType(dict(self.keys)))
+        object.__setattr__(self, "spellings", MappingProxyType(dict(self.spellings)))
 
     def __len__(self) -> int:
         """How many keys the mapping holds."""
@@ -161,6 +236,20 @@ class Substitution:
     def __bool__(self) -> bool:
         """Whether the mapping redirects anything at all."""
         return bool(self.keys)
+
+    def unserved(self) -> tuple[str, ...]:
+        """Every key no reference named, as its caller wrote it, in the order given."""
+        return tuple(
+            self.spelling(key) for key in self.keys if not self.redirects.served(key)
+        )
+
+    def spelling(self, key: tuple[str, str | None]) -> str:
+        """One key as the caller wrote it, where the mapping was given its spelling."""
+        written = self.spellings.get(key)
+        if written is not None:
+            return written
+        path, fragment = key
+        return path if fragment is None else f"{path}{FRAGMENT}{fragment}"
 
     def substitute(self, found: Reference) -> Reference:
         """One resolved reference as the reference the mapping names instead.
@@ -189,6 +278,36 @@ class Substitution:
             found.fragment if named.fragment is None else named.fragment,
             walk=named.walk,
         )
+
+    def redirect(self, found: Reference, origin: str | None = None) -> Reference:
+        """One resolved reference as the reference the mapping names, recording it.
+
+        The record is the run's and not the mapping's: every stage that
+        resolves the same link again records the same substitution, and
+        the first reference to reach one keeps the record, so a warning
+        naming a substitution names where the run first met it.
+
+        The origin is the position the caller read the link at, absent for
+        a reference the command line names, which stands in no source. A
+        stage that resolves the same link again records the same key and
+        adds no position of its own, so which caller answers does not
+        change what the record states.
+        """
+        named = self.substitute(found)
+        if named is not found:
+            self.redirects.record(self.served_key(found), named, found, origin)
+        return named
+
+    def served_key(self, found: Reference) -> tuple[str, str | None]:
+        """The key one reference's identity names, which is what a record is kept under.
+
+        The exact identity answers first, as the lookup does, so a key
+        carrying a section is marked served by the reference that named
+        that section rather than by every reference to its document.
+        """
+        if (found.path, found.fragment) in self.keys:
+            return (found.path, found.fragment)
+        return (found.path, None)
 
     def key(self, found: Reference) -> Reference | None:
         """The substitute one resolved reference's identity names, or nothing.
@@ -489,6 +608,7 @@ def inside(
     text: str,
     root: str = "",
     substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
 ) -> Reference:
     """Resolve a link from the file that carries it, within the source root.
 
@@ -522,16 +642,23 @@ def inside(
     carrying a scheme or an authority names no local path identity for
     one to match. That is a decision rather than an omission, and the
     one exception the reach of the mapping has.
+
+    The origin is where the link that wrote this reference stands, which
+    the caller that read it supplies so the substitution can be reported
+    at the first link that redirected it. Every stage that resolves the
+    same link again passes nothing and records nothing new.
     """
     base = posixpath.dirname(document)
     found = resolve(text, base, allow_parent=True)
     if found.external:
         return found
     if not components(text).path:
-        return substitution.substitute(replace(found, path=document, walk=document))
+        return substitution.redirect(
+            replace(found, path=document, walk=document), origin
+        )
     resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
     if substitution.key(resolved) is not None:
-        return substitution.substitute(resolved)
+        return substitution.redirect(resolved, origin)
     if not covers(root, found.path):
         raise OutsideRoot(
             "normalizes above the allowed source root, which cannot contain "
@@ -546,6 +673,7 @@ def bundled(
     opening: str,
     root: str = "",
     substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
 ) -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
@@ -573,7 +701,7 @@ def bundled(
     """
     if withholding(opening):
         return None
-    return resolvable(document, text, root, substitution)
+    return resolvable(document, text, root, substitution, origin)
 
 
 def withholding_target(
@@ -582,6 +710,7 @@ def withholding_target(
     opening: str,
     root: str = "",
     substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
 ) -> Reference | None:
     """The target one withheld link names, where the run is responsible for it.
 
@@ -605,7 +734,7 @@ def withholding_target(
     """
     if not withholding(opening):
         return None
-    return resolvable(document, text, root, substitution)
+    return resolvable(document, text, root, substitution, origin)
 
 
 def resolvable(
@@ -613,6 +742,7 @@ def resolvable(
     text: str,
     root: str = "",
     substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
 ) -> Reference | None:
     """The target one link names, where it resolves under the root to a document.
 
@@ -628,7 +758,7 @@ def resolvable(
     caller reading the mark.
     """
     try:
-        found = inside(document, text, root, substitution)
+        found = inside(document, text, root, substitution, origin)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):

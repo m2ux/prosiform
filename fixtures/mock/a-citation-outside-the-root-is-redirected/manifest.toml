@@ -1,8 +1,9 @@
-description = "A citation outside its author's root is redirected by a mapping key, so a reference the run would otherwise carry as text compiles the substitute and is rewritten to its destination."
+description = "A citation outside its author's root is redirected by a mapping key, so a reference the run would otherwise carry as text compiles the substitute and is rewritten to its destination, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract — -m ORIGINAL=ALTERNATIVE, both sides read from the working directory",
+  "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
@@ -12,4 +13,14 @@ arguments = ["-m", "../notes.md=../stand-in.md", "guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "../notes.md"
+resolved = "../stand-in.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1
