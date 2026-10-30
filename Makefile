@@ -42,9 +42,11 @@
 #
 # `make eval-diagrams` runs that eval against real agents, which costs money,
 # so no other target depends on it and `make check` never starts it. It runs
-# the default matrix within EVAL_BUDGET_USD, which covers every session of
+# the default matrix within EVAL_BUDGET_TOKENS, which covers every session of
 # that matrix at its default session cap; ARGS passes the runner's options
-# through, a later `--budget-usd` among them overriding the default.
+# through, a later `--budget-tokens` among them overriding the default. The
+# harness is HARNESS, `claude` or `cursor`, and the CLI it names is what the
+# run drives.
 #
 # `make render` draws the diagrams of the corpus's diagram-link fixtures with
 # mermaid-cli, which `MERMAID_CLI` names, and fails without one. A Gantt
@@ -64,7 +66,8 @@
 # documents, which `make tables` holds true in both directions.
 
 UV_RUN := uv run --project src --frozen
-EVAL_BUDGET_USD := 100
+EVAL_BUDGET_TOKENS := 24000000
+HARNESS := claude
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
@@ -130,4 +133,4 @@ examples:
 	$(UV_RUN) python scripts/render-example.py --build 'uv run --project $(CURDIR)/src --frozen pf'
 
 eval-diagrams:
-	$(UV_RUN) python evals/diagram-following/run.py --budget-usd $(EVAL_BUDGET_USD) $(ARGS)
+	$(UV_RUN) python evals/diagram-following/run.py --harness $(HARNESS) --budget-tokens $(EVAL_BUDGET_TOKENS) $(ARGS)

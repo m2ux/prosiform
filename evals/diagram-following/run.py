@@ -21,11 +21,9 @@ memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
 fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin, whose remote settings enable one,
-or whose settings file declares a hook for any event, naming the file that
-says so and the events it declares: a plugin's or a settings file's hooks
-reach a session before its first turn and no flag the runner passes
-suppresses them.
+does one whose directory installs a plugin or whose remote settings enable
+one, naming the file that says so: a plugin's hooks reach a session before
+its first turn and no flag the runner passes suppresses them.
 
 What a session's agent did carry is read back from its transcript, so the
 boundary is observed rather than assumed. A hook's response, an appended
@@ -93,6 +91,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO, Any
 
+from harness import HARNESSES, Claude, Cursor, harness_named
 from report import (
     BASELINE,
     COMPLETED,
@@ -128,7 +127,9 @@ from workflow import (
     Workflow,
     bundle,
     bundled,
+    dispatched,
     instruction,
+    sections_of,
     workflows,
 )
 
@@ -139,15 +140,6 @@ STDERR = "stderr.log"
 EVAL_ROOT = Path("~/projects/eval/prosiform")
 CONFIG = "config"
 WORKSPACES = "workspaces"
-LOGIN = ".credentials.json"
-PLUGINS = Path("plugins") / "installed_plugins.json"
-INSTALLED = "plugins"
-REMOTE = "remote-settings.json"
-ENABLED = "enabledPlugins"
-SETTINGS = "settings.json"
-HOOKS = "hooks"
-CONFIG_VARIABLE = "CLAUDE_CONFIG_DIR"
-SCRUBBED = ("CLAUDE", "ANTHROPIC_")
 HOOK_RESPONSE = "hook_response"
 SYSTEM = "system"
 CARRIED = ("additionalContext", "appendSystemPrompt", "memory")
@@ -167,13 +159,12 @@ FORMS = {
     AUTHORED_SET: AUTHORED_FORM,
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
-SUMMARY = ("run_id", "state", "sessions", "started", "cost_usd", "not_started")
+SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
-TOOLS = "Read,Write,Edit,Glob,Grep,Task"
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
-DEFAULT_SESSION_BUDGET = 0.50
+DEFAULT_SESSION_BUDGET = 60_000
 DEFAULT_SESSION_TIMEOUT = 600.0
 
 
@@ -200,19 +191,31 @@ class Session:
 
 
 class Ledger:
-    """The run's recorded cost and the session caps reserved in flight."""
+    """The run's recorded tokens and the session caps reserved in flight.
 
-    def __init__(self, budget: float, session_cap: float) -> None:
+    A budget is held in tokens, since that is the measure both harnesses
+    report. A session's own dollar ceiling is the harness's, so this guard
+    holds what the run has recorded rather than what a CLI may still spend.
+    """
+
+    def __init__(self, budget: int, session_cap: int) -> None:
         self.budget = budget
         self.session_cap = session_cap
-        self.spent = 0.0
-        self.reserved = 0.0
+        self.spent = 0
+        self.reserved = 0
+        self.held = 0
+        self.unknown = 0
         self.stopped = False
         self.condition = threading.Condition()
 
     def fits(self) -> bool:
-        """Whether one more session's cap fits within the budget."""
-        return self.spent + self.reserved + self.session_cap <= self.budget
+        """Whether one more session's cap fits within the budget.
+
+        A session that reported no usage keeps its cap held against the
+        budget, since what it spent is unknown, while its cap is not
+        reported as tokens spent.
+        """
+        return self.spent + self.held + self.reserved + self.session_cap <= self.budget
 
     def reserve(self) -> bool:
         """Reserve a session's cap, or stop the run when it cannot fit."""
@@ -225,11 +228,21 @@ class Ledger:
             self.reserved += self.session_cap
             return True
 
-    def settle(self, cost: float) -> None:
-        """Replace a session's reserved cap with the cost it recorded."""
+    def settle(self, tokens: int | None) -> None:
+        """Replace a session's reserved cap with the tokens it recorded.
+
+        A session reporting no usage contributes no tokens and is counted
+        apart, since its cap is what the guard reserved rather than what it
+        spent. Reporting the cap as spend would read a spent login as a run
+        that consumed its whole budget.
+        """
         with self.condition:
             self.reserved -= self.session_cap
-            self.spent += cost
+            if tokens is None:
+                self.unknown += 1
+                self.held += self.session_cap
+            else:
+                self.spent += tokens
             self.condition.notify_all()
 
 
@@ -237,13 +250,13 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """The run's options, defaulting to the eval's full matrix."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument(
-        "--budget-usd", type=float, required=True, help="the run's spending cap"
+        "--budget-tokens", type=int, required=True, help="the run's token cap"
     )
     parser.add_argument(
-        "--session-budget-usd",
-        type=float,
+        "--session-budget-tokens",
+        type=int,
         default=DEFAULT_SESSION_BUDGET,
-        help="each session's spending cap",
+        help="each session's token cap",
     )
     parser.add_argument(
         "--session-timeout-seconds",
@@ -257,7 +270,12 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--forms", default=",".join(FORMS))
     parser.add_argument("--parallel", type=int, default=DEFAULT_PARALLEL)
     parser.add_argument(
-        "--agent-command", default="claude", help="the agent's command line"
+        "--harness",
+        default="claude",
+        help="the agent CLI the run drives: claude or cursor",
+    )
+    parser.add_argument(
+        "--agent-command", help="the agent's command line, overriding the harness"
     )
     parser.add_argument("--results", type=Path, default=RESULTS)
     parser.add_argument(
@@ -271,13 +289,19 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 
 def matrix(
-    corpus: list[Workflow], models: list[str], forms: list[str], repetitions: int
+    corpus: list[Workflow],
+    models: list[str],
+    forms: list[str],
+    repetitions: int,
+    harness: Claude | Cursor = HARNESSES["claude"],
 ) -> list[Session]:
     """Every session a run starts when its budget allows, in start order.
 
     A workflow gives a session only in the forms it is written in, so the
     dispatch workflows take the two dispatch forms and the others take the
-    four forms they hold.
+    four forms they hold. A scenario is dropped where its trace names a start
+    no harness this run drives can observe: a cell whose correct run could
+    not pass measures the harness, not the agent.
     """
     return [
         Session(model, workflow.name, scenario.name, form, repetition)
@@ -286,8 +310,32 @@ def matrix(
         for scenario in workflow.scenarios
         for form in forms
         if FORMS[form] in workflow.forms
+        if observable(workflow, scenario, form, harness)
         for repetition in range(1, repetitions + 1)
     ]
+
+
+def observable(
+    workflow: Workflow, scenario: Scenario, form: str, harness: Claude | Cursor
+) -> bool:
+    """Whether a scenario's trace is one this harness reports.
+
+    A trace names one start per dispatch a correct run makes, nested ones
+    included. A harness that does not surface a sub-agent's own dispatch can
+    report only the starts the path's own sections make, so a scenario whose
+    trace outruns that count is beyond it.
+    """
+    if harness.nested_starts:
+        return True
+    root = workflow.form(FORMS[form])
+    top = 0
+    for state in scenario.path:
+        section = sections_of(workflow, form)[state]
+        top += sum(
+            len(targets)
+            for _, targets in dispatched(section.body, section.path.parent, root, form)
+        )
+    return len(scenario.trace) <= top
 
 
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
@@ -330,121 +378,12 @@ def prepare(
         (workspace / INPUTS / name).write_text(f"{value}\n")
 
 
-def agent_argv(agent: list[str], model: str, session_cap: float) -> list[str]:
-    """The command line one session runs, its prompt given on standard input."""
-    return [
-        *agent,
-        "-p",
-        "--model",
-        model,
-        "--output-format",
-        "stream-json",
-        "--verbose",
-        "--tools",
-        TOOLS,
-        "--permission-mode",
-        "acceptEdits",
-        "--no-session-persistence",
-        "--strict-mcp-config",
-        "--disable-slash-commands",
-        "--max-budget-usd",
-        str(session_cap),
-    ]
-
-
-def result_message(transcript: Path) -> dict[str, object] | None:
-    """The stream's last `result` message, if it printed one."""
-    found = None
-    for line in transcript.read_text().splitlines():
-        try:
-            message = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        if isinstance(message, dict) and message.get("type") == "result":
-            found = message
-    return found
-
-
 def keep(workspace: Path, records: Path) -> None:
     """Copy what the scorer reads out of a finished workspace."""
     if (workspace / TRACE).is_file():
         shutil.copy2(workspace / TRACE, records / TRACE)
     if (workspace / ACTIONS).is_dir():
         shutil.copytree(workspace / ACTIONS, records / ACTIONS)
-
-
-def environment(config: Path) -> dict[str, str]:
-    """The caller's environment without its Claude variables, naming `config`."""
-    kept = {
-        name: value
-        for name, value in os.environ.items()
-        if not name.startswith(SCRUBBED)
-    }
-    return {**kept, CONFIG_VARIABLE: str(config)}
-
-
-def preflight(config: Path) -> None:
-    """Refuse a run whose config holds no login, or one a plugin or hook reaches."""
-    if not (config / LOGIN).is_file():
-        raise CorpusError(
-            f"{config} holds no login; log in once with "
-            f"`{CONFIG_VARIABLE}={config} claude`, then `/login`"
-        )
-    path = installing(config)
-    if path is not None:
-        raise CorpusError(
-            f"{path} installs a plugin, whose hooks reach every session before "
-            f"its first turn; remove {path} before this run"
-        )
-    path = enabling(config)
-    if path is not None:
-        raise CorpusError(
-            f"{path} enables a plugin and its environment, which reach every "
-            f"session before its first turn; remove {path} before this run"
-        )
-    declared = hooking(config)
-    if declared is not None:
-        path, events = declared
-        raise CorpusError(
-            f"{path} declares a hook for {', '.join(events)}, which reaches "
-            f"every session before its first turn; remove {path} before this run"
-        )
-
-
-def record_of(path: Path) -> dict[str, object]:
-    """One settings file's content, read as JSON."""
-    if not path.is_file():
-        return {}
-    try:
-        record = json.loads(path.read_text())
-    except json.JSONDecodeError as error:
-        raise CorpusError(f"{path} is not JSON: {error}") from error
-    return record if isinstance(record, dict) else {}
-
-
-def installing(config: Path) -> Path | None:
-    """The file that installs a plugin in `config`, when one does."""
-    path = config / PLUGINS
-    return path if record_of(path).get(INSTALLED) else None
-
-
-def enabling(config: Path) -> Path | None:
-    """The file whose remote settings enable a plugin, when one does."""
-    path = config / REMOTE
-    enabled = record_of(path).get(ENABLED)
-    if not isinstance(enabled, dict):
-        return None
-    return path if any(value is True for value in enabled.values()) else None
-
-
-def hooking(config: Path) -> tuple[Path, list[str]] | None:
-    """The settings file that declares a hook, and the events it declares."""
-    path = config / SETTINGS
-    hooks = record_of(path).get(HOOKS)
-    if not isinstance(hooks, dict):
-        return None
-    events = sorted(str(event) for event, commands in hooks.items() if commands)
-    return (path, events) if events else None
 
 
 def carried_context(message: dict[str, object]) -> str | None:
@@ -536,8 +475,9 @@ def start(
     workspace: Path,
     env: dict[str, str],
     timeout: float,
-) -> float | None:
-    """Run one session in a fresh workspace, record it, and return its cost."""
+    harness: Claude | Cursor,
+) -> int | None:
+    """Run one session in a fresh workspace, record it, and return its tokens."""
     records.mkdir(parents=True)
     workspace.mkdir(parents=True)
     try:
@@ -551,8 +491,8 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
-        record_starts(records / TRANSCRIPT, records)
-        result = result_message(records / TRANSCRIPT)
+        record_starts(records / TRANSCRIPT, records, harness)
+        result = harness.result(records / TRANSCRIPT)
         ran = read_trace(records)
         verdict = (
             errored(workflow, scenario)
@@ -562,21 +502,21 @@ def start(
         )
     finally:
         shutil.rmtree(workspace)
-    cost = result.get("total_cost_usd") if result else None
-    cost = float(cost) if isinstance(cost, int | float) else None
+    tokens = harness.tokens(result)
     record = {
         **asdict(session),
         "command": argv,
         "exit_status": exit_status,
         "duration_seconds": round(duration, 3),
         "usage": result.get("usage") if result else None,
-        "cost_usd": cost,
+        "tokens": tokens,
+        "cost_usd": harness.cost(result),
         "result": result,
         "trace": [asdict(entry) for entry in scenario.trace],
         "verdict": verdict.record(),
     }
     (records / SESSION).write_text(json.dumps(record, indent=2) + "\n")
-    return cost
+    return tokens
 
 
 def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
@@ -651,13 +591,17 @@ def outcome(
 
 def run(arguments: argparse.Namespace) -> dict[str, object]:
     """Run every session the budget allows and return the run's record."""
-    agent = shlex.split(arguments.agent_command)
+    harness = harness_named(arguments.harness)
+    command = arguments.agent_command or harness.default_agent
+    agent = shlex.split(command)
     if not agent or shutil.which(agent[0]) is None:
-        raise CorpusError(f"no agent command {arguments.agent_command!r} is found")
+        raise CorpusError(f"no agent command {command!r} is found")
     eval_root = arguments.eval_root.expanduser()
     config = eval_root / CONFIG
-    preflight(config)
-    env = environment(config)
+    refused = harness.preflight(config)
+    if refused is not None:
+        raise CorpusError(refused)
+    env = harness.environment(config, dict(os.environ))
     corpus = workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
@@ -674,13 +618,23 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         for form in forms
         if form in BUNDLED and FORMS[form] in workflow.forms
     }
-    sessions = matrix(corpus, names(arguments.models), forms, arguments.repetitions)
-    covered = round(len(sessions) * arguments.session_budget_usd, 6)
-    if covered > arguments.budget_usd:
+    sessions = matrix(
+        corpus, names(arguments.models), forms, arguments.repetitions, harness
+    )
+    unobservable = [
+        f"{workflow.name}/{scenario.name}/{form}"
+        for workflow in corpus
+        for scenario in workflow.scenarios
+        for form in forms
+        if FORMS[form] in workflow.forms
+        and not observable(workflow, scenario, form, harness)
+    ]
+    covered = len(sessions) * arguments.session_budget_tokens
+    if covered > arguments.budget_tokens:
         raise CorpusError(
-            f"--budget-usd {arguments.budget_usd} does not cover the "
-            f"{len(sessions)} sessions at --session-budget-usd "
-            f"{arguments.session_budget_usd}, which need USD {covered}"
+            f"--budget-tokens {arguments.budget_tokens} does not cover the "
+            f"{len(sessions)} sessions at --session-budget-tokens "
+            f"{arguments.session_budget_tokens}, which need {covered}"
         )
     began = datetime.now(UTC)
     run_id = arguments.run_id or began.strftime("%Y%m%dT%H%M%SZ")
@@ -688,7 +642,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     run_directory.mkdir(parents=True)
     workspaces = eval_root / WORKSPACES / run_id
     prompt = instruction(ENTRY)
-    ledger = Ledger(arguments.budget_usd, arguments.session_budget_usd)
+    ledger = Ledger(arguments.budget_tokens, arguments.session_budget_tokens)
 
     def attempt(session: Session) -> bool:
         if not ledger.reserve():
@@ -697,22 +651,23 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         scenario = next(
             item for item in workflow.scenarios if item.name == session.scenario
         )
-        cost: float | None = None
+        tokens: int | None = None
         try:
-            cost = start(
+            tokens = start(
                 session,
                 workflow,
                 scenario,
-                agent_argv(agent, session.model, ledger.session_cap),
+                harness.argv(agent, session.model, ledger.session_cap),
                 prompt,
                 sets,
                 session.directory(run_directory),
                 session.directory(workspaces),
                 env,
                 arguments.session_timeout_seconds,
+                harness,
             )
         finally:
-            ledger.settle(ledger.session_cap if cost is None else cost)
+            ledger.settle(tokens)
         return True
 
     with ThreadPoolExecutor(max_workers=max(1, arguments.parallel)) as pool:
@@ -737,12 +692,15 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             key: str(value) if isinstance(value, Path) else value
             for key, value in vars(arguments).items()
         },
-        "command": agent_argv(agent, "<model>", ledger.session_cap),
+        "harness": harness.name,
+        "command": harness.argv(agent, "<model>", ledger.session_cap),
         STATE: state,
         REASON: reason,
         "sessions": len(sessions),
         "started": sum(started),
-        "cost_usd": ledger.spent,
+        "tokens": ledger.spent,
+        "tokens_unknown": ledger.unknown,
+        "unobservable": unobservable,
         "not_started": [
             asdict(session)
             for session, began in zip(sessions, started, strict=True)
