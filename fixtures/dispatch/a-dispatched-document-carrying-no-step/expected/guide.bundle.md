@@ -10,4 +10,4 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Dispatch the example
 
-Dispatch `example.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `example.bundle.md` to a sub-agent.

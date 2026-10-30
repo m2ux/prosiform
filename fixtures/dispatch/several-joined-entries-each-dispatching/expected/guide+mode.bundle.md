@@ -10,7 +10,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
 
 # Mode
 
@@ -19,8 +19,8 @@ Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ## Dispatch review
 
-Dispatch `review.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `review.bundle.md` to a sub-agent.
 
 ## Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.

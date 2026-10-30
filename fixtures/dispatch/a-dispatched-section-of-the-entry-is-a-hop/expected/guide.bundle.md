@@ -10,7 +10,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Dispatch Run
 
-Dispatch `guide__run.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `guide__run.bundle.md` to a sub-agent.
 
 ## Run
 
@@ -18,4 +18,4 @@ Dispatch `guide__run.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
 
 ### Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.

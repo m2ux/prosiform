@@ -136,14 +136,14 @@ DISPATCH_PROTOCOL = (
 )
 
 
-def protocol_link(name: str) -> str:
-    """A link to one protocol sub-section of the Prosiform section."""
-    return f"[{name}](#{slug(name)})"
+def rules_link(name: str, text: str) -> str:
+    """A link to one protocol sub-section, carrying its own link text."""
+    return f"[{text}](#{slug(name)})"
 
 
 PARALLEL_PROTOCOL = (
-    "Dispatch every listed bundle at once, each to a sub-agent of its own as "
-    f"{protocol_link(DISPATCH)} states; an item the invoking step applies "
+    "Dispatch every listed bundle at once, each to a sub-agent of its own per "
+    f"{rules_link(DISPATCH, 'dispatch')}; an item the invoking step applies "
     '"for each" of several values is dispatched once per value, together. '
     "Continue when every item has returned. A failed item cancels nothing: the "
     "set returns every failure together as blockers. Questions items return "
@@ -152,8 +152,8 @@ PARALLEL_PROTOCOL = (
 )
 
 TOGETHER = (
-    "Dispatch these bundles together, each to a sub-agent, as "
-    f"{protocol_link(PARALLEL_DISPATCH)} states:"
+    "Dispatch these bundles together, each to a sub-agent, per "
+    f"{rules_link(PARALLEL_DISPATCH, 'parallel dispatch')}:"
 )
 
 LINK_CLOSE = "link_close"
@@ -441,9 +441,7 @@ def written_in(
 
 def instruction(bundle_file: str) -> str:
     """The one line a dispatch sub-section carries."""
-    return (
-        f"Dispatch `{bundle_file}` to a sub-agent, as {protocol_link(DISPATCH)} states."
-    )
+    return f"{rules_link(DISPATCH, 'Dispatch')} `{bundle_file}` to a sub-agent."
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:

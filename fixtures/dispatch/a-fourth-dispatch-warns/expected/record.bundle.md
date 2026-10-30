@@ -10,4 +10,4 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Dispatch publish
 
-Dispatch `publish.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `publish.bundle.md` to a sub-agent.

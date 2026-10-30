@@ -88,7 +88,7 @@ The bundle shows each of these constructs:
 
   #### Dispatch Sync Mode
 
-  Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+  [Dispatch](#dispatch) `modes_sync-mode.bundle.md` to a sub-agent.
   ```
 
 - **An outside-root link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.

@@ -51,7 +51,7 @@ Follow [Issue Placement](#dispatch-issue-placement) once for each confirmed plac
 
 #### Dispatch Issue Placement
 
-Dispatch `protocols_issue-placement.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `protocols_issue-placement.bundle.md` to a sub-agent.
 
 ### 6. Set Epic Priority
 

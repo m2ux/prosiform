@@ -12,4 +12,4 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 #### Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.

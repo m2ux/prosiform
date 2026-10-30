@@ -12,12 +12,12 @@ steps](#dispatch-the-plan-steps), then [the review ](#dispatch-the-review).
 
 ## Dispatch the shared rules
 
-Dispatch `rules.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `rules.bundle.md` to a sub-agent.
 
 ## Dispatch the plan steps
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
 
 ## Dispatch the review
 
-Dispatch `review.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `review.bundle.md` to a sub-agent.

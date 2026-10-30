@@ -14,7 +14,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 #### Dispatch sketch
 
-Dispatch `sketch.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `sketch.bundle.md` to a sub-agent.
 
 #### Detail
 

@@ -128,7 +128,7 @@ from prosiform.source import (
 
 def instructed(bundle_file: str) -> str:
     """The line a dispatch sub-section carries for one bundle file."""
-    return f"Dispatch `{bundle_file}` to a sub-agent, as [Dispatch](#dispatch) states."
+    return f"[Dispatch](#dispatch) `{bundle_file}` to a sub-agent."
 
 
 DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"

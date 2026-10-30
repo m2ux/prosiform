@@ -28,7 +28,7 @@ Follow [Sync Mode](#dispatch-sync-mode) for each open initiative on the selected
 
 #### Dispatch Sync Mode
 
-Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `modes_sync-mode.bundle.md` to a sub-agent.
 
 ### 3. Read the Evidence
 

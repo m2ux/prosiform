@@ -10,4 +10,4 @@ The procedure dispatches [the shared rules](#dispatch-the-shared-rules) to a sub
 
 ## Dispatch the shared rules
 
-Dispatch `rules.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `rules.bundle.md` to a sub-agent.

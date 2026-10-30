@@ -110,7 +110,7 @@ When work has landed:
 
 #### Dispatch Sync Mode
 
-Dispatch `modes_sync-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `modes_sync-mode.bundle.md` to a sub-agent.
 
 ## Outcomes
 

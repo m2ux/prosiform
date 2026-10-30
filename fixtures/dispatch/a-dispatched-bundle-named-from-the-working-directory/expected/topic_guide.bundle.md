@@ -11,8 +11,8 @@ and [the draft](#dispatch-the-draft) to a sub-agent.
 
 ## Dispatch the shared rules
 
-Dispatch `shared_rules__every-rule.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `shared_rules__every-rule.bundle.md` to a sub-agent.
 
 ## Dispatch the draft
 
-Dispatch `shared_my rules__run.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `shared_my rules__run.bundle.md` to a sub-agent.

@@ -10,7 +10,7 @@ Run [the plan](#dispatch-the-plan).
 
 ## Dispatch the plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
 
 ## Dispatch in parallel
 

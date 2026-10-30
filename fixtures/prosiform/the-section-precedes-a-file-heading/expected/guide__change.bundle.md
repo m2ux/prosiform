@@ -12,4 +12,4 @@ Plan the change: [Plan](#dispatch-plan).
 
 #### Dispatch Plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.

@@ -10,7 +10,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Dispatch the steps
 
-Dispatch `guide__steps.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `guide__steps.bundle.md` to a sub-agent.
 
 ## Steps
 

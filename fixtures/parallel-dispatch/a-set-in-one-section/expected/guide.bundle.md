@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent, with the inputs the invoking step names,
 
 ## Parallel dispatch
 
-Dispatch every listed bundle at once, each to a sub-agent of its own as [Dispatch](#dispatch) states; an item the invoking step applies "for each" of several values is dispatched once per value, together. Continue when every item has returned. A failed item cancels nothing: the set returns every failure together as blockers. Questions items return are put to the user together once every item has returned, and only the items that asked are dispatched again.
+Dispatch every listed bundle at once, each to a sub-agent of its own per [dispatch](#dispatch); an item the invoking step applies "for each" of several values is dispatched once per value, together. Continue when every item has returned. A failed item cancels nothing: the set returns every failure together as blockers. Questions items return are put to the user together once every item has returned, and only the items that asked are dispatched again.
 
 # Guide
 
@@ -17,7 +17,7 @@ Dispatch every listed bundle at once, each to a sub-agent of its own as [Dispatc
 
 ### Dispatch in parallel
 
-Dispatch these bundles together, each to a sub-agent, as [Parallel dispatch](#parallel-dispatch) states:
+Dispatch these bundles together, each to a sub-agent, per [parallel dispatch](#parallel-dispatch):
 
 - `review__source.bundle.md` (Review the source)
 - `review__tests.bundle.md` (Review the tests)
