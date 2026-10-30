@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from harness import DONE
+from harness import DONE, HARNESSES
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -34,6 +34,7 @@ from run import (
     bundles_of,
     injected,
     matrix,
+    observable,
     options,
     run,
 )
@@ -107,6 +108,20 @@ absent fails here as surely as one that does not fire where it is present.
 def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
     """The sessions a run of the whole corpus starts."""
     return len(matrix(list(CORPUS.values()), models, forms, repetitions))
+
+
+def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
+    """A scenario whose trace outruns the path's own starts is beyond Cursor."""
+    corpus = list(CORPUS.values())
+    forms = [COMPILED_SET, AUTHORED_SET]
+    cursor = matrix(corpus, ["m"], forms, 1, HARNESSES["cursor"])
+    claude = matrix(corpus, ["m"], forms, 1, HARNESSES["claude"])
+    assert len(cursor) < len(claude)
+    assert all(item.workflow != "dispatch-chain" for item in cursor)
+    assert any(item.workflow == "dispatch-chain" for item in claude)
+    workflow = CORPUS["dispatch-set"]
+    scenario = workflow.scenarios[0]
+    assert observable(workflow, scenario, COMPILED_SET, HARNESSES["cursor"]) is True
 
 
 @pytest.fixture
@@ -453,7 +468,8 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
         *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 5
-    assert record["tokens"] == 1250
+    assert record["tokens"] == 0
+    assert record["tokens_unknown"] == 5
     assert all(item["tokens"] is None for item in records(tmp_path))
 
 
@@ -601,7 +617,8 @@ def test_a_session_past_its_timeout_is_ended_scored_and_charged(
     )
     assert time.monotonic() - began < 60
     assert record["started"] == 2 and record["not_started"] == []
-    assert record["tokens"] == 250 + 125
+    assert record["tokens"] == 125
+    assert record["tokens_unknown"] == 1
     hung, finished = sorted(records(tmp_path), key=lambda item: item["repetition"])
     assert hung["exit_status"] == TIMEOUT and hung["tokens"] is None
     assert hung["verdict"]["failure"] == "unfinished"

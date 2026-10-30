@@ -118,6 +118,8 @@ class Claude:
     enabled: str = "enabledPlugins"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
+    nested_starts: bool = True
+    """Whether a sub-agent's own dispatch reaches the parent's transcript."""
     session_cap_usd: float = 0.50
     """The price the CLI itself may spend in one session.
 
@@ -267,6 +269,13 @@ class Cursor:
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
     tools: str = ""
+    nested_starts: bool = False
+    """Whether a sub-agent's own dispatch reaches the parent's transcript.
+
+    It does not: the CLI reports a sub-agent's final text and the steps it
+    took, and no tool call it made. A scenario whose trace names a start
+    made inside a sub-agent cannot be observed on this harness.
+    """
     usage: tuple[str, str, str, str] = (
         "inputTokens",
         "outputTokens",
@@ -275,13 +284,17 @@ class Cursor:
     )
 
     def argv(self, agent: list[str], model: str, budget: int) -> list[str]:
-        """One session's command line, its prompt given as its argument.
+        """One session's command line, the workspace given as its argument.
 
-        The CLI has no session spending cap and no tool allowlist, so the
-        run's own token guard is the whole budget, and the workspace and
-        sandbox are what confine a session: `--sandbox enabled` and a
-        workspace the run laid out. `--trust` is withheld, since trusting a
-        workspace is what the eval's isolation exists to avoid.
+        The CLI has no session spend cap and no tool allowlist, so the run's
+        own token guard is the whole budget, and the workspace the run laid
+        out is what a session is confined to.
+
+        A workspace must be trusted for the CLI to run in it at all, since
+        it prompts otherwise and a prompt is no session. `--sandbox` is left
+        unset: the CLI's sandbox is unavailable on some hosts and refuses
+        every session there, so a run states the trust it gives rather than
+        an isolation it may silently lack.
         """
         return [
             *agent,
@@ -290,8 +303,7 @@ class Cursor:
             model,
             "--output-format",
             "stream-json",
-            "--sandbox",
-            "enabled",
+            "--trust",
         ]
 
     def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
@@ -308,17 +320,21 @@ class Cursor:
         }
 
     def preflight(self, config: Path) -> str | None:
-        """How this harness fails to isolate a session, if it does.
+        """What a run under this harness cannot guarantee, stated as a refusal.
 
-        The CLI declares no configuration directory, no MCP server switch and
-        no slash-command switch, so a session shares the caller's
-        configuration and may load its plugins. A run whose isolation rests
-        on those is refused rather than reported as though they held.
+        The CLI declares no configuration directory, no MCP switch, no
+        slash-command switch and no session spend cap, and it runs only in a
+        workspace it is told to trust. A run therefore draws no isolation
+        boundary beyond the workspace itself, and this harness refuses to
+        pretend otherwise: the caller names the config directory it means as
+        the boundary and accepts that a session shares the caller's
+        configuration.
         """
         if not config.is_dir():
             return (
-                f"{config} is no directory; the cursor harness reads the caller's "
-                f"configuration, so name an eval root whose config marks the boundary"
+                f"{config} is no directory; this harness reads the caller's "
+                f"configuration and trusts its workspace, so name an eval root "
+                f"whose config records that boundary"
             )
         return None
 
@@ -337,6 +353,12 @@ class Cursor:
         sharing a `model_call_id` were dispatched in one message. A start's
         target is the `description` in its args; what it returned is the
         text of the completed call's `conversationSteps`.
+
+        Only the starts a session made itself are readable: a sub-agent's own
+        stream is not part of its parent's transcript, so a dispatch nested
+        inside a sub-agent leaves its parent's record silent about it. A
+        scenario stating such a start is beyond what this harness reports,
+        which `observes` states.
         """
         found: list[tuple[str, str, bool]] = []
         returned: dict[str, str] = {}

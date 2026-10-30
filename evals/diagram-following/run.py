@@ -91,7 +91,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO, Any
 
-from harness import Claude, Cursor, harness_named
+from harness import HARNESSES, Claude, Cursor, harness_named
 from report import (
     BASELINE,
     COMPLETED,
@@ -127,7 +127,9 @@ from workflow import (
     Workflow,
     bundle,
     bundled,
+    dispatched,
     instruction,
+    sections_of,
     workflows,
 )
 
@@ -201,12 +203,19 @@ class Ledger:
         self.session_cap = session_cap
         self.spent = 0
         self.reserved = 0
+        self.held = 0
+        self.unknown = 0
         self.stopped = False
         self.condition = threading.Condition()
 
     def fits(self) -> bool:
-        """Whether one more session's cap fits within the budget."""
-        return self.spent + self.reserved + self.session_cap <= self.budget
+        """Whether one more session's cap fits within the budget.
+
+        A session that reported no usage keeps its cap held against the
+        budget, since what it spent is unknown, while its cap is not
+        reported as tokens spent.
+        """
+        return self.spent + self.held + self.reserved + self.session_cap <= self.budget
 
     def reserve(self) -> bool:
         """Reserve a session's cap, or stop the run when it cannot fit."""
@@ -219,11 +228,21 @@ class Ledger:
             self.reserved += self.session_cap
             return True
 
-    def settle(self, tokens: int) -> None:
-        """Replace a session's reserved cap with the tokens it recorded."""
+    def settle(self, tokens: int | None) -> None:
+        """Replace a session's reserved cap with the tokens it recorded.
+
+        A session reporting no usage contributes no tokens and is counted
+        apart, since its cap is what the guard reserved rather than what it
+        spent. Reporting the cap as spend would read a spent login as a run
+        that consumed its whole budget.
+        """
         with self.condition:
             self.reserved -= self.session_cap
-            self.spent += tokens
+            if tokens is None:
+                self.unknown += 1
+                self.held += self.session_cap
+            else:
+                self.spent += tokens
             self.condition.notify_all()
 
 
@@ -270,13 +289,19 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 
 def matrix(
-    corpus: list[Workflow], models: list[str], forms: list[str], repetitions: int
+    corpus: list[Workflow],
+    models: list[str],
+    forms: list[str],
+    repetitions: int,
+    harness: Claude | Cursor = HARNESSES["claude"],
 ) -> list[Session]:
     """Every session a run starts when its budget allows, in start order.
 
     A workflow gives a session only in the forms it is written in, so the
     dispatch workflows take the two dispatch forms and the others take the
-    four forms they hold.
+    four forms they hold. A scenario is dropped where its trace names a start
+    no harness this run drives can observe: a cell whose correct run could
+    not pass measures the harness, not the agent.
     """
     return [
         Session(model, workflow.name, scenario.name, form, repetition)
@@ -285,8 +310,32 @@ def matrix(
         for scenario in workflow.scenarios
         for form in forms
         if FORMS[form] in workflow.forms
+        if observable(workflow, scenario, form, harness)
         for repetition in range(1, repetitions + 1)
     ]
+
+
+def observable(
+    workflow: Workflow, scenario: Scenario, form: str, harness: Claude | Cursor
+) -> bool:
+    """Whether a scenario's trace is one this harness reports.
+
+    A trace names one start per dispatch a correct run makes, nested ones
+    included. A harness that does not surface a sub-agent's own dispatch can
+    report only the starts the path's own sections make, so a scenario whose
+    trace outruns that count is beyond it.
+    """
+    if harness.nested_starts:
+        return True
+    root = workflow.form(FORMS[form])
+    top = 0
+    for state in scenario.path:
+        section = sections_of(workflow, form)[state]
+        top += sum(
+            len(targets)
+            for _, targets in dispatched(section.body, section.path.parent, root, form)
+        )
+    return len(scenario.trace) <= top
 
 
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
@@ -569,7 +618,17 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         for form in forms
         if form in BUNDLED and FORMS[form] in workflow.forms
     }
-    sessions = matrix(corpus, names(arguments.models), forms, arguments.repetitions)
+    sessions = matrix(
+        corpus, names(arguments.models), forms, arguments.repetitions, harness
+    )
+    unobservable = [
+        f"{workflow.name}/{scenario.name}/{form}"
+        for workflow in corpus
+        for scenario in workflow.scenarios
+        for form in forms
+        if FORMS[form] in workflow.forms
+        and not observable(workflow, scenario, form, harness)
+    ]
     covered = len(sessions) * arguments.session_budget_tokens
     if covered > arguments.budget_tokens:
         raise CorpusError(
@@ -608,7 +667,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                 harness,
             )
         finally:
-            ledger.settle(ledger.session_cap if tokens is None else tokens)
+            ledger.settle(tokens)
         return True
 
     with ThreadPoolExecutor(max_workers=max(1, arguments.parallel)) as pool:
@@ -640,6 +699,8 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         "sessions": len(sessions),
         "started": sum(started),
         "tokens": ledger.spent,
+        "tokens_unknown": ledger.unknown,
+        "unobservable": unobservable,
         "not_started": [
             asdict(session)
             for session, began in zip(sessions, started, strict=True)

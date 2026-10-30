@@ -20,6 +20,7 @@ from score import (
     Failure,
     Start,
     Verdict,
+    names,
     read_starts,
     read_trace,
     record_starts,
@@ -470,6 +471,14 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
         Start("review#source", "question", False),
         Start("review#tests", "done", True),
     )
+
+
+def test_a_start_naming_a_section_by_its_heading_is_that_section() -> None:
+    """A session writes its own wording, so the heading alone names the section."""
+    assert names("Follow Plan Work section", "plan#work") is True
+    assert names("Dispatch plan work bundle", "plan#work") is True
+    assert names("Dispatch plan__work.bundle.md", "plan#work") is True
+    assert names("Follow the Review section", "plan#work") is False
 
 
 def test_a_start_naming_its_compiled_bundle_names_the_same_section(
