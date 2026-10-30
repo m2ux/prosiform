@@ -96,6 +96,7 @@ pf
 | Option | Behavior |
 | --- | --- |
 | `-f DOC` | Referring document for fragment-only positional references, resolved from the invocation working directory. File-naming positional references also use that working directory. |
+| `-m ORIGINAL=ALTERNATIVE` | Redirect one reference to the document or section the run reads instead, given once per pairing; both sides read from the working directory; repeatable. The *substitution mapping* is stated at Link classification and resource handling. |
 | `-o DIR` | The folder the run's own folder is written into, under its automatic name with the `.bundles` suffix, relative to the invocation working directory; the invocation working directory when absent. The folder must exist. `-` names standard output, which carries no bundle, and is refused. A run folder holding any captured source is refused. |
 | `-c` | Discover, bundle, and validate without emitting or publishing the bundle. |
 | `-d text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
