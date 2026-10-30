@@ -20,6 +20,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | --- | --- |
 | `REF` | document, document#fragment, or #fragment with -f; paths from cwd |
 | `-f DOC` | working-directory-relative document for fragment-only references |
+| `-m, --mock ORIGINAL=ALTERNATIVE` | redirect one reference to the document or section the run reads instead, given once per pairing; both sides read from the working directory; repeatable; default none |
 | `-o DIR` | existing folder the run's own folder of bundles is written into, swapped in whole; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
