@@ -8,7 +8,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 ## Change
 
-1. Plan the change: [Plan](#dispatch-plan).
+1. Apply: [Plan](#dispatch-plan).
 
 ### Dispatch Plan
 

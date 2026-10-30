@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Review
 
-1. Hand the next step to a sub-agent: [record](#dispatch-record).
+1. Apply: [record](#dispatch-record).
 
 ## Dispatch record
 

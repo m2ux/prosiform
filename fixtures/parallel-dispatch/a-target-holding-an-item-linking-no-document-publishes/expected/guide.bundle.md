@@ -10,7 +10,7 @@ Dispatch every listed bundle at once, each to a sub-agent of its own per [dispat
 
 # Guide
 
-1. Run [the reviews](#dispatch-in-parallel), then report.
+1. Apply: [the reviews](#dispatch-in-parallel), then report.
 
 ## Dispatch in parallel
 

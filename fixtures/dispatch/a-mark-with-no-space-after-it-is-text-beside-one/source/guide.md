@@ -1,3 +1,3 @@
 # Guide
 
-The procedure [¬⇉Rules](rules.md) to a sub-agent.
+The procedure applies [¬⇉Rules](rules.md).

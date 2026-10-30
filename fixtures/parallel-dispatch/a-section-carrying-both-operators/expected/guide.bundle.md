@@ -12,8 +12,8 @@ Dispatch every listed bundle at once, each to a sub-agent of its own per [dispat
 
 ## Change
 
-1. Plan the change: [Plan](#dispatch-plan).
-2. Review it: [Review the source](#dispatch-in-parallel) and [Review the tests](#dispatch-in-parallel).
+1. Apply: [Plan](#dispatch-plan).
+2. Apply: [Review the source](#dispatch-in-parallel) and [Review the tests](#dispatch-in-parallel).
 
 ### Dispatch Plan
 

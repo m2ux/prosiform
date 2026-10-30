@@ -1,3 +1,3 @@
 # Guide
 
-1. Run [⫽ the reviews](plan.md#reviews), then report.
+1. Apply: [⫽ the reviews](plan.md#reviews), then report.

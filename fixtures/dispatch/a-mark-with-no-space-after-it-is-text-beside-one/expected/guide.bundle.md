@@ -1,6 +1,6 @@
 # Guide
 
-The procedure [¬⇉Rules](#rules) to a sub-agent.
+The procedure applies [¬⇉Rules](#rules).
 
 # Rules
 

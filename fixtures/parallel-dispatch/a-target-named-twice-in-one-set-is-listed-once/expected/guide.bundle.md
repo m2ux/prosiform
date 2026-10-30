@@ -10,8 +10,8 @@ Dispatch every listed bundle at once, each to a sub-agent of its own per [dispat
 
 # Guide
 
-1. Run [the source review](#dispatch-in-parallel) and [the test review](#dispatch-in-parallel).
-2. Where the source changed, run [the source review again](#dispatch-in-parallel).
+1. Apply: [the source review](#dispatch-in-parallel) and [the test review](#dispatch-in-parallel).
+2. Where the source changed, apply [the source review again](#dispatch-in-parallel).
 
 ## Dispatch in parallel
 

@@ -1,3 +1,3 @@
 # Guide
 
-1. Run [⫽ the reviews](https://example.test/reviews.md).
+1. Apply: [⫽ the reviews](https://example.test/reviews.md).

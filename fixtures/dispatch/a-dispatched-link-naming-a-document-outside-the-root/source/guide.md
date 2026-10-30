@@ -1,3 +1,3 @@
 # Guide
 
-The procedure hands [⇉ the shared guidelines](../guidelines.md) to a sub-agent.
+The procedure applies [⇉ the shared guidelines](../guidelines.md).

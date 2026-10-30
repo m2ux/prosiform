@@ -6,4 +6,4 @@ See [Steps](#steps).
 
 ## Later
 
-The procedure [the rules](rules.md) to a sub-agent.
+The procedure applies [the rules](rules.md).

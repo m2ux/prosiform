@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-1. Hand the example to a sub-agent: [the example](#dispatch-the-example).
+1. Apply: [the example](#dispatch-the-example).
 
 ## Dispatch the example
 

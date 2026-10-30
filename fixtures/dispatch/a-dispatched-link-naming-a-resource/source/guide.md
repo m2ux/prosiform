@@ -1,3 +1,3 @@
 # Guide
 
-The procedure hands [⇉ the diagram](plan.png) to a sub-agent.
+The procedure applies [⇉ the diagram](plan.png).

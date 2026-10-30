@@ -10,4 +10,4 @@
 
 ###### Publish
 
-1. Hand publishing to a sub-agent: [⇉ publish](publish.md).
+1. Apply: [⇉ publish](publish.md).

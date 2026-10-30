@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-1. Hand the run to a sub-agent: [Run](#dispatch-run).
+1. Apply: [Run](#dispatch-run).
 
 ## Dispatch Run
 
@@ -14,7 +14,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 ## Run
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. Apply: [plan](#dispatch-plan).
 
 ### Dispatch plan
 

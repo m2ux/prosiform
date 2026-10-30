@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Record
 
-1. Hand the next step to a sub-agent: [publish](#dispatch-publish).
+1. Apply: [publish](#dispatch-publish).
 
 ## Dispatch publish
 

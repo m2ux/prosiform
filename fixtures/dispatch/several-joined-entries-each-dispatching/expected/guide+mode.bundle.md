@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-1. Hand planning to a sub-agent: [plan](#dispatch-plan).
+1. Apply: [plan](#dispatch-plan).
 
 ## Dispatch plan
 
@@ -14,8 +14,8 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Mode
 
-1. Hand review to a sub-agent: [review](#dispatch-review).
-2. Then hand planning to one: [plan](#dispatch-plan-1).
+1. Apply: [review](#dispatch-review).
+2. Then apply: [plan](#dispatch-plan-1).
 
 ## Dispatch review
 

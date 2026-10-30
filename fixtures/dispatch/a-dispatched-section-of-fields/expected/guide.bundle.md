@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Guide
 
-1. Hand the fields to a sub-agent: [the fields](#dispatch-the-fields).
+1. Apply: [the fields](#dispatch-the-fields).
 
 ## Dispatch the fields
 

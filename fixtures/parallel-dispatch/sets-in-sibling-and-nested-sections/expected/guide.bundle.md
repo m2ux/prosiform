@@ -12,7 +12,7 @@ Dispatch every listed bundle at once, each to a sub-agent of its own per [dispat
 
 ## Review
 
-1. Review the change: [Review the source](#dispatch-in-parallel) and [Review the tests](#dispatch-in-parallel).
+1. Apply: [Review the source](#dispatch-in-parallel) and [Review the tests](#dispatch-in-parallel).
 
 ### Dispatch in parallel
 
@@ -23,7 +23,7 @@ Dispatch these bundles together, each to a sub-agent, per [parallel dispatch](#p
 
 ### Recheck
 
-1. Recheck the change: [Recheck the source](#dispatch-in-parallel-1) and [Check the docs](#dispatch-in-parallel-1).
+1. Apply: [Recheck the source](#dispatch-in-parallel-1) and [Check the docs](#dispatch-in-parallel-1).
 
 #### Dispatch in parallel
 
@@ -34,7 +34,7 @@ Dispatch these bundles together, each to a sub-agent, per [parallel dispatch](#p
 
 ## Release
 
-1. Prepare the release: [Write the notes](#dispatch-in-parallel-2) and [Tag the version](#dispatch-in-parallel-2).
+1. Apply: [Write the notes](#dispatch-in-parallel-2) and [Tag the version](#dispatch-in-parallel-2).
 
 ### Dispatch in parallel
 

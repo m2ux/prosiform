@@ -6,7 +6,7 @@ Hand the named bundle to one sub-agent with the invoking step's inputs, to follo
 
 # Plan
 
-1. Hand review to a sub-agent: [review](#dispatch-review).
+1. Apply: [review](#dispatch-review).
 
 ## Dispatch review
 
