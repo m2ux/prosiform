@@ -118,6 +118,13 @@ class Claude:
     enabled: str = "enabledPlugins"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
+    session_cap_usd: float = 0.50
+    """The price the CLI itself may spend in one session.
+
+    The CLI caps dollars between calls and reports no token ceiling, so a
+    run's token budget is held by the run's own guard and this figure holds
+    what the CLI alone could spend before that guard sees a result.
+    """
     usage: tuple[str, str, str, str] = (
         "input_tokens",
         "output_tokens",
@@ -128,9 +135,10 @@ class Claude:
     def argv(self, agent: list[str], model: str, budget: int) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
-        `--max-budget-usd` is the CLI's own cap, in dollars, so a token
-        budget is passed as the price the run would spend them at; the
-        run's own guard is what holds the budget, this is the CLI's.
+        A token budget is not a dollar cap, so `--max-budget-usd` is given the
+        price a session is allowed to spend rather than the token count: the
+        CLI enforces dollars between calls, and the run's own guard holds the
+        token budget from what each session reports.
         """
         return [
             *agent,
@@ -148,7 +156,7 @@ class Claude:
             "--strict-mcp-config",
             "--disable-slash-commands",
             "--max-budget-usd",
-            str(round(budget, 6)),
+            str(self.session_cap_usd),
         ]
 
     def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:

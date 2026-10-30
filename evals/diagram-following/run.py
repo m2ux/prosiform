@@ -191,9 +191,9 @@ class Session:
 class Ledger:
     """The run's recorded tokens and the session caps reserved in flight.
 
-    A budget is held in tokens, so every harness is held to one measure: a
-    CLI reporting dollars alone is converted by the price the run states,
-    and one reporting neither stops the run rather than spending blind.
+    A budget is held in tokens, since that is the measure both harnesses
+    report. A session's own dollar ceiling is the harness's, so this guard
+    holds what the run has recorded rather than what a CLI may still spend.
     """
 
     def __init__(self, budget: int, session_cap: int) -> None:

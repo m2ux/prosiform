@@ -111,7 +111,7 @@ A session that still carries context the run did not supply fails the run after 
 
 | Command | Runs |
 | --- | --- |
-| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its budget is `EVAL_BUDGET_USD`, USD 100, which does not cover the default matrix's 280 sessions at the session cap, so a run over the whole matrix names a budget of its own in `ARGS`. `ARGS='...'` passes the runner's options through. |
+| `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its token budget is `EVAL_BUDGET_TOKENS` and its harness `HARNESS`; `ARGS='...'` passes the runner's options through, a later `--budget-tokens` among them overriding the default. |
 
 The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
@@ -134,25 +134,22 @@ The command starts paid agent sessions, so no other target depends on it and `ma
 For example, one model over one workflow:
 
 ```bash
-make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-tokens 2000'
+make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-tokens 100000 --session-budget-tokens 20000'
 ```
 
-### Default matrix and cost
+### Default matrix and budget
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the six scenarios of the seven workflows, in the forms each is written in; and five repetitions: 280 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — so its cost is the 150 sessions it ran: about USD 4.01, in about 10 minutes at four sessions at once. The linked form's sessions are not in it, and a four-form run costs them on top. By model, over the baseline's 150 sessions:
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the six scenarios of the seven workflows, in the forms each is written in; and five repetitions: 280 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
 
-| Model | Sessions | Mean cost per session (USD) | Run cost (USD) | Mean session duration |
-| --- | --- | --- | --- | --- |
-| `claude-haiku-5-5` | 75 | 0.0038 | 0.29 | 15 s |
-| `claude-sonnet-5-5` | 75 | 0.0496 | 3.72 | 18 s |
+A run is held to tokens, the one measure both harnesses report, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 280 sessions at the 60 000-token session cap need 16 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
 
-The costliest session recorded USD 0.088. `make eval-diagrams` passes a budget of USD 100, which the default matrix's 280 sessions need at USD 140 at the USD 0.50 session cap, so a run over the whole matrix refuses before it starts a session unless `ARGS` names a larger `--budget-usd`. A run over the dispatch scenarios alone needs USD 40: 80 sessions at the cap.
+The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor CLI accepts neither a spend cap nor a token cap, so a Cursor run is bounded by its timeout and by the run's guard alone.
 
-A run whose budget is less than its sessions times the session cap is refused before it starts a session, naming the budget, the sessions, the cap and the budget they need. A smaller matrix lowers the budget it needs by its sessions, and a lower `--session-budget-usd` by the cap: a Haiku session over one workflow records about USD 0.003, so `--session-budget-usd 0.05` covers it with room to spare. The agent checks its session cap between calls, so a session can record more than its cap; a run stops starting sessions before its recorded cost, with the caps of the sessions in flight reserved, would pass the budget, and lists those it did not start.
+The run's guard reads each session's reported tokens when it settles: a session starts only when the recorded tokens, plus the cap reserved for each session in flight, plus its own cap, fit the budget, and a run that cannot fit another lists the rest as not started. A session can record more than its cap, since its own CLI checks between calls, and the guard holds the budget against that by reserving caps in flight.
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, trace, actions, sub-agent record and `session.json`; and `run.json`, the run's options, cost, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, trace, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>

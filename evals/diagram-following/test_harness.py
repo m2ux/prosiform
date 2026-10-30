@@ -234,6 +234,13 @@ def test_an_absent_transcript_names_no_start(tmp_path: Path) -> None:
     assert Claude().result(tmp_path / "absent.jsonl") is None
 
 
+def test_the_claude_cli_is_capped_in_dollars_not_tokens(tmp_path: Path) -> None:
+    """A token budget is not a dollar cap, so the CLI is given a price."""
+    argv = Claude().argv(["claude"], "a-model", 60_000)
+    assert argv[argv.index("--max-budget-usd") + 1] == "0.5"
+    assert "60000" not in argv
+
+
 def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> None:
     """Each harness names what confines a session, and refuses what it cannot."""
     config = tmp_path / "config"
