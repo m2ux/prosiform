@@ -150,8 +150,29 @@ the operator says.
 """
 OPERATOR_LINK = re.compile(rf"\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\(")
 """Every link of a compiled step that states its operator, with the operator."""
-RESTATES = "sub-agent"
-"""The word a compiled step may not use, since it states its operators twice."""
+RESTATES = ("sub-agent", "together", "from the question it returned")
+"""The words a compiled step may not use, since its protocol states them.
+
+The `Dispatch` protocol says a dispatched run returns each question
+unanswered, that the dispatching session puts it to the user and dispatches
+again with the answers, and the `Parallel dispatch` protocol says how a
+set's questions are answered together. A step repeating any of that is a
+second statement of it, and a step carrying both a mark and a sentence is
+the ambiguity the two forms are meant to isolate.
+"""
+
+
+def restated(line: str) -> str:
+    """The protocol text a compiled step states again, or nothing.
+
+    A step states its dispatch by its operators. What a protocol says a
+    dispatch does belongs to the protocol, so a step repeating it leaves the
+    reader two statements to reconcile, which is the ambiguity the two forms
+    differ by.
+    """
+    return next((word for word in RESTATES if word in line), "")
+
+
 STEP_ONE = re.compile(rf"^\d+\. Hand the .+? to a sub-agent: {LINKS}")
 STEP_SET = re.compile(rf"^\d+\. Hand the .+? to sub-agents of their own: {LINKS}")
 """An authored step: the protocol it states, then the links it applies to.
@@ -532,15 +553,15 @@ def dispatched(
         if form == COMPILED_FORM:
             if COMPILED_STEP.match(line) is None:
                 continue
-            if RESTATES in line:
-                raise CorpusError(
-                    f"a compiled step states the dispatch in prose, not by its"
-                    f" operators alone: {line!r}"
-                )
             named = LINK_TARGET.findall(line)
             marks = OPERATOR_LINK.findall(line)
             if len(marks) != len(named):
                 raise CorpusError(f"a compiled step carries an unmarked link: {line!r}")
+            if stated := restated(line):
+                raise CorpusError(
+                    f"a compiled step states {stated!r}, which its protocol states,"
+                    f" rather than its operators alone: {line!r}"
+                )
             together = PARALLEL_OPERATOR in marks
         else:
             found = STEP_ONE.match(line) or STEP_SET.match(line)

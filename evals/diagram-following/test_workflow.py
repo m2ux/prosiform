@@ -535,9 +535,9 @@ def test_a_compiled_step_stating_its_dispatch_in_prose_is_a_fault(
         "1. Hand the plan to a sub-agent: [⇉ plan](../plan.md#work).",
     )
     assert step_faults(workflow, COMPILED_FORM) == [
-        "Request: a compiled step states the dispatch in prose, not by its"
-        " operators alone: '1. Hand the plan to a sub-agent: [⇉ plan]"
-        "(../plan.md#work).'"
+        "Request: a compiled step states 'sub-agent', which its protocol states,"
+        " rather than its operators alone: '1. Hand the plan to a sub-agent:"
+        " [⇉ plan](../plan.md#work).'"
     ]
 
 
@@ -555,6 +555,23 @@ def test_a_compiled_step_carrying_an_unmarked_link_is_a_fault(
     assert step_faults(workflow, COMPILED_FORM) == [
         "Survey: a compiled step carries an unmarked link: '1. [⫽ source]"
         "(../review.md#source) and [tests](../review.md#tests).'"
+    ]
+
+
+def test_a_compiled_step_repeating_its_protocol_is_a_fault(tmp_path: Path) -> None:
+    """A step dispatching a set states nothing the parallel protocol does not."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-set",
+        f"{COMPILED_FORM}/{document('Survey')}",
+        "1. [⫽ source](../review.md#source) and [⫽ tests](../review.md#tests).",
+        "1. [⫽ source](../review.md#source) and [⫽ tests](../review.md#tests)"
+        " together.",
+    )
+    assert step_faults(workflow, COMPILED_FORM) == [
+        "Survey: a compiled step states 'together', which its protocol states,"
+        " rather than its operators alone: '1. [⫽ source](../review.md#source)"
+        " and [⫽ tests](../review.md#tests) together.'"
     ]
 
 
