@@ -47,7 +47,7 @@ A mapping entry is an invocation parameter rather than authored content, so both
 | --- | --- |
 | Form | `-m ORIGINAL=ALTERNATIVE`, repeatable |
 | Matching | The identity a reference normalized to; an exact `(path, fragment)` key before `(path, None)` |
-| Reach | Positional entries, `-f`, and compiled, deferred, dispatched and run-set references alike |
+| Reach | Positional entries, `-f`, and compiled, deferred, dispatched and parallel-dispatched targets alike, a reference its author's root admits and one it carries as a citation |
 | Refused | Two keys normalizing to one identity; a key and value normalizing to one identity; a fragment-only key; a value naming no Markdown document |
 | Chaining | None; a substitute's own links are matched against the mapping, and a substitute that is also a key is not followed again |
 

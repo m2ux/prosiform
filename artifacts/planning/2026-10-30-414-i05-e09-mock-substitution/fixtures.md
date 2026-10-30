@@ -28,9 +28,10 @@ A fixture whose `source` is a symbolic link follows the `usage-example` family's
 
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
-| `a-mocked-dependency-is-compiled` | AC1 | A compiled link resolves to the substitute, which is bundled under its own file heading, with `W_MOCK_SUBSTITUTED` naming the link. |
+| `a-mocked-dependency-is-compiled` | AC1 | A compiled link resolves to the substitute, which is bundled under its own file heading. |
 | `a-substitute-outside-the-writing-root-is-reachable` | AC11 | A source declaring `root: .` reaches a substitute above its tree through a parent segment, which the same run without `-m` refuses as `E_TARGET_NOT_FOUND`. This is the feature's justification. |
 | `a-key-naming-an-absent-document-is-substituted` | AC18 | A key naming a document that does not exist compiles its substitute, where the same run without `-m` fails `E_TARGET_NOT_FOUND`. This is what makes an artifact under authoring testable before it lands. |
+| `a-citation-outside-the-root-is-redirected` | AC11 | A citation its author's root refuses compiles its substitute, where the same reference without a key stays the text its author wrote. |
 
 AC15 is the option's row in `invocation.md`, held to the help output by `make invocation` rather than by a corpus fixture, and AC20 is the parent-segment capability the same fixture as AC11 shows.
 
@@ -40,7 +41,7 @@ AC15 is the option's row in `invocation.md`, held to the help output by `make in
 | --- | --- | --- |
 | `a-duplicate-key-is-refused` | AC9 | Two spellings of one identity on the command line: `E_INVALID_USAGE`, exit `2`. |
 | `a-self-mock-is-refused` | AC10 | A key and value normalizing to one identity: `E_INVALID_USAGE`, exit `2`. |
-| `a-fragment-only-key-is-refused` | AC23 | A key naming no document: `E_INVALID_USAGE`, exit `2`. |
+| `a-fragment-only-key-is-refused` | AC23 | A key carrying no document, as `#section` does: `E_INVALID_USAGE`, exit `2`. |
 
 None declares `absent`: the refusals are raised before any source is read, and the runner invokes every fixture with `-o -` anyway.
 
@@ -91,5 +92,5 @@ These are scenarios in `checks/mock_scenarios.py`, not corpus fixtures, because 
 
 ## Why two behaviours carry no fixture
 
-- **A dispatched target and a run-set target** are redirected by the same `withholding_target` resolution W05 covers, and their effect is a second run rather than a bundle this run publishes. `src/tests/test_mock.py` holds both, as E00 held its candidate fault.
+- **A dispatched target and a parallel-dispatched target** are redirected by the same `withholding_target` resolution W05 covers, and their effect is a second run rather than a bundle this run publishes. `src/tests/test_mock.py` holds both, as E00 held its candidate fault.
 - **A candidate comparison against a mocked bundle** is the fault path for an emission that disagreed with its source, which no sound tree reaches.
