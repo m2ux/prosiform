@@ -66,4 +66,4 @@ A caller who needs a bundle built against other material than the tree holds has
 
 ## References
 
-- **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-389-i05-e09-mock-substitution) — the design decisions and the independent row pairs.
+- **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) — the design decisions and the independent row pairs.
