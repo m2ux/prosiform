@@ -68,6 +68,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
 INSTRUCTION = ROOT / "instruction.md"
+INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
 
 ENTRY = "workflow.md"
 ENTRY_BUNDLE = Path("workflow.bundles", "workflow.bundle.md")
@@ -78,7 +79,26 @@ PROSE = "prose"
 LINKED_FORM = "linked"
 COMPILED_FORM = "compiled"
 AUTHORED_FORM = "authored"
-FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM)
+BOOTSTRAP = "bootstrap"
+FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM, BOOTSTRAP)
+BOOTSTRAP_DIR = "skill"
+"""The directory a bootstrap form's SKILL.md sits in, beside its documents."""
+
+SOURCE_DIR = "sources"
+"""The directory a bootstrap skill's documents sit in, inside the skill."""
+
+FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
+"""The directory each form's tree sits in.
+
+A bootstrap form's tree is its skill, which carries the documents it names.
+"""
+"""The directory each form's document tree sits in.
+
+A bootstrap form's documents sit beside its skill, so the workflow is read
+from them while the skill that names them sits apart.
+"""
+SHELL_FORMS = (BOOTSTRAP,)
+"""The forms a session runs a command to read, which no other form needs."""
 
 BUNDLES = "workflow.bundles"
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
@@ -96,6 +116,7 @@ TRANSITION = {
     LINKED_FORM: LINKED_FORM,
     COMPILED_FORM: DIAGRAM,
     AUTHORED_FORM: DIAGRAM,
+    BOOTSTRAP: DIAGRAM,
 }
 """The form whose transition sentences a form's sections are written in.
 
@@ -107,6 +128,8 @@ its state, and only the step handing a section to a sub-agent is its own.
 START = "start"
 STOP = "stop"
 ENTRY_PLACEHOLDER = "ENTRY"
+SKILL_ENTRY = "SKILL.md"
+"""The document a bootstrap session is told to read."""
 STEP_LIMIT = 100
 
 DISPATCH_OPERATOR = "⇉"
@@ -185,15 +208,19 @@ OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
 LABEL_STATEMENT = re.compile(
     r"^The transition labelled `([^`]+)` applies\.$", re.MULTILINE
 )
+_DIAGRAM_DECISION = re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$")
+_DIAGRAM_ONLY_EDGE = re.compile(rf"^{re.escape(ONLY_EDGE)}$")
 DECISION = {
-    DIAGRAM: re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$"),
+    DIAGRAM: _DIAGRAM_DECISION,
     PROSE: re.compile(rf"^If (.+), {GO_TO}\. Otherwise, {GO_TO}\.$"),
     LINKED_FORM: re.compile(rf"^If (.+), {LINKED}\. Otherwise, {LINKED}\.$"),
+    BOOTSTRAP: _DIAGRAM_DECISION,
 }
 UNCONDITIONAL = {
-    DIAGRAM: re.compile(rf"^{re.escape(ONLY_EDGE)}$"),
+    DIAGRAM: _DIAGRAM_ONLY_EDGE,
     PROSE: re.compile(r"^Go to \[(\w+)\]\([^)]+\)\.$"),
-    LINKED_FORM: re.compile(rf"^{re.escape(ONLY_EDGE)}$"),
+    LINKED_FORM: _DIAGRAM_ONLY_EDGE,
+    BOOTSTRAP: _DIAGRAM_ONLY_EDGE,
 }
 READS = re.compile(r"^`inputs/([^`]+)` reads `([^`]*)`$")
 FEWER = re.compile(
@@ -309,8 +336,13 @@ class Workflow:
     scenarios: tuple[Scenario, ...]
 
     def form(self, form: str) -> Path:
-        """The directory holding one form's source tree."""
-        return self.directory / form
+        """The directory holding one form's source tree.
+
+        A bootstrap form's documents sit under the skill's `sources`, since
+        the skill hands over a directory it compiles rather than a tree it
+        hands over whole.
+        """
+        return form_directory(self.directory, form)
 
     @property
     def forms(self) -> tuple[str, ...]:
@@ -323,9 +355,13 @@ class Workflow:
 
         A workflow drawing a diagram form walks that form's sections; one
         written in the dispatch forms walks the compiled form's, whose
-        sections are the diagram's with the step handing a target added.
+        sections are the diagram's with the step handing a target added. A
+        bootstrap workflow walks the skill it hands over, which is the only
+        tree its sessions receive.
         """
-        form = next(form for form in DRAWN if form in self.forms)
+        form = next((form for form in (*DRAWN, BOOTSTRAP) if form in self.forms), None)
+        if form is None:
+            raise CorpusError(f"{self.name} holds no form drawing a workflow")
         return self.sections[form]
 
 
@@ -452,21 +488,40 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
     )
 
 
+def form_directory(workflow_directory: Path, form: str) -> Path:
+    """The directory one form's documents sit in.
+
+    A bootstrap form's tree is its skill, and its documents sit inside it, so
+    a session receives one skill that names the material it compiles.
+    """
+    directory = workflow_directory / FORM_DIR[form]
+    return directory / SOURCE_DIR if form == BOOTSTRAP else directory
+
+
 def read_workflow(directory: Path) -> Workflow:
-    """One workflow directory, read whole."""
-    drawn = next(
-        directory / form / ENTRY
-        for form in DRAWN
-        if (directory / form / ENTRY).is_file()
+    """One workflow directory, read whole.
+
+    A bootstrap workflow draws its diagram in the skill it hands over, since
+    that is the only tree a session of that form receives.
+    """
+    bootstrap = directory / BOOTSTRAP_DIR / SOURCE_DIR / ENTRY
+    drawn = (
+        bootstrap
+        if bootstrap.is_file()
+        else next(
+            directory / FORM_DIR[form] / ENTRY
+            for form in DRAWN
+            if (directory / FORM_DIR[form] / ENTRY).is_file()
+        )
     )
     return Workflow(
         directory.name,
         directory,
         read_diagram(drawn),
         {
-            form: read_sections(directory / form, TRANSITION[form])
+            form: read_sections(form_directory(directory, form), TRANSITION[form])
             for form in FORMS
-            if (directory / form).is_dir()
+            if form_directory(directory, form).is_dir()
         },
         read_scenarios(directory / SCENARIOS),
     )
@@ -477,13 +532,19 @@ def workflows(root: Path = WORKFLOWS) -> list[Workflow]:
     return [read_workflow(path) for path in sorted(root.iterdir()) if path.is_dir()]
 
 
-def instruction(entry: str) -> str:
-    """The task text a session is given, naming the document it reads."""
+def instruction(entry: str, form: str = "") -> str:
+    """The task text a session is given, naming the document it reads.
+
+    A bootstrap session is given its own text, which names the skill it reads
+    rather than a bundle, since that form's document is a skill that states a
+    compile rather than a workflow to follow.
+    """
+    source = INSTRUCTION_BOOTSTRAP if form == BOOTSTRAP else INSTRUCTION
     blocks: list[str] = [
-        body for kind, body in FENCE.findall(INSTRUCTION.read_text()) if kind == "text"
+        body for kind, body in FENCE.findall(source.read_text()) if kind == "text"
     ]
     if len(blocks) != 1:
-        raise CorpusError(f"{INSTRUCTION} holds {len(blocks)} text blocks, not one")
+        raise CorpusError(f"{source} holds {len(blocks)} text blocks, not one")
     return blocks[0].replace(ENTRY_PLACEHOLDER, entry)
 
 

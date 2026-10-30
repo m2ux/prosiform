@@ -11,7 +11,7 @@ same `Start`, which is what lets the scorer above be unaware of the CLI.
 import json
 from pathlib import Path
 
-from harness import HARNESSES, Claude, Cursor, Start, harness_named
+from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -65,9 +65,14 @@ def cursor_call(
 
 
 def test_the_declared_harnesses_are_named() -> None:
-    assert set(HARNESSES) == {"claude", "cursor"}
+    assert set(HARNESSES) == {"claude", "cursor", "opencode"}
     assert harness_named("cursor") is HARNESSES["cursor"]
-    assert Claude().name == "claude" and Cursor().name == "cursor"
+    assert harness_named("opencode") is HARNESSES["opencode"]
+    assert (
+        Claude().name == "claude"
+        and Cursor().name == "cursor"
+        and Opencode().name == "opencode"
+    )
 
 
 def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
@@ -252,3 +257,91 @@ def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> Non
     assert Cursor().preflight(config) is None
     refused = Cursor().preflight(tmp_path / "absent")
     assert refused is not None and "is no directory" in refused
+
+
+def opencode_part(
+    *, tool: str, description: str, message: str = "m1"
+) -> dict[str, object]:
+    """One opencode `tool_use` part, as the CLI prints it."""
+    return {
+        "type": "tool_use",
+        "part": {
+            "type": "tool",
+            "callID": f"call_{description}",
+            "messageID": message,
+            "tool": tool,
+            "state": {
+                "status": "completed",
+                "input": {"description": description, "prompt": "follow it"},
+            },
+        },
+    }
+
+
+def test_opencode_reads_a_task_part_as_a_start(tmp_path: Path) -> None:
+    """A `tool_use` naming `task` is a sub-agent start, named by its description."""
+    held = transcript(tmp_path, [opencode_part(tool="task", description="plan#work")])
+    assert Opencode().starts(held) == (Start("plan#work", "done", False),)
+
+
+def test_opencode_reads_starts_sharing_a_message_as_together(tmp_path: Path) -> None:
+    held = transcript(
+        tmp_path,
+        [
+            opencode_part(tool="task", description="a#b", message="m1"),
+            opencode_part(tool="task", description="c#d", message="m1"),
+            opencode_part(tool="task", description="e#f", message="m2"),
+        ],
+    )
+    assert [start.together for start in Opencode().starts(held)] == [False, True, False]
+
+
+def test_opencode_reads_a_command_not_a_task_as_no_start(tmp_path: Path) -> None:
+    held = transcript(tmp_path, [opencode_part(tool="read", description="x")])
+    assert Opencode().starts(held) == ()
+
+
+def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
+    held = transcript(
+        tmp_path,
+        [
+            {
+                "type": "tool_use",
+                "part": {
+                    "type": "tool",
+                    "callID": "c1",
+                    "tool": "bash",
+                    "state": {
+                        "input": {"command": "./bin/pf -o build sources/workflow.md"}
+                    },
+                },
+            }
+        ],
+    )
+    assert Opencode().commands(held) == ("./bin/pf -o build sources/workflow.md",)
+
+
+def test_opencode_sums_tokens_and_reads_cost_from_its_last_step(
+    tmp_path: Path,
+) -> None:
+    held = transcript(
+        tmp_path,
+        [
+            {
+                "type": "step_finish",
+                "part": {
+                    "type": "step_finish",
+                    "tokens": {
+                        "input": 100,
+                        "output": 5,
+                        "reasoning": 2,
+                        "cache": {"write": 3, "read": 7},
+                    },
+                    "cost": 0.125,
+                },
+            }
+        ],
+    )
+    result = Opencode().result(held)
+    assert Opencode().tokens(result) == 117
+    assert Opencode().cost(result) == 0.125

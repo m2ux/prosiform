@@ -242,7 +242,7 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
             faults.append(f"{scenario.name}: the diagram draws no edge {step}")
     if path and path[-1] not in diagram.terminals:
         faults.append(f"{scenario.name}: the path ends at {path[-1]}, not terminal")
-    read = inputs_read(workflow, COMPILED_FORM)
+    read = inputs_read(workflow, workflow.forms[0])
     if set(scenario.inputs) != read:
         faults.append(f"{scenario.name}: its inputs are not the files decisions read")
         return faults
@@ -283,6 +283,7 @@ def broken(
 
 def test_the_corpus_holds_the_graded_workflows() -> None:
     assert [workflow.name for workflow in CORPUS] == [
+        "bootstrap-audit",
         "branching",
         "dispatch-beside",
         "dispatch-chain",

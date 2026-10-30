@@ -1,0 +1,4 @@
+[[scenario]]
+name = "straight-through"
+path = ["Inspect", "Summarise"]
+inputs = {}
