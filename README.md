@@ -1,13 +1,13 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/3a44b1c62566778c89263efb26ec743f434a3062/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/4c72d818eec6fd45435b9d721a1b89b0fe6bf783/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
 
 ---
-**[Invocation](invocation.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Docs](docs/README.md)** • **[Examples](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner-compact.review.md)**
+**[Invocation](invocation.md)** • **[Architecture](docs/architecture.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Docs](docs/README.md)** • **[Examples](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner-compact.review.md)**
 
 ---
 

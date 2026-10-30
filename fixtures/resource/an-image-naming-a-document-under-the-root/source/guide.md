@@ -1,4 +1,4 @@
 # Guide
 
-The procedure follows ![the rules](rules.md), which image syntax embeds
+Follow ![the rules](rules.md), which image syntax embeds
 rather than links.

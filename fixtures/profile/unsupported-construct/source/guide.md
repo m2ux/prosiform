@@ -1,3 +1,3 @@
 # Guide
 
-The procedure is in [[page]].
+Embed [[page]] here.

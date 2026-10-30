@@ -1,3 +1,3 @@
 # Review
 
-1. [⇉ record](record.md).
+1. Apply: [⇉ record](record.md).

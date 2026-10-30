@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assert the corpus and its report state the contract's vocabulary and no other.
+"""Assert the corpus and its report name no implementation.
 
 The corpus is what a second implementation of the contract is held to, so a
 fixture naming a module, a language or the wording one build gives a fault
@@ -10,15 +10,19 @@ none, but both are facts about the shape of a declaration. A description, a
 clause, a carried substring and a fixture's own identity are free text, and
 free text is where such a term arrives.
 
-The bound is the vocabulary a declaration is entitled to use. The design
-states the contract's words, `docs/glossary.md` defines each term the
-design marks, the manifest schema and the documented invocation declare the
-contract's interface by name, and `docs/corpus-vocabulary.md` registers the
-words the corpus's own declarations and this report's entries add. A word
-outside all four is a term the contract does not state, and is reported
-wherever a claim carries it. Nothing is refused by name, so a term is not
-reached by spelling it differently: a word the vocabulary does not hold is
-reported whatever it names.
+A term names an implementation by its shape, not by its spelling. A struct
+field, a function, a package, a constant and a language name all carry a
+capital, an underscore or a dot: `KeyError`, `E_ROOT_NOT_FOUND`,
+`prosiform.group`, `Python`. The prose a claim is written in carries none of
+these, so the shape alone separates the two, and no list of admitted words
+is needed to tell them apart.
+
+A shaped term is admissible where the contract states it: the design's
+prose, the names the design gives its own clauses, the terms
+`docs/glossary.md` defines, and the interface the manifest schema and the
+documented invocation declare by name — the codes, severities, exit
+statuses and options. A shaped term the contract states is the contract's
+own name for something; a shaped term it does not state is a build's.
 
 What is scanned is the claims, not the documents under test. A fixture's
 source tree and the bytes it expects back are the input the run consumes
@@ -28,27 +32,22 @@ refuse the corpus its realism without saying anything about what the corpus
 binds. The paths, reference texts and arguments a manifest declares name
 that same tree, and the harness check holds each of them to the files the
 fixture carries, so they are read as the tree they name rather than as
-words. The conformance report is scanned whole, which brings the design's
-own clause names and the declared surface under the same rule. That
-surface states the codes the build under test reports for itself, so this
-check reaches the build the conformance report reads — named by
-configuration, as the corpus names it — and fails without one. A code the
-build reports that the contract declares nowhere is rendered into the
-report and so is read against the vocabulary like every other entry.
+terms. A dotted term written as a path in a claim names that same tree, and
+is read the same way. The conformance report is scanned whole, which brings
+the design's own clause names and the declared surface under the same rule.
+That surface states the codes the build under test reports for itself, so
+this check reaches the build the conformance report reads — named by
+configuration, as the corpus names it — and fails without one.
 
-A word is read as the contract states it rather than as a sentence inflects
-it: plurals, the past tense, the present participle and the adverb resolve
-to the word they are formed from, and a hyphenated compound is its parts.
-Case is folded on the reading side, so `Python` is the word `python`. It is
-not folded on the stating side: a word the design writes only capitalised
-names a product, a language or a build rather than stating a term of the
-contract, so the design's prose contributes the words it writes in lower
-case, and the names the design gives its own clauses whatever their case.
+A term is read as the contract states it rather than as a sentence inflects
+it: a plural, the past tense and the present participle resolve to the term
+they are formed from. Case is folded on both sides, so a claim writing
+`python` and one writing `Python` are the same term.
 """
 
 import re
 import sys
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
@@ -70,16 +69,18 @@ from runner import BuildNotConfigured
 from vocabulary import SHIPPED_GLOSSARY, design_reference, git_ref, git_show
 
 INVOCATION = ROOT / "invocation.md"
-REGISTER = ROOT / "docs" / "corpus-vocabulary.md"
+EXAMPLE = ROOT / "example"
 OPTION = "Option"
 REPORT = "the conformance report"
 
-WORD = re.compile(r"(?<![A-Za-z])[A-Za-z](?:\+\+|#)|[A-Za-z][A-Za-z']*")
-LOWER = re.compile(r"(?<![A-Za-z])[a-z][a-z']*(?![A-Za-z])")
+WORD = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+DOTTED = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+")
+DOUBLED = re.compile(r"([bdfglmnprt])\1$")
+PATH_NAME = re.compile(r"\.(?:md|toml|json|ya?ml|txt)$", re.IGNORECASE)
+HEADING = re.compile(r"^#{1,6}\s+(.*)$", re.MULTILINE)
 CODE_SPAN = re.compile(r"`[^`\n]*`")
 LINK_DESTINATION = re.compile(r"\]\([^)\n]*\)")
 TABLE_TERM = re.compile(r"^\|\s*\*\*([^*]+)\*\*", re.MULTILINE)
-DOUBLED = re.compile(r"([bdfglmnprt])\1$")
 
 CARRIED = "message_contains"
 DESCRIPTION = "description"
@@ -90,26 +91,24 @@ STDOUT_CARRIED = "stdout_contains"
 
 @dataclass(frozen=True)
 class Reference:
-    """One word a claim states that the contract's vocabulary does not."""
+    """One shaped term a claim states that the contract does not."""
 
     where: str
     found: str
 
 
-def forms(word: str) -> set[str]:
-    """The word as written and as the word it is formed from.
+def forms(term: str) -> set[str]:
+    """The term as written and as the term it is formed from.
 
-    One spelling of a word stands for the contract's term however a
-    sentence inflects it, so a claim writing `documents` states the word
+    One spelling of a term stands for the contract's name however a
+    sentence inflects it, so a claim writing `documents` states the term
     the design writes as `document`.
     """
-    spelling = word.lower().replace("'", "")
+    spelling = term.lower()
     found = {spelling}
-    if spelling.endswith("ied") and len(spelling) > 4:
-        found.add(spelling[:-3] + "y")
     if spelling.endswith("ies") and len(spelling) > 4:
         found.add(spelling[:-3] + "y")
-    if re.search(r"(?:s|x|z|ch|sh)es$", spelling):
+    elif spelling.endswith("es") and len(spelling) > 4:
         found.add(spelling[:-2])
     if spelling.endswith("s") and not spelling.endswith("ss") and len(spelling) > 3:
         found.add(spelling[:-1])
@@ -121,32 +120,40 @@ def forms(word: str) -> set[str]:
         found.add(spelling[:-2])
         found.add(DOUBLED.sub(r"\1", spelling[:-2]))
         found.add(spelling[:-1])
-    if spelling.endswith("ly") and len(spelling) > 4:
-        found.add(spelling[:-2])
     return found
 
 
-def words(text: str) -> list[str]:
-    """Every word one piece of text states, a hyphenated compound as its parts.
+def shaped(term: str, opening: bool = False) -> bool:
+    """Whether a term carries the shape an implementation names something by.
 
-    A single letter names nothing on its own, and the one a language is
-    named by carries its sign with it, so `c++` is a word and the `a` of a
-    sentence is not.
+    An underscore, a dot or a capital past the term's first letter is what a
+    type, a function, a field, a constant, a package and a language share.
+    A term that merely opens with a capital is orthography, and one written
+    in full capitals names a format or an encoding, so `opening` is answered
+    by the caller, which knows the sentence, and an all-capital term is
+    admitted by the contract's own vocabulary like any other term.
     """
-    return [found for found in WORD.findall(text.replace("-", " ")) if len(found) > 1]
+    if "_" in term or "." in term:
+        return True
+    if term.isupper() and len(term) > 1:
+        return False
+    if any(character.isupper() for character in term[1:]):
+        return True
+    return not opening and term[:1].isupper()
 
 
 def prose(text: str) -> str:
-    """One document as the words it states, its code and its addresses apart.
+    """One document as the terms it states, its code and its addresses apart.
 
     A code span and a link destination name something rather than stating
-    it, so neither contributes to the vocabulary nor is read as a claim.
+    it, so neither contributes to the contract's own names nor is read as
+    a claim.
     """
     return LINK_DESTINATION.sub("]", CODE_SPAN.sub(" ", text))
 
 
 def registered(text: str) -> list[str]:
-    """Every word a register of vocabulary admits, as its tables name them."""
+    """Every term the contract defines, as its tables name them."""
     return [plain(term).strip() for term in TABLE_TERM.findall(text)]
 
 
@@ -165,31 +172,46 @@ def declared_names(text: str) -> list[str]:
     )
 
 
-def vocabulary(
-    design: str, glossary: str, documentation: str, register: str
-) -> set[str]:
-    """Every word a claim is entitled to state.
+def example_headings() -> list[str]:
+    """Every heading the example tree carries, which the corpus bundles by name.
 
-    The design's prose states the contract's own words, the glossary's
-    terms and the design's clause names state what it calls things, the
-    documented invocation and the schema declare its interface, and the
-    register admits the words the corpus's declarations add.
+    A usage-example fixture names the documents it bundles by the headings
+    those documents carry, so a title there names the corpus's own source
+    rather than a build. The tree is read rather than listed, so a heading
+    added to it needs no second registration.
     """
-    stated: set[str] = set()
-    for word in LOWER.findall(prose(design)):
-        if len(word) > 1:
-            stated |= forms(word)
+    return [
+        title.strip()
+        for path in sorted(EXAMPLE.rglob("*.md"))
+        for title in HEADING.findall(path.read_text(encoding="utf-8"))
+    ]
+
+
+def stated(
+    design: str, glossary: str, documentation: str, examples: Sequence[str] = ()
+) -> set[str]:
+    """Every term the contract names.
+
+    The design's prose states the contract's own words, the design's clause
+    names state what it calls things, the glossary's terms define them, the
+    documented invocation and the schema declare its interface, and the
+    example tree's headings name the documents the corpus bundles.
+    """
+    names: set[str] = set()
+    for term in re.findall(r"[A-Za-z_][A-Za-z0-9_.]*", prose(design)):
+        names |= forms(term)
     for clause in clauses(design):
-        for word in words(clause.name):
-            stated |= forms(word)
-    for source in (registered(glossary), registered(register)):
+        for term in WORD.findall(clause.name):
+            names |= forms(term)
+    for source in (
+        registered(glossary),
+        declared_names(documentation),
+        examples,
+    ):
         for term in source:
-            for word in words(term):
-                stated |= forms(word)
-    for name in declared_names(documentation):
-        for word in words(name):
-            stated |= forms(word)
-    return stated
+            for word in WORD.findall(term):
+                names |= forms(word)
+    return names
 
 
 def claims(manifest: dict[str, Any], where: str) -> list[str]:
@@ -214,39 +236,79 @@ def claims(manifest: dict[str, Any], where: str) -> list[str]:
     )
 
 
-def scan(text: str, where: str, stated: set[str]) -> list[Reference]:
-    """Every word one claim states that the vocabulary does not hold.
+def opening_at(body: str, position: int) -> bool:
+    """Whether the term at `position` opens the sentence it is written in.
 
-    A word a claim repeats is one reference: the claim is a single
-    statement, and naming the word once locates the claim to fix.
+    A sentence opens at its first word, after the punctuation that ends
+    one, and after a list or table marker standing alone, which a term then
+    follows. A hyphen does not open one: the fixtures write a fixture's
+    identity with hyphens, and the compound a sentence carries reads as one
+    word either side of it.
     """
+    before = body[:position]
+    stripped = before.rstrip(" \t")
+    if not stripped or stripped[-1] in ".!?:;(\"'\n":
+        return True
+    last_line = before.rsplit("\n", 1)[-1]
+    return not last_line.strip(" \t#-*|>0123456789.")
+
+
+def scan(text: str, where: str, names: set[str]) -> list[Reference]:
+    """Every shaped term one claim states that the contract does not.
+
+    A term a claim repeats is one reference: the claim is a single
+    statement, and naming the term once locates the claim to fix. A dotted
+    term is read whole, because `prosiform.group` names a key where its
+    parts name a document and a grouping; a term carrying a path's
+    extension names the tree the claim is about and is read as that tree.
+    """
+    body = prose(text)
     found: dict[str, Reference] = {}
-    for word in words(prose(text)):
-        if forms(word) & stated:
+    seen: set[int] = set()
+    for match in DOTTED.finditer(body):
+        term = match.group().strip(".")
+        seen.update(range(match.start(), match.end()))
+        if PATH_NAME.search(term):
             continue
-        found.setdefault(word.lower(), Reference(where, word))
+        parts = term.split(".")
+        if all(forms(part) & names for part in parts):
+            continue
+        found.setdefault(term.lower(), Reference(where, term))
+    for match in WORD.finditer(body):
+        if match.start() in seen:
+            continue
+        term = match.group().strip("_")
+        if not term:
+            continue
+        if not shaped(term, opening_at(body, match.start())):
+            continue
+        if PATH_NAME.search(term):
+            continue
+        if forms(term) & names:
+            continue
+        found.setdefault(term.lower(), Reference(where, term))
     return sorted(found.values(), key=lambda reference: reference.found.lower())
 
 
-def corpus_references(corpus: Path, stated: set[str]) -> list[Reference]:
-    """Every word the corpus's declarations state that the vocabulary does not."""
+def corpus_references(corpus: Path, names: set[str]) -> list[Reference]:
+    """Every shaped term the corpus's declarations state that the contract does not."""
     found = []
     for fixture in fixtures(corpus):
         where = identity(fixture, corpus)
         declared = claims(read(fixture / MANIFEST_NAME), where)
-        found += scan("\n".join(declared), where, stated)
+        found += scan("\n".join(declared), where, names)
     return found
 
 
 def report_references(
-    design: str, corpus: Path, stated: set[str], reported: Collection[str]
+    design: str, corpus: Path, names: set[str], reported: Collection[str]
 ) -> list[Reference]:
-    """Every word the report's entries state that the vocabulary does not."""
+    """Every shaped term the report's entries state that the contract does not."""
     rendered = render(report(design, corpus, reported)).splitlines()
     return [
         reference
         for number, line in enumerate(rendered, start=1)
-        for reference in scan(line, f"{REPORT}, line {number}", stated)
+        for reference in scan(line, f"{REPORT}, line {number}", names)
     ]
 
 
@@ -258,23 +320,21 @@ def sources() -> tuple[str, str]:
 
 
 def check() -> tuple[list[str], list[Reference]]:
-    """The corpus's declarations and the report, each read against the vocabulary."""
+    """The corpus's declarations and the report, each read against the contract."""
     design, path = sources()
     documentation = INVOCATION.read_text()
-    stated = vocabulary(
-        design,
-        SHIPPED_GLOSSARY.read_text(),
-        documentation,
-        REGISTER.read_text(),
+    names = stated(
+        design, SHIPPED_GLOSSARY.read_text(), documentation, example_headings()
     )
 
-    corpus = corpus_references(CORPUS, stated)
-    emitted = report_references(design, CORPUS, stated, reported_codes())
+    corpus = corpus_references(CORPUS, names)
+    emitted = report_references(design, CORPUS, names, reported_codes())
 
     counted = [
-        f"ok   vocabulary  {len(stated)} word(s) from {path}, docs/glossary.md, "
-        f"{len(declared_names(documentation))} declared name(s) and "
-        "docs/corpus-vocabulary.md",
+        (
+            f"ok   vocabulary  {len(names)} term(s) from {path}, docs/glossary.md "
+            f"and {len(declared_names(documentation))} declared name(s)"
+        ),
         f"ok   corpus      {len(fixtures(CORPUS))} fixture(s) and their identities",
         f"ok   report      {REPORT} as it renders",
     ]
@@ -291,20 +351,20 @@ def main() -> int:
         print(line)
     for reference in failures:
         print(
-            f"FAIL {reference.where}: {reference.found!r} is a word the contract's "
-            "vocabulary does not state",
+            f"FAIL {reference.where}: {reference.found!r} is a term the contract "
+            "does not name",
             file=sys.stderr,
         )
     if failures:
         print(
-            f"\nindependence check: {len(failures)} term(s) the contract "
-            "does not state",
+            f"\nindependence check: {len(failures)} shaped term(s) the contract "
+            "does not name",
             file=sys.stderr,
         )
         return 1
     print(
-        "\nindependence check: every word of every fixture declaration and every "
-        "report entry is one the contract states"
+        "\nindependence check: every shaped term of every fixture declaration and "
+        "every report entry is one the contract names"
     )
     return 0
 

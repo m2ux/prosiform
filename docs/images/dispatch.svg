@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1882" viewBox="0 0 2142 1882" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1882" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="314" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
+<path d="M32 134 H1032" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">│  └─ review.md</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">├─ protocols/</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">│  └─ publish.md</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">└─ rules.md</text><rect x="32" y="416" width="1000" height="576" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="452" font-size="21" fill="#b1c6df" font-weight="400">modes/review.md</text>
+<path d="M32 470 H1032" stroke="#303b49"/>
+<text x="70" y="527" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="564" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="601" font-size="20" fill="#e6edf3" font-weight="400">  root: &quot;..&quot;</text>
+<text x="70" y="638" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="685" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="685" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="70" y="733" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules and hands delivery to a sub-agent.</text>
+<text x="44" y="787" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="787" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="835" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
+<text x="70" y="872" font-size="20" fill="#e3b341" font-weight="400">2. Follow ⇉ Publish.</text>
+<text x="44" y="926" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="926" font-size="26" fill="#e6edf3" font-weight="500">Notes</text>
+<text x="70" y="974" font-size="20" fill="#e6edf3" font-weight="400">A review is not an approval.</text><rect x="32" y="1014" width="1000" height="463" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="1050" font-size="21" fill="#b1c6df" font-weight="400">protocols/publish.md</text>
+<path d="M32 1068 H1032" stroke="#303b49"/>
+<text x="70" y="1125" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="1162" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="1199" font-size="20" fill="#e6edf3" font-weight="400">  group: protocols</text>
+<text x="70" y="1236" font-size="20" fill="#e6edf3" font-weight="400">  group-depth: 2</text>
+<text x="70" y="1273" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="1320" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="1320" font-size="30" fill="#e6edf3" font-weight="500">Publish</text>
+<text x="44" y="1374" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1374" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="1422" font-size="20" fill="#e6edf3" font-weight="400">1. Commit the change.</text>
+<text x="70" y="1459" font-size="20" fill="#e6edf3" font-weight="400">2. Push the branch.</text><rect x="32" y="1499" width="1000" height="343" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="1535" font-size="21" fill="#b1c6df" font-weight="400">rules.md</text>
+<path d="M32 1553 H1032" stroke="#303b49"/>
+<text x="44" y="1620" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="1620" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="44" y="1674" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1674" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="70" y="1722" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text>
+<text x="44" y="1776" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1776" font-size="26" fill="#e6edf3" font-weight="500">Reviews</text>
+<text x="70" y="1824" font-size="20" fill="#e6edf3" font-weight="400">A change lands reviewed by someone who did not write it.</text><rect x="1110" y="80" width="1000" height="1103" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/modes_review.bundle.md</text>
+<path d="M1110 134 H2110" stroke="#303b49"/>
+<text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">Prosiform</text>
+<text x="1122" y="255" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="255" font-size="26" fill="#e6edf3" font-weight="500">Dispatch</text>
+<text x="1148" y="303" font-size="20" fill="#e6edf3" font-weight="400">Hand the named bundle to one sub-agent, with the inputs the invoking</text>
+<text x="1148" y="340" font-size="20" fill="#e6edf3" font-weight="400">step names, to follow from its start, and continue with the result it</text>
+<text x="1148" y="377" font-size="20" fill="#e6edf3" font-weight="400">returns. A dispatched run puts no question to the user: it returns each</text>
+<text x="1148" y="414" font-size="20" fill="#e6edf3" font-weight="400">question, with its context paragraph and options, unanswered. The</text>
+<text x="1148" y="451" font-size="20" fill="#e6edf3" font-weight="400">dispatching session puts each returned question to the user, or returns</text>
+<text x="1148" y="488" font-size="20" fill="#e6edf3" font-weight="400">it in turn when itself dispatched, then dispatches again with the</text>
+<text x="1148" y="525" font-size="20" fill="#e6edf3" font-weight="400">answers.</text>
+<text x="1122" y="583" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="583" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="1148" y="631" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules and hands delivery to a sub-agent.</text>
+<text x="1122" y="685" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="685" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="733" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
+<text x="1148" y="770" font-size="20" fill="#58a6ff" font-weight="400">2. Follow Publish.</text>
+<text x="1122" y="821" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="821" font-size="23" fill="#e6edf3" font-weight="500">Dispatch Publish</text>
+<text x="1148" y="869" font-size="20" fill="#e6edf3" font-weight="400">Dispatch `protocols_publish.bundle.md` to a sub-agent, as Dispatch</text>
+<text x="1148" y="906" font-size="20" fill="#58a6ff" font-weight="400">states.</text>
+<text x="1122" y="960" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="960" font-size="26" fill="#e6edf3" font-weight="500">Notes</text>
+<text x="1148" y="1008" font-size="20" fill="#e6edf3" font-weight="400">A review is not an approval.</text>
+<text x="1122" y="1066" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="1066" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1122" y="1117" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="1117" font-size="23" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="1148" y="1165" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="1205" width="1000" height="278" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="1241" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_publish.bundle.md</text>
+<path d="M1110 1259 H2110" stroke="#303b49"/>
+<text x="1122" y="1326" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="1326" font-size="30" fill="#e6edf3" font-weight="500">Publish</text>
+<text x="1122" y="1380" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1380" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="1428" font-size="20" fill="#e6edf3" font-weight="400">1. Commit the change.</text>
+<text x="1148" y="1465" font-size="20" fill="#e6edf3" font-weight="400">2. Push the branch.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

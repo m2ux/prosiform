@@ -1,3 +1,3 @@
 # Guide
 
-1. [⇉ the example](example.md).
+1. Apply: [⇉ the example](example.md).

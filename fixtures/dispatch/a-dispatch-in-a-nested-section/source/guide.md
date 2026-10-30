@@ -4,7 +4,7 @@
 
 ### Draft
 
-1. [⇉ sketch](sketch.md).
+1. Apply: [⇉ sketch](sketch.md).
 
 #### Detail
 

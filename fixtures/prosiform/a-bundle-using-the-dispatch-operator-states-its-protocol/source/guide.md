@@ -2,4 +2,4 @@
 
 ## Change
 
-1. Plan the change: [⇉ Plan](plan.md).
+1. Apply: [⇉ Plan](plan.md).

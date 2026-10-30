@@ -1,4 +1,4 @@
 # Guide
 
-[⇉ the shared rules](../shared/rules.md#every-rule)
-and [⇉ the draft](<../shared/my rules.md#run>).
+Dispatch [⇉ the shared rules](../shared/rules.md#every-rule)
+and [⇉ the draft](<../shared/my rules.md#run>) to a sub-agent.

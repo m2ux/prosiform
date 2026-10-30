@@ -1,3 +1,3 @@
 # Guide
 
-[⇉ the specification](https://example.test/spec.md)
+Apply [⇉ the specification](https://example.test/spec.md).

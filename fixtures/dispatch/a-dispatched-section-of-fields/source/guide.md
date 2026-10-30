@@ -1,3 +1,3 @@
 # Guide
 
-1. [⇉ the fields](plan.md#fields).
+1. Apply: [⇉ the fields](plan.md#fields).

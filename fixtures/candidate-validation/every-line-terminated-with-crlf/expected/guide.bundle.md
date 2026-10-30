@@ -1,6 +1,6 @@
 # Guide
 
-The procedure requires [the notes](#notes).
+Require [the notes](#notes).
 
 A paragraph the run leaves as its source wrote it.
 

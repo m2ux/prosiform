@@ -1,3 +1,3 @@
 # Guide
 
-![⇉ the architecture](plan.png)
+Apply ![⇉ the architecture](plan.png).

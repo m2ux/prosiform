@@ -1,7 +1,7 @@
 # Guide
 
 The guide names [the runner](#guide-runner) its own definition points at, and
-requires [the tools](#tools).
+Require [the tools](#tools).
 
 # Guide Runner
 

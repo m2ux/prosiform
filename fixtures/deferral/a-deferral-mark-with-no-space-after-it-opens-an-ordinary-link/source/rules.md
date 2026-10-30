@@ -1,3 +1,3 @@
 # Rules
 
-Every rule the procedure follows.
+Every rule this guide follows.

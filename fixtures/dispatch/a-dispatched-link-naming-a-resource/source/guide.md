@@ -1,3 +1,3 @@
 # Guide
 
-[⇉ the diagram](plan.png)
+Apply [⇉ the diagram](plan.png).

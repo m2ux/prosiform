@@ -1,8 +1,34 @@
 # Diagram Renderer
 
-`render-diagram.py` bundles one Markdown entry document and draws its opened source files beside the output. Each call produces one diagram. Local Markdown dependencies are discovered by Prosiform.
+Two scripts draw a bundle. `render-diagram.py` takes any entry document and draws the files it opened beside the bundle. `render-example.py` draws the fixed cases the architecture pages carry, from the cases declared in `scripts/examples.json`.
 
-## Run
+Both use the same drawing: one panel per file, heading levels marked at the left margin, links in blue, operators in amber.
+
+## The architecture examples
+
+`scripts/examples.json` declares one case per picture: an entry and the files around it. The build runs for real over a copy of that tree, and the drawing shows what it read beside what it wrote, so a picture cannot state a result the build does not produce.
+
+```bash
+make examples
+```
+
+That re-renders every case into `docs/images/`. A single case, at a chosen build:
+
+```bash
+python3 scripts/render-example.py dispatch --build 'pf' --output /tmp
+```
+
+| Argument | Purpose |
+| --- | --- |
+| `case...` | Case names from `scripts/examples.json`; every case when none is named. |
+| `--output DIR` | Directory the drawings are written to; `docs/images` when absent. |
+| `--build COMMAND` | The build's command line, split as a shell splits one; `pf` when absent. |
+
+A case that exits nonzero still draws, and the run reports the status, so a case meant to fail is visible as one.
+
+## Rendering any entry
+
+`render-diagram.py` bundles one Markdown entry document and draws its opened source files beside the output. Each call produces one diagram. Local Markdown dependencies are discovered by Prosiform.
 
 Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync --frozen --no-dev` to install the compiler. From the repository root, use that environment's Python:
 

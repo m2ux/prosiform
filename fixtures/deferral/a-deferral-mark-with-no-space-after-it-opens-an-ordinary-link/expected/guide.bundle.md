@@ -1,7 +1,7 @@
 # Guide
 
-The procedure follows [¬the shared rules](#rules).
+Follow [¬the shared rules](#rules).
 
 # Rules
 
-Every rule the procedure follows.
+Every rule this guide follows.

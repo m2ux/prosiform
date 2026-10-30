@@ -1,6 +1,6 @@
 # Guide
 
-1. [⇉ the steps](guide.md#steps).
+1. Apply: [⇉ the steps](guide.md#steps).
 
 ## Steps
 

@@ -1,3 +1,3 @@
 # Record
 
-1. [⇉ publish](publish.md).
+1. Apply: [⇉ publish](publish.md).

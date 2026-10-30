@@ -1,3 +1,3 @@
 # Guide
 
-1. [⇉ the steps](plan.md#steps).
+1. Apply: [⇉ the steps](plan.md#steps).

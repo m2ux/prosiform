@@ -1,7 +1,7 @@
 description = "A link whose text opens with both the parallel dispatch mark and the dispatch operator is refused with a diagnostic naming the link, because one link states one operator; no bundle is published."
 
 clauses = [
-  "Link classification and resource handling — One operator per link",
+  "Link classification and resource handling — Operators that combine",
   "Adversarial acceptance fixtures — Parallel dispatch",
 ]
 
@@ -15,7 +15,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-message_contains = ["one compilation"]
-reference = "⫽ ⇉ the reviews"
+message_contains = ["two ways for one sub-agent"]
+reference = "⫽⇉ the reviews"
 source = "guide.md:3"
 chain = ["guide.md", "plan.md#reviews"]

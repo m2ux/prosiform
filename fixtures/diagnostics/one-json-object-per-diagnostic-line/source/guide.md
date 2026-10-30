@@ -1,3 +1,3 @@
 # Guide
 
-The procedure needs [the diagram](diagram.png).
+Require [the diagram](diagram.png).

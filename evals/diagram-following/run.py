@@ -21,9 +21,11 @@ memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
 fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin or whose remote settings enable
-one, naming the file that says so: a plugin's hooks reach a session before
-its first turn and no flag the runner passes suppresses them.
+does one whose directory installs a plugin, whose remote settings enable one,
+or whose settings file declares a hook for any event, naming the file that
+says so and the events it declares: a plugin's or a settings file's hooks
+reach a session before its first turn and no flag the runner passes
+suppresses them.
 
 What a session's agent did carry is read back from its transcript, so the
 boundary is observed rather than assumed. A hook's response, an appended

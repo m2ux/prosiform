@@ -1,3 +1,3 @@
 # Guide
 
-[⇉ the shared rules](rules.md)
+Apply [⇉ the shared rules](rules.md).

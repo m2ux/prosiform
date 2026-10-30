@@ -1,6 +1,6 @@
 # Guide
 
-The procedure requires [the notes](#notes) and nothing else.
+Require [the notes](#notes) and nothing else.
 
 # Notes
 

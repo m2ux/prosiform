@@ -2,17 +2,17 @@
 
 ## Dispatch
 
-Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
 
 # Guide
 
 ## Prepare
 
-1. [plan](#dispatch-plan).
+1. Apply: [plan](#dispatch-plan).
 
 ### Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
 
 ### Detail
 
@@ -20,13 +20,13 @@ What preparing involves.
 
 ## Revise
 
-1. [plan](#dispatch-plan-1).
-2. Then hand review to one: [review](#dispatch-review).
+1. Apply again: [plan](#dispatch-plan-1).
+2. Then apply: [review](#dispatch-review).
 
 ### Dispatch plan
 
-Dispatch `plan.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
 
 ### Dispatch review
 
-Dispatch `review.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `review.bundle.md` to a sub-agent.

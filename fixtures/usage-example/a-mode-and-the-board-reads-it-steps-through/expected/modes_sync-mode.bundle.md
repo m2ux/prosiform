@@ -2,7 +2,7 @@
 
 ## Dispatch
 
-Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
 
 # Sync Mode
 
@@ -40,7 +40,7 @@ Follow [Delivery Recording](#dispatch-delivery-recording) with the selected repo
 
 #### Dispatch Delivery Recording
 
-Dispatch `protocols_delivery-recording.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `protocols_delivery-recording.bundle.md` to a sub-agent.
 
 ### 3. Close Each Epic
 
@@ -50,7 +50,7 @@ For each selected epic, follow [Epic Closure](#dispatch-epic-closure) with the r
 
 #### Dispatch Epic Closure
 
-Dispatch `protocols_epic-closure.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `protocols_epic-closure.bundle.md` to a sub-agent.
 
 ### 4. Close the Initiative
 
@@ -73,7 +73,7 @@ For each task or epic Record Board Delivery newly moves to In Review, follow [Un
 
 #### Dispatch Understand Mode
 
-Dispatch `modes_understand-mode.bundle.md` to a sub-agent, as [Dispatch](#dispatch) states.
+[Dispatch](#dispatch) `modes_understand-mode.bundle.md` to a sub-agent.
 
 ### 7. Report
 

@@ -1,3 +1,3 @@
 # Guide
 
-Run [⇉ ](plan.md).
+Apply [⇉ ](plan.md).

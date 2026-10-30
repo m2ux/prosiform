@@ -25,6 +25,8 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+from workflow import CorpusError
+
 QUESTION = "question"
 DONE = "done"
 
@@ -132,6 +134,8 @@ class Claude:
     plugins: str = "plugins/installed_plugins.json"
     remote: str = "remote-settings.json"
     enabled: str = "enabledPlugins"
+    settings: str = "settings.json"
+    hooks: str = "hooks"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
     shell: bool = False
@@ -218,6 +222,16 @@ class Claude:
                 f"{enabling} enables a plugin and its environment, which reach "
                 f"every session before its first turn; remove {enabling}"
             )
+        declared = config / self.settings
+        hooks = _record(declared).get(self.hooks)
+        if isinstance(hooks, dict):
+            events = sorted(str(event) for event, commands in hooks.items() if commands)
+            if events:
+                return (
+                    f"{declared} declares a hook for {', '.join(events)}, which "
+                    f"reaches every session before its first turn; remove "
+                    f"{declared} before this run"
+                )
         return None
 
     def result(self, transcript: Path) -> dict[str, object] | None:
@@ -481,13 +495,17 @@ class Cursor:
 
 
 def _record(path: Path) -> dict[str, object]:
-    """One settings file read as JSON, or nothing where it is absent or unreadable."""
+    """One settings file read as JSON, or nothing where it is absent.
+
+    A file present but unreadable is refused rather than read as empty: an
+    empty answer would let a hook it declares reach a session unobserved.
+    """
     if not path.is_file():
         return {}
     try:
         held = json.loads(path.read_text())
-    except json.JSONDecodeError:
-        return {}
+    except json.JSONDecodeError as error:
+        raise CorpusError(f"{path} is not JSON: {error}") from error
     return held if isinstance(held, dict) else {}
 
 

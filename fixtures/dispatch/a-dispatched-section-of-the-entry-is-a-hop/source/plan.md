@@ -1,3 +1,3 @@
 # Plan
 
-1. [⇉ review](review.md).
+1. Apply: [⇉ review](review.md).

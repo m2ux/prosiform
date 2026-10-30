@@ -101,7 +101,8 @@ A session receives one form of one workflow and the instruction, so a pass measu
 Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one reach a session. It fails before the first session starts, naming the file to remove:
 
 - `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
-- `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint.
+- `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint;
+- `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, and a settings file holding only preferences is no refusal, so the directory keeps its theme and model.
 
 A run whose config directory holds no login fails the same way, naming the one-time login command.
 

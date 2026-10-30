@@ -1,7 +1,7 @@
 # Guide
 
-1. [⇉ Run](#run).
+1. Apply: [⇉ Run](#run).
 
 ## Run
 
-1. [⇉ plan](plan.md).
+1. Apply: [⇉ plan](plan.md).

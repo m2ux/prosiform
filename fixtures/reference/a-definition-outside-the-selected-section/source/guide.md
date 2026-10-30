@@ -4,7 +4,7 @@ A preamble the run does not select.
 
 ## Procedure
 
-The procedure requires [the shared rules][rules], written as a
+Require [the shared rules][rules], written as a
 reference rather than inline.
 
 ## Appendix

@@ -1,0 +1,14 @@
+description = "A run of operator marks with no space after it opens no operator, so the link is compiled like any other and its text is published as the author wrote it."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

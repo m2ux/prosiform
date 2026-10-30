@@ -1,0 +1,21 @@
+description = "A link whose text opens with the dispatch mark and the parallel dispatch mark is refused with a diagnostic naming the link, because the two state two ways for one sub-agent to run, so a link stating both states two contradictory things."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["two ways for one sub-agent"]
+reference = "⇉⫽ the shared rules"
+source = "guide.md:3"
+chain = ["guide.md", "rules.md"]

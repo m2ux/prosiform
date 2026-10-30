@@ -6,9 +6,9 @@
 the three is a local Markdown document, so none is opened, fetched or
 traversed.
 
-The procedure requires [the shared rules](#rules), which the bundle
+Require [the shared rules](#rules), which the bundle
 carries.
 
 # Rules
 
-Every rule the procedure requires.
+Every rule this guide requires.

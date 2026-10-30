@@ -4,4 +4,4 @@ prosiform:
 ---
 # Guide
 
-The procedure requires [the shared rules](rules.md).
+Require [the shared rules](rules.md).

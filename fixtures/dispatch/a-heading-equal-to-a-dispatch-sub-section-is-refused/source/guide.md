@@ -1,6 +1,6 @@
 # Guide
 
-1. [⇉ plan](plan.md).
+1. Apply: [⇉ plan](plan.md).
 
 ## Dispatch plan
 
