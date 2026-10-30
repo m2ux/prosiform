@@ -14,8 +14,7 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 | --- | --- |
 | [W01 work item](w01.md) | Dispatch scenarios in their compiled and authored-protocol forms |
 | [W02 work item](w02.md) | The sub-agent record and the scorer's dispatch checks |
-| [W03 work item](w03.md) | The first baseline of the dispatch scenarios |
-| [W04 work item](w04.md) | Each departure's class held across the dispatch corpus |
+| [W03 work item](w03.md) | Each departure's class held across the dispatch corpus |
 
 ## Design
 
@@ -43,7 +42,7 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 | --- | --- | --- |
 | W01 | Dispatch scenarios in both forms | [#411](https://github.com/m2ux/prosiform/pull/411) |
 | W02 | Sub-agent record and dispatch scorer checks | [#413](https://github.com/m2ux/prosiform/pull/413) |
-| W03 | First baseline of the dispatch scenarios | 3 |
+| W03 | Adversarial classification across the dispatch corpus | pending |
 
 ## Decisions
 
@@ -59,14 +58,14 @@ The epic is I05:E07: dispatch and parallel-dispatch scenarios in the diagram-fol
 | --- | --- | --- |
 | W01 | `evals/diagram-following/workflows` | `evals/diagram-following/workflow.py`, `test_workflow.py`, `README.md` |
 | W02 | `evals/diagram-following/score.py` | `evals/diagram-following/run.py`, `stub_agent.py`, `instruction.md`, `test_score.py`, `test_run.py` |
-| W03 | `evals/diagram-following/baseline.json` | `evals/diagram-following/report.py`, `report.md`, `README.md` |
+| W03 | `evals/diagram-following/test_run.py` | none beyond it |
 
 ## Collision Surface
 
 Checked against the in-flight I05 epics and the open pull requests on 2026-10-29.
 
 - **I05:E01 Diagram Following (#333).**
-  `i05/e01/main` is unmerged, its review pull request #353 open, and it holds `evals/diagram-following/`. Every row of this epic writes the same folder: `deps.py` reports E01 W01 and E07 W01 contending on `evals/diagram-following/workflows`, E01 W02 and E07 W02 on `score.py`, and E01 W05 and E07 W03 on `baseline.json`. That is why E07 takes priority 7 and waits for E01.
+  `i05/e01/main` is unmerged, its review pull request #353 open, and it holds `evals/diagram-following/`. Every row of this epic writes the same folder: `deps.py` reports E01 W01 and E07 W01 contending on `evals/diagram-following/workflows` and E01 W02 and E07 W02 on `score.py`. That is why E07 takes priority 7 and waits for E01.
 - **I05:E03 Dispatch Bundles (#351).**
   Holds the `pf` behaviour these scenarios exercise; the eval row has left it, and no row here writes `src/` or `fixtures/`. No collision.
 - **I05:E06 Example Authoring (#376).**
@@ -76,7 +75,7 @@ Checked against the in-flight I05 epics and the open pull requests on 2026-10-29
 
 `deps.py` over I05's body with E03 rewritten and E07 added proposes E07 one below E01 and E03, from the task edges on E01's rows and the three contending components above. Confirmed: E07 `priority: 7`.
 
-Longest chain: E01 W01 → W02 → W03 → W04 → E07 W01 → W02 → W03, seven steps.
+Longest chain: E01 W01 → W02 → W03 → W04 → E07 W01 → W02 → W03, seven steps. The measured baseline's chain runs on through I05:E08's W02, which takes E07 W02 as a prerequisite.
 
 ## Review
 
@@ -97,8 +96,7 @@ Review Initiative Goal and Check Dependencies and Numbering over the drafts, 202
 
 - **Delivery, 2026-10-29.**
   W02 merged into `i05/e07/main` as [#413](https://github.com/m2ux/prosiform/pull/413), merge commit `8905b2e3`, with AC3 ticked. Its session held six plan changes and applied none. The scorer reads a session's sub-agent starts from `subagents.json` written beside the trace and the cost, and the three dispatch classes are read after the completion check, so a trace that stopped short is still `unfinished`. No paid session ran and `EVAL_BUDGET_USD` is still USD 100.
-- **W04 raised, 2026-10-30.**
-  The paid infrastructure W03 needs is unavailable, so the epic takes a row that holds each dispatch class across the corpus with the stub agent instead. W04 depends on W02 and covers AC5, a criterion stating that every dispatch scenario in each form is classified by the class its departing stub agent states. It shares no pull request with W03: W04 is `make check` work that must land before the honest baseline is read, and W03 is a paid run against the same corpus, so pairing them would put a run that spends money behind a test that does not. The run W04 drives is a fixture run whose pass rates are correct by construction, so it writes no baseline and leaves AC4 to W03.
+- **The baseline leaves the epic.** The dispatch scenarios' measured baseline moves to I05:E08, whose W02 runs one default matrix over the hardened corpus and commits the one `baseline.json` that covers every form the matrix runs. A separate dispatch run would be replaced by that run, because `report.py` writes the baseline file whole, so one baseline covers both and E07 closes without it. (User, 2026-10-30.)
 
 ## Links
 

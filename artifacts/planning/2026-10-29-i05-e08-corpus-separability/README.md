@@ -13,7 +13,7 @@ It raises the corpus's difficulty until a default run produces cells below 1.0, 
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | Scenarios that reach every failure class the scorer defines |
-| [W02 work item](w02.md) | The four-form baseline drawn from the harder corpus |
+| [W02 work item](w02.md) | The every-form baseline drawn from the harder corpus, the dispatch scenarios among them |
 
 ## Design
 
@@ -28,6 +28,7 @@ It raises the corpus's difficulty until a default run produces cells below 1.0, 
 - **The harder corpus belongs with the baseline, not to a further epic.** A four-form baseline on the present corpus would add a column of 100% cells and settle nothing, so the corpus change and the baseline are one epic. (User, 2026-10-29.)
 - **Priority 6.** Every row extends `evals/diagram-following/workflows`, which I05:E07 W01 also extends, and both follow I05:E01, so this epic takes the number below E07's seven. (Planning, 2026-10-29.)
 - **The refused-run guard stays on I05:E01.** That guard is stub-testable today, so it needs no paid run and no corpus change, and holding E01 open for it alone is the cheapest way to close the epic. (User, 2026-10-29.)
+- **The dispatch scenarios' baseline joins this row.** I05:E07's W03 was the dispatch scenarios' own baseline, and `report.py` writes `baseline.json` whole, so a dispatch run and this epic's run cannot each commit one: whichever ran second would replace the first. W02 therefore runs the one default matrix over the hardened corpus and carries every form the matrix runs, the dispatch scenarios' compiled and authored forms among them, and E07 closes without a baseline of its own. W02 takes `E07:W02` as a prerequisite, since the dispatch rows and their checks must land before a run measures them, and AC6 states the dispatch rate the baseline must carry. (User, 2026-10-30.)
 
 ## Links
 
