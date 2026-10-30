@@ -128,4 +128,6 @@ Each manifest's declaration is `Link classification and resource handling — Th
 
 **Ran:** `gh api` against the pull request and the epic base.
 
-**Observed:** the pull request merged to `i05/e09/main`; its `Checks` run reported `success` on `c9390ac3`. It holds a Development link to #414, verified through `closingIssuesReferences`. Row `W02` on #414 links it and is ticked done; `AC9`, `AC10` and `AC23` are ticked.
+**Observed:** the pull request [merged](https://github.com/m2ux/prosiform/pull/431) to `i05/e09/main` at `b91e45ff779483ab3d983286d475e73bfb0ecf5e`; its `Checks` run reported `success` on `c9390ac3` at `20:23:33Z`. It holds a Development link to #414, verified through `closingIssuesReferences`. `sync.py` linked row `W02` to #431, ticked `AC9`, `AC10` and `AC23`, and the body it wrote was published; row `W02` reads `✓`.
+
+The same `sync.py` run reports one finding this row did not cause and does not change: `#428 W01: AC15 covered and named by no test`, which is W01's pull request body declaring `AC15` in a way `format.py` reads as a row's coverage. It is left standing rather than edited, because #428 is merged and its body is not this row's to rewrite.
