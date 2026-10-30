@@ -8,7 +8,7 @@ What a check catches is easiest to see in the failure:
 
 | A source that will not compile | What the run says |
 | --- | --- |
-| **`SKILL.md`**<br>`# Entry`<br><br>`Follow [Tests](rules/tests.md#tests) and [Reviews](rules/reviews.md#reviews).`<br><br>**`rules/reviews.md`**<br>`# Reviews`<br><br>`## Tests`<br><br>`A review lands with its findings recorded.` | `E_TARGET_NOT_FOUND: the reference`<br>`'rules/reviews.md#reviews' names no heading`<br>`of the document it selects from`<br>`  reference: rules/reviews.md#reviews`<br>`  resolved: rules/reviews.md`<br>`  source: SKILL.md:3`<br>`  chain: SKILL.md → rules/reviews.md#reviews`<br>`  remedy: name a heading the document carries` |
+| **`SKILL.md`**<br>`# Entry`<br><br>`Follow [Tests](rules/tests.md#tests) and [Reviews](rules/quality.md#reviews).`<br><br>**`rules/quality.md`**<br>`# Quality`<br><br>`## Findings`<br><br>`A review lands with its findings recorded.` | `E_TARGET_NOT_FOUND: the reference`<br>`'rules/quality.md#reviews' names no heading`<br>`of the document it selects from`<br>`  reference: rules/quality.md#reviews`<br>`  resolved: rules/quality.md`<br>`  source: SKILL.md:3`<br>`  chain: SKILL.md → rules/quality.md#reviews`<br>`  remedy: name a heading the document carries` |
 
 *A link naming a heading that does not exist is refused before anything is written. The run names the link, the document it resolved to, the line it was written on and what to do about it — and publishes nothing, so the reader never sees a broken link.*
 
