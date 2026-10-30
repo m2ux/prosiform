@@ -12,6 +12,7 @@ This record holds the delivery of W03: each departure the stub agent states, run
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03 work item](w03.md) | The matrix: each departing script over every dispatch scenario in both forms, with the class each cell must read |
 
 ## Links
 
