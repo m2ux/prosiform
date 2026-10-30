@@ -45,13 +45,14 @@ A caller who needs a bundle built against other material than the tree holds has
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, invocation rules and pin | AC16, AC17 | | | |
-| W01 | Mapping, option and identity | AC1, AC11, AC15 | W00 | | |
-| W02 | Key and self-mock refusals | AC9, AC10 | W01 | | |
+| W01 | Mapping, option and identity | AC1, AC11, AC18 | W00 | | |
+| W02 | Option row and the two refusals | AC9, AC10, AC15 | W01 | | |
 | W03 | Entry redirect and derived name | AC2, AC13 | W01 | | |
-| W04 | Substitution warnings | AC7, AC8 | W01 | | |
+| W04 | Substitution warnings and check mode | AC7, AC8, AC19 | W01 | | |
 | W05 | Withheld and dispatched targets | AC4 | W01 | | |
 | W06 | Section keys and no chaining | AC3, AC12, AC14 | W01 | | |
-| W07 | Substitute as a full source | AC5, AC6 | W01 | | |
+| W07 | Substitute as a full source | AC5, AC6, AC20 | W01 | | |
+| W08 | Example skill scenarios over the mechanism | AC21, AC22 | W04 | | |
 
 ## Acceptance Criteria
 
@@ -72,6 +73,12 @@ A caller who needs a bundle built against other material than the tree holds has
 - [ ] **AC15.** The option, its effect and its accepted form appear in `invocation.md` and agree with the command's own help output, as `make invocation` shows.
 - [ ] **AC16.** The bundling rules state that a mapping entry redirects each reference naming its key, and state which references are redirected, as an inspection of `invocation.md` shows.
 - [ ] **AC17.** The design states the mapping as a thing deciding what a reference names, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
+
+- [ ] **AC18.** A mapping key naming a document that does not exist compiles its substitute and publishes, where the same run without the mapping fails with `E_TARGET_NOT_FOUND`, as the corpus fixture `fixtures/mock/a-key-naming-an-absent-document-is-substituted` shows.
+- [ ] **AC19.** A mapping applies under `-c`, which publishes nothing and reports the substitution warning, as the corpus fixture `fixtures/mock/a-mocked-check-publishes-nothing` shows.
+- [ ] **AC20.** A mapping value carrying a parent segment reads the substitute above the working directory, and the warning names the substitute by that path, as the corpus fixture `fixtures/mock/a-substitute-above-the-working-directory-is-reachable` shows.
+- [ ] **AC21.** The example skill's modes bundle against stub artifacts supplied by a mapping and no edit to the skill tree, so `cmp` shows the tree unchanged, as the corpus fixture `fixtures/mock/an-example-mode-bundled-against-a-stub` shows.
+- [ ] **AC22.** The example skill's `conventions.md` is redirected to a document naming a fake `gh`, and the bundle carries the fake as the command the agent is told to run, as the corpus fixture `fixtures/mock/an-example-skill-told-to-use-a-fake-gh` shows.
 
 ## Open Questions
 
