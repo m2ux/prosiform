@@ -4,7 +4,7 @@ Every corpus fixture this epic lands, the row that lands it, and the criterion i
 
 ## The family
 
-All nineteen sit under a new `fixtures/mock/` family. Each declares a `source/` tree, an `expected/stdout.md`, and a `manifest.toml` naming the design clause W00 lands.
+All seventeen sit under a new `fixtures/mock/` family. Each declares a `source/` tree, an `expected/stdout.md`, and a `manifest.toml` naming the design clause W00 lands.
 
 Two family-wide obligations:
 
@@ -29,24 +29,26 @@ A fixture whose `source` is a symbolic link follows the `usage-example` family's
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
 | `a-mocked-dependency-is-compiled` | AC1 | A compiled link resolves to the substitute, which is bundled under its own file heading, with `W_MOCK_SUBSTITUTED` naming the link. |
-| `a-substitute-outside-the-writing-root-is-reachable` | AC11 | A source declaring `root: .` reaches a substitute beside its tree, which the same run without `-m` refuses as `E_TARGET_NOT_FOUND`. This is the feature's justification, and no unit test can show it. |
+| `a-substitute-outside-the-writing-root-is-reachable` | AC11 | A source declaring `root: .` reaches a substitute above its tree through a parent segment, which the same run without `-m` refuses as `E_TARGET_NOT_FOUND`. This is the feature's justification. |
 | `a-key-naming-an-absent-document-is-substituted` | AC18 | A key naming a document that does not exist compiles its substitute, where the same run without `-m` fails `E_TARGET_NOT_FOUND`. This is what makes an artifact under authoring testable before it lands. |
-| `a-substitute-above-the-working-directory-is-reachable` | AC20 | A mapping value carrying `..` reads a stub above the working directory, and the warning names it by that path. |
 
-AC15 is the option's row in `invocation.md`, held to the help output by `make invocation` rather than by a corpus fixture.
+AC15 is the option's row in `invocation.md`, held to the help output by `make invocation` rather than by a corpus fixture, and AC20 is the parent-segment capability the same fixture as AC11 shows.
 
 ## W02 — Key and self-mock refusals
 
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
-| `a-duplicate-key-is-refused` | AC9 | Two spellings of one identity on the command line: `E_INVALID_USAGE`, exit `2`, nothing published. |
-| `a-self-mock-is-refused` | AC10 | A key and value normalizing to one identity: `E_INVALID_USAGE`, exit `2`, nothing published. |
+| `a-duplicate-key-is-refused` | AC9 | Two spellings of one identity on the command line: `E_INVALID_USAGE`, exit `2`. |
+| `a-self-mock-is-refused` | AC10 | A key and value normalizing to one identity: `E_INVALID_USAGE`, exit `2`. |
+| `a-fragment-only-key-is-refused` | AC23 | A key naming no document: `E_INVALID_USAGE`, exit `2`. |
+
+None declares `absent`: the refusals are raised before any source is read, and the runner invokes every fixture with `-o -` anyway.
 
 ## W03 — Entry redirect and derived name
 
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
-| `a-redirected-entry-derives-its-name-from-the-substitute` | AC2 | The run publishes `stand-in.bundle.md`, and `absent` names `entry.bundle.md`. |
+| `a-redirected-entry-derives-its-name-from-the-substitute` | AC2 | With an explicit `-o`, the run writes the name the caller gave; the derived name follows the substitute when no `-o` is given, which the unit test covers because the runner always passes one. |
 | `a-redirected-referrer-carries-its-entry` | AC13 | A fragment-only entry resolves its section against the substituted referrer. |
 
 ## W04 — Substitution warnings and check mode
@@ -55,7 +57,7 @@ AC15 is the option's row in `invocation.md`, held to the help output by `make in
 | --- | --- | --- |
 | `a-substitution-warns-with-its-target` | AC7 | One `W_MOCK_SUBSTITUTED` per target however many references the key served, with `location`, `source` and `resolved`. |
 | `an-unused-key-warns-and-publishes` | AC8 | `W_MOCK_UNUSED` with exit `0` and a published bundle. |
-| `a-mocked-check-publishes-nothing` | AC19 | `-c` with a mapping resolves and warns exactly as a publishing run does, and `absent` names the output path. |
+| `a-mocked-check-publishes-nothing` | AC19 | `-c` with a mapping resolves and warns exactly as a publishing run does, with empty standard output. |
 
 ## W05 — Withheld and dispatched targets
 
@@ -80,12 +82,14 @@ AC15 is the option's row in `invocation.md`, held to the help output by `make in
 
 ## W08 — The example skill over the mechanism
 
-| Fixture | Criterion | Declares |
-| --- | --- | --- |
-| `an-example-mode-bundled-against-a-stub` | AC21 | `plan-mode.md` bundles against a stubbed `artifacts/epic.md`, and the example tree is byte-identical afterwards. |
-| `an-example-skill-told-to-use-a-fake-gh` | AC22 | A redirected `conventions.md` names `./fake-gh`, so an agent following the bundle runs the fake while every other instruction stays real. |
+These are scenarios in `checks/mock_scenarios.py`, not corpus fixtures, because the corpus cannot express them: its `source` is a symbolic link to the example tree, `execute` resolves the working directory, and `access.py` refuses a symbolic link in any traversed component.
 
-## Why the last two families carry no fixture
+| Scenario | Criterion | Declares |
+| --- | --- | --- |
+| An example mode bundled against a stub | AC21 | `plan-mode.md` bundles from a temporary copy with `artifacts/epic.md` stubbed, the stub standing where `## Epic` stood, and `example/work-planner` is never written. |
+| An example skill told to use a fake `gh` | AC22 | A redirected `conventions.md` names `./fake-gh`, so an agent following the bundle runs the fake while every other instruction stays real. |
+
+## Why two behaviours carry no fixture
 
 - **A dispatched target and a run-set target** are redirected by the same `withholding_target` resolution W05 covers, and their effect is a second run rather than a bundle this run publishes. `src/tests/test_mock.py` holds both, as E00 held its candidate fault.
-- **A candidate comparison against a mocked bundle** is unreachable from a source tree: it is the fault path for an emission that disagreed with its source. A unit test carries it, as it carries every internal fault.
+- **A candidate comparison against a mocked bundle** is the fault path for an emission that disagreed with its source, which no sound tree reaches.

@@ -46,13 +46,14 @@ A caller who needs a bundle built against other material than the tree holds has
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, invocation rules and pin | AC16, AC17 | | | |
 | W01 | Mapping, option and identity | AC1, AC11, AC18 | W00 | | |
-| W02 | Option row and the two refusals | AC9, AC10, AC15 | W01 | | |
+| W02 | Key and self-mock refusals | AC9, AC10, AC23 | W01 | | |
 | W03 | Entry redirect and derived name | AC2, AC13 | W01 | | |
 | W04 | Substitution warnings and check mode | AC7, AC8, AC19 | W01 | | |
 | W05 | Withheld and dispatched targets | AC4 | W01 | | |
 | W06 | Section keys and no chaining | AC3, AC12, AC14 | W01 | | |
 | W07 | Substitute as a full source | AC5, AC6, AC20 | W01 | | |
 | W08 | Example skill scenarios over the mechanism | AC21, AC22 | W04 | | |
+| W09 | Documented option row | AC15 | W02 | | |
 
 ## Acceptance Criteria
 
@@ -76,9 +77,10 @@ A caller who needs a bundle built against other material than the tree holds has
 
 - [ ] **AC18.** A mapping key naming a document that does not exist compiles its substitute and publishes, where the same run without the mapping fails with `E_TARGET_NOT_FOUND`, as the corpus fixture `fixtures/mock/a-key-naming-an-absent-document-is-substituted` shows.
 - [ ] **AC19.** A mapping applies under `-c`, which publishes nothing and reports the substitution warning, as the corpus fixture `fixtures/mock/a-mocked-check-publishes-nothing` shows.
-- [ ] **AC20.** A mapping value carrying a parent segment reads the substitute above the working directory, and the warning names the substitute by that path, as the corpus fixture `fixtures/mock/a-substitute-above-the-working-directory-is-reachable` shows.
-- [ ] **AC21.** The example skill's plan mode bundles against a stub artifact supplied by a mapping and no edit to the skill tree, with the stub standing where the real artifact's heading stood, as the corpus fixture `fixtures/mock/an-example-mode-bundled-against-a-stub` shows.
-- [ ] **AC22.** The example skill's `conventions.md` is redirected to a document naming a fake `gh`, and the bundle carries the fake as the command the agent is told to run, as the corpus fixture `fixtures/mock/an-example-skill-told-to-use-a-fake-gh` shows.
+- [ ] **AC20.** A mapping value carrying a parent segment reads the substitute above the working directory, as the corpus fixture `fixtures/mock/a-substitute-outside-the-writing-root-is-reachable` shows.
+- [ ] **AC21.** The example skill's plan mode bundles against a stub artifact supplied by a mapping and no edit to the skill tree, with the stub standing where the real artifact's heading stood, as `make mock-scenarios` shows.
+- [ ] **AC22.** The example skill's `conventions.md` is redirected to a document naming a fake `gh`, and the bundle carries the fake as the command the agent is told to run, as `make mock-scenarios` shows.
+- [ ] **AC23.** A mapping key carrying no document, as `#section` does, is refused as invalid usage, as the corpus fixture `fixtures/mock/a-fragment-only-key-is-refused` shows.
 
 ## Open Questions
 

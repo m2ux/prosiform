@@ -6,9 +6,9 @@
 
 This record holds the plan for I05:E09: a `-m ORIGINAL=ALTERNATIVE` invocation parameter that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It is the ninth epic of I05, the standing initiative for ad hoc feature enhancements.
 
-The epic is nine tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the two mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; W07 treats the substitute as a source in its own right; and W08 applies the mechanism to the example work-planner skill, bundling its modes against stub artifacts and a fake `gh`.
+The epic is ten tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the three mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; W07 treats the substitute as a source in its own right; W08 applies the mechanism to the example work-planner skill; and W09 documents the option.
 
-Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Nineteen fixtures across a new `fixtures/mock/` family, and every one names the clause W00 lands.
+Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Seventeen corpus fixtures under a new `fixtures/mock/` family, every one naming the clause W00 lands, and two example-skill scenarios the corpus cannot express.
 
 ## Artifacts
 
@@ -91,6 +91,17 @@ Six findings from a review against the source, all resolved.
 | W08's fixtures reached their stubs by `../stubs` from a `usage-example`-style symbolic link. `execute` takes `Path.cwd().resolve()`, so the value would have resolved to `example/stubs`, outside the fixture. | High | W08 holds a real copy of the example tree under `source/`, held to the original by `cmp` outside the corpus. |
 | W08 claimed `cmp` over the tree shows it unchanged, but the run wrote its bundle into `cwd`, inside the skill directory, and `expected.absent` resolves against the fixture root rather than `cwd`. | Medium | Both example fixtures run `-o -`, so the run publishes nothing and no `absent` declaration is needed. |
 | W08 named `artifacts/epic.md` as carrying "no criteria", which no part of it holds. | Low | The stub is described by the heading it replaces: `## Epic`, a member of the merged `artifacts` group at depth 1. |
+
+Third pass, against the corpus mechanics and the criterion ownership the checkers cannot see.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| W08's corpus fixtures could not exist. A `usage-example` fixture's `source` is a symbolic link to the example tree so the corpus and the published example name one tree; `execute` resolves the working directory, so a parent-segment value lands beside the link's target; and `access.py` refuses a symbolic link in any traversed component. A copying fixture would work and reintroduces the drift the link prevents. | Critical | W08 is a check, not a corpus fixture: it copies `example/work-planner` into a temporary directory at run time, so one tree is maintained and nothing is checked in twice. `make mock-scenarios` runs it. |
+| A fixture's `expected.absent` resolves against the fixture directory, and the runner invokes every fixture with `-o -`, so an `absent` declaration in this family asserts nothing. | Medium | Every `absent` claim removed from W02 and W04; the fact is stated once in `fixtures.md`. |
+| The fragment-only key refusal was stated in W06's design and covered by no criterion. | Medium | AC23 added and moved to W02, which owns every mapping refusal. |
+| W02 reached four criteria after AC23, and `format.py` refuses more than three. | Medium | AC15 split out to its own row, W09, because the documented row must follow the option it reproduces. |
+| Renumbering left a duplicate W03 and a stale joins record, which `deps.py` reported only as unmatched pairs. | Medium | Table renumbered, work-item files renumbered, joins regenerated for the final numbering. |
+| W01's fixture table lost `a-substitute-outside-the-writing-root-is-reachable` during an edit, leaving AC11 with no fixture. | Medium | Restored, and every fixture name cross-checked between the epic and the rows. |
 
 ## Links
 
