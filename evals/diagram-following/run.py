@@ -414,9 +414,15 @@ def prepare(
 
 
 def keep(workspace: Path, records: Path) -> None:
-    """Copy what the scorer reads out of a finished workspace."""
-    if (workspace / TRACE).is_file():
-        shutil.copy2(workspace / TRACE, records / TRACE)
+    """Copy what the scorer reads out of a finished workspace.
+
+    A dispatching session's path is `trace.log`; a sub-agent's is
+    `trace-<section>.log`, so both are kept and a nested workflow's states are
+    evidence rather than a file the run discards.
+    """
+    for path in sorted(workspace.glob(f"{TRACE}*")):
+        if path.is_file():
+            shutil.copy2(path, records / path.name)
     if (workspace / ACTIONS).is_dir():
         shutil.copytree(workspace / ACTIONS, records / ACTIONS)
 
