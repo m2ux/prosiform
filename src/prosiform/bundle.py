@@ -117,6 +117,7 @@ from markdown_it.token import Token
 
 from prosiform.closure import (
     bundled,
+    deferred,
     dispatched,
     parallel,
     rebased,
@@ -492,14 +493,20 @@ def target(
     found = bundled(path, destination, opening, root)
     if found is not None:
         return f"{anchor}{assigned[(found.path, found.fragment)]}"
-    deferred = withholding_target(path, destination, opening, root)
-    if deferred is None:
+    withheld = withholding_target(path, destination, opening, root)
+    if withheld is None:
         return None
+    # A deferral states when the material is compiled, and a dispatch mark
+    # beside it says who compiles it in that later run. Deferral dominates:
+    # the destination is the path that run follows, which is what a reader
+    # of this bundle needs, and the dispatch it carries is not this run's.
+    if deferred(opening):
+        return rebased(withheld, destination)
     if dispatched(opening):
         held = {} if dispatched_to is None else dispatched_to
-        served = ((deferred.path, deferred.fragment), parallel(opening))
+        served = ((withheld.path, withheld.fragment), parallel(opening))
         return f"{anchor}{held[served]}"
-    return rebased(deferred, destination)
+    return rebased(withheld, destination)
 
 
 def carries_title(tokens: Sequence[Token]) -> bool:

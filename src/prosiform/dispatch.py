@@ -79,7 +79,14 @@ from prosiform.bundle import (
     carried_headings,
     escaped,
 )
-from prosiform.closure import Reference, dispatched, identity, parallel, unmarked
+from prosiform.closure import (
+    Reference,
+    deferred,
+    dispatched,
+    identity,
+    parallel,
+    unmarked,
+)
 from prosiform.closure import withholding_target as withheld
 from prosiform.diagnostics import (
     ERROR,
@@ -420,7 +427,9 @@ def written_in(
             if child.type != LINK_OPEN:
                 continue
             opening = opening_text(children, at)
-            if not dispatched(opening):
+            if not dispatched(opening) or deferred(opening):
+                # A deferred dispatch belongs to the run that compiles it
+                # later, so this bundle names no sub-section for it.
                 continue
             destination = str(child.attrGet("href") or "")
             target = withheld(path, destination, opening, source.root)

@@ -174,10 +174,17 @@ def test_a_mark_opening_the_text_with_no_space_after_it_is_no_operator() -> None
     assert not deferred("¬\tRecord Epic Delivery")
 
 
-def test_both_operators_opening_one_text_conflict_however_they_are_spaced() -> None:
-    assert conflicting("¬ ⇉ the rules")
-    assert conflicting("⇉  ¬ the rules")
-    assert conflicting(" ¬ \t⇉ the rules")
+def test_two_dispatch_marks_opening_one_text_conflict_however_they_are_spaced() -> None:
+    assert conflicting("⇉ ⫽ the rules")
+    assert conflicting("⫽  ⇉ the rules")
+    assert conflicting(" ⇉ \t⫽ the rules")
+
+
+def test_a_deferral_beside_a_dispatch_mark_states_one_compilation() -> None:
+    """A deferral says when, a dispatch says who, so together they agree."""
+    assert not conflicting("¬ ⇉ the rules")
+    assert not conflicting("¬ ⫽ the rules")
+    assert conflicting("¬ ⇉ ⫽ the rules")
 
 
 def test_one_operator_alone_does_not_conflict() -> None:
@@ -395,6 +402,10 @@ def test_a_parallel_mark_with_no_space_after_it_is_no_operator() -> None:
     assert operators("⫽⇉ the reviews") == ()
 
 
-@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "¬ ⫽ the reviews"])
-def test_the_parallel_mark_conflicts_with_either_other_operator(opening: str) -> None:
+@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "⇉ ⫽ the reviews"])
+def test_the_parallel_mark_conflicts_with_the_dispatch_mark(opening: str) -> None:
     assert conflicting(opening)
+
+
+def test_the_parallel_mark_beside_a_deferral_states_one_compilation() -> None:
+    assert not conflicting("¬ ⫽ the reviews")

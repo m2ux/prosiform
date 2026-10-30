@@ -1888,21 +1888,21 @@ def test_an_empty_dispatch_reached_through_a_link_names_the_route(root: Path) ->
     assert diagnostic["chain"] == ["guide.md", "steps.md", "plan.md"]
 
 
-def test_a_link_opening_with_both_operators_is_refused(root: Path) -> None:
-    written(root, "guide.md", "# Guide\n\nRead [\u00ac \u21c9 the rules](rules.md).\n")
+def test_a_link_opening_with_two_dispatch_marks_is_refused(root: Path) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [\u21c9 \u2afd the rules](rules.md).\n")
     written(root, "rules.md", "# Rules\n\nEvery rule.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundle == ""
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["reference"] == "\u00ac \u21c9 the rules"
+    assert diagnostic["reference"] == "\u21c9 \u2afd the rules"
 
 
-def test_a_link_opening_with_both_operators_is_refused_where_it_names_nothing(
+def test_a_link_opening_with_two_dispatch_marks_is_refused_where_it_names_nothing(
     root: Path,
 ) -> None:
-    written(root, "guide.md", "# Guide\n\nRead [\u21c9 \u00ac a picture](plan.png).\n")
+    written(root, "guide.md", "# Guide\n\nRead [\u21c9 \u2afd a picture](plan.png).\n")
     (root / "plan.png").write_text("Never opened.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -2874,8 +2874,8 @@ def test_a_parallel_target_of_any_shape_publishes_with_no_diagnostic(
     assert sorted(run.bundles) == ["guide.bundle.md", "plan__reviews.bundle.md"]
 
 
-@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "¬ ⫽ the reviews"])
-def test_a_parallel_mark_with_another_operator_is_refused(
+@pytest.mark.parametrize("opening", ["⫽ ⇉ the reviews", "⇉ ⫽ the reviews"])
+def test_a_parallel_mark_with_the_dispatch_mark_is_refused(
     root: Path, opening: str
 ) -> None:
     written(root, "guide.md", f"# Guide\n\nRun [{opening}](plan.md).\n")

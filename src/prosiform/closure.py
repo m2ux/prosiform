@@ -248,14 +248,19 @@ def opens(text: str, at: int) -> bool:
 
 
 def conflicting(opening: str) -> bool:
-    """Whether a link's text opens with more than one operator.
+    """Whether a link's text states operators the run cannot carry out together.
 
-    Each operator states how one compilation is carried out — by a later
-    run, by a sub-agent, or by a sub-agent alongside others — so a link
-    stating two states two contradictory things and the run says so
-    rather than choosing.
+    A deferral says when the material is compiled and a dispatch says who
+    compiles it, so the two state different things about one compilation
+    rather than contradictory ones: `¬ ⇉ target` defers the material, and
+    the run that later compiles it finds a dispatch. Two dispatch marks
+    state two ways for one sub-agent to run, which is why the refusal
+    outlives the deferral.
     """
-    return len(set(operators(opening))) > 1
+    found = set(operators(opening))
+    if not found:
+        return False
+    return len(found - {DEFERRAL_MARK}) > 1
 
 
 def deferred(opening: str) -> bool:
@@ -316,8 +321,7 @@ def unmarked(text: str) -> str:
         at += 1
     if not opens(text, at):
         return text
-    at += 1
-    while at < len(text) and text[at] in BLANKS:
+    while at < len(text) and (text[at] in OPERATORS or text[at] in BLANKS):
         at += 1
     return text[at:]
 

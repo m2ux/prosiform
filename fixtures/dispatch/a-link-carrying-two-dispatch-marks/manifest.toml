@@ -1,4 +1,4 @@
-description = "A link whose text opens with both the deferral mark and the dispatch mark is refused with a diagnostic naming the link, because each operator states how one compilation is carried out, so a link stating two states two contradictory things."
+description = "A link whose text opens with the dispatch mark and the parallel dispatch mark is refused with a diagnostic naming the link, because the two state two ways for one sub-agent to run, so a link stating both states two contradictory things."
 
 clauses = [
   "Link classification and resource handling — One operator per link",
@@ -16,6 +16,6 @@ exit_status = 1
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["one compilation"]
-reference = "¬ ⇉ the shared rules"
+reference = "⇉ ⫽ the shared rules"
 source = "guide.md:3"
 chain = ["guide.md", "rules.md"]
