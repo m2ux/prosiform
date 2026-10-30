@@ -31,18 +31,23 @@ A key is the identity a reference normalized to, so `./rules.md` and `rules.md` 
 
 The substitute is the target outright: its title, its group and depth, its own root and its own links are the ones the run uses, and the bundle reads as if the author had written its path in the link.
 
+The mapping is consulted on the identity a reference normalized to, before the root decides what the run does with it. A reference the root refuses is a citation the bundle carries as text — unless a key names it, in which case the run reads the substitute and the citation is compiled like any dependency. The mapping never widens what a source's root permits; a substitute is simply exempt from it.
+
 ```mermaid
 flowchart TD
   Ref["a reference in selected content"] --> Scheme{"carries a scheme<br/>or an authority?"}
   Scheme -- yes --> Text["text: carried as authored, never opened"]
-  Scheme -- no --> Root{"resolves under its<br/>author's root?"}
+  Scheme -- no --> Mapped{"a mapping key names<br/>its identity?"}
+  Mapped -- yes --> Sub["substitute: read from the invocation<br/>working directory, exempt from the author's root"]
+  Mapped -- no --> Root{"resolves under its<br/>author's root?"}
   Root -- no --> Text
   Root -- yes --> Kind{"names Markdown,<br/>a document or a section?"}
   Kind -- no --> Text
   Kind -- yes --> Dep["dependency: followed,<br/>bundled, rewritten"]
+  Sub --> Kind
 ```
 
-*Figure 1. Three Questions Decide What a Reference Becomes, and Text Is the Answer to Any of Them.*
+*Figure 1. A Mapping Key Is Asked First, Then Three Questions Decide What a Reference Becomes, and Text Is the Answer to Any of Them.*
 
 ## Selection by reference
 
