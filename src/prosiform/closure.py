@@ -180,25 +180,30 @@ class Substitution:
         walk, and what stays is the text the reference was written as,
         because that is what a diagnostic about the link names.
         """
-        if not self.keys or found.external:
-            return found
-        substitute = self.keys.get((found.path, found.fragment))
-        if substitute is not None:
-            return Reference(
-                found.original,
-                substitute.path,
-                substitute.fragment,
-                walk=substitute.walk,
-            )
-        covering = self.keys.get((found.path, None))
-        if covering is None:
+        named = self.key(found)
+        if named is None:
             return found
         return Reference(
             found.original,
-            covering.path,
-            found.fragment,
-            walk=covering.walk,
+            named.path,
+            found.fragment if named.fragment is None else named.fragment,
+            walk=named.walk,
         )
+
+    def key(self, found: Reference) -> Reference | None:
+        """The substitute one resolved reference's identity names, or nothing.
+
+        A caller for which "the mapping named this" and "the mapping did
+        not" are different outcomes asks this rather than comparing what
+        `substitute` returned, so no case turns on two references being
+        the same object.
+        """
+        if not self.keys or found.external:
+            return None
+        found_exactly = self.keys.get((found.path, found.fragment))
+        if found_exactly is not None:
+            return found_exactly
+        return self.keys.get((found.path, None))
 
 
 UNSUBSTITUTED = Substitution({})
@@ -489,15 +494,34 @@ def inside(
 
     A link is the path a reader of its file follows, so it resolves from
     that file's directory. The root bounds the result: a path landing
-    outside it names nothing the root can contain. A fragment with no
-    path names a section of the document that carries it.
+    outside it names nothing the root can contain, so it is a citation
+    rather than a dependency. A fragment with no path names a section
+    of the document that carries it.
 
-    The mapping names what the reference resolves to instead, and is
-    read after the root check: a substitute is exempt from the writing
-    source's root, so reading the mapping first would refuse every
-    substitute kept beside the tree under test, which is the case the
-    parameter exists for. What the check was held against is the
-    authored path, and what a caller receives is the substitute's.
+    The mapping is consulted on the identity the reference normalized
+    to, which is the authored identity and never the substitute's: it
+    decides what an identity names, and the root decides what the run
+    does with that identity. A reference the root admits is redirected
+    to the substitute, and so is one the root refuses — a citation can
+    name a stand-in, which is what makes a tree under test reachable
+    from outside its own root. A reference no key names is returned as
+    it resolved, or refused as `OutsideRoot` where the root does not
+    hold it.
+
+    The substitute is exempt from the writing source's root and is
+    never held to it. It is opened through the bounded no-follow walk
+    from the invocation working directory, which is the same access a
+    positional entry takes, so a redirected citation is no wider a
+    grant than an entry reference already is. Holding the substitute to
+    the writing source's root, or reading the mapping after the check
+    had refused the authored path, would refuse every substitute kept
+    beside the tree under test.
+
+    A remote reference is returned before the mapping is consulted: a
+    key is the identity a reference normalized to, and a reference
+    carrying a scheme or an authority names no local path identity for
+    one to match. That is a decision rather than an omission, and the
+    one exception the reach of the mapping has.
     """
     base = posixpath.dirname(document)
     found = resolve(text, base, allow_parent=True)
@@ -505,13 +529,15 @@ def inside(
         return found
     if not components(text).path:
         return substitution.substitute(replace(found, path=document, walk=document))
+    resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
+    if substitution.key(resolved) is not None:
+        return substitution.substitute(resolved)
     if not covers(root, found.path):
         raise OutsideRoot(
             "normalizes above the allowed source root, which cannot contain "
             "the document it names"
         )
-    resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
-    return substitution.substitute(resolved)
+    return resolved
 
 
 def bundled(
