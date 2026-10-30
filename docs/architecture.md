@@ -6,6 +6,29 @@ Prosiform chases them ahead of time. Given a document, or a section of one, it r
 
 The work of producing it is a **run**: read the files, follow the links, arrange the result, check it, write it out. This page names the parts of a run in the order they happen, and each section is the outline of a page that states one part in full.
 
+```mermaid
+flowchart LR
+  Entry["Entry references<br/><i>pf SKILL.md</i>"] --> Capture["Capture each source"]
+  Capture --> Closure["Resolve the closure"]
+  Closure --> Arrange["Arrange groups<br/>and headings"]
+  Arrange --> Validate["Validate<br/>the candidate"]
+  Validate --> Publish["Publish<br/>the run folder"]
+```
+
+*Figure 1. One Run, from Entry References to a Published Folder.*
+
+## The words on these pages
+
+Every term the contract uses has one meaning, defined once in the [glossary](glossary.md). These are the ones the rest of this page leans on.
+
+| Word | Means |
+| --- | --- |
+| **source** | one Markdown file the run reads |
+| **reference** | a link inside a source |
+| **section** | one heading and everything beneath it, up to the next heading of the same or a higher level |
+| **bundle** | the single Markdown file a run produces |
+| **run** | one invocation, which produces a folder of bundles |
+
 ## A run, end to end
 
 A skill's entry point names one procedure. The procedure links the rules it is held to. The run is `pf SKILL.md`, and the three files become one bundle.
@@ -23,32 +46,20 @@ What changed is worth naming, because it is what the rest of these pages explain
 - `rules.md` joined the same way, its `## Tests` one level lower than its author wrote it.
 - Both links were repointed from a path to a heading, so neither needs the file it used to name.
 
-## The words on these pages
-
-Every term the contract uses has one meaning, defined once in the [glossary](glossary.md). These are the ones the rest of this page leans on.
-
-| Word | Means |
-| --- | --- |
-| **source** | one Markdown file the run reads |
-| **reference** | a link inside a source |
-| **section** | one heading and everything beneath it, up to the next heading of the same or a higher level |
-| **bundle** | the single Markdown file a run produces |
-| **run** | one invocation, which produces a folder of bundles |
-
-```mermaid
-flowchart LR
-  Entry[Entry references] --> Capture[Capture each source]
-  Capture --> Closure[Resolve the closure]
-  Closure --> Arrange[Arrange groups and headings]
-  Arrange --> Validate[Validate the candidate]
-  Validate --> Publish[Publish the run folder]
-```
-
-*Figure 1. One Run, from Entry References to a Published Folder.*
-
 ## Source
 
 The run's raw material is Markdown files on disk. Each one it opens is a **source**, read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it — which is why `modes/review.md` above could reach `rules.md` one directory up, and why its own frontmatter is absent from the bundle.
+
+```mermaid
+flowchart LR
+  Doc["modes/review.md"]
+  Doc -- "its own root: .." --> Root{{"the root it may reach"}}
+  Root -- "inside" --> Rules["rules.md<br/><i>followed</i>"]
+  Root -. "outside" .-> Outside["../library/guide.md<br/><i>cited, not opened</i>"]
+  Doc -- "read once" --> Copy["the run's copy<br/><i>bytes, hash, metadata</i>"]
+```
+
+*Figure 2. A Source Is Read Once, and Its Root Decides What It May Reach.*
 
 [Sources](sources.md) covers capture, roots, frontmatter and the Markdown profile.
 
@@ -56,11 +67,35 @@ The run's raw material is Markdown files on disk. Each one it opens is a **sourc
 
 The links inside a source are what the run follows. Each is a **reference**. Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together.
 
+```mermaid
+flowchart LR
+  Link["one link<br/>in a source"] --> Ask{"under the root,<br/>naming Markdown?"}
+  Ask -- "no" --> Text["<b>text</b><br/><i>carried as authored</i>"]
+  Ask -- "yes" --> Mark{"opens with<br/>¬ ⇉ or ⫽ ?"}
+  Mark -- "nothing" --> Dep["<b>dependency</b><br/><i>content in this bundle</i>"]
+  Mark -- "¬" --> Defer["<b>deferral</b><br/><i>a later run</i>"]
+  Mark -- "⇉" --> Disp["<b>dispatch</b><br/><i>a bundle of its own</i>"]
+  Mark -- "⫽" --> Par["<b>parallel dispatch</b><br/><i>several at once</i>"]
+```
+
+*Figure 3. A Reference Is Either Followed, Carried, or Withheld.*
+
 [References](references.md) covers each class, the operators, and what is never followed.
 
 ## Selection
 
 Following the links answers which files join the bundle. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and orders the documents by where they were first named.
+
+```mermaid
+flowchart LR
+  A["[Rules](../rules.md)"] --> W["whole document"]
+  B["[Detail](rules.md#detail)"] --> S["one section"]
+  W --> U["<b>one selection</b><br/><i>each region once</i>"]
+  S --> U
+  U --> O["<b>an order</b><br/><i>first reference wins</i>"]
+```
+
+*Figure 4. Overlapping References Settle into One Selection, in a Stated Order.*
 
 [Selection](selection.md) covers closure, consolidation and order.
 
@@ -68,11 +103,40 @@ Following the links answers which files join the bundle. It also has to answer w
 
 A bundle is one Markdown document, so everything in it shares one heading tree. Every contributing source becomes one top-level division, headed by its title. Documents that declare one **group** in their metadata are merged under a single heading instead, and source headings move down a level beneath whichever heading they land under.
 
+```mermaid
+flowchart TB
+  Bundle["<b>the bundle</b><br/><i>one heading tree</i>"]
+  Bundle --> F1["# Work Planner<br/><i>a file heading</i>"]
+  Bundle --> F2["# Rules<br/><i>a file heading</i>"]
+  Bundle --> G["# Artifacts<br/><i>a declared group</i>"]
+  G --> M1["## Overview<br/><i>one heading per member</i>"]
+  G --> M2["## Queue<br/><i>a merged section</i>"]
+```
+
+*Figure 5. Every Source Becomes One Division, Unless It Declares a Group.*
+
 [Hierarchy](hierarchy.md) covers file headings, grouping, variants and depth.
 
 ## Destination
 
 A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a **destination** — the fragment a Markdown renderer generates for it — and each compiled link is rewritten to the destination of what it named. Nothing else is rewritten.
+
+```mermaid
+flowchart LR
+  subgraph Before["in the source"]
+    L1["[Rules](../rules.md#tests)"]
+    H1["## Tests"]
+  end
+  subgraph After["in the bundle"]
+    H2["### Tests"]
+    L2["[Rules](#tests)"]
+  end
+  L1 -- "resolved to" --> H1
+  H1 -- "emitted as, then named" --> H2
+  H2 -- "named, then followed by" --> L2
+```
+
+*Figure 6. The Heading Is Renamed Where It Lands, and the Link Follows It.*
 
 [Destinations](destinations.md) covers slugs, ordinals and rewriting.
 
@@ -80,16 +144,44 @@ A reader finds their way around a Markdown document by its headings. When a sect
 
 Some material is meant for a different agent rather than for the reader of this bundle. A **dispatch** hands it over: the target is compiled as a bundle of its own in the same run folder, and the section that dispatched it says which bundle to follow.
 
+```mermaid
+flowchart LR
+  Link["[⇉ Publish](publish.md)"] -- "withheld from<br/>the bundle carrying it" --> Target["<b>publish.bundle.md</b><br/><i>compiled on its own</i>"]
+  Entry["<b>the entry's bundle</b>"] -- "a sub-section names it" --> Target
+  Target -- "a sub-agent follows it" --> Agent["<b>the other agent</b><br/><i>its own context</i>"]
+```
+
+*Figure 7. Withheld Here, Compiled There, Followed by Another Agent.*
+
 [Dispatch](dispatch.md) covers sub-sections, the protocol, depth and cycles.
 
 ## Bundle
 
 The run's output reaches disk as files. The run writes them into one folder of its own, named for its entry, and swaps that folder in whole, so a reader sees one run's output or the previous one, never a mixture. Nothing else in the output folder is touched.
 
+```mermaid
+flowchart LR
+  New["<b>the new set</b><br/><i>written whole beside</i>"] --> Swap["renamed onto<br/>the run folder's path"]
+  Old["<b>the earlier set</b>"] -. "renamed aside first" .-> Swap
+  Swap --> Done["<b>one set or the other</b><br/><i>never a mixture</i>"]
+  Swap -. "earlier set<br/>could not be removed" .-> Warn["<i>published, with a warning</i>"]
+```
+
+*Figure 8. The Whole Set Is Written, Then Swapped In.*
+
 [Bundles](bundles.md) covers derived names, publication and delivery.
 
 ## Validation
 
 A bundle that is subtly wrong is worse than no bundle, because a reader has no way to notice. Nothing is therefore published before every bundle of the run has been built and checked. A run that fails writes nothing and reports a diagnostic on standard error, with a stable code and an exit status that says what kind of failure it was.
+
+```mermaid
+flowchart TB
+  Candidate["<b>the candidate</b><br/><i>built, not yet published</i>"] --> Checks{"every invariant<br/>holds?"}
+  Checks -- "yes" --> Publish["<b>published</b><br/><i>exit 0</i>"]
+  Checks -- "no" --> Nothing["<b>nothing written</b><br/><i>diagnostics on stderr, exit 1–4</i>"]
+```
+
+*Figure 9. Checked Before Written, and a Failure Writes Nothing.*
 
 [Validation](validation.md) covers the invariants, the diagnostics and the budgets.
