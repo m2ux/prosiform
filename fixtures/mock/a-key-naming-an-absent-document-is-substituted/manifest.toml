@@ -1,0 +1,15 @@
+description = "A key naming a document the tree does not hold compiles its substitute and publishes, because the reference is redirected before any source is read, which is what makes an artifact under authoring testable."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE, given once per pairing and repeatable",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=stub.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

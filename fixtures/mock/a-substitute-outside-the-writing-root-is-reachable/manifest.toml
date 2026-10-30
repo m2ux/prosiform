@@ -1,0 +1,15 @@
+description = "A mock value carrying a parent segment reaches a substitute beside the source tree whose declared root cannot contain it, which is what the parameter exists for."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE, both sides read from the working directory",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=../stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -80,7 +80,9 @@ from prosiform.bundle import (
     escaped,
 )
 from prosiform.closure import (
+    UNSUBSTITUTED,
     Reference,
+    Substitution,
     deferred,
     dispatched,
     identity,
@@ -416,7 +418,11 @@ def link_text(children: Sequence[Token], at: int) -> str:
 
 
 def written_in(
-    path: str, source: Source, tokens: Sequence[Token], region: Token
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    region: Token,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Link]:
     """Every dispatched link one region writes, in written order."""
     found: list[Link] = []
@@ -431,7 +437,7 @@ def written_in(
                 # later, so this bundle names no sub-section for it.
                 continue
             destination = str(child.attrGet("href") or "")
-            target = withheld(path, destination, opening, source.root)
+            target = withheld(path, destination, opening, source.root, substitution)
             if target is None:
                 continue
             found.append(
@@ -476,11 +482,13 @@ class Placing:
         read: Mapping[str, Source],
         bundle_file: Callable[[Target], str],
         operators: Collection[bool],
+        substitution: Substitution = UNSUBSTITUTED,
     ) -> None:
         self.parsed = parsed
         self.read = read
         self.bundle_file = bundle_file
         self.operators = operators
+        self.substitution = substitution
         self.opened = False
         self.placed: Placed = {}
         self.at = 0
@@ -614,7 +622,13 @@ class Placing:
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
                 key = (part.path, part.lines[0])
-                for link in written_in(part.path, self.read[part.path], tokens, region):
+                for link in written_in(
+                    part.path,
+                    self.read[part.path],
+                    tokens,
+                    region,
+                    self.substitution,
+                ):
                     self.pending.setdefault(link.served, link)
                     if (key, link.served) not in self.serving:
                         self.serving.append((key, link.served))
@@ -635,6 +649,7 @@ def subsections(
     parsed: Mapping[str, Sequence[Token]],
     read: Mapping[str, Source],
     bundle_file: Callable[[Target], str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[list[Group], Placed]:
     """Every group with the bundle's generated sections, and where each one stands.
 
@@ -656,9 +671,10 @@ def subsections(
             read[part.path],
             parsed[part.path],
             region_of(parsed[part.path], part),
+            substitution,
         )
     }
-    placing = Placing(parsed, read, bundle_file, operators)
+    placing = Placing(parsed, read, bundle_file, operators, substitution)
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.placed
 

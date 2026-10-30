@@ -18,8 +18,9 @@ syntax, and the bundle drops it."""
 
 import posixpath
 import re
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, replace
+from types import MappingProxyType
 from urllib.parse import quote
 
 from prosiform.profile import is_markdown
@@ -126,6 +127,82 @@ def identity(reference: Reference, base: str = "") -> str:
     if reference.fragment is None:
         return path
     return f"{path}{FRAGMENT}{reference.fragment}"
+
+
+@dataclass(frozen=True)
+class Substitution:
+    """The mapping from an authored identity to the reference the run reads instead.
+
+    A key is the identity a reference normalized to, so two spellings of
+    one path name one key. One lookup answers: the exact document and
+    section first, then the document alone, so a key carrying a fragment
+    redirects that section and a key naming the whole document covers it
+    and every fragment of it.
+
+    A lookup returns the substitute's reference whole — its path, its
+    section and its authored access walk — while the text the reference
+    was written as stays the author's, because that is what a diagnostic
+    about the link names.
+
+    The keys are held behind a read-only view, so a mapping is a value:
+    the same pairs name the same substitution however many stages read
+    it.
+    """
+
+    keys: Mapping[tuple[str, str | None], Reference]
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "keys", MappingProxyType(dict(self.keys)))
+
+    def __len__(self) -> int:
+        """How many keys the mapping holds."""
+        return len(self.keys)
+
+    def __bool__(self) -> bool:
+        """Whether the mapping redirects anything at all."""
+        return bool(self.keys)
+
+    def substitute(self, found: Reference) -> Reference:
+        """One resolved reference as the reference the mapping names instead.
+
+        A reference the mapping does not name, and one naming something
+        other than a local document, is returned as it resolved.
+
+        The lookup answers the exact document and section first, then
+        the document alone. A key the second lookup finds names a
+        document rather than a section, so it covers every fragment of
+        that document: the substitute's path is taken and the section
+        stays the one the reference named. A key the first lookup finds
+        states the section the run reads instead, so its section is the
+        substitute's whole.
+
+        What is taken is the substitute's path and its authored access
+        walk, and what stays is the text the reference was written as,
+        because that is what a diagnostic about the link names.
+        """
+        if not self.keys or found.external:
+            return found
+        substitute = self.keys.get((found.path, found.fragment))
+        if substitute is not None:
+            return Reference(
+                found.original,
+                substitute.path,
+                substitute.fragment,
+                walk=substitute.walk,
+            )
+        covering = self.keys.get((found.path, None))
+        if covering is None:
+            return found
+        return Reference(
+            found.original,
+            covering.path,
+            found.fragment,
+            walk=covering.walk,
+        )
+
+
+UNSUBSTITUTED = Substitution({})
+"""The mapping a run given no `-m` carries, which redirects nothing."""
 
 
 @dataclass(frozen=True)
@@ -402,29 +479,48 @@ def covers(root: str, path: str) -> bool:
     return posixpath.commonpath((held, named)) == held
 
 
-def inside(document: str, text: str, root: str = "") -> Reference:
+def inside(
+    document: str,
+    text: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+) -> Reference:
     """Resolve a link from the file that carries it, within the source root.
 
     A link is the path a reader of its file follows, so it resolves from
     that file's directory. The root bounds the result: a path landing
     outside it names nothing the root can contain. A fragment with no
     path names a section of the document that carries it.
+
+    The mapping names what the reference resolves to instead, and is
+    read after the root check: a substitute is exempt from the writing
+    source's root, so reading the mapping first would refuse every
+    substitute kept beside the tree under test, which is the case the
+    parameter exists for. What the check was held against is the
+    authored path, and what a caller receives is the substitute's.
     """
     base = posixpath.dirname(document)
     found = resolve(text, base, allow_parent=True)
     if found.external:
         return found
     if not components(text).path:
-        return replace(found, path=document, walk=document)
+        return substitution.substitute(replace(found, path=document, walk=document))
     if not covers(root, found.path):
         raise OutsideRoot(
             "normalizes above the allowed source root, which cannot contain "
             "the document it names"
         )
-    return replace(found, walk=posixpath.join(base, found.walk or found.path))
+    resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
+    return substitution.substitute(resolved)
 
 
-def bundled(document: str, text: str, opening: str, root: str = "") -> Reference | None:
+def bundled(
+    document: str,
+    text: str,
+    opening: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+) -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
     A dependency carries no scheme and no authority, normalizes under
@@ -451,11 +547,15 @@ def bundled(document: str, text: str, opening: str, root: str = "") -> Reference
     """
     if withholding(opening):
         return None
-    return resolvable(document, text, root)
+    return resolvable(document, text, root, substitution)
 
 
 def withholding_target(
-    document: str, text: str, opening: str, root: str = ""
+    document: str,
+    text: str,
+    opening: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Reference | None:
     """The target one withheld link names, where the run is responsible for it.
 
@@ -479,10 +579,15 @@ def withholding_target(
     """
     if not withholding(opening):
         return None
-    return resolvable(document, text, root)
+    return resolvable(document, text, root, substitution)
 
 
-def resolvable(document: str, text: str, root: str = "") -> Reference | None:
+def resolvable(
+    document: str,
+    text: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+) -> Reference | None:
     """The target one link names, where it resolves under the root to a document.
 
     Such a reference carries no scheme and no authority, normalizes
@@ -497,7 +602,7 @@ def resolvable(document: str, text: str, root: str = "") -> Reference | None:
     caller reading the mark.
     """
     try:
-        found = inside(document, text, root)
+        found = inside(document, text, root, substitution)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):

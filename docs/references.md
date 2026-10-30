@@ -23,6 +23,14 @@ Everything else is carried as text and never opened:
 
 A bundle carrying any of these is still a successful run, and warns once that a resource it names may not be found where the bundle is read.
 
+## The substitution mapping
+
+`-m ORIGINAL=ALTERNATIVE` redirects a reference, so a bundle can be built against stand-in material without the tree under test being edited. It is given once per pairing.
+
+A key is the identity a reference normalized to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document, which covers the document and every fragment of it. Both sides resolve from the working directory, as a positional entry does, so a substitute kept outside the writing source's root is reachable — which is the case the parameter exists for.
+
+The substitute is the target outright: its title, its group and depth, its own root and its own links are the ones the run uses, and the bundle reads as if the author had written its path in the link.
+
 ```mermaid
 flowchart TD
   Ref["a reference in selected content"] --> Scheme{"carries a scheme<br/>or an authority?"}
