@@ -13,6 +13,8 @@ This record holds the delivery of W03: each departure the stub agent states, run
 | Artifact | What it holds |
 | --- | --- |
 | [W03 work item](w03.md) | The matrix: each departing script over every dispatch scenario in both forms, with the class each cell must read |
+| [Validation](validation.md) | Each check the work item's Test row names, with the revision it ran on and what it observed |
+| [Change list](change-list.md) | The plan changes this session met and those it held |
 
 ## Links
 
