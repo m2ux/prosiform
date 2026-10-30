@@ -4,7 +4,7 @@ Every corpus fixture this epic lands, the row that lands it, and the criterion i
 
 ## The family
 
-All fourteen sit under a new `fixtures/mock/` family. Each declares a `source/` tree, an `expected/stdout.md`, and a `manifest.toml` naming the design clause W00 lands.
+All nineteen sit under a new `fixtures/mock/` family. Each declares a `source/` tree, an `expected/stdout.md`, and a `manifest.toml` naming the design clause W00 lands.
 
 Two family-wide obligations:
 
@@ -17,6 +17,8 @@ Two family-wide obligations:
 | --- | --- | --- |
 | `a-mocked-dependency-is-compiled` | AC1 | A compiled link resolves to the substitute, which is bundled under its own file heading, with `W_MOCK_SUBSTITUTED` naming the link. |
 | `a-substitute-outside-the-writing-root-is-reachable` | AC11 | A source declaring `root: .` reaches a substitute beside its tree, which the same run without `-m` refuses as `E_TARGET_NOT_FOUND`. This is the feature's justification, and no unit test can show it. |
+| `a-key-naming-an-absent-document-is-substituted` | AC18 | A key naming a document that does not exist compiles its substitute, where the same run without `-m` fails `E_TARGET_NOT_FOUND`. This is what makes an artifact under authoring testable before it lands. |
+| `a-substitute-above-the-working-directory-is-reachable` | AC20 | A mapping value carrying `..` reads a stub above the working directory, and the warning names it by that path. |
 
 AC15 is the option's row in `invocation.md`, held to the help output by `make invocation` rather than by a corpus fixture.
 
@@ -34,12 +36,13 @@ AC15 is the option's row in `invocation.md`, held to the help output by `make in
 | `a-redirected-entry-derives-its-name-from-the-substitute` | AC2 | The run publishes `stand-in.bundle.md`, and `absent` names `entry.bundle.md`. |
 | `a-redirected-referrer-carries-its-entry` | AC13 | A fragment-only entry resolves its section against the substituted referrer. |
 
-## W04 — Substitution warnings
+## W04 — Substitution warnings and check mode
 
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
 | `a-substitution-warns-with-its-target` | AC7 | One `W_MOCK_SUBSTITUTED` per target however many references the key served, with `location`, `source` and `resolved`. |
 | `an-unused-key-warns-and-publishes` | AC8 | `W_MOCK_UNUSED` with exit `0` and a published bundle. |
+| `a-mocked-check-publishes-nothing` | AC19 | `-c` with a mapping resolves and warns exactly as a publishing run does, and `absent` names the output path. |
 
 ## W05 — Withheld and dispatched targets
 
@@ -61,6 +64,13 @@ AC15 is the option's row in `invocation.md`, held to the help output by `make in
 | --- | --- | --- |
 | `a-substitute-declaring-a-group-joins-it` | AC5 | The substitute's own `group` and `group-depth` decide its membership, and its section appears under its own member heading. |
 | `a-substitute-root-bounds-its-own-links` | AC6 | The substitute's declared root bounds its outgoing links, so a link above it stays a citation. |
+
+## W08 — The example skill over the mechanism
+
+| Fixture | Criterion | Declares |
+| --- | --- | --- |
+| `an-example-mode-bundled-against-a-stub` | AC21 | `plan-mode.md` bundles against a stubbed `artifacts/epic.md`, and the example tree is byte-identical afterwards. |
+| `an-example-skill-told-to-use-a-fake-gh` | AC22 | A redirected `conventions.md` names `./fake-gh`, so an agent following the bundle runs the fake while every other instruction stays real. |
 
 ## Why the last two families carry no fixture
 

@@ -6,9 +6,9 @@
 
 This record holds the plan for I05:E09: a `-m ORIGINAL=ALTERNATIVE` invocation parameter that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It is the ninth epic of I05, the standing initiative for ad hoc feature enhancements.
 
-The epic is eight tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the two mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; and W07 treats the substitute as a source in its own right.
+The epic is nine tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the two mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; W07 treats the substitute as a source in its own right; and W08 applies the mechanism to the example work-planner skill, bundling its modes against stub artifacts and a fake `gh`.
 
-Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Fourteen fixtures across a new `fixtures/mock/` family, and every one names the clause W00 lands.
+Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Nineteen fixtures across a new `fixtures/mock/` family, and every one names the clause W00 lands.
 
 ## Artifacts
 
@@ -23,6 +23,7 @@ Each fixture lands in the pull request that makes it pass, so it is written agai
 | [W05 work item](w05.md) | Withheld and dispatched targets |
 | [W06 work item](w06.md) | Section keys and the end of chaining |
 | [W07 work item](w07.md) | The substitute as a source in its own right |
+| [W08 work item](w08.md) | The example skill bundled against stubs and a fake `gh` |
 | [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
 | [Fixture inventory](fixtures.md) | Every fixture the epic lands, and the row that lands it |
 
@@ -69,8 +70,11 @@ A mocked bundle is otherwise the same kind of output as a real one, so the run s
 - **A key redirecting a document to itself is refused as invalid usage.** (User, 2026-10-30.)
 - **An epic under I05, not a new initiative.** I05 exists to hold ad hoc enhancements, and this is one self-contained addition to link resolution. (User, 2026-10-30.)
 - **Priority 5.** The epic has no prerequisite epic and no component contention, so it can start at any time; 5 places it behind the epics already in flight. (User, 2026-10-30.)
+- **The mapping is specified on the command line, not in TOML or JSON.** A file format would be a second input language in a tool that reads only Markdown and its own frontmatter, needing its own parser and its own diagnostics. If a checked profile is ever needed, it arrives as a line list read by the existing value parser rather than as a structured document. (User, 2026-10-30.)
 - **The mapping and the option are one row.** A mapping nothing can be passed is unobservable and an option with nowhere to put its pairs is unused, so W01 carries both and declares `closure.py` as its component with `cli.py` named in its body. The grain rule bends for a row that must be invocable. (User, 2026-10-30.)
 - **The design clause merges to `engineering` before the pin moves.** Conformance reads the design at the pinned commit, so the amendment must exist before the pin can name it. The Open Question is settled. (User, 2026-10-30.)
+- **Three capabilities already true by construction are stated and pinned.** A key may name a document that does not exist, a mapping value may carry a parent segment, and a mapping applies under `-c`. Each follows from where the seam sits, and a later refactor could remove it silently. (User, 2026-10-30.)
+- **The example skill's scenarios are W08 of this epic.** The mechanism and its first consumer land together, so the mapping is proven against real material rather than only against purpose-built fixtures. (User, 2026-10-30.)
 
 ## Review
 

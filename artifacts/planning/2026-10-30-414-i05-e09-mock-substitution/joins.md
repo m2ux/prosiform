@@ -17,3 +17,8 @@ Pairs of independent rows that do not share a pull request, and why.
 - E09:W05 and E09:W06 take separate pull requests: W06 redirects compiled targets by section, and W05 redirects the targets a run resolves without compiling.
 - E09:W05 and E09:W07 take separate pull requests: W07 governs the substitute's outgoing links, and W05 governs the link that reaches it.
 - E09:W06 and E09:W07 take separate pull requests: W07 reads the substitute's own declarations, which W06 never inspects because it ends at the reference the source wrote.
+- E09:W02 and E09:W08 take separate pull requests: W08 consumes a mapping that already works, and W02 refuses the two shapes that state nothing.
+- E09:W03 and E09:W08 take separate pull requests: W08 redirects artifact links inside the tree, and W03 redirects the document a run starts from.
+- E09:W05 and E09:W08 take separate pull requests: W08 compiles the targets its mapping names and W05 withholds them.
+- E09:W06 and E09:W08 take separate pull requests: W08 redirects whole artifacts, and W06 redirects a section within one.
+- E09:W07 and E09:W08 take separate pull requests: W07 decides which group a substitute joins, and W08 leaves every stub in the group its own metadata declares.
