@@ -31,8 +31,22 @@ from run import (
     options,
     run,
 )
-from score import ACTIONS, SUBAGENTS, TRACE, Start, read_starts
-from workflow import ENTRY, ENTRY_BUNDLE, LINKED_FORM, CorpusError, workflows
+from score import (
+    ACTIONS,
+    RETURNED_DONE,
+    SUBAGENTS,
+    TRACE,
+    Failure,
+    Start,
+    read_starts,
+)
+from workflow import (
+    ENTRY,
+    ENTRY_BUNDLE,
+    LINKED_FORM,
+    CorpusError,
+    workflows,
+)
 
 STUB = Path(__file__).resolve().parent / "stub_agent.py"
 CORPUS = {workflow.name: workflow for workflow in workflows()}
@@ -45,6 +59,44 @@ CALLER_VARIABLES = (
     "ANTHROPIC_BASE_URL",
 )
 DISPATCHING = ("dispatch-beside", "dispatch-chain", "dispatch-question", "dispatch-set")
+DISPATCH_FORMS = (COMPILED_SET, AUTHORED_SET)
+DISPATCH_SCENARIOS = tuple(
+    scenario.name for name in DISPATCHING for scenario in CORPUS[name].scenarios
+)
+"""The dispatch corpus's scenario names, one per dispatch workflow."""
+
+DEPARTURES: dict[str, tuple[str, dict[str, Failure | None]]] = {
+    "STUB_AGENT_NO_DISPATCH": (
+        "1",
+        dict.fromkeys(DISPATCH_SCENARIOS, Failure.UNDISPATCHED),
+    ),
+    "STUB_AGENT_SEQUENTIAL": (
+        "1",
+        {
+            "chain": None,
+            "parallel-set": Failure.SEQUENTIAL_SET,
+            "set-beside-a-dispatch": Failure.SEQUENTIAL_SET,
+            "returned-question": None,
+        },
+    ),
+    "STUB_AGENT_ANSWER": (
+        RETURNED_DONE,
+        {
+            "chain": None,
+            "parallel-set": None,
+            "set-beside-a-dispatch": None,
+            "returned-question": Failure.UNRELAYED_QUESTION,
+        },
+    ),
+    "STUB_AGENT_STOP": ("1", dict.fromkeys(DISPATCH_SCENARIOS, Failure.UNFINISHED)),
+}
+"""Each departure script, the value it reads, and the class it predicts per cell.
+
+A script states one departure, and a scenario states which of the checks that
+departure changes. A scenario whose trace the departure leaves as the
+scenario states predicts a pass, so a class that fires where its departure is
+absent fails here as surely as one that does not fire where it is present.
+"""
 
 
 def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
@@ -896,3 +948,53 @@ def test_a_scenario_dispatching_nothing_records_no_start(
     directory = session_of(record).directory(tmp_path / "results" / "test")
     assert (directory / SUBAGENTS).is_file()
     assert read_starts(directory) == ()
+
+
+def dispatch_run(tmp_path: Path) -> dict[tuple[str, str], dict[str, Any]]:
+    """A run over every dispatch scenario in both forms, by scenario and form."""
+    eval_run(
+        tmp_path,
+        *("--workflows", ",".join(DISPATCHING)),
+        *("--forms", ",".join(DISPATCH_FORMS)),
+        *("--repetitions", "1", "--budget-usd", "8"),
+    )
+    written = records(tmp_path)
+    cells = {(record["scenario"], record["form"]): record for record in written}
+    assert len(written) == len(cells) == len(DISPATCHING) * len(DISPATCH_FORMS)
+    return cells
+
+
+def test_the_departure_table_names_every_dispatch_scenario() -> None:
+    """Each script's predicted class is stated for the corpus the run walks."""
+    for departure, (_, predicted) in DEPARTURES.items():
+        assert set(predicted) == set(DISPATCH_SCENARIOS), departure
+
+
+@pytest.mark.parametrize("departure", DEPARTURES, ids=str)
+def test_a_departure_is_classified_across_every_dispatch_scenario(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, departure: str
+) -> None:
+    """AC4: each scenario in each form takes the class its script predicts."""
+    value, predicted = DEPARTURES[departure]
+    monkeypatch.setenv(departure, value)
+    cells = dispatch_run(tmp_path)
+    assert set(cells) == {
+        (scenario, form) for scenario in DISPATCH_SCENARIOS for form in DISPATCH_FORMS
+    }
+    for (scenario, form), record in cells.items():
+        verdict = record["verdict"]
+        due = predicted[scenario]
+        assert verdict["failure"] == (None if due is None else str(due)), (
+            f"{departure} over {scenario}/{form}: {verdict}"
+        )
+        assert verdict["passed"] is (due is None), verdict
+
+
+def test_a_clean_run_passes_every_dispatch_cell(tmp_path: Path, log: Path) -> None:
+    """AC4: with no departure scripted, every scenario in both forms passes."""
+    cells = dispatch_run(tmp_path)
+    for (scenario, form), record in cells.items():
+        verdict = record["verdict"]
+        assert verdict["passed"] is True, f"{scenario}/{form}: {verdict}"
+        assert verdict["failure"] is None
+        assert verdict["actual"] == verdict["expected"]
