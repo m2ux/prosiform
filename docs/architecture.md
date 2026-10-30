@@ -17,7 +17,7 @@ flowchart LR
 
 *Figure 1. One Run, from Entry References to a Published Folder.*
 
-## The words on these pages
+## Terms
 
 Every term the contract uses has one meaning, defined once in the [glossary](glossary.md). These are the ones the rest of this page leans on.
 
