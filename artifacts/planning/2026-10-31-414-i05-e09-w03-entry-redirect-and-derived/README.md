@@ -13,6 +13,9 @@ work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03 work item](w03.md) | The entry redirect, the derived name, and the two fixtures that state each |
+| [Validation](validation.md) | The evidence for every check the work item names, and the two that fail in a sandbox alone |
+| [Change list](change-list.md) | The plan changes this session applied, and the ones it held |
 
 ## Links
 
