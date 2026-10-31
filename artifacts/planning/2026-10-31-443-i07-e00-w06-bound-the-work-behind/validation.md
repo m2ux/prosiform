@@ -2,7 +2,7 @@
 
 > Evidence · 2026-10-31
 
-Every case below was run in the worktree `.worktrees/i07/e00/w06-bound-the-work-behind`, at branch `i07/e00/w06-bound-the-work-behind`, cut from `i07/e00/main` at `23882b7d` and fast-forwarded onto it at `de694350`. The branch merged as [#471](https://github.com/m2ux/prosiform/pull/471) into `i07/e00/main`.
+Every case below was run in the worktree `.worktrees/i07/e00/w06-bound-the-work-behind`, at branch `i07/e00/w06-bound-the-work-behind`, cut from `i07/e00/main` at `23882b7d` and fast-forwarded onto it at `de694350`. The branch merged as [#471](https://github.com/m2ux/prosiform/pull/471) into `i07/e00/main` at `46700605`.
 
 The build under test is named `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. Tooling ran under the sandbox by absolute path; `git fetch` and `git push` ran unsandboxed.
 

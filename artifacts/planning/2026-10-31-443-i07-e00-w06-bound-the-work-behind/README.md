@@ -21,7 +21,7 @@ the work item names, and the plan changes the session applied and held.
 
 | Resource | Link |
 | --- | --- |
-| Pull request | [#471](https://github.com/m2ux/prosiform/pull/471) — merged into `i07/e00/main` |
+| Pull request | [#471](https://github.com/m2ux/prosiform/pull/471) — merged into `i07/e00/main` at `46700605` |
 | Epic | [I07:E00 Review Remediation](https://github.com/m2ux/prosiform/issues/443) |
 | Initiative | [I07 Review Remediation](https://github.com/m2ux/prosiform/issues/442) |
 | Epic record | [I07 Review Remediation](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i07-review-remediation) |

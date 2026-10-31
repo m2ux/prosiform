@@ -18,7 +18,7 @@ The plan changes this session applied, the ones it held, and the technical debt 
 
 No finding moved between tasks, no task was created, closed or renumbered, and no criterion changed. The epic's disposition already carried findings 35 and 36 to W06, and the work item's Test row already named both cases, so the plan as written was followed.
 
-Epic delivery was recorded against the plan: row `W06` on [#443](https://github.com/m2ux/prosiform/issues/443) links [#471](https://github.com/m2ux/prosiform/pull/471) with Done ticked, and `AC13` and `AC14` are ticked there, each on the evidence the pull request's Test Plan cites.
+Epic delivery was recorded against the plan: row `W06` on [#443](https://github.com/m2ux/prosiform/issues/443) links [#471](https://github.com/m2ux/prosiform/pull/471), merged at `46700605`, with Done ticked, and `AC13` and `AC14` are ticked there, each on the evidence the pull request's Test Plan cites.
 
 ## A finding wider than the row states
 
