@@ -165,4 +165,8 @@ The count is six with and six without the change. The publication tests that fai
 
 **Ran:** `gh api` against the pull request, the epic, and the base.
 
-**Observed:** pull request [#447](https://github.com/m2ux/prosiform/pull/447) against base `i05/e09/main`, raised through REST, carrying the `bot:ai-assisted` label. Its `Checks` run is the evidence T9 defers to.
+**Observed:** pull request [#447](https://github.com/m2ux/prosiform/pull/447) against base `i05/e09/main`, raised through REST, carrying the `bot:ai-assisted` label. Its `Checks` run reported `success` on `f7900aff`, and the base's own run on the merge commit `3091c65b` reported `success` too. #447 merged into `i05/e09/main` at `3091c65b2e912fa1ead90a64a196828e9652773e`.
+
+Row `W05` on [#414](https://github.com/m2ux/prosiform/issues/414) now links #447 and is ticked done, with `AC4` ticked. The planner's `sync.py` made the edit, mapping `W05` to the pull request and ticking the criterion it was reported ready to verify.
+
+**The Development link is not set.** `addCloseIssueReferences` answered `Issue exceeds manual reference limit`: #414 already carries ten connected pull requests (425, 427, 428, 429, 430, 431, 433, 437, 438, 439, 440, 446 among the merged ones), which is GitHub's ceiling. The brief freed one reference for this row, but the ceiling was reached again by rows that landed while this one was in flight. No other row's record was unlinked, because the brief forbids it and the choice of which record to retire is the epic's rather than this row's.
