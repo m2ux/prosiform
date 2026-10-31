@@ -141,6 +141,31 @@ Three changes shorten the critical path, each taken because review attention is 
 
 The joins record accounts for every pair the changes made eligible. What remains on the critical path is Declared Inclusion: W01 through W08, with the corpus families and the documentation pages as consecutive bulk edits at its end.
 
+## Initiative criteria
+
+I05's criteria were a quality bar true of every epic forever, and the split renumbered the epics without replanning them. Every I08 row therefore cited all three bars, which made the Coverage column say the same thing nine times and left the initiative with no way to record partial delivery.
+
+The criteria are replanned at the initiative's own grain. Each states an outcome the epics realise together, not one an epic realises alone.
+
+| Criterion | Outcome | Served by |
+| --- | --- | --- |
+| AC1 | No argument reaches a run outside one grammar | E01, E02, E03, E04, E05 |
+| AC2 | Whether a reference is compiled follows from its target's declaration | E00 |
+| AC3 | A conversion setting reaches a compilation only through a named preset | E01, E06, E07 |
+| AC4 | A bundle can be carved by removing named sections | E02 |
+| AC5 | An excluded section contributes no dependency | E02 |
+| AC6 | Every ceiling is named rather than lettered | E05 |
+| AC7 | Every fault is driven by environment alone | E04 |
+| AC8 | The example and corpus trees state their settings in presets | E08 |
+| AC9 | Every added behaviour is reached by an end-to-end fixture | each epic adding surface |
+| AC10 | The documented surface describes every added behaviour | each epic adding surface |
+| AC11 | The checks pass on each delivering revision | every epic |
+| AC12 | The initiative may close once every epic is delivered | none; it is the closure condition |
+
+- **AC1, AC3, AC4, AC5, AC6, AC7 and AC8 are coarser than any epic's own criteria.** Each states what the argument surface achieves once several epics have landed, which is why several epics serve one.
+- **AC9, AC10 and AC11 survive from I05 deliberately.** They were bars rather than outcomes, and at initiative grain a quality gate over the whole surface is the right shape for them.
+- **AC12 is the only criterion no epic serves.** Closure rests on it and on the Done column, which is what makes partial delivery readable.
+
 ## Decisions
 
 - **Inclusion is target-side, on the frontmatter declaration.** A local Markdown link is a dependency when its target declares `prosiform`. (User, 2026-10-31.)
