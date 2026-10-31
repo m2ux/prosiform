@@ -1937,6 +1937,20 @@ def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     assert diagnostic["source"] == f"{member}:7"
 
 
+def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> None:
+    """A title no group emits carries its link as text, so nothing compiles it."""
+    written(root, "guide.md", "# Guide\n\nRead [the part](note.md#part).\n")
+    written(root, "note.md", "# Top [\u21c9 Plan](plan.md)\n\n## Part\n\nBody.\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == "note.md:1"
+    assert diagnostic["chain"] == ["guide.md", "note.md#part"]
+
+
 def test_a_dispatch_in_the_entry_s_own_title_still_publishes(root: Path) -> None:
     """The entry's title heads the bundle, so its sub-section stands beneath it."""
     written(root, "guide.md", "# Guide [\u21c9 Plan](plan.md)\n\nBody.\n")

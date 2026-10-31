@@ -92,11 +92,14 @@ from prosiform.bundle import (
     SPACE,
     Group,
     Overflow,
+    Unplaced,
     absorbed,
     ancestry,
     carried_headings,
+    dispatched_in,
     emitted_text,
     escaped,
+    line_of,
     region,
     required,
     rewrite,
@@ -215,6 +218,7 @@ class Member:
     ancestors: set[int]
     title: Token | None
     absorbing: Token | None
+    first_line: int = 1
     items: list[Item] = field(default_factory=list)
 
     def shift(self, at: int) -> int:
@@ -305,6 +309,7 @@ def prepared(
         needed,
         titled_token,
         absorbing,
+        first_line,
     )
     member.items = [
         Item(token, id(token) in needed)
@@ -373,6 +378,9 @@ def carried_part(
 
 def ancestor_part(member: Member, token: Token, by: int) -> tuple[str, Ancestor]:
     """One eligible ancestor the run did not select, emitted as a heading alone."""
+    held = dispatched_in(member.path, member.tokens, token, member.text)
+    if held is not None:
+        raise Unplaced(member.path, line_of(token, member.first_line), *held)
     depth = level(token) + by
     if depth > MAX_LEVEL:
         raise Overflow(member.text[id(token)], depth, member.path)

@@ -653,6 +653,34 @@ def converted(carried: Sequence[str], depth: int) -> str:
     return f"{opening_markers(carried[0])}{ATX * depth} {text}"
 
 
+def line_of(token: Token, first_line: int = 1) -> int:
+    """The line of the file one token opens on."""
+    return first_line if token.map is None else token.map[0] + first_line
+
+
+def dispatched_in(
+    path: str, tokens: Sequence[Token], token: Token, text: Mapping[int, str]
+) -> tuple[str, str] | None:
+    """The dispatch one heading carries, where it is emitted as text alone.
+
+    An ancestor heading the run did not select is emitted as its title and
+    nothing else, and a title is flattened to the one line an ATX heading
+    is. Its link is therefore no link in the bundle: nothing places a
+    sub-section for it, and the target it names is compiled by no run. The
+    text is read here rather than the copied line because the copy is what
+    the run publishes, while the dispatch is what the author wrote.
+    """
+    if token.type != HEADING_OPEN:
+        return None
+    for opening, inline in headings(tokens):
+        if opening is not token:
+            continue
+        for destination, opened in destinations(inline):
+            if dispatched(opened) and not deferred(opened):
+                return destination, opened
+    return None
+
+
 def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
     """Every heading one region holds, the region's own heading included."""
     start, end = token.map or (0, 0)
@@ -867,6 +895,14 @@ def group(
         if titled is not None and id(titled) in emitting
         else None
     )
+    if absorbing is None and not situate and titled is not None:
+        # The title stands above the selection, so the file heading carries
+        # its text as literal heading text. A dispatch it writes is then no
+        # link at all: nothing places a sub-section for it and no run
+        # compiles its target.
+        held = dispatched_in(path, tokens, titled, text)
+        if held is not None:
+            raise Unplaced(path, line_of(titled, first_line), *held)
     by = 0 if situate or absorbing is not None else SHIFT
     emitted = [] if situate else [f"{ATX} {escaped(title)}"]
     named = source_fragments(tokens)
@@ -897,6 +933,9 @@ def group(
     )
     for token in regions(tokens):
         if id(token) in needed:
+            held = dispatched_in(path, tokens, token, text)
+            if held is not None:
+                raise Unplaced(path, line_of(token, first_line), *held)
             depth = level(token) + by
             shows = single_line(text[id(token)])
             ancestor = Ancestor(
