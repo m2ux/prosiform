@@ -103,6 +103,10 @@ class Reference:
     names, which is why it sits here beside the location rather than in
     a record kept in step with the references it describes. An entry
     reference stands at the head of its own chain.
+
+    A reference a folder key derived also holds that key as its caller
+    wrote it, so the path it names is one no author wrote and the
+    diagnostic refusing that path can say which entry named it.
     """
 
     original: str
@@ -112,6 +116,7 @@ class Reference:
     origin: str | None = None
     chain: tuple[str, ...] = ()
     walk: str | None = None
+    folder: str | None = None
 
 
 @dataclass(frozen=True)
@@ -235,6 +240,11 @@ class Substitution:
     folder keys holding one path the longer answers, so the narrowest
     statement a caller wrote is the one that holds.
 
+    The substitute a folder key names is the reference it derived, and
+    that reference carries the key as its caller wrote it: the path it
+    names is no author's, and a diagnostic refusing it names the entry
+    that asked for it.
+
     A lookup returns the substitute's reference whole — its path, its
     section and its authored access walk — while the text the reference
     was written as stays the author's, because that is what a diagnostic
@@ -304,16 +314,21 @@ class Substitution:
 
         What is taken is the substitute's path and its authored access
         walk, and what stays is the text the reference was written as,
-        because that is what a diagnostic about the link names.
+        because that is what a diagnostic about the link names. A folder
+        key's derived reference keeps the spelling the caller wrote it
+        with, so the path nobody authored can be reported against the
+        entry that asked for it.
         """
-        named = self.key(found)
-        if named is None:
+        answering = self.answering(found)
+        if answering is None:
             return found
+        _key, named = answering
         return Reference(
             found.original,
             named.path,
             found.fragment if named.fragment is None else named.fragment,
             walk=named.walk,
+            folder=named.folder,
         )
 
     def redirect(self, found: Reference, origin: str | None = None) -> Reference:
@@ -329,10 +344,18 @@ class Substitution:
         stage that resolves the same link again records the same key and
         adds no position of its own, so which caller answers does not
         change what the record states.
+
+        A substitute naming no Markdown document is text the bundle
+        carries as authored, so the redirect takes no effect and the key
+        is not served by it: a key that answered only such references
+        substituted nothing. A document key's substitute is held to
+        naming a Markdown document when the mapping is read, so this is
+        reached by a folder key whose derived remainder is a resource.
         """
         named = self.substitute(found)
-        if named is not found:
-            self.redirects.record(self.served_key(found), named, found, origin)
+        if named is found or not is_markdown(named.path):
+            return named
+        self.redirects.record(self.served_key(found), named, found, origin)
         return named
 
     def served_key(self, found: Reference) -> tuple[str, str | None]:
@@ -380,6 +403,7 @@ class Substitution:
                 substitute.original,
                 posixpath.join(substitute.path, remainder),
                 walk=posixpath.join(substitute.walk or substitute.path, remainder),
+                folder=self.spelling((folder, None)),
             ),
         )
 

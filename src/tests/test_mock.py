@@ -559,6 +559,71 @@ def test_a_folder_key_and_a_document_key_of_one_path_serve_together(
     assert "# Red stand-in" not in published
 
 
+def test_a_folder_substitute_that_is_absent_is_refused(paired: Path) -> None:
+    """A derived path nobody wrote is refused where the reference resolves."""
+    (paired / "stubs" / "blue.md").unlink()
+    status, said = refused(
+        paired, "-m", "rules/=stubs/", "-o", str(paired / "out"), "guide.md"
+    )
+    assert status == 1
+    assert [one["code"] for one in said] == ["E_TARGET_NOT_FOUND"]
+
+
+def test_a_folder_substitute_that_is_absent_names_all_three(paired: Path) -> None:
+    """The reference, the key and the path: nobody authored the third to be obvious."""
+    (paired / "stubs" / "blue.md").unlink()
+    _status, said = refused(
+        paired, "-m", "rules/=stubs/", "-o", str(paired / "out"), "guide.md"
+    )
+    fault = said[0]
+    assert fault["reference"] == "rules/blue.md"
+    assert fault["resolved"] == "stubs/blue.md"
+    assert "rules/" in fault["message"]
+    assert "stubs/blue.md" in fault["message"]
+
+
+def test_a_folder_substitute_that_is_absent_publishes_nothing(paired: Path) -> None:
+    """The refusal is raised where the reference resolves, before a bundle exists."""
+    (paired / "stubs" / "blue.md").unlink()
+    status, published = invoke(paired, "-m", "rules/=stubs/", "guide.md")
+    assert status == 1
+    assert published == ""
+
+
+def test_a_document_key_naming_an_absent_document_keeps_its_shape(tree: Path) -> None:
+    """A document key's absence is refused as every other absent target is."""
+    (tree / "guide.md").write_text("# Guide\n\nSee [the rules](absent.md).\n")
+    _status, said = refused(tree, "-o", str(tree / "out"), "guide.md")
+    assert "mapping key" not in said[0]["message"]
+    assert "resolved" not in said[0]
+
+
+def test_a_folder_key_answering_only_text_is_unused(paired: Path) -> None:
+    """A folder whose references are all text was consulted by no compiled reference."""
+    (paired / "guide.md").write_text("# Guide\n\nSee [the note](rules/notes.txt).\n")
+    (paired / "rules" / "notes.txt").write_text("note\n")
+    (paired / "stubs" / "notes.txt").write_text("note\n")
+    status, _published, said = grouped(paired, "-m", "rules/=stubs/", "guide.md")
+    assert status == 0
+    assert [one["code"] for one in said] == [
+        "W_RESOURCE_PORTABILITY",
+        "W_MOCK_UNUSED",
+    ]
+    assert said[1]["source"] == "rules/"
+
+
+def test_a_folder_key_answering_only_text_publishes_the_reference_as_authored(
+    paired: Path,
+) -> None:
+    """Text is text, so the link publishes with the destination authored."""
+    (paired / "guide.md").write_text("# Guide\n\nSee [the note](rules/notes.txt).\n")
+    (paired / "rules" / "notes.txt").write_text("note\n")
+    (paired / "stubs" / "notes.txt").write_text("note\n")
+    _status, published, _said = grouped(paired, "-m", "rules/=stubs/", "guide.md")
+    assert "(rules/notes.txt)" in published
+    assert "stubs/notes.txt" not in published
+
+
 def test_two_spellings_of_one_key_are_refused_naming_both(tree: Path) -> None:
     """The message names the two options to edit, not the identity they share."""
     status, voices = refused(

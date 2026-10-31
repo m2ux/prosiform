@@ -835,10 +835,15 @@ def read_document(
         ) from linked
     except Absent as absent:
         raise input_failure(
-            f"{written} {reference!r} names no document under the allowed source root",
+            missing(found),
             code=TARGET_NOT_FOUND,
-            remedy="name a document the source root carries",
+            remedy=(
+                "name a folder whose documents the key's remainder reaches"
+                if found.folder is not None
+                else "name a document the source root carries"
+            ),
             reference=reference,
+            resolved=name if found.folder is not None else None,
             source=found.origin,
             chain=chain,
         ) from absent
@@ -927,6 +932,27 @@ def read_document(
             source=location(name, unclosed.line),
             chain=chain,
         ) from unclosed
+
+
+def missing(found: Reference) -> str:
+    """One reference naming no document, as the reader who must fix it reads it.
+
+    A reference an author wrote names the document that author meant,
+    so the reader is told the document is absent. A reference a folder
+    key derived names a path nobody wrote, so the message states the
+    whole route: the reference as authored, the key that answered it,
+    and the path the redirect resolved to.
+    """
+    if found.folder is None:
+        return (
+            f"the reference {found.original!r} names no document under the "
+            f"allowed source root"
+        )
+    return (
+        f"the reference {found.original!r} is redirected by the mapping key "
+        f"{found.folder!r} to {found.path!r}, which names no document under the "
+        f"allowed source root"
+    )
 
 
 def refused(
@@ -2099,6 +2125,12 @@ def unused(mapping: Substitution) -> list[Diagnostic]:
     of its bundle holds of material the caller did not mean to test. The
     key states a fact about the invocation rather than about any source,
     so the warning carries the key's authored spelling and no location.
+
+    A folder key answers many references and is named once, at the first
+    of them, so a key reaching no compiled reference warns once however
+    many references its folder holds. A folder holding only documents
+    its references classify as text is such a key: the folder was never
+    consulted, and the warning is the fact that states it.
     """
     return [
         Diagnostic(
