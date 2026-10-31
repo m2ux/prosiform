@@ -13,11 +13,13 @@ from both directions: a substitute outside the writing source's root is
 reached when the mapping names it, and the reference is still held to
 the root when nothing does.
 
-The three shapes the mapping refuses are decided from one set of
+The four shapes the mapping refuses are decided from one set of
 identities, so each case is asked through the command line that carries
 it: which pair of spellings a duplicate names, that a self-mock names the
-entry its author wrote, and that a key carrying no document reaches the
-usage failure rather than a document the option never named.
+entry its author wrote, that a key carrying no document reaches the usage
+failure rather than a document the option never named, and that a
+substitute naming no Markdown document is refused as the resource every
+stage would publish it as.
 """
 
 import io
@@ -385,6 +387,33 @@ def test_a_key_carrying_no_document_is_refused(tree: Path) -> None:
     assert status == 2
     assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
     assert "#escalation" in voices[0]["message"]
+
+
+def test_a_value_naming_no_markdown_document_is_refused(tree: Path) -> None:
+    """A substitute the profile classifies as a resource bundles nothing."""
+    status, voices = refused(tree, "-m", "rules.md=notes.txt", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "no Markdown document" in voices[0]["message"]
+
+
+def test_a_value_naming_no_markdown_document_names_the_entry_it_author_wrote(
+    tree: Path,
+) -> None:
+    """The message names the pair to edit, not the substitute alone."""
+    status, voices = refused(tree, "-m", "rules.md=notes.txt", "guide.md")
+    assert status == 2
+    assert "rules.md" in voices[0]["message"]
+    assert "notes.txt" in voices[0]["message"]
+    assert voices[0]["reference"] == "notes.txt"
+
+
+def test_a_value_naming_no_markdown_document_publishes_nothing(tree: Path) -> None:
+    """The run refuses before any source is read, so no bundle is written."""
+    status, published = invoke(tree, "-m", "rules.md=notes.txt", "guide.md")
+    assert status == 2
+    assert published == ""
+    assert list((tree / "out").iterdir()) == []
 
 
 def test_a_document_key_and_a_section_key_of_it_are_two_keys(tree: Path) -> None:
