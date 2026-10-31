@@ -1,0 +1,53 @@
+description = "Two folder keys reached nothing, each stated once as its author wrote it and each publishing, because the used set holds the key rather than the references it served: one answers only a reference its target classifies as text, which is no dependency, and the other answered no reference at all. The folder key beside them answers two references and states no warning, so a key the run reached is told apart from one it did not."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+  "Exit status and JSON diagnostics, warnings may accompany success",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules/=stubs/", "-m", "notes/=stubs/", "-m", "other/=spare/", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules/red.md"
+resolved = "stubs/red.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 6
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules/blue.md"
+resolved = "stubs/blue.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 6
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_UNUSED"
+source = "notes/"
+message_contains = ["notes/", "substitutes nothing"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_UNUSED"
+source = "other/"
+message_contains = ["other/", "substitutes nothing"]
