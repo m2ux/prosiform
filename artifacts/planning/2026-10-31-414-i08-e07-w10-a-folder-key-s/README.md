@@ -13,6 +13,9 @@ the work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W10 work item](w10.md) | The three-part refusal, the used-key record and the warning's wording |
+| [Validation](validation.md) | The checks T1–T12 at the revisions they ran, each fixture's counterfactual among them |
+| [Change list](change-list.md) | Every plan change this session applied, and every one it held |
 
 ## Links
 
