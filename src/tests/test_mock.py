@@ -55,6 +55,7 @@ WHOLE = Substitution({("rules.md", None): SUBSTITUTE})
 FRAGMENTED = Substitution(
     {("rules.md", None): SUBSTITUTE, ("rules.md", "escalation"): SECTION}
 )
+FOLDERED = Substitution({}, {}, {"rules": Reference("stubs/", "stubs", walk="stubs")})
 
 
 def test_no_mapping_leaves_a_reference_naming_what_it_named() -> None:
@@ -99,6 +100,80 @@ def test_a_section_keys_substitute_section_is_the_one_the_run_reads() -> None:
 def test_a_whole_document_reference_takes_the_document_key() -> None:
     found = inside("guide.md", "rules.md", "", FRAGMENTED)
     assert (found.path, found.fragment) == ("stand-in.md", None)
+
+
+def test_a_folder_key_redirects_a_reference_under_it_to_the_same_remainder() -> None:
+    """The key folder answers for every path under it, and the remainder is kept."""
+    found = inside("guide.md", "rules/red.md", "", FOLDERED)
+    assert (found.path, found.fragment) == ("stubs/red.md", None)
+
+
+def test_a_folder_key_leaves_the_section_the_reference_named() -> None:
+    """A folder names no heading, so the section is the reference's whole."""
+    found = inside("guide.md", "rules/red.md#checks", "", FOLDERED)
+    assert (found.path, found.fragment) == ("stubs/red.md", "checks")
+
+
+def test_a_folder_key_holds_only_a_path_that_continues_it_past_a_separator() -> None:
+    """A key is a folder rather than a prefix, so a neighbour sharing it is no match."""
+    mapped = Substitution({}, {}, {"rules": Reference("stubs/", "stubs")})
+    assert inside("guide.md", "rules/red.md", "", mapped).path == "stubs/red.md"
+    assert inside("guide.md", "ruleset/red.md", "", mapped).path == "ruleset/red.md"
+
+
+def test_an_exact_key_answers_before_a_folder_key() -> None:
+    """A document key and a folder key both holding a reference: the exact one wins."""
+    both = Substitution(
+        {("rules/red.md", None): Reference("other.md", "other.md")},
+        {},
+        {"rules": Reference("stubs/", "stubs")},
+    )
+    assert inside("guide.md", "rules/red.md", "", both).path == "other.md"
+    assert inside("guide.md", "rules/blue.md", "", both).path == "stubs/blue.md"
+
+
+def test_the_longer_of_two_folder_keys_holding_one_reference_answers() -> None:
+    """A narrower folder is a narrower statement, so it is the one that holds."""
+    both = Substitution(
+        {},
+        {},
+        {
+            "rules": Reference("stubs/", "stubs"),
+            "rules/visual": Reference("deepest/", "deepest"),
+        },
+    )
+    assert inside("guide.md", "rules/visual/red.md", "", both).path == "deepest/red.md"
+    assert inside("guide.md", "rules/red.md", "", both).path == "stubs/red.md"
+
+
+def test_a_folder_key_is_served_once_however_many_references_it_answered() -> None:
+    """The used set holds the key, not each reference it took."""
+    mapped = Substitution({}, {}, {"rules": Reference("stubs/", "stubs")})
+    inside("guide.md", "rules/red.md", "", mapped, "guide.md:3")
+    inside("guide.md", "rules/blue.md", "", mapped, "guide.md:5")
+    assert mapped.unserved() == ()
+    assert [one.resolved for one in mapped.redirects.targets()] == [
+        "stubs/red.md",
+        "stubs/blue.md",
+    ]
+
+
+def test_a_folder_key_no_reference_named_is_unserved_with_its_separator() -> None:
+    """The warning states the key as written, so the marker is part of it."""
+    mapped = Substitution(
+        {}, {("rules", None): "rules/"}, {"rules": Reference("stubs/", "stubs")}
+    )
+    assert mapped.unserved() == ("rules/",)
+
+
+def test_a_folder_key_and_a_document_key_of_one_path_are_two_keys() -> None:
+    """`rules/` and `rules` state two kinds of entry, so neither refuses the other."""
+    mapped = Substitution(
+        {("rules", None): Reference("once.md", "once.md")},
+        {("rules", None): "rules"},
+        {"rules": Reference("stubs/", "stubs")},
+    )
+    assert len(mapped) == 2
 
 
 def test_a_key_is_the_identity_a_reference_normalized_to() -> None:
@@ -259,6 +334,22 @@ def tree(tmp_path: Path) -> Path:
     return tmp_path
 
 
+@pytest.fixture
+def paired(tmp_path: Path) -> Path:
+    """A guide linking two documents of one folder, and a folder standing in for it."""
+    (tmp_path / "out").mkdir()
+    (tmp_path / "guide.md").write_text(
+        "# Guide\n\nUse [red](rules/red.md#checks) and [blue](rules/blue.md).\n"
+    )
+    for name in ("rules", "stubs"):
+        (tmp_path / name).mkdir()
+    (tmp_path / "rules" / "red.md").write_text("# Red\n\n## Checks\n\nAsk red.\n")
+    (tmp_path / "rules" / "blue.md").write_text("# Blue\n\nAsk blue.\n")
+    (tmp_path / "stubs" / "red.md").write_text("# Red stand-in\n\n## Checks\n\nAsk.\n")
+    (tmp_path / "stubs" / "blue.md").write_text("# Blue stand-in\n\nAsk.\n")
+    return tmp_path
+
+
 def test_a_run_given_no_mapping_publishes_the_document_the_link_names(
     tree: Path,
 ) -> None:
@@ -365,6 +456,107 @@ def refused(cwd: Path, *arguments: str) -> tuple[int, list[dict[str, Any]]]:
     finally:
         os.chdir(previous)
     return status, [json.loads(line) for line in err.getvalue().splitlines() if line]
+
+
+def test_a_folder_pair_compiles_each_remainder_and_keeps_the_section(
+    paired: Path,
+) -> None:
+    """One entry redirects a folder of references, each at its own remainder."""
+    status, published = invoke(paired, "-m", "rules/=stubs/", "guide.md")
+    assert status == 0
+    assert "# Red stand-in" in published
+    assert "# Blue stand-in" in published
+    assert "# Red\n" not in published
+    assert "[red](#checks)" in published
+
+
+def test_a_folder_pairs_half_a_shape_is_refused_naming_the_pair(tree: Path) -> None:
+    """A folder and a document answer different questions, so one entry asks one."""
+    status, voices = refused(tree, "-m", "rules/=stand-in.md", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "rules/" in voices[0]["message"]
+    assert "stand-in.md" in voices[0]["message"]
+    assert "folder" in voices[0]["message"]
+
+
+def test_a_folder_keys_half_a_shape_is_refused_naming_the_pair(tree: Path) -> None:
+    """The document side of a pair is told apart from the folder side by the marker."""
+    status, voices = refused(tree, "-m", "rules.md=stubs/", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "rules.md" in voices[0]["message"]
+    assert "stubs/" in voices[0]["message"]
+    assert "folder on one side" in voices[0]["message"]
+
+
+def test_a_folder_key_carrying_a_section_is_refused(paired: Path) -> None:
+    """A folder names no heading, so a section on its side selects nothing."""
+    status, voices = refused(paired, "-m", "rules/#checks=stubs/", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "rules/#checks" in voices[0]["message"]
+    assert "section" in voices[0]["message"]
+
+
+def test_a_folder_substitute_carrying_a_section_is_refused(paired: Path) -> None:
+    """The substitute side is told apart on the same ground as the key side."""
+    status, voices = refused(paired, "-m", "rules/=stubs/#checks", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "stubs/#checks" in voices[0]["message"]
+    assert "folder side a section" in voices[0]["message"]
+
+
+def test_a_folder_pair_is_refused_before_any_source_is_read(paired: Path) -> None:
+    """The refusals are decided from the mapping, so no absent entry masks one."""
+    status, voices = refused(paired, "-m", "rules/=stubs", "absent.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "folder on one side" in voices[0]["message"]
+
+
+def test_a_folder_pair_states_a_folder_on_both_sides(paired: Path) -> None:
+    """A separator alone names no folder, on either side of the pair."""
+    for value in ("./=stubs/", "rules/=./"):
+        status, voices = refused(paired, "-m", value, "guide.md")
+        assert status == 2
+        assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+        assert "separator alone" in voices[0]["message"]
+
+
+def test_a_folder_pair_naming_one_folder_both_ways_is_a_self_mock(
+    paired: Path,
+) -> None:
+    """Two spellings of one folder state one identity, as two documents do."""
+    status, voices = refused(paired, "-m", "rules/=rules/", "guide.md")
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "one identity" in voices[0]["message"]
+
+
+def test_two_spellings_of_one_folder_key_are_refused(paired: Path) -> None:
+    """A folder key is the path it normalizes to, so two spellings are one key."""
+    status, voices = refused(
+        paired, "-m", "rules/=stubs/", "-m", "./rules/=other/", "guide.md"
+    )
+    assert status == 2
+    assert [one["code"] for one in voices] == ["E_INVALID_USAGE"]
+    assert "one identity" in voices[0]["message"]
+
+
+def test_a_folder_key_and_a_document_key_of_one_path_serve_together(
+    paired: Path,
+) -> None:
+    """A folder key and a document key state two kinds of entry, so both hold."""
+    (paired / "other.md").write_text("# Other\n\n## checks\n\nAsk other.\n")
+    status, published = invoke(
+        paired, "-m", "rules/=stubs/", "-m", "rules/red.md=other.md", "guide.md"
+    )
+    assert status == 0
+    assert "# Other" in published
+    assert "# Blue stand-in" in published
+    assert "# Red stand-in" not in published
 
 
 def test_two_spellings_of_one_key_are_refused_naming_both(tree: Path) -> None:

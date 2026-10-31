@@ -1,0 +1,36 @@
+description = "A mapping entry naming a folder on both sides redirects every reference whose path sits under the key folder to the document at the same remainder under the substitute folder, and each reference keeps the section it named, so one entry stands in for a folder of documents where one entry per file would otherwise be needed."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules/=stubs/", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules/red.md#checks"
+resolved = "stubs/red.md#checks"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 6
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules/blue.md"
+resolved = "stubs/blue.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 6
+column = 1

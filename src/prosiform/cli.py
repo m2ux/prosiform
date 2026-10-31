@@ -59,9 +59,11 @@ from prosiform.closure import (
     DISPATCH_MARK,
     DRIVE,
     PARALLEL_MARK,
+    SEPARATOR,
     UNSUBSTITUTED,
     Malformed,
     OutsideRoot,
+    Pairing,
     Reference,
     Substitution,
     components,
@@ -424,7 +426,7 @@ def budgets(options: argparse.Namespace) -> Limits:
     return Limits({budget: getattr(options, budget.dest) for budget in BUDGETS})
 
 
-def mock(value: str) -> tuple[Reference, Reference]:
+def mock(value: str) -> Pairing:
     """One `ORIGINAL=ALTERNATIVE` pair, each side read from the working directory.
 
     Both sides are read by the grammar every other reference is read
@@ -433,11 +435,48 @@ def mock(value: str) -> tuple[Reference, Reference]:
     command-line reference names one. Neither side is matched against
     the mapping: a substitute is material rather than another
     indirection, and a value that is also a key is read from disk.
+
+    A side ending in a separator names a folder rather than a document,
+    and that separator is read here, before the reference grammar
+    normalizes the path. `closure.normalized` drops an empty path
+    segment, so `rules/` and `rules` normalise to one path and the
+    separator that states the difference is gone before anything else
+    can read it. Both sides of one pair state one kind, because a folder
+    and a document answer different questions and one entry cannot ask
+    both. A folder side carries no section, because a folder names no
+    heading for one to select.
     """
-    original, marked, alternative = value.partition(SUBSTITUTION_PAIR)
-    if not marked or not original or not alternative:
+    original, given, alternative = value.partition(SUBSTITUTION_PAIR)
+    if not given or not original or not alternative:
         raise argparse.ArgumentTypeError(f"{value!r} is no ORIGINAL=ALTERNATIVE pair")
-    return entry(original), entry(alternative)
+    if marked(original) != marked(alternative):
+        raise argparse.ArgumentTypeError(
+            f"{value!r} names a folder on one side and a document on the other, so "
+            f"the entry states two different questions"
+        )
+    if marked(original) and (
+        components(original).fragment or components(alternative).fragment
+    ):
+        raise argparse.ArgumentTypeError(
+            f"{value!r} gives a folder side a section, and a folder names no heading"
+        )
+    return Pairing(entry(original), entry(alternative), marked(original))
+
+
+def marked(text: str) -> bool:
+    """Whether one mapping side names a folder, stated by a trailing separator.
+
+    The marker is read from the path component alone, so a side carrying
+    a section states its folder marker before the delimiter rather than
+    at the end of its text; `rules/#Checks` is then a folder side
+    carrying a section, which its own refusal names.
+
+    The marker belongs to the side rather than to its path. The
+    reference grammar drops an empty path segment, so `rules/` and
+    `rules` normalize to one path, and the separator is read here before
+    that normalization runs.
+    """
+    return components(text).path.endswith(SEPARATOR)
 
 
 def substitution(options: argparse.Namespace) -> Substitution:
@@ -448,6 +487,15 @@ def substitution(options: argparse.Namespace) -> Substitution:
     sides were resolved while the grammar was read, before any source
     was opened. Each key keeps the spelling the caller wrote, because a
     key no reference named is reported as the caller wrote it.
+
+    A folder pairing states a folder on both sides, so its key is a path
+    and its substitute a folder: the remainder a reference carries past
+    the key is what the substitute folder takes. The Markdown-suffix test
+    is applied to the path each reference resolves to under the
+    substitute folder rather than to the folder, because a folder
+    legitimately names no document while the documents it holds are
+    read. A reference landing on something the profile does not read is
+    text, by the rule every destination is classified by.
 
     A mapping shape that states nothing is refused here, because here is
     where the whole mapping is known: a key carrying no document, a
@@ -461,20 +509,27 @@ def substitution(options: argparse.Namespace) -> Substitution:
     names none rather than a coincidence between two empty identities.
     """
     keys: dict[tuple[str, str | None], Reference] = {}
+    folders: dict[str, Reference] = {}
     spelled: dict[tuple[str, str | None], str] = {}
-    for original, alternative in options.mock or ():
-        if not original.path:
-            raise documentless(original)
-        if not is_markdown(alternative.path):
-            raise unbundleable(original, alternative)
-        if identity(original) == identity(alternative):
-            raise self_mocked(original, alternative)
-        named = (original.path, original.fragment)
-        if named in keys:
-            raise duplicated(spelled[named], original)
-        keys[named] = alternative
-        spelled[named] = original.original
-    return Substitution(keys, spelled)
+    for pairing in options.mock or ():
+        named = (pairing.original.path, pairing.original.fragment)
+        if pairing.folder:
+            if not (pairing.original.path and pairing.alternative.path):
+                raise folderless(pairing.original, pairing.alternative)
+        elif not pairing.original.path:
+            raise documentless(pairing.original)
+        elif not is_markdown(pairing.alternative.path):
+            raise unbundleable(pairing.original, pairing.alternative)
+        if identity(pairing.original) == identity(pairing.alternative):
+            raise self_mocked(pairing.original, pairing.alternative)
+        if named in spelled:
+            raise duplicated(spelled[named], pairing.original)
+        spelled[named] = pairing.original.original
+        if pairing.folder:
+            folders[pairing.original.path] = pairing.alternative
+        else:
+            keys[named] = pairing.alternative
+    return Substitution(keys, spelled, folders)
 
 
 def duplicated(earlier: str, later: Reference) -> Failure:
@@ -487,11 +542,31 @@ def duplicated(earlier: str, later: Reference) -> Failure:
 
 
 def self_mocked(original: Reference, alternative: Reference) -> Failure:
-    """One mapping entry whose substitute names the identity its key names."""
+    """One mapping entry whose substitute names the identity its key names.
+
+    A folder pair reaching this compares two paths, so its separator is
+    not part of what it states: `rules/=rules/` names one folder on both
+    sides exactly as `rules.md=rules.md` names one document.
+    """
     return usage_failure(
         f"the mapping entry {original.original!r}={alternative.original!r} names "
         f"one identity on both sides, so the substitute stands in for itself",
         reference=original.original,
+    )
+
+
+def folderless(original: Reference, alternative: Reference) -> Failure:
+    """One folder pair whose key or substitute names no folder.
+
+    The reference is the side that names none, as each of the other
+    refusals names the side the fault sits on: either side of the entry
+    can be edited, and the message names the pair whole.
+    """
+    unsided = original if not original.path else alternative
+    return usage_failure(
+        f"the mapping entry {original.original!r}={alternative.original!r} names a "
+        f"folder by a separator alone, so no folder is named to redirect",
+        reference=unsided.original,
     )
 
 
