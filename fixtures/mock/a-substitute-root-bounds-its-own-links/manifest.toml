@@ -1,0 +1,27 @@
+description = "The substitute's own declared root bounds its outgoing links, so a link it writes inside that root compiles where a link above it stays the citation its author wrote, and nothing above the substitute's root is opened."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Conversion metadata — Source ownership",
+  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=stand-in/entry.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "stand-in/entry.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1

@@ -646,3 +646,202 @@ def test_a_substitute_that_is_also_a_key_is_read_from_disk(tree: Path) -> None:
     )
     assert "# Second" in published
     assert "# Third" not in published
+
+
+def grouped(cwd: Path, *arguments: str) -> tuple[int, str, list[dict[str, Any]]]:
+    """One invocation from a directory, its status, entry bundle and diagnostics."""
+    status, said = voices(cwd, *arguments, "-o", str(cwd / "out"))
+    folder = cwd / "out" / f"{Path(arguments[-1]).stem}.bundles"
+    bundle = folder / f"{folder.name.removesuffix('.bundles')}.bundle.md"
+    return status, bundle.read_text() if bundle.is_file() else "", said
+
+
+def group_tree(tmp_path: Path) -> Path:
+    """A group of two documents, one link into it, and a substitute of its own."""
+    (tmp_path / "out").mkdir()
+    members = {
+        "guide.md": (
+            "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+            "The guide preamble, linking [the notes](notes.md) and "
+            "[the rules](rules.md).\n\n## Scope\n\nThe guide's scope.\n"
+        ),
+        "notes.md": (
+            "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+            "The notes preamble.\n\n## Scope\n\nThe notes' scope.\n"
+        ),
+        "rules.md": "# Rules\n\nEvery rule the tree under test holds.\n",
+        "stand-in.md": (
+            "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+            "The stand-in preamble.\n\n## Scope\n\nThe stand-in's scope.\n"
+        ),
+    }
+    for name, text in members.items():
+        (tmp_path / name).write_text(text)
+    return tmp_path
+
+
+def test_a_substitute_declaring_a_group_joins_it_under_its_own_member_heading(
+    tmp_path: Path,
+) -> None:
+    """The substitute's group and depth decide its membership, not its key's."""
+    tree = group_tree(tmp_path)
+    status, published, _said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
+    assert status == 0
+    assert published.startswith("# Rules\n")
+    assert "### Stand In" in published
+    assert published.count("The stand-in preamble.") == 1
+    assert "Every rule the tree under test holds." not in published
+
+
+def test_a_substitute_declaring_no_group_joins_no_group(tmp_path: Path) -> None:
+    """No setting travels from the document the key named."""
+    tree = group_tree(tmp_path)
+    (tree / "plain.md").write_text("# Plain\n\nA plain stand-in.\n")
+    status, published, _said = grouped(tree, "-m", "rules.md=plain.md", "guide.md")
+    assert status == 0
+    assert "# Plain" in published
+    assert "### Plain" not in published
+
+
+def test_the_group_a_substitute_declares_is_the_one_the_bundle_merges(
+    tmp_path: Path,
+) -> None:
+    """The authored target's own group declaration contributes nothing."""
+    tree = group_tree(tmp_path)
+    (tree / "rules.md").write_text(
+        "---\nprosiform:\n  group: authored\n  group-depth: 2\n---\n"
+        "# Rules\n\nEvery rule the tree under test holds.\n"
+    )
+    status, published, _said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
+    assert status == 0
+    assert published.startswith("# Rules\n")
+    assert "# Authored" not in published
+
+
+def test_a_group_depth_conflict_names_the_substitutes_own_declaration(
+    tmp_path: Path,
+) -> None:
+    """The declaration that disagrees is the substitute's, at its own position."""
+    tree = group_tree(tmp_path)
+    (tree / "stand-in.md").write_text(
+        "---\nprosiform:\n  group: rules\n  group-depth: 3\n---\n"
+        "# Stand-in\n\nThe stand-in preamble.\n"
+    )
+    status, _published, said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
+    assert status == 1
+    assert [one["code"] for one in said] == ["E_GROUP_DEPTH_CONFLICT"]
+    assert said[0]["related"][0]["file"] == "stand-in.md"
+
+
+def test_a_substitutes_metadata_failure_names_the_substitute(tmp_path: Path) -> None:
+    """The substitute's own declaration is the one whose field is unpaired."""
+    tree = group_tree(tmp_path)
+    (tree / "stand-in.md").write_text(
+        "---\nprosiform:\n  group: rules\n---\n# Stand-in\n\nStand-in.\n"
+    )
+    status, _published, said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
+    assert status == 1
+    assert [one["code"] for one in said] == ["E_INVALID_CONVERSION_METADATA"]
+    assert said[0]["location"]["file"] == "stand-in.md"
+    assert said[0]["chain"] == ["guide.md", "stand-in.md"]
+
+
+def test_a_substitute_reached_by_two_routes_joins_the_group_once(
+    tmp_path: Path,
+) -> None:
+    """One source is one capture, so one membership, however many links name it."""
+    tree = group_tree(tmp_path)
+    (tree / "notes.md").write_text(
+        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "The notes preamble, linking [the rules](rules.md).\n\n"
+        "## Scope\n\nThe notes' scope.\n"
+    )
+    status, published, _said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
+    assert status == 0
+    # One overview subsection and one variant heading name the one member.
+    assert published.count("### Stand In") == 2
+    assert published.count("The stand-in preamble.") == 1
+    assert published.count("The stand-in's scope.") == 1
+
+
+def rooted(tmp_path: Path) -> Path:
+    """A guide linking a rule set, and a stand-in declaring its own root."""
+    (tmp_path / "out").mkdir()
+    (tmp_path / "guide.md").write_text("# Guide\n\nRequire [the rules](rules.md).\n")
+    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule.\n")
+    (tmp_path / "above.md").write_text("# Above\n\nAbove the stand-in root.\n")
+    (tmp_path / "stand-in").mkdir()
+    (tmp_path / "stand-in" / "entry.md").write_text(
+        "---\nprosiform:\n  root: .\n---\n"
+        "# Entry\n\nBeside [a detail](detail.md) and [above](../above.md).\n"
+    )
+    (tmp_path / "stand-in" / "detail.md").write_text("# Detail\n\nA detail.\n")
+    return tmp_path
+
+
+def test_a_substitutes_root_bounds_its_own_outgoing_links(tmp_path: Path) -> None:
+    """A link inside the stand-in's root compiles; one above it stays a citation."""
+    tree = rooted(tmp_path)
+    status, published, _said = grouped(
+        tree, "-m", "rules.md=stand-in/entry.md", "guide.md"
+    )
+    assert status == 0
+    assert "Beside [a detail](#detail)" in published
+    assert "[above](../above.md)" in published
+    assert "# Above" not in published
+
+
+def test_the_substitutes_root_is_read_from_its_own_bytes(tmp_path: Path) -> None:
+    """The authored target's root is not the boundary its substitute is held to."""
+    tree = rooted(tmp_path)
+    (tree / "rules.md").write_text(
+        "---\nprosiform:\n  root: ..\n---\n# Rules\n\nEvery rule.\n"
+    )
+    status, published, _said = grouped(
+        tree, "-m", "rules.md=stand-in/entry.md", "guide.md"
+    )
+    assert status == 0
+    assert "[above](../above.md)" in published
+    assert "# Above" not in published
+
+
+def test_a_substitute_above_the_working_directory_reads_its_own_settings(
+    tmp_path: Path,
+) -> None:
+    """AC20's parent segment, read through the substitute's own bytes.
+
+    A value carrying `..` names a substitute above the invocation working
+    directory, and the group it joins and the root it declares are its
+    own, resolved from the directory it sits in rather than from the tree
+    the run started in.
+    """
+    tree = tmp_path / "tree"
+    above = tmp_path / "above"
+    tree.mkdir()
+    above.mkdir()
+    (tree / "guide.md").write_text(
+        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "The guide preamble, linking [the rules](rules.md).\n\n"
+        "## Scope\n\nThe guide's scope.\n"
+    )
+    (tree / "rules.md").write_text("# Rules\n\nEvery rule.\n")
+    (above / "entry.md").write_text(
+        "---\nprosiform:\n  group: rules\n  group-depth: 2\n  root: .\n---\n"
+        "The stand-in preamble, linking [its detail](detail.md) and "
+        "[the guide](../tree/guide.md).\n\n"
+        "## Scope\n\nThe stand-in's scope.\n"
+    )
+    (above / "detail.md").write_text("# Detail\n\nBeside the stand-in.\n")
+    (tree / "out").mkdir()
+    status, said = voices(
+        tree, "-m", "rules.md=../above/entry.md", "-o", str(tree / "out"), "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    folder = tree / "out" / "guide.bundles"
+    published = (folder / "guide.bundle.md").read_text()
+    assert published.startswith("# Rules\n")
+    assert "### Entry" in published
+    assert "[its detail](#detail)" in published
+    assert "Beside the stand-in." in published
+    assert "[the guide](../tree/guide.md)" in published
