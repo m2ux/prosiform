@@ -23,4 +23,5 @@ The work is a grammar change to `-m` as much as a resolution change: `closure.no
 | Epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
+| Pull request | [#448 A Folder Pairing and Its Precedence](https://github.com/m2ux/prosiform/pull/448) |
 | Plan | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — where the folder pairing was designed |

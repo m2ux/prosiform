@@ -34,8 +34,15 @@ Every plan change this session applied, and every one it held, under the allowan
 
 | Resource | Value |
 | --- | --- |
-| Branch | `i05/e09/w09-a-folder-pairing-and` |
-| Head | `30a669b2` |
+| Pull request | [#448 A Folder Pairing and Its Precedence](https://github.com/m2ux/prosiform/pull/448) |
 | Base | `i05/e09/main` at `3091c65b` |
+| Head | `f92e030d` |
+| Merged | `40a3b947cf876b1750045639b65e8b1c7bca6dd3`, `merge_method=merge` |
+| Epic row | `W09` ticks, and `AC25`, `AC26` and `AC30` tick with it |
+| Development link | **Blocked:** #414 holds ten manual references and `addCloseIssueReferences` answers `Issue exceeds manual reference limit`. #448 is the pull request awaiting one. |
 
-The pull request, the Development link, the epic row and the merge are recorded in `validation.md` T13.
+## Debt this row leaves
+
+- **`AC29`'s documented row and help string.** Recommended for `W11` rather than taken here, and recorded under Held above.
+- **`fixtures.md`'s stub-declaration rule** reads as current fact on a branch where inclusion is still bounded by the writing source's root. Recommended for `I05:E11`'s record, beside the boundary it derives, rather than restated here.
+- **The Development link for #448.** Blocked at GitHub's ceiling, so the pull request closes nothing and the row's delivery is recorded by its link alone. Clearing it needs a slot freed on #414 by whoever owns one of the ten references held there, after which the mutation is one call: issue `I_kwDOVNSvEM8AAAABbF3srA`, pull request `PR_kwDOVNSvEM8AAAABL73b8Q`.
