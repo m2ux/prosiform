@@ -51,7 +51,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [E: derived name](e-w02.md) | A section entry naming its own document |
 | [E: corpus](e-w03.md) | The three fixtures withdrawn or rewritten |
 | [E: documentation](e-w04.md) | The table and the guide without the row |
-| [E: superseded work](e-w05.md) | E09's redirected-referrer criterion |
+| [E: superseded work](e-w05.md) | E07's redirected-referrer criterion |
 | [Conformance Faults](epic-f-conformance-faults.md) | [I08:E04](https://github.com/m2ux/prosiform/issues/450): the epic moving `-x` to `PROSIFORM_FAULT` |
 | [F: design clause](f-w00.md) | The contract section, the variable and the pin |
 | [F: reader](f-w01.md) | The option's removal and the environment read |
@@ -70,14 +70,14 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [H: option](h-w01.md) | The option's removal and the preset read |
 | [H: path basis](h-w02.md) | A pair resolving from its declaring file |
 | [H: corpus](h-w03.md) | The four fixtures rewritten to presets |
-| [H: superseded work](h-w04.md) | E09's option criterion |
+| [H: superseded work](h-w04.md) | E07's option criterion |
 | [H: documentation](h-w05.md) | The table and the source page |
 | [Declared Tree](epic-i-declared-tree.md) | The bulk migration: the example and corpus trees declare presets, once every field rule has landed |
 | [I: example tree](i-w00.md) | The example tree declaring presets in one edit |
 | [I: corpus](i-w01.md) | The corpus sources declaring presets |
 | [I: eval tree](i-w02.md) | The workflow documents declaring |
 | [I: checks](i-w03.md) | The checks that read a declaration |
-| [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
+| [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E00, E01, E02 |
 
 ## Design
 
@@ -129,14 +129,14 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 
 I05's goal was a quality bar, true of every epic forever, so it could be neither reached nor reviewed against. Its 25 epics held three unrelated subjects, and each is now an initiative whose goal its epics can make true: [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) holds this record's epics, [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) holds the grouping work raised alongside it, and [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) holds the corpus and session work. I05 is closed.
 
-Every epic in this record was renumbered into I08's series: E11 became E00, E13 E01, E14 E02, E15 E03, E16 E04, E17 E05, the preset-only epic E06, E09 E07 and E22 E08. The work-item files keep their names, so a row's number and its file differ where the epic moved.
+Every epic in this record is numbered in I08's series, and each letter below names the record's artifact for it: E00 Declared Inclusion, E01 Target Presets, E02 Exclusion, E03 Remove the Referrer, E04 Conformance Faults, E05 Named Budgets, E06 Preset-Only Substitution, E07 Mock Substitution and E08 Declared Tree. The letters predate the split and the tracker's numbers are authoritative; the work-item files keep their letter, so a file named `a-w03.md` holds E00's third row.
 
 ## Optimisation
 
 Three changes shorten the critical path, each taken because review attention is the constraint rather than agent capacity.
 
 - **One pin moves for every clause.** Seven epics each amended the design and moved the pin, and conformance reads the design at the pinned revision, so those seven pull requests were a strict chain. E00:W00 now moves the pin once and the other six amendments land beside it: seven level-0 rows instead of a seven-row chain.
-- **The example tree is edited once.** E00:W06 declared 95 documents and E09:W00 migrated them to presets, and E09 depends on E00, so the same files were edited twice with each edit proving the bundles unchanged. Both now land in E09:W00, and E00's chain is one row shorter.
+- **The example tree is edited once.** E00:W06 declared 95 documents and E07:W00 migrated them to presets, and E07 depends on E00, so the same files were edited twice with each edit proving the bundles unchanged. Both now land in E07:W00, and E00's chain is one row shorter.
 - **The boundary no longer waits on absent targets.** E00:W05 depended on W04 for adjacency rather than for code: the boundary is the longest common directory holding a document's own links, which has nothing to do with the absent-target refusal. Both rows now sit at one level.
 
 The joins record accounts for every pair the changes made eligible. What remains on the critical path is Declared Inclusion: W01 through W08, with the corpus families and the documentation pages as consecutive bulk edits at its end.
@@ -148,8 +148,8 @@ The joins record accounts for every pair the changes made eligible. What remains
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
 - **A folder pair was a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. It retired with `-m`: a preset states one pair per entry, so a folder of stubs is written one entry at a time. (User, 2026-10-31.)
 - **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
-- **Seven epics, delivered in order E11, E13, E14, E15, E16, E17, E26.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
-- **Priority is the map the task graph derives: E09 4, E11 3, E13 2, E14 1.** An epic with no prerequisite epic carries the largest number and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The published labels were E11 4, E13 5, E14 5 before this review, which put two dependent epics level with their prerequisite. (User, 2026-10-31.)
+- **The epics are numbered in the order the graph orders them.** E00 changes the key rule and the classification every later epic reads; E01 is the largest and states the preset a carve-up is written as; E02 is the carve-up itself. (Agent, 2026-10-31.)
+- **Priority is the map the task graph derives.** An epic whose first row has no inbound edge carries the largest number, and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The current map is E00 8, E01 7 and E02 through E06 5, with E08 1 as the migration that waits on all of them. (User, 2026-10-31.)
 - **The folder pairing moved to I08:E07, and retired with its option.** A folder side was a shape of `-m`, which [I08:E06](https://github.com/m2ux/prosiform/issues/461) retires. A preset's `mock` entry inherits the pair syntax, so the folder form goes with the option and a preset states one pair per entry. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
@@ -163,7 +163,7 @@ The joins record accounts for every pair the changes made eligible. What remains
 - **Exclusion is the subtractive half of selection.** A named section is removed rather than filtered from the output, so the run reads fewer sources and the consumer receives only what remains. (User, 2026-10-31.)
 - **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
 - **A document in two divisions is emitted under each.** One division is one outline, so a document joining two is a member of both and its regions appear in each. (User, 2026-10-31.)
-- **The example tree and corpus migrate to presets in E13.** E11 removes `root` and leaves the flat group pair, so E13 needs a row that rewrites the tree rather than leaving it uncompilable. (User, 2026-10-31.)
+- **The example tree and corpus migrate to presets in E01.** E00 removes `root` and leaves the flat group pair, so E01 needs a row that rewrites the tree rather than leaving it uncompilable. (User, 2026-10-31.)
 - **A preset covers the closure of the compilation that selects it.** A document reached as a dependency is compiled under the entry's preset, not its own, which is what lets one top-level source set the treatment of everything it links. (User, 2026-10-31.)
 - **`-m` is retired: a preset is the only channel.** A compilation selecting no preset substitutes nothing. Two channels for one setting meant a compilation had two possible answers. (User, 2026-10-31.)
 - **A preset's pair resolves from the declaring file.** A document states its own neighbours, so one declaration reads the same from any working directory — unlike the option, which had no declaring file and read from the invocation directory. (User, 2026-10-31.)
@@ -191,17 +191,17 @@ Findings from the plan review against the source, all resolved.
 | --- | --- | --- |
 | Both initiative `Depends on` cells named whole epics that no row pair derives, and `scripts/deps.py` refused them. | High | Both cells emptied; the couplings are task edges. |
 | Seven independent pairs were named in neither Joins nor the record, so the checker reported every one. | High | Each pair accounted for in `joins.md` with its two ids on one line, and the reason it takes two pull requests stated. |
-| The folder-mock epic consumed `E09`'s `-m` grammar and `E11`'s classification seam and named neither. | High | Retired: the work moved to `E09:W09`, which names `E11:W03`. |
+| The folder-mock epic consumed `E07`'s `-m` grammar and `E00`'s classification seam and named neither. | High | Retired: the work moved to `E07:W09`, which names `E00:W03`. |
 | The three W00 rows contended on `design.md` under one priority number, with the sequencing stated only as prose. | Medium | Each W00 depends on the previous epic's W00, which is what the pin chain actually is. |
-| The diagram-following eval's 118 workflow documents declare nothing, and `make harness` requires each form to bundle cleanly. | Critical | `E11:W06` covers the eval tree and states which forms it reaches. |
-| Four `real-source` fixtures copy documents whose frontmatter declares nothing, and the family's rule forbids editing a copy. | High | `E11:W07` states where the declaration is added for a copied source. |
-| Nothing stated whether an entry reference could name a document that declares nothing. | High | AC15 added, with a fixture, and `E11:W05` carries it. |
-| `checks/smoke.py` writes `prosiform: {root: "."}`, so `make smoke` fails as soon as the refusal lands. | High | `E11:W06` owns the check's source and its retired-option assertion. |
+| The diagram-following eval's 118 workflow documents declare nothing, and `make harness` requires each form to bundle cleanly. | Critical | `E00:W06` covers the eval tree and states which forms it reaches. |
+| Four `real-source` fixtures copy documents whose frontmatter declares nothing, and the family's rule forbids editing a copy. | High | `E00:W07` states where the declaration is added for a copied source. |
+| Nothing stated whether an entry reference could name a document that declares nothing. | High | AC15 added, with a fixture, and `E00:W05` carries it. |
+| `checks/smoke.py` writes `prosiform: {root: "."}`, so `make smoke` fails as soon as the refusal lands. | High | `E00:W06` owns the check's source and its retired-option assertion. |
 | `profile` already names the grammar, and the epic reused it. | High | The concept is a `preset` throughout; the word clash is stated in the clause and the glossary check holds it. |
-| `E11:W08` named six pages where eleven state a root. | Medium | AC13 lists all eleven, and AC14 covers the four worked examples and the drawings. |
-| AC9 cited `make boundary` and the folder epic's AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E09:W11` extends the target `E09:W08` lands and states that dependency. |
-| The board held E13 and E14 at priority 5, level with the E09 epic that neither depends on and above the E11 epic both depend on; the graph derives E09 4, E11 3, E13 2, E14 1. | High | The derived map applied to the labels and recorded as a decision. |
-| The folder rows read under the inclusion rule, which a reader could take for a dependency on `E11`. | Low | `E09:W09` states that the rule is E11's and that its stubs declare from the first, so the mechanism is buildable before E11 lands and no edge is asserted. The checker refuses a row depending on a later epic, and the row does not. |
+| `E00:W08` named six pages where eleven state a root. | Medium | AC13 lists all eleven, and AC14 covers the four worked examples and the drawings. |
+| AC9 cited `make boundary` and the folder epic's AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E00:W05` creates `make boundary`; `E07:W11` extends the target `E07:W08` lands and states that dependency. |
+| The board held E01 and E02 at priority 5, level with the E07 epic that neither depends on and above the E00 epic both depend on; the graph derives E07 4, E00 3, E01 2, E02 1. | High | The derived map applied to the labels and recorded as a decision. |
+| The folder rows read under the inclusion rule, which a reader could take for a dependency on `E00`. | Low | `E07:W09` states that the rule is E00's and that its stubs declare from the first, so the mechanism is buildable before E00 lands and no edge is asserted. The checker refuses a row depending on a later epic, and the row does not. |
 | The record's `epic.md` still described ten rows and an unnumbered documented row, so the record and the tracker disagreed. | Medium | Regenerated from the published body. |
 | The argument-name set was read from the parser, which makes `-o` and `-c` settable from frontmatter. | High | The settable set is named: `mock`, `exclude` and the budgets, held to the help output by a test. |
 | An argument's value had two shapes, a scalar for `-m` and a list for `--exclude`. | Medium | Every argument value is a list, and a scalar is refused. |

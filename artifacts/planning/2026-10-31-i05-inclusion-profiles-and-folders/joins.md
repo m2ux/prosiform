@@ -158,14 +158,14 @@ The graph orders the epics, and the priority numbers state it. Three numbers, no
 | 5 | E02 Exclusion, E03 Remove the Referrer, E04 Conformance Faults, E05 Named Budgets, E06 Preset-Only Substitution | Each reads a rule E00 or E01 settles. They run together once those have landed. |
 | 1 | E08 Declared Tree | The bulk migration, last by construction: it waits on every field rule it writes. |
 
-## The clause pins chain
+## The clause pins
 
-Seven rows across six epics name `design.md` as their component, and each appends a clause and moves the pin. Run together they collide on one file.
+Seven rows across six epics append a clause to `design.md`, and conformance reads the design at the revision the README pins. A pin moved by each of them would make those seven pull requests a strict chain.
 
-- **Each epic's `W00` depends on the previous epic's `W00`.** The chain is E00 → E01 → E02 → E03 → E04 → E05 → E06, in that order, which is the order the clause pins already imply.
-- **The dependency is on the design row, not the whole epic.** Nothing else in a later epic waits for an earlier one's code, so the coupling stays where the file is.
-- **E08 carries no design row.** It is a pure migration that reads the fields rather than adding one, so it sits outside the chain and waits on the epics instead.
-- E02:W02 and E02:W03 take separate pull requests: W02 settles which links an excluded section contributes, and W03 reads that answer to tell two headings of one name apart.
+- **E00:W00 moves the pin, once.** It states the clause the whole initiative reads and pins the revision carrying it.
+- **The other six amendments land beside it, not after it.** Each later epic's `W00` appends its own clause to the same document and depends on nothing, because its clause does not need the pin to have moved: `make conformance` reads the pinned revision, and a clause not yet at that revision is reported uncovered rather than failing.
+- **The pin moves again only when a fixture must name a clause.** A row whose fixtures declare a clause its epic just added depends on that epic's `W00`, which the row edges already state. The pin itself is not a dependency of the prose.
+- **No W00 depends on another epic's W00.** Seven level-0 rows replace a seven-row chain, which is the optimisation this record records.
 
 ## What serialises a run
 
@@ -184,3 +184,4 @@ The epic is not the unit that serialises work; the component is. Forty-four rows
 - **The pin chain and the priority numbers handle the two largest.** `cli.py` serialises through the epics' own row edges; `design.md` serialises through the `W00` chain stated above.
 - **Eleven files for forty-four rows is the measure of the work.** Most rows are in different files, so a run that reads the component can still dispatch several at once.
 
+- E02:W02 and E02:W03 take separate pull requests: W02 settles which links an excluded section contributes, and W03 reads that answer to tell two headings of one name apart.
