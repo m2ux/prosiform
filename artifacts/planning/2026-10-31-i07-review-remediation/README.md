@@ -38,6 +38,26 @@ Each decision was taken with the user before the initiative was raised, or on re
 | D20 | **Defer the minors.** A minor is recorded and addressed later, so no epic is raised for one before the blockers and majors it would sit beside are delivered. | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 |
 | D21 | **Amend the initiative to its epic.** A criterion no epic serves is dropped, and one served in part is narrowed to what the epic delivers. | initiative AC2, AC7 |
 
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+| [W01 work item](w01.md) | The check order |
+| [W02 work item](w02.md) | Distribution faults and entry overwrite |
+| [W03 work item](w03.md) | Every click and every link element |
+| [W04 work item](w04.md) | Group and member names that empty |
+| [W05 work item](w05.md) | One title case, one destination per parent |
+| [W06 work item](w06.md) | The work behind the byte budget |
+| [W07 work item](w07.md) | The Cursor harness and its traces |
+| [W08 work item](w08.md) | A question observed and a session counted |
+| [W09 work item](w09.md) | A run that could not complete |
+| [W10 work item](w10.md) | The corpus held to what each form measures |
+| [W11 work item](w11.md) | The committed baseline |
+| [W12 work item](w12.md) | The evidence these steps consume |
+| [W13 work item](w13.md) | The overview rule and its condition |
+| [W14 work item](w14.md) | The counts and the revision |
+| [W15 work item](w15.md) | The grouping rule where it is read |
+
 ## Task Disposition
 
 Each finding below is delivered by exactly one task, and each row's Coverage carries one criterion per finding, so a criterion and the task delivering it read from the same row.
@@ -55,12 +75,12 @@ Each finding below is delivered by exactly one task, and each row's Coverage car
 | W09 | eval | 9, 23, 24 |
 | W10 | eval | 21, 22 |
 | W11 | eval | 61 |
-| W12 | example | 5, 26 |
-| W13 | example | 26, 27 |
+| W12 | example | 5, 27 |
+| W13 | example | 26 |
 | W14 | example | 30, 31 |
 | W15 | example | 17, 29, 81 |
 
-Findings 1 and 8 describe one defect from two directions and share one criterion.
+Findings 1 and 8 describe one defect from two directions and share one criterion. Finding 26 is delivered by W13, where its rule is stated.
 
 ## Taken Elsewhere
 
