@@ -22,13 +22,23 @@ The pairs below are the ones the dependency checker reports as eligible to share
 
 | Pair | Two pull requests because |
 | --- | --- |
-| E13:W02 and E13:W03 | the settable set and the list value, and matching a section name to a preset. The two share no file and neither reads the other's work. |
-| E13:W04 and E13:W05 | a whole-document entry matching no preset, and a preset's entries bound. W04 changes which preset a compilation selects and W05 refuses a collision inside one, so one branch could not show the other does not fire. |
-| E13:W04 and E13:W06 | a whole-document entry matching no preset, and the unused-preset warning. The two share no file and neither reads the other's work. |
-| E13:W04 and E13:W07 | a whole-document entry matching no preset, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
-| E13:W04 and E13:W08 | a whole-document entry matching no preset, and the two documentation pages. The two share no file and neither reads the other's work. |
+| E13:W01 and E13:W02 | prosiform holds presets alone, and group-depth is a list of pairs and group is refused. The two share no file and neither reads the other's work. |
+| E13:W01 and E13:W03 | prosiform holds presets alone, and the exclude and mock entry shapes. The two share no file and neither reads the other's work. |
+| E13:W02 and E13:W03 | group-depth is a list of pairs and group is refused, and the exclude and mock entry shapes. The two share no file and neither reads the other's work. |
+| E13:W02 and E13:W04 | group-depth is a list of pairs and group is refused, and selecting a preset and the default fallback. The two share no file and neither reads the other's work. |
+| E13:W03 and E13:W04 | the exclude and mock entry shapes, and selecting a preset and the default fallback. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W05 | selecting a preset and the default fallback, and a preset subsuming its compilation's arguments. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W06 | selecting a preset and the default fallback, and the unused-preset warning. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W07 | selecting a preset and the default fallback, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W08 | selecting a preset and the default fallback, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
+| E13:W05 and E13:W06 | a preset subsuming its compilation's arguments, and the unused-preset warning. The two share no file and neither reads the other's work. |
+| E13:W05 and E13:W07 | a preset subsuming its compilation's arguments, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
+| E13:W05 and E13:W08 | a preset subsuming its compilation's arguments, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
 | E13:W06 and E13:W07 | the unused-preset warning, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
-| E13:W07 and E13:W08 | a deferred target keeping its preset, and the two documentation pages. The two share no file and neither reads the other's work. |
+| E13:W06 and E13:W08 | the unused-preset warning, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
+| E13:W07 and E13:W08 | a deferred target keeping its preset, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
+| E13:W07 and E13:W09 | a deferred target keeping its preset, and the two documentation pages. The two share no file and neither reads the other's work. |
+| E13:W08 and E13:W09 | the example tree and corpus declaring presets, and the two documentation pages. The two share no file and neither reads the other's work. |
 
 ### Exclusion
 
