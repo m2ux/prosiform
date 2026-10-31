@@ -24,7 +24,7 @@ A shipped flag exists only for tests, and every surface presents it as a feature
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, the variable | AC7 | | | |
+| W00 | Design clause, the variable | AC7 | [I08:E03](https://github.com/m2ux/prosiform/issues/449) | | |
 | W01 | The parser and the run reading the variable | AC1, AC6 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | The runner setting it from a manifest | AC2 | W01 | | |
 | W03 | The option table and the help output | AC3 | W01 | | |
