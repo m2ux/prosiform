@@ -3,7 +3,7 @@ description = "A platform-specific drive path written inside a source names a lo
 clauses = [
   "Reference normalization and path identity, the root is the caller's confinement boundary",
   "Reference normalization and path identity, a platform-specific drive path",
-  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Link classification and resource handling — A link naming a document that declares nothing",
 ]
 
 [invocation]

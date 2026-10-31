@@ -4,7 +4,7 @@ clauses = [
   "Usage examples",
   "Link classification and resource handling — The deferral mark",
   "Link classification and resource handling — A deferred link's destination",
-  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Link classification and resource handling — A link naming a document that declares nothing",
 ]
 
 [invocation]

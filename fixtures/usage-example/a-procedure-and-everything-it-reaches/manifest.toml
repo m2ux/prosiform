@@ -3,7 +3,7 @@ description = "The usage example that names a procedure bundles that procedure a
 clauses = [
   "Usage examples",
   "Input and output contract — Whole documents",
-  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown document links",
   "Compile before publishing — step 4",
   "Input and output contract — Entry references",
 ]
