@@ -59,6 +59,12 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [F: documentation](f-w03.md) | The table and the guide without the row |
 | [F: corpus page](f-w04.md) | The field stated as a behaviour |
 | [F: fixtures](f-w05.md) | The three fault fixtures unchanged |
+| [Named Budgets](epic-g-named-budgets.md) | [E17](https://github.com/m2ux/prosiform/issues/451): the epic collapsing eight budget letters into one named option |
+| [G: design clause](g-w00.md) | The clause, the eight names and the pin |
+| [G: option](g-w01.md) | The option, its parser and its refusals |
+| [G: limits](g-w02.md) | Each ceiling gaining a name |
+| [G: corpus](g-w03.md) | The sixteen fixtures rewritten to names |
+| [G: documentation](g-w04.md) | One table row and the examples |
 | [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
 
 ## Design
@@ -110,7 +116,7 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
 - **A folder pair is a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. (User, 2026-10-31.)
 - **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
-- **Five epics, delivered in order E11, E13, E14, E15, E16.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
+- **Six epics, delivered in order E11, E13, E14, E15, E16, E17.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
 - **Priority is the map the task graph derives: E09 4, E11 3, E13 2, E14 1.** An epic with no prerequisite epic carries the largest number and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The published labels were E11 4, E13 5, E14 5 before this review, which put two dependent epics level with their prerequisite. (User, 2026-10-31.)
 - **The folder pairing moved to I05:E09.** A folder side is a shape of the `-m` option that epic owns, so keeping it here would put one option's two shapes in two planning records. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
@@ -127,6 +133,7 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
 - **A document in two divisions is emitted under each.** One division is one outline, so a document joining two is a member of both and its regions appear in each. (User, 2026-10-31.)
 - **The example tree and corpus migrate to presets in E13.** E11 removes `root` and leaves the flat group pair, so E13 needs a row that rewrites the tree rather than leaving it uncompilable. (User, 2026-10-31.)
+- **The eight budgets collapse into one `--budget NAME=VALUE`.** Eight siblings of identical shape are one decision rendered eight times, since the parser generates them from one table. Named ceilings also remove the `-o`/`-O` collision, which no arrangement of letters fixes. (User, 2026-10-31.)
 - **The fault moves out of the option surface to `PROSIFORM_FAULT`.** A shipped flag whose only consumer is the corpus reads as a feature a caller may use. The corpus already abstracts the fault through a manifest field, so the channel is the runner's business and the option goes. (User, 2026-10-31.)
 - **`-f` and the bare-fragment form are removed.** Every use is rewritable as `document#fragment`, the bare form is a usage error for the thing a caller types first, and three fixtures carry it with no consumer. The link form `[x](#section)` is untouched. (User, 2026-10-31.)
 - **A fault stays a command-line concern.** `-x` reaches codes no source tree produces, which is a harness need rather than a document's: `internal` means the tool fails in itself and `cleanup-refused` is about the output folder, so neither has a document to attach to. `source-changed` could not be declared in the file it corrupts, because frontmatter is read during capture and the corruption would follow the read that learns of it. A `prosiform` key holding a fault would also put test scaffolding inside the material under test, which the mock feature refused on the same ground. (User, 2026-10-31.)
@@ -188,4 +195,5 @@ None outstanding. Two readings were put to the user and answered: the boundary i
 | Epic D | [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445) |
 | Epic E | [I05:E15 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449) |
 | Epic F | [I05:E16 Conformance Faults](https://github.com/m2ux/prosiform/issues/450) |
+| Epic G | [I05:E17 Named Budgets](https://github.com/m2ux/prosiform/issues/451) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |

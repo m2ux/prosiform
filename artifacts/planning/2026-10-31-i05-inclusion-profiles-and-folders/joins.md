@@ -78,6 +78,17 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E16:W03 and E16:W05 | the option table and the guide, and the three fault fixtures. The fixtures are the evidence the mechanism moved and their files are untouched. |
 | E16:W04 and E16:W05 | the corpus page's field, and the three fault fixtures. The two share no file and neither reads the other's work. |
 
+### Named Budgets
+
+| Pair | Two pull requests because |
+| --- | --- |
+| E17:W01 and E17:W02 | the option and its parser, and each ceiling gaining a name. The two share no file and neither reads the other's work. |
+| E17:W01 and E17:W03 | the option and its parser, and the sixteen fixtures rewritten. The two share no file and neither reads the other's work. |
+| E17:W01 and E17:W04 | the option and its parser, and the table row and the examples. The two share no file and neither reads the other's work. |
+| E17:W02 and E17:W03 | each ceiling gaining a name, and the sixteen fixtures rewritten. The two share no file and neither reads the other's work. |
+| E17:W02 and E17:W04 | each ceiling gaining a name, and the table row and the examples. The two share no file and neither reads the other's work. |
+| E17:W03 and E17:W04 | the sixteen fixtures rewritten, and the table row and the examples. The corpus is what proves the ceilings still bound while the page states their names. |
+
 ## Across epics
 
 | Edge | Consumes |
