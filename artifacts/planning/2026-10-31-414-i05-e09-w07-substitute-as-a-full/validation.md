@@ -137,6 +137,12 @@ The local `format-check` this session ran before the first push reported `177 fi
     90|
 ## T9 — Delivery
 
-**Ran:** `gh api` against the pull request, the epic base and the epic issue, and `gh api graphql` for the Development link.
+**Ran:** `gh api` against the pull request, the epic base and the epic issue, `gh api graphql` for the Development link, and the work planner's `sync.py` over #414 with `--link W07=439`.
 
-**Observed:** [#439](https://github.com/m2ux/prosiform/pull/439) opened against `i05/e09/main` at `846f8f5a`, titled `[I05:E09] Substitute as a Full Source`, labelled `bot:ai-assisted`, and holding a Development link to #414 verified through `closedByPullRequestsReferences`, which lists `439`.
+**Observed:** [#439](https://github.com/m2ux/prosiform/pull/439) opened against `i05/e09/main` at `846f8f5a`, titled `[I05:E09] Substitute as a Full Source`, labelled `bot:ai-assisted`, and holding a Development link to #414 verified through `closedByPullRequestsReferences`, which lists `439`. Its `Checks` run reported `success` on `4c641293`.
+
+Merged to `i05/e09/main` at `52ebf1300b86e0499daea6f9bc25472ec8e28db3` with a merge commit, and never to `main`.
+
+`sync.py` cleared the epic's `ticked early` reports for AC5, AC6 and AC20 once the pull request was merged, and reported `closable: no (undelivered W05, W08, W10, unticked AC4, AC21, AC22, AC24)` — every remaining gap is another row's. Row `W07` on #414 links #439 and carries its tick, and AC5, AC6 and AC20 are ticked.
+
+The sync's remaining reports are the epic's existing state and no part of this row: three unmatched corrections (#427, #429, #430), W08's #440 in flight, and a W01 test-plan disagreement. `sync.py` treats a merged pull request as delivering its row only once merged, which is why the row's tick was withheld until the merge rather than applied with the body patch before it.

@@ -27,3 +27,4 @@ AC20 is the parent-segment capability the AC11 fixture already shows, so this ro
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
 | Predecessor | [W01 Mapping, option and identity](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-w01-mapping-option-and-identity) |
 | Pull request | [#439 Substitute as a Full Source](https://github.com/m2ux/prosiform/pull/439) |
+| Base | `i05/e09/main`, merged at `52ebf130` |
