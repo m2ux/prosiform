@@ -1,0 +1,25 @@
+description = "A mapping key carrying a fragment redirects the section it names alone, so the link to that section compiles the substitute while the link to its document compiles the document as it ships, and the run states the one substitution it performed."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md#escalation=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md#escalation"
+resolved = "stand-in.md#escalation"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 5
+column = 1
