@@ -6,7 +6,7 @@
 
 Fifteen epics already merged into `main` were reviewed for delivered defects, and eighty-two findings were recorded: five blockers, thirty-six majors and forty-one minors.
 
-This initiative delivers forty-one of them across forty criteria in thirteen tasks. Every blocker is delivered here. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
+This initiative delivers forty-one of them across thirty-four criteria in fifteen tasks. Every blocker is delivered here. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
     10|
 The findings and their evidence are held in [the review record](../2026-10-31-merged-epic-review/README.md), whose disposition table names the task delivering each finding.
 
@@ -36,6 +36,7 @@ Each decision was taken with the user before the initiative was raised, or on re
 | D18 | **Raise priority.** The epic holds every blocker and a silent data-loss path, so it outranks work that leaves what a user sees unchanged. | all |
 | D19 | **Move the check-and-design findings.** A finding whose fix no run of the tool shows belongs to the epic that holds that material by its own boundary. | 10, 12, 13, 14, 15, 16, 33, 34, 52, 55, 56, 65, 71, 76, 77 |
 | D20 | **Defer the minors.** A minor is recorded and addressed later, so no epic is raised for one before the blockers and majors it would sit beside are delivered. | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 |
+| D21 | **Amend the initiative to its epic.** A criterion no epic serves is dropped, and one served in part is narrowed to what the epic delivers. | initiative AC2, AC7 |
 
 ## Task Disposition
 
@@ -52,10 +53,12 @@ Each finding below is delivered by exactly one task, and each row's Coverage car
 | W07 | eval | 1, 8 |
 | W08 | eval | 6, 7 |
 | W09 | eval | 9, 23, 24 |
-| W10 | eval | 21, 22, 61 |
-| W11 | example | 5, 26, 27 |
-| W12 | example | 30, 31 |
-| W13 | example | 17, 29, 81 |
+| W10 | eval | 21, 22 |
+| W11 | eval | 61 |
+| W12 | example | 5, 26 |
+| W13 | example | 26, 27 |
+| W14 | example | 30, 31 |
+| W15 | example | 17, 29, 81 |
 
 Findings 1 and 8 describe one defect from two directions and share one criterion.
 
