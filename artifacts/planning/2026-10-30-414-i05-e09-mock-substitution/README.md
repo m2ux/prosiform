@@ -109,6 +109,15 @@ Third pass, against the corpus mechanics and the criterion ownership the checker
 | Renumbering left a duplicate W03 and a stale joins record, which `deps.py` reported only as unmatched pairs. | Medium | Table renumbered, work-item files renumbered, joins regenerated for the final numbering. |
 | W01's fixture table lost `a-substitute-outside-the-writing-root-is-reachable` during an edit, leaving AC11 with no fixture. | Medium | Restored, and every fixture name cross-checked between the epic and the rows. |
 
+## The epic's reference ceiling
+
+GitHub holds at most ten Development-linked pull requests on one issue. The epic reaches that on its tenth delivered row, so the link for a later row cannot be set even though the row delivers.
+
+A row's link in the Work Breakdown is the delivery record; the Development field is a second statement of the same fact. Where the ceiling binds, the row link stands and the field is left unset. Which rows hold the field is not a measure of delivery.
+
+- **Corrections take no epic link.** A correction corrects work whose primary pull request already holds the link, so linking it adds no record a row does not carry. Its body states which pull request it corrects.
+- **A row body names the epic by its own reference, not as a mention.** An `Epic: [#414 …]` line in a pull request body consumes a cross-reference slot as a Development link does.
+
 ## Links
 
 | Resource | Link |
