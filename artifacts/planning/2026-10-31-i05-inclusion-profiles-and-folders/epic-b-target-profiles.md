@@ -1,76 +1,81 @@
 ## Overview
 
-A file's declaration admits a **preset**: a named block of `-m` entries and budget overrides. The preset named for the section an entry reference selects applies to that compilation alone, so one artifact is compiled against stand-in material and a budget of its own while the rest of the run is unaffected.
+`prosiform` holds **presets and nothing else**. A preset is a named block of conversion settings — the groupings a document joins and their depths, the substitutions its references take, the sections it withholds — selected by the section an entry reference names. A preset named `default` applies wherever no other is selected.
 
 ## Problem
 
-A run is one set of options, and one artifact is not the run.
+A document's declaration is flat, and a run is one set of options for every compilation.
 
+- **Every setting is one per file.**
+  `prosiform` admits `root`, `group` and `group-depth` and `metadata.decode` fails any other key. One group means one division, so a document cannot be carved into differently-named divisions for different consumers.
 - **Options are run-wide.**
-  `-m` and the budgets `argparse` reads are properties of the invocation. Exercising one artifact against stand-ins means running the whole closure against them, so a mode's unrelated dependencies are mocked too and the run proves less than it appears to.
-- **The key set is closed.**
-  `prosiform` admits `root`, `group` and `group-depth`, and `metadata.decode` fails any other key with `E_INVALID_CONVERSION_METADATA`. A preset has nowhere to be written, so a caller keeping stand-in settings beside the document has to keep them on the command line, where they are neither versioned with the document nor reviewed with it.
+  `-m` and the budgets `argparse` reads are properties of the invocation. Exercising one artifact against stand-ins means running the whole closure against them, so a mode's unrelated dependencies are mocked too.
+- **A setting cannot vary with what a caller selected.**
+  The material that needs substituting, excluding or re-grouping belongs to the artifact under authoring — the epic body being drafted, the conventions file being revised — and that artifact is a section of a larger closure rather than the whole of it.
 - **The word *profile* is taken.**
-  `src/prosiform/__init__.py` holds `PROFILE = "skill-markdown-v4"`, the glossary defines *profile* as "the named, versioned Markdown grammar and option set a run declares", and `-v` reports it. A second sense would make the glossary's one defined term name two things, and `make vocabulary` reads that glossary.
-- **A stand-in is attached to a section, not to a run.**
-  The material that needs substituting belongs to the artifact under authoring — the epic body being drafted, the conventions file being revised — and that artifact is a section of a larger closure rather than the whole of it.
+  `src/prosiform/__init__.py` holds `PROFILE = "skill-markdown-v4"`, the glossary defines *profile* as the named grammar and option set a run declares, and `-v` reports it. A second sense would make the contract's one defined term name two things.
 - **Nothing states what a preset reached.**
   A bundle compiled against a preset and one compiled without are the same kind of output, and a preset no section named is indistinguishable from one that applied.
 
 ## Proposal
 
-- **Two kinds of key, decided by the value.**
-  A `prosiform` key that is an argument name holds that argument's value and applies it to every compilation of the file. Any other key whose value is a mapping is a **preset**, named by the key and holding a substitution and budget overrides. A key that is neither an argument name nor a mapping is refused, because it is a misspelled field rather than a preset.
-- **Only an argument that shapes the bundle is settable.**
-  The settable set is `mock` and the budgets — `-F`, `-B`, `-I`, `-O`, `-T`, `-L`, `-N` and `-E`. An option stating where a run writes or what it reports is not a document's business: `-o` would let a document redirect its own bundle and disagree with a sibling's, and `-c`, `-d` and `-x` describe the invocation rather than the content. A `prosiform` key naming one of those is refused as a misspelled field. Every name in the set is an option the parser declares, so the tuple is held to the help output by one test.
-- **Every argument value is a list, and a preset may hold one of its own.**
-  A repeatable option and a single-valued one state one shape, so `mock` holds a list and each entry is read by the option's own parser. A scalar is refused rather than read as a one-element list. A list is a preset's shape as well: `exclude` is a preset entry whose value is a list of sections, so a top-level key is never a list and [I05:E14](https://github.com/m2ux/prosiform/issues/445) needs no change to the rule stated here.
-- **A preset applies to one compilation.**
-  A **bundle compilation** is one entry reference and everything it reaches: the run's own entry, and each dispatched target's. A preset applies to a compilation when the **section** that compilation's entry reference names has a heading text matching the preset's name. The name matched is the resolved heading text, not the fragment as written, because a fragment is written in a different document from the one that declares the preset and a URL-escaped fragment names no preset directly.
-- **A matched preset governs its compilation's own resolution.**
-  The preset's substitution entries join the run's mapping for that compilation only, and its budget overrides replace the run's for that compilation only. Each compilation starts from a fresh count already, so the count a preset overrides is that compilation's.
+- **`prosiform` holds presets alone.**
+  Every key in `prosiform` is a preset name whose value is a mapping. There is no top-level parameter: a key whose value is not a mapping is refused with `E_INVALID_CONVERSION_METADATA`, because `prosiform` states per-preset settings and nothing file-wide.
+- **`default` is the fallback, and its name is reserved.**
+  A compilation selects the preset whose name equals the exact heading text of the section its entry reference names. Where no name matches — including an entry naming a whole document — `default` applies. A document may carry a heading headed `default`; naming it selects the fallback, and no preset can be selected by that name literally.
+- **A preset subsumes.**
+  The selected preset is the whole conversion setting for its compilation. A `-m` on the command line is the default for compilations that select no preset at all; where a preset is selected, it is the entire argument set, and nothing outside it reaches that compilation.
+- **`group-depth` replaces `group`.**
+  One field holds a list of single-entry mappings, each a group name mapped to its depth: `group-depth: [{protocols: 1}, {targets: 2}]`. `group` is refused, so the two halves of a pair are never written apart. A document may join several divisions, at different depths, in one preset.
+- **`exclude` holds names, not references.**
+  A list whose entries are a bare section name, or a single-entry mapping of name to heading level: `exclude: ["Draft", {Tests: 3}]`. Naming a section is the entry's meaning, so no `#` is written and the entry is not read by the reference grammar.
+- **`mock` holds pairs written as strings.**
+  `mock: ["rules.md=stub.md"]`. Its sides are references, and a reference in a mapping key would collide with the colons a path may contain, so the pair keeps the `=` the option uses.
+- **An entry is one string key with an integer value, or it is refused.**
+  `exclude: [{Tests: 3, Draft: 3}]` and `exclude: [{3: 1}]` are both YAML-legal and neither is what an author could mean. Each fails with `E_INVALID_CONVERSION_METADATA` naming the entry, so the single-entry shape is grammar rather than convention.
+- **Only what shapes the bundle is settable, and budgets are not.**
+  A preset may hold `group-depth`, `exclude` and `mock`. A budget bounds a *bundle* rather than a document, so `-F`, `-B`, `-I`, `-O`, `-T`, `-L`, `-N` and `-E` are refused in frontmatter: a document raising its own ceiling would move a refusal away from the caller who chose it. `-f`, `-o`, `-c`, `-d`, `-x`, `-C`, `-v` and `-h` are refused on the same ground — none is the document's business.
 - **A preset collision is refused.**
-  Two entries in one preset's substitution normalising to one identity, or a key and its value normalising to one identity, is invalid usage — the same two refusals `-m` carries, stated where the preset is read. A preset entry restating a `-m` entry for the same identity is refused too, because the two state one redirection twice and only one order makes a run reproducible.
+  Two entries in one preset's `mock` normalising to one identity, a key and its value normalising to one identity, and two entries naming one group are each refused as invalid usage.
 - **A preset nothing applied warns.**
-  `W_PRESET_UNUSED` names the document, the preset and the sections the run compiled, and accompanies a published bundle and exit status `0`. A preset on a document reached only through a deferral is not unused: the run that follows the deferral compiles that document and reads the preset then.
-- **A declared preset is inert where the document is merged.**
-  A preset governs a compilation's resolution, not its inclusion. A document whose section is merged into another compilation carries its content as that compilation's own preset directed, because one bundle answers to one set of options.
+  `W_PRESET_UNUSED` names the document and the preset, and accompanies a published bundle and exit status `0`. A preset on a document reached only through a deferral is not unused: the run that follows the deferral compiles it and reads the preset then.
 
 ## Work Breakdown
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, the term and the pin | AC12 | [E11:W00](https://github.com/m2ux/prosiform/issues/434) | | |
-| W01 | The preset key and the argument-name key | AC1, AC2 | W00 | | |
-| W02 | The settable set and the list value | AC13, AC15 | W01 | | |
-| W03 | Matching a section name to a preset | AC3, AC4, AC7 | W02, [E11:W03](https://github.com/m2ux/prosiform/issues/434) | | |
-| W04 | A whole-document entry matches no preset | AC14 | W03 | | |
-| W05 | A preset's entries bound and collisions refused | AC5, AC6 | W03, [E09:W09](https://github.com/m2ux/prosiform/issues/414) | | |
-| W06 | A preset nothing applied warns | AC8 | W05 | | |
+| W01 | `prosiform` holds presets alone | AC1, AC13 | W00 | | |
+| W02 | `group-depth` as a list of pairs, `group` refused | AC14 | W01 | | |
+| W03 | `exclude` and `mock` entry shapes | AC15, AC16 | W02 | | |
+| W04 | Selecting a preset, and `default` | AC2, AC3, AC4 | W03, [E11:W03](https://github.com/m2ux/prosiform/issues/434) | | |
+| W05 | A preset subsumes its compilation's arguments | AC5, AC17 | W04 | | |
+| W06 | A preset nothing applied warns | AC6, AC8 | W05 | | |
 | W07 | A deferred target keeps its preset | AC9 | W05 | | |
 | W08 | The preset stated in the invocation and the source page | AC10, AC11 | W06 | | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** A `prosiform` key naming a preset whose value is a mapping is accepted, and the same key whose value is a scalar fails with `E_INVALID_CONVERSION_METADATA`, as the corpus fixtures `fixtures/inclusion/a-preset-key-holds-a-mapping` and `fixtures/inclusion/a-preset-key-holding-a-scalar-is-refused` show.
-- [ ] **AC2.** A `prosiform` key naming an argument holds that argument's value and applies it to every compilation of that document, as the corpus fixture `fixtures/inclusion/an-argument-key-applies-to-every-compilation` shows.
-- [ ] **AC3.** An entry reference naming a section whose heading text matches a preset in the entry document compiles under that preset's substitution, as the corpus fixture `fixtures/inclusion/a-section-matching-a-preset-is-compiled-under-it` shows.
-- [ ] **AC4.** A section whose heading text matches no preset compiles under the run's own options, as the corpus fixture `fixtures/inclusion/a-section-matching-no-preset-is-unaffected` shows.
-- [ ] **AC5.** A preset's substitution applies to that compilation alone, and a sibling compilation reached by the same run resolves the same identities without it, as the corpus fixture `fixtures/inclusion/a-preset-leaves-a-sibling-compilation-alone` shows.
-- [ ] **AC6.** Two entries in one preset normalising to one identity, a key and value normalising to one identity, and a preset entry restating a `-m` entry are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/a-duplicate-preset-key-is-refused` and `fixtures/inclusion/a-preset-entry-restating-a-m-argument-is-refused` show.
-- [ ] **AC7.** A budget override in a preset bounds that compilation and leaves the run's budget governing every other compilation, as the corpus fixture `fixtures/inclusion/a-preset-budget-bounds-one-compilation` shows.
-- [ ] **AC8.** A preset no compiled section named raises `W_PRESET_UNUSED` naming the preset and the compilation, and a `-m` key unused in one compilation while used in another is reported for the one alone, as the corpus fixtures `fixtures/inclusion/an-unused-preset-warns` and `fixtures/inclusion/a-key-used-in-one-compilation-warns-only-for-the-other` show.
-- [ ] **AC9.** A preset on a document reached only through a deferral raises no warning, and the run that compiles the deferral reads it then, as the corpus fixture `fixtures/inclusion/a-deferred-target-keeps-its-preset` shows.
-- [ ] **AC10.** The invocation states the preset, its key rule and what it governs, and agrees with the command's help output, as `make invocation` shows.
-- [ ] **AC11.** The source page states the two kinds of `prosiform` key and the preset's shape, and the glossary distinguishes a preset from the grammar `profile`, as `make vocabulary` shows.
-- [ ] **AC12.** The design states presets as a property of a compilation chosen by a section's heading text, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
-- [ ] **AC13.** A `prosiform` key naming `-o`, `-c`, `-d`, `-x` or `-f` is refused with `E_INVALID_CONVERSION_METADATA`, as the corpus fixture `fixtures/inclusion/an-option-that-writes-is-not-settable` shows.
-- [ ] **AC14.** An entry naming a whole document matches no preset, compiles under the run's own options, and a preset named for the document's title raises `W_PRESET_UNUSED`, as the corpus fixture `fixtures/inclusion/a-whole-document-entry-matches-no-preset` shows.
-- [ ] **AC15.** Every argument value is a list, and a scalar value is refused with `E_INVALID_CONVERSION_METADATA`, as the corpus fixtures `fixtures/inclusion/an-argument-value-is-a-list` and `fixtures/inclusion/a-scalar-argument-value-is-refused` show.
+- [ ] **AC1.** Every key in `prosiform` is a preset name holding a mapping, and a key whose value is not a mapping fails with `E_INVALID_CONVERSION_METADATA`, as the corpus fixtures `fixtures/inclusion/a-preset-key-holds-a-mapping` and `fixtures/inclusion/a-preset-key-holding-a-scalar-is-refused` show.
+- [ ] **AC2.** A compilation selects the preset whose name equals the exact heading text of the section its entry reference names, as the corpus fixture `fixtures/inclusion/a-section-matching-a-preset-is-compiled-under-it` shows.
+- [ ] **AC3.** A compilation whose section matches no preset name, and one whose entry names a whole document, both select `default`, as the corpus fixtures `fixtures/inclusion/a-section-matching-no-preset-selects-default` and `fixtures/inclusion/a-whole-document-entry-selects-default` show.
+- [ ] **AC4.** A document whose `prosiform` carries no `default` and whose section matches no preset compiles under the run's options with no conversion setting, as the corpus fixture `fixtures/inclusion/no-default-and-no-match-is-bare` shows.
+- [ ] **AC5.** The selected preset is the whole argument set: a `-m` pair the preset does not name does not reach that compilation, as the corpus fixture `fixtures/inclusion/a-preset-subsumes-the-command-line` shows.
+- [ ] **AC6.** A preset no compilation selected raises `W_PRESET_UNUSED` naming the document and the preset, and the run publishes with exit status `0`, as the corpus fixture `fixtures/inclusion/an-unused-preset-warns` shows.
+- [ ] **AC8.** A preset on a document reached only through a deferral raises no warning, and the run that compiles the deferral reads it then, as the corpus fixture `fixtures/inclusion/a-deferred-target-keeps-its-preset` shows.
+- [ ] **AC9.** A document declaring several presets is compiled under the one its section names for each compilation, so one run reaching it twice may use two, as the corpus fixture `fixtures/inclusion/one-document-two-presets` shows.
+- [ ] **AC10.** The invocation states the preset, the fallback and what it governs, and agrees with the command's help output, as `make invocation` shows.
+- [ ] **AC11.** The source page states `prosiform` as presets, the two pair encodings and the refused keys, and the glossary distinguishes a preset from the grammar `profile`, as `make vocabulary` shows.
+- [ ] **AC12.** The design states presets as a property of a compilation chosen by a section's heading text, states subsumption and the fallback, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
+- [ ] **AC13.** `group` is refused with `E_INVALID_CONVERSION_METADATA`, as the corpus fixture `fixtures/inclusion/a-declared-group-is-refused` shows.
+- [ ] **AC14.** `group-depth` holds a list of single-entry mappings, one document may join several divisions at different depths, and a mapping entry holding two keys or a non-string key is refused, as the corpus fixtures `fixtures/inclusion/a-document-joins-two-divisions` and `fixtures/inclusion/a-malformed-group-entry-is-refused` show.
+- [ ] **AC15.** `exclude` holds bare section names and single-entry name-to-level mappings in one list, and the level selects which heading of a repeated name is meant, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
+- [ ] **AC16.** `mock` holds `ORIGINAL=ALTERNATIVE` strings whose sides are read by the reference grammar, as the corpus fixture `fixtures/inclusion/a-mock-entry-is-a-pair-string` shows.
+- [ ] **AC17.** Two entries in one preset naming one group, two `mock` entries normalising to one identity, and a `mock` key and value normalising to one identity are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/a-duplicate-group-entry-is-refused` and `fixtures/inclusion/a-duplicate-mock-entry-is-refused` show.
 
 ## References
 
-- **R0.** Epic - [I05:E13 Target Profiles](https://github.com/m2ux/prosiform/issues/436).
+- **R0.** Epic — [I05:E13 Target Presets](https://github.com/m2ux/prosiform/issues/436).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the work items.
-- **R2.** [Declared Inclusion](epic-a-declared-inclusion.md) — the epic that opens the key set this one fills.
-- **R3.** [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the mapping a preset's entries join.
+- **R2.** [Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) — the epic that opens the key set this one fills.
+- **R3.** [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445) — the epic whose `exclude` entry this one's grammar states.

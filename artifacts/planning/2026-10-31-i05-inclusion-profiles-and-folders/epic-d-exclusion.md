@@ -14,7 +14,8 @@ A bundle is the union of what its links reach, and a document has no way to say 
 ## Proposal
 
 - **A preset declares what its file withholds.** A `prosiform` preset holds an `exclude` of sections, and each named section is removed from the contribution of the file that declares the preset — the scope is the declaring file, and no document qualifier is written.
-- **The grammar is one bare section and an optional level.** `exclude: ["#Draft"]` removes `Draft` from the declaring file. `#Tests:3` names the level-3 heading of a repeated name, so a carve-up can exclude one of a pair. The level selects which heading is meant; the whole subtree beneath it goes.
+- **The grammar is a bare name, and a level where one is needed.**
+  `exclude: ["Draft"]` removes `Draft`. `exclude: ["Draft", {"Tests": 3}]` removes `Draft` whole and the level-3 heading named `Tests`, so a carve-up can exclude one of a repeated pair. Naming a section is the entry's meaning, so no `#` is written; the level selects which heading is meant and the whole subtree beneath it goes. The entry shape is [I05:E13](https://github.com/m2ux/prosiform/issues/436)'s.
 - **An exclusion is the whole section.** What it removes is what `source.section` selects for that name: the heading, its own content and every subsection beneath it. Inclusion and exclusion describe one shape, so a reader learns one rule.
 - **Exclusion narrows the closure.** A link written inside an excluded section is no dependency, so the document it names is not read through it. What the bundle then carries is what the remaining content reaches, and a document another link also reaches still arrives by that link.
 - **Exclusion happens where selection settles.** The settled region set is the selected regions less the excluded ones, and every stage already reads that set — discovery, withheld targets, dispatches, operator refusals and emission. One seam removes the material, so no stage can disagree about what the bundle holds.
@@ -44,12 +45,12 @@ A bundle is the union of what its links reach, and a document has no way to say 
 - [ ] **AC3.** A link written inside an excluded section is no dependency, so the document it names is not read through it, while a document another link reaches is still carried by that link, as the corpus fixture `fixtures/exclusion/an-excluded-sections-link-is-not-followed` shows.
 - [ ] **AC4.** An exclusion whose section holds content another reference selected is refused with `E_EXCLUDED_CONTENT` naming the exclusion and the route, and nothing is published, as the corpus fixture `fixtures/exclusion/an-excluded-section-holding-selected-content-is-refused` shows.
 - [ ] **AC5.** A file whose own exclusion removes every region it contributes is refused with `E_EXCLUDED_ENTRY`, as the corpus fixture `fixtures/exclusion/an-exclusion-of-the-whole-entry-is-refused` shows.
-- [ ] **AC6.** `#Tests:3` excludes the level-3 heading of that name and leaves the level-2 heading of the same name and its subsections in the bundle, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
+- [ ] **AC6.** An entry mapping a name to a level excludes the heading at that level and leaves the heading of the same name at another level with its subsections, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
 - [ ] **AC7.** An exclusion naming a heading the declaring file does not carry publishes, exits `0`, and reports no diagnostic, as the corpus fixture `fixtures/exclusion/an-unmatched-exclusion-is-silent` shows.
 - [ ] **AC8.** A preset's `exclude` holds a list whose entries are read by the exclusion grammar, and a top-level `exclude` is refused as a key that is neither an argument nor a preset, as the corpus fixtures `fixtures/exclusion/a-preset-carries-an-exclusion` and `fixtures/exclusion/a-top-level-exclude-is-refused` show.
 - [ ] **AC9.** The source page and the selection page state exclusion, its scope and its two codes, and the glossary carries the term, as `make vocabulary` and an inspection of those pages show.
 - [ ] **AC10.** The design states exclusion as the subtractive half of selection, scoped to the file that declares it, names the two codes, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
-- [ ] **AC11.** An empty section and a level outside one through six are each refused as invalid usage with exit status `2`, as the corpus fixture `fixtures/exclusion/a-malformed-exclusion-is-refused` shows.
+- [ ] **AC11.** An empty name, a level outside one through six, and a mapping entry holding two keys are each refused with `E_INVALID_CONVERSION_METADATA` naming the entry, as the corpus fixture `fixtures/exclusion/a-malformed-exclusion-is-refused` shows.
 
 ## References
 
