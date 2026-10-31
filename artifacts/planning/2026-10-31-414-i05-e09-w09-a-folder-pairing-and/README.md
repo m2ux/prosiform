@@ -12,6 +12,9 @@ The work is a grammar change to `-m` as much as a resolution change: `closure.no
 
 | Artifact | What it holds |
 | --- | --- |
+| [W09 work item](w09.md) | The folder pairing's marker, its two refusals, the precedence order and the four fixtures |
+| [Validation](validation.md) | The checks T1–T13 at the revisions they ran, each fixture's counterfactual among them |
+| [Change list](change-list.md) | Every plan change this session applied, and every one it held |
 
 ## Links
 
