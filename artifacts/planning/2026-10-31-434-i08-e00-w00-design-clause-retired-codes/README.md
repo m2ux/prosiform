@@ -4,9 +4,9 @@
 
 ## Executive Summary
 
-The design states inclusion as a property of the target document rather than of the directory holding it, so the clause this epic's fixtures cite has to exist at the pinned revision before any of them can name it. `make conformance` reads the design at the commit `README.md` pins, so a fixture declaring a clause absent from that commit fails the report. This row lands the clause, records the codes the change retires, and moves the pin once for the whole initiative.
+The design states inclusion as a property of the target document rather than of the directory holding it, so the clause this epic's links cite has to exist at the pinned revision before any fixture can name it. `make conformance` reads the design at the commit `README.md` pins, so a fixture declaring a clause absent from that commit fails the report. This row lands the clause, refuses `root`, retires the code that field reported, and moves the pin.
 
-One pin moves for seven amendments. Seven epics each amending the design and moving the pin would serialise seven pull requests on one commit, so the other six amendments land beside this one and the pin names the revision carrying all seven.
+The row was planned to carry seven amendments at one pin so that seven epics would not serialise on one commit. Retiring the budget letters, `-f` and `-x` before the build implements them would have left `make conformance` failing on 33 fixtures, and the pinned contract would have described a build that does not exist. The scope is therefore the clause the build already supports, and each other amendment is left to the epic whose pull request makes it true.
 
 ## Artifacts
 
