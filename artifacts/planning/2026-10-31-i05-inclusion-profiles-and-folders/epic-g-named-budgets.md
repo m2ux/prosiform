@@ -26,8 +26,8 @@ Eight options of one shape are one decision printed eight times.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, the names and the pin | AC6 | | | |
-| W01 | The option, its parser and its refusals | AC1, AC2, AC5 | W00 | | |
+| W00 | Design clause, the names | AC6 | | | |
+| W01 | The option, its parser and its refusals | AC1, AC2, AC5 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | `Limits` read from the pairs | AC3 | W01 | | |
 | W03 | The corpus rewritten to the names | AC4 | W01 | | |
 | W04 | The option table and the help output | AC7 | W02 | | |

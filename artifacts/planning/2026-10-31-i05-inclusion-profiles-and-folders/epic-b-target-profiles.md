@@ -48,16 +48,15 @@ A document's declaration is flat, and a run is one set of options for every comp
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, the term and the pin | AC11 | [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
-| W01 | `prosiform` holds presets alone | AC1 | W00 | | |
+| W00 | Design clause, the term | AC11 | | | |
+| W01 | `prosiform` holds presets alone | AC1 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | `group-depth` as a list of pairs, `group` refused | AC12, AC13 | W01 | | |
 | W03 | `exclude` and `mock` entry shapes | AC14, AC15 | W02 | | |
 | W04 | Selecting a preset, and `default` | AC2, AC3, AC4 | W03, [I08:E00:W03](https://github.com/m2ux/prosiform/issues/434) | | |
 | W05 | A preset is its compilation's whole setting | AC5, AC16 | W04 | | |
 | W06 | A preset nothing applied warns | AC6, AC7 | W05 | | |
 | W07 | A deferred target keeps its preset | AC8 | W05 | | |
-| W08 | The example tree and the corpus declare presets | AC17 | W03, [I08:E00:W06](https://github.com/m2ux/prosiform/issues/434) | | |
-| W09 | The preset stated in the invocation and the source page | AC9, AC10 | W06, W08 | | |
+| W08 | The preset stated in the invocation and the source page | AC9, AC10 | W06 | | |
 
 ## Acceptance Criteria
 
@@ -77,7 +76,6 @@ A document's declaration is flat, and a run is one set of options for every comp
 - [ ] **AC14.** `exclude` holds bare section names and single-entry name-to-level mappings in one list, and the level selects which heading of a repeated name is meant, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
 - [ ] **AC15.** `mock` holds `ORIGINAL=ALTERNATIVE` strings whose sides are read by the reference grammar, as the corpus fixture `fixtures/inclusion/a-mock-entry-is-a-pair-string` shows.
 - [ ] **AC16.** Two entries in one preset naming one group, two `mock` entries normalising to one identity, and a `mock` key and value normalising to one identity are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/a-duplicate-group-entry-is-refused` and `fixtures/inclusion/a-duplicate-mock-entry-is-refused` show.
-- [ ] **AC17.** Every document in the example tree and every corpus source declares its settings inside a preset, no document declares `group`, and the published example bundles are unchanged by the migration, as `make corpus` and `make examples` show.
 
 ## References
 
