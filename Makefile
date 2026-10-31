@@ -68,9 +68,9 @@ EVAL_BUDGET_USD := 100
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render examples eval-diagrams
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render examples mock-scenarios eval-diagrams
 
-check: lock-check lint format-check typecheck test harness authoring corpus smoke layout tables links vocabulary invocation conformance independence steps
+check: lock-check lint format-check typecheck test harness authoring corpus smoke layout tables links vocabulary invocation conformance independence steps mock-scenarios
 
 test:
 	cd src && uv run --frozen pytest
@@ -119,6 +119,9 @@ independence:
 
 steps:
 	python3 checks/steps.py
+
+mock-scenarios:
+	$(UV_RUN) python checks/mock_scenarios.py
 
 authoring:
 	python3 checks/authoring.py
