@@ -23,3 +23,7 @@ Pairs of independent rows that do not share a pull request, and why.
 - E09:W06 and E09:W07 take separate pull requests: W06 changes the lookup a mapping performs, and W07 derives a source's settings and root from its bytes.
 - E09:W06 and E09:W08 take separate pull requests: W06 changes the lookup a mapping performs, and W08 bundles the example skill against a run-time copy.
 - E09:W07 and E09:W08 take separate pull requests: W07 derives a source's settings and root from its bytes, and W08 bundles the example skill against a run-time copy.
+- E09:W03 and E09:W10 take separate pull requests: W03 resolves the entry and referrer and derives the run's output name, and W10 refuses a mapping value whose path names no Markdown document.
+- E09:W05 and E09:W10 take separate pull requests: W05 withholds the targets a run resolves without compiling, and W10 refuses a mapping value whose path names no Markdown document.
+- E09:W06 and E09:W10 take separate pull requests: W06 changes the lookup a mapping performs, and W10 refuses a mapping value whose path names no Markdown document.
+- E09:W07 and E09:W10 take separate pull requests: W07 derives a source's settings and root from its bytes, and W10 refuses a mapping value whose path names no Markdown document.
