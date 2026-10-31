@@ -122,6 +122,17 @@ That is the row's scope as the epic's review settled it: W01 owns the exact-then
 
 ## T9 — Delivery
 
-**Ran:** `gh api` against the pull request, `i05/e09/main` and #414.
+**Ran:** `gh api` against the pull request, the epic base and #414, and the planner's `sync.py`.
 
-**Observed:** recorded in the change list and the pull request. The base is `i05/e09/main`, never `main`.
+**Observed:**
+
+- **#437** [Section Keys and the End of Chaining](https://github.com/m2ux/prosiform/pull/437), base `i05/e09/main`, head `i05/e09/w06-section-keys-and-no` at `444fe9ab`. The base had not moved from `8734a799`, so no rebase was needed.
+- **`Checks`** — `success` on `444fe9ab`. It is the only check run on the branch head.
+- **Merged** at `2026-10-31T05:46:38Z` with `merge_method=merge`, merge commit `846f8f5a116cd99a754a10c073f5b43293460056`, and `origin/i05/e09/main` now reads `846f8f5a Merge pull request #437 from m2ux/i05/e09/w06-section-keys-and-no`. Never `main`.
+- **Development link** — `closingIssuesReferences` on #437 answers `414`, verified after the merge rather than after the mutation alone.
+- **The label** — `bot:ai-assisted` is on the pull request, added after the REST create because the REST body carries no label.
+- **#414** — `sync.py` with `--link W06=437 --tick AC3,AC12,AC14` reports `linked: W06 → #437`, `ticked: AC3`, `ticked: AC12`, `ticked: AC14`, `done: W06`, and writes the body saved to the epic. Row `W06` now links #437, its Coverage is `AC3, AC12, AC14`, and its Done cell is ticked. The run also reports `unmatched` for #427, #429 and #430, which are W00's and W01's corrections rather than this row's, and `ticked early` for `AC6` and `AC20`, which belong to W07.
+- **A comment** records `Delivered by #437.` on the epic.
+- **The epic stays open**, as `sync.py` reports: `closable: no (undelivered W03, W05, W07, W08, W10, unticked AC2, AC4, AC5, AC13, AC21, AC22, AC24)`. `draft: i05/e09/main` is the epic base still unmerged into its long-lived branch, which is not this row's.
+- **The planning record** is published on `engineering` at `d8385097`.
+

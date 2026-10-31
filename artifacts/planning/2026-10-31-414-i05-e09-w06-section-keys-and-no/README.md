@@ -27,3 +27,4 @@ This record holds the delivery: the work item, the validation evidence for every
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
 | Predecessor | [W01 Mapping, option and identity](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-w01-mapping-option-and-identity) |
 | Predecessor | [W04 Substitution warnings and check mode](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-w04-substitution-warnings-and-check) |
+| Pull request | [#437 Section Keys and the End of Chaining](https://github.com/m2ux/prosiform/pull/437) |
