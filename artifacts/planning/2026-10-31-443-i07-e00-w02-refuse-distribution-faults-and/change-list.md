@@ -17,6 +17,8 @@ The plan changes this session applied, the ones it held, and the technical debt 
 
 No finding moved between tasks, no task was created, closed or renumbered, and no criterion changed. The epic's disposition already carried findings 4 and 18 to W02, and the work item's Test row already named both cases, so the plan as written was followed.
 
+Epic delivery was recorded against the plan: row `W02` on [#443](https://github.com/m2ux/prosiform/issues/443) links [#470](https://github.com/m2ux/prosiform/pull/470) with Done ticked, and `AC3` and `AC4` are ticked there, each on the evidence the pull request's Test Plan cites.
+
 ## A plan attribution corrected in the record, not in the plan
 
 The work item names `src/prosiform/bundle.py` as the component, and the epic's row states findings 4 and 18 as its scope. Finding 4's site is in `bundle.py` as stated — `target`, at the map index that raised. Finding 18's is not: the rename and unlink are in `publish_folder`, and the checks that precede a write are in `publication`, both in `src/prosiform/cli.py`.

@@ -2,7 +2,7 @@
 
 > Evidence · 2026-10-31
 
-Every case below was run in the worktree `.worktrees/i07/e00/w02-refuse-distribution-faults-and`, at branch `i07/e00/w02-refuse-distribution-faults-and`, cut from `i07/e00/main` at `23882b7d` and rebased onto it at `d99025c1`.
+Every case below was run in the worktree `.worktrees/i07/e00/w02-refuse-distribution-faults-and`, at branch `i07/e00/w02-refuse-distribution-faults-and`, cut from `i07/e00/main` at `23882b7d` and fast-forwarded onto it at `d99025c1`. The branch merged as [#470](https://github.com/m2ux/prosiform/pull/470) into `i07/e00/main` at `de694350`.
 
 The build under test is named `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. Tooling ran under the sandbox by absolute path; `git fetch` and `git push` ran unsandboxed.
 
