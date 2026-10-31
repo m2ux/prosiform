@@ -6,7 +6,7 @@
 
 This record holds the plan for I05:E09: a `-m ORIGINAL=ALTERNATIVE` invocation parameter that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It is the ninth epic of I05, the standing initiative for ad hoc feature enhancements.
 
-The epic is nine tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the three mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; W07 treats the substitute as a source in its own right; W08 applies the mechanism to the example work-planner skill; and the option's documented row lands with W01, where `make invocation` first requires it.
+The epic is ten tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the three mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; W07 treats the substitute as a source in its own right; W08 applies the mechanism to the example work-planner skill; the option's documented row lands with W01, where `make invocation` first requires it; and W10 refuses the fourth mapping shape the clause states, a value naming no Markdown document.
 
 Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Seventeen corpus fixtures under a new `fixtures/mock/` family, every one naming the clause W00 lands, and two example-skill scenarios the corpus cannot express.
 
@@ -24,6 +24,7 @@ Each fixture lands in the pull request that makes it pass, so it is written agai
 | [W06 work item](w06.md) | Section keys and the end of chaining |
 | [W07 work item](w07.md) | The substitute as a source in its own right |
 | [W08 work item](w08.md) | The example skill bundled against stubs and a fake `gh` |
+| [W10 work item](w10.md) | The fourth refused shape: a mapping value naming no Markdown document |
 | [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
 | [Fixture inventory](fixtures.md) | Every fixture the epic lands, and the row that lands it |
 
