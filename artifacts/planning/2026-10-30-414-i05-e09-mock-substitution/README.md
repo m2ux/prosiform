@@ -26,10 +26,10 @@ Three rows were migrated here from [I05:E12](../2026-10-31-i05-inclusion-profile
 | [W06 work item](w06.md) | Section keys and the end of chaining |
 | [W07 work item](w07.md) | The substitute as a source in its own right |
 | [W08 work item](w08.md) | The example skill bundled against stubs and a fake `gh` |
-| [W10 work item](w10.md) | The fourth refused shape: a mapping value naming no Markdown document |
-| [W11 work item](w11.md) | A folder pairing, its precedence and its refusals |
+| [W10 work item](w12.md) | The fourth refused shape: a mapping value naming no Markdown document |
+| [W11 work item](w09.md) | A folder pairing, its precedence and its refusals |
 | [W12 work item](w12.md) | A folder key's absent substitute and its unused report |
-| [W13 work item](w13.md) | The folder form documented and demonstrated |
+| [W13 work item](w09.md) | The folder form documented and demonstrated |
 | [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
 | [Fixture inventory](fixtures.md) | Every fixture the epic lands, and the row that lands it |
 

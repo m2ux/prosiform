@@ -1,14 +1,14 @@
-# Declared Inclusion, Target Profiles and Folder Mocks — October 2026
+# Declared Inclusion, Target Presets and Exclusion — October 2026
 
 > Epic set · Created 2026-10-31
 
 ## Executive Summary
 
-Three changes to what a run carries and how an argument reaches it. The first retires `prosiform.root`: a local Markdown link is bundled when the document it names declares `prosiform`, and a document's boundary is derived from the links it writes rather than declared. The second admits named *presets* in frontmatter, so a section an argument names is compiled under that argument. The third lets `-m` name a folder pair, so a whole directory is mocked without an entry per file.
+Three changes to what a run carries and how an argument reaches it. The first retires `prosiform.root`: a local Markdown link is bundled when the document it names declares `prosiform`, and a document's boundary is derived from the links it writes rather than declared. The second admits named *presets* in frontmatter, so a section an argument names is compiled under that argument. The third removes a named section from a bundle, so one preset carves one source several ways for several consumers. A fourth change — a folder pairing in `-m` — moved to [I05:E09](https://github.com/m2ux/prosiform/issues/414), because a folder side is a shape of the option that epic owns.
 
 They are one record because two of them are ordered by the first. Today `prosiform` admits exactly three keys and refuses any other; a preset is a key that is neither. And today a substitution is exempt from the writing source's root because the root is a boundary; once a boundary is derived from links, what bounds a substitute has to be stated against that instead. Delivering presets first would mean writing the key rule twice.
 
-The set is three epics. **Declared Inclusion** is the load-bearing one: it moves link classification from where a file sits to whether the file opts in, which changes the answer for every document in the example tree, every root-declaring fixture and eleven pages of documentation. **Folder Mocks** is small and lands second, because a folder of stubs is what the preset work is exercised against. **Target Profiles** lands last, once the declaration it reads and the folder it mocks both exist.
+The set is three epics. **Declared Inclusion** is the load-bearing one: it moves link classification from where a file sits to whether the file opts in, which changes the answer for every document in the example tree, every root-declaring fixture and eleven pages of documentation. **Target Presets** follows, admitting the key rule a preset is written under. **Exclusion** lands last, because a carve-up is a preset's use.
 
 ## Artifacts
 
@@ -16,7 +16,6 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | --- | --- |
 | [Declared Inclusion](epic-a-declared-inclusion.md) | [E11](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
 | [Target Profiles](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets and applying one to a compilation |
-| [Folder Mocks](epic-c-folder-mocks.md) | [E12](https://github.com/m2ux/prosiform/issues/435): the epic letting `-m` name a folder pair |
 | [Exclusion](epic-d-exclusion.md) | [E14](https://github.com/m2ux/prosiform/issues/445): the epic removing a named section from a bundle |
 | [A: design clause](a-w00.md) | The clause, the retired codes and the pin |
 | [A: metadata](a-w01.md) | Declaration presence, the empty block and the `root` refusal |
@@ -34,12 +33,6 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [B: unused presets](b-w04.md) | The warning for a preset nothing applied |
 | [B: deferred targets](b-w05.md) | A preset kept for the run that follows the deferral |
 | [B: documentation](b-w06.md) | The preset stated in the invocation and the source page |
-| [C: design clause](c-w00.md) | The clause and the pin |
-| [C: grammar](c-w01.md) | The folder pair and its refusals |
-| [C: matching](c-w02.md) | Prefix matching, precedence and the retained section |
-| [C: unmatched](c-w03.md) | The warning for a folder key that matched nothing |
-| [C: example](c-w04.md) | A whole folder mocked in the example skill |
-| [C: documentation](c-w05.md) | The option row |
 | [D: design clause](d-w00.md) | The clause, the two codes and the pin |
 | [D: grammar](d-w01.md) | The option, its level suffix and its refusals |
 | [D: seam](d-w02.md) | Exclusion where the selection settles, and the silent miss |
@@ -50,7 +43,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: level](d-w07.md) | A level telling a repeated heading apart |
 | [D: preset](d-w08.md) | A document and a preset carrying an exclusion |
 | [D: documentation](d-w09.md) | The option row and the selection page |
-| [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E12, E13, E14 |
+| [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
 
 ## Design
 
@@ -99,7 +92,8 @@ An exclusion touching nothing is silent, because a shared preset legitimately na
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
 - **A folder pair is a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. (User, 2026-10-31.)
 - **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
-- **Three epics, delivered in order E11, E12, E13.** The first changes the key rule and the classification both later epics read; the second is small and supplies the stub folders the third is demonstrated against; the third is the largest and depends on both. (Agent, 2026-10-31.)
+- **Three epics, delivered in order E11, E13, E14.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
+- **The folder pairing moved to I05:E09.** A folder side is a shape of the `-m` option that epic owns, so keeping it here would put one option's two shapes in two planning records. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
 - **An absent document is text, and the operators keep the failure.** The run cannot tell a citation from a typo without the declaration that would answer it, so responsibility is stated by the mark instead. (User, 2026-10-31.) An existing document that declares nothing is text too, which is the cost accepted in exchange for a target that qualifies itself.
@@ -121,9 +115,9 @@ Findings from the plan review against the source, all resolved.
 
 | Finding | Severity | Resolution |
 | --- | --- | --- |
-| Both initiative `Depends on` cells named whole epics that no row pair derives, and `scripts/deps.py` refused them. | High | Both cells emptied; the couplings are task edges, and `E12` gained the two it was missing. |
+| Both initiative `Depends on` cells named whole epics that no row pair derives, and `scripts/deps.py` refused them. | High | Both cells emptied; the couplings are task edges. |
 | Seven independent pairs were named in neither Joins nor the record, so the checker reported every one. | High | Each pair accounted for in `joins.md` with its two ids on one line, and the reason it takes two pull requests stated. |
-| `E12` consumed `E09`'s `-m` grammar and `E11`'s classification seam and named neither, so it could have started first. | High | `E12:W02` gained a dependency on `E11:W03`; `E12:W01`'s relation to `E09` is stated in the body, since `E09` is not an epic the checker is given. |
+| The folder-mock epic consumed `E09`'s `-m` grammar and `E11`'s classification seam and named neither. | High | Retired: the work moved to `E09:W11`, which names `E11:W03`. |
 | The three W00 rows contended on `design.md` under one priority number, with the sequencing stated only as prose. | Medium | Each W00 depends on the previous epic's W00, which is what the pin chain actually is. |
 | The diagram-following eval's 118 workflow documents declare nothing, and `make harness` requires each form to bundle cleanly. | Critical | `E11:W06` covers the eval tree and states which forms it reaches. |
 | Four `real-source` fixtures copy documents whose frontmatter declares nothing, and the family's rule forbids editing a copy. | High | `E11:W07` states where the declaration is added for a copied source. |
@@ -131,7 +125,7 @@ Findings from the plan review against the source, all resolved.
 | `checks/smoke.py` writes `prosiform: {root: "."}`, so `make smoke` fails as soon as the refusal lands. | High | `E11:W06` owns the check's source and its retired-option assertion. |
 | `profile` already names the grammar, and the epic reused it. | High | The concept is a `preset` throughout; the word clash is stated in the clause and the glossary check holds it. |
 | `E11:W08` named six pages where eleven state a root. | Medium | AC13 lists all eleven, and AC14 covers the four worked examples and the drawings. |
-| AC9 cited `make boundary` and AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E12:W04` extends the target `E09:W08` lands and states that dependency. |
+| AC9 cited `make boundary` and the folder epic's AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E09:W13` extends the target `E09:W08` lands and states that dependency. |
 
 ## Debt this record defers
 
@@ -149,7 +143,6 @@ None outstanding. Two readings were put to the user and answered: the boundary i
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Preceding epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
 | Epic A | [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
-| Epic C | [I05:E12 Folder Mocks](https://github.com/m2ux/prosiform/issues/435) |
-| Epic B | [I05:E13 Target Profiles](https://github.com/m2ux/prosiform/issues/436) |
+| Epic B | [I05:E13 Target Presets](https://github.com/m2ux/prosiform/issues/436) |
 | Epic D | [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
