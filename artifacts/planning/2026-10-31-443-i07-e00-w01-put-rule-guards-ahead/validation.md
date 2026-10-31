@@ -109,7 +109,7 @@ The second case reads a `Makefile` written for the test in both orders, so the r
 
 ## Every check run on the branch head
 
-`make check` was run twice over the repaired tree. Under the sandbox the guards run third and fourth and pass, and the run then stops inside `test` at `test_linked_bootstrap`, which needs network for `uv build`:
+`make check` was run twice over the repaired tree. Under the sandbox the four static checks pass, then both guards run and pass, and the run stops inside `test` at `test_linked_bootstrap`, which needs network for `uv build`:
 
 ```
 9:python3 checks/steps.py
@@ -152,5 +152,5 @@ Run unsandboxed, where `test_linked_bootstrap`, `smoke` and `links` reach the ne
 | --- | --- |
 | `make -n check` after the repair | `lock-check lint format-check typecheck steps authoring test harness corpus smoke layout tables links vocabulary invocation conformance independence` |
 | The status a broken tree meets | The guard, not the bundling target, in both injected cases |
-| Checks reading the example | `steps` and `authoring` are the only guards; `harness` reads the example only through test-written copies, so it stays after `test` |
+| Checks reading the example | `steps` and `authoring` are the only guards. `harness` reads the example directly but bundles nothing, so it stays after `test` and now follows both guards |
 | The example itself | Unmodified; every injected break reverted with `git checkout --` |
