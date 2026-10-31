@@ -13,6 +13,9 @@ the work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The check order, the targets that mask each guard, and what the task delivered |
+| [Validation](validation.md) | The before-fix observation for each finding, the order test, and every check run |
+| [Change list](change-list.md) | The plan changes the session applied and those left held, with the debt it classified |
 
 ## Links
 
