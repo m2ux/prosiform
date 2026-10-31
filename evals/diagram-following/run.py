@@ -353,16 +353,23 @@ def observable(
     included. A harness that does not surface a sub-agent's own dispatch can
     report only the starts the path's own sections make, so a scenario whose
     trace outruns that count is beyond it.
+
+    The corpus names its forms by what they hold, so the runner's form is
+    read as the corpus form it carries before its sections are asked for.
     """
     if harness.nested_starts:
         return True
-    root = workflow.form(FORMS[form])
+    written = FORMS[form]
+    sections = sections_of(workflow, written)
+    root = workflow.form(written)
     top = 0
     for state in scenario.path:
-        section = sections_of(workflow, form)[state]
+        section = sections[state]
         top += sum(
             len(targets)
-            for _, targets in dispatched(section.body, section.path.parent, root, form)
+            for _, targets in dispatched(
+                section.body, section.path.parent, root, written
+            )
         )
     return len(scenario.trace) <= top
 

@@ -29,6 +29,7 @@ from run import (
     LINKED_TREE,
     PROSE_BUNDLE,
     TRANSCRIPT,
+    TREE,
     Ledger,
     Session,
     bundles_of,
@@ -123,6 +124,30 @@ def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
     workflow = CORPUS["dispatch-set"]
     scenario = workflow.scenarios[0]
     assert observable(workflow, scenario, COMPILED_SET, HARNESSES["cursor"]) is True
+
+
+def test_the_cursor_harness_completes_a_matrix_over_the_default_forms() -> None:
+    """AC15: every default form reaches the matrix the Cursor harness runs.
+
+    The runner names its forms by what a session receives, and the corpus
+    names its own by what they hold, so a form the run offers in the default
+    list is looked up as the corpus form it carries. One that is not resolves
+    to no sections at all, and the matrix stops before a single session.
+    """
+    corpus = list(CORPUS.values())
+    forms = list(FORMS)
+    sessions = matrix(corpus, ["m"], forms, 1, HARNESSES["cursor"])
+    reached = {(session.workflow, session.form) for session in sessions}
+    offered = {
+        (workflow.name, form)
+        for workflow in corpus
+        for form in forms
+        if FORMS[form] in workflow.forms
+    }
+    assert reached <= offered
+    assert {("linear", BUNDLE), ("linear", TREE)} <= reached
+    assert {("branching", PROSE_BUNDLE), ("branching", LINKED_TREE)} <= reached
+    assert {("dispatch-chain", COMPILED_SET)}.isdisjoint(reached)
 
 
 @pytest.fixture
