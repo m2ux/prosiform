@@ -32,9 +32,9 @@ A folder of stand-ins costs one entry per file.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause and pin | AC8 | | | |
+| W00 | Design clause and pin | AC8 | [E11:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W01 | The folder grammar and its refusals | AC3 | W00 | | |
-| W02 | Prefix matching, precedence and retained section | AC1, AC2 | W01 | | |
+| W02 | Prefix matching, precedence and retained section | AC1, AC2 | W01, [E11:W03](https://github.com/m2ux/prosiform/issues/434) | | |
 | W03 | Absent substitute and unmatched folder | AC4, AC5 | W02 | | |
 | W04 | A whole folder mocked in the example | AC6 | W03 | | |
 | W05 | The option row states the folder form | AC7 | W03 | | |

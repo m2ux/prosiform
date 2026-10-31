@@ -4,18 +4,18 @@
 
 ## Executive Summary
 
-Three changes to what a run carries and how an argument reaches it. The first retires `prosiform.root`: a local Markdown link is bundled when the document it names declares `prosiform`, and a document's boundary is derived from the links it writes rather than declared. The second admits named *profiles* in frontmatter, so a section an argument names is compiled under that argument. The third lets `-m` name a folder pair, so a whole directory is mocked without an entry per file.
+Three changes to what a run carries and how an argument reaches it. The first retires `prosiform.root`: a local Markdown link is bundled when the document it names declares `prosiform`, and a document's boundary is derived from the links it writes rather than declared. The second admits named *presets* in frontmatter, so a section an argument names is compiled under that argument. The third lets `-m` name a folder pair, so a whole directory is mocked without an entry per file.
 
-They are one record because two of them are ordered by the first. Today `prosiform` admits exactly three keys and refuses any other; a profile is a key that is neither. And today a substitution is exempt from the writing source's root because the root is a boundary; once a boundary is derived from links, what bounds a substitute has to be stated against that instead. Delivering the profiles first would mean writing the key rule twice.
+They are one record because two of them are ordered by the first. Today `prosiform` admits exactly three keys and refuses any other; a preset is a key that is neither. And today a substitution is exempt from the writing source's root because the root is a boundary; once a boundary is derived from links, what bounds a substitute has to be stated against that instead. Delivering presets first would mean writing the key rule twice.
 
-The set is three epics. **Declared Inclusion** is the load-bearing one: it moves link classification from where a file sits to whether the file opts in, which changes the answer for every document in the example tree, every root-declaring fixture and five pages of documentation. **Folder Mocks** is small and lands second, because a folder of stubs is what the profile work is exercised against. **Target Profiles** lands last, once the declaration it reads and the folder it mocks both exist.
+The set is three epics. **Declared Inclusion** is the load-bearing one: it moves link classification from where a file sits to whether the file opts in, which changes the answer for every document in the example tree, every root-declaring fixture and eleven pages of documentation. **Folder Mocks** is small and lands second, because a folder of stubs is what the preset work is exercised against. **Target Profiles** lands last, once the declaration it reads and the folder it mocks both exist.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
 | [Declared Inclusion](epic-a-declared-inclusion.md) | [E11](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
-| [Target Profiles](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named profiles and applying one to a compilation |
+| [Target Profiles](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets and applying one to a compilation |
 | [Folder Mocks](epic-c-folder-mocks.md) | [E12](https://github.com/m2ux/prosiform/issues/435): the epic letting `-m` name a folder pair |
 | [A: design clause](a-w00.md) | The clause, the retired codes and the pin |
 | [A: metadata](a-w01.md) | Declaration presence, the empty block and the `root` refusal |
@@ -26,13 +26,13 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [A: example tree](a-w06.md) | Declaring 95 documents and withdrawing their roots |
 | [A: corpus](a-w07.md) | Every fixture family declaring rather than rooting |
 | [A: documentation](a-w08.md) | Five pages that state the declaration |
-| [B: design clause](b-w00.md) | The clause and the pin |
-| [B: profile keys](b-w01.md) | The key rule `prosiform` admits |
-| [B: selection](b-w02.md) | Matching a section name to a profile |
-| [B: spec binding](b-w03.md) | A profile's mock entries and their collisions |
-| [B: unused profiles](b-w04.md) | The warning for a profile nothing applied |
-| [B: deferred targets](b-w05.md) | A profile kept for the run that follows the deferral |
-| [B: documentation](b-w06.md) | The profile stated in the invocation and the source page |
+| [B: design clause](b-w00.md) | The clause, the term and the pin |
+| [B: preset keys](b-w01.md) | The key rule `prosiform` admits |
+| [B: selection](b-w02.md) | Matching a section name to a preset |
+| [B: spec binding](b-w03.md) | A preset's mock entries and their collisions |
+| [B: unused presets](b-w04.md) | The warning for a preset nothing applied |
+| [B: deferred targets](b-w05.md) | A preset kept for the run that follows the deferral |
+| [B: documentation](b-w06.md) | The preset stated in the invocation and the source page |
 | [C: design clause](c-w00.md) | The clause and the pin |
 | [C: grammar](c-w01.md) | The folder pair and its refusals |
 | [C: matching](c-w02.md) | Prefix matching, precedence and the retained section |
@@ -79,13 +79,33 @@ A mapping side ending in a separator makes the entry a folder pairing, and both 
 - **No path boundary decides a link.** `prosiform.root` retires and a link outside every previous root is compiled when its target declares. (User, 2026-10-31.)
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
 - **A folder pair is a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. (User, 2026-10-31.)
-- **A profile is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
-- **Three epics, delivered in order A, C, B.** A changes the key rule and the classification both later epics read; C is small and supplies the stub folders B is demonstrated against; B is the largest and depends on both. (Agent, 2026-10-31.)
+- **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
+- **Three epics, delivered in order E11, E12, E13.** The first changes the key rule and the classification both later epics read; the second is small and supplies the stub folders the third is demonstrated against; the third is the largest and depends on both. (Agent, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
-- **An absent document is text, and the operators keep the failure.** The run cannot tell a citation from a typo without the declaration that would answer it, so responsibility is stated by the mark instead. (Agent, 2026-10-31.)
+- **An absent document is text, and the operators keep the failure.** The run cannot tell a citation from a typo without the declaration that would answer it, so responsibility is stated by the mark instead. (User, 2026-10-31.) An existing document that declares nothing is text too, which is the cost accepted in exchange for a target that qualifies itself.
 - **The boundary refuses no authored link.** Deriving it from the links makes that a property rather than a policy, and the clause says so rather than implying a confinement it no longer performs. (Agent, 2026-10-31.)
-- **Priority 4 for A, 4 for C, 5 for B.** A touches every tree in the repository, so nothing else should be in flight over the same files; B has no contention and can start once A lands. (Agent, 2026-10-31.)
+- **An entry reference is held to the same declaration.** The command line is the one selection made outside the link mechanism, so a document that declares nothing cannot be reached by argument either. (Agent, 2026-10-31.)
+- **The per-compilation argument set is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
+- **The initiative's `Depends on` cells are empty.** The rule derives a whole-epic edge only where every row of the dependent requires every row of the prerequisite, and no row pair here meets it. The gates live in the task edges and in the priority numbers. (User, 2026-10-31.)
+
+## Review
+
+Findings from the plan review against the source, all resolved.
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| Both initiative `Depends on` cells named whole epics that no row pair derives, and `scripts/deps.py` refused them. | High | Both cells emptied; the couplings are task edges, and `E12` gained the two it was missing. |
+| Seven independent pairs were named in neither Joins nor the record, so the checker reported every one. | High | Each pair accounted for in `joins.md` with its two ids on one line, and the reason it takes two pull requests stated. |
+| `E12` consumed `E09`'s `-m` grammar and `E11`'s classification seam and named neither, so it could have started first. | High | `E12:W02` gained a dependency on `E11:W03`; `E12:W01`'s relation to `E09` is stated in the body, since `E09` is not an epic the checker is given. |
+| The three W00 rows contended on `design.md` under one priority number, with the sequencing stated only as prose. | Medium | Each W00 depends on the previous epic's W00, which is what the pin chain actually is. |
+| The diagram-following eval's 118 workflow documents declare nothing, and `make harness` requires each form to bundle cleanly. | Critical | `E11:W06` covers the eval tree and states which forms it reaches. |
+| Four `real-source` fixtures copy documents whose frontmatter declares nothing, and the family's rule forbids editing a copy. | High | `E11:W07` states where the declaration is added for a copied source. |
+| Nothing stated whether an entry reference could name a document that declares nothing. | High | AC15 added, with a fixture, and `E11:W05` carries it. |
+| `checks/smoke.py` writes `prosiform: {root: "."}`, so `make smoke` fails as soon as the refusal lands. | High | `E11:W06` owns the check's source and its retired-option assertion. |
+| `profile` already names the grammar, and the epic reused it. | High | The concept is a `preset` throughout; the word clash is stated in the clause and the glossary check holds it. |
+| `E11:W08` named six pages where eleven state a root. | Medium | AC13 lists all eleven, and AC14 covers the four worked examples and the drawings. |
+| AC9 cited `make boundary` and AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E12:W04` extends the target `E09:W08` lands and states that dependency. |
 
 ## Debt this record defers
 
