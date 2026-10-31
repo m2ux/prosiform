@@ -1,12 +1,17 @@
-"""Assert `make check` names the authoring check ahead of the corpus.
+"""Assert `make check` names every guard that reads the example ahead of every
+target that bundles it.
 
-A rule break in a file a usage-example fixture reaches alters that fixture's
-bundle, so a corpus run over the broken tree fails on the bytes that moved and
-names the bundle rather than the file and the rule. The authoring check reads
-the example alone and needs no build, so its position ahead of the corpus is
-what makes the rule the verdict a broken tree meets first. The repository's
-own `Makefile` is held to that order here, and the reading is held to a
-Makefile written for this test.
+Two kinds of target read the example tree. A guard reads it directly and needs
+no build: `make steps` reads every procedure's step headings, and
+`make authoring` reads the authoring rules by file and line. A bundling target
+runs the build over it: `make test` copies the example and compiles each of its
+modes, and `make corpus` does so through the usage-example fixtures.
+
+A rule break in a document the guards read alters the bundle a bundling target
+compares, so a bundling target running first reports the bytes that moved, or
+the target-not-found code the moved link produces, where the guard names the
+file and the rule. The repository's own `Makefile` is held to that order here,
+and the reading is held to a Makefile written for this test.
 """
 
 import re
@@ -17,6 +22,17 @@ MAKEFILE = ROOT / "Makefile"
 
 CHECK = re.compile(r"^check\s*:[ \t]*([^\n#]*)$", re.MULTILINE)
 
+GUARDS = ("steps", "authoring")
+BUNDLING = ("test", "corpus")
+
+MASKED = {
+    "steps": "a broken step convention is reported as the bundle bytes that moved",
+    "authoring": (
+        "a broken authoring rule is reported as a bundle byte difference or a "
+        "target-not-found code"
+    ),
+}
+
 
 def prerequisites(text: str) -> list[str]:
     """The targets `check` names, in the order it names them."""
@@ -25,19 +41,26 @@ def prerequisites(text: str) -> list[str]:
     return found.group(1).split()
 
 
-def test_the_makefile_names_authoring_ahead_of_corpus() -> None:
+def test_the_makefile_names_every_guard_ahead_of_every_bundling_target() -> None:
     order = prerequisites(MAKEFILE.read_text())
-    assert "authoring" in order, "check names no authoring target"
-    assert "corpus" in order, "check names no corpus target"
-    assert order.index("authoring") < order.index("corpus"), (
-        "check names corpus ahead of authoring, so a rule break in a "
-        "fixture-reached file is reported as a bundle byte difference"
-    )
+    for target in (*GUARDS, *BUNDLING):
+        assert target in order, f"check names no {target} target"
+    for guard in GUARDS:
+        for target in BUNDLING:
+            assert order.index(guard) < order.index(target), (
+                f"check names {target} ahead of {guard}, so {MASKED[guard]}"
+            )
 
 
 def test_the_reading_keeps_the_order_the_rule_names_are_written_in() -> None:
-    text = "check: lint authoring corpus test\n\ncorpus:\n\tpython3 checks/corpus.py\n"
-    assert prerequisites(text) == ["lint", "authoring", "corpus", "test"]
-    reversed_text = "check: lint corpus authoring\n"
+    text = (
+        "check: lint steps authoring test corpus\n"
+        "\n"
+        "corpus:\n"
+        "\tpython3 checks/corpus.py\n"
+    )
+    assert prerequisites(text) == ["lint", "steps", "authoring", "test", "corpus"]
+    reversed_text = "check: lint corpus test authoring steps\n"
     order = prerequisites(reversed_text)
-    assert order.index("corpus") < order.index("authoring")
+    assert order.index("corpus") < order.index("steps")
+    assert order.index("test") < order.index("authoring")
