@@ -771,9 +771,17 @@ def rebased(found: Reference, text: str) -> str:
 
     A deferral publishes the path the run that compiles the material
     follows from the working directory the bundle was compiled in, with
-    the fragment the link resolved retained.
+    the fragment the link resolved to retained. The path is the
+    target's, so a target the substitution mapping redirected publishes
+    the substitute's path, and so is the fragment: a section key
+    redirects the section together with the document, while a document
+    key keeps the section the reference named. A target resolving to no
+    section publishes the fragment its author wrote, which an empty one
+    spells as the bare delimiter.
     """
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
+    if found.fragment is not None:
+        return f"{path}{FRAGMENT}{found.fragment}"
     fragment = components(text).fragment
     if fragment is None:
         return path

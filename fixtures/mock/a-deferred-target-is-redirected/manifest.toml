@@ -1,0 +1,26 @@
+description = "A deferred link's target is redirected like any other, so the destination the bundle publishes is the substitute's working-directory-relative path, which is where a later run following that path finds the stand-in, and the document the link names is never opened or bundled."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Link classification and resource handling — A deferred link's destination",
+  "Link classification and resource handling — A withheld link's target",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "stand-in.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1

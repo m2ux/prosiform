@@ -30,6 +30,7 @@ from typing import Any
 
 import pytest
 
+from prosiform.candidate import carried, intended
 from prosiform.cli import MOCK_UNUSED, main
 from prosiform.closure import (
     UNSUBSTITUTED,
@@ -42,7 +43,11 @@ from prosiform.closure import (
     inside,
     withholding_target,
 )
-from prosiform.profile import is_markdown
+from prosiform.limits import BUDGETS, NESTING, Limits
+from prosiform.profile import is_markdown, parse
+from prosiform.source import regions
+
+BUDGET = Limits({budget: budget.default for budget in BUDGETS}).of(NESTING)
 
 SUBSTITUTE = Reference("stand-in.md", "stand-in.md", walk="stand-in.md")
 SECTION = Reference("stand-in.md#one", "stand-in.md", "one", walk="stand-in.md")
@@ -874,3 +879,170 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     assert "[its detail](#detail)" in published
     assert "Beside the stand-in." in published
     assert "[the guide](../tree/guide.md)" in published
+
+
+def withheld_tree(tmp_path: Path) -> Path:
+    """A guide deferring one section, beside a stand-in holding a different one."""
+    (tmp_path / "out").mkdir()
+    (tmp_path / "guide.md").write_text(
+        "# Guide\n\nDefer [\u00ac the rules](rules.md#escalation) to a later run.\n"
+    )
+    (tmp_path / "rules.md").write_text(
+        "# Rules\n\nEvery rule the tree under test holds.\n\n"
+        "## Escalation\n\nAsk the maintainer.\n"
+    )
+    (tmp_path / "stand-in.md").write_text(
+        "# Stand-in\n\nOne section, redirected.\n\n## Answers\n\nAsk the stand-in.\n"
+    )
+    return tmp_path
+
+
+def test_a_deferred_target_is_redirected_to_the_substitute(tmp_path: Path) -> None:
+    """AC4: the destination a deferral publishes is the substitute's own path.
+
+    A deferral compiles nothing here, so the substitute contributes no
+    content and no heading: what moves is the destination the later run
+    follows.
+    """
+    tree = withheld_tree(tmp_path)
+    status, published, said = grouped(
+        tree, "-m", "rules.md#escalation=stand-in.md#answers", "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert "[the rules](stand-in.md#answers)" in published
+    assert "Every rule the tree under test holds." not in published
+    assert "Ask the stand-in." not in published
+    assert "# Stand-in" not in published
+
+
+def test_a_deferred_destination_publishes_the_section_the_substitution_names(
+    tmp_path: Path,
+) -> None:
+    """The resolved fragment is published, so a later run finds the section it names.
+
+    A key carrying a section redirects the section with the document. The
+    run has confirmed the substitute carries it, so publishing the
+    authored fragment instead would name a section that need not exist
+    and a later run following the bundle would refuse.
+    """
+    tree = withheld_tree(tmp_path)
+    the_run = tree / "out" / "guide.bundles" / "guide.bundle.md"
+    assert (
+        grouped(tree, "-m", "rules.md#escalation=stand-in.md#answers", "guide.md")[0]
+        == 0
+    )
+    assert "[the rules](stand-in.md#answers)" in the_run.read_text()
+    (tree / "later.md").write_text(
+        "# Later\n\nFollow [the rules](stand-in.md#answers).\n"
+    )
+    assert invoke(tree, "later.md")[0] == 0
+    (tree / "later.md").write_text(
+        "# Later\n\nFollow [the rules](stand-in.md#escalation).\n"
+    )
+    assert invoke(tree, "later.md")[0] == 1
+
+
+def test_a_deferred_targets_heading_is_confirmed_of_the_substitute(
+    tmp_path: Path,
+) -> None:
+    """The document the run confirms is the one the later run reads."""
+    tree = withheld_tree(tmp_path)
+    status, said = voices(
+        tree,
+        "-m",
+        "rules.md#escalation=stand-in.md#elsewhere",
+        "-o",
+        str(tree / "out"),
+        "guide.md",
+    )
+    assert status == 1
+    assert [one["code"] for one in said] == ["E_TARGET_NOT_FOUND"]
+    assert said[0]["resolved"] == "stand-in.md"
+
+
+def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
+    tmp_path: Path,
+) -> None:
+    """A dispatch compiles the bundle of the substitute, not of the target."""
+    (tmp_path / "out").mkdir()
+    (tmp_path / "guide.md").write_text(
+        "# Guide\n\n## Steps\n\nApply [\u21c9 the rules](rules.md).\n"
+    )
+    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule the tree holds.\n")
+    (tmp_path / "stand-in.md").write_text(
+        "# Stand-in\n\nEvery rule the stand-in holds.\n"
+    )
+    status, said = voices(
+        tmp_path, "-m", "rules.md=stand-in.md", "-o", str(tmp_path / "out"), "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    folder = tmp_path / "out" / "guide.bundles"
+    assert (folder / "stand-in.bundle.md").is_file()
+    assert not (folder / "rules.bundle.md").exists()
+    published = (folder / "guide.bundle.md").read_text()
+    assert "`stand-in.bundle.md`" in published
+    assert (folder / "stand-in.bundle.md").read_text().startswith("# Stand-in\n")
+
+
+def test_a_parallel_dispatched_target_is_redirected_and_listed_once(
+    tmp_path: Path,
+) -> None:
+    """The set a parallel mark publishes lists the substitute's bundle."""
+    (tmp_path / "out").mkdir()
+    (tmp_path / "guide.md").write_text(
+        "# Guide\n\n## Steps\n\nRun [\u2afd the rules](rules.md) beside the rest.\n"
+    )
+    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule the tree holds.\n")
+    (tmp_path / "stand-in.md").write_text(
+        "# Stand-in\n\nEvery rule the stand-in holds.\n"
+    )
+    status, said = voices(
+        tmp_path, "-m", "rules.md=stand-in.md", "-o", str(tmp_path / "out"), "guide.md"
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    folder = tmp_path / "out" / "guide.bundles"
+    assert (folder / "stand-in.bundle.md").is_file()
+    listed = (folder / "guide.bundle.md").read_text()
+    assert "`stand-in.bundle.md` (the rules)" in listed
+
+
+def test_the_candidate_comparison_reads_the_same_substitute() -> None:
+    """A mocked bundle's expected destination is the one the bundle published.
+
+    The comparison resolves each withheld link again, so a run whose
+    published destination came from the mapping while the comparison
+    resolved without it would report the destination as one the bundle
+    invented. Both answers are read from one mapping here.
+    """
+    text = "# Guide\n\nDefer [\u00ac the rules](rules.md#escalation) to a later run.\n"
+    tokens = parse(text, BUDGET, {})
+    span = next(one for one in regions(tokens) if one.type == "paragraph_open")
+    mapped = Substitution(
+        {
+            ("rules.md", "escalation"): Reference(
+                "stand-in.md#answers", "stand-in.md", "answers", walk="stand-in.md"
+            )
+        }
+    )
+    found = [
+        intended(
+            "guide.md",
+            one,
+            at,
+            children,
+            {},
+            "",
+            None,
+            mapped,
+        )
+        for children, at, one in carried(tokens, span)
+    ]
+    assert [one.destination for one in found] == ["stand-in.md#answers"]
+    unmapped = [
+        intended("guide.md", one, at, children, {}, "", None, UNSUBSTITUTED)
+        for children, at, one in carried(tokens, span)
+    ]
+    assert [one.destination for one in unmapped] == ["rules.md#escalation"]
