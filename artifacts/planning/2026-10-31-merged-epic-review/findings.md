@@ -86,38 +86,47 @@ Every finding below was delivered by an epic already merged into `main` and was 
 | 76 | I01:E06 | checks | A metadata-preservation test asserts a path nothing writes, so it cannot fail | minor |
 | 77 | I01:E06 | checks | The checks README describes the root-ownership guard this epic deleted | minor |
 | 78 | I01:E02 | source | A parent's whole-document destination degrades silently to an unrelated variant heading | minor |
-| 79 | I01:E02 | source | One member's duplicate section text produces two identical variant headings, unwarned | minor |
+| 79 | I01:E02 | source | A member's duplicate section text produces two identical variant headings, unwarned | minor |
 
-## Named, not attributed
+## Disposition
 
-Three further defects were named during the review of I02:E03 and attributed by that reviewer to edits after the epic merged. They are recorded here because each holds at `23882b7d`.
+| Column | Meaning |
+| --- | --- |
+| # | Stable finding number, assigned in the review and never reused |
+| Epic | The epic that delivered the finding |
+| Scope | The area of the tree it affects |
+| Problem | The defect in one sentence |
+| Severity | `blocker`, `major` or `minor` |
+| Where | The task in the delivering epic, or the epic that took the finding elsewhere |
 
-| # | Epic | Scope | Problem | Severity |
-| --- | --- | --- | --- | --- |
-| 80 | I02:E03 | example | Place Issue on Board lost the issue-number input its criterion promised | minor |
-| 81 | I02:E03 | example | Review Pull Request calls Record Epic Delivery with inputs its own step does not declare | major |
-| 82 | I02:E03 | example | The closure protocol says every exit continues at one step while an earlier step continues elsewhere | minor |
+## Where Each Finding Goes
+
+| Task | Scope | Findings |
+| --- | --- | --- |
+| W01 | build | 3, 11 |
+| W02 | source | 4, 18 |
+| W03 | source | 19, 20, 25 |
+| W04 | source | 37, 39 |
+| W05 | source | 28, 38, 40 |
+| W06 | source | 35, 36 |
+| W07 | eval | 1, 8 |
+| W08 | eval | 6, 7 |
+| W09 | eval | 9, 23, 24 |
+| W10 | eval | 21, 22, 61 |
+| W11 | example | 5, 26, 27 |
+| W12 | example | 30, 31 |
+| W13 | example | 17, 29, 81 |
+
+Findings 10, 12, 13, 14, 15, 16, 33, 34, 52, 55, 56, 65, 71, 76 and 77 are rules the design or a check states imprecisely, which the epic [I01:E03](https://github.com/m2ux/prosiform/issues/187) holds by its own stated boundary. Finding 32 is taken by [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same command lines.
 
 ## Totals
 
-| Severity | Attributed | Not attributed |
-| --- | --- | --- |
-| blocker | 5 | 0 |
-| major | 35 | 1 |
-| minor | 39 | 2 |
-| **total** | **79** | **3** |
-
-## Scope
-
-| Scope | Meaning |
-| --- | --- |
-| build | The `Makefile` and the order its targets run in |
-| checks | The repository checks under `checks/` |
-| docs | The top-level documentation: the README, the invocation page, the design pages |
-| eval | The diagram-following eval under `evals/` |
-| example | The work-planner example skill under `example/` |
-| fixture | The conformance corpus under `fixtures/` |
-| source | The build under `src/prosiform/` |
+| Severity | Recorded | In this epic | Elsewhere |
+| --- | --- | --- | --- |
+| blocker | 5 | 5 | 0 |
+| major | 36 | 28 | 8 |
+| minor | 41 | 8 | 33 |
+| **total** | **82** | **41** | **41** |
 
 ## Corroboration
 
@@ -131,10 +140,6 @@ Three findings were reached independently by more than one epic's reviewer, whic
 
 ## Patterns
 
-Most of the eighty-two findings reduce to three causes, and each cause names the checks or criteria that would have caught it.
-
-- **Reach narrower than the stated rule.** Eleven findings across six epics are guards that state a rule broader than the cases they inspect: an unlabelled fence, a step anchor read as a contract section, a step at its own level, a duplicate heading compared by text, prose beside a compiled step, a byte bound that bounds bytes but not work, a coincidence warning that skips merged groups, and a link check that blanks fenced blocks whole.
-
-- **A criterion that enumerates documents.** Five findings are a rule changed in code and in the documents the criterion named, but left standing in an unlisted page: the checks README twice, the hierarchy page, the invocation page and the bundles page. The list is what failed, not the edit.
-
-- **The example is read but never run.** Six findings follow from validating the example skill as documents alone: thirty-nine command blocks naming a script path no tree carries, a step-verb rule nothing applies, a percent-encoding mismatch between the check and the build, and two counts no command produces. The checks that cover the example are authoring, steps, tables, layout and links, and every one of them reads prose.
+- **Reach narrower than the stated rule.** Eleven findings across six epics are guards that state a rule broader than the cases they inspect.
+- **A criterion that enumerates documents.** Five findings are a rule changed in code and in the documents the criterion named, but left standing in an unlisted page.
+- **The example is read but never run.** Six findings follow from validating the example skill as documents alone.
