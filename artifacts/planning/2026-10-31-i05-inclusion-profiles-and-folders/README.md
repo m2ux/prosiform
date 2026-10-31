@@ -28,14 +28,15 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [A: documentation](a-w08.md) | Eleven pages and five drawings that state the declaration |
 | [A: invariants](a-w09.md) | The one settled selection and the boundary that refuses no link |
 | [B: design clause](b-w00.md) | The clause, the term and the pin |
-| [B: key rule](b-w01.md) | The preset key and the argument-name key |
-| [B: settable set](b-w02.md) | Which arguments a document sets, and the list value |
-| [B: selection](b-w03.md) | Matching a section name to a preset |
-| [B: whole document](b-w04.md) | A whole-document entry selecting no preset |
-| [B: entry binding](b-w05.md) | A preset's entries bound, and their collisions refused |
-| [B: unused presets](b-w06.md) | The warning for a preset nothing applied |
+| [B: presets only](b-w01.md) | `prosiform` holding presets and nothing else |
+| [B: groupings](b-w02.md) | `group-depth` as pairs, and the two divisions it allows |
+| [B: entry shapes](b-w03.md) | `exclude` and `mock` entries |
+| [B: selection](b-w04.md) | Selecting a preset, and `default` |
+| [B: subsumption](b-w05.md) | A preset as its compilation's whole argument set |
+| [B: unused presets](b-w06.md) | The warning for a preset nothing selected |
 | [B: deferred targets](b-w07.md) | A preset kept for the run that follows the deferral |
-| [B: documentation](b-w08.md) | The preset stated in the invocation and the source page |
+| [B: trees](b-w08.md) | The example tree and corpus declaring presets |
+| [B: documentation](b-w09.md) | The preset stated in the invocation and the source page |
 | [D: design clause](d-w00.md) | The clause, the two codes and the pin |
 | [D: grammar and seam](d-w01.md) | The exclusion grammar, its refusals and the narrow settlement |
 | [D: closure](d-w02.md) | An excluded section's links are no dependency |
@@ -110,6 +111,8 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **The per-compilation argument set is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
 - **Exclusion is the subtractive half of selection.** A named section is removed rather than filtered from the output, so the run reads fewer sources and the consumer receives only what remains. (User, 2026-10-31.)
 - **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
+- **A document in two divisions is emitted under each.** One division is one outline, so a document joining two is a member of both and its regions appear in each. (User, 2026-10-31.)
+- **The example tree and corpus migrate to presets in E13.** E11 removes `root` and leaves the flat group pair, so E13 needs a row that rewrites the tree rather than leaving it uncompilable. (User, 2026-10-31.)
 - **There is no top-level `exclude`.** A list is a preset's shape, so a top-level key holding one is neither an argument nor a preset and is refused. (User, 2026-10-31.)
 - **`exclude` leaves the settable set.** It has no command-line option, so it is a preset entry rather than an argument, and the set holds only names the parser declares. (User, 2026-10-31.)
 - **A preset's exclusion is a bare section with an optional level.** The declaring file is the scope, so a qualifier would name what the scope already states. (User, 2026-10-31.)

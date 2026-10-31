@@ -27,6 +27,8 @@ A document's declaration is flat, and a run is one set of options for every comp
   The selected preset is the whole conversion setting for its compilation. A `-m` on the command line is the default for compilations that select no preset at all; where a preset is selected, it is the entire argument set, and nothing outside it reaches that compilation.
 - **`group-depth` replaces `group`.**
   One field holds a list of single-entry mappings, each a group name mapped to its depth: `group-depth: [{protocols: 1}, {targets: 2}]`. `group` is refused, so the two halves of a pair are never written apart. A document may join several divisions, at different depths, in one preset.
+- **A document in two divisions is emitted under each.**
+  `group-depth: [{modes: 1}, {targets: 2}]` places the document's selected content under `Modes` and again under `Targets`. A merged group pools members, and a document in two of them is a member of both, so its regions appear in each. Within one division it is emitted once, by the rule `hierarchy.md` already states; across divisions the content is repeated, because each division is a separate top-level outline.
 - **`exclude` holds names, not references.**
   A list whose entries are a bare section name, or a single-entry mapping of name to heading level: `exclude: ["Draft", {Tests: 3}]`. Naming a section is the entry's meaning, so no `#` is written and the entry is not read by the reference grammar.
 - **`mock` holds pairs written as strings.**
@@ -44,15 +46,16 @@ A document's declaration is flat, and a run is one set of options for every comp
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, the term and the pin | AC12 | [E11:W00](https://github.com/m2ux/prosiform/issues/434) | | |
-| W01 | `prosiform` holds presets alone | AC1, AC13 | W00 | | |
-| W02 | `group-depth` as a list of pairs, `group` refused | AC14 | W01 | | |
-| W03 | `exclude` and `mock` entry shapes | AC15, AC16 | W02 | | |
+| W00 | Design clause, the term and the pin | AC11 | [E11:W00](https://github.com/m2ux/prosiform/issues/434) | | |
+| W01 | `prosiform` holds presets alone | AC1 | W00 | | |
+| W02 | `group-depth` as a list of pairs, `group` refused | AC12, AC13 | W01 | | |
+| W03 | `exclude` and `mock` entry shapes | AC14, AC15 | W02 | | |
 | W04 | Selecting a preset, and `default` | AC2, AC3, AC4 | W03, [E11:W03](https://github.com/m2ux/prosiform/issues/434) | | |
-| W05 | A preset subsumes its compilation's arguments | AC5, AC17 | W04 | | |
-| W06 | A preset nothing applied warns | AC6, AC8 | W05 | | |
-| W07 | A deferred target keeps its preset | AC9 | W05 | | |
-| W08 | The preset stated in the invocation and the source page | AC10, AC11 | W06 | | |
+| W05 | A preset subsumes its compilation's arguments | AC5, AC16 | W04 | | |
+| W06 | A preset nothing applied warns | AC6, AC7 | W05 | | |
+| W07 | A deferred target keeps its preset | AC8 | W05 | | |
+| W08 | The example tree and the corpus declare presets | AC17 | W03, [E11:W06](https://github.com/m2ux/prosiform/issues/434) | | |
+| W09 | The preset stated in the invocation and the source page | AC9, AC10 | W06, W08 | | |
 
 ## Acceptance Criteria
 
@@ -62,16 +65,17 @@ A document's declaration is flat, and a run is one set of options for every comp
 - [ ] **AC4.** A document whose `prosiform` carries no `default` and whose section matches no preset compiles under the run's options with no conversion setting, as the corpus fixture `fixtures/inclusion/no-default-and-no-match-is-bare` shows.
 - [ ] **AC5.** The selected preset is the whole argument set: a `-m` pair the preset does not name does not reach that compilation, as the corpus fixture `fixtures/inclusion/a-preset-subsumes-the-command-line` shows.
 - [ ] **AC6.** A preset no compilation selected raises `W_PRESET_UNUSED` naming the document and the preset, and the run publishes with exit status `0`, as the corpus fixture `fixtures/inclusion/an-unused-preset-warns` shows.
-- [ ] **AC8.** A preset on a document reached only through a deferral raises no warning, and the run that compiles the deferral reads it then, as the corpus fixture `fixtures/inclusion/a-deferred-target-keeps-its-preset` shows.
-- [ ] **AC9.** A document declaring several presets is compiled under the one its section names for each compilation, so one run reaching it twice may use two, as the corpus fixture `fixtures/inclusion/one-document-two-presets` shows.
-- [ ] **AC10.** The invocation states the preset, the fallback and what it governs, and agrees with the command's help output, as `make invocation` shows.
-- [ ] **AC11.** The source page states `prosiform` as presets, the two pair encodings and the refused keys, and the glossary distinguishes a preset from the grammar `profile`, as `make vocabulary` shows.
-- [ ] **AC12.** The design states presets as a property of a compilation chosen by a section's heading text, states subsumption and the fallback, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
-- [ ] **AC13.** `group` is refused with `E_INVALID_CONVERSION_METADATA`, as the corpus fixture `fixtures/inclusion/a-declared-group-is-refused` shows.
-- [ ] **AC14.** `group-depth` holds a list of single-entry mappings, one document may join several divisions at different depths, and a mapping entry holding two keys or a non-string key is refused, as the corpus fixtures `fixtures/inclusion/a-document-joins-two-divisions` and `fixtures/inclusion/a-malformed-group-entry-is-refused` show.
-- [ ] **AC15.** `exclude` holds bare section names and single-entry name-to-level mappings in one list, and the level selects which heading of a repeated name is meant, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
-- [ ] **AC16.** `mock` holds `ORIGINAL=ALTERNATIVE` strings whose sides are read by the reference grammar, as the corpus fixture `fixtures/inclusion/a-mock-entry-is-a-pair-string` shows.
-- [ ] **AC17.** Two entries in one preset naming one group, two `mock` entries normalising to one identity, and a `mock` key and value normalising to one identity are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/a-duplicate-group-entry-is-refused` and `fixtures/inclusion/a-duplicate-mock-entry-is-refused` show.
+- [ ] **AC7.** A preset on a document reached only through a deferral raises no warning, and the run that compiles the deferral reads it then, as the corpus fixture `fixtures/inclusion/a-deferred-target-keeps-its-preset` shows.
+- [ ] **AC8.** A document declaring several presets is compiled under the one its section names for each compilation, so one run reaching it twice may use two, as the corpus fixture `fixtures/inclusion/one-document-two-presets` shows.
+- [ ] **AC9.** The invocation states the preset, the fallback and what it governs, and agrees with the command's help output, as `make invocation` shows.
+- [ ] **AC10.** The source page states `prosiform` as presets, the two pair encodings and the refused keys, and the glossary distinguishes a preset from the grammar `profile`, as `make vocabulary` shows.
+- [ ] **AC11.** The design states presets as a property of a compilation chosen by a section's heading text, states subsumption and the fallback, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
+- [ ] **AC12.** `group` is refused with `E_INVALID_CONVERSION_METADATA`, as the corpus fixture `fixtures/inclusion/a-declared-group-is-refused` shows.
+- [ ] **AC13.** `group-depth` holds a list of single-entry mappings, one document may join several divisions at different depths, and a mapping entry holding two keys or a non-string key is refused, as the corpus fixtures `fixtures/inclusion/a-document-joins-two-divisions` and `fixtures/inclusion/a-malformed-group-entry-is-refused` show.
+- [ ] **AC14.** `exclude` holds bare section names and single-entry name-to-level mappings in one list, and the level selects which heading of a repeated name is meant, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
+- [ ] **AC15.** `mock` holds `ORIGINAL=ALTERNATIVE` strings whose sides are read by the reference grammar, as the corpus fixture `fixtures/inclusion/a-mock-entry-is-a-pair-string` shows.
+- [ ] **AC16.** Two entries in one preset naming one group, two `mock` entries normalising to one identity, and a `mock` key and value normalising to one identity are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/a-duplicate-group-entry-is-refused` and `fixtures/inclusion/a-duplicate-mock-entry-is-refused` show.
+- [ ] **AC17.** Every document in the example tree and every corpus source declares its settings inside a preset, no document declares `group`, and the published example bundles are unchanged by the migration, as `make corpus` and `make examples` show.
 
 ## References
 
