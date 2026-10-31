@@ -37,15 +37,13 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [B: deferred targets](b-w07.md) | A preset kept for the run that follows the deferral |
 | [B: documentation](b-w08.md) | The preset stated in the invocation and the source page |
 | [D: design clause](d-w00.md) | The clause, the two codes and the pin |
-| [D: grammar](d-w01.md) | The option, its level suffix and its refusals |
-| [D: seam](d-w02.md) | Exclusion where the selection settles, and the silent miss |
-| [D: scope](d-w03.md) | Bare and document-qualified scope |
-| [D: closure](d-w04.md) | An excluded section's links are no dependency |
-| [D: conflict](d-w05.md) | Included content beneath an exclusion is refused |
-| [D: empty entry](d-w06.md) | A selection excluding everything is refused |
-| [D: level](d-w07.md) | A level telling a repeated heading apart |
-| [D: preset](d-w08.md) | A document and a preset carrying an exclusion |
-| [D: documentation](d-w09.md) | The option row and the selection page |
+| [D: grammar and seam](d-w01.md) | The exclusion grammar, its refusals and the narrow settlement |
+| [D: closure](d-w02.md) | An excluded section's links are no dependency |
+| [D: conflict](d-w03.md) | Included content beneath an exclusion is refused |
+| [D: empty contribution](d-w04.md) | A file withholding everything is refused |
+| [D: level](d-w05.md) | A level telling a repeated heading apart |
+| [D: frontmatter](d-w06.md) | A preset and a top-level key carrying an exclusion |
+| [D: documentation](d-w07.md) | The selection page and the source page state it |
 | [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
 
 ## Design
@@ -82,11 +80,13 @@ A mapping side ending in a separator makes the entry a folder pairing, and both 
 
 ### Exclusion
 
-Selection only adds, so `--exclude SECTION` is its subtractive half. A bare `#Section` removes that section in every document the run reads; a qualified `document.md#Section` removes it in that document alone; a trailing `:N` names which heading of a repeated name is meant. An exclusion removes what a fragment of the same name would select — the heading, its content and every subsection beneath it — so inclusion and exclusion describe one shape.
+Selection only adds, so a file can withhold part of itself. A preset holds an `exclude` of sections, and each is removed from the contribution of the **file that declares it** — the scope is the declaring file, so no entry names a document. An `exclude` at the top level of `prosiform` governs every compilation of that file; one inside a preset governs the compilation that preset was selected for.
+
+The grammar is a bare section with an optional level: `exclude: ["#Draft"]`, and `#Tests:3` to name the level-3 heading of a repeated name. An exclusion removes what a fragment of the same name would select — the heading, its content and every subsection beneath it — so inclusion and exclusion describe one shape.
 
 Two properties make it a carve-up rather than a trim. A link written inside an excluded section is no dependency, so the document it names is never read, and a document another link also reaches arrives by that surviving link. And an exclusion holding content another reference selected is refused rather than half-applied, because the bundle cannot carry material beneath a heading its author removed.
 
-An exclusion touching nothing is silent, because a shared preset legitimately names sections some document lacks. An exclusion emptying its own entry is refused, because a bundle carrying no document is not a bundle.
+An exclusion naming a heading the file does not carry is silent, because a preset is shared across documents that vary. An exclusion withholding a file's whole contribution is refused, because a document that withholds everything it holds states a contradiction. A deferral is not carried across: what a later run withholds is that run's business.
 
 ## Decisions
 
@@ -109,7 +109,11 @@ An exclusion touching nothing is silent, because a shared preset legitimately na
 - **An entry reference is held to the same declaration.** The command line is the one selection made outside the link mechanism, so a document that declares nothing cannot be reached by argument either. (Agent, 2026-10-31.)
 - **The per-compilation argument set is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
 - **Exclusion is the subtractive half of selection.** A named section is removed rather than filtered from the output, so the run reads fewer sources and the consumer receives only what remains. (User, 2026-10-31.)
-- **A bare exclusion applies wherever the name appears, a qualified one to its document.** One preset carving several documents needs the bare form; the qualified form scopes a removal that would otherwise reach too far. (User, 2026-10-31.)
+- **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
+- **A preset's exclusion is a bare section with an optional level.** The declaring file is the scope, so a qualifier would name what the scope already states. (User, 2026-10-31.)
+- **A deferral is not carried across.** An exclusion governs what this run compiles; the later run's exclusions are its own. (User, 2026-10-31.)
+- **An unmatched exclusion is silent, including one naming no heading of the declaring file.** A preset is shared across documents that vary, so a miss is ordinary. (User, 2026-10-31.)
+- **`W_MOCK_UNUSED` reports per compilation.** A key may be redundant for one compilation and live for another, so the warning names the key and the compilation it did not serve. (User, 2026-10-31.)
 - **The number after a section names its heading level, and never changes how much is cut.** It exists to tell two headings of one name apart, which a fragment already refuses as ambiguous. A level is optional: `#Section` is the document-level heading. (User, 2026-10-31.)
 - **An excluded section's links are not followed.** The closure shrinks, so an exclusion is structural rather than cosmetic. (User, 2026-10-31.)
 - **An unmatched exclusion is silent.** A shared preset names sections a given document lacks, and a filter matching nothing is unremarkable. (User, 2026-10-31.)

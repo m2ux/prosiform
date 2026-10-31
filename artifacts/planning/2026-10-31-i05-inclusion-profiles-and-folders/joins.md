@@ -34,20 +34,17 @@ The pairs below are the ones the dependency checker reports as eligible to share
 
 | Pair | Two pull requests because |
 | --- | --- |
-| E14:W03 and E14:W04 | W03 states which documents an exclusion reaches; W04 states that a removed section's links stop being dependencies. Both are properties of one seam, and the fixtures one needs would have to predict the other's behaviour. |
-| E14:W03 and E14:W05 | W05 refuses a carve-up that collides with a selection. The collision test needs to know a region was excluded before it can say the removal was contradictory. |
-| E14:W03 and E14:W06 | W06 refuses an entry emptied by its exclusions, which is stated per compilation rather than per document and shares no function with the scope rule. |
-| E14:W03 and E14:W09 | W09 is documentation, and it lands once the behaviour it states is settled. |
-| E14:W04 and E14:W07 | W07 adds a level to the heading lookup; W04 narrows discovery. One changes a lookup, the other a traversal round. |
-| E14:W04 and E14:W08 | W08 admits a frontmatter sequence value; W04 is a property of the closure. The two share no file. |
-| E14:W05 and E14:W06 | W05 refuses a conflict between an exclusion and a selection; W06 refuses an empty result where no conflict exists. The two are distinguished by which one fires, so one pull request could not show the other does not. |
-| E14:W05 and E14:W07 | W05 states the refusal; W07 makes a repeated heading excludable at all, which W05's fixtures would otherwise have to avoid. |
-| E14:W05 and E14:W08 | W08 reads the option's grammar from frontmatter, so a preset's exclusion is refused by the same test W05 states. The corpus rows are separate. |
-| E14:W05 and E14:W09 | W09 documents both codes, and documentation follows the refusals it names. |
-| E14:W06 and E14:W07 | W06 tests emptiness; W07 changes which heading answers a name. A level that matches nothing must stay silent under W06's rule, and one branch cannot show both. |
-| E14:W06 and E14:W08 | W08's preset can empty a dispatch, which is W06's second fixture. The frontmatter plumbing and the emptiness test are separate components. |
-| E14:W07 and E14:W09 | W09 documents the level; documentation follows it. |
-| E14:W08 and E14:W09 | W09 documents the frontmatter form; documentation follows it. |
+| E14:W02 and E14:W05 | an excluded section's links are no dependency, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
+| E14:W02 and E14:W06 | an excluded section's links are no dependency, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
+| E14:W03 and E14:W04 | included content beneath an exclusion is refused, and a file withholding everything is refused. The two share no file and neither reads the other's work. |
+| E14:W03 and E14:W07 | included content beneath an exclusion is refused, and the selection page states exclusion. W07 documents the refusal W03 states. |
+| E14:W04 and E14:W05 | a file withholding everything is refused, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
+| E14:W04 and E14:W06 | a file withholding everything is refused, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
+| E14:W03 and E14:W05 | included content beneath an exclusion is refused, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
+| E14:W03 and E14:W06 | included content beneath an exclusion is refused, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
+| E14:W05 and E14:W07 | a level tells a repeated heading apart, and the selection page states exclusion. The two share no file and neither reads the other's work. |
+| E14:W06 and E14:W07 | a preset and a top-level key carry an exclusion, and the selection page states exclusion. The two share no file and neither reads the other's work. |
+
 ## Across epics
 
 | Edge | Consumes |
