@@ -117,7 +117,7 @@ Findings from the plan review against the source, all resolved.
 | --- | --- | --- |
 | Both initiative `Depends on` cells named whole epics that no row pair derives, and `scripts/deps.py` refused them. | High | Both cells emptied; the couplings are task edges. |
 | Seven independent pairs were named in neither Joins nor the record, so the checker reported every one. | High | Each pair accounted for in `joins.md` with its two ids on one line, and the reason it takes two pull requests stated. |
-| The folder-mock epic consumed `E09`'s `-m` grammar and `E11`'s classification seam and named neither. | High | Retired: the work moved to `E09:W11`, which names `E11:W03`. |
+| The folder-mock epic consumed `E09`'s `-m` grammar and `E11`'s classification seam and named neither. | High | Retired: the work moved to `E09:W09`, which names `E11:W03`. |
 | The three W00 rows contended on `design.md` under one priority number, with the sequencing stated only as prose. | Medium | Each W00 depends on the previous epic's W00, which is what the pin chain actually is. |
 | The diagram-following eval's 118 workflow documents declare nothing, and `make harness` requires each form to bundle cleanly. | Critical | `E11:W06` covers the eval tree and states which forms it reaches. |
 | Four `real-source` fixtures copy documents whose frontmatter declares nothing, and the family's rule forbids editing a copy. | High | `E11:W07` states where the declaration is added for a copied source. |
@@ -125,7 +125,7 @@ Findings from the plan review against the source, all resolved.
 | `checks/smoke.py` writes `prosiform: {root: "."}`, so `make smoke` fails as soon as the refusal lands. | High | `E11:W06` owns the check's source and its retired-option assertion. |
 | `profile` already names the grammar, and the epic reused it. | High | The concept is a `preset` throughout; the word clash is stated in the clause and the glossary check holds it. |
 | `E11:W08` named six pages where eleven state a root. | Medium | AC13 lists all eleven, and AC14 covers the four worked examples and the drawings. |
-| AC9 cited `make boundary` and the folder epic's AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E09:W13` extends the target `E09:W08` lands and states that dependency. |
+| AC9 cited `make boundary` and the folder epic's AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E09:W11` extends the target `E09:W08` lands and states that dependency. |
 
 ## Debt this record defers
 
