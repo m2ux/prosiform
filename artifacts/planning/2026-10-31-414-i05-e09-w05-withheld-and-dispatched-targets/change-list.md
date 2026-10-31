@@ -13,7 +13,7 @@ Every plan change this session applied, and every one it held, under the allowan
 | Folded work | This record's `w05.md`, `## Additions from review` | Three statements the epic's work item could not make: that the published fragment is the resolved one, that a dispatched and a parallel-dispatched target take no corpus fixture (which `fixtures.md` records), and that the run's heading check is asked of the substitute. |
 | Folded work | `src/tests/test_mock.py` | Seven cases added for the row's three withheld paths: a deferred destination, a section key's deferred destination and the later run following it, the heading check asked of the substitute, a dispatched target, a parallel-dispatched target, and the candidate comparison. The three the change corrects fail against the pre-change `closure.py`; the two dispatch cases pass on both trees, which is the plan's own recorded finding. |
 | Folded work | [This record](../../../README.md), reserved folder | `w05.md`, `validation.md` and `change-list.md` are registered in the folder's `README.md` Artifacts table. |
-| Folded work | Epic [#414](https://github.com/m2ux/prosiform/issues/414) | Row `W05` links pull request [#447](https://github.com/m2ux/prosiform/pull/447) and is ticked done, with `AC4` ticked. |
+| Folded work | Epic [#414](https://github.com/m2ux/prosiform/issues/414) | Row `W05` links pull request [#447](https://github.com/m2ux/prosiform/pull/447) and is ticked done, with `AC4` ticked, applied through the planner's `sync.py`. The Development link the mutation would set is blocked: #414 is at GitHub's ceiling of ten manual references, and no record was unlinked to make room. |
 
 ## Held
 
