@@ -119,6 +119,32 @@ def test_missing_or_non_directory_root_has_original_location(
     assert run.diagnostics()[0]["location"] == {"file": "a.md", "line": 2, "column": 19}
 
 
+def test_a_missing_root_names_the_declaring_source_the_root_and_a_remedy(
+    tmp_path: Path,
+) -> None:
+    """The walk refuses a segment; a reader needs the reference and the root.
+
+    The segment alone is a bare path with no statement of which source
+    declared it or what that source wrote, and no remedy at all.
+    """
+    written(tmp_path, "docs/a.md", rooted("../library/../absent", "# A\n"))
+    run = invoke("-d", "json", "docs/a.md", cwd=tmp_path)
+    reported = run.diagnostics()[0]
+    assert reported["code"] == cli.ROOT_NOT_FOUND
+    assert "docs/a.md" in reported["message"]
+    assert "../library/../absent" in reported["message"]
+    assert reported["remedy"]
+
+
+def test_a_root_absent_from_the_working_directory_names_that_binding(
+    tmp_path: Path,
+) -> None:
+    written(tmp_path, "a.md", '---\nprosiform: {root: "missing"}\n---\n# A\n')
+    reported = invoke("-d", "json", "a.md", cwd=tmp_path).diagnostics()[0]
+    assert "missing" in reported["message"]
+    assert reported["remedy"]
+
+
 @pytest.mark.parametrize("entry", ["alias/a.md", "alias/../a.md"])
 def test_bootstrap_checks_components_before_normalization(
     tmp_path: Path, entry: str

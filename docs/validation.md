@@ -75,6 +75,10 @@ The [options table](../invocation.md#options) names each budget and what it coun
 
 The remedies are the same either way — restructure the sources or raise the number — so one code covers them all. Overrides are positive decimal integers: zero does not mean unlimited.
 
+A byte budget bounds bytes, and it bounds the work those bytes can ask for only where that work is bounded on its own. Read, parse and render cost one pass over the content, but canonicalising a numeric scalar is not a pass: a base-prefixed integer converts through a binary value and a float's exponent accumulates digit by digit, and both cost time quadratic in the digits. A source of one megabyte holds one scalar of a million digits, which canonicalises in seconds while crossing no budget at all.
+
+One scalar of either notation therefore carries at most 65,536 characters, and a longer one fails with `E_RESOURCE_LIMIT`. The ceiling is part of what a byte budget means rather than an option of its own, so it is stated here and in the diagnostic rather than in the [options table](../invocation.md#options). Within it every scalar costs a pass over its own digits, so a source's bytes bound the work the run performs and the byte budget is the bound it reads as.
+
 ## The corpus
 
 The corpus under [`fixtures/`](../fixtures/README.md) is the behavioural contract. Each fixture declares a source tree, an invocation and an expected result, and names no language, package or module, so it binds any implementation rather than describing one.

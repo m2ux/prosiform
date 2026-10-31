@@ -599,6 +599,39 @@ class Opened:
     capture: Capture
 
 
+ROOT_REMEDIES = {
+    ROOT_NOT_FOUND: "declare a root the declaring document's directory carries, "
+    "or remove prosiform.root to bind the invocation working directory",
+    SOURCE_SYMLINK: "declare a root the walk reaches without following a link",
+    SOURCE_ACCESS: "check the permissions of the declared root and its directories",
+}
+
+
+def root_remedy(code: str) -> str:
+    """What a caller does about the root the walk could not reach."""
+    return ROOT_REMEDIES.get(code, "check the declared root and its permissions")
+
+
+def undeclared_root(name: str, declared: str | None, detail: str, code: str) -> str:
+    """The root one source declared and the reference that declared it.
+
+    The walk reports the segment it refused, which is a bare path and says
+    nothing about where the root was written or what it named. A reader who
+    is handed that segment alone has to guess which of a document's sources
+    declared it, so the message names the declaring source, the root as it
+    was written and the segment that stopped the walk.
+    """
+    if declared is None:
+        return (
+            f"the source {name!r} declares no root, and the invocation working "
+            f"directory it binds reaches it no further: {detail}"
+        )
+    return (
+        f"the source {name!r} declares prosiform.root {declared!r}, which the "
+        f"walk cannot reach: {detail}"
+    )
+
+
 def read_document(
     root: Path, found: Reference, limits: Limits, total: int = 0
 ) -> Opened:
@@ -706,10 +739,11 @@ def read_document(
                 INPUT_FAILURE,
                 Diagnostic(
                     ERROR,
-                    str(error),
+                    undeclared_root(name, declared, str(error), code),
                     code,
                     location=source.conversion.root_location,
                     reference=reference,
+                    remedy=root_remedy(code),
                     chain=chain,
                 ),
             ) from error
