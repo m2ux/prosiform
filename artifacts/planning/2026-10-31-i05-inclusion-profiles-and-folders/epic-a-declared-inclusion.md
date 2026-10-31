@@ -66,6 +66,9 @@ Inclusion is decided by directory, and the directory is authored twice.
 
 ## References
 
+- **R0.** Epic - [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434).
+
+
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions, the work items and the debt this epic takes on.
 - **R2.** [The `root` declaration: three roles, one of them questionable](../2026-10-24-root-declaration-roles/README.md) — the note that found the spelling role unsound, and the change it declined to make.
 - **R3.** [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic whose root exemption this one removes the need for.

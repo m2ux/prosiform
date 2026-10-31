@@ -59,6 +59,9 @@ A run is one set of options, and one artifact is not the run.
 
 ## References
 
+- **R0.** Epic - [I05:E13 Target Profiles](https://github.com/m2ux/prosiform/issues/436).
+
+
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the work items.
 - **R2.** [Declared Inclusion](epic-a-declared-inclusion.md) — the epic that opens the key set this one fills.
 - **R3.** [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the mapping a profile's entries join.
