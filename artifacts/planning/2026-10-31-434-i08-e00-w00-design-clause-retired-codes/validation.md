@@ -4,7 +4,7 @@
 
 Every check below ran in the worktree `.worktrees/i08/e00/w00-design-clause-retired-codes` on branch `i08/e00/w00-design-clause-retired-codes`, cut from `i08/e00/main` at `23882b7d`. The build under test was named by `PROSIFORM_BUILD` as `uv run --project <worktree>/src --frozen pf`, the same form the continuous-integration job supplies.
 
-The design amendment is `f8430f7f` on `engineering`: inclusion stated as a property of the target document, `root` refused as an unknown key, `E_ROOT_NOT_FOUND` retired, and the selection, capture, resolution and safety clauses stated against the declaration. The pin in `README.md` names it.
+The design amendment is `5306e0f3` on `engineering`: inclusion stated as a property of the target document, `root` refused as an unknown key, `E_ROOT_NOT_FOUND` retired, and the selection, capture, resolution and safety clauses stated against the declaration. The pin in `README.md` names it.
 
 ## T1 — The clause set the epic's fixtures cite is absent at the previous pin
 
@@ -14,7 +14,7 @@ The design amendment is `f8430f7f` on `engineering`: inclusion stated as a prope
 
 ## T2 — The amendment lands and the pin names it
 
-**Ran:** `git push origin engineering` from the engineering worktree, then `make conformance` at the new pin `f8430f7f`.
+**Ran:** `git push origin engineering` from the engineering worktree, then `make conformance` at the new pin `5306e0f3`.
 
 **Observed:** exit `0` once the fixtures are repointed, `306 clause(s) the design states` against `303` before, `0 declaration(s) naming no clause`.
 
@@ -43,4 +43,12 @@ The design amendment is `f8430f7f` on `engineering`: inclusion stated as a prope
 - **The row's own amendment is inert against it.** `make conformance`, `make invocation` and `make authoring` all pass, and `make corpus` runs 349 fixtures with none failing.
 - **The consequence.** CI cannot go green until `i05/e09/main`'s schema reaches `main`, which is `I08:E07`'s base and not this row's to merge.
 
-The design amendment is committed to `engineering` at `f8430f7f`; the branch carries the pin move and the 17 manifest declarations that follow the two renamed clauses.
+The design amendment is committed to `engineering` at `5306e0f3`; the branch carries the pin move and the 17 manifest declarations that follow the two renamed clauses.
+
+## T6 — The review found the amendment self-contradictory, and the fix
+
+**Ran:** a read of the amended design against the code table it states, and a run of the build on a document declaring `root`.
+
+**Observed:** the catalogue still carried `E_ROOT_NOT_FOUND` as a live row and `E_INVALID_CONVERSION_METADATA` still described a malformed root value, three lines below the clause refusing `root`. Six further clauses named a root the document no longer has. The rows are removed, the retirement is stated once where the catalogue ends, and the remaining clauses are restated. `make conformance` reports `305 clause(s)`, `0 declaration(s) naming no clause`, `0 declared code(s) the build reports nowhere`.
+
+**Also observed:** the build accepts a document declaring `root`, because the refusal is W01's work. The design states it ahead of the build, which is what a design clause does; no fixture names it yet, so the corpus is unaffected.
