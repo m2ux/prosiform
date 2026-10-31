@@ -146,7 +146,7 @@ Both reproduce on this host wherever the sandbox has no network, and neither nam
 
 **Ran:** `gh api` against the pull request, its Test Plan and the epic.
 
-**Observed:** the pull request [merged](https://github.com/m2ux/prosiform/pull/446) to `i05/e09/main` at `f21985cc5efffb51cff53c7716a228b85ff46733`, merged from head `d33beb15`. Its `Checks` run reported `success` on `d33beb15` at `06:46:57Z`, and the pull request read `mergeable: true`, `mergeable_state: clean` against `i05/e09/main`.
+**Observed:** the pull request [merged](https://github.com/m2ux/prosiform/pull/446) to `i05/e09/main` at `f21985cc5efffb51cff53c7716a228b85ff46733`, merged from head `d33beb15`. Its `Checks` run reported `success` on `d33beb15` at `06:46:57Z`, the pull request read `mergeable: true`, `mergeable_state: clean` against `i05/e09/main`, and the base's own `Checks` run reported `success` on the merge commit `f21985cc`.
 
 Its Development link to #414 was set with `addCloseIssueReferences` and read back through `closingIssuesReferences`, which reports `{number: 414}`. That mutation ran before the merge, so it needed no reference freed by another row; it did not answer `Issue exceeds manual reference limit`.
 
