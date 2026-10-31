@@ -92,11 +92,14 @@ from prosiform.bundle import (
     SPACE,
     Group,
     Overflow,
+    Unplaced,
     absorbed,
     ancestry,
     carried_headings,
+    dispatched_in,
     emitted_text,
     escaped,
+    line_of,
     region,
     required,
     rewrite,
@@ -215,6 +218,7 @@ class Member:
     ancestors: set[int]
     title: Token | None
     absorbing: Token | None
+    first_line: int = 1
     items: list[Item] = field(default_factory=list)
 
     def shift(self, at: int) -> int:
@@ -240,6 +244,7 @@ def prepared(
     root: str = "",
     keep_title: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    first_line: int = 1,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -249,6 +254,9 @@ def prepared(
     carries it, and is no structural ancestor either way, because the
     subsection stands in its place. The parent keeps its title, so
     nothing absorbs it.
+
+    The first line of the member's content is the line of the file it
+    stands on, which a refusal about a link names.
     """
     removed = {
         at for one in defined.values() for at in range(one.lines[0], one.lines[1])
@@ -278,7 +286,15 @@ def prepared(
         list(physical)
         if assigned is None
         else rewrite(
-            physical, tokens, chosen, assigned, path, defined, root, dispatching
+            physical,
+            tokens,
+            chosen,
+            assigned,
+            path,
+            defined,
+            root,
+            dispatching,
+            first_line,
         )
     )
     member = Member(
@@ -293,6 +309,7 @@ def prepared(
         needed,
         titled_token,
         absorbing,
+        first_line,
     )
     member.items = [
         Item(token, id(token) in needed)
@@ -361,6 +378,9 @@ def carried_part(
 
 def ancestor_part(member: Member, token: Token, by: int) -> tuple[str, Ancestor]:
     """One eligible ancestor the run did not select, emitted as a heading alone."""
+    held = dispatched_in(member.path, member.tokens, token, member.text)
+    if held is not None:
+        raise Unplaced(member.path, line_of(token, member.first_line), *held)
     depth = level(token) + by
     if depth > MAX_LEVEL:
         raise Overflow(member.text[id(token)], depth, member.path)
