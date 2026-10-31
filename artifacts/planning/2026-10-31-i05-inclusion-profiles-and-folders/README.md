@@ -99,6 +99,10 @@ An exclusion touching nothing is silent, because a shared preset legitimately na
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
 - **An absent document is text, and the operators keep the failure.** The run cannot tell a citation from a typo without the declaration that would answer it, so responsibility is stated by the mark instead. (User, 2026-10-31.) An existing document that declares nothing is text too, which is the cost accepted in exchange for a target that qualifies itself.
 - **The boundary refuses no authored link.** Deriving it from the links makes that a property rather than a policy, and the clause says so rather than implying a confinement it no longer performs. (Agent, 2026-10-31.)
+- **Only an argument that shapes the bundle is settable from frontmatter.** `mock`, `exclude` and the budgets. `-o`, `-c`, `-d`, `-x` and `-f` describe the invocation rather than the content, and a document setting `-o` could redirect its own bundle. (User, 2026-10-31.)
+- **Every argument value is a list, for every argument.** One shape for a repeatable option and a single-valued one, and a scalar is refused rather than read as a list of one. (User, 2026-10-31.)
+- **A whole-document entry matches no preset.** Nothing names a section, so the compilation runs under the run's own options and a preset named for the document's title raises `W_PRESET_UNUSED`. (User, 2026-10-31.)
+- **A property the construction holds is held by a check.** Discovery reading one selection and the boundary refusing no authored link are invariants an author cannot break, so each is asserted by a fixture rather than left as prose. (User, 2026-10-31.)
 - **An entry reference is held to the same declaration.** The command line is the one selection made outside the link mechanism, so a document that declares nothing cannot be reached by argument either. (Agent, 2026-10-31.)
 - **The per-compilation argument set is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
 - **Exclusion is the subtractive half of selection.** A named section is removed rather than filtered from the output, so the run reads fewer sources and the consumer receives only what remains. (User, 2026-10-31.)
@@ -130,6 +134,10 @@ Findings from the plan review against the source, all resolved.
 | The board held E13 and E14 at priority 5, level with the E09 epic that neither depends on and above the E11 epic both depend on; the graph derives E09 4, E11 3, E13 2, E14 1. | High | The derived map applied to the labels and recorded as a decision. |
 | The folder rows read under the inclusion rule, which a reader could take for a dependency on `E11`. | Low | `E09:W09` states that the rule is E11's and that its stubs declare from the first, so the mechanism is buildable before E11 lands and no edge is asserted. The checker refuses a row depending on a later epic, and the row does not. |
 | The record's `epic.md` still described ten rows and an unnumbered documented row, so the record and the tracker disagreed. | Medium | Regenerated from the published body. |
+| The argument-name set was read from the parser, which makes `-o` and `-c` settable from frontmatter. | High | The settable set is named: `mock`, `exclude` and the budgets, held to the help output by a test. |
+| An argument's value had two shapes, a scalar for `-m` and a list for `--exclude`. | Medium | Every argument value is a list, and a scalar is refused. |
+| W02's body invented a title-matching rule for a whole-document entry that no criterion stated. | High | A whole-document entry matches no preset, which AC14 states and a fixture holds. |
+| Two invariants stated in W04 and W05 were prose with no test behind them. | Medium | Each has a criterion now, and W09 carries the fixture and the boundary assertion. |
 
 ## Debt this record defers
 
