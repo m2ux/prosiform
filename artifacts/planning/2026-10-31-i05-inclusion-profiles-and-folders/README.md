@@ -120,6 +120,12 @@ Two properties make it a carve-up rather than a trim. A link written inside an e
 
 An exclusion naming a heading the file does not carry is silent, because a preset is shared across documents that vary. An exclusion withholding a file's whole contribution is refused, because a document that withholds everything it holds states a contradiction. A deferral is not carried across: what a later run withholds is that run's business.
 
+## The split
+
+I05's goal was a quality bar, true of every epic forever, so it could be neither reached nor reviewed against. Its 25 epics held three unrelated subjects, and each is now an initiative whose goal its epics can make true: [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) holds this record's epics, [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) holds the grouping work raised alongside it, and [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) holds the corpus and session work. I05 is closed.
+
+Every epic in this record was renumbered into I08's series: E11 became E00, E13 E01, E14 E02, E15 E03, E16 E04, E17 E05, the preset-only epic E06, E09 E07 and E22 E08. The work-item files keep their names, so a row's number and its file differ where the epic moved.
+
 ## Decisions
 
 - **Inclusion is target-side, on the frontmatter declaration.** A local Markdown link is a dependency when its target declares `prosiform`. (User, 2026-10-31.)
