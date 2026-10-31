@@ -26,6 +26,7 @@ from ruamel.yaml.reader import ReaderError
 from ruamel.yaml.scanner import Scanner, ScannerError
 
 from prosiform.diagnostics import ERROR, Diagnostic, Location, RelatedLocation
+from prosiform.limits import SCALAR_DIGITS
 
 INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
@@ -42,6 +43,14 @@ PATTERNS = {
         r"|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN))"
     ),
 }
+"""The two notations whose canonical form costs more than a pass over the literal.
+
+A decimal integer is already its own decimal value, and a float without an
+exponent is read in one pass. A base-prefixed integer is exact only through
+a binary value, and a float's exponent is accumulated digit by digit, so
+both cost quadratic time in their digits.
+"""
+PREFIXED = ("0o", "0x")
 
 
 class _MarkedScanner(Scanner):
@@ -114,8 +123,37 @@ def _scalar(
 ) -> tuple[str, Hashable]:
     if any(0xD800 <= ord(char) <= 0xDFFF for char in value):
         raise _fail(INVALID_FRONTMATTER, "invalid Unicode scalar value", location)
+    kind = _kind(value, tag, plain, location)
+    if costly(kind, value) and len(value) > SCALAR_DIGITS:
+        raise _fail(
+            RESOURCE_LIMIT,
+            f"one {kind} scalar carries {len(value)} characters, more than the "
+            f"{SCALAR_DIGITS} a scalar of this notation may carry, because its "
+            f"canonical form costs time quadratic in its digits; write the same "
+            f"value in decimal or as a string, or keep it within "
+            f"{SCALAR_DIGITS} characters",
+            location,
+        )
+    return kind, _canonical(value, kind)
+
+
+def costly(kind: str, value: str) -> bool:
+    """Whether one scalar's canonical form costs more than a pass over its literal."""
+    if kind == "int":
+        return value.startswith(PREFIXED)
+    return kind == "float" and ("e" in value.lower() and "inf" not in value.lower())
+
+
+def _kind(value: str, tag: str | None, plain: bool, location: Location) -> str:
+    """The YAML 1.2 Core type one scalar resolves to, and nothing built from it.
+
+    Resolution reads the tag where the source wrote one and the implicit
+    rule otherwise, so a base-prefixed integer and a float's exponent are
+    classified here without being converted. That is what lets the caller
+    hold the work ceiling before the work is asked for.
+    """
     if tag in (None, "!"):
-        kind = next(
+        return next(
             (
                 name
                 for name, pattern in PATTERNS.items()
@@ -123,30 +161,40 @@ def _scalar(
             ),
             "str",
         )
-    else:
-        kind = tag.removeprefix(PREFIX)
-        if tag != PREFIX + kind or kind not in (*PATTERNS, "str"):
-            raise _fail(INVALID_FRONTMATTER, "custom or non-Core scalar tag", location)
-        if kind != "str" and not PATTERNS[kind].fullmatch(value):
-            raise _fail(INVALID_FRONTMATTER, f"invalid {kind} scalar", location)
-    canonical: Hashable = value
+    kind = tag.removeprefix(PREFIX)
+    if tag != PREFIX + kind or kind not in (*PATTERNS, "str"):
+        raise _fail(INVALID_FRONTMATTER, "custom or non-Core scalar tag", location)
+    if kind != "str" and not PATTERNS[kind].fullmatch(value):
+        raise _fail(INVALID_FRONTMATTER, f"invalid {kind} scalar", location)
+    return kind
+
+
+def _canonical(value: str, kind: str) -> Hashable:
+    """One scalar's value as equality is decided, from a scalar already bounded."""
     if kind == "null":
-        canonical = "null"
-    elif kind == "bool":
-        canonical = value.lower()
-    elif kind == "int":
-        canonical = (
-            Decimal(int(value, 8 if value.startswith("0o") else 16))
-            if value.startswith(("0o", "0x"))
-            else Decimal(value)
-        )
-    elif kind == "float":
-        canonical = (
-            value.lower().replace("+", "")
-            if "inf" in value.lower() or "nan" in value.lower()
-            else _finite_float(value)
-        )
-    return kind, canonical
+        return "null"
+    if kind == "bool":
+        return value.lower()
+    if kind == "int":
+        return _decimal_integer(value)
+    if kind == "float":
+        if "inf" in value.lower() or "nan" in value.lower():
+            return value.lower().replace("+", "")
+        return _finite_float(value)
+    return value
+
+
+def _decimal_integer(value: str) -> Decimal:
+    """A Core integer's exact value, from any of the three notations it admits.
+
+    A base-prefixed literal is exact only through a binary value, and
+    converting a binary value to a decimal one is the cost the caller's
+    ceiling bounds. A decimal literal is its own decimal value, which
+    costs one pass over the digits.
+    """
+    if not value.startswith(("0o", "0x")):
+        return Decimal(value)
+    return Decimal(int(value, 8 if value.startswith("0o") else 16))
 
 
 def _finite_float(value: str) -> tuple[str, int]:

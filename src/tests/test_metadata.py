@@ -1,11 +1,13 @@
 """YAML schema, bounds and original-coordinate invariants."""
 
 import json
+import time
 from dataclasses import FrozenInstanceError
 
 import pytest
 
 from prosiform.diagnostics import Location
+from prosiform.limits import FILE_BYTES, SCALAR_DIGITS
 from prosiform.metadata import (
     Conversion,
     InvalidMetadata,
@@ -13,7 +15,13 @@ from prosiform.metadata import (
 )
 
 
-def parse(text: str, *, depth: int = 64, prefix: str = "---\n") -> Conversion:
+def parse(
+    text: str,
+    *,
+    depth: int = 64,
+    prefix: str = "---\n",
+    max_bytes: int | None = None,
+) -> Conversion:
     before = prefix.encode()
     payload = text.encode()
     raw = before + payload + b"\n---\nbody"
@@ -21,7 +29,7 @@ def parse(text: str, *, depth: int = 64, prefix: str = "---\n") -> Conversion:
         raw,
         file="rules/a.md",
         span=(len(before), len(before) + len(payload)),
-        max_bytes=len(raw),
+        max_bytes=len(raw) if max_bytes is None else max_bytes,
         max_depth=depth,
     )
 
@@ -368,6 +376,56 @@ def test_root_mapping_nesting_budget() -> None:
     with pytest.raises(InvalidMetadata) as caught:
         parse("prosiform: {root: ..}", depth=1)
     assert caught.value.diagnostic.code == "E_RESOURCE_LIMIT"
+
+
+@pytest.mark.parametrize(
+    "literal",
+    [
+        "0x" + "f" * SCALAR_DIGITS,
+        "0o" + "7" * SCALAR_DIGITS,
+        "1e" + "9" * (SCALAR_DIGITS - 1),
+    ],
+)
+def test_a_scalar_whose_canonical_form_is_quadratic_has_a_ceiling(
+    literal: str,
+) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("other: " + literal)
+    assert caught.value.diagnostic.code == "E_RESOURCE_LIMIT"
+    assert str(SCALAR_DIGITS) in str(caught.value)
+
+
+@pytest.mark.parametrize(
+    "literal",
+    [
+        "0x" + "f" * (SCALAR_DIGITS - 2),
+        "0o" + "7" * (SCALAR_DIGITS - 2),
+        "1e" + "9" * (SCALAR_DIGITS - 3),
+        "9" * (SCALAR_DIGITS * 4),
+        "1." + "9" * (SCALAR_DIGITS * 4),
+    ],
+)
+def test_a_scalar_within_the_ceiling_is_read(literal: str) -> None:
+    assert parse("other: " + literal) == Conversion()
+
+
+def test_one_scalar_beyond_the_ceiling_is_refused_inside_the_byte_budget() -> None:
+    """A source the byte budget admits completes inside it, whatever it holds.
+
+    A scalar of a million hex digits fits a source of a megabyte and costs
+    sixteen seconds to canonicalise on its own, which is work the byte
+    budget never counted. The ceiling is what turns that into a refusal the
+    run reaches in a fraction of the second, so the figure here is the time
+    the source may take and not a value it may hold.
+    """
+    budget = FILE_BYTES.default
+    payload = "other: 0x" + "f" * (budget - 40)
+    assert len(payload) < budget
+    began = time.perf_counter()
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(payload, max_bytes=budget)
+    assert caught.value.diagnostic.code == "E_RESOURCE_LIMIT"
+    assert time.perf_counter() - began < 5
 
 
 def test_metadata_has_no_conversion_meaning() -> None:
