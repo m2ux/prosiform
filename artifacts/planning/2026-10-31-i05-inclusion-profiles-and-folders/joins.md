@@ -10,13 +10,21 @@ The pairs below are the ones the dependency checker reports as eligible to share
 
 | Pair | Two pull requests because |
 | --- | --- |
-| E00:W04 and E00:W05 | W04 states which links fail and W05 states the boundary a document's links derive. W05 depends on W04, so the pair is an ordered pair rather than a join, and the two land separately because one rewrites `cli.required` and the other adds a target and a source field. |
-| E00:W04 and E00:W06 | W06 edits 213 documents and two checks; W04 changes a refusal. One review cannot read both with any care. |
-| E00:W04 and E00:W07 | W07 is the corpus's own row, and a corpus row that lands with an implementation row cannot tell a passing fixture from a fixture written to match the code. |
-| E00:W04 and E00:W08 | W08 is documentation, and documentation lands once the behaviour it states is settled. |
-| E00:W06 and E00:W09 | W06 edits the example tree; W09 adds a fixture and a boundary assertion. The two share no file. |
-| E00:W07 and E00:W09 | W07 reworks the corpus families; W09 adds one fixture and states the invariant it holds. |
-| E00:W08 and E00:W09 | W08 is the documentation pages, and documentation follows the invariant it describes. |
+| E00:W01 and E00:W02 | the declaration and the refusal, and the probe. The two share no file and neither reads the other's work. |
+| E00:W01 and E00:W03 | the declaration and the refusal, and classification. The two share no file and neither reads the other's work. |
+| E00:W02 and E00:W03 | the probe, and classification. The two share no file and neither reads the other's work. |
+| E00:W03 and E00:W04 | classification, and absent targets. The two share no file and neither reads the other's work. |
+| E00:W03 and E00:W05 | classification, and the derived boundary. The two share no file and neither reads the other's work. |
+| E00:W04 and E00:W05 | absent targets, and the derived boundary. The two share no file and neither reads the other's work. |
+| E00:W04 and E00:W06 | absent targets, and the corpus families. The two share no file and neither reads the other's work. |
+| E00:W04 and E00:W07 | absent targets, and the documentation pages. The two share no file and neither reads the other's work. |
+| E00:W04 and E00:W08 | absent targets, and the two invariants. The two share no file and neither reads the other's work. |
+| E00:W05 and E00:W06 | the derived boundary, and the corpus families. The two share no file and neither reads the other's work. |
+| E00:W05 and E00:W07 | the derived boundary, and the documentation pages. The two share no file and neither reads the other's work. |
+| E00:W05 and E00:W08 | the derived boundary, and the two invariants. The two share no file and neither reads the other's work. |
+| E00:W06 and E00:W07 | the corpus families, and the documentation pages. The two share no file and neither reads the other's work. |
+| E00:W06 and E00:W08 | the corpus families, and the two invariants. The two share no file and neither reads the other's work. |
+| E00:W07 and E00:W08 | the documentation pages, and the two invariants. The two share no file and neither reads the other's work. |
 
 ### Target Presets
 

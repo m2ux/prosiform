@@ -126,6 +126,16 @@ I05's goal was a quality bar, true of every epic forever, so it could be neither
 
 Every epic in this record was renumbered into I08's series: E11 became E00, E13 E01, E14 E02, E15 E03, E16 E04, E17 E05, the preset-only epic E06, E09 E07 and E22 E08. The work-item files keep their names, so a row's number and its file differ where the epic moved.
 
+## Optimisation
+
+Three changes shorten the critical path, each taken because review attention is the constraint rather than agent capacity.
+
+- **One pin moves for every clause.** Seven epics each amended the design and moved the pin, and conformance reads the design at the pinned revision, so those seven pull requests were a strict chain. E00:W00 now moves the pin once and the other six amendments land beside it: seven level-0 rows instead of a seven-row chain.
+- **The example tree is edited once.** E00:W06 declared 95 documents and E09:W00 migrated them to presets, and E09 depends on E00, so the same files were edited twice with each edit proving the bundles unchanged. Both now land in E09:W00, and E00's chain is one row shorter.
+- **The boundary no longer waits on absent targets.** E00:W05 depended on W04 for adjacency rather than for code: the boundary is the longest common directory holding a document's own links, which has nothing to do with the absent-target refusal. Both rows now sit at one level.
+
+The joins record accounts for every pair the changes made eligible. What remains on the critical path is Declared Inclusion: W01 through W08, with the corpus families and the documentation pages as consecutive bulk edits at its end.
+
 ## Decisions
 
 - **Inclusion is target-side, on the frontmatter declaration.** A local Markdown link is a dependency when its target declares `prosiform`. (User, 2026-10-31.)

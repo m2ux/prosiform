@@ -43,11 +43,10 @@ Inclusion is decided by directory, and the directory is authored twice.
 | W02 | A declaration probed without a capture | AC6 | W01 | | |
 | W03 | Classification that asks the target | AC1, AC3 | W02 | | |
 | W04 | Absent targets and the operators that hold | AC7, AC8, AC15 | W03 | | |
-| W05 | The boundary a document's links state | AC2, AC9, AC17 | W04 | | |
-| W06 | The example tree declares, rootless | AC11 | W05 | | |
-| W07 | Every corpus family declares | AC12 | W06 | | |
-| W08 | The pages that state the declaration | AC13, AC14 | W07 | | |
-| W09 | The one settled selection and the property it holds | AC16 | W08 | | |
+| W05 | The boundary a document's links state | AC2, AC9, AC17 | W03 | | |
+| W06 | Every corpus family declares | AC12 | W05 | | |
+| W07 | The pages that state the declaration | AC13, AC14 | W06 | | |
+| W08 | The one settled selection and the property it holds | AC16 | W07 | | |
 
 ## Acceptance Criteria
 
@@ -61,7 +60,6 @@ Inclusion is decided by directory, and the directory is authored twice.
 - [ ] **AC8.** A link naming no document whose text opens with an operator fails with `E_TARGET_NOT_FOUND`, and a fragment-only link naming a heading its document does not carry fails with the same code, as the corpus fixtures `fixtures/inclusion/operators-keep-the-absent-target-refusal` and `fixtures/inclusion/a-fragment-naming-no-heading` show.
 - [ ] **AC9.** A document's derived boundary is the deepest directory holding every local Markdown path its own links name, as `make boundary` reports over the example tree.
 - [ ] **AC10.** The design states inclusion as a property of the target document, states the derived boundary and the refusal of `root`, names the retired code, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
-- [ ] **AC11.** Every document in [the example tree](https://github.com/m2ux/prosiform/blob/main/example/work-planner/SKILL.md) declares `prosiform` and none declares a root, as `make authoring` shows.
 - [ ] **AC12.** Every corpus family that declared a root declares its targets instead, and the corpus passes with the same expected bundles, as `make corpus` shows.
 - [ ] **AC13.** No page states a root as a property of a source: the source page, the reference page, the architecture page, the hierarchy page, the output-budget page, the destinations page, the validation page, the selection page, the docs index, the glossary and the invocation describe inclusion by declaration, as an inspection of those pages shows.
 - [ ] **AC14.** A page naming a root as a worked example of confinement states the derived boundary in its place, and the drawings whose panels carry `root:` are re-rendered from their cases, as `make examples` shows.

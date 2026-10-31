@@ -25,8 +25,8 @@ The option adds a spelling and a failure mode, and nothing needs either.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, retired option and pin | AC7 | | | |
-| W01 | The parser, the refusal and the entry | AC1, AC6 | W00 | | |
+| W00 | Design clause, retired option | AC7 | | | |
+| W01 | The parser, the refusal and the entry | AC1, AC6 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | The derived name without a referrer | AC2 | W01 | | |
 | W03 | The corpus without the three fixtures | AC3 | W01 | | |
 | W04 | `invocation.md` and the guide without the row | AC4 | W01 | | |
