@@ -73,6 +73,22 @@ def test_a_fragment_key_leaves_another_section_of_the_document_alone() -> None:
     assert (found.path, found.fragment) == ("stand-in.md", "other")
 
 
+def test_a_section_key_serves_no_other_section_of_its_document() -> None:
+    """A key carrying a section redirects that section and nothing beside it."""
+    mapped = Substitution({("rules.md", "escalation"): SECTION})
+    found = inside("guide.md", "rules.md#other", "", mapped)
+    assert identity(found) == "rules.md#other"
+    assert mapped.unserved() == ("rules.md#escalation",)
+
+
+def test_a_section_keys_substitute_section_is_the_one_the_run_reads() -> None:
+    """The redirect replaces the reference, so the substitute's section is the whole."""
+    advised = Reference("stand-in.md#advised", "stand-in.md", "advised")
+    mapped = Substitution({("rules.md", "escalation"): advised})
+    found = inside("guide.md", "rules.md#escalation", "", mapped)
+    assert (found.path, found.fragment) == ("stand-in.md", "advised")
+
+
 def test_a_whole_document_reference_takes_the_document_key() -> None:
     found = inside("guide.md", "rules.md", "", FRAGMENTED)
     assert (found.path, found.fragment) == ("stand-in.md", None)
@@ -499,3 +515,75 @@ def test_a_run_given_no_mapping_states_neither_warning(tree: Path) -> None:
     status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert said == []
+
+
+def test_a_section_key_leaves_the_rest_of_its_document_real(tree: Path) -> None:
+    """One branch is redirected and the rest of its document compiles as it ships."""
+    (tree / "guide.md").write_text(
+        "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
+        "Read [the escalation](rules.md#escalation) with it.\n"
+    )
+    (tree / "stand-in.md").write_text(
+        "# Stand-in\n\n## Escalation\n\nAsk the stand-in.\n"
+    )
+    status, published = invoke(
+        tree, "-m", "rules.md#escalation=stand-in.md", "guide.md"
+    )
+    assert status == 0
+    assert "# Rules" in published
+    assert "Ask the stand-in." in published
+    assert "Ask.\n" in published
+
+
+def test_a_document_key_and_a_section_key_of_it_both_serve_their_references(
+    tree: Path,
+) -> None:
+    """The narrower key takes the section, and the wider one takes the document."""
+    (tree / "guide.md").write_text(
+        "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
+        "Read [the escalation](rules.md#escalation) with it.\n"
+    )
+    (tree / "rules-copy.md").write_text("# Rules Copy\n\n## Escalation\n\nCopy.\n")
+    (tree / "escalation-copy.md").write_text(
+        "# Escalation Copy\n\n## Escalation\n\nEscalated.\n"
+    )
+    status, published = invoke(
+        tree,
+        "-m",
+        "rules.md=rules-copy.md",
+        "-m",
+        "rules.md#escalation=escalation-copy.md",
+        "guide.md",
+    )
+    assert status == 0
+    assert (tree / "out" / "guide.bundles" / "guide.bundle.md").is_file()
+    for substitute in ("# Rules Copy", "# Escalation Copy"):
+        assert substitute in published
+    assert "# Rules\n" not in published
+
+
+def test_a_substitute_that_is_also_a_key_is_read_from_disk(tree: Path) -> None:
+    """The mapping is applied once, so the second key is never followed."""
+    (tree / "first.md").write_text("# First\n\nFirst.\n")
+    (tree / "second.md").write_text("# Second\n\nSecond.\n")
+    (tree / "third.md").write_text("# Third\n\nThird.\n")
+    (tree / "guide.md").write_text("# Guide\n\nRequire [the first](first.md) whole.\n")
+    status, said = voices(
+        tree,
+        "-m",
+        "first.md=second.md",
+        "-m",
+        "second.md=third.md",
+        "-o",
+        str(tree / "out"),
+        "guide.md",
+    )
+    assert status == 0
+    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED", "W_MOCK_UNUSED"]
+    assert said[0]["resolved"] == "second.md"
+    assert said[1]["source"] == "second.md"
+    _status, published = invoke(
+        tree, "-m", "first.md=second.md", "-m", "second.md=third.md", "guide.md"
+    )
+    assert "# Second" in published
+    assert "# Third" not in published
