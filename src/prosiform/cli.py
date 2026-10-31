@@ -450,17 +450,23 @@ def substitution(options: argparse.Namespace) -> Substitution:
     key no reference named is reported as the caller wrote it.
 
     A mapping shape that states nothing is refused here, because here is
-    where the whole mapping is known: a second key naming an identity the
-    first already names, a key and a substitute naming one identity, and a
-    key carrying no document. The three are decided from one set of
-    identities, so no run reaches a shape that would otherwise win
-    silently by being read last.
+    where the whole mapping is known: a key carrying no document, a
+    substitute naming no Markdown document, a key and a substitute naming
+    one identity, and a second key naming an identity the first already
+    names. The four are decided from one set of identities, so no run
+    reaches a shape that would otherwise win silently by being read last.
+
+    The two tests of a pair's own sides answer before the two that
+    compare them, so a pair naming no document reports the side that
+    names none rather than a coincidence between two empty identities.
     """
     keys: dict[tuple[str, str | None], Reference] = {}
     spelled: dict[tuple[str, str | None], str] = {}
     for original, alternative in options.mock or ():
         if not original.path:
             raise documentless(original)
+        if not is_markdown(alternative.path):
+            raise unbundleable(original, alternative)
         if identity(original) == identity(alternative):
             raise self_mocked(original, alternative)
         named = (original.path, original.fragment)
@@ -495,6 +501,21 @@ def documentless(original: Reference) -> Failure:
         f"the mapping key {original.original!r} names no document to redirect, so "
         f"no reference can name it",
         reference=original.original,
+    )
+
+
+def unbundleable(original: Reference, alternative: Reference) -> Failure:
+    """One mapping entry whose substitute names no Markdown document.
+
+    The substitute is the target outright, so a reference redirected to
+    one the profile classifies as a resource is a reference the run
+    publishes as text rather than bundles.
+    """
+    return usage_failure(
+        f"the mapping entry {original.original!r}={alternative.original!r} gives a "
+        f"substitute naming no Markdown document, so the reference it redirects "
+        f"could only be published as text",
+        reference=alternative.original,
     )
 
 
