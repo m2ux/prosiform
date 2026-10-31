@@ -2,13 +2,13 @@
 
 > Evidence record · Created 2026-10-31
 
-Every check below ran in the worktree `.worktrees/i05/e09/w09-a-folder-pairing-and` on branch `i05/e09/w09-a-folder-pairing-and`, at branch head `30a669b2` unless a section names another revision. The build under test was named by `PROSIFORM_BUILD` as the worktree's own `src/.venv/bin/pf`.
+Every check below ran in the worktree `.worktrees/i05/e09/w09-a-folder-pairing-and` on branch `i05/e09/w09-a-folder-pairing-and`, at branch head `f92e030d` unless a section names another revision. The build under test was named by `PROSIFORM_BUILD` as the worktree's own `src/.venv/bin/pf`.
 
 The design clause the fixtures declare is `a59b62fca8ad2a155e4e32ac7857761b871cf304`, the revision `README.md` pins.
 
 ## T1 — The four fixtures pass against the build
 
-**Ran:** `make corpus` at `30a669b2`.
+**Ran:** `make corpus` at `f92e030d`.
 
 **Observed:** exit `0`.
 
@@ -26,7 +26,7 @@ The count rose from 367 to 371, which is the four this row lands.
 
 This is the check the epic's own record warns about. W05's corpus fixture passed both ways, so a fixture is not evidence until it has been shown to fail without the change.
 
-**Ran:** `checks/corpus.py` at `30a669b2` with the branch's `src/prosiform` replaced by the package at `3091c65b` — the base the branch was cut from — placed ahead of it on `sys.path` by a shim script. The whole corpus ran; the four fixtures below are the only ones this row adds.
+**Ran:** `checks/corpus.py` at `f92e030d` with the branch's `src/prosiform` replaced by the package at `3091c65b` — the base the branch was cut from — placed ahead of it on `sys.path` by a shim script. The whole corpus ran; the four fixtures below are the only ones this row adds.
 
 **Observed:** exit `1`, four failures and no others.
 
@@ -109,7 +109,7 @@ One entry served two references of one folder, each at its own remainder, and th
 
 ## T4 — The two refusals, through the JSON stream
 
-**Ran:** `pf -d json -m rules/=stub.md guide.md` and `pf -d json -m rules/#checks=stubs/ guide.md` at `30a669b2`.
+**Ran:** `pf -d json -m rules/=stub.md guide.md` and `pf -d json -m rules/#checks=stubs/ guide.md` at `f92e030d`.
 
 **Observed:** status `2` for both.
 
@@ -134,15 +134,17 @@ Both name the pair as the author wrote it, and both carry `E_INVALID_USAGE` with
 
 ## T7 — The other mapping behaviour is unchanged
 
-**Ran:** `src/tests/test_mock.py` at `30a669b2`.
+**Ran:** `src/tests/test_mock.py` at `f92e030d`.
 
-**Observed:** 87 tests pass, up from the 68 the branch's base collects. The eighteen failures above account for the difference: three cases were rewritten rather than added, so the count of new cases and the count of failures on the base are one number.
+**Observed:** 87 tests pass. The branch's base collects 69 from the same file — 68 cases, one of which is parametrized twice — so the difference is the eighteen cases above. Three of those were rewritten during this check rather than written afresh, so the eighteen are eighteen additions and not twenty-one.
+
+The cases covering the document key, the fragment key, the four existing refusals, the entry redirect, the two warnings, the substitute as a source and the dispatch and deferral targets all pass unchanged, so the folder pairing neither shifts the answer a document pair receives nor changes the order the four refusals answer in. The corpus confirms it at the same head: 371 fixtures pass, the 19 mock fixtures that predate this row among them.
 
 The cases covering the document key, the fragment key, the four existing refusals, the entry redirect, the two warnings, the substitute as a source and the dispatch and deferral targets all pass unchanged, so the folder pairing neither shifts the answer a document pair receives nor changes the order the four refusals answer in. The corpus confirms it at the same head: 371 fixtures pass, the 19 mock fixtures that predate this row among them.
 
 ## T8 — `make conformance` maps the clause against the fixtures naming it
 
-**Ran:** `make conformance` at `30a669b2`.
+**Ran:** `make conformance` at `f92e030d`.
 
 **Observed:** exit `0`.
 
@@ -155,26 +157,26 @@ The mapping's clause count rises from 19 to 23 — the four fixtures this row la
 
 ## T9 — `make invocation` still agrees with the help output
 
-**Ran:** `make invocation` at `30a669b2`.
+**Ran:** `make invocation` at `f92e030d`.
 
 **Observed:** exit `0`, `30 statement(s)`. The option's row and its help string are unchanged, because this row adds a shape of the value rather than an option. The documented row's folder form is `AC29`'s and lands with W11.
 
 ## T10 — `make independence` finds no implementation term in the new claims
 
-**Ran:** `make independence` at `30a669b2`.
+**Ran:** `make independence` at `f92e030d`.
 
 **Observed:** exit `0`, `every shaped term of every fixture declaration and every report entry is one the contract names`. The new descriptions and carried substrings state `rules/`, `stubs/`, `folder`, `document`, `section`, `substitute`, `one identity` and `separator alone`, each a term the contract names.
 
 ## T11 — `make check`
 
-**Ran:** every target of `make check` on branch head `30a669b2`, in the Makefile's order. Exit `0`.
+**Ran:** every target of `make check` on branch head `f92e030d`, in the Makefile's order. Exit `0`.
 
 | Target | Observed |
 | --- | --- |
 | `lock-check` | `Resolved` from the locked set, no resolution |
 | `lint` | `All checks passed` |
-| `format-check` | `73 files already formatted` |
-| `typecheck` | `Success: no issues found in 72 source files` |
+| `format-check` | `179 files already formatted` |
+| `typecheck` | `Success: no issues found in 81 source files` |
 | `test` | `1395 passed` |
 | `harness` | `1027 passed` |
 | `authoring` | `0 finding(s)` |
@@ -200,4 +202,15 @@ This host reaches the package index, so `test_linked_bootstrap` and the publicat
 
 ## T13 — Delivery
 
-Filled in by the delivery section of `change-list.md` once the pull request, the Development link, the epic row and the merge are done.
+**Ran:** `gh api` against the pull request, its Test Plan and the epic.
+
+**Observed:** the pull request [merged](https://github.com/m2ux/prosiform/pull/448) to `i05/e09/main` at `40a3b947cf876b1750045639b65e8b1c7bca6dd3`, merged from head `f92e030d`. Its `Checks` run reported `success` on `f92e030d`, the pull request read `mergeable: true`, `mergeable_state: clean` against `i05/e09/main`, and the base's own `Checks` run reported `success` on the merge commit `40a3b947`.
+
+`sync.py` linked epic row `W09` to #448, reported `AC25`, `AC26` and `AC30` ready to verify, ticked all three, and reported row `W09` delivered with its Done cell ticked. The body it wrote was published, and row `W09` reads `✓`.
+
+**One blocker, this row does not clear.** The Development link to #414 could not be set: `addCloseIssueReferences` answered `Issue exceeds manual reference limit`, because ten pull requests already hold that issue's manual references — #425, #428, #431, #433, #437, #438, #439, #440, #446 and #447. No slot is free, and unlinking another row's record is not this row's to do. The pull request number to be linked is **#448**, whose node id is `PR_kwDOVNSvEM8AAAABL73b8Q`, against issue node id `I_kwDOVNSvEM8AAAABbF3srA`. That mutation is the one command still to be run for this delivery.
+
+**Two findings this row does not cause and does not change:**
+
+- `sync.py` reports `#428 W01: AC15 covered and named by no test`, which W01's pull request body declares in a way `format.py` reads as a row's coverage. #428 is merged and its body is not this row's to rewrite, so it is left standing, as W02's and W12's records also left it.
+- `sync.py` reports four pull requests naming the epic that no row links — #427, #429, #430 and #444. Each merged before this branch was cut and each is a correction rather than a task delivery, so the unmatched report is the shape they have rather than an omission of this row's.
