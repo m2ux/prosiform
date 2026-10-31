@@ -14,9 +14,9 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 
 | Artifact | What it holds |
 | --- | --- |
-| [Declared Inclusion](epic-a-declared-inclusion.md) | [E11](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
-| [Target Presets](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets and applying one to a compilation |
-| [Exclusion](epic-d-exclusion.md) | [E14](https://github.com/m2ux/prosiform/issues/445): the epic removing a named section from a bundle |
+| [Declared Inclusion](epic-a-declared-inclusion.md) | [I08:E00](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
+| [Target Presets](epic-b-target-profiles.md) | [I08:E01](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets and applying one to a compilation |
+| [Exclusion](epic-d-exclusion.md) | [I08:E02](https://github.com/m2ux/prosiform/issues/445): the epic removing a named section from a bundle |
 | [A: design clause](a-w00.md) | The clause, the retired codes and the pin |
 | [A: metadata](a-w01.md) | Declaration presence, the empty block and the `root` refusal |
 | [A: probe](a-w02.md) | Reading a declaration without capturing a source |
@@ -45,33 +45,38 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: level](d-w05.md) | A level telling a repeated heading apart |
 | [D: frontmatter](d-w06.md) | A preset carrying an exclusion, and the top-level key refused |
 | [D: documentation](d-w07.md) | The selection page and the source page state it |
-| [Remove the Referrer](epic-e-remove-referrer.md) | [E15](https://github.com/m2ux/prosiform/issues/449): the epic removing `-f` and the bare-fragment form |
+| [Remove the Referrer](epic-e-remove-referrer.md) | [I08:E03](https://github.com/m2ux/prosiform/issues/449): the epic removing `-f` and the bare-fragment form |
 | [E: design clause](e-w00.md) | The clause, the retired option and the pin |
 | [E: parser and refusal](e-w01.md) | The option's removal and the usage error that replaces it |
 | [E: derived name](e-w02.md) | A section entry naming its own document |
 | [E: corpus](e-w03.md) | The three fixtures withdrawn or rewritten |
 | [E: documentation](e-w04.md) | The table and the guide without the row |
 | [E: superseded work](e-w05.md) | E09's redirected-referrer criterion |
-| [Conformance Faults](epic-f-conformance-faults.md) | [E16](https://github.com/m2ux/prosiform/issues/450): the epic moving `-x` to `PROSIFORM_FAULT` |
+| [Conformance Faults](epic-f-conformance-faults.md) | [I08:E04](https://github.com/m2ux/prosiform/issues/450): the epic moving `-x` to `PROSIFORM_FAULT` |
 | [F: design clause](f-w00.md) | The contract section, the variable and the pin |
 | [F: reader](f-w01.md) | The option's removal and the environment read |
 | [F: runner](f-w02.md) | The manifest field reaching the run |
 | [F: documentation](f-w03.md) | The table and the guide without the row |
 | [F: corpus page](f-w04.md) | The field stated as a behaviour |
 | [F: fixtures](f-w05.md) | The three fault fixtures unchanged |
-| [Named Budgets](epic-g-named-budgets.md) | [E17](https://github.com/m2ux/prosiform/issues/451): the epic collapsing eight budget letters into one named option |
+| [Named Budgets](epic-g-named-budgets.md) | [I08:E05](https://github.com/m2ux/prosiform/issues/451): the epic collapsing eight budget letters into one named option |
 | [G: design clause](g-w00.md) | The clause, the eight names and the pin |
 | [G: option](g-w01.md) | The option, its parser and its refusals |
 | [G: limits](g-w02.md) | Each ceiling gaining a name |
 | [G: corpus](g-w03.md) | The sixteen fixtures rewritten to names |
 | [G: documentation](g-w04.md) | One table row and the examples |
-| [Preset-Only Substitution](epic-h-preset-only-mock.md) | [E26](https://github.com/m2ux/prosiform/issues/461): the epic retiring `-m` |
+| [Preset-Only Substitution](epic-h-preset-only-mock.md) | [I08:E06](https://github.com/m2ux/prosiform/issues/461): the epic retiring `-m` |
 | [H: design clause](h-w00.md) | The clause, the retired option and the pin |
 | [H: option](h-w01.md) | The option's removal and the preset read |
 | [H: path basis](h-w02.md) | A pair resolving from its declaring file |
 | [H: corpus](h-w03.md) | The four fixtures rewritten to presets |
 | [H: superseded work](h-w04.md) | E09's option criterion |
 | [H: documentation](h-w05.md) | The table and the source page |
+| [Declared Tree](epic-i-declared-tree.md) | The bulk migration: the example and corpus trees declare presets, once every field rule has landed |
+| [I: example tree](i-w00.md) | The example tree declaring presets in one edit |
+| [I: corpus](i-w01.md) | The corpus sources declaring presets |
+| [I: eval tree](i-w02.md) | The workflow documents declaring |
+| [I: checks](i-w03.md) | The checks that read a declaration |
 | [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
 
 ## Design
