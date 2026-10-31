@@ -29,12 +29,12 @@ A bundle is the union of what its links reach, and a document has no way to say 
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause | AC10 | [I08:E01:W00](https://github.com/m2ux/prosiform/issues/436) | | |
+| W00 | Design clause | AC10 | [E01:W00](https://github.com/m2ux/prosiform/issues/436) | | |
 | W01 | The exclusion grammar, its refusals and the seam | AC1, AC7, AC11 | W00, [I08:E00:W03](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | An excluded section's links are no dependency | AC3 | W01 | | |
-| W03 | Included content beneath an exclusion is refused | AC4 | W02 | | |
-| W04 | A file withholding everything is refused | AC5 | W02 | | |
-| W05 | A level tells a repeated heading apart | AC6 | W01 | | |
+| W03 | A level tells a repeated heading apart | AC6 | W01 | | |
+| W04 | Included content beneath an exclusion is refused | AC4 | W02 | | |
+| W05 | A file withholding everything is refused | AC5 | W02 | | |
 | W06 | A preset carries an exclusion | AC2, AC8 | W05, [I08:E01:W03](https://github.com/m2ux/prosiform/issues/436) | | |
 | W07 | The clause and the selection page state exclusion | AC9 | W04 | | |
 

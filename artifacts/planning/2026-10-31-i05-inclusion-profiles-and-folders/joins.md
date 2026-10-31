@@ -134,3 +134,53 @@ The initiative's `Depends on` cells are empty. The rule derives a whole-epic edg
 ## What each epic's base is
 
 Each epic cuts its base from `i05/main` after the previous epic's merge, so the clause pins chain and no epic branch carries another's frontmatter edits.
+
+
+## Pairs that share no pull request
+
+Every pair the dependency checker reports as eligible below names no other in Joins, because every one of them lands as its own pull request. The reason is the same for all of them and is stated once here rather than thirty-one times.
+
+- **A pair takes separate pull requests when either row changes a file the other also changes.** The rows under one epic edit one or two files between them — `cli.py`, `invocation.md`, a fixture family — so two rows landing together would collide in the diff rather than in review.
+- **The pairs are named by the checker from the edges, not from intent.** Two rows with no dependency between them are reported as eligible, which states that nothing orders them. It does not state that they should share a pull request, and here they should not.
+- **A later pass may join a pair.** Where two rows turn out to touch disjoint files, joining them saves a pull request. That is a decision for the run that opens them, not one the plan can make before the change exists.
+
+The eligible pairs, per epic: E00 four, E01 two, E02 nine, E03 five, E04 four, E05 two, E06 four. Each is listed by the checker, and each is accounted for by the rule above.
+
+
+## Epic priority
+
+The graph orders the epics, and the priority numbers state it. Three numbers, not one.
+
+| Priority | Epics | Why |
+| --- | --- | --- |
+| 8 | E00 Declared Inclusion | The only epic whose first row has no inbound edge. It changes the key rule every later epic reads. |
+| 7 | E01 Target Presets | Its `W00` reads E00's clause, and its field rules are what E02 and E06 write against. |
+| 5 | E02 Exclusion, E03 Remove the Referrer, E04 Conformance Faults, E05 Named Budgets, E06 Preset-Only Substitution | Each reads a rule E00 or E01 settles. They run together once those have landed. |
+| 1 | E08 Declared Tree | The bulk migration, last by construction: it waits on every field rule it writes. |
+
+## The clause pins chain
+
+Seven rows across six epics name `design.md` as their component, and each appends a clause and moves the pin. Run together they collide on one file.
+
+- **Each epic's `W00` depends on the previous epic's `W00`.** The chain is E00 → E01 → E02 → E03 → E04 → E05 → E06, in that order, which is the order the clause pins already imply.
+- **The dependency is on the design row, not the whole epic.** Nothing else in a later epic waits for an earlier one's code, so the coupling stays where the file is.
+- **E08 carries no design row.** It is a pure migration that reads the fields rather than adding one, so it sits outside the chain and waits on the epics instead.
+- E02:W02 and E02:W03 take separate pull requests: W02 settles which links an excluded section contributes, and W03 reads that answer to tell two headings of one name apart.
+
+## What serialises a run
+
+The epic is not the unit that serialises work; the component is. Forty-four rows across nine epics touch eleven distinct files, so the parallelism the row count suggests is far smaller than it looks.
+
+| Component | Rows | Epics |
+| --- | --- | --- |
+| `src/prosiform/cli.py` | 14 | E00–E06 |
+| `artifacts/planning/2026-10-17-prosiform-v1/design.md` | 7 | E00–E06 |
+| `src/prosiform/metadata.py` | 5 | E00, E01, E02 |
+| `invocation.md` | 5 | E01, E03, E04, E05, E06 |
+| `example/work-planner/SKILL.md` | 3 | E00, E01, E08 |
+| `src/prosiform/closure.py` | 2 | E00, E06 |
+
+- **A run checks the component before it dispatches.** Two rows of different epics on one file collide in the diff whatever their priority numbers say.
+- **The pin chain and the priority numbers handle the two largest.** `cli.py` serialises through the epics' own row edges; `design.md` serialises through the `W00` chain stated above.
+- **Eleven files for forty-four rows is the measure of the work.** Most rows are in different files, so a run that reads the component can still dispatch several at once.
+

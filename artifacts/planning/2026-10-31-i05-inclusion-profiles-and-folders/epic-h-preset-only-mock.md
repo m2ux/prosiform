@@ -23,7 +23,7 @@ The option is a second channel for one thing.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, retired option | AC7 | [I08:E01:W00](https://github.com/m2ux/prosiform/issues/436) | | |
+| W00 | Design clause, retired option | AC7 | [E01:W00](https://github.com/m2ux/prosiform/issues/436), [I08:E05](https://github.com/m2ux/prosiform/issues/451) | | |
 | W01 | The option's removal and the preset read | AC1, AC2 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | The declared-file path basis | AC3 | W01 | | |
 | W03 | The corpus rewritten to presets | AC4 | W01 | | |

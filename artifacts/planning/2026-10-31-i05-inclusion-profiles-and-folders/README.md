@@ -40,9 +40,9 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: design clause](d-w00.md) | The clause, the two codes and the pin |
 | [D: grammar and seam](d-w01.md) | The exclusion grammar, its refusals and the narrow settlement |
 | [D: closure](d-w02.md) | An excluded section's links are no dependency |
-| [D: conflict](d-w03.md) | Included content beneath an exclusion is refused |
-| [D: empty contribution](d-w04.md) | A file withholding everything is refused |
-| [D: level](d-w05.md) | A level telling a repeated heading apart |
+| [D: level](d-w03.md) | A level telling a repeated heading apart |
+| [D: conflict](d-w04.md) | Included content beneath an exclusion is refused |
+| [D: empty contribution](d-w05.md) | A file withholding everything is refused |
 | [D: frontmatter](d-w06.md) | A preset carrying an exclusion, and the top-level key refused |
 | [D: documentation](d-w07.md) | The selection page and the source page state it |
 | [Remove the Referrer](epic-e-remove-referrer.md) | [I08:E03](https://github.com/m2ux/prosiform/issues/449): the epic removing `-f` and the bare-fragment form |

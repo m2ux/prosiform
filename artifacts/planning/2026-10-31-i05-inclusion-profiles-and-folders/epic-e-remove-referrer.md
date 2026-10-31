@@ -25,7 +25,7 @@ The option adds a spelling and a failure mode, and nothing needs either.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, retired option | AC7 | | | |
+| W00 | Design clause, retired option | AC7 | [I08:E02](https://github.com/m2ux/prosiform/issues/445) | | |
 | W01 | The parser, the refusal and the entry | AC1, AC6 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | The derived name without a referrer | AC2 | W01 | | |
 | W03 | The corpus without the three fixtures | AC3 | W01 | | |
