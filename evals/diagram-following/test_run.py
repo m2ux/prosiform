@@ -44,6 +44,7 @@ from score import (
     ACTIONS,
     SUBAGENTS,
     TRACE,
+    TRACES,
     Failure,
     Start,
     read_starts,
@@ -990,26 +991,50 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
 def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC6: a dispatched section's own path survives the workspace.
+    """AC16: a dispatched section's own path survives the workspace.
 
     A sub-agent following a section that holds a chart of its own records its
-    states to `trace-<section>.log`. The session's path is kept beside it, so
-    the two are read as one dispatch rather than as a nested chart's states
-    mistaken for the outer path.
+    states to `trace-<section>.log`, the name the instruction states. The
+    session's path is kept beside it, so the two are read as one dispatch
+    rather than as a nested chart's states mistaken for the outer path.
     """
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     (workspace / TRACE).write_text("Scope\nGather\n")
-    (workspace / f"{TRACE}-review.log").write_text("read\nrank\n")
+    stated = "trace-review.log"
+    (workspace / stated).write_text("read\nrank\n")
     records = tmp_path / "records"
     records.mkdir()
     keep(workspace, records)
-    assert sorted(path.name for path in records.glob(f"{TRACE}*")) == [
-        TRACE,
-        f"{TRACE}-review.log",
-    ]
+    assert sorted(path.name for path in records.glob(TRACES)) == [stated, TRACE]
     assert (records / TRACE).read_text() == "Scope\nGather\n"
-    assert (records / f"{TRACE}-review.log").read_text() == "read\nrank\n"
+    assert (records / stated).read_text() == "read\nrank\n"
+
+
+def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC16: a scored run over a dispatching scenario keeps both paths.
+
+    The stub writes each dispatched sub-agent's own states under the name the
+    instruction gives it, so a run that kept only the dispatching session's
+    path would record a dispatch whose sub-agent trace it discarded.
+    """
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-tokens", "2000"),
+    )
+    [record] = records(tmp_path)
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    [scenario] = CORPUS["dispatch-chain"].scenarios
+    stated = sorted(entry.section.partition("#")[2] for entry in scenario.trace)
+    assert record["verdict"]["passed"] is True
+    assert sorted(path.name for path in directory.glob(TRACES)) == sorted(
+        [TRACE, *(f"trace-{section}.log" for section in stated)]
+    )
+    assert (directory / TRACE).read_text().split() == list(scenario.path)
 
 
 def test_a_run_starting_no_sub_agent_is_undispatched(

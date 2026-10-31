@@ -37,10 +37,10 @@ Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
 agent printed; `stderr.log` when it printed any; `subagents.json`, the
 sub-agent starts the transcript records, in order, with what each returned;
-the final workspace's `trace.log` and `actions/`; and `session.json`,
-holding the session's identity, exit status, duration, the stream's
-`result` message with its `usage` and `total_cost_usd`, and the scorer's
-verdict record. `run.json`
+the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
+`actions/`; and `session.json`, holding the session's identity, exit status,
+duration, the stream's `result` message with its `usage` and
+`total_cost_usd`, and the scorer's verdict record. `run.json`
 holds the run's date, options, recorded cost, the sessions it did not
 start and the run's state. Once `run.json` is written, `report.py` writes
 the run's report beside it, compared with the committed baseline.
@@ -106,7 +106,7 @@ from report import (
 )
 from score import (
     ACTIONS,
-    TRACE,
+    TRACES,
     Failure,
     Verdict,
     read_trace,
@@ -427,7 +427,7 @@ def keep(workspace: Path, records: Path) -> None:
     `trace-<section>.log`, so both are kept and a nested workflow's states are
     evidence rather than a file the run discards.
     """
-    for path in sorted(workspace.glob(f"{TRACE}*")):
+    for path in sorted(workspace.glob(TRACES)):
         if path.is_file():
             shutil.copy2(path, records / path.name)
     if (workspace / ACTIONS).is_dir():

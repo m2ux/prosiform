@@ -54,6 +54,9 @@ from harness import QUESTION as RETURNED_QUESTION
 from score import ACTIONS, TRACE
 from workflow import Scenario, Workflow, walk, workflows
 
+SUB_AGENT_TRACE = "trace-{section}.log"
+"""The path a sub-agent writes, named for the section it was handed."""
+
 HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
 
 
@@ -105,6 +108,25 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
         )
         for entry in item.trace
     ]
+
+
+def write_sub_agent_traces(
+    workspace: Path, started: list[tuple[str, str, bool]]
+) -> None:
+    """Record each dispatched sub-agent's own path, under the stated name.
+
+    The instruction names a sub-agent's path `trace-<section>.log`, so a
+    session that made no start writes none of them. A start was handed a
+    section, so the path is named for that section and holds the section's
+    title as its one state. What a nested chart draws is the sub-agent's own
+    material, which this stub does not read.
+    """
+    for section, _, _ in started:
+        document, _, heading = section.partition("#")
+        named = heading or document
+        (workspace / SUB_AGENT_TRACE.format(section=named)).write_text(
+            f"{named.title()}\n"
+        )
 
 
 def message(identifier: str, start: tuple[str, str, bool]) -> dict[str, object]:
@@ -195,6 +217,7 @@ def main() -> int:
             name, value = workflow.walked[state].action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
     dispatch = starts(scenario_of(workflow, inputs))
+    write_sub_agent_traces(workspace, dispatch)
     hang = os.environ.get("STUB_AGENT_HANG")
     if hang and not Path(hang).exists():
         Path(hang).touch()
