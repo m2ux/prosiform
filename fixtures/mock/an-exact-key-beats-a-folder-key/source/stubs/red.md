@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Red stand-in
 
 ## Checks
