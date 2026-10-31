@@ -13,6 +13,9 @@ check the work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W10 work item](w10.md) | The fourth refused shape, the fixture that shows it, and the review's two additions |
+| [Validation](validation.md) | The checks T1–T12 at the revisions they ran, with their observations |
+| [Change list](change-list.md) | Every plan change this session applied, and every one it held |
 
 ## Links
 
@@ -22,3 +25,5 @@ check the work item names, and the plan changes the session applied and held.
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
 | Predecessor | [W02 Key and self-mock refusals](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-w02-key-and-self-mock) |
+| Defect | [#432 A Value Naming No Markdown Document](https://github.com/m2ux/prosiform/issues/432) |
+| Pull request | [#446 A Value Naming No Markdown Document Is Refused](https://github.com/m2ux/prosiform/pull/446) |
