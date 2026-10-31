@@ -45,6 +45,13 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: level](d-w05.md) | A level telling a repeated heading apart |
 | [D: frontmatter](d-w06.md) | A preset carrying an exclusion, and the top-level key refused |
 | [D: documentation](d-w07.md) | The selection page and the source page state it |
+| [Remove the Referrer](epic-e-remove-referrer.md) | [E15](https://github.com/m2ux/prosiform/issues/446): the epic removing `-f` and the bare-fragment form |
+| [E: design clause](e-w00.md) | The clause, the retired option and the pin |
+| [E: parser and refusal](e-w01.md) | The option's removal and the usage error that replaces it |
+| [E: derived name](e-w02.md) | A section entry naming its own document |
+| [E: corpus](e-w03.md) | The three fixtures withdrawn or rewritten |
+| [E: documentation](e-w04.md) | The table and the guide without the row |
+| [E: superseded work](e-w05.md) | E09's redirected-referrer criterion |
 | [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
 
 ## Design
@@ -96,7 +103,7 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
 - **A folder pair is a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. (User, 2026-10-31.)
 - **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
-- **Three epics, delivered in order E11, E13, E14.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
+- **Four epics, delivered in order E11, E13, E14, E15.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
 - **Priority is the map the task graph derives: E09 4, E11 3, E13 2, E14 1.** An epic with no prerequisite epic carries the largest number and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The published labels were E11 4, E13 5, E14 5 before this review, which put two dependent epics level with their prerequisite. (User, 2026-10-31.)
 - **The folder pairing moved to I05:E09.** A folder side is a shape of the `-m` option that epic owns, so keeping it here would put one option's two shapes in two planning records. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
@@ -113,6 +120,7 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
 - **A document in two divisions is emitted under each.** One division is one outline, so a document joining two is a member of both and its regions appear in each. (User, 2026-10-31.)
 - **The example tree and corpus migrate to presets in E13.** E11 removes `root` and leaves the flat group pair, so E13 needs a row that rewrites the tree rather than leaving it uncompilable. (User, 2026-10-31.)
+- **`-f` and the bare-fragment form are removed.** Every use is rewritable as `document#fragment`, the bare form is a usage error for the thing a caller types first, and three fixtures carry it with no consumer. The link form `[x](#section)` is untouched. (User, 2026-10-31.)
 - **There is no top-level `exclude`.** A list is a preset's shape, so a top-level key holding one is neither an argument nor a preset and is refused. (User, 2026-10-31.)
 - **`exclude` leaves the settable set.** It has no command-line option, so it is a preset entry rather than an argument, and the set holds only names the parser declares. (User, 2026-10-31.)
 - **A preset's exclusion is a bare section with an optional level.** The declaring file is the scope, so a qualifier would name what the scope already states. (User, 2026-10-31.)
@@ -169,4 +177,5 @@ None outstanding. Two readings were put to the user and answered: the boundary i
 | Epic A | [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
 | Epic B | [I05:E13 Target Presets](https://github.com/m2ux/prosiform/issues/436) |
 | Epic D | [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445) |
+| Epic E | [I05:E15 Remove the Referrer](https://github.com/m2ux/prosiform/issues/446) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |

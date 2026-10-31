@@ -55,6 +55,16 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E14:W05 and E14:W07 | a level tells a repeated heading apart, and the selection page states exclusion. The two share no file and neither reads the other's work. |
 | E14:W06 and E14:W07 | a preset and a top-level key carry an exclusion, and the selection page states exclusion. The two share no file and neither reads the other's work. |
 
+### Remove the Referrer
+
+| Pair | Two pull requests because |
+| --- | --- |
+| E15:W02 and E15:W03 | a section entry deriving its own name, and the corpus fixtures rewritten or withdrawn. The two share no file and neither reads the other's work. |
+| E15:W02 and E15:W04 | a section entry deriving its own name, and the option table and the guide. The two share no file and neither reads the other's work. |
+| E15:W02 and E15:W05 | a section entry deriving its own name, and E09's superseded criterion. The two share no file and neither reads the other's work. |
+| E15:W03 and E15:W04 | the corpus fixtures rewritten or withdrawn, and the option table and the guide. The two share no file and neither reads the other's work. |
+| E15:W04 and E15:W05 | the option table and the guide, and E09's superseded criterion. The two share no file and neither reads the other's work. |
+
 ## Across epics
 
 | Edge | Consumes |
