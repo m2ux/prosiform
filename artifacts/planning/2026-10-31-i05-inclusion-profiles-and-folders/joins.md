@@ -56,7 +56,7 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E14:W02 → E11:W03 | Exclusion narrows the region set discovery reads, and that row is where classification stops asking a root and asks the target. |
 | E14:W08 → E13:W02 | A preset carrying an exclusion reads the key rule that row lands. |
 
-The folder pairing the record once carried as its own epic is [I05:E09](https://github.com/m2ux/prosiform/issues/414)'s `W11` to `W13`, because a folder side is a shape of the `-m` option that epic owns. Its dependency on `E11:W03` and its place in `E13:W03`'s chain travel with it.
+The folder pairing the record once carried as its own epic is [I05:E09](https://github.com/m2ux/prosiform/issues/414)'s `W09` to `W11`, because a folder side is a shape of the `-m` option that epic owns. Its place in `E13:W05`'s chain travels with it.
 
 ## Why this order rather than another
 

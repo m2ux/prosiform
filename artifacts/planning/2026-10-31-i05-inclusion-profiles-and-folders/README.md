@@ -22,17 +22,20 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [A: probe](a-w02.md) | Reading a declaration without capturing a source |
 | [A: classification](a-w03.md) | The seam that answers whether a link is a dependency |
 | [A: absent targets](a-w04.md) | Text for a link naming nothing, a refusal for one an operator marks |
-| [A: derived boundary](a-w05.md) | The boundary a document's own links state |
-| [A: example tree](a-w06.md) | Declaring 95 documents and withdrawing their roots |
+| [A: derived boundary](a-w05.md) | The boundary a document's own links state, and the entry refusal |
+| [A: example and eval trees](a-w06.md) | Declaring 95 example documents and the 118 eval documents |
 | [A: corpus](a-w07.md) | Every fixture family declaring rather than rooting |
-| [A: documentation](a-w08.md) | Five pages that state the declaration |
+| [A: documentation](a-w08.md) | Eleven pages and five drawings that state the declaration |
+| [A: invariants](a-w09.md) | The one settled selection and the boundary that refuses no link |
 | [B: design clause](b-w00.md) | The clause, the term and the pin |
-| [B: preset keys](b-w01.md) | The key rule `prosiform` admits |
-| [B: selection](b-w02.md) | Matching a section name to a preset |
-| [B: spec binding](b-w03.md) | A preset's mock entries and their collisions |
-| [B: unused presets](b-w04.md) | The warning for a preset nothing applied |
-| [B: deferred targets](b-w05.md) | A preset kept for the run that follows the deferral |
-| [B: documentation](b-w06.md) | The preset stated in the invocation and the source page |
+| [B: key rule](b-w01.md) | The preset key and the argument-name key |
+| [B: settable set](b-w02.md) | Which arguments a document sets, and the list value |
+| [B: selection](b-w03.md) | Matching a section name to a preset |
+| [B: whole document](b-w04.md) | A whole-document entry selecting no preset |
+| [B: entry binding](b-w05.md) | A preset's entries bound, and their collisions refused |
+| [B: unused presets](b-w06.md) | The warning for a preset nothing applied |
+| [B: deferred targets](b-w07.md) | A preset kept for the run that follows the deferral |
+| [B: documentation](b-w08.md) | The preset stated in the invocation and the source page |
 | [D: design clause](d-w00.md) | The clause, the two codes and the pin |
 | [D: grammar](d-w01.md) | The option, its level suffix and its refusals |
 | [D: seam](d-w02.md) | Exclusion where the selection settles, and the silent miss |
