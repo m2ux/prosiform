@@ -161,4 +161,15 @@ The delivery brief expects `test_linked_bootstrap` and the publication tests to 
 
 ## T12 — Delivery
 
-Recorded in the pull request's Test Plan and in `change-list.md`.
+**Ran:** `gh api` against the pull request, its checks and the epic.
+
+**Observed:** the pull request [merged](https://github.com/m2ux/prosiform/pull/469) to `i08/e07/main` at `01653cf8725ced5ff737de32dc8cd925ebb62d8a`, merged from head `b4a39250`. Its `Checks` run reported `success` on `b4a39250` and `success` on the merge commit `01653cf8`.
+
+`sync.py` mapped epic row `W10` to #469, reported `AC27` and `AC28` ready to verify, and reported row `W10` delivered once the pull request merged. The body it produced was published for the row and the two criteria, and row `W10` reads `✓`.
+
+**One blocker, this row does not clear.** The Development link to #414 could not be set: `addCloseIssueReferences` answered `Issue exceeds manual reference limit`, because ten pull requests already hold that issue's manual references — #425, #428, #431, #433, #437, #438, #439, #440, #446 and #447. No slot is free, and unlinking another row's record is not this row's to do. The pull request number to be linked is **#469**, whose node id is `PR_kwDOVNSvEM8AAAABL9uVFQ`, against issue node id `I_kwDOVNSvEM8AAAABbF3srA`. That mutation is the one command still to be run for this delivery.
+
+**Findings this row does not cause and does not change:**
+
+- `sync.py` reports eleven rows — `W00` to `W09` and `W12` — as linking pull requests whose titles do not name `I08:E07`. Each merged under the epic's old reference, `[I05:E09]`, so the conflict is a fact about the titles rather than about the delivery. #469 is the first row whose title names the epic's current reference.
+- `sync.py` reports `AC6`, `AC11` and `AC20` unticked on rows it otherwise reads as delivered, and its rewrite clears the Done cells of `W01` and `W07`. That disagreement predates this row, so those two cells and the three criteria are left as they stood.
