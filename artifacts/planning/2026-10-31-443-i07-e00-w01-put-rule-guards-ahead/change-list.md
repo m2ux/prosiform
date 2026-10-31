@@ -21,7 +21,7 @@ No finding moved between tasks, no task was created, closed or renumbered, and n
 | Held | Why |
 | --- | --- |
 | A separate target for the injected cases | The work item's Test row asks the order test to read the `Makefile`, and each injected case to be shown against `make check`. Both were shown here and are recorded in [validation.md](validation.md); a target that mutates the example tree to prove the order would put a destructive check into `make check` for a property the order test already holds |
-| Moving any target other than `steps` and `authoring` | Findings 3 and 11 name those two. `test` and `harness` sit where they do for reasons outside this task's scope, and a reordering for its own sake would move checks whose position no finding faults |
+| Moving any target other than `steps` and `authoring` | Findings 3 and 11 name those two. `harness` reads the example directly but bundles nothing, so a broken rule reaches it as the guard's own reading; `test` and `harness` keep their relative places, and a reordering for its own sake would move checks no finding faults |
 
 ## Technical debt classified
 
