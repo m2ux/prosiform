@@ -25,3 +25,4 @@ the work item names, and the plan changes the session applied and held.
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Mock Substitution design](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-30-414-i05-e09-mock-substitution) |
 | Predecessor | [W09 A folder pairing and its precedence](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-414-i05-e09-w09-a-folder-pairing-and) |
+| Pull request | [#469 A Folder Key's Absent Substitute and Unused Report](https://github.com/m2ux/prosiform/pull/469) |

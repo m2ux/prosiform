@@ -13,6 +13,7 @@ Every plan change this session applied, and every one it held, under the allowan
 | Folded work | [W10 work item](../2026-10-30-414-i05-e09-mock-substitution/w10.md), the substitute's own record | The row needed the refusal to name the key, and by the time `read_document` raises the absence the key is out of scope. `Reference` gains a `folder` field carrying the key as its caller wrote it, set where the lookup derives the reference. The field is also the only place the caller's spelling survives to the diagnostic, so the message names `rules/` with its separator rather than the normalized `rules`. |
 | Folded work | [W10 work item](../2026-10-30-414-i05-e09-mock-substitution/w10.md), the redirect's effect | `Substitution.redirect` now takes effect only where the substitute names a Markdown document. Without it the text case records a substitution for a redirect the bundle never performs — which is the fault T2 shows the base has — and `W_MOCK_SUBSTITUTED` would name a substitution the published link does not show. A document key's substitute is already held to naming a Markdown document when the mapping is read, so the guard is reached only by a folder key's derived remainder. |
 | Folded work | [W10 record](../../../README.md), reserved folder | `w10.md`, `validation.md` and `change-list.md` are registered in the folder's `README.md` Artifacts table. |
+| Epic row | [#414](https://github.com/m2ux/prosiform/issues/414), row `W10` | `sync.py` mapped `W10` to #469 and reported the row delivered once #469 merged, and `AC27` and `AC28` were ticked from the ready-to-verify report it gave. The row link and the two criteria were published from the sync's own output rather than rewritten. |
 
 ## Held
 
@@ -33,14 +34,17 @@ Every plan change this session applied, and every one it held, under the allowan
 
 | Resource | Value |
 | --- | --- |
-| Pull request | _pending_ |
+| Pull request | [#469 A Folder Key's Absent Substitute and Unused Report](https://github.com/m2ux/prosiform/pull/469) |
 | Base | `i08/e07/main` at `40a3b947` |
 | Head | `b4a39250` |
-| Merged | _pending_ |
-| Epic row | _pending_ |
-| Development link | _pending_ |
+| Merged | `01653cf8725ced5ff737de32dc8cd925ebb62d8a`, `merge_method=merge` |
+| Epic row | `W10` reads `✓`, and `AC27` and `AC28` tick with it |
+| Development link | **Blocked:** #414 holds ten manual references and `addCloseIssueReferences` answers `Issue exceeds manual reference limit`. #469 is the pull request awaiting one. |
 
 ## Debt this row leaves
 
 - **`AC29`'s documented row and help string.** Recommended for `W11` rather than taken here, and recorded under Held above.
 - **`fixtures.md`'s stub-declaration rule** reads as current fact on a branch where inclusion is still bounded by the writing source's root. Recommended for `I05:E11`'s record rather than restated here.
+- **The Development link for #469.** Blocked at GitHub's ceiling, so the pull request closes nothing and the row's delivery is recorded by its link alone. Clearing it needs a slot freed on #414 by whoever owns one of the ten references held there, after which the mutation is one call: issue `I_kwDOVNSvEM8AAAABbF3srA`, pull request `PR_kwDOVNSvEM8AAAABL9uVFQ`.
+- **Eleven epic-row title conflicts the sync reports.** `sync.py` reports `W00`–`W09` and `W12` as linking pull requests whose titles do not name `I08:E07`. Each merged under the epic's old reference, `[I05:E09]`, before the reap of the parent issue, so the conflict is a fact about the titles rather than about the delivery. #469 is the first row whose title names the epic's current reference. It belongs to whoever owns the epic's record, not to this row.
+- **`W01` and `W07` Done cells.** `sync.py` reports `AC6`, `AC11` and `AC20` unticked on rows it otherwise reads as delivered, and its rewrite clears their ticks. That is a pre-existing disagreement between the criteria and the rows, not this row's, so the two cells are left as they stood and the criterion ticks are untouched.
