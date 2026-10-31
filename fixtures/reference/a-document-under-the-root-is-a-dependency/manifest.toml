@@ -1,7 +1,7 @@
 description = "A local Markdown reference resolving to a document under the allowed source root is compiled into the bundle and rewritten to that document's destination, whether it names the document whole or a section of it, and no mark is written to say so."
 
 clauses = [
-  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown document links",
   "Explicitly linked source structure — Explicit dependencies",
   "Compile before publishing — step 4",
   "Link classification and resource handling",
