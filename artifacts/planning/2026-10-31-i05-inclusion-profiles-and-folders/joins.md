@@ -16,12 +16,6 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E11:W04 and E11:W08 | W08 is documentation, and documentation lands once the behaviour it states is settled. |
 | E11:W04 and E11:W07 (corpus and tree) | Every corpus row after W04 is a whole-tree edit, so each is one review of one tree. |
 
-### Folder Mocks
-
-| Pair | Two pull requests because |
-| --- | --- |
-| E12:W04 and E12:W05 | W04 extends a check the earlier epic lands; W05 rewrites the option table and the help string. The two share no file. |
-
 ### Target Presets
 
 | Pair | Two pull requests because |
@@ -52,22 +46,21 @@ The pairs below are the ones the dependency checker reports as eligible to share
 
 | Edge | Consumes |
 | --- | --- |
-| E11:W00 → E12:W00 → E13:W00 → E14:W00 | Each clause amends the design after the previous pin moved, so the four pins are one chain rather than four branches amending one revision. |
-| E12:W01 → E09:W01 | The folder grammar extends the `-m` option and the `Substitution` value that row lands. |
-| E12:W02 → E11:W03 | A substitution reaches a substitute through the inclusion rule, so a folder of stubs is meaningful only once a stub declares. |
+| E11:W00 → E13:W00 → E14:W00 | Each clause amends the design after the previous pin moved, so the three pins are one chain rather than three branches amending one revision. |
 | E13:W02 → E11:W03 | A preset governs a compilation's resolution, and resolution is the seam that row moves. |
-| E13:W03 → E12:W02 | A preset's entries reach one `Substitution`, and that row is where the value holds two kinds of key. |
+| E13:W03 → E09:W11 | A preset's entries reach one `Substitution`, and that row is where the value holds two kinds of key. |
 | E14:W02 → E11:W03 | Exclusion narrows the region set discovery reads, and that row is where classification stops asking a root and asks the target. |
 | E14:W08 → E13:W02 | A preset carrying an exclusion reads the key rule that row lands. |
+
+The folder pairing the record once carried as its own epic is [I05:E09](https://github.com/m2ux/prosiform/issues/414)'s `W11` to `W13`, because a folder side is a shape of the `-m` option that epic owns. Its dependency on `E11:W03` and its place in `E13:W03`'s chain travel with it.
 
 ## Why this order rather than another
 
 - **E11 first.** It narrows the key set E13 fills and moves the classification seam E13 and E14 read. Delivering either first would mean writing the key rule twice, once against `root` and once against the declaration.
-- **E12 second.** It is small, it amends a value E11 touched only to remove a parameter from, and E13's demonstration needs a folder of stubs to point at.
-- **E13 third.** It is the largest and the only one whose subject is a compilation rather than a source, and it reads both of the two before it.
+- **E13 second.** It is the largest and the only one whose subject is a compilation rather than a source, and it reads E11.
 - **E14 last.** A carve-up is a preset's use, so it lands once presets exist to carry it. Its seam is E11's, so it could be delivered earlier; the order is the value of the feature rather than a hard gate.
 
-The initiative's `Depends on` cells are empty. The rule derives a whole-epic edge only where every row of the dependent requires every row of the prerequisite, and no epic here meets that: E13's W06 documentation row consumes nothing from E11, and E12's W05 option row consumes nothing from either. The board keeps each epic out of Ready by its priority number and by the task edges above.
+The initiative's `Depends on` cells are empty. The rule derives a whole-epic edge only where every row of the dependent requires every row of the prerequisite, and no epic here meets that: E13's W06 documentation row consumes nothing from E11, and E14's W09 documentation row consumes nothing from either. The board keeps each epic out of Ready by its priority number and by the task edges above.
 
 ## What each epic's base is
 
