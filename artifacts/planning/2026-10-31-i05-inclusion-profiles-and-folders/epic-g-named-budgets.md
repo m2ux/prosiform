@@ -44,5 +44,5 @@ Eight options of one shape are one decision printed eight times.
 
 ## References
 
-- **R0.** Epic — [I05:E17 Named Budgets](https://github.com/m2ux/prosiform/issues/451).
+- **R0.** Epic — [I08:E05 Named Budgets](https://github.com/m2ux/prosiform/issues/451).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions this change comes from.

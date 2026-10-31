@@ -15,7 +15,7 @@ A bundle is the union of what its links reach, and a document has no way to say 
 
 - **A preset declares what its file withholds.** A `prosiform` preset holds an `exclude` of sections, and each named section is removed from the contribution of the file that declares the preset — the scope is the declaring file, and no document qualifier is written.
 - **The grammar is a bare name, and a level where one is needed.**
-  `exclude: ["Draft"]` removes `Draft`. `exclude: ["Draft", {"Tests": 3}]` removes `Draft` whole and the level-3 heading named `Tests`, so a carve-up can exclude one of a repeated pair. Naming a section is the entry's meaning, so no `#` is written; the level selects which heading is meant and the whole subtree beneath it goes. The entry shape is [I05:E13](https://github.com/m2ux/prosiform/issues/436)'s.
+  `exclude: ["Draft"]` removes `Draft`. `exclude: ["Draft", {"Tests": 3}]` removes `Draft` whole and the level-3 heading named `Tests`, so a carve-up can exclude one of a repeated pair. Naming a section is the entry's meaning, so no `#` is written; the level selects which heading is meant and the whole subtree beneath it goes. The entry shape is [I08:E01](https://github.com/m2ux/prosiform/issues/436)'s.
 - **An exclusion is the whole section.** What it removes is what `source.section` selects for that name: the heading, its own content and every subsection beneath it. Inclusion and exclusion describe one shape, so a reader learns one rule.
 - **Exclusion narrows the closure.** A link written inside an excluded section is no dependency, so the document it names is not read through it. What the bundle then carries is what the remaining content reaches, and a document another link also reaches still arrives by that link.
 - **Exclusion happens where selection settles.** The settled region set is the selected regions less the excluded ones, and every stage already reads that set — discovery, withheld targets, dispatches, operator refusals and emission. One seam removes the material, so no stage can disagree about what the bundle holds.
@@ -29,13 +29,13 @@ A bundle is the union of what its links reach, and a document has no way to say 
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause and pin | AC10 | [E13:W00](https://github.com/m2ux/prosiform/issues/436) | | |
-| W01 | The exclusion grammar, its refusals and the seam | AC1, AC7, AC11 | W00, [E11:W03](https://github.com/m2ux/prosiform/issues/434) | | |
+| W00 | Design clause and pin | AC10 | [I08:E01:W00](https://github.com/m2ux/prosiform/issues/436) | | |
+| W01 | The exclusion grammar, its refusals and the seam | AC1, AC7, AC11 | W00, [I08:E00:W03](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | An excluded section's links are no dependency | AC3 | W01 | | |
 | W03 | Included content beneath an exclusion is refused | AC4 | W02 | | |
 | W04 | A file withholding everything is refused | AC5 | W02 | | |
 | W05 | A level tells a repeated heading apart | AC6 | W01 | | |
-| W06 | A preset carries an exclusion | AC2, AC8 | W05, [E13:W03](https://github.com/m2ux/prosiform/issues/436) | | |
+| W06 | A preset carries an exclusion | AC2, AC8 | W05, [I08:E01:W03](https://github.com/m2ux/prosiform/issues/436) | | |
 | W07 | The clause and the selection page state exclusion | AC9 | W04 | | |
 
 ## Acceptance Criteria
@@ -54,7 +54,7 @@ A bundle is the union of what its links reach, and a document has no way to say 
 
 ## References
 
-- **R0.** Epic — [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445).
+- **R0.** Epic — [I08:E02 Exclusion](https://github.com/m2ux/prosiform/issues/445).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the work items.
-- **R2.** [I05:E13 Target Presets](https://github.com/m2ux/prosiform/issues/436) — the epic that admits a preset carrying an exclusion.
-- **R3.** [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) — the epic that moves the classification seam this one narrows.
+- **R2.** [I08:E01 Target Presets](https://github.com/m2ux/prosiform/issues/436) — the epic that admits a preset carrying an exclusion.
+- **R3.** [I08:E00 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) — the epic that moves the classification seam this one narrows.
