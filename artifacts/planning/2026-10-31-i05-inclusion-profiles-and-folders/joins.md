@@ -29,23 +29,45 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E13:W04 and E13:W05 | W04 adds a warning to the run's trailing diagnostics; W05 records a deferred document's presets. Both touch `cli.py` and neither reads the other's work. |
 | E13:W05 and E13:W06 | W06 is the two documentation pages, and documentation lands after the warning whose wording it quotes. |
 
+### Exclusion
+
+| Pair | Two pull requests because |
+| --- | --- |
+| E14:W03 and E14:W04 | W03 states which documents an exclusion reaches; W04 states that a removed section's links stop being dependencies. Both are properties of one seam, and the fixtures one needs would have to predict the other's behaviour. |
+| E14:W03 and E14:W05 | W05 refuses a carve-up that collides with a selection. The collision test needs to know a region was excluded before it can say the removal was contradictory. |
+| E14:W03 and E14:W06 | W06 refuses an entry emptied by its exclusions, which is stated per compilation rather than per document and shares no function with the scope rule. |
+| E14:W03 and E14:W09 | W09 is documentation, and it lands once the behaviour it states is settled. |
+| E14:W04 and E14:W07 | W07 adds a level to the heading lookup; W04 narrows discovery. One changes a lookup, the other a traversal round. |
+| E14:W04 and E14:W08 | W08 admits a frontmatter sequence value; W04 is a property of the closure. The two share no file. |
+| E14:W05 and E14:W06 | W05 refuses a conflict between an exclusion and a selection; W06 refuses an empty result where no conflict exists. The two are distinguished by which one fires, so one pull request could not show the other does not. |
+| E14:W05 and E14:W07 | W05 states the refusal; W07 makes a repeated heading excludable at all, which W05's fixtures would otherwise have to avoid. |
+| E14:W05 and E14:W08 | W08 reads the option's grammar from frontmatter, so a preset's exclusion is refused by the same test W05 states. The corpus rows are separate. |
+| E14:W05 and E14:W09 | W09 documents both codes, and documentation follows the refusals it names. |
+| E14:W06 and E14:W07 | W06 tests emptiness; W07 changes which heading answers a name. A level that matches nothing must stay silent under W06's rule, and one branch cannot show both. |
+| E14:W06 and E14:W08 | W08's preset can empty a dispatch, which is W06's second fixture. The frontmatter plumbing and the emptiness test are separate components. |
+| E14:W07 and E14:W09 | W09 documents the level; documentation follows it. |
+| E14:W08 and E14:W09 | W09 documents the frontmatter form; documentation follows it. |
+
 ## Across epics
 
 | Edge | Consumes |
 | --- | --- |
-| E11:W00 → E12:W00 → E13:W00 | Each clause amends the design after the previous pin moved, so the three pins are one chain rather than three branches amending one revision. |
+| E11:W00 → E12:W00 → E13:W00 → E14:W00 | Each clause amends the design after the previous pin moved, so the four pins are one chain rather than four branches amending one revision. |
 | E12:W01 → E09:W01 | The folder grammar extends the `-m` option and the `Substitution` value that row lands. |
 | E12:W02 → E11:W03 | A substitution reaches a substitute through the inclusion rule, so a folder of stubs is meaningful only once a stub declares. |
 | E13:W02 → E11:W03 | A preset governs a compilation's resolution, and resolution is the seam that row moves. |
 | E13:W03 → E12:W02 | A preset's entries reach one `Substitution`, and that row is where the value holds two kinds of key. |
+| E14:W02 → E11:W03 | Exclusion narrows the region set discovery reads, and that row is where classification stops asking a root and asks the target. |
+| E14:W08 → E13:W02 | A preset carrying an exclusion reads the key rule that row lands. |
 
 ## Why this order rather than another
 
-- **E11 first.** It narrows the key set E13 fills and moves the classification seam E13 reads. Delivering E13 first would mean writing the key rule twice, once against `root` and once against the declaration.
+- **E11 first.** It narrows the key set E13 fills and moves the classification seam E13 and E14 read. Delivering either first would mean writing the key rule twice, once against `root` and once against the declaration.
 - **E12 second.** It is small, it amends a value E11 touched only to remove a parameter from, and E13's demonstration needs a folder of stubs to point at.
-- **E13 last.** It is the largest and the only one whose subject is a compilation rather than a source, and it reads both of the other two.
+- **E13 third.** It is the largest and the only one whose subject is a compilation rather than a source, and it reads both of the two before it.
+- **E14 last.** A carve-up is a preset's use, so it lands once presets exist to carry it. Its seam is E11's, so it could be delivered earlier; the order is the value of the feature rather than a hard gate.
 
-The initiative's `Depends on` cells are empty. The rule derives a whole-epic edge only where every row of the dependent requires every row of the prerequisite, and neither epic meets that: E13's W06 documentation row consumes nothing from E11, and E12's W05 option row consumes nothing from either. The board keeps each epic out of Ready by its priority number and by the task edges above.
+The initiative's `Depends on` cells are empty. The rule derives a whole-epic edge only where every row of the dependent requires every row of the prerequisite, and no epic here meets that: E13's W06 documentation row consumes nothing from E11, and E12's W05 option row consumes nothing from either. The board keeps each epic out of Ready by its priority number and by the task edges above.
 
 ## What each epic's base is
 
