@@ -280,6 +280,65 @@ def test_a_mapped_entry_derives_its_name_from_the_substitute(tree: Path) -> None
     assert (tree / "out" / "stand-in.bundles" / "stand-in.bundle.md").is_file()
 
 
+def test_an_explicit_folder_leaves_the_derived_name_following_the_substitute(
+    tree: Path,
+) -> None:
+    """`-o` names the folder and no file, so the name still follows the substitute."""
+    out, err = io.StringIO(), io.StringIO()
+    previous = Path.cwd()
+    try:
+        os.chdir(tree)
+        status = main(["-m", "guide.md=stand-in.md", "-o", "out", "guide.md"], out, err)
+    finally:
+        os.chdir(previous)
+    assert status == 0
+    assert (tree / "out" / "stand-in.bundles" / "stand-in.bundle.md").is_file()
+    assert not (tree / "out" / "guide.bundles").exists()
+
+
+def test_a_section_entry_derives_the_section_the_substitute_carries(
+    tree: Path,
+) -> None:
+    """A substitute carrying a fragment contributes it in place of the authored one."""
+    (tree / "stand-in.md").write_text("# Stand-in\n\n## Answers\n\nAnswered.\n")
+    status, _published = invoke(
+        tree, "-m", "guide.md#escalation=stand-in.md#answers", "guide.md#escalation"
+    )
+    assert status == 0
+    bundle = tree / "out" / "stand-in__answers.bundles" / "stand-in__answers.bundle.md"
+    assert "Answered." in bundle.read_text()
+
+
+def test_a_document_key_leaves_a_section_entry_its_own_fragment(tree: Path) -> None:
+    """A document key replaces the document, so the section the entry named stays."""
+    (tree / "stand-in.md").write_text("# Stand-in\n\n## Escalation\n\nAnswered.\n")
+    status, _published = invoke(
+        tree, "-m", "guide.md=stand-in.md", "guide.md#escalation"
+    )
+    assert status == 0
+    bundle = (
+        tree / "out" / "stand-in__escalation.bundles" / "stand-in__escalation.bundle.md"
+    )
+    assert "Answered." in bundle.read_text()
+
+
+def test_two_entries_naming_one_substitute_derive_one_name(tree: Path) -> None:
+    """Both entries resolve to one identity, so the run publishes one bundle of it."""
+    (tree / "other.md").write_text("# Other\n\nOther.\n")
+    status, _published = invoke(
+        tree,
+        "-m",
+        "guide.md=stand-in.md",
+        "-m",
+        "other.md=stand-in.md",
+        "guide.md",
+        "other.md",
+    )
+    assert status == 0
+    assert (tree / "out" / "stand-in.bundles" / "stand-in.bundle.md").is_file()
+    assert not (tree / "out" / "guide+other.bundles").exists()
+
+
 def test_a_value_that_is_no_pair_is_invalid_usage(tree: Path) -> None:
     assert invoke(tree, "-m", "rules.md", "guide.md")[0] == 2
 
