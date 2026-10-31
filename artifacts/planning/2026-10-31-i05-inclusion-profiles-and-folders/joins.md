@@ -65,6 +65,19 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E15:W03 and E15:W04 | the corpus fixtures rewritten or withdrawn, and the option table and the guide. The two share no file and neither reads the other's work. |
 | E15:W04 and E15:W05 | the option table and the guide, and E09's superseded criterion. The two share no file and neither reads the other's work. |
 
+### Conformance Faults
+
+| Pair | Two pull requests because |
+| --- | --- |
+| E16:W01 and E16:W02 | the parser and the environment read, and the runner setting the variable. The two share no file and neither reads the other's work. |
+| E16:W01 and E16:W03 | the parser and the environment read, and the option table and the help output. The two share no file and neither reads the other's work. |
+| E16:W02 and E16:W03 | the runner setting the variable, and the option table and the help output. The two share no file and neither reads the other's work. |
+| E16:W02 and E16:W04 | the runner setting the variable, and the corpus page's field. The two share no file and neither reads the other's work. |
+| E16:W02 and E16:W05 | the runner setting the variable, and the three fault fixtures. The two share no file and neither reads the other's work. |
+| E16:W03 and E16:W04 | the option table and the guide, and the corpus page's field. The two share no file and neither reads the other's work. |
+| E16:W03 and E16:W05 | the option table and the guide, and the three fault fixtures. The fixtures are the evidence the mechanism moved and their files are untouched. |
+| E16:W04 and E16:W05 | the corpus page's field, and the three fault fixtures. The two share no file and neither reads the other's work. |
+
 ## Across epics
 
 | Edge | Consumes |
