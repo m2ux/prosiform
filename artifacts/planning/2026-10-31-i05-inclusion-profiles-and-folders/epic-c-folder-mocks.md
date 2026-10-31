@@ -52,5 +52,8 @@ A folder of stand-ins costs one entry per file.
 
 ## References
 
+- **R0.** Epic - [I05:E12 Folder Mocks](https://github.com/m2ux/prosiform/issues/435).
+
+
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the work items.
 - **R2.** [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic that landed the mapping this one extends.

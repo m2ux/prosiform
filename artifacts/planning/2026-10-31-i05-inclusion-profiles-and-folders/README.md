@@ -14,9 +14,9 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 
 | Artifact | What it holds |
 | --- | --- |
-| [Declared Inclusion](epic-a-declared-inclusion.md) | The epic retiring `root`: the declaration, the probe, classification and the derived boundary |
-| [Target Profiles](epic-b-target-profiles.md) | The epic admitting named profiles and applying one to a compilation |
-| [Folder Mocks](epic-c-folder-mocks.md) | The epic letting `-m` name a folder pair |
+| [Declared Inclusion](epic-a-declared-inclusion.md) | [E11](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
+| [Target Profiles](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named profiles and applying one to a compilation |
+| [Folder Mocks](epic-c-folder-mocks.md) | [E12](https://github.com/m2ux/prosiform/issues/435): the epic letting `-m` name a folder pair |
 | [A: design clause](a-w00.md) | The clause, the retired codes and the pin |
 | [A: metadata](a-w01.md) | Declaration presence, the empty block and the `root` refusal |
 | [A: probe](a-w02.md) | Reading a declaration without capturing a source |
@@ -102,5 +102,7 @@ None outstanding. Two readings were put to the user and answered: the boundary i
 | --- | --- |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
 | Preceding epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
-| Tracker numbers | The next free numbers after E10; assigned at publication |
+| Epic A | [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
+| Epic C | [I05:E12 Folder Mocks](https://github.com/m2ux/prosiform/issues/435) |
+| Epic B | [I05:E13 Target Profiles](https://github.com/m2ux/prosiform/issues/436) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
