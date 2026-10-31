@@ -44,6 +44,6 @@ The option adds a spelling and a failure mode, and nothing needs either.
 
 ## References
 
-- **R0.** Epic — [I05:E15 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449).
+- **R0.** Epic — [I08:E03 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions this removal comes from.
-- **R2.** [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic whose redirected-referrer criterion this supersedes.
+- **R2.** [I08:E07 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic whose redirected-referrer criterion this supersedes.

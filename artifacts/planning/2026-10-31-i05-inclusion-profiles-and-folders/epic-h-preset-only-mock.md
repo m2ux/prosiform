@@ -9,7 +9,7 @@ The option is a second channel for one thing.
 - **It duplicates the preset.** `-m ORIGINAL=ALTERNATIVE` states a substitution on the command line, and a preset states the same thing in the document. Two channels for one intent means a compilation has two possible answers.
 - **It makes `default` optional.** While `-m` exists, a document needs no preset to be substituted; with it gone, a preset is the only way, which is what makes one top-level source the setting for its whole closure.
 - **Its scope is the run.** `-m` is read once in `main` and folded into every compilation, so a caller cannot vary a substitution by entry. A preset can.
-- **It is delivered and open.** [I05:E09](https://github.com/m2ux/prosiform/issues/414) landed the option, its parser and its documented row, and four fixtures pass it.
+- **It is delivered and open.** [I08:E07](https://github.com/m2ux/prosiform/issues/414) landed the option, its parser and its documented row, and four fixtures pass it.
 
 ## Proposal
 
@@ -23,7 +23,7 @@ The option is a second channel for one thing.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, retired option and pin | AC7 | [E13:W00](https://github.com/m2ux/prosiform/issues/436) | | |
+| W00 | Design clause, retired option and pin | AC7 | [I08:E01:W00](https://github.com/m2ux/prosiform/issues/436) | | |
 | W01 | The option's removal and the preset read | AC1, AC2 | W00 | | |
 | W02 | The declared-file path basis | AC3 | W01 | | |
 | W03 | The corpus rewritten to presets | AC4 | W01 | | |
@@ -42,6 +42,6 @@ The option is a second channel for one thing.
 
 ## References
 
-- **R0.** Epic — [I05:E18 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/452).
+- **R0.** Epic — [I08:E06 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/461).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions this removal comes from.
-- **R2.** [I05:E09](https://github.com/m2ux/prosiform/issues/414) — the epic whose option this retires.
+- **R2.** [I08:E07](https://github.com/m2ux/prosiform/issues/414) — the epic whose option this retires.

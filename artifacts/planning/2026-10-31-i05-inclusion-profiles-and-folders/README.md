@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Three changes to what a run carries and how an argument reaches it. The first retires `prosiform.root`: a local Markdown link is bundled when the document it names declares `prosiform`, and a document's boundary is derived from the links it writes rather than declared. The second admits named *presets* in frontmatter, so a section an argument names is compiled under that argument. The third removes a named section from a bundle, so one preset carves one source several ways for several consumers. A fourth change — a folder pairing in `-m` — moved to [I05:E09](https://github.com/m2ux/prosiform/issues/414), because a folder side is a shape of the option that epic owns.
+Three changes to what a run carries and how an argument reaches it. The first retires `prosiform.root`: a local Markdown link is bundled when the document it names declares `prosiform`, and a document's boundary is derived from the links it writes rather than declared. The second admits named *presets* in frontmatter, so a section an argument names is compiled under that argument. The third removes a named section from a bundle, so one preset carves one source several ways for several consumers. A fourth change — a folder pairing in `-m` — moved to [I08:E07](https://github.com/m2ux/prosiform/issues/414), because a folder side is a shape of the option that epic owns.
 
 They are one record because two of them are ordered by the first. Today `prosiform` admits exactly three keys and refuses any other; a preset is a key that is neither. And today a substitution is exempt from the writing source's root because the root is a boundary; once a boundary is derived from links, what bounds a substitute has to be stated against that instead. Delivering presets first would mean writing the key rule twice.
 
@@ -15,7 +15,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | Artifact | What it holds |
 | --- | --- |
 | [Declared Inclusion](epic-a-declared-inclusion.md) | [E11](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
-| [Target Profiles](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets and applying one to a compilation |
+| [Target Presets](epic-b-target-profiles.md) | [E13](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets and applying one to a compilation |
 | [Exclusion](epic-d-exclusion.md) | [E14](https://github.com/m2ux/prosiform/issues/445): the epic removing a named section from a bundle |
 | [A: design clause](a-w00.md) | The clause, the retired codes and the pin |
 | [A: metadata](a-w01.md) | Declaration presence, the empty block and the `root` refusal |
@@ -32,7 +32,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [B: groupings](b-w02.md) | `group-depth` as pairs, and the two divisions it allows |
 | [B: entry shapes](b-w03.md) | `exclude` and `mock` entries |
 | [B: selection](b-w04.md) | Selecting a preset, and `default` |
-| [B: subsumption](b-w05.md) | A preset as its compilation's whole argument set |
+| [B: subsumption](b-w05.md) | A preset as its compilation's whole setting |
 | [B: unused presets](b-w06.md) | The warning for a preset nothing selected |
 | [B: deferred targets](b-w07.md) | A preset kept for the run that follows the deferral |
 | [B: trees](b-w08.md) | The example tree and corpus declaring presets |
@@ -65,7 +65,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [G: limits](g-w02.md) | Each ceiling gaining a name |
 | [G: corpus](g-w03.md) | The sixteen fixtures rewritten to names |
 | [G: documentation](g-w04.md) | One table row and the examples |
-| [Preset-Only Substitution](epic-h-preset-only-mock.md) | [E18](https://github.com/m2ux/prosiform/issues/452): the epic retiring `-m` |
+| [Preset-Only Substitution](epic-h-preset-only-mock.md) | [E26](https://github.com/m2ux/prosiform/issues/461): the epic retiring `-m` |
 | [H: design clause](h-w00.md) | The clause, the retired option and the pin |
 | [H: option](h-w01.md) | The option's removal and the preset read |
 | [H: path basis](h-w02.md) | A pair resolving from its declaring file |
@@ -84,7 +84,7 @@ A link is followed when its target declares `prosiform`. Nothing about where eit
 
 A document's **derived boundary** is the deepest directory that holds every local Markdown path its own links name, normalised from the document's directory; a document linking no such path has its own directory. The boundary states what the declaration used to state: the deepest place the author already reached.
 
-It is worth being exact about what the boundary now refuses, because `root` refused a great deal. It refuses **no authored link**, by construction — every link a document writes resolves inside it. It confines a positional entry reference, and it is the value a diagnostic names when a path leaves it. Anything else `root` used to bound — a substitute named on the command line, a path a profile names — is command-line or frontmatter material rather than authored text, and the clause states each one's confinement in its own right.
+It is worth being exact about what the boundary now refuses, because `root` refused a great deal. It refuses **no authored link**, by construction — every link a document writes resolves inside it. It confines a positional entry reference, and it is the value a diagnostic names when a path leaves it. Anything else `root` used to bound — a substitute named on the command line, a path a preset names — is command-line or frontmatter material rather than authored text, and the clause states each one's confinement in its own right.
 
 ### Classification
 
@@ -96,15 +96,19 @@ A link naming a document that exists and does not declare is text, and a link na
 
 This is the one behaviour the change makes weaker, and it is stated rather than softened: a misspelled link under a directory a previous `root` covered used to fail the run, and now reaches the bundle as authored.
 
-### Profiles
+### Presets
 
-`prosiform` admits, beside its fields, a key that is an argument name or a profile name. A key named for an argument applies that argument to every compilation of the file; any other key whose value is a mapping is a profile; an unknown key whose value is not a mapping is refused, because that is a misspelled field.
+`prosiform` holds presets and nothing else: every key is a preset name whose value is a mapping, and a key whose value is anything else is refused. There is no top-level parameter, because a file-wide setting cannot vary with what a caller selected.
 
-A profile applies to a **bundle compilation**, which is one entry reference and everything it reaches: the run's own entry, and each dispatched target's. The profile is chosen by the section the entry reference names — the heading text that fragment resolves to, matched against the names in the entry document's declaration. A profile on a document merged into another bundle applies to nothing, and the run says so with `W_PROFILE_UNUSED`.
+A preset is the whole setting of the **bundle compilation** that selects it — one entry reference and everything it reaches, the run's own entry and each dispatched target's. It is chosen by the section the entry reference names: the heading text that fragment resolves to, matched against the preset names in the entry document's declaration. A preset covers every document its compilation reaches, so a document reached as a dependency is compiled under the entry's preset rather than its own; its own applies only where some run names a section of it as an entry. A preset nothing selected raises `W_PRESET_UNUSED`.
 
-### The folder pair
+`default` is the fallback and its name is reserved: a compilation whose section matches no preset name — including one whose entry names a whole document — selects it. Where a document declares none, that compilation substitutes nothing and withholds nothing.
 
-A mapping side ending in a separator makes the entry a folder pairing, and both sides must agree. A key folder matches every reference whose normalised path sits under it, the substitute folder takes the same remainder, and the reference keeps its section. Exact keys answer first, then the longest matching folder key.
+A preset holds three entries. `group-depth` is a list of single-entry mappings, each a group name mapped to its depth, so one document may join several divisions. `exclude` is a list of section names, or of single-entry mappings from a name to a heading level. `mock` is a list of `ORIGINAL=ALTERNATIVE` strings whose sides resolve from the file that declares the preset. Budgets are refused there: a budget bounds a bundle rather than a document, so `--budget` on the command line is the only place one is set.
+
+### Substitution
+
+`mock` is the only channel. [I08:E06](https://github.com/m2ux/prosiform/issues/461) retires `-m`, so a compilation selecting no preset substitutes nothing rather than inheriting a default. The mapping a preset holds is the one its compilation resolves through, and a document reached under two different presets resolves two ways.
 
 ### Exclusion
 
@@ -121,21 +125,20 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **Inclusion is target-side, on the frontmatter declaration.** A local Markdown link is a dependency when its target declares `prosiform`. (User, 2026-10-31.)
 - **No path boundary decides a link.** `prosiform.root` retires and a link outside every previous root is compiled when its target declares. (User, 2026-10-31.)
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
-- **A folder pair is a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. (User, 2026-10-31.)
+- **A folder pair was a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. It retired with `-m`: a preset states one pair per entry, so a folder of stubs is written one entry at a time. (User, 2026-10-31.)
 - **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
-- **Seven epics, delivered in order E11, E13, E14, E15, E16, E17, E18.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
+- **Seven epics, delivered in order E11, E13, E14, E15, E16, E17, E26.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
 - **Priority is the map the task graph derives: E09 4, E11 3, E13 2, E14 1.** An epic with no prerequisite epic carries the largest number and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The published labels were E11 4, E13 5, E14 5 before this review, which put two dependent epics level with their prerequisite. (User, 2026-10-31.)
-- **The folder pairing moved to I05:E09.** A folder side is a shape of the `-m` option that epic owns, so keeping it here would put one option's two shapes in two planning records. (User, 2026-10-31.)
+- **The folder pairing moved to I08:E07, and retired with its option.** A folder side was a shape of `-m`, which [I08:E06](https://github.com/m2ux/prosiform/issues/461) retires. A preset's `mock` entry inherits the pair syntax, so the folder form goes with the option and a preset states one pair per entry. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
 - **An absent document is text, and the operators keep the failure.** The run cannot tell a citation from a typo without the declaration that would answer it, so responsibility is stated by the mark instead. (User, 2026-10-31.) An existing document that declares nothing is text too, which is the cost accepted in exchange for a target that qualifies itself.
 - **The boundary refuses no authored link.** Deriving it from the links makes that a property rather than a policy, and the clause says so rather than implying a confinement it no longer performs. (Agent, 2026-10-31.)
-- **Only an argument that shapes the bundle is settable from frontmatter.** `mock`, `exclude` and the budgets. `-o`, `-c`, `-d`, `-x` and `-f` describe the invocation rather than the content, and a document setting `-o` could redirect its own bundle. (User, 2026-10-31.)
 - **Every argument value is a list, for every argument.** One shape for a repeatable option and a single-valued one, and a scalar is refused rather than read as a list of one. (User, 2026-10-31.)
 - **A whole-document entry matches no preset.** Nothing names a section, so the compilation runs under the run's own options and a preset named for the document's title raises `W_PRESET_UNUSED`. (User, 2026-10-31.)
 - **A property the construction holds is held by a check.** Discovery reading one selection and the boundary refusing no authored link are invariants an author cannot break, so each is asserted by a fixture rather than left as prose. (User, 2026-10-31.)
 - **An entry reference is held to the same declaration.** The command line is the one selection made outside the link mechanism, so a document that declares nothing cannot be reached by argument either. (Agent, 2026-10-31.)
-- **The per-compilation argument set is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
+- **The per-compilation setting is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
 - **Exclusion is the subtractive half of selection.** A named section is removed rather than filtered from the output, so the run reads fewer sources and the consumer receives only what remains. (User, 2026-10-31.)
 - **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
 - **A document in two divisions is emitted under each.** One division is one outline, so a document joining two is a member of both and its regions appear in each. (User, 2026-10-31.)
@@ -148,7 +151,6 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **`-f` and the bare-fragment form are removed.** Every use is rewritable as `document#fragment`, the bare form is a usage error for the thing a caller types first, and three fixtures carry it with no consumer. The link form `[x](#section)` is untouched. (User, 2026-10-31.)
 - **A fault stays a command-line concern.** `-x` reaches codes no source tree produces, which is a harness need rather than a document's: `internal` means the tool fails in itself and `cleanup-refused` is about the output folder, so neither has a document to attach to. `source-changed` could not be declared in the file it corrupts, because frontmatter is read during capture and the corruption would follow the read that learns of it. A `prosiform` key holding a fault would also put test scaffolding inside the material under test, which the mock feature refused on the same ground. (User, 2026-10-31.)
 - **There is no top-level `exclude`.** A list is a preset's shape, so a top-level key holding one is neither an argument nor a preset and is refused. (User, 2026-10-31.)
-- **`exclude` leaves the settable set.** It has no command-line option, so it is a preset entry rather than an argument, and the set holds only names the parser declares. (User, 2026-10-31.)
 - **A preset's exclusion is a bare section with an optional level.** The declaring file is the scope, so a qualifier would name what the scope already states. (User, 2026-10-31.)
 - **A deferral is not carried across.** An exclusion governs what this run compiles; the later run's exclusions are its own. (User, 2026-10-31.)
 - **An unmatched exclusion is silent, including one naming no heading of the declaring file.** A preset is shared across documents that vary, so a miss is ordinary. (User, 2026-10-31.)
@@ -187,24 +189,24 @@ Findings from the plan review against the source, all resolved.
 
 ## Debt this record defers
 
-- **Epic A supersedes two acceptance criteria of [I05:E09](https://github.com/m2ux/prosiform/issues/414).** AC11 and AC20 of that epic make a substitute reachable from a source whose root excludes it; with no root there is no exemption to state. The criteria are reworded in that epic rather than carried here, and the fixture `a-substitute-outside-the-writing-root-is-reachable` is renamed to the boundary it now exercises.
+- **Epic A supersedes two acceptance criteria of [I08:E07](https://github.com/m2ux/prosiform/issues/414).** AC11 and AC20 of that epic make a substitute reachable from a source whose root excludes it; with no root there is no exemption to state. The criteria are reworded in that epic rather than carried here, and the fixture `a-substitute-outside-the-writing-root-is-reachable` is renamed to the boundary it now exercises.
 - **`checks/authoring.py` holds a rule about link spelling written in terms of `root`.** Its `DECLARED_ROOT` pattern and `link_form` test exist because a root prefixed a link's spelling. The 2026-10-24 note already found the spy role gone; A retires the declaration the check reads, so the check is rewritten to the derived boundary rather than deleted outright, because it still catches a link written from the wrong directory.
 
 ## Open Questions
 
-None outstanding. Two readings were put to the user and answered: the boundary is derived from the file's own links, and a profile matches a resolved heading text and governs one compilation.
+None outstanding. Every reading this record raised has been answered: the boundary is derived from the file's own links, a preset matches a resolved heading text and covers its compilation's closure, `-m` is retired so a preset is the only channel, and the fault leaves the option surface.
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
-| Preceding epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
-| Epic A | [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
-| Epic B | [I05:E13 Target Presets](https://github.com/m2ux/prosiform/issues/436) |
-| Epic D | [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445) |
-| Epic E | [I05:E15 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449) |
-| Epic F | [I05:E16 Conformance Faults](https://github.com/m2ux/prosiform/issues/450) |
-| Epic G | [I05:E17 Named Budgets](https://github.com/m2ux/prosiform/issues/451) |
-| Epic H | [I05:E18 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/452) |
+| Preceding epic | [I08:E07 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
+| Epic A | [I08:E00 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
+| Epic B | [I08:E01 Target Presets](https://github.com/m2ux/prosiform/issues/436) |
+| Epic D | [I08:E02 Exclusion](https://github.com/m2ux/prosiform/issues/445) |
+| Epic E | [I08:E03 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449) |
+| Epic F | [I08:E04 Conformance Faults](https://github.com/m2ux/prosiform/issues/450) |
+| Epic G | [I08:E05 Named Budgets](https://github.com/m2ux/prosiform/issues/451) |
+| Epic H | [I08:E06 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/461) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |

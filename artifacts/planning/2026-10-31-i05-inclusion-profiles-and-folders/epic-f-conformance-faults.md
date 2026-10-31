@@ -43,5 +43,5 @@ A shipped flag exists only for tests, and every surface presents it as a feature
 
 ## References
 
-- **R0.** Epic — [I05:E16 Faults Out of the Option Surface](https://github.com/m2ux/prosiform/issues/450).
+- **R0.** Epic — [I08:E04 Faults Out of the Option Surface](https://github.com/m2ux/prosiform/issues/450).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions this change comes from.

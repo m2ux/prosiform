@@ -11,7 +11,7 @@ Inclusion is decided by directory, and the directory is authored twice.
 - **A file's inclusion is not a property of the file.**
   Whether `rules/common.md` travels in a bundle depends on the declaration of whichever procedure happened to link it. The same document reached from two sources is two answers, and neither is written on the document.
 - **The boundary refuses material the bundle is responsible for.**
-  A link above the root is a citation rather than a dependency, so a tree kept beside the skill — the fixture tree a mock exercises, the stand-in an author is drafting — is unreachable by the document being tested. [I05:E09](https://github.com/m2ux/prosiform/issues/414) exists only to exempt substitutes from that boundary.
+  A link above the root is a citation rather than a dependency, so a tree kept beside the skill — the fixture tree a mock exercises, the stand-in an author is drafting — is unreachable by the document being tested. [I08:E07](https://github.com/m2ux/prosiform/issues/414) exists only to exempt substitutes from that boundary.
 - **Link spelling is already known to be unsound.**
   The [2026-10-24 note](../2026-10-24-root-declaration-roles/README.md) records that a root prefixes a link's spelling, that `[Codex](codex.md)` fails where `[Codex](rules/codex.md)` resolves, and that two commits to the example tree were wrong in exactly that way without any check reporting it.
 
@@ -71,9 +71,9 @@ Inclusion is decided by directory, and the directory is authored twice.
 
 ## References
 
-- **R0.** Epic - [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434).
+- **R0.** Epic - [I08:E00 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434).
 
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions, the work items and the debt this epic takes on.
 - **R2.** [The `root` declaration: three roles, one of them questionable](../2026-10-24-root-declaration-roles/README.md) — the note that found the spelling role unsound, and the change it declined to make.
-- **R3.** [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic whose root exemption this one removes the need for.
+- **R3.** [I08:E07 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic whose root exemption this one removes the need for.
