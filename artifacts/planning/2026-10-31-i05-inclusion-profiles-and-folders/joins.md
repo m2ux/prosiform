@@ -14,14 +14,21 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E11:W04 and E11:W06 | W06 edits 213 documents and two checks; W04 changes a refusal. One review cannot read both with any care. |
 | E11:W04 and E11:W07 | W07 is the corpus's own row, and a corpus row that lands with an implementation row cannot tell a passing fixture from a fixture written to match the code. |
 | E11:W04 and E11:W08 | W08 is documentation, and documentation lands once the behaviour it states is settled. |
-| E11:W04 and E11:W07 (corpus and tree) | Every corpus row after W04 is a whole-tree edit, so each is one review of one tree. |
+| E11:W06 and E11:W09 | W06 edits the example tree; W09 adds a fixture and a boundary assertion. The two share no file. |
+| E11:W07 and E11:W09 | W07 reworks the corpus families; W09 adds one fixture and states the invariant it holds. |
+| E11:W08 and E11:W09 | W08 is the documentation pages, and documentation follows the invariant it describes. |
 
 ### Target Presets
 
 | Pair | Two pull requests because |
 | --- | --- |
-| E13:W04 and E13:W05 | W04 adds a warning to the run's trailing diagnostics; W05 records a deferred document's presets. Both touch `cli.py` and neither reads the other's work. |
-| E13:W05 and E13:W06 | W06 is the two documentation pages, and documentation lands after the warning whose wording it quotes. |
+| E13:W02 and E13:W03 | the settable set and the list value, and matching a section name to a preset. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W05 | a whole-document entry matching no preset, and a preset's entries bound. W04 changes which preset a compilation selects and W05 refuses a collision inside one, so one branch could not show the other does not fire. |
+| E13:W04 and E13:W06 | a whole-document entry matching no preset, and the unused-preset warning. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W07 | a whole-document entry matching no preset, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
+| E13:W04 and E13:W08 | a whole-document entry matching no preset, and the two documentation pages. The two share no file and neither reads the other's work. |
+| E13:W06 and E13:W07 | the unused-preset warning, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
+| E13:W07 and E13:W08 | a deferred target keeping its preset, and the two documentation pages. The two share no file and neither reads the other's work. |
 
 ### Exclusion
 
@@ -41,14 +48,11 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E14:W06 and E14:W08 | W08's preset can empty a dispatch, which is W06's second fixture. The frontmatter plumbing and the emptiness test are separate components. |
 | E14:W07 and E14:W09 | W09 documents the level; documentation follows it. |
 | E14:W08 and E14:W09 | W09 documents the frontmatter form; documentation follows it. |
-
 ## Across epics
 
 | Edge | Consumes |
 | --- | --- |
 | E11:W00 → E13:W00 → E14:W00 | Each clause amends the design after the previous pin moved, so the three pins are one chain rather than three branches amending one revision. |
-| E13:W02 → E11:W03 | A preset governs a compilation's resolution, and resolution is the seam that row moves. |
-| E13:W03 → E09:W09 | A preset's entries reach one `Substitution`, and that row is where the value holds two kinds of key. |
 | E14:W02 → E11:W03 | Exclusion narrows the region set discovery reads, and that row is where classification stops asking a root and asks the target. |
 | E14:W08 → E13:W02 | A preset carrying an exclusion reads the key rule that row lands. |
 
