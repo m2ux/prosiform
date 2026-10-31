@@ -10,6 +10,8 @@ The epic is ten tasks. W00 states the design clause and moves the pin that lets 
 
 Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Seventeen corpus fixtures under a new `fixtures/mock/` family, every one naming the clause W00 lands, and two example-skill scenarios the corpus cannot express.
 
+Three rows were migrated here from [I05:E12](../2026-10-31-i05-inclusion-profiles-and-folders/epic-c-folder-mocks.md). A folder pairing is a shape of the same `-m` option this epic landed, so it belongs to the epic that owns the option rather than to a later epic that would reopen it. W11 carries the grammar, the precedence and the two refusals; W12 the absent substitute and the unused report; W13 the documented row and the example scenario. Five corpus fixtures and one check join the family, and the option's row is rewritten rather than added.
+
 ## Artifacts
 
 | Artifact | What it holds |
@@ -25,6 +27,9 @@ Each fixture lands in the pull request that makes it pass, so it is written agai
 | [W07 work item](w07.md) | The substitute as a source in its own right |
 | [W08 work item](w08.md) | The example skill bundled against stubs and a fake `gh` |
 | [W10 work item](w10.md) | The fourth refused shape: a mapping value naming no Markdown document |
+| [W11 work item](w11.md) | A folder pairing, its precedence and its refusals |
+| [W12 work item](w12.md) | A folder key's absent substitute and its unused report |
+| [W13 work item](w13.md) | The folder form documented and demonstrated |
 | [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
 | [Fixture inventory](fixtures.md) | Every fixture the epic lands, and the row that lands it |
 
