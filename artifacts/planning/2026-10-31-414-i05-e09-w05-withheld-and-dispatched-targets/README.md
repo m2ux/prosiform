@@ -13,6 +13,7 @@ check the work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [Validation](validation.md) | The corpus run, the counterfactual on the unit suite, and the fixture that does not discriminate |
 
 ## Links
 
