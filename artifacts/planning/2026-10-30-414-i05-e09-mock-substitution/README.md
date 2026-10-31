@@ -1,16 +1,16 @@
-# I05:E09 Mock Substitution — October 2026
+# I08:E07 Mock Substitution — October 2026
 
 > Epic planning · Created 2026-10-30
 
 ## Executive Summary
 
-This record holds the plan for I05:E09: a `-m ORIGINAL=ALTERNATIVE` invocation parameter that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It is the ninth epic of I05, the standing initiative for ad hoc feature enhancements.
+This record holds the plan for what was I05:E09 and is now **I08:E07**: a mapping that redirects that redirects the document a reference resolves to, so a bundle can be built and exercised against stand-in material without editing the tree under test. It was raised in I05, which has since been split; it now belongs to [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462). The `-m` option this record plans is retired by [I08:E06](../2026-10-31-i05-inclusion-profiles-and-folders/epic-h-preset-only-mock.md), and the mapping moves into a preset.
 
 The epic is ten tasks. W00 states the design clause and moves the pin that lets a fixture name it, because `make conformance` reads the design at the revision `README.md` pins and refuses a declaration naming no clause it carries. W01 carries the mapping and the option together, because neither is observable without the other; W02 adds the three mapping refusals; W03 makes a redirected entry and referrer derive their own output name; W04 emits the two warnings; W05 redirects withheld and dispatched targets; W06 settles section keys and ends chaining; W07 treats the substitute as a source in its own right; W08 applies the mechanism to the example work-planner skill; the option's documented row lands with W01, where `make invocation` first requires it; and W10 refuses the fourth mapping shape the clause states, a value naming no Markdown document.
 
 Each fixture lands in the pull request that makes it pass, so it is written against working behaviour rather than a prediction. Seventeen corpus fixtures under a new `fixtures/mock/` family, every one naming the clause W00 lands, and two example-skill scenarios the corpus cannot express.
 
-Three rows were migrated here from [I05:E12](../2026-10-31-i05-inclusion-profiles-and-folders/epic-c-folder-mocks.md). A folder pairing is a shape of the same `-m` option this epic landed, so it belongs to the epic that owns the option rather than to a later epic that would reopen it. W11 carries the grammar, the precedence and the two refusals; W12 the absent substitute and the unused report; W13 the documented row and the example scenario. Five corpus fixtures and one check join the family, and the option's row is rewritten rather than added.
+Three rows were migrated here from the folder-mocks epic, which was withdrawn. A folder pairing is a shape of the same `-m` option this epic landed, so it belongs to the epic that owns the option rather than to a later epic that would reopen it. W11 carries the grammar, the precedence and the two refusals; W12 the absent substitute and the unused report; W13 the documented row and the example scenario. Five corpus fixtures and one check join the family, and the option's row is rewritten rather than added.
 
 ## Artifacts
 
@@ -74,7 +74,7 @@ A mocked bundle is otherwise the same kind of output as a real one, so the run s
 - **A warning per redirected target, not a note in the bundle.** A note would need a heading, which is a destination in the bundle. (User, 2026-10-30.)
 - **Every reference is redirected, withheld ones included.** (User, 2026-10-30.)
 - **A key redirecting a document to itself is refused as invalid usage.** (User, 2026-10-30.)
-- **An epic under I05, not a new initiative.** I05 exists to hold ad hoc enhancements, and this is one self-contained addition to link resolution. (User, 2026-10-30.)
+- **An epic under I05, not a new initiative.** I05 held ad hoc enhancements when this was raised, and this was one self-contained addition to link resolution. The epic is now I08:E07, I05 having been split by subject. (User, 2026-10-30.)
 - **Priority 5.** The epic has no prerequisite epic and no component contention, so it can start at any time; 5 places it behind the epics already in flight. (User, 2026-10-30.)
 - **The mapping is specified on the command line, not in TOML or JSON.** A file format would be a second input language in a tool that reads only Markdown and its own frontmatter, needing its own parser and its own diagnostics. If a checked profile is ever needed, it arrives as a line list read by the existing value parser rather than as a structured document. (User, 2026-10-30.)
 - **The mapping and the option are one row.** A mapping nothing can be passed is unobservable and an option with nowhere to put its pairs is unused, so W01 carries both and declares `closure.py` as its component with `cli.py` named in its body. The grain rule bends for a row that must be invocable. (User, 2026-10-30.)
@@ -113,6 +113,6 @@ Third pass, against the corpus mechanics and the criterion ownership the checker
 
 | Resource | Link |
 | --- | --- |
-| Epic | [I05:E09 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
-| Initiative | [I05 Ad Hoc Enhancements](https://github.com/m2ux/prosiform/issues/327) |
+| Epic | [I08:E07 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) |
+| Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
