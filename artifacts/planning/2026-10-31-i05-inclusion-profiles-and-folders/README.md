@@ -45,7 +45,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: level](d-w05.md) | A level telling a repeated heading apart |
 | [D: frontmatter](d-w06.md) | A preset carrying an exclusion, and the top-level key refused |
 | [D: documentation](d-w07.md) | The selection page and the source page state it |
-| [Remove the Referrer](epic-e-remove-referrer.md) | [E15](https://github.com/m2ux/prosiform/issues/446): the epic removing `-f` and the bare-fragment form |
+| [Remove the Referrer](epic-e-remove-referrer.md) | [E15](https://github.com/m2ux/prosiform/issues/449): the epic removing `-f` and the bare-fragment form |
 | [E: design clause](e-w00.md) | The clause, the retired option and the pin |
 | [E: parser and refusal](e-w01.md) | The option's removal and the usage error that replaces it |
 | [E: derived name](e-w02.md) | A section entry naming its own document |
@@ -177,5 +177,5 @@ None outstanding. Two readings were put to the user and answered: the boundary i
 | Epic A | [I05:E11 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
 | Epic B | [I05:E13 Target Presets](https://github.com/m2ux/prosiform/issues/436) |
 | Epic D | [I05:E14 Exclusion](https://github.com/m2ux/prosiform/issues/445) |
-| Epic E | [I05:E15 Remove the Referrer](https://github.com/m2ux/prosiform/issues/446) |
+| Epic E | [I05:E15 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449) |
 | Board | [Markdown Bundling](https://github.com/users/m2ux/projects/18) |
