@@ -93,6 +93,7 @@ An exclusion touching nothing is silent, because a shared preset legitimately na
 - **A folder pair is a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. (User, 2026-10-31.)
 - **A preset is selected by the heading text the entry reference's fragment resolves to, and governs that compilation alone.** (User, 2026-10-31.)
 - **Three epics, delivered in order E11, E13, E14.** The first changes the key rule and the classification both later epics read; the second is the largest and states the preset a carve-up is written as; the third is the carve-up itself. (Agent, 2026-10-31.)
+- **Priority is the map the task graph derives: E09 4, E11 3, E13 2, E14 1.** An epic with no prerequisite epic carries the largest number and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The published labels were E11 4, E13 5, E14 5 before this review, which put two dependent epics level with their prerequisite. (User, 2026-10-31.)
 - **The folder pairing moved to I05:E09.** A folder side is a shape of the `-m` option that epic owns, so keeping it here would put one option's two shapes in two planning records. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
@@ -126,6 +127,9 @@ Findings from the plan review against the source, all resolved.
 | `profile` already names the grammar, and the epic reused it. | High | The concept is a `preset` throughout; the word clash is stated in the clause and the glossary check holds it. |
 | `E11:W08` named six pages where eleven state a root. | Medium | AC13 lists all eleven, and AC14 covers the four worked examples and the drawings. |
 | AC9 cited `make boundary` and the folder epic's AC6 cited `make mock-scenarios`; neither target existed. | Medium | `E11:W05` creates `make boundary`; `E09:W11` extends the target `E09:W08` lands and states that dependency. |
+| The board held E13 and E14 at priority 5, level with the E09 epic that neither depends on and above the E11 epic both depend on; the graph derives E09 4, E11 3, E13 2, E14 1. | High | The derived map applied to the labels and recorded as a decision. |
+| The folder rows read under the inclusion rule, which a reader could take for a dependency on `E11`. | Low | `E09:W09` states that the rule is E11's and that its stubs declare from the first, so the mechanism is buildable before E11 lands and no edge is asserted. The checker refuses a row depending on a later epic, and the row does not. |
+| The record's `epic.md` still described ten rows and an unnumbered documented row, so the record and the tracker disagreed. | Medium | Regenerated from the published body. |
 
 ## Debt this record defers
 
