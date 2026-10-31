@@ -42,7 +42,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: conflict](d-w03.md) | Included content beneath an exclusion is refused |
 | [D: empty contribution](d-w04.md) | A file withholding everything is refused |
 | [D: level](d-w05.md) | A level telling a repeated heading apart |
-| [D: frontmatter](d-w06.md) | A preset and a top-level key carrying an exclusion |
+| [D: frontmatter](d-w06.md) | A preset carrying an exclusion, and the top-level key refused |
 | [D: documentation](d-w07.md) | The selection page and the source page state it |
 | [Joins and ordering](joins.md) | The rows that share a pull request, and why the epics are ordered E11, E13, E14 |
 
@@ -80,7 +80,7 @@ A mapping side ending in a separator makes the entry a folder pairing, and both 
 
 ### Exclusion
 
-Selection only adds, so a file can withhold part of itself. A preset holds an `exclude` of sections, and each is removed from the contribution of the **file that declares it** — the scope is the declaring file, so no entry names a document. An `exclude` at the top level of `prosiform` governs every compilation of that file; one inside a preset governs the compilation that preset was selected for.
+Selection only adds, so a file can withhold part of itself. A preset holds an `exclude` of sections, and each is removed from the contribution of the **file that declares it** — the scope is the declaring file, so no entry names a document. An exclusion is a preset entry, so it governs the compilation that preset was selected for, and no top-level form exists: a list is a preset's shape.
 
 The grammar is a bare section with an optional level: `exclude: ["#Draft"]`, and `#Tests:3` to name the level-3 heading of a repeated name. An exclusion removes what a fragment of the same name would select — the heading, its content and every subsection beneath it — so inclusion and exclusion describe one shape.
 
@@ -110,6 +110,8 @@ An exclusion naming a heading the file does not carry is silent, because a prese
 - **The per-compilation argument set is a `preset`.** `profile` already names the grammar `skill-markdown-v4`, reported by `-v` and defined in the glossary; a second sense would make the contract's one defined term name two things. (User, 2026-10-31.)
 - **Exclusion is the subtractive half of selection.** A named section is removed rather than filtered from the output, so the run reads fewer sources and the consumer receives only what remains. (User, 2026-10-31.)
 - **An exclusion is declared in a preset, and its scope is the file that declares it.** No entry names a document, and there is no command-line form: what a file withholds belongs in that file's own declaration. (User, 2026-10-31.)
+- **There is no top-level `exclude`.** A list is a preset's shape, so a top-level key holding one is neither an argument nor a preset and is refused. (User, 2026-10-31.)
+- **`exclude` leaves the settable set.** It has no command-line option, so it is a preset entry rather than an argument, and the set holds only names the parser declares. (User, 2026-10-31.)
 - **A preset's exclusion is a bare section with an optional level.** The declaring file is the scope, so a qualifier would name what the scope already states. (User, 2026-10-31.)
 - **A deferral is not carried across.** An exclusion governs what this run compiles; the later run's exclusions are its own. (User, 2026-10-31.)
 - **An unmatched exclusion is silent, including one naming no heading of the declaring file.** A preset is shared across documents that vary, so a miss is ordinary. (User, 2026-10-31.)
