@@ -13,6 +13,9 @@ the work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W07 work item](w07.md) | The defect, its analysis, and the checks that carry it |
+| [Validation](validation.md) | What was observed before the fix, each case failing without it, and every test run |
+| [Change list](change-list.md) | The pull request, its commits, files and findings |
 
 ## Links
 
