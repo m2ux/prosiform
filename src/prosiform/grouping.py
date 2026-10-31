@@ -240,6 +240,7 @@ def prepared(
     root: str = "",
     keep_title: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    first_line: int = 1,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -249,6 +250,9 @@ def prepared(
     carries it, and is no structural ancestor either way, because the
     subsection stands in its place. The parent keeps its title, so
     nothing absorbs it.
+
+    The first line of the member's content is the line of the file it
+    stands on, which a refusal about a link names.
     """
     removed = {
         at for one in defined.values() for at in range(one.lines[0], one.lines[1])
@@ -278,7 +282,15 @@ def prepared(
         list(physical)
         if assigned is None
         else rewrite(
-            physical, tokens, chosen, assigned, path, defined, root, dispatching
+            physical,
+            tokens,
+            chosen,
+            assigned,
+            path,
+            defined,
+            root,
+            dispatching,
+            first_line,
         )
     )
     member = Member(

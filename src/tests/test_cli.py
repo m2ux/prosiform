@@ -1901,6 +1901,54 @@ def test_a_link_opening_with_two_dispatch_marks_is_refused(root: Path) -> None:
     assert diagnostic["reference"] == "\u21c9\u2afd the rules"
 
 
+@pytest.mark.parametrize("mark", ["\u21c9", "\u2afd"])
+def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> None:
+    """A title the file heading absorbs is no section, so it places no sub-section."""
+    written(root, "guide.md", "# Guide\n\nRead [the note](note.md).\n")
+    written(root, "note.md", f"# Note [{mark} Plan](plan.md)\n\nBody.\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["reference"] == "plan.md"
+    assert diagnostic["source"] == "note.md:1"
+    assert diagnostic["chain"] == ["guide.md", "note.md"]
+    assert diagnostic["remedy"]
+
+
+def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
+    """A member's title the subsection absorbs places no sub-section either."""
+    front = "---\nprosiform:\n  group: Merge\n  group-depth: 2\n---\n\n"
+    member = "note-\u21c9-plan.md"
+    written(
+        root,
+        "entry.md",
+        front + f"# Entry\n\nRead [note]({member}) and [plan](plan.md).\n",
+    )
+    written(root, member, front + "# Note [\u21c9 Plan](plan.md)\n\nBody.\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "entry.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == f"{member}:7"
+
+
+def test_a_dispatch_in_the_entry_s_own_title_still_publishes(root: Path) -> None:
+    """The entry's title heads the bundle, so its sub-section stands beneath it."""
+    written(root, "guide.md", "# Guide [\u21c9 Plan](plan.md)\n\nBody.\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+    assert run.bundle.startswith(DISPATCHING)
+    assert "[Plan](#dispatch-plan)" in run.bundle
+    assert run.bundles["plan.bundle.md"] == "# Plan\n\n1. Go.\n"
+
+
 def test_a_link_opening_with_two_dispatch_marks_is_refused_where_it_names_nothing(
     root: Path,
 ) -> None:

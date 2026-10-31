@@ -41,6 +41,7 @@ from prosiform.bundle import (
     MAX_LEVEL,
     Group,
     Overflow,
+    Unplaced,
     assemble,
     document_title,
     file_heading,
@@ -1622,7 +1623,7 @@ def assembled(
             merging.setdefault(named, []).append(path)
             continue
         tokens = parsed[path]
-        with overflowing(path, selecting):
+        with assembling(path, selecting):
             groups.append(
                 group(
                     path,
@@ -1634,11 +1635,12 @@ def assembled(
                     read[path].root,
                     path == parent,
                     dispatching,
+                    read[path].first_line,
                 )
             )
     for named, paths in merging.items():
         depth = inforce[named]
-        with overflowing(paths[0], selected[paths[0]]):
+        with assembling(paths[0], selected[paths[0]]):
             groups.append(
                 merged(
                     named,
@@ -1655,6 +1657,7 @@ def assembled(
                             read[path].root,
                             path == parent,
                             dispatching,
+                            read[path].first_line,
                         )
                         for path in paths
                     ],
@@ -1666,8 +1669,15 @@ def assembled(
 
 
 @contextmanager
-def overflowing(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
-    """One assembly, a heading beyond the sixth level reported as the input it is."""
+def assembling(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
+    """One assembly, a source fault it meets reported as the input it is.
+
+    A heading beyond the sixth level is a hierarchy the bundle cannot
+    emit, and a dispatched link the bundle places no sub-section for is a
+    handoff it cannot state. Both are properties of the sources the run
+    was asked to bundle rather than faults in the tool, so each is
+    reported with the code the contract declares for it.
+    """
     try:
         yield
     except Overflow as beyond:
@@ -1680,6 +1690,18 @@ def overflowing(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
             source=beyond.path,
             chain=selecting[0].chain if selecting else (),
         ) from beyond
+    except Unplaced as unplaced:
+        raise input_failure(
+            f"the dispatch {unplaced.opening!r} in {unplaced.path!r} names "
+            f"{unplaced.destination!r}, and the heading that carries it is no "
+            f"section a dispatch sub-section can stand beneath",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy="write the dispatch in the body beneath the heading, where a "
+            "sub-section has a section to follow",
+            reference=unplaced.destination,
+            source=location(unplaced.path, unplaced.line),
+            chain=selecting[0].chain if selecting else (),
+        ) from unplaced
 
 
 def destination_map(
@@ -1862,7 +1884,8 @@ def publication(
     """Validate every bundle a run publishes, then publish the set whole or not at all.
 
     Each bundle is held to the output budget, every name is held to one
-    bundle, the output folder is held to existing, and the run folder's
+    bundle, the output folder is held to existing, the path standing at
+    the run folder's own to being a folder or a link, and the run folder's
     name and each bundle's are held to the length its filesystem allows,
     before any is written, so a set publication would refuse ends the run with its
     diagnostic and nothing written, whether or not the run only
@@ -1900,11 +1923,46 @@ def publication(
     for one, name in [(bundles[0], folder.name), *((one, one.name) for one in bundles)]:
         if len(os.fsencode(name)) > longest:
             raise overlong(one, name, longest)
+    held = occupied(folder)
+    if held is not None:
+        raise occupied_failure(folder, held)
     for one in bundles:
         for warning in one.warnings:
             reporter.emit(warning)
     if not check:
         publish_folder(bundles, folder, reporter, retained)
+
+
+def occupied(folder: Path) -> str | None:
+    """What stands at the run folder's path, where a run folder cannot be placed.
+
+    A run folder is a folder or the link a run once placed there, so a
+    symbolic link is replaced as the link it is and a folder is the
+    earlier set. Anything else — a regular file, a device, a socket or a
+    named pipe under the run's own `.bundles` name — is material the run
+    never wrote and cannot replace without destroying bytes it never
+    read, so it is refused rather than renamed aside.
+    """
+    if not (folder.exists() or folder.is_symlink()):
+        return None
+    if folder.is_symlink() or folder.is_dir():
+        return None
+    return "a file" if folder.is_file() else "neither a folder nor a link"
+
+
+def occupied_failure(folder: Path, held: str) -> Failure:
+    """One path standing where the run's folder belongs, as a refusal."""
+    return Failure(
+        PUBLICATION_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"the output path {str(folder)!r} holds {held}, which is neither the "
+            f"run folder a run writes nor a link to one, so the bundles cannot "
+            f"be published without removing it",
+            code=PUBLICATION_FAILED,
+            remedy="remove or rename what stands there, or name another output folder",
+        ),
+    )
 
 
 def overlong(one: Bundle, name: str, longest: int) -> Failure:
