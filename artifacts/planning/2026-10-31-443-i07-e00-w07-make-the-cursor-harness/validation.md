@@ -131,10 +131,29 @@ Targets that had passed before `corpus` in the same `make check` invocation:
 | `harness` | 992 passed |
 | `authoring` | 0 findings |
 
-The full `make check` with `PROSIFORM_BUILD` set, and the targets after `corpus` (`smoke`, `layout`, `tables`, `links`, `vocabulary`, `invocation`, `conformance`, `independence`, `steps`), are recorded against the pull request.
+The targets after `corpus` were run on the host, since `make links` reads the network:
+
+```text
+make links smoke layout tables vocabulary invocation conformance independence steps
+link check: every reference in 237 document(s) resolved
+smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
+layout check: 4 tree(s) present
+table check: 21 command(s) and 8 declaration(s), each declared by the project and named by a table
+vocabulary check: ok
+invocation check: 29 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
+conformance report: 303 clause(s) the design states, 55 covered by no fixture, 0 declaration(s) naming no clause
+independence check: every shaped term of every fixture declaration and every report entry is one the contract names
+step check: every procedure in 59 document(s) under example/work-planner/ writes its steps as sub-sections
+EXIT 0
+```
+
+Every target of `make check` therefore passes on this branch.
+
+## CI
+
+`Checks` passed on `b1b7715d96319359962b3c586e54eaa2b8dee16b`, the branch head the pull request was raised from — the same commit this worktree holds. That run carries `test_linked_bootstrap` and the publication tests, which do not run in this sandbox.
 
 ## What was not proved here
 
 - **The eval's own runs.** `make eval-diagrams` starts paid agent sessions against a real CLI and is not run by `make check`. AC15's case is the matrix construction the run performs, which is the site of the defect; no Cursor session was started in this sandbox, and the Cursor CLI is not installed here.
-- **`test_linked_bootstrap` and the publication tests.** They need network and an atomic folder swap under `/tmp`; both fail in this sandbox on every settled branch and pass in CI. They are not touched by this change.
-- **CI.** The results above are from the worktree unless a row says otherwise. The row `W07` on #443 carries the CI run for the branch.
+- **The `E_PUBLICATION_FAILED` and `test_linked_bootstrap` failures.** Both reproduce in this sandbox on every settled branch and pass in CI; the CI run above is the evidence that they pass with this change in place.
