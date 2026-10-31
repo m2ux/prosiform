@@ -48,7 +48,7 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | --- | --- |
 | E11:W00 → E13:W00 → E14:W00 | Each clause amends the design after the previous pin moved, so the three pins are one chain rather than three branches amending one revision. |
 | E13:W02 → E11:W03 | A preset governs a compilation's resolution, and resolution is the seam that row moves. |
-| E13:W03 → E09:W11 | A preset's entries reach one `Substitution`, and that row is where the value holds two kinds of key. |
+| E13:W03 → E09:W09 | A preset's entries reach one `Substitution`, and that row is where the value holds two kinds of key. |
 | E14:W02 → E11:W03 | Exclusion narrows the region set discovery reads, and that row is where classification stops asking a root and asks the target. |
 | E14:W08 → E13:W02 | A preset carrying an exclusion reads the key rule that row lands. |
 

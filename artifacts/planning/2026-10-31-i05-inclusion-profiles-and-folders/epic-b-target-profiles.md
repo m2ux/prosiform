@@ -39,7 +39,7 @@ A run is one set of options, and one artifact is not the run.
 | W00 | Design clause, the term and the pin | AC12 | [E11:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W01 | The preset key and the argument-name key | AC1, AC2 | W00 | | |
 | W02 | Matching a section name to a preset | AC3, AC4, AC7 | W01, [E11:W03](https://github.com/m2ux/prosiform/issues/434) | | |
-| W03 | A preset's entries bound and collisions refused | AC5, AC6 | W02, [E09:W11](https://github.com/m2ux/prosiform/issues/414) | | |
+| W03 | A preset's entries bound and collisions refused | AC5, AC6 | W02, [E09:W09](https://github.com/m2ux/prosiform/issues/414) | | |
 | W04 | A preset nothing applied warns | AC8 | W03 | | |
 | W05 | A deferred target keeps its preset | AC9 | W03 | | |
 | W06 | The preset stated in the invocation and the source page | AC10, AC11 | W04 | | |
