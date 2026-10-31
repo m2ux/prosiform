@@ -13,6 +13,9 @@ the work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | Why an absorbed title carries no dispatch sub-section, why a standing file is not an earlier set, and what the task delivered |
+| [Validation](validation.md) | The before-fix observation for each finding, the cases that fail without the repair, and every check run |
+| [Change list](change-list.md) | The plan changes the session applied and those left held, with the debt it classified |
 
 ## Links
 
