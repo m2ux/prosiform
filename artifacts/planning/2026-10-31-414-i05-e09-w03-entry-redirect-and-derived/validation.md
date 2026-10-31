@@ -89,7 +89,7 @@ The mapping clause's fixture count rose from 10 to 12. The clause count and the 
 
 ## T8 — `make check`
 
-**Ran:** every target of `make check` at two revisions — `7a662612`, the head before the base moved, and the rebased head after `846f8f5a` landed W06 — in the Makefile's order.
+**Ran:** every target of `make check`, in the Makefile's order, at three revisions: `7a662612`, the head before the base moved; the head after W06's merge `846f8f5a` was brought in; and the final head.
 
 **Observed at `7a662612`:** exit `0` throughout.
 
@@ -106,21 +106,30 @@ The mapping clause's fixture count rose from 10 to 12. The clause count and the 
 - `independence` — every shaped term of every declaration and report entry is one the contract names.
 - `steps` — every procedure in 59 documents writes its steps as sub-sections.
 
-**Observed after the rebase onto `846f8f5a`:** every target green except two, both in the sandbox and both for one cause:
+**Observed after the base moved, on the head carrying it:** two targets failed, both in the sandbox and both for one cause.
 
 ```text
 tests/test_linked_bootstrap.py: error: Failed to build ... cause: Failed to fetch: https://pypi.org/simple/hatchling/ ... dns error
 smoke check: the installation does not stand
 ```
 
-`smoke` and the thirteen `test_linked_bootstrap` cases each run `uv build --wheel`, which resolves `hatchling` from the network. Every other source test passes: `1346 passed` with `--ignore=tests/test_linked_bootstrap.py`. Both are the failures the delivery brief names as sandbox-only, and neither is this branch's change: neither file is touched by it, and both fail identically on the same base without it.
+`smoke` and the thirteen `test_linked_bootstrap` cases each run `uv build --wheel`, which resolves `hatchling` from the network. Every other source test passed: `1346 passed` with `--ignore=tests/test_linked_bootstrap.py`. Both are the failures the delivery brief names as sandbox-only.
 
-The harness, including the diagram-following eval's own tests, passed, so the `/tmp` restriction the brief warns of did not arise on this branch.
+**Observed at the final head `97a6a9b0`:** exit `0` on every target, including `smoke` and `test_linked_bootstrap`, which pass once the sandbox's network restriction is lifted.
+
+- `test` — 1359 passed; `harness` — 802 passed.
+- `corpus` — `363 fixture(s), 363 pass`, the two new fixtures among them.
+- `smoke` — `the installed command is named on the path, independent of the working directory, independent of this repository`.
+- `conformance` — `305 clause(s)`, `55 covered by no fixture`, `0 declaration(s) naming no clause`.
+- `independence`, `invocation`, `vocabulary`, `links --online`, `layout`, `tables`, `steps`, `authoring`, `lint`, `format-check`, `typecheck` — each green.
 
 ## T9 — Delivery
 
-**Ran:** `gh api` against the pull request and the epic base.
+**Ran:** `gh api` against the pull request, the epic base and the epic issue; and `sync.py` to record the delivery.
 
-**Observed:** [#438](https://github.com/m2ux/prosiform/pull/438) raised against `i05/e09/main`, titled `[I05:E09] Redirect the Entry and Derive the Name It Publishes`, and linked to #414 by `addCloseIssueReferences`. The link was verified through `closedByPullRequestsReferences`, which lists #438 at `OPEN` beside the earlier rows.
+**Observed:** [#438](https://github.com/m2ux/prosiform/pull/438) raised against `i05/e09/main`, titled `[I05:E09] Redirect the Entry and Derive the Name It Publishes`, and linked to #414 by `addCloseIssueReferences`. The link was verified through `closedByPullRequestsReferences`, which listed #438 at `OPEN` beside the earlier rows.
 
-The base moved to `846f8f5a` (W06's merge) between the branch being cut and the pull request being raised, so the branch was rebased onto it and the check set re-run at the rebased head before merge.
+The base moved to `846f8f5a` (W06's merge) between the branch being cut and the pull request being raised. The base was brought into the branch with a merge commit, `97a6a9b0`, rather than by rebasing a branch already pushed, so the pull request's history holds both the delivery commit and the merge. The `Checks` run reported `success` on `97a6a9b0`, and the pull request merged to `i05/e09/main` at `737068cf5cc297e74a6c6d8dfec4e60b72201ffd`.
+
+`sync.py` linked row `W03` to #438, ticked `AC2` and `AC13` as ready to verify, and marked the row done. The updated body was published to #414 and read back: the row links #438 with `✓`, and both criteria carry `[x]`. The epic is not closable, which is expected — W05, W07, W08 and W10 are undelivered.
+
