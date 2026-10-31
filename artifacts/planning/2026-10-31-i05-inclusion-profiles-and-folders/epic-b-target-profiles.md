@@ -48,7 +48,7 @@ A document's declaration is flat, and a run is one set of options for every comp
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, the term | AC11 | [I08:E00](https://github.com/m2ux/prosiform/issues/434) | | |
+| W00 | Design clause, the term | AC11 | | | |
 | W01 | `prosiform` holds presets alone | AC1 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
 | W02 | `group-depth` as a list of pairs, `group` refused | AC12, AC13 | W01 | | |
 | W03 | `exclude` and `mock` entry shapes | AC14, AC15 | W02 | | |
