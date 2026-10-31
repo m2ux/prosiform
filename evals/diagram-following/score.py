@@ -75,6 +75,7 @@ __all__ = [
     "ACTIONS",
     "SUBAGENTS",
     "TRACE",
+    "TRACES",
     "Failure",
     "Start",
     "Verdict",
@@ -86,6 +87,13 @@ __all__ = [
 from workflow import FEWER, START, Dispatch, Scenario, Workflow
 
 TRACE = "trace.log"
+"""The path a session writes its own states to."""
+TRACES = "trace*.log"
+"""Every trace a workspace holds: the session's, and a sub-agent's beside it.
+
+The instruction names a sub-agent's own path `trace-<section>.log`, so a
+finished workspace carries both and the run keeps them together.
+"""
 ACTIONS = "actions"
 SUBAGENTS = "subagents.json"
 TRANSCRIPT = "transcript.jsonl"

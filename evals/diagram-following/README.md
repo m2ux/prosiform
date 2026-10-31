@@ -150,7 +150,7 @@ The run's guard reads each session's reported tokens when it settles: a session 
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, trace, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>

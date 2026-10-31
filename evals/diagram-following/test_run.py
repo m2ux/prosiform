@@ -29,6 +29,7 @@ from run import (
     LINKED_TREE,
     PROSE_BUNDLE,
     TRANSCRIPT,
+    TREE,
     Ledger,
     Session,
     bundles_of,
@@ -43,6 +44,7 @@ from score import (
     ACTIONS,
     SUBAGENTS,
     TRACE,
+    TRACES,
     Failure,
     Start,
     read_starts,
@@ -123,6 +125,30 @@ def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
     workflow = CORPUS["dispatch-set"]
     scenario = workflow.scenarios[0]
     assert observable(workflow, scenario, COMPILED_SET, HARNESSES["cursor"]) is True
+
+
+def test_the_cursor_harness_completes_a_matrix_over_the_default_forms() -> None:
+    """AC15: every default form reaches the matrix the Cursor harness runs.
+
+    The runner names its forms by what a session receives, and the corpus
+    names its own by what they hold, so a form the run offers in the default
+    list is looked up as the corpus form it carries. One that is not resolves
+    to no sections at all, and the matrix stops before a single session.
+    """
+    corpus = list(CORPUS.values())
+    forms = list(FORMS)
+    sessions = matrix(corpus, ["m"], forms, 1, HARNESSES["cursor"])
+    reached = {(session.workflow, session.form) for session in sessions}
+    offered = {
+        (workflow.name, form)
+        for workflow in corpus
+        for form in forms
+        if FORMS[form] in workflow.forms
+    }
+    assert reached <= offered
+    assert {("linear", BUNDLE), ("linear", TREE)} <= reached
+    assert {("branching", PROSE_BUNDLE), ("branching", LINKED_TREE)} <= reached
+    assert {("dispatch-chain", COMPILED_SET)}.isdisjoint(reached)
 
 
 @pytest.fixture
@@ -965,26 +991,50 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
 def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC6: a dispatched section's own path survives the workspace.
+    """AC16: a dispatched section's own path survives the workspace.
 
     A sub-agent following a section that holds a chart of its own records its
-    states to `trace-<section>.log`. The session's path is kept beside it, so
-    the two are read as one dispatch rather than as a nested chart's states
-    mistaken for the outer path.
+    states to `trace-<section>.log`, the name the instruction states. The
+    session's path is kept beside it, so the two are read as one dispatch
+    rather than as a nested chart's states mistaken for the outer path.
     """
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     (workspace / TRACE).write_text("Scope\nGather\n")
-    (workspace / f"{TRACE}-review.log").write_text("read\nrank\n")
+    stated = "trace-review.log"
+    (workspace / stated).write_text("read\nrank\n")
     records = tmp_path / "records"
     records.mkdir()
     keep(workspace, records)
-    assert sorted(path.name for path in records.glob(f"{TRACE}*")) == [
-        TRACE,
-        f"{TRACE}-review.log",
-    ]
+    assert sorted(path.name for path in records.glob(TRACES)) == [stated, TRACE]
     assert (records / TRACE).read_text() == "Scope\nGather\n"
-    assert (records / f"{TRACE}-review.log").read_text() == "read\nrank\n"
+    assert (records / stated).read_text() == "read\nrank\n"
+
+
+def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC16: a scored run over a dispatching scenario keeps both paths.
+
+    The stub writes each dispatched sub-agent's own states under the name the
+    instruction gives it, so a run that kept only the dispatching session's
+    path would record a dispatch whose sub-agent trace it discarded.
+    """
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-tokens", "2000"),
+    )
+    [record] = records(tmp_path)
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    [scenario] = CORPUS["dispatch-chain"].scenarios
+    stated = sorted(entry.section.partition("#")[2] for entry in scenario.trace)
+    assert record["verdict"]["passed"] is True
+    assert sorted(path.name for path in directory.glob(TRACES)) == sorted(
+        [TRACE, *(f"trace-{section}.log" for section in stated)]
+    )
+    assert (directory / TRACE).read_text().split() == list(scenario.path)
 
 
 def test_a_run_starting_no_sub_agent_is_undispatched(
