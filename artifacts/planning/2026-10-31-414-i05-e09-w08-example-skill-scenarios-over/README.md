@@ -13,6 +13,9 @@ work item names, and the plan changes the session applied and held.
 
 | Artifact | What it holds |
 | --- | --- |
+| [W08 work item](w08.md) | The two example-skill scenarios, their stand-ins and how each expectation is held |
+| [Validation](validation.md) | The checks T1–T13 at the revision they ran, with their observations |
+| [Change list](change-list.md) | Every plan change this session applied, and every one it held |
 
 ## Links
 
