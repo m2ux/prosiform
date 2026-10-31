@@ -122,7 +122,7 @@ bundle        the section still states 'The evidence required ...'
 
 **Ran:** `checks/tests` through `pytest --config-file src/pyproject.toml --rootdir . checks/tests`, which is one half of `make harness`.
 
-**Observed:** `832 passed`, including the 32 new cases in `checks/tests/test_mock_scenarios.py`. Each supplies input the reading would take wrongly: a section holding headings deeper than itself, a heading the document repeats, a stand-in emitted as a document of its own rather than as a member, a section carrying the artifact's prose beside the stand-in's, a stand-in whose blocks the mode never reaches, a document whose front matter is not content, and a tree a run wrote into.
+**Observed:** `832 passed` on the pre-rebase head and `835 passed` after the rebase — the three W03 fixtures' cases arrived with the base — including the 32 new cases in `checks/tests/test_mock_scenarios.py`. Each supplies input the reading would take wrongly: a section holding headings deeper than itself, a heading the document repeats, a stand-in emitted as a document of its own rather than as a member, a section carrying the artifact's prose beside the stand-in's, a stand-in whose blocks the mode never reaches, a document whose front matter is not content, and a tree a run wrote into.
 
 The other half of that target is `evals/diagram-following`, which fails 62 cases in this session because it writes a temporary directory beside its output path and the sandbox denies it; the brief records it as passing in CI. None of its cases reads anything this row changed.
 
@@ -130,7 +130,7 @@ The other half of that target is `evals/diagram-following`, which fails 62 cases
 
 **Ran:** `ruff check`, `ruff format --check` and `mypy --config-file src/pyproject.toml` over `checks/` and `src/prosiform`, which is `make lint`, `make format-check` and `make typecheck`. `make lock-check` ran as `uv lock --check`. The `make` targets themselves were not invoked, because the locked environment cannot resolve inside the sandbox; each target's own command was run directly against the worktree's `src/.venv`, which is the same environment `uv sync --frozen` produces.
 
-**Observed:** `All checks passed!`, `53 files already formatted`, `Success: no issues found in 37 source files`, and `Resolved 24 packages`.
+**Observed:** `All checks passed!`, `53 files already formatted`, `Success: no issues found in 37 source files` before the rebase and `in 52 source files` after it, and `Resolved 24 packages`.
 
 ## T10 — `make corpus`, `make conformance`, `make invocation`, `make independence`
 
@@ -139,11 +139,13 @@ The other half of that target is `evals/diagram-following`, which fails 62 cases
 **Observed:** exit `0` throughout.
 
 ```text
-corpus check: 358 fixture(s), 358 pass, 0 fail, 0 awaited, 0 unexpected pass
+corpus check: 361 fixture(s), 361 pass, 0 fail, 0 awaited, 0 unexpected pass
 conformance report: 305 clause(s) the design states, 55 covered by no fixture, 0 declaration(s) naming no clause; 37 declared name(s) reached, 0 unfixturable, 0 declared code(s) the build reports nowhere, 0 reported code(s) the contract declares nowhere, 16 clause(s) no run states, 3 section(s) stating no behaviour, 3 installation claim(s) no run observes
 invocation check: 30 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
 independence check: every shaped term of every fixture declaration and every report entry is one the contract names
 ```
+
+This row lands no corpus fixture, so the clause counts are unchanged from the base. The 361 fixtures are the base's own — W03, W06 and W07 merged while this row was built, and each brought fixtures of its own.
 
 This row lands no corpus fixture, so the clause and fixture counts are unchanged from the base at `8734a799`. The design clause the scenarios bind is stated in their own module rather than declared in a manifest, which is what a check rather than a fixture means here: `make conformance` reads manifests, and a check contributes no declaration to that report.
 
@@ -170,8 +172,33 @@ link check: every reference in 2 document(s) resolved
 
 **Observed:** every test passing. `tests/test_handoff_round_trip.py` resolves the command by name from `PATH` — it names no configuration and no environment variable, by design — so it reads the environment's own entry point rather than a path written into the suite. Run without that directory on `PATH` its six cases fail with `E_PUBLICATION_FAILED`, which is the suite naming a missing `pf` rather than a defect in the build; `make test` runs it from `cd src && uv run --frozen pytest`, where the locked environment supplies the name.
 
+The count is `1355 passed` on the rebased head.
+
 **One sandbox limitation, not a change.** `tests/test_linked_bootstrap.py` runs `uv build --wheel` and needs network, and the diagram eval writes a temporary directory beside its output path, which the sandboxed shell denies; the brief records both as passing in CI and failing only here.
 
 ## T13 — Delivery
 
-Delivery is recorded in `change-list.md` and reported to the user: the pull request number, its base and merge commit, row `W08` on #414 and the two criterion ticks.
+**Ran:** `gh api` against the pull request, the epic base and #414, and the planner's `sync.py`.
+
+**Observed:** [#440](https://github.com/m2ux/prosiform/pull/440) raised against `i05/e09/main`, its `Checks` run reported `success` on the branch head `f3146972`, and it merged at `6867cf603f771f1b41f3a34f48b34e2d3205e50b`.
+
+The base had moved while this row was built — W06 merged at `846f8f5a` — so the branch was rebased onto `origin/i05/e09/main` before its pull request was raised, and every check in T1 to T12 was re-run on the rebased head. `src/prosiform/` is untouched by this row, so no conflict arose.
+
+`sync.py` with `--link W08=440 --tick AC21,AC22` reports:
+
+```text
+#414 epic (open)
+  linked: W08 → #440
+  ready to verify: AC21 (W08)
+  ready to verify: AC22 (W08)
+  ticked: AC21
+  ticked: AC22
+  done: W08
+  closable: no (undelivered W05, W10, unticked AC4, AC24)
+```
+
+The body it wrote was published to #414 and read back: row `W08` links #440 with `✓`, and `AC21` and `AC22` each carry `[x]`. The epic stays open for W05 and W10, which are other rows.
+
+The run also reports findings this row neither caused nor changes: `unmatched` for #427, #429 and #430, which are W00's and W01's corrections rather than any row's delivery; `in flight` for #444, a review pull request naming the epic; and `disagreement: #428 W01: AC15 covered and named by no test`, which is W01's pull request body. None is this row's to rewrite.
+
+**The Development link to #414 is missing.** `addCloseIssueReferences` refuses with `UNPROCESSABLE: Issue exceeds manual reference limit`: #414 already holds ten linked pull requests, which is GitHub's ceiling for a manually added reference, so #440 cannot be linked the same way. The row link on #414 and the cross-reference the published body carries are what record the delivery. This is reported rather than worked around: the alternative — unlinking another row's pull request to make room — would remove a delivery record this row does not own.
