@@ -35,6 +35,7 @@ Each decision was taken with the user before the initiative was raised, or on re
 | D17 | **No task shares a pull request.** Each task repairs one scope area and carries its own failing case. | all |
 | D18 | **Raise priority.** The epic holds every blocker and a silent data-loss path, so it outranks work that leaves what a user sees unchanged. | all |
 | D19 | **Move the check-and-design findings.** A finding whose fix no run of the tool shows belongs to the epic that holds that material by its own boundary. | 10, 12, 13, 14, 15, 16, 33, 34, 52, 55, 56, 65, 71, 76, 77 |
+| D20 | **Defer the minors.** A minor is recorded and addressed later, so no epic is raised for one before the blockers and majors it would sit beside are delivered. | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 |
 
 ## Task Disposition
 
@@ -64,7 +65,7 @@ Findings 1 and 8 describe one defect from two directions and share one criterion
 | --- | --- | --- |
 | [I01:E03](https://github.com/m2ux/prosiform/issues/187) | 10, 12, 13, 14, 15, 16, 33, 34, 52, 55, 56, 65, 71, 76, 77 | A rule the design or a check states imprecisely, whose fix no run of the tool shows, which is that epic's stated boundary |
 | [I06:E00](https://github.com/m2ux/prosiform/issues/406) | 32 | The example's command lines, named in that epic's own Problem |
-| Recorded only | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 | Minors whose instrument no epic currently holds |
+| Recorded only | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 | Minors deferred by decision: they are addressed later, not by this initiative |
 
 ## Joins
 
