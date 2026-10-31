@@ -89,6 +89,21 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E17:W02 and E17:W04 | each ceiling gaining a name, and the table row and the examples. The two share no file and neither reads the other's work. |
 | E17:W03 and E17:W04 | the sixteen fixtures rewritten, and the table row and the examples. The corpus is what proves the ceilings still bound while the page states their names. |
 
+### Preset-Only Substitution
+
+| Pair | Two pull requests because |
+| --- | --- |
+| E18:W01 and E18:W02 | the option's removal and the preset read, and a pair resolving from its declaring file. The two share no file and neither reads the other's work. |
+| E18:W01 and E18:W03 | the option's removal and the preset read, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
+| E18:W01 and E18:W04 | the option's removal and the preset read, and E09's option criterion. The two share no file and neither reads the other's work. |
+| E18:W01 and E18:W05 | the option's removal and the preset read, and the table and the source page. The two share no file and neither reads the other's work. |
+| E18:W02 and E18:W03 | a pair resolving from its declaring file, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
+| E18:W02 and E18:W05 | a pair resolving from its declaring file, and the table and the source page. The two share no file and neither reads the other's work. |
+| E18:W03 and E18:W04 | the four fixtures rewritten, and E09's option criterion. The two share no file and neither reads the other's work. |
+| E18:W02 and E18:W04 | a pair resolving from its declaring file, and E09's option criterion. The superseded criterion cites a row, not a path basis. |
+| E18:W03 and E18:W05 | the four fixtures rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
+| E18:W04 and E18:W05 | E09's option criterion, and the table and the source page. Both amend a record of a channel that is gone. |
+
 ## Across epics
 
 | Edge | Consumes |
