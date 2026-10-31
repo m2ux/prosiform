@@ -9,7 +9,11 @@
 | Pull request | [#468](https://github.com/m2ux/prosiform/pull/468) |
 | Base | `i07/e00/main` |
 | Branch | `i07/e00/w07-make-the-cursor-harness` |
+| State | merged |
+| Merge commit | `d99025c152a77d7f3116277f5c58738f0c2c31f4` |
 | Epic | [#443](https://github.com/m2ux/prosiform/issues/443) |
+
+Merged into `i07/e00/main`, never `main`. The epic's `W07` row carries the pull request and its Done cell is ticked, and both of its criteria are ticked.
 
 ## Commits
 
