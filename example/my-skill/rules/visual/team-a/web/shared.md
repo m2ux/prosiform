@@ -1,5 +1,4 @@
 ---
-prosiform:
-  root: "../../../.."
+prosiform: {}
 ---
 Team A web guidance.

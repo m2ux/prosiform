@@ -1,5 +1,4 @@
 ---
-prosiform:
-  root: "."
+prosiform: {}
 ---
 Start with one small change.

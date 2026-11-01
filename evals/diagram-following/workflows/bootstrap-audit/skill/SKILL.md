@@ -1,8 +1,7 @@
 ---
 name: audit
 description: Audit a change, gathering evidence in parallel and reporting a verdict.
-prosiform:
-  root: "."
+prosiform: {}
 ---
 # Audit
 

@@ -1,6 +1,5 @@
 ---
-prosiform:
-  root: ".."
+prosiform: {}
 ---
 # Hoist Mode
 

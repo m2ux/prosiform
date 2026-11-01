@@ -1,6 +1,5 @@
 ---
-prosiform:
-  root: "../.."
+prosiform: {}
 ---
 Read [Blue](blue.md) and [Red](red.md).
 

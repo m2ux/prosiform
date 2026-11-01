@@ -1,6 +1,5 @@
 ---
-prosiform:
-  root: "."
+prosiform: {}
 ---
 # Visual validation examples
 
