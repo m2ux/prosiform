@@ -1,0 +1,22 @@
+description = "A fragment-only link naming a heading its own document does not carry fails with E_TARGET_NOT_FOUND, naming the fragment and the document, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Fragment-only links",
+  "Link classification and resource handling — A target that resolves to nothing",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "#nowhere"
+resolved = "guide.md"
+source = "guide.md:6"
+chain = ["guide.md", "guide.md#nowhere"]

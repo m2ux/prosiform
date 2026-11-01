@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # The Standing Order
 
 An opening paragraph, above the first eligible heading.

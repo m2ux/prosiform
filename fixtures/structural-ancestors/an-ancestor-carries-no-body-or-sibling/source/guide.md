@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 ## Alpha
 
 Alpha body, which no selection reaches.

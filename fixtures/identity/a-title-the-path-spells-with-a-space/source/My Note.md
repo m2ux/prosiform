@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # My Note
 
 An opening paragraph, above the first eligible heading.

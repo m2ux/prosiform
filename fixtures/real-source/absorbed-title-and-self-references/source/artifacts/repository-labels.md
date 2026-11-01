@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Repository Labels
 
 The labels available for issue metadata in one repository.

@@ -1,0 +1,22 @@
+description = "A link naming a document the tree does not hold, whose text opens with the dispatch operator, fails with E_TARGET_NOT_FOUND at the link and publishes nothing, because an operator states that an agent compiles a target that cannot be read."
+
+clauses = [
+  "Link classification and resource handling — A target that resolves to nothing",
+  "Validation and failure contract — Publication",
+  "Validation and failure contract — Completeness, a failed dependency is not silently omitted",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "missing.md"
+source = "guide.md:6"
+chain = ["guide.md", "missing.md"]

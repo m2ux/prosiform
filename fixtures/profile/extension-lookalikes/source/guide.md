@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 A code span naming `[[page]]` is prose about a wiki link rather than one.

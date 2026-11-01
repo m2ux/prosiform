@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Article
 
 An opening paragraph, above the first heading the fixture measures.

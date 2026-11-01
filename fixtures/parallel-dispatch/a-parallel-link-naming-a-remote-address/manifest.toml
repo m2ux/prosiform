@@ -16,5 +16,5 @@ exit_status = 1
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 reference = "https://example.test/reviews.md"
-source = "guide.md:3"
+source = "guide.md:6"
 chain = ["guide.md", "https://example.test/reviews.md"]

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 An opening paragraph, above the first eligible heading.

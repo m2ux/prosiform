@@ -16,4 +16,4 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_RAW_HTML"
-source = "guide.md:3"
+source = "guide.md:6"

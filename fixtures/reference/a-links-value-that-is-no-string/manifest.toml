@@ -14,5 +14,5 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-source = "exchange.md:6"
+source = "exchange.md:9"
 chain = ["exchange.md"]

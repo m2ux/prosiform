@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Lifecycle
 
 An example of the click syntax, written in a fence holding no diagram:

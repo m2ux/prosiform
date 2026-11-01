@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 A preamble the selection leaves behind.

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Stand-in Guide
 
 Every step the stand-in states.

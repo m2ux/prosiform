@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Cite [the shared rules](C:/rules.md) by drive path, and the
