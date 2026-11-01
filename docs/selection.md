@@ -14,7 +14,7 @@ An entry naming one section takes that section and nothing above it, so a headin
 
 The run starts at the **entry references**, the arguments on the command line, and follows each dependency the selected content carries. It repeats until nothing new is reachable. The result is the **closure**: everything the bundle will contain.
 
-Fragment-only references resolve against their own source document wherever that source sits, including outside its own root. A link to a sibling section of the same document is an ordinary reference; it is not a self-reference unless it names the region it sits in.
+Fragment-only references resolve against their own source document wherever that source sits. A link to a sibling section of the same document is an ordinary reference; it is not a self-reference unless it names the region it sits in.
 
 A reference back to material the closure already holds resolves to that material's destination. It expands nothing twice.
 
