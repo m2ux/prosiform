@@ -1,0 +1,18 @@
+description = "A cited target larger than -B that declares nothing is probed rather than captured, so the link is emitted as authored and the run publishes."
+
+awaiting = "I08:E00:W03"
+
+clauses = [
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Resource limits — -B",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-B", "64", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
