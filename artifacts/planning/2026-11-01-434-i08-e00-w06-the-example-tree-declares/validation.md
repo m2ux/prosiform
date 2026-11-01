@@ -16,4 +16,4 @@ Evidence for each check the [work item](w06.md) names, run in the unit's worktre
 
 ## T4 Full check
 
-`make check` exits 0 at 591b42cb before opening.
+`make check` exits 0 at 591b42cb before opening; the epic base held no newer commit before merging, CI on 591b42cb passes, and #501 merged into `i08/e00/main` as a5a33116.
