@@ -4,14 +4,17 @@
 
 ## Executive Summary
 
-Reads whether a cited target declares without capturing it, so an oversized target that declares nothing is text and the run publishes.
+Reads whether a cited target declares without capturing it, so the classification that follows can leave an oversized target that declares nothing as text.
 
-This record holds its delivery of `AC6`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
+This record holds its delivery of `AC20`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02](w02.md) | The work item: the head read, the probe and the size distinction |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 
