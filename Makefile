@@ -54,6 +54,11 @@
 # mermaid-cli ships. mermaid-cli and the headless browser it drives are no
 # dependency of the build, so `make check` leaves it out.
 #
+# `make boundary` prints the boundary each work-planner example document
+# derives from its own links and fails on a link naming a path outside it. The
+# boundary is the build's own answer, so the check imports the build from the
+# locked environment and runs through it.
+#
 # `make authoring` reports where the work-planner example departs from the
 # authoring rules its guidelines state, by file and area, and fails while any
 # departure remains, so the rules the example now meets are held by the checks
@@ -71,9 +76,9 @@ HARNESS := claude
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring render examples mock-scenarios eval-diagrams
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring boundary render examples mock-scenarios eval-diagrams
 
-check: lock-check lint format-check typecheck test harness authoring corpus smoke layout tables links vocabulary invocation conformance independence steps mock-scenarios
+check: lock-check lint format-check typecheck test harness authoring boundary corpus smoke layout tables links vocabulary invocation conformance independence steps mock-scenarios
 
 test:
 	cd src && uv run --frozen pytest
@@ -128,6 +133,9 @@ mock-scenarios:
 
 authoring:
 	python3 checks/authoring.py
+
+boundary:
+	$(UV_RUN) python checks/boundary.py
 
 render:
 	python3 checks/render.py
