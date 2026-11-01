@@ -12,6 +12,7 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02](w02.md) | The work item: the README's bootstrap form, the check holding its form table to `run.FORMS`, and the tests. |
 
 ## Links
 
