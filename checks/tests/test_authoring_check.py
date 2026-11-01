@@ -2,9 +2,10 @@
 
 Each finding kind is one rule the work-planner guidelines state: Inputs and
 Outputs lines of contract links or `None`, no Commands section, a command in
-an unindented fenced block within a step, and file-relative links. A document
-meeting every rule reports nothing, and the size report names a file past
-either limit without making it a finding.
+an unindented fenced block within a step, file-relative links, and a
+`prosiform` declaration naming no root. A document meeting every rule reports
+nothing, and the size report names a file past either limit without making it
+a finding.
 """
 
 from pathlib import Path
@@ -15,8 +16,7 @@ import pytest
 
 PASSING = """\
 ---
-prosiform:
-  root: ".."
+prosiform: {}
 ---
 # Planning Record
 
@@ -82,9 +82,14 @@ def write(tmp_path: Path, name: str, text: str) -> Path:
 def findings(
     tmp_path: Path, text: str, name: str = "artifacts/record.md"
 ) -> list[authoring.Finding]:
-    path = write(tmp_path, name, text)
+    """Every finding but the declaration's, which its own tests observe."""
+    write(tmp_path, name, text)
     write(tmp_path, "artifacts/other.md", "# Other\n\n## Message\n")
-    return authoring.report(path, name, text)[0]
+    return [
+        finding
+        for finding in authoring.report(name, text)[0]
+        if finding.kind != authoring.DECLARATION
+    ]
 
 
 def line_of(text: str, needle: str, occurrence: int = 1) -> int:
@@ -97,8 +102,8 @@ def kinds(found: list[authoring.Finding]) -> list[tuple[str, int]]:
     return [(finding.kind, finding.line) for finding in found]
 
 
-def test_a_file_meeting_every_rule_reports_nothing(tmp_path: Path) -> None:
-    assert findings(tmp_path, PASSING) == []
+def test_a_file_meeting_every_rule_reports_nothing() -> None:
+    assert authoring.report("artifacts/record.md", PASSING)[0] == []
 
 
 def test_a_command_in_a_steps_fenced_block_is_no_finding(tmp_path: Path) -> None:
@@ -281,16 +286,42 @@ def test_an_absolute_link_is_a_finding(tmp_path: Path) -> None:
     assert "absolute path" in found[0].detail
 
 
-def test_a_link_written_from_the_declared_root_is_a_finding(
-    tmp_path: Path,
-) -> None:
-    write(tmp_path, "rules.md", "# Rules\n")
-    text = '---\nprosiform:\n  root: ".."\n---\n# Mode\n\nSee [Rules](rules.md).\n'
-    found = findings(tmp_path, text, "modes/plan-mode.md")
-    assert kinds(found) == [(authoring.FILE_RELATIVE, 7)]
-    assert "declared root" in found[0].detail
-    relative = text.replace("(rules.md)", "(../rules.md)")
-    assert findings(tmp_path, relative, "modes/plan-mode.md") == []
+def test_a_document_with_no_front_matter_is_a_declaration_finding() -> None:
+    found = authoring.declaration("modes/plan-mode.md", "# Mode\n")
+    assert kinds(found) == [(authoring.DECLARATION, 1)]
+
+
+def test_front_matter_without_prosiform_is_a_declaration_finding() -> None:
+    text = "---\nname: work-planner\n---\n# Mode\n"
+    found = authoring.declaration("SKILL.md", text)
+    assert kinds(found) == [(authoring.DECLARATION, 1)]
+    assert "declares no `prosiform`" in found[0].detail
+
+
+def test_an_empty_prosiform_block_beside_other_keys_declares() -> None:
+    text = "---\nname: work-planner\nprosiform: {}\n---\n# Mode\n"
+    assert authoring.declaration("SKILL.md", text) == []
+
+
+def test_a_declared_root_is_a_declaration_finding_at_its_line() -> None:
+    text = '---\nprosiform:\n  root: ".."\n  group: "artifacts"\n---\n# Epic\n'
+    found = authoring.declaration("artifacts/epic.md", text)
+    assert kinds(found) == [(authoring.DECLARATION, 3)]
+    assert "declares a root" in found[0].detail
+    flow = '---\nprosiform: {root: ".."}\n---\n# Epic\n'
+    assert kinds(authoring.declaration("artifacts/epic.md", flow)) == [
+        (authoring.DECLARATION, 2)
+    ]
+
+
+def test_a_root_key_outside_the_prosiform_block_is_no_finding() -> None:
+    text = "---\nprosiform:\n  group: x\n  group-depth: 1\nroot: y\n---\n# A\n"
+    assert authoring.declaration("artifacts/a.md", text) == []
+
+
+def test_a_link_resolving_from_the_file_is_no_finding() -> None:
+    text = "---\nprosiform: {}\n---\n# Mode\n\nSee [Rules](../rules.md).\n"
+    assert authoring.report("modes/plan-mode.md", text)[0] == []
 
 
 def test_a_repository_url_to_a_held_file_is_a_finding(tmp_path: Path) -> None:
@@ -323,15 +354,14 @@ def test_a_link_in_literal_content_is_no_finding(tmp_path: Path) -> None:
     assert findings(tmp_path, text, "modes/plan-mode.md") == []
 
 
-def test_the_size_report_names_a_file_past_either_limit(tmp_path: Path) -> None:
+def test_the_size_report_names_a_file_past_either_limit() -> None:
     operation = (
         "### Read Item {n}\n\nOne item.\n\n**Inputs:** None\n**Outputs:** None\n\n"
     )
-    many = "# Board\n\n## Operations\n\n" + "".join(
+    many = "---\nprosiform: {}\n---\n# Board\n\n## Operations\n\n" + "".join(
         operation.format(n=n) for n in range(9)
     )
-    path = write(tmp_path, "artifacts/board.md", many)
-    found, count = authoring.report(path, "artifacts/board.md", many)
+    found, count = authoring.report("artifacts/board.md", many)
     assert found == []
     assert count == 9
     assert authoring.oversized(len(many.encode()), count)

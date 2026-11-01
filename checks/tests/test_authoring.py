@@ -8,8 +8,7 @@ a derived filename writes each directory separator as an underscore.
 
 Worked commands are copied as written. Each names a file this repository
 holds, passes no retired root option, and leaves an output path as an
-output. Example sources that declare a root declare one relative to the
-file.
+output. Every example source declares `prosiform` and names no root.
 """
 
 import re
