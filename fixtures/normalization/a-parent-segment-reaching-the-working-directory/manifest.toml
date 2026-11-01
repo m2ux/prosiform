@@ -1,0 +1,15 @@
+description = "A parent segment that normalizes exactly onto the working directory is confined to it, so the entry bundles the document the working directory holds rather than being refused at the boundary."
+
+clauses = [
+  "Resolution sequence — sub/../guide.md#run",
+  "Resolution sequence — step 7",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["docs/../guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -1,4 +1,4 @@
-description = "A link whose text opens with the dispatch operator names a remote address, which no source root holds, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+description = "A link whose text opens with the dispatch operator names a remote address, which no local path holds, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
 
 clauses = [
   "Link classification and resource handling — An operator's target",

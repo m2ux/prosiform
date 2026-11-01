@@ -1,0 +1,16 @@
+description = "A local Markdown link naming a declaring document is resolved against the document carrying it, bundled and present: one naming a document carries the whole of it, one naming a section carries that section, and one resolving above the working directory carries nothing."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links",
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Compile before publishing — step 4",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

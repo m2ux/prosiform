@@ -1,0 +1,16 @@
+description = "A link naming a document above the writing document's directory that declares nothing is emitted as authored and its target is never read: the target sits inside the working directory and carries a construct the profile refuses in selected content, so the run publishing proves the declaration decided it and the target's position did not."
+
+clauses = [
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Resolution sequence — step 7",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["notes/guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/notes_guide.bundle.md"]
+diagnostics = []

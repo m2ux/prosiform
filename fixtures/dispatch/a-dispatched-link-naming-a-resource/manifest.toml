@@ -1,4 +1,4 @@
-description = "A link whose text opens with the dispatch operator names a resource under the allowed source root, which is no Markdown document, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+description = "A link whose text opens with the dispatch operator names a resource inside the working directory, which is no Markdown document, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
 
 clauses = [
   "Link classification and resource handling — An operator's target",
