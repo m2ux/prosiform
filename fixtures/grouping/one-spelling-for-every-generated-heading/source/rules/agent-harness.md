@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "harness-rules"
-    group-depth: 2
+    group-depth: [{harness-rules: 2}]
 ---
 The rules one harness reads.
 

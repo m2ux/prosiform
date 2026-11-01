@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "protocols"
-    group-depth: 1
+    group-depth: [{protocols: 1}]
 ---
 # Issue Delivery
 

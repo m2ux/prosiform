@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "parts"
-    group-depth: 3
+    group-depth: [{parts: 3}]
 ---
 # Two
 

@@ -1,4 +1,4 @@
-description = "A group declaration naming group-heading beside group and group-depth names a preset field the contract does not admit, so it fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
+description = "A group declaration naming group-heading beside group-depth names a preset field the contract does not admit, so it fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
 
 clauses = [
   "Presets — default always applies",

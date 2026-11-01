@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "guides"
-    group-depth: 2
+    group-depth: [{guides: 2}]
 ---
 What the second run recorded before its sections.
 

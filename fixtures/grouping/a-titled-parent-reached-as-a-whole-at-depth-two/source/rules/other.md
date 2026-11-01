@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "rules"
-    group-depth: 2
+    group-depth: [{rules: 2}]
 ---
 # Other
 

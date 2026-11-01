@@ -273,8 +273,7 @@ For example, the [epic](work-planner/artifacts/epic.md) begins with this declara
 ---
 prosiform:
   default:
-    group: "artifacts"
-    group-depth: 1
+    group-depth: [{artifacts: 1}]
 ---
 ```
 
