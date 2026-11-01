@@ -12,12 +12,14 @@ wrong reason fails where it fires.
 """
 
 import json
+import re
 import sys
 import time
 from pathlib import Path
 from typing import Any
 
 import pytest
+import workflow as source
 from harness import DONE, HARNESSES, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
@@ -42,6 +44,7 @@ from run import (
 )
 from score import (
     ACTIONS,
+    SUB_AGENT_TRACE,
     SUBAGENTS,
     TRACE,
     TRACES,
@@ -1057,15 +1060,74 @@ def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
     assert (records / stated).read_text() == "read\nrank\n"
 
 
-def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
-    tmp_path: Path, log: Path
-) -> None:
-    """AC16: a scored run over a dispatching scenario keeps both paths.
+def handed_prompts(directory: Path) -> list[str]:
+    """The prompt each `Task` call in a session's transcript gave its sub-agent."""
+    return [
+        block["input"]["prompt"]
+        for line in (directory / TRANSCRIPT).read_text().splitlines()
+        if (said := json.loads(line)).get("type") == "assistant"
+        for block in said["message"]["content"]
+        if isinstance(block, dict) and block.get("name") == "Task"
+    ]
 
-    The stub writes each dispatched sub-agent's own states under the name the
-    instruction gives it, so a run that kept only the dispatching session's
-    path would record a dispatch whose sub-agent trace it discarded.
+
+@pytest.mark.parametrize("form", DISPATCH_FORMS)
+def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
+    tmp_path: Path, log: Path, form: str
+) -> None:
+    """AC16, AC25: each sub-agent is told its trace's name, and the run keeps it.
+
+    The session's instruction tells it to hand each sub-agent the name
+    `keep()` reads, and the stub's sub-agent writes only the trace its prompt
+    names. So the kept traces are those the instruction caused, in the
+    compiled and the authored form alike, beside the session's own path.
     """
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", form, "--repetitions", "1"),
+        *("--budget-tokens", "2000"),
+    )
+    [record] = records(tmp_path)
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    [scenario] = CORPUS["dispatch-chain"].scenarios
+    stated = [
+        SUB_AGENT_TRACE.format(section=entry.section.partition("#")[2])
+        for entry in scenario.trace
+    ]
+    assert record["verdict"]["passed"] is True
+    prompts = handed_prompts(directory)
+    assert len(prompts) == len(stated)
+    assert all(name in prompt for name, prompt in zip(stated, prompts, strict=True))
+    assert sorted(path.name for path in directory.glob(TRACES)) == sorted(
+        [TRACE, *stated]
+    )
+    assert (directory / TRACE).read_text().split() == list(scenario.path)
+
+
+def test_a_sub_agent_untold_its_trace_name_keeps_none(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC25: the sub-agent trace exists only because the instruction names it.
+
+    An instruction without the sentence naming the sub-agent trace leaves the
+    session nothing to hand on, so the stub's sub-agents are told no name and
+    the run keeps the session's path alone.
+    """
+    text = source.INSTRUCTION.read_text()
+    untold = tmp_path / "instruction.md"
+    untold.write_text(
+        re.sub(
+            r"- When a state dispatches a sub-agent.*?\n(?=- )",
+            "",
+            text,
+            flags=re.DOTALL,
+        )
+    )
+    stated = SUB_AGENT_TRACE.format(section="<section>")
+    assert stated in text
+    assert stated not in untold.read_text()
+    monkeypatch.setattr(source, "INSTRUCTION", untold)
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-chain"),
@@ -1074,13 +1136,8 @@ def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
     )
     [record] = records(tmp_path)
     directory = session_of(record).directory(tmp_path / "results" / "test")
-    [scenario] = CORPUS["dispatch-chain"].scenarios
-    stated = sorted(entry.section.partition("#")[2] for entry in scenario.trace)
-    assert record["verdict"]["passed"] is True
-    assert sorted(path.name for path in directory.glob(TRACES)) == sorted(
-        [TRACE, *(f"trace-{section}.log" for section in stated)]
-    )
-    assert (directory / TRACE).read_text().split() == list(scenario.path)
+    assert all("trace-" not in prompt for prompt in handed_prompts(directory))
+    assert [path.name for path in directory.glob(TRACES)] == [TRACE]
 
 
 def test_a_run_starting_no_sub_agent_is_undispatched(
