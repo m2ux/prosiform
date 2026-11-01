@@ -12,6 +12,7 @@ This record holds its delivery of `AC17, AC18`: the work item, the validation ev
 
 | Artifact | What it holds |
 | --- | --- |
+| [W08 work item](w08.md) | The plan for reading an opencode sub-agent's return and summing a session's steps |
 
 ## Links
 
