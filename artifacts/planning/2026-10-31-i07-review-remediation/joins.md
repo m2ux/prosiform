@@ -11,7 +11,6 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W01 E00:W08 — separate components: Makefile; evals/diagram-following/harness
 - E00:W01 E00:W09 — separate components: Makefile; evals/diagram-following/scorer
 - E00:W01 E00:W10 — separate components: Makefile; fixtures
-- E00:W01 E00:W11 — separate components: Makefile; evals/diagram-following/baseline.json
 - E00:W01 E00:W16 — separate components: Makefile; evals/diagram-following/instruction.md
 - E00:W01 E00:W17 — separate components: Makefile; fixtures
 - E00:W01 E00:W18 — separate components: Makefile; fixtures/README.md
@@ -20,7 +19,6 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W02 E00:W08 — separate components: src/prosiform/bundle.py; evals/diagram-following/harness
 - E00:W02 E00:W09 — separate components: src/prosiform/bundle.py; evals/diagram-following/scorer
 - E00:W02 E00:W10 — separate components: src/prosiform/bundle.py; fixtures
-- E00:W02 E00:W11 — separate components: src/prosiform/bundle.py; evals/diagram-following/baseline.json
 - E00:W02 E00:W16 — separate components: src/prosiform/bundle.py; evals/diagram-following/instruction.md
 - E00:W02 E00:W18 — separate components: src/prosiform/bundle.py; fixtures/README.md
 - E00:W03 E00:W04 — separate components: src/prosiform/diagram.py; src/prosiform/heading.py
@@ -30,7 +28,6 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W03 E00:W08 — separate components: src/prosiform/diagram.py; evals/diagram-following/harness
 - E00:W03 E00:W09 — separate components: src/prosiform/diagram.py; evals/diagram-following/scorer
 - E00:W03 E00:W10 — separate components: src/prosiform/diagram.py; fixtures
-- E00:W03 E00:W11 — separate components: src/prosiform/diagram.py; evals/diagram-following/baseline.json
 - E00:W03 E00:W16 — separate components: src/prosiform/diagram.py; evals/diagram-following/instruction.md
 - E00:W03 E00:W17 — separate components: src/prosiform/diagram.py; fixtures
 - E00:W03 E00:W18 — separate components: src/prosiform/diagram.py; fixtures/README.md
@@ -39,7 +36,6 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W04 E00:W08 — separate components: src/prosiform/heading.py; evals/diagram-following/harness
 - E00:W04 E00:W09 — separate components: src/prosiform/heading.py; evals/diagram-following/scorer
 - E00:W04 E00:W10 — separate components: src/prosiform/heading.py; fixtures
-- E00:W04 E00:W11 — separate components: src/prosiform/heading.py; evals/diagram-following/baseline.json
 - E00:W04 E00:W16 — separate components: src/prosiform/heading.py; evals/diagram-following/instruction.md
 - E00:W04 E00:W17 — separate components: src/prosiform/heading.py; fixtures
 - E00:W04 E00:W18 — separate components: src/prosiform/heading.py; fixtures/README.md
@@ -48,7 +44,6 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W05 E00:W08 — separate components: src/prosiform/heading.py; evals/diagram-following/harness
 - E00:W05 E00:W09 — separate components: src/prosiform/heading.py; evals/diagram-following/scorer
 - E00:W05 E00:W10 — separate components: src/prosiform/heading.py; fixtures
-- E00:W05 E00:W11 — separate components: src/prosiform/heading.py; evals/diagram-following/baseline.json
 - E00:W05 E00:W16 — separate components: src/prosiform/heading.py; evals/diagram-following/instruction.md
 - E00:W05 E00:W17 — separate components: src/prosiform/heading.py; fixtures
 - E00:W05 E00:W18 — separate components: src/prosiform/heading.py; fixtures/README.md
@@ -56,7 +51,6 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W06 E00:W08 — separate components: src/prosiform/limits.py; evals/diagram-following/harness
 - E00:W06 E00:W09 — separate components: src/prosiform/limits.py; evals/diagram-following/scorer
 - E00:W06 E00:W10 — separate components: src/prosiform/limits.py; fixtures
-- E00:W06 E00:W11 — separate components: src/prosiform/limits.py; evals/diagram-following/baseline.json
 - E00:W06 E00:W16 — separate components: src/prosiform/limits.py; evals/diagram-following/instruction.md
 - E00:W06 E00:W17 — separate components: src/prosiform/limits.py; fixtures
 - E00:W07 E00:W17 — separate components: evals/diagram-following/harness; fixtures
@@ -73,8 +67,5 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W10 E00:W16 — separate components: fixtures; evals/diagram-following/instruction.md
 - E00:W10 E00:W17 — one component, separate findings landing in order: fixtures; fixtures
 - E00:W10 E00:W18 — separate components: fixtures; fixtures/README.md
-- E00:W11 E00:W16 — separate components: evals/diagram-following/baseline.json; evals/diagram-following/instruction.md
-- E00:W11 E00:W17 — separate components: evals/diagram-following/baseline.json; fixtures
-- E00:W11 E00:W18 — separate components: evals/diagram-following/baseline.json; fixtures/README.md
 - E00:W16 E00:W17 — separate components: evals/diagram-following/instruction.md; fixtures
 - E00:W16 E00:W18 — separate components: evals/diagram-following/instruction.md; fixtures/README.md
