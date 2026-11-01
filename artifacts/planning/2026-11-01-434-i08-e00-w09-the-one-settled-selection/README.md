@@ -12,6 +12,8 @@ This record holds its delivery of `AC16`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W09](w09.md) | The work item: the fixture that holds every reader to the settled selection |
+| [Validation](validation.md) | The evidence for each check the work item names, with the reader mutations the fixture catches |
 
 ## Links
 
