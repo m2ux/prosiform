@@ -1,6 +1,6 @@
 # Validation
 
-Evidence for each check the [work item](w04.md) names, run in the unit's worktree with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`.
+Evidence for each check the [work item](w04.md) names, run in the unit's worktree at c26287ed with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`.
 
 ## T1 unit tests
 
@@ -18,4 +18,4 @@ Evidence for each check the [work item](w04.md) names, run in the unit's worktre
 
 ## T3 full check
 
-`make check` exits 0 before opening. CI and the pre-merge run are recorded on the pull request.
+`make check` exits 0 before opening, and the epic base held no newer commit before merging; CI on c26287ed passes.
