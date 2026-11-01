@@ -17,7 +17,7 @@ The plan changes this session applied, the ones it held, and the technical debt 
 | Six expected bundles regenerated, one fixture rewritten, four fixtures added | Test | Each moved bundle moves by generated headings, their destinations or the wrapper alone; `one-spelling-for-every-generated-heading` claimed hyphenated generated headings its sources never produced | `fixtures/grouping`, `fixtures/mock` |
 | The design states the convention, the wordless refusal, the overview condition and the parent destination | Contract | The design is the contract `make conformance` and `make vocabulary` read; leaving it stating the replaced rules would be a stale claim | `artifacts/planning/2026-10-17-prosiform-v1/design.md` on `engineering` |
 
-No task was created, closed or renumbered and no criterion changed. Epic delivery was recorded on [#443](https://github.com/m2ux/prosiform/issues/443): rows W04 and W05 link [#488](https://github.com/m2ux/prosiform/pull/488).
+No task was created, closed or renumbered and no criterion changed. Epic delivery was recorded on [#443](https://github.com/m2ux/prosiform/issues/443): rows W04 and W05 link [#488](https://github.com/m2ux/prosiform/pull/488) with Done ticked, and AC8 to AC12 are ticked. The review pull request [#473](https://github.com/m2ux/prosiform/pull/473) cites #488 and states its changes.
 
 ## Held
 
