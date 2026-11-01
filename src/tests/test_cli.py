@@ -651,9 +651,9 @@ def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
 def conversion(group: str, depth: int) -> str:
     """One source's complete conversion metadata."""
     return (
-        "---\nprosiform:\n  group: "
+        "---\nprosiform:\n  default:\n    group: "
         + json.dumps(group)
-        + "\n  group-depth: "
+        + "\n    group-depth: "
         + str(depth)
         + "\n---\n"
     )
@@ -1075,7 +1075,7 @@ def test_groups_are_ordered_by_first_link(root: Path) -> None:
 
 
 def test_members_are_ordered_by_first_link(root: Path) -> None:
-    member = "---\nprosiform: {group: notes, group-depth: 2}\n---\n"
+    member = "---\nprosiform: {default: {group: notes, group-depth: 2}}\n---\n"
     written(
         root,
         "guide.md",
@@ -1226,12 +1226,12 @@ def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
             "reader tells apart only by where each stands",
             "code": COINCIDENT_HEADING,
             "remedy": "rename a member so its path distinguishes it in the group",
-            "location": {"file": "notes/note.md", "line": 3, "column": 10},
+            "location": {"file": "notes/note.md", "line": 4, "column": 12},
             "related": [
                 {
                     "file": "notes/note.markdown",
-                    "line": 3,
-                    "column": 10,
+                    "line": 4,
+                    "column": 12,
                     "message": "member heading 'Note'",
                 }
             ],
@@ -2111,7 +2111,7 @@ def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> No
 
 def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     """A member's title the subsection absorbs places no sub-section either."""
-    front = "---\nprosiform:\n  group: Merge\n  group-depth: 2\n---\n\n"
+    front = "---\nprosiform:\n  default:\n    group: Merge\n    group-depth: 2\n---\n\n"
     member = "note-\u21c9-plan.md"
     written(
         root,
@@ -2125,7 +2125,7 @@ def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["source"] == f"{member}:7"
+    assert diagnostic["source"] == f"{member}:8"
 
 
 def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> None:

@@ -965,17 +965,17 @@ def group_tree(tmp_path: Path) -> Path:
     (tmp_path / "out").mkdir()
     members = {
         "guide.md": (
-            "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+            "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 2\n---\n"
             "The guide preamble, linking [the notes](notes.md) and "
             "[the rules](rules.md).\n\n## Scope\n\nThe guide's scope.\n"
         ),
         "notes.md": (
-            "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+            "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 2\n---\n"
             "The notes preamble.\n\n## Scope\n\nThe notes' scope.\n"
         ),
         "rules.md": "# Rules\n\nEvery rule the tree under test holds.\n",
         "stand-in.md": (
-            "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+            "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 2\n---\n"
             "The stand-in preamble.\n\n## Scope\n\nThe stand-in's scope.\n"
         ),
     }
@@ -1013,7 +1013,7 @@ def test_the_group_a_substitute_declares_is_the_one_the_bundle_merges(
     """The authored target's own group declaration contributes nothing."""
     tree = group_tree(tmp_path)
     (tree / "rules.md").write_text(
-        "---\nprosiform:\n  group: authored\n  group-depth: 2\n---\n"
+        "---\nprosiform:\n  default:\n    group: authored\n    group-depth: 2\n---\n"
         "# Rules\n\nEvery rule the tree under test holds.\n"
     )
     status, published, _said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
@@ -1028,7 +1028,7 @@ def test_a_group_depth_conflict_names_the_substitutes_own_declaration(
     """The declaration that disagrees is the substitute's, at its own position."""
     tree = group_tree(tmp_path)
     (tree / "stand-in.md").write_text(
-        "---\nprosiform:\n  group: rules\n  group-depth: 3\n---\n"
+        "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 3\n---\n"
         "# Stand-in\n\nThe stand-in preamble.\n"
     )
     status, _published, said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
@@ -1041,7 +1041,7 @@ def test_a_substitutes_metadata_failure_names_the_substitute(tmp_path: Path) -> 
     """The substitute's own declaration is the one whose field is unpaired."""
     tree = group_tree(tmp_path)
     (tree / "stand-in.md").write_text(
-        "---\nprosiform:\n  group: rules\n---\n# Stand-in\n\nStand-in.\n"
+        "---\nprosiform:\n  default:\n    group: rules\n---\n# Stand-in\n\nStand-in.\n"
     )
     status, _published, said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
     assert status == 1
@@ -1056,7 +1056,7 @@ def test_a_substitute_reached_by_two_routes_joins_the_group_once(
     """One source is one capture, so one membership, however many links name it."""
     tree = group_tree(tmp_path)
     (tree / "notes.md").write_text(
-        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 2\n---\n"
         "The notes preamble, linking [the rules](rules.md).\n\n"
         "## Scope\n\nThe notes' scope.\n"
     )
@@ -1083,13 +1083,13 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     tree.mkdir()
     above.mkdir()
     (tree / "guide.md").write_text(
-        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 2\n---\n"
         "The guide preamble, linking [the rules](rules.md).\n\n"
         "## Scope\n\nThe guide's scope.\n"
     )
     (tree / "rules.md").write_text("# Rules\n\nEvery rule.\n")
     (above / "entry.md").write_text(
-        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "---\nprosiform:\n  default:\n    group: rules\n    group-depth: 2\n---\n"
         "The stand-in preamble, linking [its detail](detail.md).\n\n"
         "## Scope\n\nThe stand-in's scope.\n"
     )

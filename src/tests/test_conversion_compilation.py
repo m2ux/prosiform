@@ -109,15 +109,15 @@ def test_conflicting_depths_are_stable_and_atomic(
     if form == "json":
         diagnostic = forward.diagnostics()[0]
         assert diagnostic["code"] == "E_GROUP_DEPTH_CONFLICT"
-        assert diagnostic["location"] == {"file": "a.md", "line": 4, "column": 16}
+        assert diagnostic["location"] == {"file": "a.md", "line": 5, "column": 18}
         assert diagnostic["related"][0] == {
             "file": "b.md",
-            "line": 4,
-            "column": 16,
-            "message": "prosiform.group-depth for group 'shared' is 3",
+            "line": 5,
+            "column": 18,
+            "message": "prosiform.default.group-depth for group 'shared' is 3",
         }
     else:
-        assert "a.md:4:16" in forward.stderr and "b.md:4:16" in forward.stderr
+        assert "a.md:5:18" in forward.stderr and "b.md:5:18" in forward.stderr
 
 
 @pytest.mark.parametrize(

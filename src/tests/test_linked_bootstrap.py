@@ -66,11 +66,12 @@ def run_bundle(folder: Path, name: str) -> Path:
 
 
 def document(body: str, *, group: str | None = None, depth: Any = None) -> str:
-    """A document with the declared top-level settings and its original body."""
+    """A document with the declared default preset and its original body."""
     fields = []
     if group is not None:
-        fields.append("  group: " + json.dumps(group))
-        fields.append("  group-depth: " + json.dumps(depth))
+        fields.append("  default:")
+        fields.append("    group: " + json.dumps(group))
+        fields.append("    group-depth: " + json.dumps(depth))
     if not fields:
         return body
     return "---\nprosiform:\n" + "\n".join(fields) + "\n---\n" + body

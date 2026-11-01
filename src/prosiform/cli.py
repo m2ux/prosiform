@@ -1780,16 +1780,16 @@ def group_depths(
     """Consistent depths for named groups, ordered by source path."""
     members: dict[str, list[str]] = {}
     for path in sorted(selected):
-        name = read[path].conversion.group
+        name = read[path].conversion.default.group
         if name is not None:
             members.setdefault(name, []).append(path)
     depths: dict[str, int] = {}
     for name in sorted(members):
-        first = read[members[name][0]].conversion
+        first = read[members[name][0]].conversion.default
         assert first.depth is not None and first.depth_location is not None
         depths[name] = first.depth
         for path in members[name][1:]:
-            current = read[path].conversion
+            current = read[path].conversion.default
             if current.depth != first.depth:
                 location = current.depth_location
                 assert location is not None
@@ -1797,7 +1797,7 @@ def group_depths(
                     INPUT_FAILURE,
                     Diagnostic(
                         ERROR,
-                        f"prosiform.group-depth for group {name!r} "
+                        f"prosiform.{first.name}.group-depth for group {name!r} "
                         f"is {first.depth}; "
                         f"another member declares {current.depth}",
                         code=GROUP_DEPTH_CONFLICT,
@@ -1807,7 +1807,7 @@ def group_depths(
                                 location.file,
                                 location.line,
                                 location.column,
-                                "prosiform.group-depth for group "
+                                f"prosiform.{current.name}.group-depth for group "
                                 f"{name!r} is {current.depth}",
                             ),
                         ),
@@ -1926,11 +1926,13 @@ def coincident(
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
-        paths = [path for path in selected if read[path].conversion.group == named]
+        paths = [
+            path for path in selected if read[path].conversion.default.group == named
+        ]
         names = member_headings(paths, named)
         members: dict[str, list[Named]] = {}
         for path in paths:
-            declared = read[path].conversion.group_location
+            declared = read[path].conversion.default.group_location
             assert declared is not None
             members.setdefault(names[path].casefold(), []).append(
                 Named(names[path], declared)
@@ -2032,7 +2034,7 @@ def assembled(
     merging: dict[str, list[str]] = {}
     with assembling(reaching(selected)):
         for path in selected:
-            named = read[path].conversion.group
+            named = read[path].conversion.default.group
             if named is not None:
                 merging.setdefault(named, []).append(path)
                 continue

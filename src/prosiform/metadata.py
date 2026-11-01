@@ -34,6 +34,12 @@ INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 DEPTH = "group-depth"
+EXCLUDE = "exclude"
+PATH_SUB = "path-sub"
+FIELDS = (GROUP, DEPTH, EXCLUDE, PATH_SUB)
+"""The fields a preset may hold; none is written directly under `prosiform`."""
+DEFAULT = "default"
+"""The preset in force wherever its document is compiled."""
 ROOT = "root"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
@@ -75,24 +81,46 @@ class _MarkedScanner(Scanner):
 
 
 @dataclass(frozen=True)
-class Conversion:
-    """Immutable source settings and their original value locations.
+class Preset:
+    """One named preset's settings and their original value locations.
 
-    The settings belong to the bytes they were decoded from. `declared`
-    holds where the frontmatter carries a `prosiform` mapping, an empty
-    one included, and is false for a document carrying none. `group` and
-    `depth` decide which merged group that source joins, held to the
-    depth every contributing member declares. A source the substitution
-    mapping redirected is read as the substitute, so the settings decoded
-    here are the substitute's: none travels from the document its key
-    named.
+    `group` and `depth` decide which merged group the declaring document
+    joins, held to the depth every contributing member declares; a preset
+    stating neither leaves the document its individual file group.
     """
 
-    declared: bool = False
+    name: str
     group: str | None = None
     depth: int | None = None
     group_location: Location | None = None
     depth_location: Location | None = None
+
+
+@dataclass(frozen=True)
+class Conversion:
+    """Immutable source settings: every preset one document declares.
+
+    The settings belong to the bytes they were decoded from. `declared`
+    holds where the frontmatter carries a `prosiform` mapping, an empty
+    one included, and is false for a document carrying none. `presets`
+    holds each preset in written order. A source the substitution mapping
+    redirected is read as the substitute, so the settings decoded here are
+    the substitute's: none travels from the document its key named.
+    """
+
+    declared: bool = False
+    presets: tuple[Preset, ...] = ()
+
+    @property
+    def default(self) -> Preset:
+        """The `default` preset, in force wherever the document is compiled.
+
+        A document declaring no `default` is compiled under an empty one.
+        """
+        return next(
+            (preset for preset in self.presets if preset.name == DEFAULT),
+            Preset(DEFAULT),
+        )
 
 
 class InvalidMetadata(Exception):
@@ -380,7 +408,7 @@ def decode(
             "prosiform must be a mapping",
             metadata.location,
         )
-    fields: dict[str, _Node] = {}
+    presets: list[Preset] = []
     for key, value in zip(metadata.children[::2], metadata.children[1::2], strict=True):
         if key.kind != "str":
             raise _fail(
@@ -390,33 +418,70 @@ def decode(
             )
         name = "prosiform." + key.value
         if key.value == ROOT:
+            raise _refused_root(name, key.location)
+        if value.kind != "map":
+            remedy = (
+                f"; write the field within a preset, as prosiform.{DEFAULT}.{key.value}"
+                if key.value in FIELDS
+                else ""
+            )
             raise _fail(
                 INVALID_CONVERSION_METADATA,
-                f"{name} is refused: a document declares its inclusion and "
-                "states no boundary; remove the field",
+                f"{name} must be a mapping, since every prosiform key names a "
+                f"preset holding its settings{remedy}",
+                value.location,
+            )
+        presets.append(_preset(key.value, value))
+    return Conversion(declared=True, presets=tuple(presets))
+
+
+def _refused_root(name: str, location: Location) -> InvalidMetadata:
+    return _fail(
+        INVALID_CONVERSION_METADATA,
+        f"{name} is refused: a document declares its inclusion and "
+        "states no boundary; remove the field",
+        location,
+    )
+
+
+def _preset(preset: str, mapping: _Node) -> Preset:
+    """One preset's settings, each field checked where it is written."""
+    fields: dict[str, _Node] = {}
+    for key, value in zip(mapping.children[::2], mapping.children[1::2], strict=True):
+        if key.kind != "str":
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"prosiform.{preset} keys must be strings",
                 key.location,
             )
-        if key.value not in (GROUP, DEPTH):
+        name = f"prosiform.{preset}.{key.value}"
+        if key.value == ROOT:
+            raise _refused_root(name, key.location)
+        if key.value not in FIELDS:
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
-        if key.value != DEPTH and value.kind != "str":
+        if key.value == GROUP and value.kind != "str":
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"{name} must be a string", value.location
             )
+        if key.value in (EXCLUDE, PATH_SUB) and value.kind != "seq":
+            raise _fail(
+                INVALID_CONVERSION_METADATA, f"{name} must be a list", value.location
+            )
         fields[key.value] = value
     if GROUP not in fields and DEPTH not in fields:
-        return Conversion(declared=True)
+        return Preset(preset)
     if GROUP not in fields or DEPTH not in fields:
         present = GROUP if GROUP in fields else DEPTH
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"prosiform.{present} requires its paired field",
+            f"prosiform.{preset}.{present} requires its paired field",
             fields[present].location,
         )
     group, depth = fields[GROUP], fields[DEPTH]
     if not group.value.strip() or any(
-        char in ":/\u0085\u2028\u2029"
+        char in ":/\u0085  "
         or ord(char) < 32
         or 127 <= ord(char) <= 159
         or 0xD800 <= ord(char) <= 0xDFFF
@@ -425,16 +490,16 @@ def decode(
     ):
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "prosiform.group must be printable, single-line and nonblank, "
-            "without ':' or '/'",
+            f"prosiform.{preset}.group must be printable, single-line and "
+            "nonblank, without ':' or '/'",
             group.location,
         )
     if not worded(group.value):
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "prosiform.group must carry a word, since its title case is the "
-            "group's heading; name the group with a character other than a "
-            "hyphen, an underscore or whitespace",
+            f"prosiform.{preset}.group must carry a word, since its title case "
+            "is the group's heading; name the group with a character other "
+            "than a hyphen, an underscore or whitespace",
             group.location,
         )
     numeric_depth = (
@@ -445,11 +510,11 @@ def decode(
     if not isinstance(numeric_depth, Decimal) or not 1 <= numeric_depth <= 6:
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "prosiform.group-depth must be an integer from 1 through 6",
+            f"prosiform.{preset}.group-depth must be an integer from 1 through 6",
             depth.location,
         )
-    return Conversion(
-        declared=True,
+    return Preset(
+        preset,
         group=group.value,
         depth=int(numeric_depth),
         group_location=group.location,
