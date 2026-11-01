@@ -1,4 +1,4 @@
-description = "A local Markdown link naming a declaring document is resolved against the document carrying it, bundled and present: one naming a document carries the whole of it, one naming a section carries that section, and one resolving above the working directory carries nothing."
+description = "A local Markdown link naming a declaring document is resolved against the document carrying it, bundled and present: one naming a document carries the whole of it, one naming a section carries that section, and one naming a document that declares nothing carries nothing."
 
 clauses = [
   "Link classification and resource handling — Local Markdown document links",

@@ -1,6 +1,3 @@
----
-prosiform: {}
----
 # Guidelines
 
-The shared material this fixture's source cites and the run never opens.
+The shared material this fixture's source cites, which declares nothing.

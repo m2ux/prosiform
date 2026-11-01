@@ -8,7 +8,7 @@ Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions
 
 ### 1. Read the Guidelines
 
-Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
+Read the [shared skill guidelines](#skill-guidelines) and [skill guidelines](guidelines.md) whole before the first edit.
 
 ### 2. Understand the Request
 
@@ -32,14 +32,14 @@ Make the change in the rule's one home.
 
 ### 5. Check Against the Guidelines
 
-Read every changed file against the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md), checking:
+Read every changed file against the [shared skill guidelines](#skill-guidelines) and [skill guidelines](guidelines.md), checking:
 
-- The [description](../../guidelines.md#frontmatter), when the skill's reach changed.
-- [Layout](../../guidelines.md#layout).
-- [Prose](../../guidelines.md#prose), with the skill's own [Prose](guidelines.md#prose), and [stale claims](../../guidelines.md#changes).
-- [Commands](../../guidelines.md#commands).
-- [Links](../../guidelines.md#links).
-- [Progressive disclosure](../../guidelines.md#progressive-disclosure).
+- The [description](#frontmatter), when the skill's reach changed.
+- [Layout](#layout).
+- [Prose](#prose), with the skill's own [Prose](guidelines.md#prose), and [stale claims](#changes).
+- [Commands](#commands).
+- [Links](#links).
+- [Progressive disclosure](#progressive-disclosure).
 - Fix each departure.
 
 ### 6. Run Script Tests
@@ -72,7 +72,7 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/scripts/check_skill
 
 Read the skill-file check's exit code and output. Correct any failure and repeat the affected checks from [6. Run Script Tests](#6-run-script-tests) before continuing.
 
-- Apply [disclosure verification](../../guidelines.md#disclosure-verification) with the skill's [representative scenarios](guidelines.md#progressive-disclosure).
+- Apply [disclosure verification](#disclosure-verification) with the skill's [representative scenarios](guidelines.md#progressive-disclosure).
 - Resolve every required file, command and heading without an implicit external dependency.
 
 ### 9. Deliver
@@ -162,6 +162,173 @@ Substitute the real ones:
 - `14` the Proposals Template, `15` the Proposals board;
 - `m2ux` the user.
 - `<checkout>` any checkout of the project, a linked worktree included.
+
+# Skill Guidelines
+
+How a skill's own files are written: SKILL.md, the references, the templates, and the scripts' docstrings. Every change to a skill follows them. A skill with rules of its own keeps them in `guidelines.md` beside its entry point or in `references/guidelines.md`, and those rules define the structure of every directory it adds.
+
+## Frontmatter
+
+- **Fields.**
+  - `name`, `description` and `prosiform`, and `hooks` when the skill declares a hook. No other field.
+  - `name` is kebab-case and matches the skill's folder.
+- **Declaration.**
+  - Every Markdown file of the skill opens with frontmatter declaring `prosiform`, so a link to it is compiled; a file declaring nothing is cited as written.
+  - A file declaring nothing else writes `prosiform: {}`. A group member adds `group` and `group-depth`.
+  - The declaration names no root. Each link resolves from the file that writes it.
+- **Hooks.**
+  - A skill declares a hook when a check it owns must run at every tool call that could break it, not only at a step its procedure names.
+  - The hook's command runs a script in the skill's own scripts folder, which exits at once on a call outside its check.
+  - Claude Code registers the hook when the skill is invoked and runs it for the rest of the session. Cursor ignores the field.
+- **Description.**
+  - It states what the skill covers and the requests that call for it, as the phrases a user would say: "plan the work", "audit workflow X".
+  - It carries at least one such phrase for each mode, since the description alone decides whether the skill loads.
+  - It carries no procedure; what each mode does is in the body.
+  - It stays under the 1,024-character skill limit.
+
+## Files
+
+- **SKILL.md.**  The skill's entry point, at the top of its folder.
+- **References.**
+  - A mode file is named `<mode>-mode.md`. `references/` holds `guidelines.md` when the skill has rules of its own, and each guide the modes share.
+  - A skill may add directories of its own, one for its modes among them, and keep its guidelines beside SKILL.md. Its guidelines state what those files carry and the sections they take, and `structure.json` beside SKILL.md declares those sections to the shared check.
+  - Scripts and tests each have a folder of their own. Standalone templates use `templates/`.
+- **Shared.**
+  The folder holding the skills holds this file beside the folders of the checks every skill runs. A check binding one skill lives in that skill's own folders.
+
+## SKILL.md structure
+
+- **Opening.**
+  One sentence on what the skill does, then a bulleted list with one item for each thing it acts on.
+- **Modes.**
+  - Each mode is its bold name, without the word "mode", linking to its reference file.
+  - Beneath it, a bulleted list that selects the mode, since the reader holds a request and picks one mode from this list alone:
+    - The first item states the mode's direction and what it is scoped to, and nothing else: `Backward-looking, scoped to one initiative`.
+    - Each further item is one line: a noun phrase or a gerund phrase naming a request this mode answers.
+    - An item earns its place only where a request reaches this mode because of it. At most five follow the first.
+    - A step the mode takes once selected stays in the mode file, as does a distinction from another mode.
+    - A mode the mode runs for itself goes unnamed, since naming it routes that mode's own requests here.
+    - It has no trailing full stop, no purpose clause, and no board status outside that phrase.
+- **Rules and conventions.**
+  A statement that binds every mode goes in a rules or conventions file beside SKILL.md, which each mode's preamble links, never as loose prose in SKILL.md.
+- **Dependencies.**
+  Every tool, sandbox, runtime, branch and harness capability the skill relies on is named in Dependencies, with what it is needed for.
+
+## Procedure files
+
+- **What the file carries selects the set.**
+  - A procedure is a section holding steps, whatever its heading names it. A step is the author stating that the reader performs it, in its order, and is the only place a file records that.
+  - A file carrying one takes the sections below. A catalog, a context file and a contract file state what a procedure consults, and nothing about them is a sequence, so each keeps its own shape.
+  - A skill's entry point takes [its own structure](#skillmd-structure) whatever it carries, and a file in a directory whose sections the skill's own guidelines state takes those sections.
+- **Top-level sections.**
+  - Procedure, Reference and Rules, in that order, each optional but for Procedure.
+  - Anything else the file needs is a sub-section under one of them, so a diverse title names a part of a known whole.
+- **What the reader does with a heading places it.**
+  - Reference holds what a step consults or produces: a table, an output shape, a vocabulary.
+  - Rules holds what binds the file whatever step it is on.
+  - An alternative way in is a step of the Procedure.
+- **Procedure.**
+  - A `## Procedure` of more than one step writes each step as a sub-section one heading level below it, headed by the step's position and its action in title case: `### 1. Take the Proposal`.
+  - A single-step procedure is one paragraph or bullet, with no heading.
+  - The steps come in the order performed, ahead of the procedure's child sections.
+  - Where the file holds several procedures, each is a child section of it, and writes its own steps one heading level below its heading.
+
+## Layout
+
+- **One line per item.**
+  Each paragraph and list item is one line. No file is hard-wrapped at a column; the editor wraps.
+- **Bold leads.**
+  - A bold lead is a label. When the label and its body fit on one line of at most 100 characters, indent included, the body stays on it, two spaces after the label: `- **Epic**  Lists its tasks in a Work Breakdown table.`
+  - A longer body goes on the next line, indented under the bullet.
+  - A label that is a phrase ends in a full stop. A bare name, such as a mode or an issue type, takes none.
+  - No bold words open a running sentence. An item such as "**Fetch** each issue" becomes the label "**Fetch.**" with "Fetch each issue …" beneath it.
+- **Sub-bullets.**
+  An item that describes several discrete points lists them as sub-bullets. A single sentence, or a simple list within one sentence, stays as it is.
+- **Bounded prose.**
+  A run of prose under one heading is at most eight lines. Longer prose splits into named sub-sections, leaving the linked heading where it is. A list or table is one structure and is not split to meet this.
+
+## Prose
+
+- **Succinct.**  Plain words, and no sentence that another already carries.
+- **One home per rule.**
+  - Each rule is stated once, in its home: the contract or outcome it constrains, the step it binds, the rules or conventions file when it binds every mode, or the guidelines when it governs how a file is written.
+  - Every other file links that home, never restates it.
+- **The design as it is.**
+  Present tense, with no account of what the text replaced: no "previously", "no longer" or "instead of".
+- **Terms.**  After a rename, every use of the old term goes, in prose, docstrings and identifiers.
+
+## Links
+
+- **Files.**
+  A reference to another markdown file in the skill is a relative link, never a code span.
+- **Link text.**
+  The link sits on the noun that names the thing: the mode, the guide, the command, the template.
+- **Selection links.**
+  A link naming the next operation, section or route points wherever that content sits, forward included. The reader chooses from it rather than needing to hold it already.
+- **Prerequisite citation.**
+  A citation asserting the reader must already hold a section earns its place only where that section is in another file, opened for its own reason. Name it: `Read [Issue Fields](issue.md#fields) first.`
+  - Within one file, position carries the requirement and the citation is dropped: conventions sit ahead of the procedures they govern.
+  - A prerequisite citation pointing further down its own file is a defect, whatever its wording. A sequential reader meets it after the point it was meant to serve.
+- **Resolution.**  Every link resolves to a file that exists, and every anchor to a heading in it.
+
+## Commands
+
+- **Commands in steps.**
+  - A command sits in the step that runs it, in an unindented fenced block, never a code span. No skill file has a `## Commands` section: a command lives in the step that runs it.
+  - The step's instruction states where the command runs from and which inputs fill its parameters, and the block follows it.
+  - A command several procedures run is written in each step that runs it.
+- **Prose runs nothing.**
+  Whatever its mood, order or count, a sentence naming commands runs none of them: a sentence routing three commands in sequence names them as a statement of what one command does names it. State a route as steps that run them.
+- **Conventions.**
+  - Session setup, execution location, example values and other skill-wide prerequisites stand in the conventions file each mode's preamble links.
+  - A condition governing one command sits in the step that runs it.
+
+## Progressive Disclosure
+
+- **Placement.**
+  Keep shared purpose and mode selection in the entry point, and what binds every mode in the rules and conventions files each mode links. Link conditional detail where the active mode needs it.
+- **Applicability.**
+  State the condition beside a conditional link and require the reader to resolve it before loading the instructions. Select a check before reading the steps that run it.
+- **Reading boundaries.**
+  Link the smallest complete section the caller needs. A heading link names that section and its subsections, stopping before the next heading of equal or higher level. Whole-file links identify required complete documents.
+- **File size.**
+  A heading link names a section; a reader takes the file. Size each file to one role's whole context, and split a file that carries guidance that role never uses. A boundary the reader need not honour is not a budget.
+- **Prerequisites.**
+  Provide the context needed to use each section in the file that holds it. Link it only where the reader would not otherwise reach it, as a [prerequisite citation](#links). Split files when section routing still brings unrelated guidance into context.
+- **Common context.**
+  Group prerequisites shared by all specific sections into one named common section, with any common subsections nested beneath it. Specific sections sit outside that heading's boundary. Keep prerequisites used by only some sections with those sections or in a separately linked section.
+- **Caller routing.**
+  A calling document links the common section once on a required path before its first specific section, then links specific sections at their points of use. Every supported entry path reaches that prerequisite link; an unlinked preamble or sibling section supplies no context. Reuse complete prerequisite content already read at the same revision.
+- **Prohibition and structure.**
+  A rule telling a reader to retrieve less says the file carries more than that reader needs. Remove the surplus rather than policing the read.
+- **Complete output.**
+  Bound reads and output volume so required content is returned completely. Retrieve missing sections when output is truncated; a request for content is not evidence of receipt.
+
+## Disclosure Verification
+
+- **Required context.**
+  Every revision traces a representative request through each affected mode's required reads, including prerequisites, subsections and explicit whole-file requirements. Check every supported entry path for common context before specific sections, reuse across multiple operations and exclusion of unrelated sections. Necessity follows the task and affected consumers; another mode's guidance can be required.
+- **Live checks.**
+  When a revision changes reading paths, test representative requests with independent sub-agents in fresh contexts. Give them the skill, realistic tasks, necessary inputs and authority limits, without expected reading choices or prior findings. Repeat affected scenarios before claiming consistent behavior. Record unavailable live validation as an evidence gap.
+- **Observed behavior.**
+  Inspect actual tool calls, returned content and task results. Missing necessary context or loading unrelated content fails the disclosure check. Report structural validation and live behavior separately, preserving observed failures.
+- **Performance.**
+  Record unnecessary content, repeated reads, truncation and task correctness. Claims of context-token savings require a comparable baseline with the same tasks, inputs and execution conditions; file or word counts establish only their stated measurements.
+- **What a walk can settle.**
+  Measure the volume a walk retrieves, which its transcript settles outright. Retrieval order measures file layout wherever the reader loads the file whole, so it can show a citation failing and never show one working. A test of citation efficacy needs a target that broad reading does not already reach.
+
+## Changes
+
+- **Worktrees.**
+  Make skill changes in a dedicated linked worktree on the change's branch. Preserve existing edits in the project-root checkout. Corrections to an open pull request stay on its branch.
+- **Current preferences.**
+  Keep the guidelines aligned with the user's explicit, non-reverted preferences. A later correction supersedes the earlier preference; update its existing rule in the same change. Shared rules belong here and skill-specific rules belong in that skill's guidelines.
+- **Everything that names it.**
+  A rename or a move updates every reference: folder, `name`, heading, script paths, links and anchors.
+- **Stale claims.**
+  After a behaviour change, search the skill for any description of the old behaviour and restate it.
+- **Verified.**
+  The skill's tests and affected shared-checker or integration suites pass, the shared skill check reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed. State which checks ran and distinguish local evidence from external workflow execution.
 
 # Artifacts
 
