@@ -47,7 +47,7 @@ A source heading's own fragment is the slug its visible text produces. Nothing n
 
 A compiled reference is rewritten to the destination of the target it resolved to. A reference the run compiled is a reference the bundle carries, so each one has a destination.
 
-The rest keep the bytes their author wrote: a link outside the root, a link with a scheme, an image, a non-Markdown target. A deferred link points at a path from the invocation working directory, and a dispatched link at its generated sub-section. Each is published without its operator mark.
+The rest keep the bytes their author wrote: a link to a document that declares nothing or to none, a link with a scheme, an image, a non-Markdown target. A deferred link points at a path from the invocation working directory, and a dispatched link at its generated sub-section. Each is published without its operator mark.
 
 ```mermaid
 flowchart LR

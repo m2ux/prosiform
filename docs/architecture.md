@@ -31,18 +31,18 @@ Every term the contract uses has one meaning, defined once in the [glossary](glo
 
 ## Source
 
-The run's raw material is Markdown files on disk. Each one it opens is a [**source**](sources.md), read once and held as bytes, so what was checked is what is published. Its **root** decides which of its links may be followed, and its **frontmatter** declares the metadata the run reads from it — which is how a mode in one directory can cite a rules file in the directory above, and why the frontmatter itself never reaches the bundle.
+The run's raw material is Markdown files on disk. Each one it opens is a [**source**](sources.md), read once and held as bytes, so what was checked is what is published. Its **frontmatter** declares `prosiform` when the document is one a bundle carries, and a link is followed only to a document that declares — which is how a mode in one directory can carry a rules file in the directory above, and why the frontmatter itself never reaches the bundle.
 
 ```mermaid
 flowchart LR
   Doc["modes/review.md"]
-  Doc -- "its own root: .." --> Root{{"the root it may reach"}}
-  Root -- "inside" --> Rules["rules.md<br/><i>followed</i>"]
-  Root -. "outside" .-> Outside["../library/guide.md<br/><i>cited, not opened</i>"]
+  Doc -- "links" --> Ask{{"does the target<br/>declare prosiform?"}}
+  Ask -- "declares" --> Rules["../rules.md<br/><i>followed</i>"]
+  Ask -. "declares nothing" .-> Outside["../library/guide.md<br/><i>cited, not opened</i>"]
   Doc -- "read once" --> Copy["the run's copy<br/><i>bytes, hash, metadata</i>"]
 ```
 
-*Figure 2. A Source Is Read Once, and Its Root Decides What It May Reach.*
+*Figure 2. A Source Is Read Once, and Each Target's Declaration Decides Whether It Is Followed.*
 
 ## Reference
 
@@ -50,7 +50,7 @@ The links inside a source are what the run follows. Each is a [**reference**](re
 
 ```mermaid
 flowchart LR
-  Link["one link<br/>in a source"] --> Ask{"under the root,<br/>naming Markdown?"}
+  Link["one link<br/>in a source"] --> Ask{"names Markdown<br/>that declares prosiform?"}
   Ask -- "no" --> Text["<b>text</b><br/><i>carried as authored</i>"]
   Ask -- "yes" --> Mark{"opens with<br/>¬ ⇉ or ⫽ ?"}
   Mark -- "nothing" --> Dep["<b>dependency</b><br/><i>content in this bundle</i>"]
