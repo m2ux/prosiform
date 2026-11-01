@@ -55,7 +55,7 @@ A caller who needs a bundle built against other material than the tree holds has
 | [W08](https://github.com/m2ux/prosiform/pull/440) | Example skill scenarios over the mechanism | AC21, AC22 | W04 | | ✓ |
 | W09 | A folder pairing and its precedence | AC25, AC26, AC30 | W01 | | |
 | W10 | A folder key's absent substitute and unused report | AC27, AC28 | W09 | | |
-| W11 | The folder documented and demonstrated | AC29, AC31 | W10 | | |
+| W11 | The folder documented and demonstrated *(withdrawn: see [Supersession](#supersession))* | AC29, AC31 | W10 | | |
 | W12 | A value naming no Markdown document is refused | AC24 | W02 | | |
 
 ## Acceptance Criteria
@@ -104,6 +104,7 @@ A caller who needs a bundle built against other material than the tree holds has
 - **The tick on AC11 records work that landed.** Its row delivered reachability from a root the writing source excluded; the code that delivers it stays, and what changes is the rule it is a consequence of.
 - **`fixtures/mock/a-substitute-outside-the-writing-root-is-reachable` is renamed.** The new epic's corpus row renames it to the boundary it will then exercise, because a fixture named for a declaration the contract no longer carries reads as current fact.
 - **AC13 is superseded by the referrer's removal.** [I05:E15](../2026-10-31-i05-inclusion-profiles-and-folders/epic-e-remove-referrer.md) removes `-f` and the bare-fragment positional form, so a referrer no longer exists to redirect. The tick records work that landed; the capability it describes is gone, and `fixtures/mock/a-redirected-referrer-carries-its-entry` is withdrawn rather than rewritten because no surviving spelling reaches the same behaviour.
+- **W11, AC29 and AC31 are withdrawn.** [I08:E06](https://github.com/m2ux/prosiform/issues/461) retires `-m` and the folder pair, carrying substitution as a `path-sub` entry in a section preset, so documenting and demonstrating the folder form would describe a capability about to be removed. W09 and W10 landed it; I08:E06 withdraws their fixtures.
 - **Every other criterion stands unchanged.** The mapping, its option, its refusals, its warnings and its reach are unaffected: what a substitution names is a separate question from what qualifies a document for inclusion.
 
 ## References
