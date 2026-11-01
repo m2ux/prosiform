@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The scope is named in [Scope](docs/repository-labels.md#scope), and the

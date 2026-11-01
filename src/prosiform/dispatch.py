@@ -80,7 +80,9 @@ from prosiform.bundle import (
     escaped,
 )
 from prosiform.closure import (
+    DECLARING,
     UNSUBSTITUTED,
+    Declarations,
     Reference,
     Substitution,
     deferred,
@@ -422,6 +424,7 @@ def written_in(
     source: Source,
     tokens: Sequence[Token],
     region: Token,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Link]:
     """Every dispatched link one region writes, in written order."""
@@ -437,7 +440,7 @@ def written_in(
                 # later, so this bundle names no sub-section for it.
                 continue
             destination = str(child.attrGet("href") or "")
-            target = withheld(path, destination, opening, source.root, substitution)
+            target = withheld(path, destination, opening, declarations, substitution)
             if target is None:
                 continue
             found.append(
@@ -482,12 +485,14 @@ class Placing:
         read: Mapping[str, Source],
         bundle_file: Callable[[Target], str],
         operators: Collection[bool],
+        declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
     ) -> None:
         self.parsed = parsed
         self.read = read
         self.bundle_file = bundle_file
         self.operators = operators
+        self.declarations = declarations
         self.substitution = substitution
         self.opened = False
         self.placed: Placed = {}
@@ -627,6 +632,7 @@ class Placing:
                     self.read[part.path],
                     tokens,
                     region,
+                    self.declarations,
                     self.substitution,
                 ):
                     self.pending.setdefault(link.served, link)
@@ -649,6 +655,7 @@ def subsections(
     parsed: Mapping[str, Sequence[Token]],
     read: Mapping[str, Source],
     bundle_file: Callable[[Target], str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[list[Group], Placed]:
     """Every group with the bundle's generated sections, and where each one stands.
@@ -671,10 +678,11 @@ def subsections(
             read[part.path],
             parsed[part.path],
             region_of(parsed[part.path], part),
+            declarations,
             substitution,
         )
     }
-    placing = Placing(parsed, read, bundle_file, operators, substitution)
+    placing = Placing(parsed, read, bundle_file, operators, declarations, substitution)
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.placed
 

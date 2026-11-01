@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Prepare
 
 Write `actions/prepare.txt` containing `prepared`.

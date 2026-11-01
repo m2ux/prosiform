@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Glossary
 
 Glossary body.

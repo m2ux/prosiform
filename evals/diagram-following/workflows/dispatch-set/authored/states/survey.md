@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Survey
 
 Write `actions/survey.txt` containing `surveyed`.

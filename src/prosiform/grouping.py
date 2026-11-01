@@ -104,7 +104,12 @@ from prosiform.bundle import (
     single_line,
     source_fragments,
 )
-from prosiform.closure import UNSUBSTITUTED, Substitution
+from prosiform.closure import (
+    DECLARING,
+    UNSUBSTITUTED,
+    Declarations,
+    Substitution,
+)
 from prosiform.provenance import (
     GROUP_HEADING,
     MEMBER_OVERVIEW,
@@ -238,7 +243,7 @@ def prepared(
     selected: Selection | None,
     assigned: dict[tuple[str, str | None], str] | None,
     depth: int,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     keep_title: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
@@ -260,7 +265,7 @@ def prepared(
         if selected is None
         else {id(token) for token in selected.regions}
     )
-    text = shown_text(path, tokens, root, substitution)
+    text = shown_text(path, tokens, declarations, substitution)
     named = source_fragments(tokens)
     titled_token = absorbed(tokens, PurePosixPath(path).stem)
     absorbing = (
@@ -286,7 +291,7 @@ def prepared(
             assigned,
             path,
             defined,
-            root,
+            declarations,
             dispatching,
             substitution,
         )

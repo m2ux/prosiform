@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Fix
 
 Write `actions/fix.txt` containing `fixed`.

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Review Mode
 
 Reads a plan back against the goal it states.

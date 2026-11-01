@@ -546,6 +546,7 @@ def test_a_diagram_click_outside_the_selection_keeps_its_source_path() -> None:
     assert published[11] == '  click Open "open.md"\n'
 
 
+DECLARED = "---\nprosiform: {}\n---\n"
 DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"
 TOGETHER = f"## Parallel dispatch\n\n{PARALLEL_PROTOCOL}\n\n"
 PLAN = "[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent."
@@ -580,7 +581,10 @@ def test_a_bundle_using_the_dispatch_operator_opens_with_its_protocol(
 ) -> None:
     status, bundles, _ = compiled(
         tmp_path,
-        {"guide.md": "# Guide\n\nRun [\u21c9 plan](plan.md).\n", "plan.md": "# Plan\n"},
+        {
+            "guide.md": "# Guide\n\nRun [\u21c9 plan](plan.md).\n",
+            "plan.md": DECLARED + "# Plan\n",
+        },
         "guide.md",
     )
     assert status == SUCCESS
@@ -596,7 +600,10 @@ def test_a_bundle_using_the_parallel_mark_states_both_protocols(
 ) -> None:
     status, bundles, _ = compiled(
         tmp_path,
-        {"guide.md": "# Guide\n\nRun [\u2afd plan](plan.md).\n", "plan.md": "# Plan\n"},
+        {
+            "guide.md": "# Guide\n\nRun [\u2afd plan](plan.md).\n",
+            "plan.md": DECLARED + "# Plan\n",
+        },
         "guide.md",
     )
     assert status == SUCCESS
@@ -614,7 +621,7 @@ def test_a_bundle_using_both_operators_states_each_protocol_once(
         {
             "guide.md": "# Guide\n\n## One\n\nRun [\u21c9 plan](plan.md).\n\n"
             "## Two\n\nRun [\u2afd plan](plan.md).\n",
-            "plan.md": "# Plan\n",
+            "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md",
     )
@@ -631,7 +638,10 @@ def test_a_bundle_using_neither_operator_carries_no_prosiform_section(
 ) -> None:
     status, bundles, _ = compiled(
         tmp_path,
-        {"guide.md": "# Guide\n\nSee [plan](plan.md).\n", "plan.md": "# Plan\n\nGo.\n"},
+        {
+            "guide.md": "# Guide\n\nSee [plan](plan.md).\n",
+            "plan.md": DECLARED + "# Plan\n\nGo.\n",
+        },
         "guide.md",
     )
     assert status == SUCCESS
@@ -645,7 +655,7 @@ def test_the_prosiform_section_precedes_a_file_heading(tmp_path: Path) -> None:
         tmp_path,
         {
             "guide.md": "# Guide\n\n## Run\n\nRun [\u21c9 plan](plan.md).\n",
-            "plan.md": "# Plan\n",
+            "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md#run",
     )
@@ -663,7 +673,7 @@ def test_the_prosiform_section_follows_a_preamble_and_precedes_its_dispatch(
         tmp_path,
         {
             "guide.md": "Intro [\u21c9 plan](plan.md).\n\n# Guide\n\nBody.\n",
-            "plan.md": "# Plan\n",
+            "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md",
     )
@@ -684,7 +694,7 @@ def test_the_prosiform_section_precedes_a_titled_entry_members_title(
             "guide.md": f"{member}Intro.\n\n# Guide\n\nAbove.\n\n"
             "## Run\n\nRun [\u21c9 plan](plan.md).\n",
             "other.md": f"{member}# Other\n\n## Run\n\nTheirs.\n",
-            "plan.md": "# Plan\n",
+            "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md",
     )
@@ -710,7 +720,7 @@ def test_an_authored_heading_equal_to_a_protocol_pf_emits_is_refused(
         {
             "guide.md": f"# Guide\n\nRun [{operator} plan](plan.md).\n\n"
             f"## {heading}\n\nMine.\n",
-            "plan.md": "# Plan\n",
+            "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md",
     )
@@ -735,7 +745,7 @@ def test_an_authored_protocol_heading_pf_does_not_emit_publishes(
         {
             "guide.md": f"# Guide\n\nRun [{operator}plan](plan.md).\n\n"
             f"## {heading}\n\nMine.\n",
-            "plan.md": "# Plan\n",
+            "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md",
     )
@@ -752,8 +762,10 @@ def test_each_protocol_is_the_same_bytes_in_two_corpora(tmp_path: Path) -> None:
         {
             "skill/guide.md": "# Guide\n\n## Act\n\n"
             "Run [\u21c9 plan](plan.md) and [\u2afd review](review.md#code).\n",
-            "skill/plan.md": "# Plan\n\nRun [\u2afd review](review.md#tests).\n",
-            "skill/review.md": "# Review\n\n## Code\n\nRead.\n\n## Tests\n\nRun.\n",
+            "skill/plan.md": DECLARED
+            + "# Plan\n\nRun [\u2afd review](review.md#tests).\n",
+            "skill/review.md": DECLARED
+            + "# Review\n\n## Code\n\nRead.\n\n## Tests\n\nRun.\n",
         },
         "skill/guide.md",
     )
@@ -762,7 +774,7 @@ def test_each_protocol_is_the_same_bytes_in_two_corpora(tmp_path: Path) -> None:
         {
             "mode.md": "Opening [\u2afd check](check.md).\n\n"
             "# Mode\n\n### Deep\n\nThen [\u21c9 check](check.md).\n",
-            "check.md": "# Check\n\nDone.\n",
+            "check.md": DECLARED + "# Check\n\nDone.\n",
         },
         "mode.md",
     )

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Require [the note's step](notes.md#step) and

@@ -6,7 +6,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-N", "1", "guide.md"]
+arguments = ["-N", "2", "guide.md"]
 
 [expected]
 exit_status = 1
@@ -15,5 +15,5 @@ exit_status = 1
 severity = "error"
 code = "E_PARSER_REFERENCE_LIMIT"
 reference = "plan.md"
-source = "guide.md:3"
+source = "guide.md:6"
 chain = ["guide.md"]

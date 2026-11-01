@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 > The quoted procedure names [the shared rules][rules].

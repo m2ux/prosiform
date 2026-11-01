@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Example
 
 A plan reads like this:

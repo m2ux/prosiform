@@ -167,7 +167,9 @@ def test_deferred_source_counts_towards_raw_budgets(
 ) -> None:
     a = "# A\n\n[¬ B](b.md)\n"
     (tmp_path / "a.md").write_text(a)
-    (tmp_path / "b.md").write_text("---\nname: " + "x" * 100 + "\n---\n# B\n")
+    (tmp_path / "b.md").write_text(
+        "---\nprosiform: {}\nname: " + "x" * 100 + "\n---\n# B\n"
+    )
     bound = "1" if option == "-F" else str(len(a.encode()) + 1)
     run = invoke("-d", "json", option, bound, "a.md", cwd=tmp_path)
     assert run.status == 1

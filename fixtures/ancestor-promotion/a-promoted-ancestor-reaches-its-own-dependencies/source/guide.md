@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 ## Alpha
 
 Alpha body, which needs [the appendix](appendix.md).

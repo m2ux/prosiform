@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Audit
 
 The diagram is the workflow. Each state's section says what to do there, each decision's section says what it weighs, and each condition's section says when its escape applies.

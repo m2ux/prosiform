@@ -94,9 +94,9 @@ and every other byte of the fence is carried as written. The anchor is
 spelled as the line's form spells it: a quoted destination opens it
 with `#`, and a sequence diagram's menu entry with `#35;`, the entity
 Mermaid renders as `#` where a bare one would open a comment. A diagram
-link destination the bundle compiled nothing for, such as one outside
-the root or one naming no Markdown document, keeps the text its author
-wrote.
+link destination the bundle compiled nothing for, such as one naming
+a document that declares nothing or no Markdown document at all, keeps
+the text its author wrote.
 
 A destination is the fragment a renderer generates for a bundled
 heading: the heading's slug, carrying the ordinal the renderer appends
@@ -116,7 +116,9 @@ from pathlib import PurePosixPath
 from markdown_it.token import Token
 
 from prosiform.closure import (
+    DECLARING,
     UNSUBSTITUTED,
+    Declarations,
     Substitution,
     bundled,
     deferred,
@@ -335,7 +337,7 @@ def is_atx(token: Token) -> bool:
 def emitted_visible(
     path: str,
     inline: Token,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> str:
     """The text one inline token shows once the bundle has rewritten its links.
@@ -346,8 +348,8 @@ def emitted_visible(
     takes names the heading a reader finds.
 
     A link the bundle took no destination for shows the text its author
-    wrote. That covers a markup or resource reference under the root and
-    a reference leaving the root.
+    wrote. That covers a markup or resource reference and a reference
+    naming a document that declares nothing.
     """
     children = inline.children or []
     carried: list[str] = []
@@ -358,7 +360,7 @@ def emitted_visible(
                 path,
                 str(before.attrGet(HREF) or ""),
                 child.content,
-                root,
+                declarations,
                 substitution,
             )
             carried.append(
@@ -372,7 +374,7 @@ def emitted_visible(
 def shown_text(
     path: str,
     tokens: Sequence[Token],
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[int, str]:
     """The visible text of each heading token, keyed by the token's identity.
@@ -382,7 +384,7 @@ def shown_text(
     destination the heading takes names what a reader finds.
     """
     return {
-        id(opening): emitted_visible(path, inline, root, substitution)
+        id(opening): emitted_visible(path, inline, declarations, substitution)
         for opening, inline in headings(tokens)
     }
 
@@ -407,7 +409,7 @@ def rewrite(
     assigned: dict[tuple[str, str | None], str],
     path: str,
     defined: Mapping[str, Definition],
-    root: str = "",
+    declarations: Declarations = DECLARING,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[str]:
@@ -451,7 +453,7 @@ def rewrite(
                     one,
                     opening,
                     assigned,
-                    root,
+                    declarations,
                     dispatched_to=here,
                     substitution=substitution,
                 )
@@ -469,7 +471,7 @@ def rewrite(
                 click.destination,
                 "",
                 assigned,
-                root,
+                declarations,
                 click.anchor,
                 substitution=substitution,
             )
@@ -498,7 +500,7 @@ def target(
     destination: str,
     opening: str,
     assigned: Mapping[tuple[str, str | None], str],
-    root: str = "",
+    declarations: Declarations = DECLARING,
     anchor: str = ANCHOR,
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
@@ -511,7 +513,7 @@ def target(
     that heading's slug behind the anchor spelling the link's form
     writes, `#` wherever the link is not a sequence diagram's menu entry.
 
-    A deferred link under the allowed source root takes its target's
+    A deferred link naming a declaring document takes its target's
     path from the invocation working directory, so the run that
     compiles it later, from that directory, follows it as written. A
     dispatched one takes the destination of the dispatch sub-section
@@ -520,14 +522,16 @@ def target(
     reference carried its target into the bundle: what one author
     withheld cannot be changed by another author's reference.
 
-    A link resolving outside the allowed source root, and one naming no
+    A link naming a document that declares nothing, and one naming no
     Markdown document, is text the bundle carries and takes no
     destination, whether or not its author marked it.
     """
-    found = bundled(path, destination, opening, root, substitution)
+    found = bundled(path, destination, opening, declarations, substitution)
     if found is not None:
         return f"{anchor}{assigned[(found.path, found.fragment)]}"
-    withheld = withholding_target(path, destination, opening, root, substitution)
+    withheld = withholding_target(
+        path, destination, opening, declarations, substitution
+    )
     if withheld is None:
         return None
     # A deferral states when the material is compiled, and a dispatch mark
@@ -572,7 +576,7 @@ def document_title(tokens: Sequence[Token]) -> Token | None:
 def file_heading(
     path: str,
     tokens: Sequence[Token],
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> str:
     """The text one document's file group is headed by.
@@ -584,7 +588,7 @@ def file_heading(
     titled = document_title(tokens)
     if titled is None:
         return heading_text(path)
-    return single_line(shown_text(path, tokens, root, substitution)[id(titled)])
+    return single_line(shown_text(path, tokens, declarations, substitution)[id(titled)])
 
 
 def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
@@ -795,7 +799,7 @@ def group(
     defined: Mapping[str, Definition] | None = None,
     selected: Selection | None = None,
     assigned: dict[tuple[str, str | None], str] | None = None,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     situate: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
@@ -844,9 +848,9 @@ def group(
     declarations behind them.
     """
     situate = situate and carries_title(tokens) and selected is None
-    text = shown_text(path, tokens, root, substitution)
+    text = shown_text(path, tokens, declarations, substitution)
     titled = document_title(tokens)
-    title = file_heading(path, tokens, root, substitution)
+    title = file_heading(path, tokens, declarations, substitution)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])
@@ -886,7 +890,7 @@ def group(
             assigned,
             path,
             environment,
-            root,
+            declarations,
             dispatching,
             substitution,
         )
