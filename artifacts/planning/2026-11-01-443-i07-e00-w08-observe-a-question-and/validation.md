@@ -1,6 +1,6 @@
 # W08 Validation
 
-Evidence for each check the [W08 work item](w08.md) names. Tested revision: `fa02c1b9` on `i07/e00/w08-observe-a-question-and`, cut from `i07/e00/main` at `5bffb717`.
+Evidence for each check the [W08 work item](w08.md) names. Tested revisions: `fa02c1b9` on `i07/e00/w08-observe-a-question-and`, cut from `i07/e00/main` at `5bffb717`, and `f590e0a2`, that head merged with `i07/e00/main` at `5b16c3b4`; `make check` and CI `Checks` passed on both. Merged into `i07/e00/main` as `9b40ffdc` by [#478](https://github.com/m2ux/prosiform/pull/478).
 
 ## Source of the opencode shapes
 
