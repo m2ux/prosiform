@@ -69,3 +69,16 @@ Each pair below has no dependency either way and is not joined. Its tasks ship a
 - E00:W10 E00:W18 — separate components: fixtures; fixtures/README.md
 - E00:W16 E00:W17 — separate components: evals/diagram-following/instruction.md; fixtures
 - E00:W16 E00:W18 — separate components: evals/diagram-following/instruction.md; fixtures/README.md
+- E00:W03 E00:W19 — separate components: src/prosiform/diagram.py; docs/bundles.md
+- E00:W04 E00:W19 — separate components: src/prosiform/heading.py; docs/bundles.md
+- E00:W05 E00:W19 — separate components: src/prosiform/heading.py; docs/bundles.md
+- E00:W08 E00:W19 — separate components: evals/diagram-following/harness; docs/bundles.md
+- E00:W09 E00:W19 — separate components: evals/diagram-following/scorer; docs/bundles.md
+- E00:W10 E00:W19 — separate components: fixtures; docs/bundles.md
+- E00:W16 E00:W19 — separate components: evals/diagram-following/instruction.md; docs/bundles.md
+- E00:W17 E00:W19 — separate components: fixtures; docs/bundles.md
+- E00:W18 E00:W19 — separate components: fixtures/README.md; docs/bundles.md
+- E00:W01 E00:W19 — W01 is delivered by its own merged pull request; W19 is undelivered.
+- E00:W02 E00:W19 — W02 is delivered by its own merged pull request; W19 is undelivered.
+- E00:W06 E00:W19 — W06 is delivered by its own merged pull request; W19 is undelivered.
+- E00:W07 E00:W19 — W07 is delivered by its own merged pull request; W19 is undelivered.

@@ -6,7 +6,7 @@
 
 Fifteen epics already merged into `main` were reviewed for delivered defects, and eighty-two findings were recorded: five blockers, thirty-six majors and forty-one minors.
 
-This initiative delivers twenty-four of them across twenty-four criteria in ten tasks, and three further tasks carry five criteria closing what a review of the merged tasks found. Four of the five blockers are delivered here; blocker 5 waits with the stale example. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
+This initiative delivers twenty-four of them across twenty-four criteria in ten tasks, and four further tasks carry six criteria closing what reviews of merged work found. Four of the five blockers are delivered here; blocker 5 waits with the stale example. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
     10|
 The findings and their evidence are held in [the review record](../2026-10-31-merged-epic-review/README.md), whose disposition table names the task delivering each finding.
 
@@ -55,6 +55,7 @@ Each decision was taken with the user before the initiative was raised, or on re
 | [W16 work item](w16.md) | The sub-agent trace in every dispatching form |
 | [W17 work item](w17.md) | The publication and title-dispatch refusals stated |
 | [W18 work item](w18.md) | The scalar ceiling in the catalogue |
+| [W19 work item](w19.md) | `-o` stated as making its folder |
 | [Joins](joins.md) | Each independent pair not joined, with its reason |
 
 ## Task Disposition
@@ -76,6 +77,7 @@ Each finding below is delivered by exactly one task, and each row's Coverage car
 | W16 | eval | Merged-task review: AC16 holds for the bootstrap form alone |
 | W17 | source | Merged-task review: W02's refusals stated in no page, catalogue row or fixture |
 | W18 | source | Merged-task review: the scalar ceiling absent from the catalogue |
+| W19 | docs | I08:E07 agent review: `-o` described as needing an existing folder |
 
 Findings 1 and 8 describe one defect from two directions and share one criterion. Finding 2 is delivered by W07 as AC16, which holds for the bootstrap form, the one form whose instruction names a sub-agent's trace; W16 states that name in every other dispatching form. Finding 26 is delivered by W13, where its rule is stated.
 
@@ -113,3 +115,4 @@ The epic was reviewed twice after it was raised, and these corrections are what 
 | AC16 narrowed to the bootstrap form | Only the bootstrap instruction names a sub-agent's trace, so the criterion states the form its evidence covers |
 | W11 depends on W08 and W10 | The baseline it writes measures the scoring W08 changes and the linked form W10 changes |
 | W16–W18 added with AC25–AC29 | A review of the merged tasks found a criterion proved for one form, and refusals and a ceiling stated in no page, catalogue row or fixture |
+| W19 added with AC30 | The agent review of the I08:E07 integration found pages and a docstring still describing `-o` as needing an existing folder |
