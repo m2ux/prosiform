@@ -1,0 +1,18 @@
+description = "A symbolic link below the working directory is refused although its target is a document the working directory holds, so one document is reached by one path and a dependency base does not vary with the alias discovered first."
+
+clauses = [
+  "No-symlink source policy",
+  "Resolution sequence — step 8",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["alias.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "alias.md"

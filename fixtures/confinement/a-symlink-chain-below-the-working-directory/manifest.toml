@@ -1,0 +1,18 @@
+description = "A symbolic link to a symbolic link is refused at the first link, so no chain below the working directory is walked to a target."
+
+clauses = [
+  "No-symlink source policy",
+  "Resolution sequence — step 8",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["chain.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "chain.md"

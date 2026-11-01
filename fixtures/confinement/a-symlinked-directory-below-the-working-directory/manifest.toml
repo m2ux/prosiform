@@ -1,0 +1,18 @@
+description = "A path reaching its source through a symbolic directory link below the working directory is refused, though every segment the reference writes stays inside it."
+
+clauses = [
+  "No-symlink source policy",
+  "Resolution sequence — step 8",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["docs/note.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "docs/note.md"

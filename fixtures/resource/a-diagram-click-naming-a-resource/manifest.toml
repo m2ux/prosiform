@@ -1,4 +1,4 @@
-description = "A diagram click naming a file under the allowed source root that is not a Markdown document is emitted as authored and never opened, and the bundle carrying it warns once that resource portability is not guaranteed, as one carrying an inline link to that file does."
+description = "A diagram click naming a file inside the working directory that is not a Markdown document is emitted as authored and never opened, and the bundle carrying it warns once that resource portability is not guaranteed, as one carrying an inline link to that file does."
 
 clauses = [
   "Resources are text",

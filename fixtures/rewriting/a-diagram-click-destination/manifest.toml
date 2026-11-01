@@ -1,4 +1,4 @@
-description = "A diagram click naming a document under the allowed source root compiles that document into the bundle, and the click destination is rewritten to the destination of that document's heading while every other byte of the fence is carried as written."
+description = "A diagram click naming a declaring document compiles that document into the bundle, and the click destination is rewritten to the destination of that document's heading while every other byte of the fence is carried as written."
 
 clauses = [
   "Bundle destinations — Internal links",

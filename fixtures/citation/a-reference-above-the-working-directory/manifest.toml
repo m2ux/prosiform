@@ -1,0 +1,16 @@
+description = "A document whose reference names material above the working directory bundles successfully: the citation is emitted as authored, the document it names is not opened, and the closure stays inside the working directory."
+
+clauses = [
+  "Explicitly linked source structure — Explicit dependencies",
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Reference normalization and path identity, the invocation working directory confines the run",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

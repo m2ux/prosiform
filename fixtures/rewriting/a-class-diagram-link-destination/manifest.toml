@@ -1,4 +1,4 @@
-description = "A class diagram's link line naming a document under the allowed source root compiles that document into the bundle, and the destination between its quotes is rewritten to the destination of that document's heading while every other byte of the fence, the quoted text and target that follow the destination among them, is carried as written."
+description = "A class diagram's link line naming a declaring document compiles that document into the bundle, and the destination between its quotes is rewritten to the destination of that document's heading while every other byte of the fence, the quoted text and target that follow the destination among them, is carried as written."
 
 clauses = [
   "Bundle destinations — Internal links",
