@@ -25,6 +25,7 @@ from report import (
     markdown,
     report,
 )
+from workflow import CorpusError
 
 HAIKU = "claude-haiku-5-5"
 SONNET = "claude-sonnet-5-5"
@@ -376,3 +377,28 @@ def test_writing_the_baseline_follows_the_comparison_with_the_one_it_replaces(
         assert again["baseline_only"][name] == []
         for item in again[name]:
             assert item["difference"] == {"pass_rate": 0, "failures": counts()}
+
+
+def test_a_run_that_measured_no_cell_writes_no_baseline(
+    tmp_path: Path, baseline: Path
+) -> None:
+    """A completed run that started nothing leaves the committed baseline whole."""
+    directory = tmp_path / "results" / "empty"
+    directory.mkdir(parents=True)
+    run = {
+        "run_id": "empty",
+        "date": "2026-10-27T12:00:00+00:00",
+        "options": {"models": HAIKU, "repetitions": 1},
+        "command": ["claude", "-p"],
+        "state": "completed",
+        "reason": None,
+        "sessions": 0,
+        "started": 0,
+        "tokens": 0,
+        "not_started": [],
+    }
+    (directory / RUN).write_text(json.dumps(run))
+    committed = baseline.read_text()
+    with pytest.raises(CorpusError, match="run empty measured no cell"):
+        main([str(directory), "--baseline", str(baseline), "--write-baseline"])
+    assert baseline.read_text() == committed

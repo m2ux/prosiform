@@ -666,16 +666,14 @@ def outcome(
 ) -> tuple[str, str | None]:
     """A run's state, and the reason it records when it is refused.
 
-    A run is refused when it started every session of its matrix and every
-    one took the `errored` verdict: no session entered a state, so the
-    matrix is no result. A run its budget stopped part way, and one where
-    some sessions errored beside others that entered a state, is a
-    completed run whose failures are the result. The reason is the first
-    errored session's own `result` text, so a reader sees the limit the
-    agent reported.
+    A run is refused when it started a session and every session it
+    started took the `errored` verdict, whether or not its budget stopped
+    it before the rest: no session entered a state, so the matrix is no
+    result. A run where some sessions errored beside others that entered a
+    state is a completed run whose failures are the result. The reason is
+    the first errored session's own `result` text, so a reader sees the
+    limit the agent reported.
     """
-    if not all(started):
-        return COMPLETED, None
     records = [
         verdict_of(session.directory(run_directory))
         for session, began in zip(sessions, started, strict=True)
