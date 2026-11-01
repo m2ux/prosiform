@@ -57,6 +57,7 @@ Each decision was taken with the user before the initiative was raised, or on re
 | [W18 work item](w18.md) | The scalar ceiling in the catalogue |
 | [W19 work item](w19.md) | `-o` stated as making its folder |
 | [Joins](joins.md) | Each independent pair not joined, with its reason |
+| [Agent review of #473](agent-review-473.json) | The agent review record of the integration pull request, by reviewed head and target |
 
 ## Task Disposition
 
