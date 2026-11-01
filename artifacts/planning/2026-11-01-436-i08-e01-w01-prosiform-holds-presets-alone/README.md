@@ -12,6 +12,8 @@ This record holds its delivery of `AC1`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The one-kind key rule, `Conversion` holding presets and the `default` preset in force |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
