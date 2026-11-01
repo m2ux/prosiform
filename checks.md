@@ -116,12 +116,13 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 
 #### Authoring Rules
 
-`make authoring` asserts four rules:
+`make authoring` asserts five rules:
 
 - An operation states its Inputs and Outputs on one line before its first step, as `None` or a comma-separated list of links to contract sections.
 - A shell command sits in an unindented fenced block within the step that runs it.
 - No file has a heading titled `Commands`.
 - A cross-file link is written from the file that holds it.
+- Every document declares `prosiform` in its frontmatter, and the declaration names no root.
 
 #### Mock Scenarios
 

@@ -8,8 +8,12 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
 ## Frontmatter
 
 - **Fields.**
-  - `name` and `description`, and `hooks` when the skill declares a hook. No other field.
+  - `name`, `description` and `prosiform`, and `hooks` when the skill declares a hook. No other field.
   - `name` is kebab-case and matches the skill's folder.
+- **Declaration.**
+  - Every Markdown file of the skill opens with frontmatter declaring `prosiform`, so a link to it is compiled; a file declaring nothing is cited as written.
+  - A file declaring nothing else writes `prosiform: {}`. A group member adds `group` and `group-depth`.
+  - The declaration names no root. Each link resolves from the file that writes it.
 - **Hooks.**
   - A skill declares a hook when a check it owns must run at every tool call that could break it, not only at a step its procedure names.
   - The hook's command runs a script in the skill's own scripts folder, which exits at once on a call outside its check.
