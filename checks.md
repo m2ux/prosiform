@@ -50,9 +50,9 @@ Three commands sit outside it, because each needs a tool or a budget the others 
   - refuses a run, before its first session, when the config directory installs or enables a plugin or declares a hook in its settings file;
   - fails a run when a session carried context the runner did not supply;
   - records each session's transcript, usage, cost and verdict;
-  - records a run whose every session errored as refused, with the agent's own reason;
+  - records a run whose every started session errored as refused, with the agent's own reason, whether or not its budget stopped it;
   - stops before the recorded cost would pass the spending cap.
-- **Report.** The [report](evals/diagram-following/report.py) reads recorded results. It gives the pass rate and failure classes per model, form and scenario, and each one's difference from a baseline. For a refused run it names the run's state and reason in place of a pass rate.
+- **Report.** The [report](evals/diagram-following/report.py) reads recorded results. It gives the pass rate and failure classes per model, form and scenario, and each one's difference from a baseline. For a refused run it names the run's state and reason in place of a pass rate, and it writes a baseline only from a run that measured a cell.
 
 #### Corpus and Smoke Details
 
