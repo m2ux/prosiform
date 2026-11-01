@@ -13,6 +13,8 @@ This record holds its delivery of `AC12`: the work item, the validation evidence
 | Artifact | What it holds |
 | --- | --- |
 | [W07](w07.md) | The work item: fixtures named for what they prove, the silent-target fixture reworked, descriptions and prose naming the working directory, and the copied-source declaration stated |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 

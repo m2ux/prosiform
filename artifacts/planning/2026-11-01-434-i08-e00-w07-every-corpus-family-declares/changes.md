@@ -1,0 +1,6 @@
+# Plan Changes
+
+- **Design decision, applied** — The `real-source/` copies keep the `prosiform: {}` declaration [W03](https://github.com/m2ux/prosiform/pull/493) gave them, and the family statement admits it as the one thing a copy adds, held to its original with the declaration removed. The epic plan's `a-w07.md` proposed a fixture-supplied setting; the build reads a declaration from the document alone, so such a setting would state a rule the design does not carry.
+- **Design decision, applied** — No `inclusion/` fixture is added: the nine the epic plan names landed with W01 to W05. Fixtures about a path above or below the run's bound are renamed for the working directory rather than withdrawn, since that bound survives.
+- **Design decision, applied** — `confinement/a-parent-segment-above-the-root` becomes `confinement/an-entry-above-the-working-directory`, the name [W05](https://github.com/m2ux/prosiform/pull/500) declined to add a second fixture under.
+- **Observation, held** — The rewritten source prose moves six expected bundles by the rewritten lines alone; AC12's "same expected bundles" holds for every bundle the declaration change could have moved.
