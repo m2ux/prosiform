@@ -12,6 +12,9 @@ This record holds its delivery of `AC1, AC3, AC6`: the work item, the validation
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03](w03.md) | The work item: the declarations record, the helpers without a root, and the declared trees |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 
