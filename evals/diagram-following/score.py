@@ -74,6 +74,7 @@ from harness import Harness, Start
 __all__ = [
     "ACTIONS",
     "SUBAGENTS",
+    "SUB_AGENT_TRACE",
     "TRACE",
     "TRACES",
     "Failure",
@@ -88,11 +89,17 @@ from workflow import FEWER, START, Dispatch, Scenario, Workflow
 
 TRACE = "trace.log"
 """The path a session writes its own states to."""
+SUB_AGENT_TRACE = "trace-{section}.log"
+"""The path a dispatched sub-agent writes its states to, named for its section.
+
+Every instruction states it with `<section>` in place of the name, and tells
+the session to hand it to each sub-agent it dispatches.
+"""
 TRACES = "trace*.log"
 """Every trace a workspace holds: the session's, and a sub-agent's beside it.
 
-The instruction names a sub-agent's own path `trace-<section>.log`, so a
-finished workspace carries both and the run keeps them together.
+Both `TRACE` and every `SUB_AGENT_TRACE` match it, so a finished workspace
+carries both and the run keeps them together.
 """
 ACTIONS = "actions"
 SUBAGENTS = "subagents.json"

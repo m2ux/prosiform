@@ -46,7 +46,7 @@ The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each sta
 
 ## Scoring
 
-A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of seven classes that fits where its trace departs from the path:
+A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of seven classes that fits where its trace departs from the path:
 
 | Class | The session |
 | --- | --- |

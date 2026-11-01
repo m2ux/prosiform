@@ -15,6 +15,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from score import SUB_AGENT_TRACE
 from workflow import (
     AUTHORED_FORM,
     BOOTSTRAP,
@@ -509,6 +510,20 @@ def test_the_instruction_names_the_entry_and_nothing_else_varies() -> None:
         "workflow.bundle.md"
     )
     assert instruction("a.md").replace("a.md", "b.md") == instruction("b.md")
+
+
+def test_every_dispatching_form_names_the_sub_agent_trace() -> None:
+    """AC25: each instruction tells the session the sub-agent trace to hand on.
+
+    A sub-agent reads only the prompt its session writes, so the name the
+    runner keeps reaches it only where the session's instruction states it.
+    Every form's instruction states it, the forms that dispatch among them.
+    """
+    stated = SUB_AGENT_TRACE.format(section="<section>")
+    assert {*DISPATCH_FORMS, BOOTSTRAP} <= set(FORMS)
+    for form in FORMS:
+        text = " ".join(instruction(ENTRY, form).split())
+        assert f"tell it to append each state it enters as one line to {stated}" in text
 
 
 def test_a_state_the_bundle_does_not_reach_is_a_fault(tmp_path: Path) -> None:
