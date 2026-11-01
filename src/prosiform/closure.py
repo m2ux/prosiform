@@ -26,8 +26,10 @@ from enum import Enum
 from types import MappingProxyType
 from urllib.parse import quote
 
+from markdown_it.token import Token
+
 from prosiform.profile import is_markdown
-from prosiform.source import ENCODING, external
+from prosiform.source import ENCODING, external, regions, uses
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
@@ -542,8 +544,8 @@ def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -
             continue
         if not walked:
             raise OutsideRoot(
-                "normalizes above the allowed source root, which cannot contain "
-                "the document it names"
+                "normalizes above the invocation working directory, which bounds "
+                "every document the run reads"
             )
         walked.pop()
     return SEPARATOR.join(walked)
@@ -678,8 +680,8 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
     written = components(text)
     if DRIVE.match(written.path) is not None:
         raise OutsideRoot(
-            f"names the drive path {written.path!r}, which the allowed source "
-            f"root cannot contain"
+            f"names the drive path {written.path!r}, which no path under the "
+            f"invocation working directory spells"
         )
     if external(written.path):
         return Reference(text, "", None, external=True)
@@ -690,8 +692,8 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
         )
     if written.path.startswith(SEPARATOR):
         raise OutsideRoot(
-            f"names the root-relative path {written.path!r}, which the allowed "
-            f"source root cannot contain"
+            f"names the root-relative path {written.path!r}, which no path under "
+            f"the invocation working directory spells"
         )
     if BACKSLASH in written.path:
         raise Malformed(
@@ -808,8 +810,8 @@ def inside(
         return substitution.redirect(resolved, origin)
     if found.path == PARENT or found.path.startswith(f"{PARENT}{SEPARATOR}"):
         raise OutsideRoot(
-            "normalizes above the allowed source root, which cannot contain "
-            "the document it names"
+            "normalizes above the invocation working directory, which bounds "
+            "every document the run reads"
         )
     return resolved
 
@@ -936,6 +938,33 @@ def named(
     if found.external or not is_markdown(found.path):
         return None
     return replace(found, origin=origin, chain=(*reached, identity(found)))
+
+
+def boundary(document: str, tokens: Sequence[Token]) -> str:
+    """The deepest directory holding every local Markdown path a document's links name.
+
+    Each link resolves from the document's directory, as a reader of the
+    file follows it, and a fragment-only link names the document itself.
+    The boundary is read from every link the document writes rather than
+    from a selected region, because the links are a property of the
+    document and one file has one boundary. It is derived from the links,
+    so it holds every one of them and refuses none. A document naming no
+    local Markdown path has its own directory.
+
+    The working-directory-relative directory is returned, empty for the
+    working directory itself. A link the path grammar refuses, one naming
+    no Markdown document and an image name no path and contribute
+    nothing; so does a path above the working directory, which bounds
+    every document the run reads.
+    """
+    directories = [
+        posixpath.dirname(found.path)
+        for use in uses(tokens, tuple(regions(tokens)))
+        if not use.resource and (found := named(document, use.destination)) is not None
+    ]
+    if not directories:
+        return posixpath.dirname(document)
+    return posixpath.commonpath(directories)
 
 
 def rebased(found: Reference, text: str) -> str:

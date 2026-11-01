@@ -730,9 +730,9 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
     """Normalize a positional reference with bounded relative-parent bootstrap.
 
     The mapping names what the reference resolves to instead, and is
-    read after the normalization: an entry reference is exempt from the
-    writing source's root, so the mapping applies to the identity the
-    reference normalized to rather than to anything a source decides.
+    read after the normalization: an entry reference is written in no
+    source, so the mapping applies to the identity the reference
+    normalized to rather than to anything a source decides.
     An entry reference stands in no source, so a redirect of one is
     recorded with no source position.
     """
