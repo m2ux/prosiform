@@ -17,6 +17,9 @@ from test_file_roots import declared
 
 from prosiform import cli
 
+DECLARED = "---\nprosiform: {}\n---\n"
+"""The frontmatter block that makes a document a run's entry or compiled target."""
+
 
 def bundle(folder: Path, name: str) -> Path:
     """The entry bundle a run named so writes under one output folder."""
@@ -54,7 +57,7 @@ def test_file_and_section_names_follow_the_working_directory_path(
 def test_equivalent_selections_share_one_derived_destination(
     tmp_path: Path, arguments: tuple[str, ...]
 ) -> None:
-    written(tmp_path, "dir/a.md", "# A\n\n## Part\n\nContent.\n")
+    written(tmp_path, "dir/a.md", DECLARED + "# A\n\n## Part\n\nContent.\n")
     run = invoke(tmp_path, *arguments)
     assert run.status == 0 and run.stdout == ""
     assert len(list(tmp_path.glob("dir_a*.bundles/dir_a*.bundle.md"))) == 1
@@ -74,8 +77,10 @@ def test_equivalent_selections_share_one_derived_destination(
 def test_distinct_selections_join_their_names_in_entry_order(
     tmp_path: Path, references: tuple[str, ...], name: str, check: bool
 ) -> None:
-    written(tmp_path, "a.md", "# A\n\n## One\n\nFirst.\n\n## Two\n\nSecond.\n")
-    written(tmp_path, "b.md", "# B\n")
+    written(
+        tmp_path, "a.md", DECLARED + "# A\n\n## One\n\nFirst.\n\n## Two\n\nSecond.\n"
+    )
+    written(tmp_path, "b.md", DECLARED + "# B\n")
     flags = ["-c"] if check else []
     run = invoke(tmp_path, *flags, *references)
     assert run.status == 0 and run.stdout == ""
@@ -84,7 +89,7 @@ def test_distinct_selections_join_their_names_in_entry_order(
 
 
 def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None:
-    written(tmp_path, "entries/a.md", "# A\n")
+    written(tmp_path, "entries/a.md", DECLARED + "# A\n")
     (tmp_path / "work").mkdir()
     run = invoke(tmp_path / "work", "../entries/a.md")
     assert run.status == 0
@@ -105,7 +110,9 @@ def test_derived_folder_cannot_hold_any_captured_source(
     tmp_path: Path, deferred: bool, check: bool
 ) -> None:
     mark = "¬ " if deferred else ""
-    written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a.bundles/a.bundle.md)\n")
+    written(
+        tmp_path, "a.md", DECLARED + f"# A\n\n[{mark}Captured](a.bundles/a.bundle.md)\n"
+    )
     written(tmp_path, "a.bundles/a.bundle.md", declared("# Captured\n\nPreserve.\n"))
     run = invoke(tmp_path, *(["-c"] if check else []), "a.md")
     assert run.status == 2 and run.stdout == ""
@@ -115,7 +122,7 @@ def test_derived_folder_cannot_hold_any_captured_source(
 def test_derived_publication_swaps_the_folder_in_whole(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     original = os.rename
     calls = []
@@ -136,7 +143,7 @@ def test_derived_publication_swaps_the_folder_in_whole(
 def test_atomic_failure_preserves_existing_folder(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    written(tmp_path, "a.md", "# A\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n")
     written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     original = os.rename
 
@@ -156,7 +163,7 @@ def test_atomic_failure_preserves_existing_folder(
 def test_failed_validation_preserves_existing_derived_output(
     tmp_path: Path, flags: tuple[str, ...]
 ) -> None:
-    written(tmp_path, "a.md", "# A\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n")
     written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     run = invoke(tmp_path, *flags, "a.md")
     assert run.status == 1 and run.stdout == ""
@@ -165,7 +172,7 @@ def test_failed_validation_preserves_existing_derived_output(
 
 def test_filename_length_failure_is_publication_failure(tmp_path: Path) -> None:
     name = "a" * 150 + "/" + "b" * 150 + ".md"
-    written(tmp_path, name, "# A\n")
+    written(tmp_path, name, DECLARED + "# A\n")
     run = invoke(tmp_path, "-d", "json", name)
     assert run.status == 3 and run.stdout == ""
     assert run.diagnostics()[0]["code"] == cli.PUBLICATION_FAILED
@@ -175,7 +182,7 @@ def test_filename_length_failure_is_publication_failure(tmp_path: Path) -> None:
 def test_a_link_at_the_run_folder_is_replaced_and_never_followed(
     tmp_path: Path, dangling: bool
 ) -> None:
-    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     precious = tmp_path / "precious"
     if not dangling:
         written(tmp_path, "precious/data.txt", "Keep.\n")
@@ -196,7 +203,7 @@ def test_a_link_at_the_run_folder_is_replaced_and_never_followed(
 
 def test_a_run_folder_name_the_filesystem_accepts_publishes(tmp_path: Path) -> None:
     name = "n" * 240
-    written(tmp_path, f"{name}.md", "# Long\n")
+    written(tmp_path, f"{name}.md", DECLARED + "# Long\n")
     run = invoke(tmp_path, f"{name}.md")
     assert run.status == 0 and run.stdout == ""
     assert bundle(tmp_path, name).read_text() == "# Long\n"
@@ -210,7 +217,7 @@ def test_a_run_folder_name_the_filesystem_accepts_publishes(tmp_path: Path) -> N
 def test_two_targets_deriving_one_name_are_refused_naming_both(
     tmp_path: Path, check: bool
 ) -> None:
-    written(tmp_path, "e.md", "# E\n\n1. [⇉ x](a/b.md)\n2. [⇉ y](a_b.md)\n")
+    written(tmp_path, "e.md", DECLARED + "# E\n\n1. [⇉ x](a/b.md)\n2. [⇉ y](a_b.md)\n")
     written(tmp_path, "a/b.md", declared("# B\n"))
     written(tmp_path, "a_b.md", declared("# B too\n"))
     run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "e.md")
@@ -227,7 +234,7 @@ def test_an_output_folder_that_does_not_exist_is_made_by_the_run(
     tmp_path: Path, check: bool
 ) -> None:
     """A named folder the run can make is made, and a check makes it too."""
-    written(tmp_path, "a.md", "# A\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n")
     run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "-o", "zz", "a.md")
     assert run.status == 0 and run.stdout == ""
     assert (tmp_path / "zz").is_dir()
@@ -237,7 +244,7 @@ def test_an_output_folder_that_does_not_exist_is_made_by_the_run(
 def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    written(tmp_path, "a.md", "# A\n\n[⇉ plan](plan.md)\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n\n[⇉ plan](plan.md)\n")
     written(tmp_path, "plan.md", declared("# Plan\n"))
     original = cli.compiled
     reads = []
@@ -260,7 +267,7 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
 
 
 def test_a_failing_run_under_the_cleanup_fault_writes_nothing(tmp_path: Path) -> None:
-    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     run = invoke(tmp_path, "-x", "cleanup-refused", "-O", "1", "a.md")
     assert run.status == 1 and run.stdout == ""
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
@@ -269,7 +276,7 @@ def test_a_failing_run_under_the_cleanup_fault_writes_nothing(tmp_path: Path) ->
 def test_a_dangling_link_under_the_cleanup_fault_is_retained_and_warned(
     tmp_path: Path,
 ) -> None:
-    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     (tmp_path / "a.bundles").symlink_to("nowhere")
     run = invoke(tmp_path, "-d", "json", "-x", "cleanup-refused", "a.md")
     assert run.status == 0 and run.stdout == ""
@@ -283,7 +290,7 @@ def test_a_derived_name_longer_than_the_filesystem_allows_names_its_selection(
     tmp_path: Path, check: bool
 ) -> None:
     name = "n" * 247
-    written(tmp_path, f"{name}.md", "# Long\n")
+    written(tmp_path, f"{name}.md", DECLARED + "# Long\n")
     run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), f"{name}.md")
     assert run.status == 3 and run.stdout == ""
     [refused] = run.diagnostics()

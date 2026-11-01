@@ -43,7 +43,7 @@ def test_links_resolve_from_their_own_file_and_a_fragment_names_its_document(
 
 
 def test_parent_entry_bootstrap_and_referrer(tmp_path: Path) -> None:
-    written(tmp_path, "a.md", "# A\n\n## Part\n\nParent content.\n")
+    written(tmp_path, "a.md", declared("# A\n\n## Part\n\nParent content.\n"))
     (tmp_path / "caller").mkdir()
     run = invoke("-f", "../a.md", "#part", cwd=tmp_path / "caller")
     assert run.status == 0
@@ -113,7 +113,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
 def test_bootstrap_checks_components_before_normalization(
     tmp_path: Path, entry: str
 ) -> None:
-    written(tmp_path, "a.md", "# A\n")
+    written(tmp_path, "a.md", declared("# A\n"))
     (tmp_path / "real").mkdir()
     (tmp_path / "alias").symlink_to("real", target_is_directory=True)
     run = invoke("-d", "json", entry, cwd=tmp_path)
@@ -124,13 +124,13 @@ def test_bootstrap_checks_components_before_normalization(
 def test_a_replaced_source_directory_prevents_publication(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    written(tmp_path, "library/a.md", "# A\n")
+    written(tmp_path, "library/a.md", declared("# A\n"))
     original = cli.compose
 
     def replace_directory(*args: Any, **kwargs: Any) -> Any:
         result = original(*args, **kwargs)
         (tmp_path / "library").rename(tmp_path / "old")
-        written(tmp_path, "library/a.md", "# A\n")
+        written(tmp_path, "library/a.md", declared("# A\n"))
         return result
 
     monkeypatch.setattr(cli, "compose", replace_directory)
@@ -143,7 +143,7 @@ def test_a_replaced_source_directory_prevents_publication(
 def test_raw_limit_stops_before_complete_read(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    written(tmp_path, "a.md", "# A\n" + "x" * 10000)
+    written(tmp_path, "a.md", declared("# A\n" + "x" * 10000))
     original = read_source
     sizes = []
 
@@ -153,10 +153,10 @@ def test_raw_limit_stops_before_complete_read(
         return data
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("-B", "8", "-d", "json", "a.md", cwd=tmp_path)
+    run = invoke("-B", "30", "-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
-    assert sizes == [9]
+    assert sizes == [31]
 
 
 def test_root_option_is_invalid_usage(tmp_path: Path) -> None:
@@ -187,7 +187,7 @@ def test_a_cached_target_still_verifies_each_access_route(
     (tmp_path / "real").mkdir()
     (tmp_path / "alias").symlink_to("real", target_is_directory=True)
     if linked:
-        written(tmp_path, "a.md", "# A\n\n[B](b.md) [Alias](alias/../b.md)\n")
+        written(tmp_path, "a.md", declared("# A\n\n[B](b.md) [Alias](alias/../b.md)\n"))
         entries = ["b.md", "a.md"]
     else:
         entries = ["b.md", "alias/../b.md"]

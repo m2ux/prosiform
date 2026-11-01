@@ -19,6 +19,7 @@ from prosiform.closure import (
     Declarations,
     Malformed,
     OutsideRoot,
+    Probed,
     Reference,
     bundled,
     conflicting,
@@ -425,11 +426,11 @@ def test_a_blank_between_the_marks_of_a_compound_operator_is_refused(
     assert spaced(opening)
 
 
-def probing(answers: dict[str, bool]) -> tuple[Declarations, list[Reference]]:
+def probing(answers: dict[str, Probed]) -> tuple[Declarations, list[Reference]]:
     """A record answering from a table, and the occurrences its probe was handed."""
     asked: list[Reference] = []
 
-    def probe(found: Reference) -> bool:
+    def probe(found: Reference) -> Probed:
         asked.append(found)
         return answers[found.path]
 
@@ -437,26 +438,32 @@ def probing(answers: dict[str, bool]) -> tuple[Declarations, list[Reference]]:
 
 
 def test_a_link_naming_a_declaring_document_is_a_dependency() -> None:
-    declarations, _ = probing({"rules.md": True})
+    declarations, _ = probing({"rules.md": Probed.DECLARING})
     found = bundled("guide.md", "rules.md", "the rules", declarations)
     assert found is not None and found.path == "rules.md"
 
 
 def test_a_link_naming_a_silent_document_is_text() -> None:
-    declarations, _ = probing({"rules.md": False})
+    declarations, _ = probing({"rules.md": Probed.SILENT})
     assert bundled("guide.md", "rules.md", "the rules", declarations) is None
     assert resolvable("guide.md", "rules.md", declarations) is None
 
 
+def test_a_link_naming_no_document_is_text() -> None:
+    declarations, _ = probing({"rules.md": Probed.ABSENT})
+    assert bundled("guide.md", "rules.md", "the rules", declarations) is None
+    assert declarations.answer(Reference("rules.md", "rules.md")) is Probed.ABSENT
+
+
 def test_a_withheld_link_naming_a_silent_document_withholds_nothing() -> None:
-    declarations, _ = probing({"rules.md": False})
+    declarations, _ = probing({"rules.md": Probed.SILENT})
     assert (
         withholding_target("guide.md", "rules.md", "¬ the rules", declarations) is None
     )
 
 
 def test_a_target_is_probed_once_however_many_links_name_it() -> None:
-    declarations, asked = probing({"rules.md": True})
+    declarations, asked = probing({"rules.md": Probed.DECLARING})
     bundled("guide.md", "rules.md", "the rules", declarations)
     bundled("guide.md", "rules.md#alpha", "alpha", declarations)
     withholding_target("guide.md", "./rules.md", "¬ the rules", declarations)
@@ -471,7 +478,7 @@ def test_a_citation_naming_no_markdown_document_is_never_probed() -> None:
 
 
 def test_the_probe_is_handed_the_occurrence_that_asked() -> None:
-    declarations, asked = probing({"docs/rules.md": True})
+    declarations, asked = probing({"docs/rules.md": Probed.DECLARING})
     resolvable(
         "docs/guide.md",
         "rules.md",

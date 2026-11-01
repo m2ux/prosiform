@@ -69,14 +69,15 @@ from prosiform.closure import (
     Malformed,
     OutsideRoot,
     Pairing,
+    Probed,
     Reference,
     Substitution,
     components,
     conflicting,
     identity,
     inside,
+    named,
     operators,
-    resolvable,
     resolve,
     spaced,
     withholding,
@@ -745,15 +746,15 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
         raise input_failure(
             f"the entry reference {text!r} {outside}",
             code=SOURCE_OUTSIDE_ROOT,
-            remedy="name a document the source root carries",
+            remedy="name a document under the invocation working directory",
             reference=text,
         ) from outside
     if found.external:
         raise input_failure(
             f"the entry reference {text!r} carries a scheme or an authority, so it "
-            f"names no document the allowed source root can contain",
+            f"names no local document",
             code=SOURCE_OUTSIDE_ROOT,
-            remedy="name a document the source root carries",
+            remedy="name a document under the invocation working directory",
             reference=text,
         )
     return substitution.redirect(found)
@@ -815,9 +816,9 @@ def reading(found: Reference) -> Iterator[None]:
     except Symlinked as linked:
         raise input_failure(
             f"{written} {reference!r} reaches its source through {linked}, "
-            f"a symbolic link below the allowed source root",
+            f"a symbolic link",
             code=SOURCE_SYMLINK,
-            remedy="name the document the link points at, under the source root",
+            remedy="name the document the symbolic link points at",
             reference=reference,
             source=found.origin,
             chain=found.chain,
@@ -829,7 +830,7 @@ def reading(found: Reference) -> Iterator[None]:
             remedy=(
                 "name a folder whose documents the key's remainder reaches"
                 if found.folder is not None
-                else "name a document the source root carries"
+                else "name a document that exists"
             ),
             reference=reference,
             resolved=name if found.folder is not None else None,
@@ -941,8 +942,8 @@ def read_document(
     return Opened(source, len(data), captured)
 
 
-def probe(root: Path, found: Reference, limits: Limits) -> bool:
-    """Whether the document a reference names declares, its body unread.
+def probe(root: Path, found: Reference, limits: Limits) -> Probed:
+    """Whether the document a reference names exists and declares, its body unread.
 
     The probe reads the document's head through the walk a capture
     takes, within `-B`, and decodes it as a capture would, so an invalid
@@ -956,14 +957,24 @@ def probe(root: Path, found: Reference, limits: Limits) -> bool:
     fails the run, since its declaration cannot be read within the
     budget; a declaring document is captured afterwards, and the capture
     holds `-B` over the whole file.
+
+    A path naming no document is answered as absent, and the caller
+    reading the link decides what that is. A substitute naming no
+    document is refused here: the caller who named it stated the run is
+    answerable for it.
     """
     with reading(found):
-        head = read_head(
-            root,
-            found.walk or found.path,
-            limit=limits.of(FILE_BYTES),
-            ended=closes_head,
-        )
+        try:
+            head = read_head(
+                root,
+                found.walk or found.path,
+                limit=limits.of(FILE_BYTES),
+                ended=closes_head,
+            )
+        except Absent:
+            if found.redirected:
+                raise
+            return Probed.ABSENT
     try:
         limits.hold(FILE_BYTES, len(head))
     except Crossed as crossed:
@@ -975,7 +986,48 @@ def probe(root: Path, found: Reference, limits: Limits) -> bool:
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
-    return settings.declared
+    return Probed.DECLARING if settings.declared else Probed.SILENT
+
+
+def declared_entries(
+    referrer: Reference | None,
+    requested: Sequence[Reference],
+    declarations: Declarations,
+) -> None:
+    """Hold every entry reference to naming a document that declares `prosiform`.
+
+    An entry reference names the procedure the bundle carries out, so a
+    document declaring nothing is no procedure and one naming nothing
+    is nothing to carry out: each fails with the code a reference
+    naming nothing fails with, before any source is read. A fragment
+    alone names a section of the referring document, which is the
+    document asked. An entry naming no Markdown document is refused by
+    its suffix when it is read, and is not asked.
+    """
+    for one in requested:
+        asked = one if one.path or referrer is None else referrer
+        if not is_markdown(asked.path):
+            continue
+        answer = declarations.answer(asked)
+        if answer is Probed.DECLARING:
+            continue
+        stated = (
+            "names no document"
+            if answer is Probed.ABSENT
+            else "names a document whose frontmatter declares no prosiform"
+        )
+        raise input_failure(
+            f"the entry reference {asked.original!r} {stated}, so it names no "
+            f"procedure the bundle can carry",
+            code=TARGET_NOT_FOUND,
+            remedy=(
+                "name a document that exists"
+                if answer is Probed.ABSENT
+                else "declare prosiform in the document's frontmatter"
+            ),
+            reference=asked.original,
+            chain=asked.chain,
+        )
 
 
 def missing(found: Reference) -> str:
@@ -988,14 +1040,10 @@ def missing(found: Reference) -> str:
     and the path the redirect resolved to.
     """
     if found.folder is None:
-        return (
-            f"the reference {found.original!r} names no document under the "
-            f"allowed source root"
-        )
+        return f"the reference {found.original!r} names no document"
     return (
         f"the reference {found.original!r} is redirected by the mapping key "
-        f"{found.folder!r} to {found.path!r}, which names no document under the "
-        f"allowed source root"
+        f"{found.folder!r} to {found.path!r}, which names no document"
     )
 
 
@@ -1217,7 +1265,8 @@ def required(
     A use naming a Markdown document whose frontmatter declares
     `prosiform` is a reference the bundle carries, and every other use
     is text: a document declaring nothing is probed and never captured,
-    a path above the working directory is not opened, and the link
+    a path naming no document states nothing the bundle answers for, a
+    path above the working directory is not opened, and the link
     reaches the bundle as its author wrote it. The target's declaration
     is the whole of the question, so a document states that it travels
     and every link reaching it agrees.
@@ -1306,6 +1355,11 @@ def refusals_of_operators(
     metadata fault: what the author wrote states no compilation the run
     can carry out, and the run reports the link rather than reading it
     one way.
+
+    An operator states that a run or an agent compiles its target, so
+    one naming a Markdown path that holds no document names a target
+    that cannot be read, and fails as a reference naming nothing does.
+    The same link without its operator is text.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -1344,20 +1398,45 @@ def refusals_of_operators(
             )
         if not operators(use.opening):
             continue
-        target = resolvable(
-            path, use.destination, declarations, substitution, at, chain
+        target = (
+            None
+            if use.resource
+            else named(path, use.destination, substitution, at, chain)
         )
-        if not use.resource and target is not None:
+        answer = None if target is None else declarations.answer(target)
+        if answer is Probed.DECLARING:
             continue
+        if answer is Probed.ABSENT:
+            raise input_failure(
+                f"the link {use.opening!r} opens with an operator and names "
+                f"{use.destination!r}, which names no document, so the operator "
+                f"states a compilation no run can read",
+                code=TARGET_NOT_FOUND,
+                remedy="name a Markdown document that exists, or remove the operator",
+                reference=use.destination,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if answer is Probed.SILENT:
+            raise input_failure(
+                f"the link {use.opening!r} opens with an operator and names "
+                f"{use.destination!r}, a document whose frontmatter declares no "
+                f"prosiform, so the operator states no compilation the run can "
+                f"carry out",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="declare prosiform in the target's frontmatter, or remove "
+                "the operator",
+                reference=use.destination,
+                source=at,
+                chain=(*chain, use.destination),
+            )
         kind = "image" if use.resource else "link"
         raise input_failure(
             f"the {kind} {use.opening!r} opens with an operator and names "
-            f"{use.destination!r}, which is no Markdown document or section under "
-            f"the source root, so the operator states no compilation the run "
-            f"can carry out",
+            f"{use.destination!r}, which is no Markdown document or section, so "
+            f"the operator states no compilation the run can carry out",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy="name a Markdown document or section the source root carries, "
-            "or remove the operator",
+            remedy="name a Markdown document or section, or remove the operator",
             reference=use.destination,
             source=at,
             chain=(*chain, use.destination),
@@ -1667,10 +1746,10 @@ def confirm(
     A deferral says that the material is reached in a run of its own,
     and a dispatch that a sub-agent reaches it, not that nobody is
     answerable for it, so the document is read and
-    the fragment is looked up. A reference the root does not carry is
-    refused by the read, and one naming no heading of the document it
-    resolves to is refused here, each with the code and the route a
-    compiled reference naming nothing reports.
+    the fragment is looked up. A withheld target naming no document is
+    refused with the operator that withholds it, and one naming no
+    heading of the document it resolves to is refused here, each with
+    the code and the route a compiled reference naming nothing reports.
 
     The question is whether the document carries the heading, asked of
     the index of every heading the profile recognizes. Which section a
@@ -2573,6 +2652,7 @@ def compiled(
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
+    declared_entries(referrer, requested, declarations)
     try:
         read, parsed, defined, captured, found, hops = traverse(
             root, referrer, requested, limits, declarations, substitution
