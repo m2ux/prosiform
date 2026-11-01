@@ -236,6 +236,37 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert len(sessions) == 2 * 5 * 28
 
 
+def readme_rows(header: str) -> list[list[str]]:
+    """The body rows of each README table whose first header cell is `header`.
+
+    Each cell is its text with code-span marks removed, so a form written as
+    code compares as the name the runner gives it.
+    """
+    lines = (source.ROOT / "README.md").read_text().splitlines()
+    rows: list[list[str]] = []
+    for index, line in enumerate(lines[:-1]):
+        cells = [cell.strip().strip("`") for cell in line.strip().split("|")[1:-1]]
+        if not cells or cells[0] != header or not lines[index + 1].startswith("| -"):
+            continue
+        for row in lines[index + 2 :]:
+            if not row.startswith("|"):
+                break
+            rows.append([cell.strip().strip("`") for cell in row.split("|")[1:-1]])
+    return rows
+
+
+def test_the_readme_states_every_form_the_runner_offers_and_its_default() -> None:
+    """AC2: the README's form table and `--forms` default read as `run.FORMS`.
+
+    A form the runner offers that the README omits is one a reader choosing a
+    run's forms cannot learn of, so the table names every form in the order
+    the runner holds them, and the option's default is the list it builds.
+    """
+    assert [row[0] for row in readme_rows("Form")] == list(FORMS)
+    forms = [row for row in readme_rows("Option") if row[0] == "--forms"]
+    assert [row[1] for row in forms] == [",".join(FORMS)]
+
+
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     tmp_path: Path, log: Path
 ) -> None:
