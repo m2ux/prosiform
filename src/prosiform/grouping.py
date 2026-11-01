@@ -402,7 +402,7 @@ def carried_part(
 
 def ancestor_part(member: Member, token: Token, by: int) -> tuple[str, Ancestor]:
     """One eligible ancestor the run did not select, emitted as a heading alone."""
-    held = dispatched_in(member.path, member.tokens, token, member.text)
+    held = dispatched_in(member.tokens, token)
     if held is not None:
         raise Unplaced(member.path, line_of(token, member.first_line), *held)
     depth = level(token) + by

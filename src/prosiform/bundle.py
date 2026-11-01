@@ -679,17 +679,16 @@ def line_of(token: Token, first_line: int = 1) -> int:
     return first_line if token.map is None else token.map[0] + first_line
 
 
-def dispatched_in(
-    path: str, tokens: Sequence[Token], token: Token, text: Mapping[int, str]
-) -> tuple[str, str] | None:
+def dispatched_in(tokens: Sequence[Token], token: Token) -> tuple[str, str] | None:
     """The dispatch one heading carries, where it is emitted as text alone.
 
     An ancestor heading the run did not select is emitted as its title and
     nothing else, and a title is flattened to the one line an ATX heading
     is. Its link is therefore no link in the bundle: nothing places a
     sub-section for it, and the target it names is compiled by no run. The
-    text is read here rather than the copied line because the copy is what
-    the run publishes, while the dispatch is what the author wrote.
+    heading's inline tokens are read rather than the copied line, because
+    the copy is what the run publishes, while the dispatch is what the
+    author wrote.
     """
     if token.type != HEADING_OPEN:
         return None
@@ -922,7 +921,7 @@ def group(
         # its text as literal heading text. A dispatch it writes is then no
         # link at all: nothing places a sub-section for it and no run
         # compiles its target.
-        held = dispatched_in(path, tokens, titled, text)
+        held = dispatched_in(tokens, titled)
         if held is not None:
             raise Unplaced(path, line_of(titled, first_line), *held)
     by = 0 if situate or absorbing is not None else SHIFT
@@ -956,7 +955,7 @@ def group(
     )
     for token in regions(tokens):
         if id(token) in needed:
-            held = dispatched_in(path, tokens, token, text)
+            held = dispatched_in(tokens, token)
             if held is not None:
                 raise Unplaced(path, line_of(token, first_line), *held)
             depth = level(token) + by
