@@ -1,15 +1,13 @@
 # Incident
 
-The workflow starts at [Intake](states/intake.md). Each state's section says what to do in that state and which state comes next.
-
-The diagram is the one statement of the edges; a decision names the document stating which of its edges applies.
+The diagram is the workflow. Each state's section says what to do in that state and which transition to take out of it, and a decision names the document stating which of its edges applies.
 
 ```mermaid
 flowchart TD
     start(( )) --> Intake
     Intake --> Triage
-    Triage -->|high| Escalate
-    Triage -->|low| Queue
+    Triage --> Escalate
+    Triage --> Queue
     Escalate --> Notify
     Notify --> Resolve
     Queue --> Resolve

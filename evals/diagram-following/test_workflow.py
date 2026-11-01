@@ -1,13 +1,14 @@
 """Hold the diagram-following corpus to what the eval relies on.
 
 Every form a workflow is written in bundles cleanly and carries every
-state's section; the forms' sections differ only in their transition
-paragraphs, and a dispatch form's in the step handing a section to a
-sub-agent too; and each scenario's path is a walk of the diagram from its
-start to a terminal state that every form's sections lead through for the
-scenario's inputs, with the dispatch trace its sources state. Each property
-is a function returning the faults it finds, so the corpus is held to an
-empty list and a copy of it broken on purpose is held to a fault.
+state's section, and its entry carries only what its form allows; the forms'
+sections differ only in their transition paragraphs, and a dispatch form's
+in the step handing a section to a sub-agent too; and each scenario's path
+is a walk of the diagram from its start to a terminal state that every
+form's sections lead through for the scenario's inputs, with the dispatch
+trace its sources state. Each property is a function returning the faults it
+finds, so the corpus is held to an empty list and a copy of it broken on
+purpose is held to a fault.
 """
 
 import re
@@ -22,8 +23,10 @@ from workflow import (
     COMPILED_STEP,
     DIAGRAM,
     DISPATCH_FORMS,
+    EDGE,
     ENTRY,
     ENTRY_BUNDLE,
+    FENCE,
     FORMS,
     LINKED_FORM,
     MARKED_FORMS,
@@ -32,6 +35,8 @@ from workflow import (
     STEP_ONE,
     STEP_SET,
     TRANSITION,
+    UNDRAWN,
+    UNLABELLED,
     WORKFLOWS,
     CorpusError,
     Scenario,
@@ -217,9 +222,10 @@ def transition_faults(workflow: Workflow) -> list[str]:
     """How a section's transition or a click disagrees with the diagram.
 
     A section naming an edge's label is held to the labels the diagram draws
-    leaving its state, and a prose section naming a state to the states those
-    labels lead to. A dispatch form writes its transitions as the diagram
-    form does, so it is held to the labels too.
+    leaving its state, and a prose section naming a state, or a linked
+    decision's rules naming one, to the states those edges lead to. A
+    dispatch form writes its transitions as the diagram form does, so it is
+    held to the labels too.
     """
     diagram = workflow.diagram
     faults = []
@@ -247,6 +253,11 @@ def transition_faults(workflow: Workflow) -> list[str]:
                     faults.append(
                         f"{state}: the prose names states the diagram does not"
                     )
+            elif TRANSITION[form] == LINKED_FORM and drawn.condition is not None:
+                if {drawn.then, drawn.otherwise} != {edge.target for edge in leaving}:
+                    faults.append(
+                        f"{state}: the linked rules name states the diagram does not"
+                    )
             elif drawn.condition is None and labels != {None}:
                 faults.append(f"{state}: no one unlabelled edge leaves it")
             elif drawn.condition is not None and labels != {
@@ -254,15 +265,48 @@ def transition_faults(workflow: Workflow) -> list[str]:
                 drawn.otherwise,
             }:
                 faults.append(f"{state}: its labels are not the edges leaving it")
-            if TRANSITION[form] == LINKED_FORM:
-                stated = {drawn.then, drawn.otherwise} - {None}
-                if stated != labels - {None}:
-                    faults.append(
-                        f"{state}: the linked rules state labels the diagram does not"
-                    )
     for node, destination in sorted(diagram.clicks.items()):
         if destination != document(node):
             faults.append(f"the click on {node} links {destination}, not its document")
+    return faults
+
+
+def drawn_edges(drawings: list[str]) -> list[re.Match[str]]:
+    """Every edge the Mermaid diagrams draw, one match per line drawing one."""
+    return [
+        edge
+        for body in drawings
+        for line in body.splitlines()
+        if (edge := EDGE.match(line)) is not None
+    ]
+
+
+def entry_faults(workflow: Workflow, form: str) -> list[str]:
+    """How one form's entry document carries more than its form allows.
+
+    A prose entry draws no diagram, and a linked entry draws the diagram
+    form's edges with no branch label, so the rule a linked decision names
+    is the only statement of the edge its branch takes.
+    """
+    entry = workflow.form(form) / ENTRY
+    drawings = [
+        body for kind, body in FENCE.findall(entry.read_text()) if kind == "mermaid"
+    ]
+    if form in UNDRAWN:
+        return [f"the {form} entry draws a diagram"] if drawings else []
+    if form not in UNLABELLED:
+        return []
+    faults = []
+    edges = drawn_edges(drawings)
+    for edge in edges:
+        source, label, target = edge.groups()
+        if label is not None:
+            faults.append(
+                f"the {form} entry labels the edge {source} to {target} {label!r}"
+            )
+    drawn = {(edge.source, edge.target) for edge in workflow.diagram.edges}
+    if {(edge.group(1), edge.group(3)) for edge in edges} != drawn:
+        faults.append(f"the {form} entry draws edges the diagram does not")
     return faults
 
 
@@ -402,6 +446,17 @@ def test_each_section_states_the_transition_the_diagram_draws(
     workflow: Workflow,
 ) -> None:
     assert transition_faults(workflow) == []
+
+
+@pytest.mark.parametrize(
+    ("workflow", "form"),
+    [(workflow, form) for workflow in CORPUS for form in workflow.forms],
+    ids=lambda item: getattr(item, "name", item),
+)
+def test_each_entry_carries_only_what_its_form_allows(
+    workflow: Workflow, form: str
+) -> None:
+    assert entry_faults(workflow, form) == []
 
 
 @pytest.mark.parametrize(
@@ -657,31 +712,33 @@ def test_a_prose_transition_naming_another_state_is_a_fault(tmp_path: Path) -> N
     ]
 
 
-def test_a_linked_rule_stating_another_label_is_a_fault(tmp_path: Path) -> None:
+def test_a_linked_rule_naming_a_state_its_decision_does_not_reach_is_a_fault(
+    tmp_path: Path,
+) -> None:
     workflow = broken(
         tmp_path,
         "branching",
-        "linked/rules/escalation.md",
-        "The transition labelled `high` applies.",
-        "The transition labelled `low` applies.",
+        "linked/rules/a.md",
+        "The transition into `Escalate` applies.",
+        "The transition into `Notify` applies.",
     )
-    assert "Triage: the linked rules state labels the diagram does not" in (
+    assert "Triage: the linked rules name states the diagram does not" in (
         transition_faults(workflow)
     )
 
 
-def test_a_linked_rule_that_states_no_label_is_a_fault(tmp_path: Path) -> None:
-    with pytest.raises(CorpusError, match="states no label"):
+def test_a_linked_rule_that_states_no_state_is_a_fault(tmp_path: Path) -> None:
+    with pytest.raises(CorpusError, match="states no state"):
         broken(
             tmp_path,
             "branching",
-            "linked/rules/queue.md",
-            "The transition labelled `low` applies.",
+            "linked/rules/b.md",
+            "The transition into `Queue` applies.",
             "Queue the incident.",
         )
 
 
-def test_a_linked_decision_must_state_a_label_outside_its_sections(
+def test_a_linked_decision_must_state_its_branch_outside_its_sections(
     tmp_path: Path,
 ) -> None:
     """Stating a branch's label in the section itself is not a linked transition."""
@@ -690,25 +747,77 @@ def test_a_linked_decision_must_state_a_label_outside_its_sections(
             tmp_path,
             "branching",
             f"{LINKED_FORM}/{document('Triage')}",
-            "Otherwise, take the transition labelled in [the queue rule]"
-            "(../rules/queue.md).",
+            "Otherwise, take the transition [rule B](../rules/b.md) names.",
             "Otherwise, take the transition labelled `low`.",
         )
 
 
-def test_a_linked_decision_resolves_the_label_through_the_document(
+def test_a_linked_decision_resolves_its_branch_through_the_document(
     tmp_path: Path,
 ) -> None:
-    """The linked form walks the path only when each rule states its label."""
+    """The linked form walks the path only when each rule states its branch."""
     workflow = broken(
         tmp_path,
         "looping",
-        "linked/rules/rework.md",
-        "The transition labelled `revise` applies.",
-        "The transition labelled `approve` applies.",
+        "linked/rules/a.md",
+        "The transition into `Revise` applies.",
+        "The transition into `Publish` applies.",
     )
     faults = scenario_faults(workflow, workflow.scenarios[1])
     assert any("two-rounds" in fault for fault in faults)
+
+
+@pytest.mark.parametrize("workflow", ["branching", "looping"])
+def test_the_linked_bundle_draws_no_branch_label(workflow: str, tmp_path: Path) -> None:
+    """A bundle of the linked form carries its entry's flowchart unlabelled."""
+    form = read_workflow(WORKFLOWS / workflow)
+    assert bundle(form.form(LINKED_FORM), tmp_path).returncode == 0
+    drawn = [
+        body
+        for kind, body in FENCE.findall((tmp_path / ENTRY_BUNDLE).read_text())
+        if kind == "mermaid"
+    ]
+    assert len(drawn) == 1
+    edges = drawn_edges(drawn)
+    assert len(edges) == len(form.diagram.edges)
+    assert [edge.group(0).strip() for edge in edges if edge.group(2) is not None] == []
+
+
+def test_a_linked_entry_labelling_a_branch_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "branching",
+        f"{LINKED_FORM}/{ENTRY}",
+        "    Triage --> Escalate",
+        "    Triage -->|high| Escalate",
+    )
+    assert entry_faults(workflow, LINKED_FORM) == [
+        "the linked entry labels the edge Triage to Escalate 'high'"
+    ]
+
+
+def test_a_linked_entry_drawing_another_edge_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "branching",
+        f"{LINKED_FORM}/{ENTRY}",
+        "    Triage --> Queue",
+        "    Triage --> Notify",
+    )
+    assert entry_faults(workflow, LINKED_FORM) == [
+        "the linked entry draws edges the diagram does not"
+    ]
+
+
+def test_a_prose_entry_drawing_a_diagram_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "linear",
+        f"{PROSE}/{ENTRY}",
+        "# Release\n",
+        "# Release\n\n```mermaid\nflowchart TD\n    Plan --> Build\n```\n",
+    )
+    assert entry_faults(workflow, PROSE) == ["the prose entry draws a diagram"]
 
 
 def test_a_scenario_path_with_a_step_the_diagram_does_not_draw_is_a_fault(

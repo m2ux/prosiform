@@ -218,7 +218,7 @@ def test_an_empty_or_absent_trace_is_unfinished(tmp_path: Path) -> None:
 def test_a_linked_decision_passes_on_the_path_its_rules_state(
     tmp_path: Path,
 ) -> None:
-    """The linked form's path is the one its rule documents label."""
+    """The linked form's path is the one its rule documents name."""
     branching = CORPUS["branching"]
     high = scenario("branching", "high-severity")
     low = scenario("branching", "low-severity")
