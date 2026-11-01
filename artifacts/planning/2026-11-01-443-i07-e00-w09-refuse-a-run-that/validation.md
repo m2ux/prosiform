@@ -80,3 +80,7 @@ EXIT 0
 ## What was not proved here
 
 - **The eval's own paid runs.** `make eval-diagrams` starts agent sessions against a real CLI and is not run by `make check`. Each case drives the runner through the stub agent, or the scorer and report over records laid out by hand, which is where each defect sat.
+
+## CI
+
+`Checks` passed on `6015a8cca1ae89da69286e20799f249d61eb3a7a`, the head of [#481](https://github.com/m2ux/prosiform/pull/481) after merging `origin/i07/e00/main`, the same commit this worktree's `make check` ran at.
