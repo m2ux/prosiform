@@ -1,0 +1,23 @@
+description = "A folder key answering a reference whose substitute path the substitute folder does not hold fails with E_TARGET_NOT_FOUND, naming the reference as its author wrote it, the key that redirected it and the path the redirect resolved to, so a document nobody named directly is reported against the entry that asked for it rather than as a missing reference of its own."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety or resource-limit failure",
+  "Exit status and JSON diagnostics, location, original reference, resolved identity when available, inclusion chain, and remedy when accurate",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules/=stubs/", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "rules/blue.md"
+resolved = "stubs/blue.md"
+source = "guide.md:6"
+chain = ["guide.md", "stubs/blue.md"]
+message_contains = ["rules/blue.md", "rules/", "stubs/blue.md"]

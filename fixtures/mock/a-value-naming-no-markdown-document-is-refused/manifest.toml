@@ -1,0 +1,21 @@
+description = "A mapping value naming no Markdown document is refused as invalid usage, because the substitute becomes the target outright and every stage of the run would publish the reference it redirects as text."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE",
+  "Exit status and JSON diagnostics — 2",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=notes.txt", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["rules.md", "notes.txt", "no Markdown document"]
+reference = "notes.txt"

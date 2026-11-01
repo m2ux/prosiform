@@ -18,8 +18,9 @@ syntax, and the bundle drops it."""
 
 import posixpath
 import re
-from collections.abc import Sequence
-from dataclasses import dataclass, replace
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass, field, replace
+from types import MappingProxyType
 from urllib.parse import quote
 
 from prosiform.profile import is_markdown
@@ -102,6 +103,10 @@ class Reference:
     names, which is why it sits here beside the location rather than in
     a record kept in step with the references it describes. An entry
     reference stands at the head of its own chain.
+
+    A reference a folder key derived also holds that key as its caller
+    wrote it, so the path it names is one no author wrote and the
+    diagnostic refusing that path can say which entry named it.
     """
 
     original: str
@@ -111,6 +116,23 @@ class Reference:
     origin: str | None = None
     chain: tuple[str, ...] = ()
     walk: str | None = None
+    folder: str | None = None
+
+
+@dataclass(frozen=True)
+class Pairing:
+    """One mapping entry as its caller read it, and which kind of entry it states.
+
+    A folder pairing names a folder on both sides, so its key is a path
+    and its substitute is a folder; a document pairing names a reference
+    on each side. Each reference carries the spelling its caller wrote,
+    separator included, because that is what a diagnostic about the entry
+    names.
+    """
+
+    original: Reference
+    alternative: Reference
+    folder: bool
 
 
 def identity(reference: Reference, base: str = "") -> str:
@@ -126,6 +148,292 @@ def identity(reference: Reference, base: str = "") -> str:
     if reference.fragment is None:
         return path
     return f"{path}{FRAGMENT}{reference.fragment}"
+
+
+@dataclass(frozen=True)
+class Redirect:
+    """One substitution a run performed, as the warning stating it reports.
+
+    `resolved` is the substitute the served key names, which is the target
+    one record serves however many references that key served. `would` is
+    the identity the first reference to reach it was written to name,
+    `source` the destination that reference was written as, and `origin`
+    the source position it stands at, absent where the reference is a
+    command-line entry and stands in no source.
+    """
+
+    resolved: str
+    would: str
+    source: str
+    origin: str | None
+
+
+class Redirects:
+    """Every substitution one run performed, and every key a reference named.
+
+    A mapping is a value the run cannot rewrite, and the record of what a
+    run did with it belongs to the run: each stage that resolves a
+    reference again writes the same record, so the mapping holds one and
+    the run reads it after traversal rather than inferring it from the
+    bundle.
+
+    A record is kept under the key that served the reference and the
+    document it substituted, so a key naming one target states one
+    substitution however many references named it — a document key
+    serving the document and one of its sections included — and a folder
+    key states one per document it answered, because each remainder is a
+    target of its own. The first reference to reach one keeps the
+    position and destination the record carries. A key is marked served
+    by any reference that named it, whether or not the record it wrote
+    was the first. The position is the caller's to supply, because the
+    lookup knows a reference was redirected and only the traversal knows
+    where the link that wrote it stands; a record re-reached by a caller
+    that knows no position keeps the one already recorded.
+    """
+
+    def __init__(self) -> None:
+        self._records: dict[tuple[tuple[str, str | None], str], Redirect] = {}
+        self._served: set[tuple[str, str | None]] = set()
+
+    def record(
+        self,
+        key: tuple[str, str | None],
+        substitute: Reference,
+        found: Reference,
+        origin: str | None = None,
+    ) -> None:
+        """Note one redirect: its key, target and the position it was written at."""
+        self._served.add(key)
+        named = (key, substitute.path)
+        earlier = self._records.get(named)
+        if earlier is None:
+            self._records[named] = Redirect(
+                identity(substitute), identity(found), found.original, origin
+            )
+        elif earlier.origin is None and origin is not None:
+            self._records[named] = replace(earlier, origin=origin)
+
+    def served(self, key: tuple[str, str | None]) -> bool:
+        """Whether any reference of the run named this key."""
+        return key in self._served
+
+    def targets(self) -> tuple[Redirect, ...]:
+        """Each substitution the run performed, in the order it first reached one."""
+        return tuple(self._records.values())
+
+
+@dataclass(frozen=True)
+class Substitution:
+    """The mapping from an authored identity to the reference the run reads instead.
+
+    A key is the identity a reference normalized to, so two spellings of
+    one path name one key. One lookup answers: the exact document and
+    section first, then the document alone, then the longest folder key
+    holding the path, so a key carrying a fragment redirects that section,
+    a key naming the whole document covers it and every fragment of it,
+    and a key naming a folder redirects every document under that folder.
+
+    A folder key is a path rather than an identity, because it answers for
+    a path and not for one document: its substitute is a folder, and the
+    remainder a reference carries past the key is what the substitute
+    folder takes. A document key answers before any folder key, and of two
+    folder keys holding one path the longer answers, so the narrowest
+    statement a caller wrote is the one that holds.
+
+    The substitute a folder key names is the reference it derived, and
+    that reference carries the key as its caller wrote it: the path it
+    names is no author's, and a diagnostic refusing it names the entry
+    that asked for it.
+
+    A lookup returns the substitute's reference whole — its path, its
+    section and its authored access walk — while the text the reference
+    was written as stays the author's, because that is what a diagnostic
+    about the link names.
+
+    The keys are held behind a read-only view, so a mapping is a value:
+    the same pairs name the same substitution however many stages read
+    it. What a run did with it is kept beside it, in `redirects`, because
+    that is where a reference is known to have been redirected and which
+    key served it. A key's authored spelling is kept for the warning that
+    states a key no reference named, and a mapping given none writes the
+    key's identity back, which is the spelling the caller wrote.
+    """
+
+    keys: Mapping[tuple[str, str | None], Reference]
+    spellings: Mapping[tuple[str, str | None], str] = MappingProxyType({})
+    folders: Mapping[str, Reference] = MappingProxyType({})
+    redirects: Redirects = field(default_factory=Redirects, compare=False, repr=False)
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "keys", MappingProxyType(dict(self.keys)))
+        object.__setattr__(self, "spellings", MappingProxyType(dict(self.spellings)))
+        object.__setattr__(self, "folders", MappingProxyType(dict(self.folders)))
+
+    def __len__(self) -> int:
+        """How many keys the mapping holds, of either kind."""
+        return len(self.keys) + len(self.folders)
+
+    def __bool__(self) -> bool:
+        """Whether the mapping redirects anything at all."""
+        return bool(self.keys) or bool(self.folders)
+
+    def unserved(self) -> tuple[str, ...]:
+        """Every key no reference named, as its caller wrote it, in the order given."""
+        keys: tuple[tuple[str, str | None], ...] = (
+            *self.keys,
+            *((folder, None) for folder in self.folders),
+        )
+        return tuple(
+            self.spelling(key) for key in keys if not self.redirects.served(key)
+        )
+
+    def spelling(self, key: tuple[str, str | None]) -> str:
+        """One key as the caller wrote it, where the mapping was given its spelling."""
+        written = self.spellings.get(key)
+        if written is not None:
+            return written
+        path, fragment = key
+        return path if fragment is None else f"{path}{FRAGMENT}{fragment}"
+
+    def substitute(self, found: Reference) -> Reference:
+        """One resolved reference as the reference the mapping names instead.
+
+        A reference the mapping does not name, and one naming something
+        other than a local document, is returned as it resolved.
+
+        The lookup answers the exact document and section first, then
+        the document alone, then the longest folder key holding the path.
+        A key the second lookup finds names a document rather than a
+        section, so it covers every fragment of that document: the
+        substitute's path is taken and the section stays the one the
+        reference named. A key the first lookup finds states the section
+        the run reads instead, so its section is the substitute's whole.
+        A folder key names no section and takes none: the substitute's
+        folder joined with the remainder the reference carries past the
+        key is the path, and the section is the reference's.
+
+        What is taken is the substitute's path and its authored access
+        walk, and what stays is the text the reference was written as,
+        because that is what a diagnostic about the link names. A folder
+        key's derived reference keeps the spelling the caller wrote it
+        with, so the path nobody authored can be reported against the
+        entry that asked for it.
+        """
+        answering = self.answering(found)
+        if answering is None:
+            return found
+        _key, named = answering
+        return Reference(
+            found.original,
+            named.path,
+            found.fragment if named.fragment is None else named.fragment,
+            walk=named.walk,
+            folder=named.folder,
+        )
+
+    def redirect(self, found: Reference, origin: str | None = None) -> Reference:
+        """One resolved reference as the reference the mapping names, recording it.
+
+        The record is the run's and not the mapping's: every stage that
+        resolves the same link again records the same substitution, and
+        the first reference to reach one keeps the record, so a warning
+        naming a substitution names where the run first met it.
+
+        The origin is the position the caller read the link at, absent for
+        a reference the command line names, which stands in no source. A
+        stage that resolves the same link again records the same key and
+        adds no position of its own, so which caller answers does not
+        change what the record states.
+
+        A substitute naming no Markdown document is text the bundle
+        carries as authored, so the redirect takes no effect and the key
+        is not served by it: a key that answered only such references
+        substituted nothing. A document key's substitute is held to
+        naming a Markdown document when the mapping is read, so this is
+        reached by a folder key whose derived remainder is a resource.
+        """
+        named = self.substitute(found)
+        if named is found or not is_markdown(named.path):
+            return named
+        self.redirects.record(self.served_key(found), named, found, origin)
+        return named
+
+    def served_key(self, found: Reference) -> tuple[str, str | None]:
+        """The key one reference's identity names, which is what a record is kept under.
+
+        The answer follows the lookup's precedence, so a key carrying a
+        section is marked served by the reference that named that section
+        rather than by every reference to its document, and a folder key is
+        marked served by the first reference it answered.
+        """
+        answering = self.answering(found)
+        return (found.path, None) if answering is None else answering[0]
+
+    def answering(
+        self, found: Reference
+    ) -> tuple[tuple[str, str | None], Reference] | None:
+        """The key that answers one reference and the substitute it names.
+
+        One answer is what the lookup and the record both read, so a
+        caller asking what a reference names and a caller asking which key
+        served it cannot disagree about which of two keys holds.
+
+        The exact document and section answers first, then the document
+        alone, then the longest folder key holding the path. The exact
+        answer is asked for even where the section is absent, because a key
+        naming a document and a key naming that document's section are two
+        keys and the section one states which.
+        """
+        if found.external or not (self.keys or self.folders):
+            return None
+        exact = self.keys.get((found.path, found.fragment))
+        if exact is not None:
+            return ((found.path, found.fragment), exact)
+        whole = self.keys.get((found.path, None))
+        if whole is not None:
+            return ((found.path, None), whole)
+        folder = self.folder(found.path)
+        if folder is None:
+            return None
+        substitute = self.folders[folder]
+        remainder = found.path[len(folder) :].lstrip(SEPARATOR)
+        return (
+            (folder, None),
+            Reference(
+                substitute.original,
+                posixpath.join(substitute.path, remainder),
+                walk=posixpath.join(substitute.walk or substitute.path, remainder),
+                folder=self.spelling((folder, None)),
+            ),
+        )
+
+    def key(self, found: Reference) -> Reference | None:
+        """The substitute one resolved reference's identity names, or nothing.
+
+        A caller for which "the mapping named this" and "the mapping did
+        not" are different outcomes asks this rather than comparing what
+        `substitute` returned, so no case turns on two references being
+        the same object.
+        """
+        answering = self.answering(found)
+        return None if answering is None else answering[1]
+
+    def folder(self, path: str) -> str | None:
+        """The longest folder key one path sits under, or nothing.
+
+        A folder key holds a path that continues it past a separator, so
+        a key `rules` holds `rules/red.md` and not `ruleset.md`: the
+        separator is what states that the key names a folder rather than a
+        document whose name happens to be a prefix.
+        """
+        holding = [key for key in self.folders if path.startswith(f"{key}{SEPARATOR}")]
+        if not holding:
+            return None
+        return max(holding, key=len)
+
+
+UNSUBSTITUTED = Substitution({})
+"""The mapping a run given no `-m` carries, which redirects nothing."""
 
 
 @dataclass(frozen=True)
@@ -402,29 +710,78 @@ def covers(root: str, path: str) -> bool:
     return posixpath.commonpath((held, named)) == held
 
 
-def inside(document: str, text: str, root: str = "") -> Reference:
+def inside(
+    document: str,
+    text: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
+) -> Reference:
     """Resolve a link from the file that carries it, within the source root.
 
     A link is the path a reader of its file follows, so it resolves from
     that file's directory. The root bounds the result: a path landing
-    outside it names nothing the root can contain. A fragment with no
-    path names a section of the document that carries it.
+    outside it names nothing the root can contain, so it is a citation
+    rather than a dependency. A fragment with no path names a section
+    of the document that carries it.
+
+    The mapping is consulted on the identity the reference normalized
+    to, which is the authored identity and never the substitute's: it
+    decides what an identity names, and the root decides what the run
+    does with that identity. A reference the root admits is redirected
+    to the substitute, and so is one the root refuses — a citation can
+    name a stand-in, which is what makes a tree under test reachable
+    from outside its own root. A reference no key names is returned as
+    it resolved, or refused as `OutsideRoot` where the root does not
+    hold it.
+
+    The substitute is exempt from the writing source's root and is
+    never held to it. It is opened through the bounded no-follow walk
+    from the invocation working directory, which is the same access a
+    positional entry takes, so a redirected citation is no wider a
+    grant than an entry reference already is. Holding the substitute to
+    the writing source's root, or reading the mapping after the check
+    had refused the authored path, would refuse every substitute kept
+    beside the tree under test.
+
+    A remote reference is returned before the mapping is consulted: a
+    key is the identity a reference normalized to, and a reference
+    carrying a scheme or an authority names no local path identity for
+    one to match. That is a decision rather than an omission, and the
+    one exception the reach of the mapping has.
+
+    The origin is where the link that wrote this reference stands, which
+    the caller that read it supplies so the substitution can be reported
+    at the first link that redirected it. Every stage that resolves the
+    same link again passes nothing and records nothing new.
     """
     base = posixpath.dirname(document)
     found = resolve(text, base, allow_parent=True)
     if found.external:
         return found
     if not components(text).path:
-        return replace(found, path=document, walk=document)
+        return substitution.redirect(
+            replace(found, path=document, walk=document), origin
+        )
+    resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
+    if substitution.key(resolved) is not None:
+        return substitution.redirect(resolved, origin)
     if not covers(root, found.path):
         raise OutsideRoot(
             "normalizes above the allowed source root, which cannot contain "
             "the document it names"
         )
-    return replace(found, walk=posixpath.join(base, found.walk or found.path))
+    return resolved
 
 
-def bundled(document: str, text: str, opening: str, root: str = "") -> Reference | None:
+def bundled(
+    document: str,
+    text: str,
+    opening: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
+) -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
     A dependency carries no scheme and no authority, normalizes under
@@ -451,11 +808,16 @@ def bundled(document: str, text: str, opening: str, root: str = "") -> Reference
     """
     if withholding(opening):
         return None
-    return resolvable(document, text, root)
+    return resolvable(document, text, root, substitution, origin)
 
 
 def withholding_target(
-    document: str, text: str, opening: str, root: str = ""
+    document: str,
+    text: str,
+    opening: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
 ) -> Reference | None:
     """The target one withheld link names, where the run is responsible for it.
 
@@ -479,10 +841,16 @@ def withholding_target(
     """
     if not withholding(opening):
         return None
-    return resolvable(document, text, root)
+    return resolvable(document, text, root, substitution, origin)
 
 
-def resolvable(document: str, text: str, root: str = "") -> Reference | None:
+def resolvable(
+    document: str,
+    text: str,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
+) -> Reference | None:
     """The target one link names, where it resolves under the root to a document.
 
     Such a reference carries no scheme and no authority, normalizes
@@ -497,7 +865,7 @@ def resolvable(document: str, text: str, root: str = "") -> Reference | None:
     caller reading the mark.
     """
     try:
-        found = inside(document, text, root)
+        found = inside(document, text, root, substitution, origin)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):
@@ -510,9 +878,17 @@ def rebased(found: Reference, text: str) -> str:
 
     A deferral publishes the path the run that compiles the material
     follows from the working directory the bundle was compiled in, with
-    the fragment the link resolved retained.
+    the fragment the link resolved to retained. The path is the
+    target's, so a target the substitution mapping redirected publishes
+    the substitute's path, and so is the fragment: a section key
+    redirects the section together with the document, while a document
+    key keeps the section the reference named. A target resolving to no
+    section publishes the fragment its author wrote, which an empty one
+    spells as the bare delimiter.
     """
     path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
+    if found.fragment is not None:
+        return f"{path}{FRAGMENT}{found.fragment}"
     fragment = components(text).fragment
     if fragment is None:
         return path

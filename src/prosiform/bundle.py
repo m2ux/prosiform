@@ -116,6 +116,8 @@ from pathlib import PurePosixPath
 from markdown_it.token import Token
 
 from prosiform.closure import (
+    UNSUBSTITUTED,
+    Substitution,
     bundled,
     deferred,
     dispatched,
@@ -330,7 +332,12 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
-def emitted_visible(path: str, inline: Token, root: str = "") -> str:
+def emitted_visible(
+    path: str,
+    inline: Token,
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+) -> str:
     """The text one inline token shows once the bundle has rewritten its links.
 
     A heading can carry a link, and one the run withholds a compilation
@@ -348,7 +355,11 @@ def emitted_visible(path: str, inline: Token, root: str = "") -> str:
         before = children[at - 1] if at else None
         if child.type == TEXT and before is not None and before.type == LINK_OPEN:
             target = withholding_target(
-                path, str(before.attrGet(HREF) or ""), child.content, root
+                path,
+                str(before.attrGet(HREF) or ""),
+                child.content,
+                root,
+                substitution,
             )
             carried.append(
                 unmarked(child.content) if target is not None else child.content
@@ -358,7 +369,12 @@ def emitted_visible(path: str, inline: Token, root: str = "") -> str:
     return "".join(carried)
 
 
-def shown_text(path: str, tokens: Sequence[Token], root: str = "") -> dict[int, str]:
+def shown_text(
+    path: str,
+    tokens: Sequence[Token],
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+) -> dict[int, str]:
     """The visible text of each heading token, keyed by the token's identity.
 
     The text is the one the bundle emits for that heading, which is the
@@ -366,7 +382,7 @@ def shown_text(path: str, tokens: Sequence[Token], root: str = "") -> dict[int, 
     destination the heading takes names what a reader finds.
     """
     return {
-        id(opening): emitted_visible(path, inline, root)
+        id(opening): emitted_visible(path, inline, root, substitution)
         for opening, inline in headings(tokens)
     }
 
@@ -393,6 +409,7 @@ def rewrite(
     defined: Mapping[str, Definition],
     root: str = "",
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -429,7 +446,15 @@ def rewrite(
                 continue
             start, end = inline.map
             targets = [
-                target(path, one, opening, assigned, root, dispatched_to=here)
+                target(
+                    path,
+                    one,
+                    opening,
+                    assigned,
+                    root,
+                    dispatched_to=here,
+                    substitution=substitution,
+                )
                 for one, opening in found
             ]
             written[start:end] = rewritten(written[start:end], inline, targets, defined)
@@ -439,7 +464,15 @@ def rewrite(
         held = lines(fence.content)
         first = 0 if fence.map is None else fence.map[0] + 1
         for click in clicks(fence):
-            given = target(path, click.destination, "", assigned, root, click.anchor)
+            given = target(
+                path,
+                click.destination,
+                "",
+                assigned,
+                root,
+                click.anchor,
+                substitution=substitution,
+            )
             if given is not None:
                 at = click.line - 1
                 written[at] = clicked(written[at], held[at - first], click, given)
@@ -468,6 +501,7 @@ def target(
     root: str = "",
     anchor: str = ANCHOR,
     dispatched_to: Mapping[Served, str] | None = None,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -490,10 +524,10 @@ def target(
     Markdown document, is text the bundle carries and takes no
     destination, whether or not its author marked it.
     """
-    found = bundled(path, destination, opening, root)
+    found = bundled(path, destination, opening, root, substitution)
     if found is not None:
         return f"{anchor}{assigned[(found.path, found.fragment)]}"
-    withheld = withholding_target(path, destination, opening, root)
+    withheld = withholding_target(path, destination, opening, root, substitution)
     if withheld is None:
         return None
     # A deferral states when the material is compiled, and a dispatch mark
@@ -535,7 +569,12 @@ def document_title(tokens: Sequence[Token]) -> Token | None:
     return opening
 
 
-def file_heading(path: str, tokens: Sequence[Token], root: str = "") -> str:
+def file_heading(
+    path: str,
+    tokens: Sequence[Token],
+    root: str = "",
+    substitution: Substitution = UNSUBSTITUTED,
+) -> str:
     """The text one document's file group is headed by.
 
     It is the document's title where the document carries one, as the
@@ -545,7 +584,7 @@ def file_heading(path: str, tokens: Sequence[Token], root: str = "") -> str:
     titled = document_title(tokens)
     if titled is None:
         return heading_text(path)
-    return single_line(shown_text(path, tokens, root)[id(titled)])
+    return single_line(shown_text(path, tokens, root, substitution)[id(titled)])
 
 
 def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
@@ -759,6 +798,7 @@ def group(
     root: str = "",
     situate: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -804,9 +844,9 @@ def group(
     declarations behind them.
     """
     situate = situate and carries_title(tokens) and selected is None
-    text = shown_text(path, tokens, root)
+    text = shown_text(path, tokens, root, substitution)
     titled = document_title(tokens)
-    title = file_heading(path, tokens, root)
+    title = file_heading(path, tokens, root, substitution)
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])
@@ -840,7 +880,15 @@ def group(
         list(physical)
         if assigned is None
         else rewrite(
-            physical, tokens, chosen, assigned, path, environment, root, dispatching
+            physical,
+            tokens,
+            chosen,
+            assigned,
+            path,
+            environment,
+            root,
+            dispatching,
+            substitution,
         )
     )
     for token in regions(tokens):

@@ -1,0 +1,20 @@
+description = "A mapping entry naming a folder on one side and a document on the other is refused as invalid usage, because a folder and a document state two different questions and one entry cannot ask both, so the run publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE",
+  "Exit status and JSON diagnostics — 2",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules/=stub.md", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["rules/", "stub.md", "folder on one side"]
