@@ -395,7 +395,7 @@ Metadata input failures exit 1, fail check mode, publish no bundle, and preserve
 | `E_INVALID_CONVERSION_METADATA` | Invalid `prosiform` mapping, non-string keys, an absent paired grouping field, unknown setting, the refused `root`, invalid group slug, or invalid integer depth. |
 | `E_GROUP_DEPTH_CONFLICT` | Contributing sources declare different depths for the same exact group identity. |
 | `E_SOURCE_SYMLINK` | A bootstrap source or dependency access traverses a symlink forbidden by the no-follow policy. |
-| `E_SOURCE_OUTSIDE_ROOT` | A path form no grammar admits: a drive path, an absolute path, or one normalising above the invocation working directory. |
+| `E_SOURCE_OUTSIDE_ROOT` | A path form no grammar admits: a drive path or an absolute path. |
 | `E_TARGET_NOT_FOUND` | A permitted Markdown target is missing or is not a regular source file, or its requested heading is missing. |
 | `E_SOURCE_ACCESS` | A source cannot be opened or read due to an access or filesystem error other than the specific missing, symlink or confinement defects above. |
 | `E_SOURCE_CHANGED` | Captured source bytes, identity or derived boundary change or disappear before publication. |
