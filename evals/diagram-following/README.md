@@ -21,7 +21,7 @@ The linked form's entry draws the diagram's flowchart with no branch label, and 
 
 Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
-Every session is given the same [instruction](instruction.md), naming only the entry document. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
+Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), naming the skill it finds. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
 
 A diagram form's `click` lines carry destinations relative to the document that writes them, so a node opens its section for a reader of the source tree and for a session in its workspace. GitHub draws a Mermaid fence in a frame of its own and resolves such a destination against that frame, so a diagram form's clicks open nothing in the blob view; the state documents sit beside the entry document all the same.
 
@@ -48,7 +48,7 @@ The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each sta
 
 ## Scoring
 
-A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of seven classes that fits where its trace departs from the path:
+A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of seven classes that fits where its trace departs from the path:
 
 | Class | The session |
 | --- | --- |
