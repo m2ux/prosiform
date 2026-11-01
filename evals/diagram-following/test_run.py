@@ -328,7 +328,7 @@ def test_the_linked_form_walks_every_scenario_of_a_branching_workflow(
     assert len(written) == len(CORPUS["branching"].scenarios)
     linked = CORPUS["branching"].form(LINKED_FORM)
     rules = {str(path.relative_to(linked)) for path in (linked / "rules").iterdir()}
-    assert rules == {"rules/escalation.md", "rules/queue.md"}
+    assert rules == {"rules/a.md", "rules/b.md"}
     held = {tuple(sorted(entry["files"])) for entry in seen(log)}
     for files in held:
         assert "workflow.md" in files
@@ -354,7 +354,7 @@ def test_the_linked_form_walks_every_scenario_of_a_looping_workflow(
     assert len(written) == len(CORPUS["looping"].scenarios)
     linked = CORPUS["looping"].form(LINKED_FORM)
     rules = {str(path.relative_to(linked)) for path in (linked / "rules").iterdir()}
-    assert rules == {"rules/rework.md", "rules/release.md"}
+    assert rules == {"rules/a.md", "rules/b.md"}
     held = {tuple(sorted(entry["files"])) for entry in seen(log)}
     for files in held:
         assert "workflow.md" in files
