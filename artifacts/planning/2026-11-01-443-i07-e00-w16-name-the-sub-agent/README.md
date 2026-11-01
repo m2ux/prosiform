@@ -14,6 +14,7 @@ This record holds its delivery of `AC25`: the work item, the validation evidence
 | --- | --- |
 | [W16 work item](w16.md) | The defect, its analysis, the design and the checks that carry it |
 | [Validation](validation.md) | Each check failing without the change and passing with it, and every test run |
+| [Change list](change-list.md) | The pull request, its commits and files, the plan changes applied and held, and the debt found |
 
 ## Links
 

@@ -2,7 +2,7 @@
 
 > Validation evidence · Created 2026-11-01
 
-Evidence for each check the [W16 work item](w16.md) names, on branch `i07/e00/w16-name-the-sub-agent` at `0a442443`.
+Evidence for each check the [W16 work item](w16.md) names, on branch `i07/e00/w16-name-the-sub-agent`, last at `4cab9c11` after merging `i07/e00/main`.
 
 ## Before the Change
 
@@ -32,4 +32,4 @@ Evidence for each check the [W16 work item](w16.md) names, on branch `i07/e00/w1
 ## Test Runs
 
 - Targeted: the four cases above, `4 passed`, and each failing with `instruction.md` at its prior text (`4 failed`).
-- `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`: exit 0. `make test` 1420 passed; `make harness` 1062 passed; lint, format, type check, corpus, smoke and every guard pass.
+- `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`: exit 0 at `0a442443`, and again at `4cab9c11` after merging `i07/e00/main` (W09 and W19 merged): `make test` 1420 passed; `make harness` 1064 passed; lint, format, type check, corpus, smoke and every guard pass.
