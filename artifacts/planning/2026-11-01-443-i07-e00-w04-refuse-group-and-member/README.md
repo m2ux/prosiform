@@ -12,6 +12,8 @@ This record holds its delivery of `AC8, AC9, AC10, AC11, AC12`: the work item, t
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | Group and member names that carry no word |
+| [W05 work item](w05.md) | One title case, the parent's title destination and the overview condition |
 
 ## Links
 
