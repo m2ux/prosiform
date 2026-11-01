@@ -12,6 +12,8 @@ This record holds its delivery of `AC22, AC23, AC24`: the work item, the validat
 
 | Artifact | What it holds |
 | --- | --- |
+| [W10 work item](w10.md) | The plan: the linked entry unlabelled, each form's entry held to what it may carry, and every listed render fixture drawing |
+| [Validation](validation.md) | Each check the work item names, its result and the failure it shows before the change |
 
 ## Links
 
