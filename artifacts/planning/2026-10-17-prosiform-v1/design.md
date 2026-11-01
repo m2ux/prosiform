@@ -132,8 +132,8 @@ For these examples, `work-planner/modes/align-mode.md` declares the following fr
 ```yaml
 ---
 prosiform:
-  group: modes
-  group-depth: 2
+  default:
+    group-depth: [{modes: 2}]
 ---
 ```
 
