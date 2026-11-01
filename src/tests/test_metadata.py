@@ -10,8 +10,10 @@ from prosiform.diagnostics import Location
 from prosiform.limits import FILE_BYTES, SCALAR_DIGITS
 from prosiform.metadata import (
     Conversion,
+    Exclusion,
     InvalidMetadata,
     Membership,
+    PathSub,
     Preset,
     decode,
 )
@@ -90,7 +92,12 @@ def test_every_key_names_a_preset_holding_a_mapping() -> None:
     )
     assert [one.name for one in result.presets] == ["default", "Target", "checks"]
     assert joined(result) == [("rules", 2)]
-    assert result.presets[1] == Preset("Target")
+    assert result.presets[1].path_subs == (
+        PathSub("checks.md", "stub.md", Location("rules/a.md", 4, 23)),
+    )
+    assert result.presets[2].exclusions == (
+        Exclusion("Draft", None, Location("rules/a.md", 5, 22)),
+    )
 
 
 @pytest.mark.parametrize("value", ['"x"', "1", "null", "true", "[]", "[a]"])
@@ -206,6 +213,104 @@ def test_a_malformed_group_entry_is_refused_at_the_entry(
     assert f"prosiform.default.group-depth[{at}] must" in diagnostic.message
     column = text.rindex(entry) + 1
     assert diagnostic.location == Location("rules/a.md", 2, column)
+
+
+def excluded(entries: str) -> list[tuple[str, int | None]]:
+    """Each section the `default` preset's `exclude` names, with its level."""
+    conversion = parse(preset("exclude: [" + entries + "]"))
+    return [(one.name, one.level) for one in conversion.default.exclusions]
+
+
+def test_an_exclude_list_holds_names_and_levels_together() -> None:
+    assert excluded('Draft, {Tests: 3}, "#Notes", {"Draft: old": 6}') == [
+        ("Draft", None),
+        ("Tests", 3),
+        ("#Notes", None),
+        ("Draft: old", 6),
+    ]
+    text = preset("exclude: [Draft, {Tests: 3}]")
+    assert parse(text).default.exclusions == (
+        Exclusion("Draft", None, Location("rules/a.md", 2, text.index("Draft") + 1)),
+        Exclusion("Tests", 3, Location("rules/a.md", 2, text.index("{Tests") + 1)),
+    )
+
+
+@pytest.mark.parametrize(
+    "entries,at,entry,said",
+    [
+        ("{Tests: 3, Draft: 3}", 0, "{Tests: 3, Draft: 3}", "must be a section name"),
+        ("Draft, {}", 1, "{}", "must be a section name"),
+        ("{3: 1}", 0, "{3: 1}", "must name its section with a string key"),
+        ("{null: 1}", 0, "{null: 1}", "must name its section with a string key"),
+        ("3", 0, "3", "must be a section name"),
+        ("true", 0, "true", "must be a section name"),
+        ("null", 0, "null", "must be a section name"),
+        ("[Draft]", 0, "[Draft]", "must be a section name"),
+        ('""', 0, '""', "must name a section printable, single-line and nonblank"),
+        ('" "', 0, '" "', "must name a section printable, single-line and nonblank"),
+        ('"a\\nb"', 0, '"a\\nb"', "must name a section printable"),
+        ('{"": 2}', 0, '""', "must name a section printable"),
+        ("{Tests: 0}", 0, "0", "for section 'Tests' must be a heading level"),
+        ("{Tests: 7}", 0, "7", "for section 'Tests' must be a heading level"),
+        ("{Tests: 2.0}", 0, "2.0", "for section 'Tests' must be a heading level"),
+        ('{Tests: "3"}', 0, '"3"', "for section 'Tests' must be a heading level"),
+        ("{Tests: true}", 0, "true", "for section 'Tests' must be a heading level"),
+    ],
+)
+def test_a_malformed_exclude_entry_is_refused_naming_it(
+    entries: str, at: int, entry: str, said: str
+) -> None:
+    text = preset("exclude: [" + entries + "]")
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(text)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert f"prosiform.default.exclude[{at}] {said}" in diagnostic.message
+    assert diagnostic.location == Location("rules/a.md", 2, text.rindex(entry) + 1)
+
+
+def test_a_path_sub_entry_is_a_pair_string() -> None:
+    text = preset('path-sub: ["rules.md=stub.md", "a.md#Checks=b/c%20d.md=e"]')
+    assert parse(text).default.path_subs == (
+        PathSub(
+            "rules.md",
+            "stub.md",
+            Location("rules/a.md", 2, text.index('"rules') + 1),
+        ),
+        PathSub(
+            "a.md#Checks",
+            "b/c%20d.md=e",
+            Location("rules/a.md", 2, text.index('"a.md') + 1),
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "entries,at,entry",
+    [
+        ("{rules.md: stub.md}", 0, "{rules.md: stub.md}"),
+        ('"rules.md=stub.md", "rules.md"', 1, '"rules.md"'),
+        ('"=stub.md"', 0, '"=stub.md"'),
+        ('"rules.md="', 0, '"rules.md="'),
+        ('"="', 0, '"="'),
+        ("[rules.md, stub.md]", 0, "[rules.md, stub.md]"),
+        ("3", 0, "3"),
+        ("null", 0, "null"),
+    ],
+)
+def test_a_path_sub_entry_that_is_no_pair_string_is_refused_naming_it(
+    entries: str, at: int, entry: str
+) -> None:
+    text = preset("path-sub: [" + entries + "]")
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(text)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert (
+        f"prosiform.default.path-sub[{at}] must be one ORIGINAL=ALTERNATIVE string"
+        in diagnostic.message
+    )
+    assert diagnostic.location == Location("rules/a.md", 2, text.rindex(entry) + 1)
 
 
 @pytest.mark.parametrize(

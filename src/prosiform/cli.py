@@ -125,7 +125,15 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import DEFAULT, InvalidMetadata, Membership
+from prosiform.metadata import (
+    DEFAULT,
+    INVALID_CONVERSION_METADATA,
+    PATH_SUB,
+    SUBSTITUTION,
+    Conversion,
+    InvalidMetadata,
+    Membership,
+)
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -246,8 +254,6 @@ CLEANUP_FAULT = "cleanup-refused"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 
 DECIMAL = re.compile(r"^[0-9]+$")
-
-SUBSTITUTION_PAIR = "="
 
 EXIT_STATUSES = """exit statuses:
   0  successful compilation, validation, or informational response
@@ -453,7 +459,7 @@ def mock(value: str) -> Pairing:
     both. A folder side carries no section, because a folder names no
     heading for one to select.
     """
-    original, given, alternative = value.partition(SUBSTITUTION_PAIR)
+    original, given, alternative = value.partition(SUBSTITUTION)
     if not given or not original or not alternative:
         raise argparse.ArgumentTypeError(f"{value!r} is no ORIGINAL=ALTERNATIVE pair")
     if marked(original) != marked(alternative):
@@ -468,6 +474,39 @@ def mock(value: str) -> Pairing:
             f"{value!r} gives a folder side a section, and a folder names no heading"
         )
     return Pairing(entry(original), entry(alternative), marked(original))
+
+
+def path_subs(conversion: Conversion) -> None:
+    """Hold each `path-sub` side a document's presets state to the reference grammar.
+
+    A side is read as every other reference is, so a side the grammar
+    refuses, or one carrying a scheme or an authority and naming no
+    local document, fails as invalid conversion metadata at its entry.
+    The grammar's refusals hold whatever directory a side resolves
+    from, so no base is needed to decide them.
+    """
+    for preset in conversion.presets:
+        for at, pair in enumerate(preset.path_subs):
+            for side in (pair.original, pair.alternative):
+                try:
+                    refusal = (
+                        "carries a scheme or an authority, so it names no local "
+                        "document"
+                        if resolve(side).external
+                        else None
+                    )
+                except (Malformed, OutsideRoot) as unresolvable:
+                    refusal = str(unresolvable)
+                if refusal is not None:
+                    raise InvalidMetadata(
+                        Diagnostic(
+                            ERROR,
+                            f"prosiform.{preset.name}.{PATH_SUB}[{at}] side "
+                            f"{side!r} {refusal}",
+                            INVALID_CONVERSION_METADATA,
+                            location=pair.location,
+                        )
+                    )
 
 
 def marked(text: str) -> bool:
@@ -939,6 +978,7 @@ def read_document(
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
+        path_subs(source.conversion)
     return Opened(source, len(data), captured)
 
 
