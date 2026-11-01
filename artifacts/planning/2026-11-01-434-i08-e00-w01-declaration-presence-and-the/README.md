@@ -14,6 +14,7 @@ This record holds its delivery of `AC4, AC5, AC18`: the work item, the validatio
 | --- | --- |
 | [W01](w01.md) | The work item: declaration presence, the `root` refusal, the retired code and the trees that drop the field |
 | [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 

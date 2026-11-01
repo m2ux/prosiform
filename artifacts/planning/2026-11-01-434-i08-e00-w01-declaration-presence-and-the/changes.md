@@ -1,0 +1,5 @@
+# Plan Changes
+
+- **Folded work, applied** — I08:E00 W01 carries the frontmatter edits planned for W06 (every example document, both skills, keeps its block without `root`) and the stubs in `checks/smoke.py`, `checks/mock_scenarios.py` and the eval workflow skill, because the refusal fails each tree that still declares a root. W06 keeps the `checks/authoring.py` root reader, the preambles and `example/README.md`.
+- **Folded work, applied** — W01 withdraws `fixtures/cli/an-allowed-source-root-naming-no-directory`, `fixtures/confinement/a-root-the-filesystem-cannot-open` and `fixtures/mock/a-substitute-root-bounds-its-own-links`, drops `root` from `fixtures/mock/a-substitute-outside-the-writing-root-is-reachable`, and adds `fixtures/confinement/a-path-the-filesystem-cannot-open` for `E_SOURCE_ACCESS`; W07 keeps the remaining families.
+- **Task creation, applied** — [#489](https://github.com/m2ux/prosiform/issues/489) placed in [I08:E00](https://github.com/m2ux/prosiform/issues/434) as W10, covering the new AC19: the *Conversion metadata* paragraph states an empty `prosiform` mapping declares nothing, contrary to its own bullet.
