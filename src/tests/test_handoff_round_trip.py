@@ -60,7 +60,6 @@ SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 ARTIFACT = (
     "---\n"
     "prosiform:\n"
-    '  root: ".."\n'
     '  group: "artifacts"\n'
     "  group-depth: 2\n"
     "---\n"
@@ -80,7 +79,6 @@ ARTIFACT = (
 MODE = (
     "---\n"
     "prosiform:\n"
-    '  root: ".."\n'
     '  group: "modes"\n'
     "  group-depth: 2\n"
     "---\n"

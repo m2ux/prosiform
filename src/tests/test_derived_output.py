@@ -13,7 +13,7 @@ from typing import Any
 
 import pytest
 from test_cli import Run, written
-from test_file_roots import rooted
+from test_file_roots import declared
 
 from prosiform import cli
 
@@ -36,7 +36,7 @@ def test_file_and_section_names_follow_the_working_directory_path(
     tmp_path: Path, suffix: str, fragment: str
 ) -> None:
     name = f"Skill/modes/Run_it{suffix}"
-    written(tmp_path, name, rooted("..", "# Run\n\n## Part\n\nSelected.\n"))
+    written(tmp_path, name, declared("# Run\n\n## Part\n\nSelected.\n"))
     run = invoke(tmp_path, name + fragment)
     output = "Skill_modes_Run_it" + ("__part" if fragment else "")
     assert run.status == 0 and run.stdout == ""
@@ -83,14 +83,6 @@ def test_distinct_selections_join_their_names_in_entry_order(
     assert published == ([] if check else [name])
 
 
-def test_a_declared_root_does_not_rename_an_entry_s_output(tmp_path: Path) -> None:
-    written(tmp_path, "entries/a.md", rooted("../library", "# A\n\n[B](b.md)\n"))
-    written(tmp_path, "library/b.md", rooted(".", "# B\n"))
-    run = invoke(tmp_path, "entries/a.md")
-    assert run.status == 0
-    assert bundle(tmp_path, "entries_a").is_file()
-
-
 def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None:
     written(tmp_path, "entries/a.md", "# A\n")
     (tmp_path / "work").mkdir()
@@ -100,7 +92,7 @@ def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None
 
 
 def test_fragment_referrer_and_check_mode(tmp_path: Path) -> None:
-    written(tmp_path, "dir/a.md", rooted(".", "# A\n\n## Part\n\nContent.\n"))
+    written(tmp_path, "dir/a.md", declared("# A\n\n## Part\n\nContent.\n"))
     assert invoke(tmp_path, "-c", "-f", "dir/a.md", "#part").status == 0
     assert not (tmp_path / "dir_a__part.bundles").exists()
     assert invoke(tmp_path, "-f", "dir/a.md", "#part").status == 0

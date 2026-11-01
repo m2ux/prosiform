@@ -1055,56 +1055,15 @@ def test_a_substitute_reached_by_two_routes_joins_the_group_once(
     assert published.count("The stand-in's scope.") == 1
 
 
-def rooted(tmp_path: Path) -> Path:
-    """A guide linking a rule set, and a stand-in declaring its own root."""
-    (tmp_path / "out").mkdir()
-    (tmp_path / "guide.md").write_text("# Guide\n\nRequire [the rules](rules.md).\n")
-    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule.\n")
-    (tmp_path / "above.md").write_text("# Above\n\nAbove the stand-in root.\n")
-    (tmp_path / "stand-in").mkdir()
-    (tmp_path / "stand-in" / "entry.md").write_text(
-        "---\nprosiform:\n  root: .\n---\n"
-        "# Entry\n\nBeside [a detail](detail.md) and [above](../above.md).\n"
-    )
-    (tmp_path / "stand-in" / "detail.md").write_text("# Detail\n\nA detail.\n")
-    return tmp_path
-
-
-def test_a_substitutes_root_bounds_its_own_outgoing_links(tmp_path: Path) -> None:
-    """A link inside the stand-in's root compiles; one above it stays a citation."""
-    tree = rooted(tmp_path)
-    status, published, _said = grouped(
-        tree, "-m", "rules.md=stand-in/entry.md", "guide.md"
-    )
-    assert status == 0
-    assert "Beside [a detail](#detail)" in published
-    assert "[above](../above.md)" in published
-    assert "# Above" not in published
-
-
-def test_the_substitutes_root_is_read_from_its_own_bytes(tmp_path: Path) -> None:
-    """The authored target's root is not the boundary its substitute is held to."""
-    tree = rooted(tmp_path)
-    (tree / "rules.md").write_text(
-        "---\nprosiform:\n  root: ..\n---\n# Rules\n\nEvery rule.\n"
-    )
-    status, published, _said = grouped(
-        tree, "-m", "rules.md=stand-in/entry.md", "guide.md"
-    )
-    assert status == 0
-    assert "[above](../above.md)" in published
-    assert "# Above" not in published
-
-
 def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     tmp_path: Path,
 ) -> None:
     """AC20's parent segment, read through the substitute's own bytes.
 
     A value carrying `..` names a substitute above the invocation working
-    directory, and the group it joins and the root it declares are its
-    own, resolved from the directory it sits in rather than from the tree
-    the run started in.
+    directory, and the group it joins is its own. Its links resolve from
+    the directory it sits in, which the working directory does not hold,
+    so a link beside it is carried as its author wrote it.
     """
     tree = tmp_path / "tree"
     above = tmp_path / "above"
@@ -1117,9 +1076,8 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     )
     (tree / "rules.md").write_text("# Rules\n\nEvery rule.\n")
     (above / "entry.md").write_text(
-        "---\nprosiform:\n  group: rules\n  group-depth: 2\n  root: .\n---\n"
-        "The stand-in preamble, linking [its detail](detail.md) and "
-        "[the guide](../tree/guide.md).\n\n"
+        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "The stand-in preamble, linking [its detail](detail.md).\n\n"
         "## Scope\n\nThe stand-in's scope.\n"
     )
     (above / "detail.md").write_text("# Detail\n\nBeside the stand-in.\n")
@@ -1133,9 +1091,8 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     published = (folder / "guide.bundle.md").read_text()
     assert published.startswith("# Rules\n")
     assert "### Entry" in published
-    assert "[its detail](#detail)" in published
-    assert "Beside the stand-in." in published
-    assert "[the guide](../tree/guide.md)" in published
+    assert "[its detail](detail.md)" in published
+    assert "Beside the stand-in." not in published
 
 
 def withheld_tree(tmp_path: Path) -> Path:

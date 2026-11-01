@@ -10,8 +10,8 @@ from prosiform import cli
 from prosiform.access import read_source
 
 
-def rooted(root: str, text: str) -> str:
-    return f'---\nprosiform: {{root: "{root}"}}\n---\n{text}'
+def declared(text: str) -> str:
+    return f"---\nprosiform: {{}}\n---\n{text}"
 
 
 def test_entries_and_linked_files_default_to_invocation_directory(
@@ -26,15 +26,15 @@ def test_entries_and_linked_files_default_to_invocation_directory(
     assert "[Above](../c.md)" in run.bundle
 
 
-def test_library_root_outside_source_and_fragment_self_reference(
+def test_links_resolve_from_their_own_file_and_a_fragment_names_its_document(
     tmp_path: Path,
 ) -> None:
     written(
         tmp_path,
         "entries/a.md",
-        rooted("../library", "# A\n\n[Self](#a) [B](../library/b.md)\n"),
+        declared("# A\n\n[Self](#a) [B](../library/b.md)\n"),
     )
-    written(tmp_path, "library/b.md", rooted("../other", "# B\n\n[C](../other/c.md)\n"))
+    written(tmp_path, "library/b.md", declared("# B\n\n[C](../other/c.md)\n"))
     written(tmp_path, "other/c.md", "# C\n\nSeparate library.\n")
     run = invoke("entries/a.md", cwd=tmp_path)
     assert run.status == 0
@@ -50,11 +50,13 @@ def test_parent_entry_bootstrap_and_referrer(tmp_path: Path) -> None:
     assert "Parent content." in run.bundle
 
 
-def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -> None:
-    written(tmp_path, "one/a.md", rooted(".", "# A\n\n[Target](x.md)\n"))
-    written(tmp_path, "one/x.md", rooted("..", "# X\n\nFirst target.\n"))
-    written(tmp_path, "two/b.md", rooted(".", "# B\n\n[Target](x.md)\n"))
-    written(tmp_path, "two/x.md", rooted("..", "# X\n\nSecond target.\n"))
+def test_same_named_targets_in_distinct_directories_keep_a_stable_order(
+    tmp_path: Path,
+) -> None:
+    written(tmp_path, "one/a.md", declared("# A\n\n[Target](x.md)\n"))
+    written(tmp_path, "one/x.md", declared("# X\n\nFirst target.\n"))
+    written(tmp_path, "two/b.md", declared("# B\n\n[Target](x.md)\n"))
+    written(tmp_path, "two/x.md", declared("# X\n\nSecond target.\n"))
     forward = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     reverse = invoke("two/b.md", "one/a.md", cwd=tmp_path)
     assert forward.status == reverse.status == 0
@@ -71,23 +73,23 @@ def test_distinct_roots_have_distinct_targets_and_stable_order(tmp_path: Path) -
     assert "[Target](#x)" in forward.bundle and "[Target](#x-1)" in forward.bundle
 
 
-def test_files_under_distinct_roots_are_headed_by_working_directory_paths(
+def test_files_in_distinct_directories_are_headed_by_working_directory_paths(
     tmp_path: Path,
 ) -> None:
     for name in ("one", "two"):
-        written(tmp_path, f"{name}/same.md", rooted(".", "Body.\n"))
+        written(tmp_path, f"{name}/same.md", declared("Body.\n"))
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
     assert run.status == 0
     assert run.bundle == "# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
 
 
-def test_shared_target_cycle_retains_its_own_root(tmp_path: Path) -> None:
-    written(tmp_path, "one/a.md", rooted("../shared", "# A\n\n[C](../shared/c.md)\n"))
-    written(tmp_path, "two/b.md", rooted("../shared", "# B\n\n[C](../shared/c.md)\n"))
+def test_a_shared_target_cycle_is_captured_once(tmp_path: Path) -> None:
+    written(tmp_path, "one/a.md", declared("# A\n\n[C](../shared/c.md)\n"))
+    written(tmp_path, "two/b.md", declared("# B\n\n[C](../shared/c.md)\n"))
     written(
         tmp_path,
         "shared/c.md",
-        rooted("..", "# C\n\n[A](../one/a.md) [B](../two/b.md)\n\nOnce.\n"),
+        declared("# C\n\n[A](../one/a.md) [B](../two/b.md)\n\nOnce.\n"),
     )
     run = invoke("one/a.md", "two/b.md", cwd=tmp_path)
     assert run.status == 0
@@ -98,25 +100,13 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(
         tmp_path,
         "entry/a.md",
-        rooted("../library", "# A\n\n[¬ Later](../library/b%20%25%23%3F.md)\n"),
+        declared("# A\n\n[¬ Later](../library/b%20%25%23%3F.md)\n"),
     )
     written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "[Later](library/b%20%25%23%3F.md)" in run.bundle
     assert "Hidden." not in run.bundle
-
-
-@pytest.mark.parametrize("root", ["missing", "file.md"])
-def test_missing_or_non_directory_root_has_original_location(
-    tmp_path: Path, root: str
-) -> None:
-    written(tmp_path, "file.md", "# File\n")
-    written(tmp_path, "a.md", rooted(root, "# A\n"))
-    run = invoke("-d", "json", "a.md", cwd=tmp_path)
-    assert run.status == 1
-    assert run.diagnostics()[0]["code"] == cli.ROOT_NOT_FOUND
-    assert run.diagnostics()[0]["location"] == {"file": "a.md", "line": 2, "column": 19}
 
 
 @pytest.mark.parametrize("entry", ["alias/a.md", "alias/../a.md"])
@@ -131,51 +121,20 @@ def test_bootstrap_checks_components_before_normalization(
     assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
 
 
-def test_root_walk_checks_symlinks_before_parent_segments(tmp_path: Path) -> None:
-    (tmp_path / "real").mkdir()
-    (tmp_path / "alias").symlink_to("real", target_is_directory=True)
-    written(tmp_path, "a.md", rooted("alias/..", "# A\n"))
-    run = invoke("-d", "json", "a.md", cwd=tmp_path)
-    assert run.status == 1
-    assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
-
-
-def test_outside_root_link_is_an_unopened_citation(tmp_path: Path) -> None:
-    written(tmp_path, "a.md", rooted("library", "# A\n\n[Outside](../missing.md)\n"))
-    (tmp_path / "library").mkdir()
-    run = invoke("a.md", cwd=tmp_path)
-    assert run.status == 0
-    assert "[Outside](../missing.md)" in run.bundle
-
-
-def test_a_link_beside_its_file_outside_the_root_is_an_unopened_citation(
-    tmp_path: Path,
-) -> None:
-    written(tmp_path, "a.md", rooted("library", "# A\n\n[Beside](b.md)\n"))
-    written(tmp_path, "b.md", "# B\n\nBeside the entry.\n")
-    written(tmp_path, "library/b.md", "# B\n\nInside the root.\n")
-    run = invoke("a.md", cwd=tmp_path)
-    assert run.status == 0
-    assert "[Beside](b.md)" in run.bundle
-    assert "Beside the entry." not in run.bundle
-    assert "Inside the root." not in run.bundle
-
-
-def test_root_replacement_prevents_publication(
+def test_a_replaced_source_directory_prevents_publication(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    written(tmp_path, "a.md", rooted("library", "# A\n"))
-    (tmp_path / "library").mkdir()
+    written(tmp_path, "library/a.md", "# A\n")
     original = cli.compose
 
-    def replace_root(*args: Any, **kwargs: Any) -> Any:
+    def replace_directory(*args: Any, **kwargs: Any) -> Any:
         result = original(*args, **kwargs)
         (tmp_path / "library").rename(tmp_path / "old")
-        (tmp_path / "library").mkdir()
+        written(tmp_path, "library/a.md", "# A\n")
         return result
 
-    monkeypatch.setattr(cli, "compose", replace_root)
-    run = invoke("-d", "json", "a.md", cwd=tmp_path)
+    monkeypatch.setattr(cli, "compose", replace_directory)
+    run = invoke("-d", "json", "library/a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_CHANGED
@@ -205,14 +164,14 @@ def test_root_option_is_invalid_usage(tmp_path: Path) -> None:
     assert run.status == 2
 
 
-def test_members_under_distinct_roots_are_named_by_their_paths(
+def test_members_in_distinct_directories_are_named_by_their_paths(
     tmp_path: Path,
 ) -> None:
     for folder in ("one", "two"):
         written(
             tmp_path,
             f"{folder}/same.md",
-            "---\nprosiform: {root: ., group: rules, group-depth: 2}\n---\n"
+            "---\nprosiform: {group: rules, group-depth: 2}\n---\n"
             "# Same\n\n## Run\n\nContent.\n",
         )
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)

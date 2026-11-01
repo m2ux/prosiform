@@ -41,7 +41,7 @@ SKILL = (
     "read its bundle before following its instructions.\n"
     "\n"
     "Resolve each link target relative to this SKILL.md file. Keep the "
-    "caller's working directory: absent source roots use that directory. "
+    "caller's working directory: it bounds every source the run reads. "
     'Invoke `pf -o "FOLDER" "ABSOLUTE_TARGET"` for each resolved target and '
     "read the whole bundle it writes into that folder. Preserve a link's "
     "fragment when present. A failed "
@@ -65,13 +65,9 @@ def run_bundle(folder: Path, name: str) -> Path:
     return folder / f"{name}.bundles" / f"{name}.bundle.md"
 
 
-def document(
-    body: str, *, root: str | None = None, group: str | None = None, depth: Any = None
-) -> str:
+def document(body: str, *, group: str | None = None, depth: Any = None) -> str:
     """A document with the declared top-level settings and its original body."""
     fields = []
-    if root is not None:
-        fields.append("  root: " + json.dumps(root))
     if group is not None:
         fields.append("  group: " + json.dumps(group))
         fields.append("  group-depth: " + json.dumps(depth))
@@ -232,7 +228,6 @@ class Stack:
             document(
                 "# Assemble\n\nENTRY_INTRO\n\n## Steps\n\nASSEMBLE_MARKER\n\n"
                 "Read [Rules](../../../libraries/alpha/rules.md#checks).\n",
-                root="../../..",
                 group="procedures",
                 depth=2,
             ),
@@ -242,7 +237,6 @@ class Stack:
             document(
                 "# Review\n\n## Checklist\n\n### Inspect\n\nREVIEW_MARKER\n\n"
                 "Read [Rules](../../../libraries/beta/rules.md).\n",
-                root="../../../libraries/beta",
                 group="reviews",
                 depth=3,
             ),
@@ -261,7 +255,6 @@ class Stack:
             document(
                 "# Rules\n\nALPHA_UNSELECTED_INTRO\n\n## Checks\n\n"
                 "ALPHA_RULES_MARKER\n\nRead [Checks](nested/checks.md).\n",
-                root="..",
                 group="rules",
                 depth=2,
             ),
@@ -271,7 +264,6 @@ class Stack:
             document(
                 "# Checks\n\n## Gate\n\n### Verify\n\nCHECKS_MARKER\n\n"
                 "Read [Shared](../shared.md).\n",
-                root="..",
                 group="checks",
                 depth=3,
             ),
@@ -290,7 +282,6 @@ class Stack:
             document(
                 "# Rules\n\n## Checks\n\nBETA_RULES_MARKER\n\n"
                 "Read [Shared](shared.md).\n",
-                root=".",
                 group="rules",
                 depth=2,
             ),
@@ -511,15 +502,13 @@ def stack(installation: Installation, request: pytest.FixtureRequest) -> Stack:
 
 
 def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
-    """Three targets linked from the skill, each with its own root and group."""
+    """Three targets linked from the skill, each with its own group."""
     assemble = stack.tree / "skills/pf-bootstrap-specimen/modes/assemble.md"
     review = stack.tree / "skills/pf-bootstrap-specimen/modes/review.md"
     defaults = stack.tree / "skills/pf-bootstrap-specimen/modes/defaults.md"
-    assert 'root: "../../.."' in assemble.read_text(encoding="utf-8")
     assert 'group: "procedures"' in assemble.read_text(encoding="utf-8")
-    assert 'root: "../../../libraries/beta"' in review.read_text(encoding="utf-8")
     assert 'group: "reviews"' in review.read_text(encoding="utf-8")
-    assert "root:" not in defaults.read_text(encoding="utf-8")
+    assert 'group: "defaults"' in defaults.read_text(encoding="utf-8")
     cases = {
         "Assemble": (
             [
@@ -568,19 +557,19 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         assert stack.skill.name not in stack.entry(label)
 
 
-def test_absent_roots_are_bounded_by_the_invocation_directory(stack: Stack) -> None:
-    """A caller directory that does not hold the leaf leaves the link to it authored."""
+def test_sources_are_bounded_by_the_invocation_directory(stack: Stack) -> None:
+    """A link leaving the caller directory is carried as its author wrote it."""
     other = stack.tree / "skills"
     for label in stack.targets():
         first = stack.compiled(stack.entry(label))
         second = stack.compiled(stack.entry(label, cwd=other), cwd=other)
         assert "RUN_LEAF_MARKER" in first
         assert "RUN_LEAF_MARKER" not in second
-        assert "run/leaf.md)" in second
+        assert "](../../../" in second
 
 
 def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
-    """A fragment keeps the entry file's root and drops the unselected intro."""
+    """A fragment keeps the entry file's settings and drops the unselected intro."""
     output = stack.compiled(stack.entry("Assemble", "steps"))
     assert "ENTRY_INTRO" not in output
     stack.assert_content(
@@ -623,14 +612,13 @@ def test_repeated_target_is_included_once(stack: Stack) -> None:
     assert derived.read_text(encoding="utf-8").count("DEFAULTS_MARKER") == 1
 
 
-def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
-    """Parents with different roots reach one source the caller directory bounds."""
+def test_a_shared_source_is_captured_once(stack: Stack) -> None:
+    """Parents in different directories reach one source the caller directory bounds."""
     stack.write(
         "libraries/alpha/via.md",
         document(
             "# Via\n\n## Body\n\nALPHA_VIA_MARKER\n\n"
             "Read [Common](../../shared/common.md).\n",
-            root="../../shared",
             group="alpha-via",
             depth=2,
         ),
@@ -640,7 +628,6 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
         document(
             "# Via\n\n## Body\n\nPORTAL_VIA_MARKER\n\n"
             "Read [Common](../shared/common.md).\n",
-            root="../shared",
             group="portal-via",
             depth=2,
         ),
@@ -659,16 +646,10 @@ def test_shared_source_keeps_the_caller_root(stack: Stack) -> None:
             "# Join\n\n## Body\n\nJOIN_MARKER\n\n"
             "Read [Alpha](libraries/alpha/via.md).\n\n"
             "Read [Portal](portal/via.md).\n",
-            root=".",
             group="join",
             depth=2,
         ),
     )
-    alpha = (stack.tree / "libraries/alpha/via.md").read_text(encoding="utf-8")
-    portal = (stack.tree / "portal/via.md").read_text(encoding="utf-8")
-    assert 'root: "../../shared"' in alpha
-    assert 'root: "../shared"' in portal
-    assert "root:" not in (stack.tree / "shared/common.md").read_text(encoding="utf-8")
     output = stack.compiled("join.md")
     for marker in (
         "JOIN_MARKER",
