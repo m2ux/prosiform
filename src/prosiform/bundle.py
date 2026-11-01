@@ -79,9 +79,9 @@ Each link in selected content that the bundle compiled is rewritten to
 the destination of the target it resolved to, through the map the
 bundle's own headings produce. A whole-document reference takes the
 destination of that file's heading, except the parent — the first entry
-document — whose whole-document reference takes the destination of its
-first H2 where it heads a file group of its own, and of the heading
-carrying its title where it is a member of a merged group. A fragment takes the
+document — whose whole-document reference takes the destination of the
+heading carrying its title, whether it heads a file group of its own or
+is a member of a merged group. A fragment takes the
 destination of the heading it named, and a fragment-only link resolves
 inside its own source first and then takes that heading's destination. A destination
 is scoped to the whole bundle, so a reference from one group to another
@@ -854,7 +854,8 @@ def group(
 
     The parent keeps its H1 and the content above its first H2 at the
     levels the author wrote, and a whole-document reference to it
-    resolves to that first H2.
+    resolves to the heading carrying its title, or to its first H1
+    where it carries no title.
 
     A selection of None is the whole document. A selection of sections
     emits the regions it names and nothing else.
@@ -1013,40 +1014,25 @@ def group(
         )
         emitted.append(region(written, tokens, token, by, removed))
     if situate:
-        roots = {
-            token.map[0] + 1
-            for token in regions(tokens)
-            if token.type == HEADING_OPEN
-            and level(token) == 2
-            and token.map is not None
-        }
-        at = next(
-            (
-                index
-                for index, heading in enumerate(emitting_headings)
-                if isinstance(heading, Carried)
-                and any(
-                    origin.path == path and origin.line in roots
-                    for origin in heading.origins
-                )
-            ),
-            None,
+        opening = (
+            titled
+            if titled is not None
+            else next(
+                token
+                for token in regions(tokens)
+                if token.type == HEADING_OPEN and level(token) == 1
+            )
         )
-        if at is None:
-            at = next(
-                (
-                    index
-                    for index, heading in enumerate(emitting_headings)
-                    if isinstance(heading, Carried)
-                    and any(origin.path == path for origin in heading.origins)
-                ),
-                None,
-            )
-        if at is not None:
-            heading = emitting_headings[at]
-            emitting_headings[at] = replace(
-                heading, answers=(*heading.answers, (path, None))
-            )
+        target: Target = (path, named[id(opening)])
+        at = next(
+            index
+            for index, heading in enumerate(emitting_headings)
+            if target in heading.answers
+        )
+        heading = emitting_headings[at]
+        emitting_headings[at] = replace(
+            heading, answers=(*heading.answers, (path, None))
+        )
     return Group(
         tuple(emitted),
         Record(path, None, tuple(emitting_headings), tuple(recorded)),
