@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Rules Copy
 
 Every rule the copy states.

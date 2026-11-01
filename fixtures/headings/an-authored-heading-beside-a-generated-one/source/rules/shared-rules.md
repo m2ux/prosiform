@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Shared Rules
 
 ## Every rule

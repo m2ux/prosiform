@@ -18,5 +18,5 @@ severity = "error"
 code = "E_TARGET_NOT_FOUND"
 reference = "procedure.md#review"
 resolved = "procedure.md"
-source = "guide.md:3"
+source = "guide.md:6"
 chain = ["guide.md", "procedure.md#review"]

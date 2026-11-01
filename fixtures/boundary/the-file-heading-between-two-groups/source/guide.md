@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Refer to [other](other.md).

@@ -18,5 +18,5 @@ severity = "error"
 code = "E_TARGET_NOT_FOUND"
 reference = "other.md#nowhere"
 resolved = "docs/other.md"
-source = "docs/notes.md:5"
+source = "docs/notes.md:8"
 chain = ["entry.md", "docs/notes.md#detail", "docs/other.md#nowhere"]

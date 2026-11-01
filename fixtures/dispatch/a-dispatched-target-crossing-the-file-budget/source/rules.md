@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Rules
 
 The rules.

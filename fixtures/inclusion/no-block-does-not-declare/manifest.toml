@@ -1,7 +1,5 @@
 description = "A target carrying no prosiform mapping declares nothing, so the link naming it is emitted as authored and the target contributes no content."
 
-awaiting = "I08:E00:W03"
-
 clauses = [
   "Conversion metadata — An empty block declares",
   "Link classification and resource handling — A link naming a document that declares nothing",

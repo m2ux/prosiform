@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Plan Mode
 
 Scopes the solution before any work starts.

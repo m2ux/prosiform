@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The guide names [the shared rules][rules].

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Stand-in
 
 One section, redirected.

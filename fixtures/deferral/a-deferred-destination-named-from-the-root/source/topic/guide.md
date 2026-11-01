@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Defer [¬ the shared rules](../shared/rules.md#every-rule)

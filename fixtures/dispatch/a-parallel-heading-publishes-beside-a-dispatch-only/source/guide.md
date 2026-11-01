@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Apply [⇉ the plan](plan.md).

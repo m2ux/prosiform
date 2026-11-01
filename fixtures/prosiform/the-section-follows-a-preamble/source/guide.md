@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 Start with [⇉ the plan](plan.md).
 
 # Guide

@@ -1,0 +1,15 @@
+description = "A target declaring prosiform is compiled into the bundle: its content follows the guide under its own heading and the link is rewritten to that heading."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Follow [the shared guidelines](../guidelines.md), which

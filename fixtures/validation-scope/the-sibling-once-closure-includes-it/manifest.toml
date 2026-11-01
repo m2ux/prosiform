@@ -17,5 +17,5 @@ exit_status = 1
 severity = "error"
 code = "E_TARGET_NOT_FOUND"
 reference = "reading-list.md"
-source = "guide.md:9"
+source = "guide.md:12"
 chain = ["guide.md#procedure", "reading-list.md"]

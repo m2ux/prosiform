@@ -1,7 +1,5 @@
 description = "A cited target larger than -B that declares nothing is probed rather than captured, so the link is emitted as authored and the run publishes."
 
-awaiting = "I08:E00:W03"
-
 clauses = [
   "Link classification and resource handling — A link naming a document that declares nothing",
   "Resource limits — -B",
