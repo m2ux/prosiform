@@ -12,6 +12,9 @@ This record holds its delivery of `AC26, AC27, AC28, AC29`: the work item, the v
 
 | Artifact | What it holds |
 | --- | --- |
+| [W17](w17.md) | The work item for the publication and title-dispatch refusals |
+| [W18](w18.md) | The work item for the scalar ceiling in the catalogue |
+| [Validation](validation.md) | The evidence for every check the work items name |
 
 ## Links
 
