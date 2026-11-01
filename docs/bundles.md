@@ -61,7 +61,7 @@ flowchart LR
 
 ## The output folder
 
-`-o DIR` names an existing folder the run's own folder is written into. The working directory is the default. `-o -` is refused: standard output carries no bundle, only the guide, an informational response, or nothing.
+`-o DIR` names the folder the run's own folder is written into, made with any absent parents if it is absent. The working directory is the default. `-o -` is refused: standard output carries no bundle, only the guide, an informational response, or nothing.
 
 A run folder holding any source the run reads is refused, so a run can never write over its own input.
 

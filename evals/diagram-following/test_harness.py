@@ -273,9 +273,15 @@ def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> Non
 
 
 def opencode_part(
-    *, tool: str, description: str, message: str = "m1"
+    *, tool: str, description: str, message: str = "m1", output: str | None = None
 ) -> dict[str, object]:
     """One opencode `tool_use` part, as the CLI prints it."""
+    state: dict[str, object] = {
+        "status": "completed",
+        "input": {"description": description, "prompt": "follow it"},
+    }
+    if output is not None:
+        state["output"] = output
     return {
         "type": "tool_use",
         "part": {
@@ -283,10 +289,38 @@ def opencode_part(
             "callID": f"call_{description}",
             "messageID": message,
             "tool": tool,
-            "state": {
-                "status": "completed",
-                "input": {"description": description, "prompt": "follow it"},
+            "state": state,
+        },
+    }
+
+
+def opencode_task_output(text: str, *, state: str = "completed") -> str:
+    """A `task` call's output, the sub-agent's text wrapped as opencode wraps it."""
+    element = "task_error" if state == "error" else "task_result"
+    return "\n".join(
+        [
+            f'<task id="ses_1" state="{state}">',
+            f"<{element}>",
+            text,
+            f"</{element}>",
+            "</task>",
+        ]
+    )
+
+
+def opencode_step(tokens: int, cost: float) -> dict[str, object]:
+    """One opencode `step_finish` part, its token kinds summing to `tokens`."""
+    return {
+        "type": "step_finish",
+        "part": {
+            "type": "step_finish",
+            "tokens": {
+                "input": tokens - 4,
+                "output": 1,
+                "reasoning": 1,
+                "cache": {"write": 1, "read": 1},
             },
+            "cost": cost,
         },
     }
 
@@ -334,7 +368,51 @@ def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
     assert Opencode().commands(held) == ("./bin/pf -o build sources/workflow.md",)
 
 
-def test_opencode_sums_tokens_and_reads_cost_from_its_last_step(
+def test_opencode_reads_what_each_sub_agent_returned(tmp_path: Path) -> None:
+    """A start returns what its sub-agent's text states, read inside the wrapper."""
+    held = transcript(
+        tmp_path,
+        [
+            opencode_part(
+                tool="task",
+                description="a#b",
+                output=opencode_task_output("Question: which source?"),
+            ),
+            opencode_part(
+                tool="task",
+                description="c#d",
+                message="m2",
+                output=opencode_task_output("done: read it"),
+            ),
+            opencode_part(
+                tool="task",
+                description="e#f",
+                message="m3",
+                output=opencode_task_output("question: stopped", state="error"),
+            ),
+            opencode_part(tool="task", description="g#h", message="m4"),
+        ],
+    )
+    assert Opencode().starts(held) == (
+        Start("a#b", "question", False),
+        Start("c#d", "done", False),
+        Start("e#f", "question", False),
+        Start("g#h", "done", False),
+    )
+
+
+def test_opencode_sums_every_step_of_a_session(tmp_path: Path) -> None:
+    """A session's tokens and cost are the sum of its steps, not its last one."""
+    held = transcript(
+        tmp_path,
+        [opencode_step(100, 0.25), opencode_step(40, 0.125), opencode_step(9, 0.0)],
+    )
+    result = Opencode().result(held)
+    assert Opencode().tokens(result) == 149
+    assert Opencode().cost(result) == 0.375
+
+
+def test_opencode_sums_the_token_kinds_of_one_step(
     tmp_path: Path,
 ) -> None:
     held = transcript(

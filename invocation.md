@@ -83,7 +83,7 @@ The bundle is arranged in file headings and groups, its headings take destinatio
 
 ## Output
 
-A run publishes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o DIR` names, which must exist, or under the working directory when `-o` is absent. The folder is swapped in whole, so a reader sees one run's set or the one before it.
+A run publishes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o DIR` names, made if absent, or under the working directory when `-o` is absent. The folder is swapped in whole, so a reader sees one run's set or the one before it.
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in the derived name, so a hyphen keeps a directory boundary visible in the filename.
 
