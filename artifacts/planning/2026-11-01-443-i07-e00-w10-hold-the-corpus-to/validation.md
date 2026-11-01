@@ -2,7 +2,7 @@
 
 > Validation · Created 2026-11-01
 
-Each check the [work item](w10.md) names, run in the task worktree on branch `i07/e00/w10-hold-the-corpus-to` at `124ee13b`, and `make check` again at `ac8642ce` once `origin/i07/e00/main` was merged in. Each test was also run against the tree before the change, to show it fails there.
+Each check the [work item](w10.md) names, run in the task worktree on branch `i07/e00/w10-hold-the-corpus-to` at `124ee13b`, and `make check` again at `ac8642ce` and `97b1c16d`, each after `origin/i07/e00/main` was merged in. CI passed on `97b1c16d`, which merged into `i07/e00/main` as `36f9b72a`. Each test was also run against the tree before the change, to show it fails there.
 
 ## T1 The linked bundle draws no branch label
 
@@ -40,4 +40,4 @@ Before the change, mermaid-cli refuses the semicolon fixture's bundle: `...lient
 
 **Covers:** none. **Result:** ✓
 
-`PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` exits 0 at both revisions: at `ac8642ce`, `src` tests 1420 passed, harness 1087 passed, every other target passing.
+`PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` exits 0 at every revision: at `97b1c16d`, `src` tests 1420 passed, harness 1091 passed, every other target passing.
