@@ -14,6 +14,7 @@ This record holds its delivery of `AC4`: the work item, the validation evidence 
 | --- | --- |
 | [W04 work item](w04.md) | The task's component, problem, proposal and work breakdown |
 | [Validation](validation.md) | The evidence for each check the work item names |
+| [Change list](changes.md) | The plan changes the session applied and held, and its debt findings |
 
 ## Links
 
@@ -22,3 +23,4 @@ This record holds its delivery of `AC4`: the work item, the validation evidence 
 | Epic | [I07:E01 Deferred Debt](https://github.com/m2ux/prosiform/issues/479) |
 | Initiative | [I07 Review Remediation](https://github.com/m2ux/prosiform/issues/442) |
 | Task issue | [#490](https://github.com/m2ux/prosiform/issues/490) |
+| Pull request | [#497](https://github.com/m2ux/prosiform/pull/497) |
