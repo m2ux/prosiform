@@ -14,6 +14,7 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 | --- | --- |
 | [W02](w02.md) | The work item: the README's bootstrap form, the check holding its form table to `run.FORMS`, and the tests. |
 | [Validation](validation.md) | The procedure, observation and result of each check the work item names. |
+| [Change List](changes.md) | The plan changes the session applied and held, and the debt its validation found. |
 
 ## Links
 
@@ -21,3 +22,5 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 | --- | --- |
 | Epic | [I07:E01 Deferred Debt](https://github.com/m2ux/prosiform/issues/479) |
 | Initiative | [I07 Review Remediation](https://github.com/m2ux/prosiform/issues/442) |
+| Task issue | [#485](https://github.com/m2ux/prosiform/issues/485) |
+| Pull request | [#496](https://github.com/m2ux/prosiform/pull/496) |
