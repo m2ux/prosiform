@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 
 import pytest
-from harness import Claude
+from harness import Claude, Opencode
 from score import (
     ACTIONS,
     SUBAGENTS,
@@ -503,3 +503,60 @@ def test_an_absent_transcript_records_no_start(tmp_path: Path) -> None:
     assert record_starts(tmp_path / "absent.jsonl", records, Claude()) == ()
     assert read_starts(records) == ()
     assert read_starts(tmp_path / "unwritten") == ()
+
+
+def opencode_task(call: str, message: str, target: str, text: str) -> dict[str, object]:
+    """One completed opencode `task` part, its output wrapped as the CLI wraps it."""
+    return {
+        "type": "tool_use",
+        "part": {
+            "type": "tool",
+            "callID": call,
+            "messageID": message,
+            "tool": "task",
+            "state": {
+                "status": "completed",
+                "input": {"description": target, "prompt": f"Follow {target}."},
+                "output": "\n".join(
+                    [
+                        f'<task id="ses_{call}" state="completed">',
+                        "<task_result>",
+                        text,
+                        "</task_result>",
+                        "</task>",
+                    ]
+                ),
+            },
+        },
+    }
+
+
+def test_an_opencode_question_left_unanswered_scores_as_a_question(
+    tmp_path: Path,
+) -> None:
+    """AC17: a sub-agent's returned question reads as one when the run is scored.
+
+    The session relayed the question rather than answering it, so its first
+    start returns `question` and the cell passes; read as `done`, the same
+    transcript would score as `unrelayed_question`.
+    """
+    corpus = CORPUS["dispatch-question"]
+    [item] = corpus.scenarios
+    [first, second] = item.trace
+    held = transcript(
+        tmp_path,
+        [
+            opencode_task("a", "m1", first.section, "question: which option?"),
+            opencode_task("b", "m2", second.section, "done: chose the first"),
+        ],
+    )
+    records = tmp_path / "records"
+    records.mkdir()
+    workspace(records, corpus, list(item.path))
+    record_starts(held, records, Opencode())
+    assert [start.returned for start in read_starts(records)] == [
+        "question",
+        "done",
+    ]
+    verdict = score(corpus, item, records)
+    assert (verdict.passed, verdict.failure) == (True, None)
