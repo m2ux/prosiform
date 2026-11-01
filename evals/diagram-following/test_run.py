@@ -574,7 +574,9 @@ def test_a_refused_run_writes_no_baseline(
         *("--budget-tokens", "1000"),
     )
     baseline = tmp_path / "baseline.json"
-    with pytest.raises(CorpusError, match="refused, so it has no cells"):
+    with pytest.raises(
+        CorpusError, match="measured no cell, so it writes no baseline: "
+    ):
         main(
             [
                 str(tmp_path / "results" / "test"),
