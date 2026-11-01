@@ -26,22 +26,22 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E00:W06 and E00:W08 | the corpus families, and the two invariants. The two share no file and neither reads the other's work. |
 | E00:W07 and E00:W08 | the documentation pages, and the two invariants. The two share no file and neither reads the other's work. |
 
-### Target Presets
+### Section Presets
 
 | Pair | Two pull requests because |
 | --- | --- |
 | E01:W01 and E01:W02 | prosiform holds presets alone, and group-depth is a list of pairs and group is refused. The two share no file and neither reads the other's work. |
-| E01:W01 and E01:W03 | prosiform holds presets alone, and the exclude and mock entry shapes. The two share no file and neither reads the other's work. |
-| E01:W02 and E01:W03 | group-depth is a list of pairs and group is refused, and the exclude and mock entry shapes. The two share no file and neither reads the other's work. |
+| E01:W01 and E01:W03 | prosiform holds presets alone, and the exclude and path-sub entry shapes. The two share no file and neither reads the other's work. |
+| E01:W02 and E01:W03 | group-depth is a list of pairs and group is refused, and the exclude and path-sub entry shapes. The two share no file and neither reads the other's work. |
 | E01:W02 and E01:W04 | group-depth is a list of pairs and group is refused, and selecting a preset and the default fallback. The two share no file and neither reads the other's work. |
-| E01:W03 and E01:W04 | the exclude and mock entry shapes, and selecting a preset and the default fallback. The two share no file and neither reads the other's work. |
-| E01:W04 and E01:W05 | selecting a preset and the default fallback, and a preset subsuming its compilation's arguments. The two share no file and neither reads the other's work. |
-| E01:W04 and E01:W06 | selecting a preset and the default fallback, and the unused-preset warning. The two share no file and neither reads the other's work. |
-| E01:W04 and E01:W07 | selecting a preset and the default fallback, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
-| E01:W04 and E01:W08 | selecting a preset and the default fallback, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
-| E01:W05 and E01:W06 | a preset subsuming its compilation's arguments, and the unused-preset warning. The two share no file and neither reads the other's work. |
-| E01:W05 and E01:W07 | a preset subsuming its compilation's arguments, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
-| E01:W05 and E01:W08 | a preset subsuming its compilation's arguments, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
+| E01:W03 and E01:W04 | the exclude and path-sub entry shapes, and selecting a preset by keyword and default. The two share no file and neither reads the other's work. |
+| E01:W04 and E01:W05 | selecting a preset by keyword and default, and the union of matched presets. The two share no file and neither reads the other's work. |
+| E01:W04 and E01:W06 | selecting a preset by keyword and default, and the unused-preset warning. The two share no file and neither reads the other's work. |
+| E01:W04 and E01:W07 | selecting a preset by keyword and default, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
+| E01:W04 and E01:W08 | selecting a preset by keyword and default, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
+| E01:W05 and E01:W06 | the union of matched presets, and the unused-preset warning. The two share no file and neither reads the other's work. |
+| E01:W05 and E01:W07 | the union of matched presets, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
+| E01:W05 and E01:W08 | the union of matched presets, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
 | E01:W06 and E01:W07 | the unused-preset warning, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |
 | E01:W06 and E01:W08 | the unused-preset warning, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
 | E01:W07 and E01:W08 | a deferred target keeping its preset, and the example tree and corpus declaring presets. The two share no file and neither reads the other's work. |
@@ -52,16 +52,16 @@ The pairs below are the ones the dependency checker reports as eligible to share
 
 | Pair | Two pull requests because |
 | --- | --- |
-| E02:W02 and E02:W05 | an excluded section's links are no dependency, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
+| E02:W02 and E02:W04 | an excluded section's links are no dependency, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
 | E02:W02 and E02:W06 | an excluded section's links are no dependency, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
-| E02:W03 and E02:W04 | included content beneath an exclusion is refused, and a file withholding everything is refused. The two share no file and neither reads the other's work. |
-| E02:W03 and E02:W07 | included content beneath an exclusion is refused, and the selection page states exclusion. W07 documents the refusal W03 states. |
-| E02:W04 and E02:W05 | a file withholding everything is refused, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
-| E02:W04 and E02:W06 | a file withholding everything is refused, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
-| E02:W03 and E02:W05 | included content beneath an exclusion is refused, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
-| E02:W03 and E02:W06 | included content beneath an exclusion is refused, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
-| E02:W05 and E02:W07 | a level tells a repeated heading apart, and the selection page states exclusion. The two share no file and neither reads the other's work. |
-| E02:W06 and E02:W07 | a preset and a top-level key carry an exclusion, and the selection page states exclusion. The two share no file and neither reads the other's work. |
+| E02:W03 and E02:W05 | the whole-file scope of the carve, and a target the preset empties being refused. The two share no file and neither reads the other's work. |
+| E02:W05 and E02:W07 | a target the preset empties being refused, and the selection page states exclusion. W07 documents the refusal W05 states. |
+| E02:W02 and E02:W03 | an excluded section's links are no dependency, and the whole-file scope of the carve. The two share no file and neither reads the other's work. |
+| E02:W03 and E02:W04 | the whole-file scope of the carve, and a level tells a repeated heading apart. The two share no file and neither reads the other's work. |
+| E02:W05 and E02:W06 | a target the preset empties being refused, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
+| E02:W04 and E02:W07 | a level tells a repeated heading apart, and the selection page states exclusion. The two share no file and neither reads the other's work. |
+| E02:W01 and E02:W06 | the grammar, its refusals and the seam, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
+| E02:W02 and E02:W06 | an excluded section's links are no dependency, and a preset and a top-level key carry an exclusion. The two share no file and neither reads the other's work. |
 
 ### Remove the Referrer
 
@@ -102,16 +102,16 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | Pair | Two pull requests because |
 | --- | --- |
 | E06:W01 and E06:W02 | the option's removal and the preset read, and a pair resolving from its declaring file. The two share no file and neither reads the other's work. |
-| E09:W01 and E09:W03 | the option's removal and the preset read, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
-| E06:W01 and E06:W04 | the option's removal and the preset read, and E09's option criterion. The two share no file and neither reads the other's work. |
-| E09:W01 and E09:W05 | the option's removal and the preset read, and the table and the source page. The two share no file and neither reads the other's work. |
+| E06:W01 and E06:W03 | the option's removal and the preset read, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
+| E06:W01 and E06:W04 | the option's removal and the preset read, and E07's superseded criteria. The two share no file and neither reads the other's work. |
+| E06:W01 and E06:W05 | the option's removal and the preset read, and the table and the source page. The two share no file and neither reads the other's work. |
 | E06:W02 and E06:W03 | a pair resolving from its declaring file, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
 | E06:W02 and E06:W05 | a pair resolving from its declaring file, and the table and the source page. The two share no file and neither reads the other's work. |
 | E06:W03 and E06:W04 | the four fixtures rewritten, and the option criterion. The two share no file and neither reads the other's work. |
 | E06:W03 and E06:W05 | the four fixtures rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
-| E06:W02 and E06:W04 | a pair resolving from its declaring file, and E09's option criterion. The superseded criterion cites a row, not a path basis. |
-| E09:W03 and E09:W05 | the four fixtures rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
-| E06:W04 and E06:W05 | E09's option criterion, and the table and the source page. Both amend a record of a channel that is gone. |
+| E06:W02 and E06:W04 | a pair resolving from its declaring file, and E07's superseded criteria. The superseded criteria cite a row, not a path basis. |
+| E06:W03 and E06:W05 | the four fixtures rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
+| E06:W04 and E06:W05 | E07's superseded criteria, and the table and the source page. Both amend a record of a channel that is gone. |
 
 ## Across epics
 
@@ -144,7 +144,7 @@ Every pair the dependency checker reports as eligible below names no other in Jo
 - **The pairs are named by the checker from the edges, not from intent.** Two rows with no dependency between them are reported as eligible, which states that nothing orders them. It does not state that they should share a pull request, and here they should not.
 - **A later pass may join a pair.** Where two rows turn out to touch disjoint files, joining them saves a pull request. That is a decision for the run that opens them, not one the plan can make before the change exists.
 
-The eligible pairs, per epic: E00 four, E01 two, E02 nine, E03 five, E04 four, E05 two, E06 four. Each is listed by the checker, and each is accounted for by the rule above.
+The eligible pairs, per epic: E00 four, E01 two, E02 eight, E03 five, E04 four, E05 two, E06 four. Each is listed by the checker, and each is accounted for by the rule above.
 
 
 ## Epic priority
@@ -154,7 +154,7 @@ The graph orders the epics, and the priority numbers state it. Three numbers, no
 | Priority | Epics | Why |
 | --- | --- | --- |
 | 8 | E00 Declared Inclusion | The only epic whose first row has no inbound edge. It changes the key rule every later epic reads. |
-| 7 | E01 Target Presets | Its `W00` reads E00's clause, and its field rules are what E02 and E06 write against. |
+| 7 | E01 Section Presets | Its `W00` reads E00's clause, and its field rules are what E02 and E06 write against. |
 | 5 | E02 Exclusion, E03 Remove the Referrer, E04 Conformance Faults, E05 Named Budgets, E06 Preset-Only Substitution | Each reads a rule E00 or E01 settles. They run together once those have landed. |
 | 1 | E08 Declared Tree | The bulk migration, last by construction: it waits on every field rule it writes. |
 
