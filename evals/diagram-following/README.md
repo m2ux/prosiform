@@ -4,7 +4,7 @@ How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link 
 
 ## Forms
 
-Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the branch's label, and the two dispatch forms a workflow dispatching a target is written in. A session receives one of six forms, always entered at `workflow.md`:
+Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the state the branch enters, and the two dispatch forms a workflow dispatching a target is written in. A session receives one of six forms, always entered at `workflow.md`:
 
 | Form | Material | What it isolates |
 | --- | --- | --- |
@@ -17,7 +17,9 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 
 A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, and the four dispatch scenarios take `compiled` and `authored`.
 
-The linked form's decisions carry no label of their own. Each names a rule document that states one label, so the edge a branch takes is recoverable only by opening the document the section links, and the label it states is held to the edges the diagram draws. Its rule document's destination resolves from the section that writes it, under `states/`.
+The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
+
+Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
 Every session is given the same [instruction](instruction.md), naming only the entry document. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
 
