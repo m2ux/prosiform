@@ -2,7 +2,7 @@ description = "A document whose reference names material above the allowed sourc
 
 clauses = [
   "Explicitly linked source structure — Explicit dependencies",
-  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Link classification and resource handling — A link naming a document that declares nothing",
   "Reference normalization and path identity, the root is the caller's confinement boundary",
 ]
 

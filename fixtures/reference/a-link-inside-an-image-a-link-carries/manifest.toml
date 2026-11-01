@@ -1,7 +1,7 @@
 description = "A link written inside an image an enclosing link carries resolves under the allowed source root like any other, so both links are bundled and rewritten to their targets' destinations and the run ends in no internal error."
 
 clauses = [
-  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown document links",
   "Bundle destinations",
 ]
 

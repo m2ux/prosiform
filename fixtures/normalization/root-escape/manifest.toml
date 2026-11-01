@@ -1,7 +1,7 @@
 description = "A reference inside a source normalizing to a path outside the allowed source root is emitted as authored, and the document above the root is not opened."
 
 clauses = [
-  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Link classification and resource handling — A link naming a document that declares nothing",
   "Resolution sequence — step 7",
   "Resolution sequence — step 7",
   "Compile before publishing — step 1, allowed source paths resolved against the root",

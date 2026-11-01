@@ -3,7 +3,7 @@ description = "A schemeless root-relative reference written inside a source name
 clauses = [
   "Reference normalization and path identity, the root is the caller's confinement boundary",
   "Reference normalization and path identity, a root-relative path beginning with a slash",
-  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Link classification and resource handling — A link naming a document that declares nothing",
 ]
 
 [invocation]

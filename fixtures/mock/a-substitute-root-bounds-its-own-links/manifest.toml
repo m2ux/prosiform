@@ -3,7 +3,7 @@ description = "The substitute's own declared root bounds its outgoing links, so 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "Conversion metadata — Source ownership",
-  "Link classification and resource handling — Local Markdown links resolving outside the root",
+  "Link classification and resource handling — A link naming a document that declares nothing",
   "Exit status and JSON diagnostics — 0",
 ]
 
