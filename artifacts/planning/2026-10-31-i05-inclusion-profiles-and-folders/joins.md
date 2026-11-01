@@ -136,7 +136,6 @@ The pairs below are the ones the dependency checker reports as eligible to share
 
 ### Mock Substitution
 
-E07:W13 depends on W04, and every other row of the epic is delivered, so it forms no eligible pair.
 
 ## Across epics
 
@@ -210,3 +209,56 @@ The epic is not the unit that serialises work; the component is. Forty-four rows
 - **Eleven files for forty-four rows is the measure of the work.** Most rows are in different files, so a run that reads the component can still dispatch several at once.
 
 - E02:W02 and E02:W03 take separate pull requests: W02 settles which links an excluded section contributes, and W03 reads that answer to tell two headings of one name apart.
+- E02:W02 and E02:W07 take separate pull requests: they extend different components, `src/prosiform/cli.py` and `docs/selection.md`.
+- E02:W04 and E02:W05 take separate pull requests: they extend different components, `src/prosiform/metadata.py` and `src/prosiform/cli.py`.
+- E02:W06 and E02:W07 take separate pull requests: they extend different components, `src/prosiform/metadata.py` and `docs/selection.md`.
+- E06:W02 and E06:W10 take separate pull requests: they extend different components, `src/prosiform/closure.py` and `src/prosiform/bundle.py`.
+- E06:W03 and E06:W10 take separate pull requests: they extend different components, `fixtures/mock` and `src/prosiform/bundle.py`.
+- E06:W04 and E06:W10 take separate pull requests: they extend different components, `artifacts/planning/2026-10-30-414-i05-e09-mock-substitution/epic.md` and `src/prosiform/bundle.py`.
+- E06:W05 and E06:W10 take separate pull requests: they extend different components, `invocation.md` and `src/prosiform/bundle.py`.
+- E06:W06 and E06:W10 take separate pull requests: they extend different components, `src/prosiform/closure.py` and `src/prosiform/bundle.py`.
+- E06:W07 and E06:W10 take separate pull requests: they extend different components, `src/prosiform/cli.py` and `src/prosiform/bundle.py`.
+- E06:W08 and E06:W10 take separate pull requests: they extend different components, `src/prosiform/closure.py` and `src/prosiform/bundle.py`.
+- E06:W09 and E06:W10 take separate pull requests: they extend different components, `checks/mock_scenarios.py` and `src/prosiform/bundle.py`.
+- E07:W02 and E07:W03 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W04 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W05 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W06 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W07 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W08 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W02 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W04 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W05 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W06 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W07 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W08 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W03 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W04 and E07:W05 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W04 and E07:W06 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W04 and E07:W07 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W04 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W04 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W04 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W05 and E07:W06 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W05 and E07:W07 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W05 and E07:W08 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W05 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W05 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W05 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W06 and E07:W07 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W06 and E07:W08 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W06 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W06 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W06 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W07 and E07:W08 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W07 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W07 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W07 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W08 and E07:W09 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W08 and E07:W10 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W08 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W09 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.
+- E07:W10 and E07:W12 took separate pull requests: both rows are delivered, each through its own merged pull request.

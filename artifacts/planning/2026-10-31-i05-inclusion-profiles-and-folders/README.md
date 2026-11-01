@@ -35,8 +35,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [B: union](b-w05.md) | Several governing presets, and the refusal of a disagreement |
 | [B: unused presets](b-w06.md) | The warning for a preset no site matched |
 | [B: deferred targets](b-w07.md) | A preset kept for the run that follows the deferral |
-| [B: trees](b-w08.md) | The example tree and corpus declaring presets |
-| [B: documentation](b-w09.md) | The preset stated in the invocation and the source page |
+| [B: documentation](b-w08.md) | The preset stated in the invocation and the source page |
 | [D: design clause](d-w00.md) | The clause, the code and the pin |
 | [D: grammar and seam](d-w01.md) | The exclusion grammar, its refusals and the narrow settlement |
 | [D: closure](d-w02.md) | An excluded section's links are no dependency |
@@ -76,7 +75,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [H: entry](h-w07.md) | An entry reference compiled as named |
 | [H: folder pair](h-w08.md) | The folder pair refused and its code removed |
 | [H: scenarios](h-w09.md) | The example scenarios stating their stand-ins in presets |
-| [E07 W13: selection](e07-w13.md) | A heading outside the selection recording no substitution |
+| [H: selection](h-w10.md) | A heading outside the selection recording no substitution |
 | [Declared Tree](epic-i-declared-tree.md) | The bulk migration: the example and corpus trees declare presets, once every field rule has landed |
 | [I: example tree](i-w00.md) | The example tree declaring presets in one edit |
 | [I: corpus](i-w01.md) | The corpus sources declaring presets |
@@ -254,7 +253,7 @@ Findings from the plan review against the source, all resolved.
 | The delivered mapping is run-wide: it reaches the entry, every document's links and every dispatched bundle, and no criterion held a pair to its declaring document. | High | E06 W06 and W07 hold a pair to the links its file writes and compile an entry as named; E07 AC2 is superseded. |
 | The folder pair retired here and survived in E07's code, six fixtures and the parser E06 kept for `path-sub`. | High | E06 W08 refuses a side ending in a separator and removes the folder code and fixtures; E07 AC25–AC31 are superseded and W11 withdrawn. |
 | E06 named four `-m` fixtures; 25 pass it, and `make mock-scenarios` passes it in five scenarios that state no edit to the tree under test. | High | E06 AC4 covers every fixture with a disposition for retired capabilities, and W09 moves the scenarios to presets on the copied file. |
-| A withheld link in a heading outside the selection marked its key served, so a run reported a substitution it never made and no unused key. | Major | E07 W13 records a substitution only for selected content. |
+| A withheld link in a heading outside the selection marked its key served, so a run reported a substitution it never made and no unused key. | Major | E06 W10 records a substitution only for selected content. |
 | E06's design row covered a fixture criterion and the epic stated no design criterion. | Medium | AC13 states the clause and W00 covers it; W05 covers AC6 and AC7. |
 
 ## Debt this record defers
