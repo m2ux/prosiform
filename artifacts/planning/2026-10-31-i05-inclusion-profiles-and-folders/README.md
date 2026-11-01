@@ -27,6 +27,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [A: corpus](a-w07.md) | Every fixture family declaring rather than rooting |
 | [A: documentation](a-w08.md) | Eleven pages and five drawings that state the declaration |
 | [A: invariants](a-w09.md) | The one settled selection and the boundary that refuses no link |
+| [A: agent review of #474](agent-review-474.json) | The agent review record of the I08:E00 integration pull request, by reviewed head and target |
 | [B: design clause](b-w00.md) | The clause, the term and the pin |
 | [B: presets only](b-w01.md) | `prosiform` holding presets and nothing else |
 | [B: divisions](b-w02.md) | `group-depth` as pairs, applied per reference |

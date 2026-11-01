@@ -1,0 +1,39 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/474",
+    "head": "be10f1478219271c9f4c8d3932a73684b5b0b9df",
+    "base": "5d7ff99d37995dd846feb078e5a10d1e58e1d1c0",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders/agent-review-474.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-01T16:40:53Z",
+    "scope": "Complete integration diff main...i08/e00/main, base 5d7ff99d (origin/main, carrying I07:E00 #473 and I07:E01 #498) to head be10f147: 1060 files, carried by task merges #467, #487, #491, #492, #493, #499, #500, #501, #502, #504, #505 and #506, the merge of origin/main into the base (5db319f6, 76 commits), the design pin move (f31cce83) and one review fix (be10f147). Update Epic Base merged origin/main with conflicts in Makefile, docs/references.md, fixtures/README.md, one grouping fixture source, src/prosiform/cli.py, src/prosiform/grouping.py, src/tests/test_cli.py, src/tests/test_file_roots.py and four deleted eval rule files. Source read in the diff: closure.py (Probed, Declarations, resolvable/named asking the target's declaration, boundary and climb, normalized keeping leading parents, OutsideRoot limited to drive and root-relative paths), cli.py (reading/probe/declared_entries on the I08 side; main's assembling chains, Unplaced dispatch refusal, occupied publication refusal and first_line merged in; main's ROOT_REMEDIES and undeclared_root dropped with the retired prosiform.root), source.py (frontmatter declaration() probe beside main's diagram helpers), grouping.py and bundle.py (positional order declarations, keep_title/situate, dispatching, first_line, substitution checked at every call site: group, prepared, rewrite), metadata.py (main's scalar-digit ceiling and worded group name beside the declared flag and root refusal). Docs and checks read for surviving root or target-not-found claims: docs/*.md, fixtures/README.md, checks/README.md, Makefile; main-added fixture sources checked for a prosiform declaration on every entry and target.",
+    "criteria": "AC1-AC21 of #434, all ticked. Re-verified at the reviewed head: the inclusion fixtures named by AC1-AC8, AC15, AC16 and AC21 pass in make corpus (398 fixtures, 398 pass); make boundary reports a derived boundary holding every link for the example tree (AC9, AC17); make conformance passes at the new pin b53ae57a with every fixture naming a clause the design carries (AC10, AC19 by inspection of the pinned Conversion metadata clause); make authoring reports 0 findings over 59 example documents (AC11); AC12 by make corpus with unchanged expected bundles; AC13/AC14 by grep of docs for root-as-property wording (none outside repository/frontmatter/eval roots) and make examples unchanged; AC18 by grep (E_ROOT_NOT_FOUND appears only in test_cli's assertion that the catalogue lacks it; main's two reintroduced test_file_roots root tests were dropped in the merge); AC20 by src/tests/test_access.py and test_cli.py passing.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, steps, authoring, boundary, test, harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence, mock-scenarios) passed locally at f31cce83 with PROSIFORM_BUILD naming the worktree build; make tables, links and layout passed after be10f147, which changes checks/README.md prose only. make conformance and make vocabulary pass at pin b53ae57a6c03422e7198b3c7ab19ee0fcc593a71 (305 clauses, 0 declarations naming no clause; 46 contract terms defined). CI workflow Checks passed on be10f1478219271c9f4c8d3932a73684b5b0b9df: https://github.com/m2ux/prosiform/actions/runs/41327486631/job/124910383461",
+    "findings": [
+      {
+        "description": "Merge defect: origin/main added source.declaration(content) -> str for a Mermaid diagram's opening text, which shadowed the I08 frontmatter declaration() probe of the same module, so every run that probed a target failed with E_UNEXPECTED_INTERNAL_ERROR. The diagram helper is named diagram_opening.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/5db319f6d59388b986d51f02bd10db47bfcffe0f"
+      },
+      {
+        "description": "Merge defect: tests and corpus fixtures added on main (dispatch-in-title refusals, links-array refusal, anchor-as-text, every-click-on-one-line, run-folder file refusal, titled entry whole-document reference, wordless member name, heading overflow chain) linked undeclared targets, which declared inclusion carries as text, so they failed with E_TARGET_NOT_FOUND or the wrong outcome. Every entry and target declares prosiform and the expected diagnostic lines move by the frontmatter's three lines.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/5db319f6d59388b986d51f02bd10db47bfcffe0f"
+      },
+      {
+        "description": "Merge conflict: main reworded declared-root diagnostics (ROOT_REMEDIES, undeclared_root) and added E_ROOT_NOT_FOUND rows and test_file_roots root tests; declared inclusion retires prosiform.root and the code (AC4, AC18), so those are dropped and main's links-array, anchor and dispatch-in-title clauses are kept without root wording.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/5db319f6d59388b986d51f02bd10db47bfcffe0f"
+      },
+      {
+        "description": "Stale claim from main in the Makefile header and checks/README.md: running steps/authoring first avoids 'the target-not-found code a moved link produces', but a link naming no document is text under declared inclusion. Both now state that the guard names the file and rule where test and corpus report only moved bytes, and name boundary in the order.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/be10f1478219271c9f4c8d3932a73684b5b0b9df"
+      }
+    ]
+  }
+]
