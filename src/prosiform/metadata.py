@@ -26,6 +26,7 @@ from ruamel.yaml.reader import ReaderError
 from ruamel.yaml.scanner import Scanner, ScannerError
 
 from prosiform.diagnostics import ERROR, Diagnostic, Location, RelatedLocation
+from prosiform.heading import worded
 from prosiform.limits import SCALAR_DIGITS
 
 INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
@@ -440,6 +441,14 @@ def decode(
             INVALID_CONVERSION_METADATA,
             "prosiform.group must be printable, single-line and nonblank, "
             "without ':' or '/'",
+            group.location,
+        )
+    if not worded(group.value):
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            "prosiform.group must carry a word, since its title case is the "
+            "group's heading; name the group with a character other than a "
+            "hyphen, an underscore or whitespace",
             group.location,
         )
     numeric_depth = (
