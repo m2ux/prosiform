@@ -12,6 +12,8 @@ This record holds its delivery of `AC21`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W11 work item](w11.md) | The plan for compiling a declaring target above the working directory |
+| [Validation](validation.md) | Evidence for each check the work item names |
 
 ## Links
 
