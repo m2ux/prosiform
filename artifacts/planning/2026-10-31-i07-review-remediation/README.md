@@ -57,6 +57,10 @@ Each decision was taken with the user before the initiative was raised, or on re
 | [W13 work item](w13.md) | The overview rule and its condition |
 | [W14 work item](w14.md) | The counts and the revision |
 | [W15 work item](w15.md) | The grouping rule where it is read |
+| [W16 work item](w16.md) | The sub-agent trace in every dispatching form |
+| [W17 work item](w17.md) | The publication and title-dispatch refusals stated |
+| [W18 work item](w18.md) | The scalar ceiling in the catalogue |
+| [Joins](joins.md) | Each independent pair not joined, with its reason |
 
 ## Task Disposition
 
@@ -97,9 +101,7 @@ W16, W17 and W18 answer a review of the four merged tasks rather than a finding 
 
 ## Joins
 
-No task shares a pull request with another, and no pair is joined. The tasks are incomparable: each repairs one scope area across files the others do not touch, and each carries the case that proves its own finding.
-
-That incomparability is what the empty Joins cell records, rather than an unexamined default.
+Tasks extending one component share a pull request: W04 and W05 (`src/prosiform/heading.py`), W12, W14 and W15 (`example/work-planner`), and W17 and W18 (the fixtures catalogue). [joins.md](joins.md) gives every other independent pair a line naming why it takes its own pull request.
 
 ## Corrections
 
