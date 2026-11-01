@@ -1,7 +1,8 @@
 ---
 prosiform:
-  group: "protocols"
-  group-depth: 1
+  default:
+    group: "protocols"
+    group-depth: 1
 ---
 # Delivery Base Preparation
 

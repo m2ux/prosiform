@@ -45,14 +45,14 @@ Leading YAML frontmatter is read for metadata and excluded from the body. It ope
 
 The block is one YAML 1.2 Core mapping. Duplicate keys, aliases, merge keys and custom tags are invalid. An opener with no closer fails the run.
 
-`prosiform` holds the conversion settings, and its presence is the declaration. The keys in `prosiform` are `group` and `group-depth`; a key outside them fails the run. `root` fails with `E_INVALID_CONVERSION_METADATA`, naming the field: a boundary is derived from a document's links, so a declared one states nothing a run reads.
+`prosiform` holds the conversion settings, and its presence is the declaration. Every key in `prosiform` is a **preset** name, and its value is a mapping of that preset's settings; a key holding anything else fails the run with `E_INVALID_CONVERSION_METADATA`. The `default` preset is in force wherever its document is compiled. A preset holds the keys below, and a key outside them fails the run. `root` fails, at the top level or within a preset, with `E_INVALID_CONVERSION_METADATA`, naming the field: a boundary is derived from a document's links, so a declared one states nothing a run reads.
 
 | Key | Holds |
 | --- | --- |
 | `group` | a group name, containing neither `:` nor `/` |
 | `group-depth` | an integer from `1` to `6` |
 
-`group` and `group-depth` are declared together or not at all. Other top-level fields, `name` and `description` among them, are skill metadata and carry no conversion meaning. A file declaring no group keeps a group of its own.
+`group` and `group-depth` are declared together or not at all. Other top-level fields, `name` and `description` among them, are skill metadata and carry no conversion meaning. A file whose `default` preset declares no group keeps a group of its own.
 
 Frontmatter counts toward the byte budgets and obeys the nesting budget independently of Markdown containers. It supplies no headings, links or rendered content.
 

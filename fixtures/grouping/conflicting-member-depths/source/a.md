@@ -1,6 +1,7 @@
 ---
 prosiform:
-  group: "shared"
-  group-depth: 2
+  default:
+    group: "shared"
+    group-depth: 2
 ---
 # a

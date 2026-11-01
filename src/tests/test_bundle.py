@@ -689,7 +689,7 @@ def test_the_prosiform_section_follows_a_preamble_and_precedes_its_dispatch(
 def test_the_prosiform_section_precedes_a_titled_entry_members_title(
     tmp_path: Path,
 ) -> None:
-    member = "---\nprosiform: {group: notes, group-depth: 2}\n---\n"
+    member = "---\nprosiform: {default: {group: notes, group-depth: 2}}\n---\n"
     status, bundles, _ = compiled(
         tmp_path,
         {

@@ -1,6 +1,7 @@
 description = "The parent's title sits at grouping depth 1, so the group opens on its own heading and the title is the merged section the parent alone contributes. Another member's whole-document reference to the parent resolves to that title heading, not to the first section beneath it."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping — The parent arrangement",
   "Bundle destinations — Document destinations",
 ]

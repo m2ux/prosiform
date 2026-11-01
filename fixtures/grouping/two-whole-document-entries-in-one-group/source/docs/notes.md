@@ -1,7 +1,8 @@
 ---
 prosiform:
-  group: "docs"
-  group-depth: 1
+  default:
+    group: "docs"
+    group-depth: 1
 ---
 # Notes
 

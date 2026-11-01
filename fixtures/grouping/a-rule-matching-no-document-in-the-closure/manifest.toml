@@ -1,6 +1,7 @@
 description = "A source outside the closure declares a group without contributing a member or a warning."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping",
 ]
 

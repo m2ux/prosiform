@@ -1,7 +1,8 @@
 ---
 prosiform:
-  group: "other"
-  group-depth: 2
+  default:
+    group: "other"
+    group-depth: 2
 ---
 # Unused
 
