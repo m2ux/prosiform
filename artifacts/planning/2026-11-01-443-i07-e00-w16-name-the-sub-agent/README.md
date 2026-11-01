@@ -12,6 +12,7 @@ This record holds its delivery of `AC25`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W16 work item](w16.md) | The defect, its analysis, the design and the checks that carry it |
 
 ## Links
 
