@@ -1,6 +1,7 @@
 description = "A reference to a source heading at the grouping depth resolves to the variant heading carrying the document it named where the name carries variants, and to the merged heading itself where the name occurs once in the group. A fragment reference selects the section it names and not the preamble above it, so neither member contributes an overview subsection here."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping — Merged section references",
   "Grouping — Document-keyed sections",
   "Grouping — Verbatim names",

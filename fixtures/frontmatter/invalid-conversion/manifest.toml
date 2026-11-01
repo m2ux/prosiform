@@ -1,6 +1,7 @@
 description = "A conversion depth must be a string in the metadata mapping."
 
 clauses = [
+  "Presets — default always applies",
   "Conversion metadata",
   "Metadata failures",
   "Validation and failure contract — Publication",

@@ -1,6 +1,7 @@
 ---
 prosiform:
-  group: "notes"
-  group-depth: 2
+  default:
+    group: "notes"
+    group-depth: 2
 ---
 # Bare

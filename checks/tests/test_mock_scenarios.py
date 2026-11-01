@@ -49,8 +49,9 @@ STUB = """\
 ---
 prosiform:
   root: ".."
-  group: "artifacts"
-  group-depth: 1
+  default:
+    group: "artifacts"
+    group-depth: 1
 ---
 # Epic
 

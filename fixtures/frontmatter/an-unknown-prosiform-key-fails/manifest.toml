@@ -1,6 +1,7 @@
-description = "A prosiform key the contract does not admit, here dispatch, fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
+description = "A preset field the contract does not admit, here dispatch, fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
 
 clauses = [
+  "Presets — default always applies",
   "Conversion metadata — The admitted keys",
   "Metadata failures",
 ]
@@ -15,6 +16,6 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_CONVERSION_METADATA"
-message_contains = ["unknown field prosiform.dispatch"]
+message_contains = ["unknown field prosiform.default.dispatch"]
 reference = "guide.md"
 chain = ["guide.md"]

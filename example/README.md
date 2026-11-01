@@ -265,15 +265,16 @@ cd example/work-planner
 pf modes/hoist-mode.md
 ```
 
-Every artifact file declares group `artifacts` at depth `1`. A mode file declares `prosiform: {}`, which includes it with no group.
+Every artifact file's `default` preset declares group `artifacts` at depth `1`. A mode file declares `prosiform: {}`, which includes it with no group.
 
 For example, the [epic](work-planner/artifacts/epic.md) begins with this declaration:
 
 ```yaml
 ---
 prosiform:
-  group: "artifacts"
-  group-depth: 1
+  default:
+    group: "artifacts"
+    group-depth: 1
 ---
 ```
 

@@ -1,6 +1,7 @@
 description = "A substitute declaring a group and depth joins that merged group under its own settings, so its section appears beneath a member heading naming the substitute's own path while the document the link names contributes nothing."
 
 clauses = [
+  "Presets — default always applies",
   "Link classification and resource handling — The substitution mapping",
   "Grouping — Group membership",
   "Grouping — Document content above the grouping depth",
@@ -23,5 +24,5 @@ resolved = "stand-in.md"
 
 [expected.diagnostics.location]
 file = "guide.md"
-line = 6
+line = 7
 column = 1

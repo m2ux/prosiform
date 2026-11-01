@@ -27,7 +27,7 @@ SURFACES = (GUIDE, README, EXAMPLES)
 # keeps the command line; the architecture pages state the rules it links to.
 INSTRUCTIONS = (
     (GUIDE, "pf [OPTIONS] REF [REF ...]"),
-    (SOURCES, "The keys in `prosiform` are `group` and `group-depth`"),
+    (SOURCES, "Every key in `prosiform` is a **preset** name"),
     (SOURCES, "the target's own declaration then decides whether it is compiled"),
     (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
     (GUIDE, "`-f DOC`"),

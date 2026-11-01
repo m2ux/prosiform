@@ -1,6 +1,6 @@
 description = "Contributing members of one group declare conflicting depths."
 
-clauses = ["Grouping", "Metadata failures", "Validation and failure contract — Publication"]
+clauses = ["Presets — default always applies", "Grouping", "Metadata failures", "Validation and failure contract — Publication"]
 
 [invocation]
 cwd = "source"

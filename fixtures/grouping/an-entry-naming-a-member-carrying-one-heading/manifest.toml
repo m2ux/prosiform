@@ -1,6 +1,7 @@
 description = "An entry reference naming a member whose whole content is its title opens the group on that title, and the run succeeds. The member carries nothing above or at the grouping depth beside that heading, so the title is the whole of what the group emits from it, and the other member's subsection follows the merged section in the overview."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping — Document content above the grouping depth",
   "Bundle destinations — Document destinations",
   "Grouping — The parent arrangement",

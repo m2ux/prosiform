@@ -1,6 +1,7 @@
 ---
 prosiform:
-  group: "rules"
-  group-depth: 1
+  default:
+    group: "rules"
+    group-depth: 1
 ---
 Name the harness.
