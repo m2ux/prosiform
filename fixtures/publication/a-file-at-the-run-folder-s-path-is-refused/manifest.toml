@@ -1,0 +1,18 @@
+description = "A regular file standing at the path the run's folder takes is material no run wrote, so the run refuses it with the publication status, names the path, leaves the file where it stands and writes no bundle."
+
+clauses = [
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 3",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 3
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_PUBLICATION_FAILED"
+message_contains = ["guide.bundles"]
