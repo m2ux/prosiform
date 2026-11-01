@@ -12,6 +12,7 @@ This record holds its delivery of `AC11`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W06](w06.md) | The work item: the authoring check's Declaration kind, its root reader withdrawn, and the example pages stating the declaration |
 
 ## Links
 
