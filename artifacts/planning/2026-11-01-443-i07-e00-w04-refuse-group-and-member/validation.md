@@ -69,3 +69,7 @@ Six existing fixtures moved with the convention, each by generated headings and 
 ## T9
 
 **make check.** `PROSIFORM_BUILD=... make check` exits 0 on the branch: lint, format, types, steps, authoring, the unit tests, harness, 378 corpus fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock scenarios.
+
+## T10
+
+**Continuous integration.** The `Checks` workflow passed on head `2d873de4` ([run](https://github.com/m2ux/prosiform/actions/runs/41279912221/job/124769537596)) and, after `origin/i07/e00/main` was merged in again with W10, on head `223dc175` ([run](https://github.com/m2ux/prosiform/actions/runs/41280431713/job/124771074864)). `make check` was rerun locally on each merged head and exited 0.
