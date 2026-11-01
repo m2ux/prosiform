@@ -651,11 +651,11 @@ def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
 def conversion(group: str, depth: int) -> str:
     """One source's complete conversion metadata."""
     return (
-        "---\nprosiform:\n  default:\n    group: "
+        "---\nprosiform:\n  default:\n    group-depth: [{"
         + json.dumps(group)
-        + "\n    group-depth: "
+        + ": "
         + str(depth)
-        + "\n---\n"
+        + "}]\n---\n"
     )
 
 
@@ -1075,7 +1075,7 @@ def test_groups_are_ordered_by_first_link(root: Path) -> None:
 
 
 def test_members_are_ordered_by_first_link(root: Path) -> None:
-    member = "---\nprosiform: {default: {group: notes, group-depth: 2}}\n---\n"
+    member = "---\nprosiform: {default: {group-depth: [{notes: 2}]}}\n---\n"
     written(
         root,
         "guide.md",
@@ -1204,6 +1204,66 @@ def test_headings_an_author_repeats_warn_of_nothing(root: Path) -> None:
     assert run.diagnostics() == []
 
 
+def joining(*groups: tuple[str, int]) -> str:
+    """One source's conversion metadata joining each group at its depth."""
+    entries = ", ".join(
+        "{" + json.dumps(name) + f": {depth}}}" for name, depth in groups
+    )
+    return "---\nprosiform:\n  default:\n    group-depth: [" + entries + "]\n---\n"
+
+
+def test_a_document_joining_two_groups_is_emitted_under_each(root: Path) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\nFollow [the rules](rules.md).\n")
+    written(
+        root,
+        "rules.md",
+        joining(("modes", 1), ("targets", 2))
+        + "# Rules\n\nThe preamble.\n\n## Checks\n\nEvery check.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.diagnostics() == []
+    assert run.bundle == (
+        "# Guide\n\nFollow [the rules](#rules).\n\n"
+        "# Modes\n\n## Rules\n\nThe preamble.\n\n### Checks\n\nEvery check.\n\n"
+        "# Targets\n\n## Overview\n\n### Rules\n\nThe preamble.\n\n"
+        "## Checks\n\nEvery check.\n"
+    )
+
+
+def test_a_depth_disagreement_in_one_of_a_documents_groups_refuses(
+    root: Path,
+) -> None:
+    """Depth is held per group, so the group the members disagree about is named."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\nRead [a](a.md) and [b](b.md).\n",
+    )
+    written(root, "a.md", joining(("modes", 1), ("targets", 2)) + "# A\n")
+    written(root, "b.md", joining(("modes", 1), ("targets", 3)) + "# B\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == GROUP_DEPTH_CONFLICT
+    assert "for group 'targets' is 2" in diagnostic["message"]
+    assert diagnostic["location"]["file"] == "a.md"
+    assert diagnostic["related"][0]["file"] == "b.md"
+
+
+def test_a_group_its_preset_names_twice_holds_the_document_once(root: Path) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\nFollow [the rules](rules.md).\n")
+    written(
+        root,
+        "rules.md",
+        joining(("modes", 1), ("modes", 1)) + "# Rules\n\nEvery rule.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundle.count("Every rule.") == 1
+
+
 def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
     written(
         root,
@@ -1226,12 +1286,12 @@ def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
             "reader tells apart only by where each stands",
             "code": COINCIDENT_HEADING,
             "remedy": "rename a member so its path distinguishes it in the group",
-            "location": {"file": "notes/note.md", "line": 4, "column": 12},
+            "location": {"file": "notes/note.md", "line": 4, "column": 20},
             "related": [
                 {
                     "file": "notes/note.markdown",
                     "line": 4,
-                    "column": 12,
+                    "column": 20,
                     "message": "member heading 'Note'",
                 }
             ],
@@ -2111,7 +2171,7 @@ def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> No
 
 def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     """A member's title the subsection absorbs places no sub-section either."""
-    front = "---\nprosiform:\n  default:\n    group: Merge\n    group-depth: 2\n---\n\n"
+    front = "---\nprosiform:\n  default:\n    group-depth: [{Merge: 2}]\n---\n\n"
     member = "note-\u21c9-plan.md"
     written(
         root,
@@ -2125,7 +2185,7 @@ def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
-    assert diagnostic["source"] == f"{member}:8"
+    assert diagnostic["source"] == f"{member}:7"
 
 
 def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> None:

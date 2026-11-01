@@ -50,8 +50,7 @@ STUB = """\
 prosiform:
   root: ".."
   default:
-    group: "artifacts"
-    group-depth: 1
+    group-depth: [{artifacts: 1}]
 ---
 # Epic
 
@@ -289,8 +288,7 @@ def test_the_shipped_scenarios_are_named_and_distinct() -> None:
 
 
 def test_a_stand_in_declares_the_group_its_artifact_joins() -> None:
-    assert 'group: "artifacts"' in mock_scenarios.ARTIFACT_STUB
-    assert "group-depth: 1" in mock_scenarios.ARTIFACT_STUB
+    assert "group-depth: [{artifacts: 1}]" in mock_scenarios.ARTIFACT_STUB
 
 
 def test_the_redirected_conventions_name_the_stand_in_and_not_the_tracker() -> None:

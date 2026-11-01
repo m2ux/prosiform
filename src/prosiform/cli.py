@@ -125,7 +125,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import InvalidMetadata
+from prosiform.metadata import DEFAULT, InvalidMetadata, Membership
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -1777,28 +1777,29 @@ def confirm(
 def group_depths(
     read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
 ) -> dict[str, int]:
-    """Consistent depths for named groups, ordered by source path."""
-    members: dict[str, list[str]] = {}
+    """Consistent depths for named groups, ordered by source path.
+
+    A document is a member of each group its preset in force pairs it
+    with, so one document may hold one depth in one group and another in
+    a second; within one group every membership must agree.
+    """
+    members: dict[str, list[tuple[str, Membership]]] = {}
     for path in sorted(selected):
-        name = read[path].conversion.default.group
-        if name is not None:
-            members.setdefault(name, []).append(path)
+        for one in read[path].conversion.default.memberships:
+            members.setdefault(one.group, []).append((path, one))
     depths: dict[str, int] = {}
     for name in sorted(members):
-        first = read[members[name][0]].conversion.default
-        assert first.depth is not None and first.depth_location is not None
+        _, first = members[name][0]
         depths[name] = first.depth
-        for path in members[name][1:]:
-            current = read[path].conversion.default
+        for _, current in members[name][1:]:
             if current.depth != first.depth:
                 location = current.depth_location
-                assert location is not None
                 raise Failure(
                     INPUT_FAILURE,
                     Diagnostic(
                         ERROR,
-                        f"prosiform.{first.name}.group-depth for group {name!r} "
-                        f"is {first.depth}; "
+                        f"prosiform.{DEFAULT}.group-depth for group "
+                        f"{name!r} is {first.depth}; "
                         f"another member declares {current.depth}",
                         code=GROUP_DEPTH_CONFLICT,
                         location=first.depth_location,
@@ -1807,7 +1808,7 @@ def group_depths(
                                 location.file,
                                 location.line,
                                 location.column,
-                                f"prosiform.{current.name}.group-depth for group "
+                                f"prosiform.{DEFAULT}.group-depth for group "
                                 f"{name!r} is {current.depth}",
                             ),
                         ),
@@ -1815,6 +1816,14 @@ def group_depths(
                     ),
                 )
     return depths
+
+
+def membership(source: Source, named: str) -> Membership | None:
+    """The membership joining one document to the named group, where it joins it."""
+    return next(
+        (one for one in source.conversion.default.memberships if one.group == named),
+        None,
+    )
 
 
 @dataclass(frozen=True)
@@ -1926,16 +1935,16 @@ def coincident(
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
-        paths = [
-            path for path in selected if read[path].conversion.default.group == named
-        ]
-        names = member_headings(paths, named)
+        joined = {
+            path: joins
+            for path in selected
+            if (joins := membership(read[path], named)) is not None
+        }
+        names = member_headings(list(joined), named)
         members: dict[str, list[Named]] = {}
-        for path in paths:
-            declared = read[path].conversion.default.group_location
-            assert declared is not None
+        for path, joins in joined.items():
             members.setdefault(names[path].casefold(), []).append(
-                Named(names[path], declared)
+                Named(names[path], joins.group_location)
             )
         found.extend(
             (
@@ -2023,10 +2032,12 @@ def assembled(
     """Each group the bundle carries, its links rewritten where a map says so.
 
     The documents arrive in placement order, which `placement` decides.
-    A document without conversion settings is its own file group. Every
-    other document joins the merged group its slug names, which carries
-    its members in placement order. A group stands where its first
-    document is placed, so the group carrying the parent leads and one
+    A document whose preset in force pairs it with no group is its own
+    file group. Every other document joins each merged group a membership
+    names, once however often it is named, and each group carries its
+    members in placement order. A group stands where its first document
+    is placed, groups sharing that document standing in the order its
+    memberships name them, so the group carrying the parent leads and one
     selection always bundles to the same bytes.
     """
     parent = parent_document(entries)
@@ -2034,9 +2045,12 @@ def assembled(
     merging: dict[str, list[str]] = {}
     with assembling(reaching(selected)):
         for path in selected:
-            named = read[path].conversion.default.group
-            if named is not None:
-                merging.setdefault(named, []).append(path)
+            joins = read[path].conversion.default.memberships
+            for one in joins:
+                members = merging.setdefault(one.group, [])
+                if path not in members:
+                    members.append(path)
+            if joins:
                 continue
             tokens = parsed[path]
             groups.append(

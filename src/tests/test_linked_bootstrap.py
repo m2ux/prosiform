@@ -70,8 +70,9 @@ def document(body: str, *, group: str | None = None, depth: Any = None) -> str:
     fields = []
     if group is not None:
         fields.append("  default:")
-        fields.append("    group: " + json.dumps(group))
-        fields.append("    group-depth: " + json.dumps(depth))
+        fields.append(
+            "    group-depth: [{" + json.dumps(group) + ": " + json.dumps(depth) + "}]"
+        )
     if not fields:
         return body
     return "---\nprosiform:\n" + "\n".join(fields) + "\n---\n" + body
@@ -507,9 +508,9 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
     assemble = stack.tree / "skills/pf-bootstrap-specimen/modes/assemble.md"
     review = stack.tree / "skills/pf-bootstrap-specimen/modes/review.md"
     defaults = stack.tree / "skills/pf-bootstrap-specimen/modes/defaults.md"
-    assert 'group: "procedures"' in assemble.read_text(encoding="utf-8")
-    assert 'group: "reviews"' in review.read_text(encoding="utf-8")
-    assert 'group: "defaults"' in defaults.read_text(encoding="utf-8")
+    assert 'group-depth: [{"procedures": ' in assemble.read_text(encoding="utf-8")
+    assert 'group-depth: [{"reviews": ' in review.read_text(encoding="utf-8")
+    assert 'group-depth: [{"defaults": ' in defaults.read_text(encoding="utf-8")
     cases = {
         "Assemble": (
             [
