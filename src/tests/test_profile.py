@@ -228,13 +228,21 @@ def test_the_ceiling_is_reached_under_every_budget_at_its_default() -> None:
         "---\nconfig:\n  kanban:\n    ticketBaseUrl: 'people/#TICKET#.md'\n---\n"
         "kanban\n  Todo\n    [Write]@{ ticket: user }\n",
         "flowchart LR\n  A[\"<a href='people/user.md#setup'>User</a>\"]\n",
-        "sequenceDiagram\n  Note over A: <a href='../people/user.MD'>User</a>\n",
+        "flowchart LR\n  A -->|<a href='../people/user.MD'>User</a>| B\n",
     ],
 )
 def test_a_rendered_link_naming_local_markdown_is_refused(diagram: str) -> None:
     found = list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n")))
     assert [refusal.code for refusal in found] == ["E_UNSUPPORTED_CONSTRUCT"]
     assert found[0].line == 3 + diagram.count("\n")
+
+
+def test_a_links_array_is_refused_naming_its_line() -> None:
+    diagram = 'sequenceDiagram\n  links A: ["people/user.md", "guide.md"]\n'
+    found = list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n")))
+    assert [refusal.code for refusal in found] == ["E_UNSUPPORTED_CONSTRUCT"]
+    assert found[0].line == 5
+    assert "array" in found[0].message
 
 
 @pytest.mark.parametrize(
@@ -249,4 +257,16 @@ def test_a_rendered_link_naming_local_markdown_is_refused(diagram: str) -> None:
     ],
 )
 def test_a_rendered_link_naming_no_local_markdown_is_carried(diagram: str) -> None:
+    assert list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n"))) == []
+
+
+@pytest.mark.parametrize(
+    "diagram",
+    [
+        'flowchart LR\n  click A "x.md" "<a href=\'people/user.md\'>User</a>"\n',
+        "pie\n  \"<a href='people/user.md'>User</a>\" : 1\n",
+        "sequenceDiagram\n  Note over A: <a href='../people/user.MD'>User</a>\n",
+    ],
+)
+def test_an_anchor_mermaid_draws_as_no_anchor_is_carried(diagram: str) -> None:
     assert list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n"))) == []

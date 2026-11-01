@@ -1,0 +1,18 @@
+description = "A sequence diagram's links line whose value is an array of destinations, which a renderer draws as a menu whose entries are named by their positions, is refused with a diagnostic naming the line; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["exchange.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+source = "exchange.md:6"
+chain = ["exchange.md"]

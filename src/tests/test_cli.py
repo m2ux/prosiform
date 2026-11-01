@@ -3050,3 +3050,77 @@ def test_each_diagram_fence_is_read_once_per_parse_of_a_run(
     assert set(calls.values()) == {1}
     sources = [fence for fence in fences if "docs/note.md" in fence.content]
     assert len(sources) == 2
+
+
+def test_a_links_array_is_refused_naming_its_line(root: Path) -> None:
+    """An array renders a menu whose entries are named by their positions."""
+    written(
+        root,
+        "exchange.md",
+        "# Exchange\n\n```mermaid\nsequenceDiagram\n    participant Server\n"
+        '    links Server: ["docs/note.md", "guide.md"]\n```\n',
+    )
+    run = invoke("-d", "json", "exchange.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == "exchange.md:6"
+    assert diagnostic["remedy"]
+
+
+NOTE_ANCHOR = "<a href='docs/note.md'>the note</a>"
+
+
+@pytest.mark.parametrize(
+    "fence",
+    [
+        f'flowchart LR\n    A --> B\n    click B "docs/note.md" "{NOTE_ANCHOR}"\n',
+        f'pie title Share\n    "{NOTE_ANCHOR}" : 40\n    "Other" : 60\n',
+        f"sequenceDiagram\n    Alice->>Bob: hello\n"
+        f"    Note over Alice,Bob: {NOTE_ANCHOR}\n",
+    ],
+    ids=["tooltip", "pie-label", "sequence-note"],
+)
+def test_an_anchor_mermaid_draws_as_no_anchor_is_carried(
+    root: Path, fence: str
+) -> None:
+    """A tooltip, a pie label and a sequence note draw no anchor."""
+    written(root, "map.md", f"# Map\n\n```mermaid\n{fence}```\n")
+    run = invoke("-d", "json", "map.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert NOTE_ANCHOR in run.bundle
+
+
+def test_an_anchor_in_a_label_beside_a_click_is_still_refused(root: Path) -> None:
+    """A node statement on a click's line draws its label's anchor."""
+    written(
+        root,
+        "map.md",
+        "# Map\n\n```mermaid\nflowchart LR\n"
+        '    A["<a href=\'docs/note.md\'>N</a>"]; click A "guide.md" '
+        "\"<a href='guide.md'>tip</a>\"\n```\n",
+    )
+    run = invoke("-d", "json", "map.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["reference"] == "docs/note.md"
+    assert diagnostic["source"] == "map.md:5"
+
+
+def test_every_click_on_one_line_is_followed(root: Path) -> None:
+    """Each statement of the line is read, so both destinations are rewritten."""
+    written(root, "one.md", "# One\n")
+    written(root, "two.md", "# Two\n")
+    written(
+        root,
+        "map.md",
+        "# Map\n\n```mermaid\nflowchart LR\n    A --> B\n"
+        '    click A "one.md"; click B href "two.md" "Two"\n```\n',
+    )
+    run = invoke("map.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click A "#one"; click B href "#two" "Two"\n' in run.bundle
+    assert "\n# One\n" in run.bundle
+    assert "\n# Two\n" in run.bundle
