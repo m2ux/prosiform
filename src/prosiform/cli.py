@@ -182,7 +182,6 @@ INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
-ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_ACCESS = "E_SOURCE_ACCESS"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
@@ -210,7 +209,6 @@ CODES = tuple(
             GROUP_DEPTH_CONFLICT,
             INVALID_USAGE,
             PUBLICATION_FAILED,
-            ROOT_NOT_FOUND,
             SOURCE_CHANGED,
             SOURCE_ACCESS,
             SOURCE_OUTSIDE_ROOT,
@@ -798,12 +796,12 @@ class Opened:
 def read_document(
     root: Path, found: Reference, limits: Limits, total: int = 0
 ) -> Opened:
-    """Capture bounded bytes, typed settings and no-follow source/root identities.
+    """Capture bounded bytes, typed settings and no-follow source identities.
 
     Metadata resolves only after the source has been captured within the byte
-    and nesting limits. An explicit root is walked from its declaring directory;
-    absence binds the invocation working directory. Diagnostics retain physical
-    coordinates and the referring chain."""
+    and nesting limits. Every source is bounded by the invocation working
+    directory. Diagnostics retain physical coordinates and the referring
+    chain."""
     reference, name = found.original, found.path
     written = "the entry reference" if found.origin is None else "the reference"
     chain = found.chain
@@ -891,32 +889,6 @@ def read_document(
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
-        declared = source.conversion.root
-        root_walk = str(Path(name).parent / declared) if declared is not None else "."
-        try:
-            rooted = directory(root, root_walk)
-        except (Unreadable, OSError) as error:
-            code = (
-                SOURCE_SYMLINK
-                if isinstance(error, Symlinked)
-                else ROOT_NOT_FOUND
-                if isinstance(error, Absent)
-                else SOURCE_ACCESS
-            )
-            raise Failure(
-                INPUT_FAILURE,
-                Diagnostic(
-                    ERROR,
-                    str(error),
-                    code,
-                    location=source.conversion.root_location,
-                    reference=reference,
-                    chain=chain,
-                ),
-            ) from error
-        effective = os.path.relpath(rooted[-1][0], root)
-        source = replace(source, root="" if effective == "." else effective)
-        captured = replace(captured, directories=(*captured.directories, *rooted))
         return Opened(source, len(data), captured)
     except InvalidMetadata as invalid:
         raise Failure(

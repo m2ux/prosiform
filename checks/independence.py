@@ -12,7 +12,7 @@ free text is where such a term arrives.
 
 A term names an implementation by its shape, not by its spelling. A struct
 field, a function, a package, a constant and a language name all carry a
-capital, an underscore or a dot: `KeyError`, `E_ROOT_NOT_FOUND`,
+capital, an underscore or a dot: `KeyError`, `E_TARGET_NOT_FOUND`,
 `prosiform.group`, `Python`. The prose a claim is written in carries none of
 these, so the shape alone separates the two, and no list of admitted words
 is needed to tell them apart.

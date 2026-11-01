@@ -1,6 +1,5 @@
 ---
 prosiform:
-  root: ".."
   group: "rules"
   group-depth: 1
 ---

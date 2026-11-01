@@ -1,0 +1,16 @@
+description = "A target whose prosiform mapping holds no key declares, so the link naming it is compiled into the bundle and its destination rewritten."
+
+clauses = [
+  "Conversion metadata — An empty block declares",
+  "Link classification and resource handling — Local Markdown document links",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

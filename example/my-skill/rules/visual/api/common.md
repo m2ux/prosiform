@@ -1,5 +1,4 @@
 ---
-prosiform:
-  root: "../../.."
+prosiform: {}
 ---
 API-specific guidance.

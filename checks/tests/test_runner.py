@@ -78,10 +78,6 @@ TARGET_NOT_FOUND = {
     "reference": "procedure.md#review",
     "resolved": "procedure.md",
 }
-ROOT_NOT_FOUND = {
-    "severity": "error",
-    "code": "E_ROOT_NOT_FOUND",
-}
 BUNDLE_NAME = "guide.bundle.md"
 RUN_FOLDER = "guide.bundles"
 
@@ -101,10 +97,9 @@ def write_fixture(
 ) -> Path:
     """A fixture directory declaring the result its run must produce.
 
-    A fixture declaring that the run cannot find its allowed source root
-    carries no source tree, which is what `source` leaves out. A fixture
-    declaring a run supplied no allowed source root names none, which is
-    what `root` leaves out.
+    A fixture declaring a run supplied no allowed source root names none,
+    which is what `root` leaves out, and carries no source tree, which is
+    what `source` leaves out.
     """
     directory.mkdir(parents=True, exist_ok=True)
     if source:
@@ -444,25 +439,6 @@ def test_standard_output_carrying_bytes_no_declaration_names_is_reported(
     configure(monkeypatch, replaying(tmp_path, b"# Guide\n", b"", 0))
     detail = detail_of(run_fixture(fixture), STDOUT_TEXT)
     assert "standard output carries 8 bytes where the manifest declares none" in detail
-
-
-def test_a_fixture_declaring_an_absent_root_is_decided_from_its_manifest(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The one fixture whose allowed source root is a path it does not hold."""
-    fixture = write_fixture(
-        tmp_path / "fixture",
-        exit_status=1,
-        diagnostics=(ROOT_NOT_FOUND,),
-        source=False,
-        root=None,
-    )
-    configure(
-        monkeypatch, replaying(tmp_path, b"", diagnostic_lines(ROOT_NOT_FOUND), 1)
-    )
-    result = run_fixture(fixture)
-    assert result.passed, result.report()
-    assert not (fixture / "source").exists()
 
 
 def test_a_fixture_naming_a_root_it_does_not_hold_is_refused(

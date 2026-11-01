@@ -45,19 +45,17 @@ def test_settings_are_per_source_and_not_inherited() -> None:
     assert content("# Plain\n").conversion.group is None
 
 
-def test_root_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
+def test_a_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
     path = tmp_path / "a.md"
-    (tmp_path.parent / "library").mkdir(exist_ok=True)
-    raw = b"---\nprosiform:\n  root: ../library\n---\n# A\n"
+    raw = b"---\nprosiform: {}\n---\n# A\n"
     path.write_bytes(raw)
     opened = cli.read_document(
         tmp_path, resolve("a.md"), Limits({b: b.default for b in BUDGETS})
     )
-    path.write_bytes(raw.replace(b"../library", b"../other"))
-    assert opened.source.conversion.root == "../library"
-    assert opened.source.conversion.root_location == Location("a.md", 3, 9)
+    path.write_bytes(b"# A\n")
+    assert opened.source.conversion.declared
     assert opened.capture.digest == hashed(raw)
-    assert content("# Linked\n").conversion.root is None
+    assert not content("# Linked\n").conversion.declared
     with pytest.raises(cli.Failure) as caught:
         cli.recheck(tmp_path, {"a.md": opened.capture})
     assert caught.value.diagnostic.code == cli.SOURCE_CHANGED

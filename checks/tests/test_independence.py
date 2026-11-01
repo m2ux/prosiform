@@ -193,7 +193,7 @@ def test_a_reported_code_the_contract_declares_nowhere_is_read(
 
 def test_the_contract_declares_its_interface_terms() -> None:
     declared = declared_names(DOCUMENTATION)
-    assert "E_ROOT_NOT_FOUND" in declared
+    assert "E_TARGET_NOT_FOUND" in declared
     assert "W_RESOURCE_PORTABILITY" in declared
     assert "warning" in declared
     assert "4" in declared
@@ -201,7 +201,7 @@ def test_the_contract_declares_its_interface_terms() -> None:
 
 
 def test_an_interface_term_the_contract_declares_is_admitted(names: set[str]) -> None:
-    claim = "The run reports E_ROOT_NOT_FOUND."
+    claim = "The run reports E_TARGET_NOT_FOUND."
     assert scan(claim, "where", names) == []
 
 
@@ -269,7 +269,7 @@ def test_an_inflection_of_a_named_term_is_admitted(names: set[str]) -> None:
 
 def test_a_shape_is_what_a_capital_an_underscore_or_a_dot_is() -> None:
     assert shaped("KeyError")
-    assert shaped("E_ROOT_NOT_FOUND")
+    assert shaped("E_TARGET_NOT_FOUND")
     assert shaped("prosiform.group")
     assert not shaped("region")
     assert not shaped("Regions", opening=True)

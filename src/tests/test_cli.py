@@ -66,7 +66,6 @@ from prosiform.cli import (
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     RESOURCE_PORTABILITY,
-    ROOT_NOT_FOUND,
     SOURCE_ACCESS,
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
@@ -265,7 +264,6 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         INVALID_ENCODING,
         INVALID_USAGE,
         PUBLICATION_FAILED,
-        ROOT_NOT_FOUND,
         SOURCE_CHANGED,
         SOURCE_ACCESS,
         SOURCE_ACCESS,
@@ -465,12 +463,23 @@ def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
     assert "See [Bare](#bare)." in run.bundle
 
 
-def test_a_source_root_naming_no_directory_is_an_input_failure(tmp_path: Path) -> None:
-    (tmp_path / "guide.md").write_text("---\nprosiform: {root: absent}\n---\n# Guide\n")
+def test_a_declared_root_is_an_input_failure(tmp_path: Path) -> None:
+    (tmp_path / "guide.md").write_text("---\nprosiform: {root: .}\n---\n# Guide\n")
     run = invoke("-d", "json", "guide.md", cwd=tmp_path)
     assert run.status == INPUT_FAILURE
     assert run.bundle == ""
-    assert [one["code"] for one in run.diagnostics()] == [ROOT_NOT_FOUND]
+    assert [one["code"] for one in run.diagnostics()] == [
+        "E_INVALID_CONVERSION_METADATA"
+    ]
+    assert run.diagnostics()[0]["location"] == {
+        "file": "guide.md",
+        "line": 2,
+        "column": 13,
+    }
+
+
+def test_no_code_reports_a_missing_root() -> None:
+    assert "E_ROOT_NOT_FOUND" not in CODES
 
 
 def test_a_usage_failure_is_reported_before_an_input_failure(tmp_path: Path) -> None:

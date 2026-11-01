@@ -65,7 +65,7 @@ BIN = "bin"
 
 ENTRY = "guide.md"
 SOURCE = (
-    '---\nprosiform: {root: "."}\n---\n'
+    "---\nprosiform: {}\n---\n"
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
 BUNDLE = "# Guide\n\nThe installed command bundles this document.\n"

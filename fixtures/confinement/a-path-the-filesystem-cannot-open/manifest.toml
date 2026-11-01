@@ -1,0 +1,17 @@
+description = "A link naming a path the filesystem cannot open, here a directory name longer than the filesystem admits, fails as source access without publishing a bundle."
+
+clauses = [
+  "Metadata failures — E_SOURCE_ACCESS",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_ACCESS"
