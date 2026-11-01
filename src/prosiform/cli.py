@@ -2259,7 +2259,7 @@ def publication(
     """Validate every bundle a run publishes, then publish the set whole or not at all.
 
     Each bundle is held to the output budget, every name is held to one
-    bundle, the output folder is held to existing, the path standing at
+    bundle, the output folder is made where absent, the path standing at
     the run folder's own to being a folder or a link, and the run folder's
     name and each bundle's are held to the length its filesystem allows,
     before any is written, so a set publication would refuse ends the run with its
@@ -2473,7 +2473,7 @@ def refusal(destination: Path, refused: OSError) -> Failure:
             ERROR,
             f"the output path {str(destination)!r} refused the bundle: {refused}",
             code=PUBLICATION_FAILED,
-            remedy="name an existing folder the run can write",
+            remedy="name a folder the run can write",
         ),
     )
 
