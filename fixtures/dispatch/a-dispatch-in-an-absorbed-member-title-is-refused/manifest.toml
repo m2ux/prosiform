@@ -1,4 +1,4 @@
-description = "A merged group's member whose title its subsection absorbs is emitted as that subsection rather than as a section, so a dispatch the title writes has no section to stand beneath; the run publishes nothing and fails, naming the link."
+description = "A merged group's member whose title its subsection absorbs is emitted as that subsection rather than as a section, so a dispatch the title writes has no section to stand beneath; the run publishes nothing and fails, naming the link and the chain that reached the member."
 
 clauses = [
   "Link classification and resource handling — Dispatch sub-sections",
@@ -19,3 +19,4 @@ code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["⇉ Publish"]
 reference = "publish.md"
 source = "checklist-⇉-publish.md:7"
+chain = ["guide.md", "checklist-⇉-publish.md"]
