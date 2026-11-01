@@ -1,6 +1,6 @@
 # Validation
 
-Evidence for each check the [work item](w02.md) names, run in the task worktree on branch `i07/e01/w02-state-the-bootstrap-form` at `310c624e`.
+Evidence for each check the [work item](w02.md) names, run in the task worktree on branch `i07/e01/w02-state-the-bootstrap-form` at `310c624e`, and again at `5cf609bf` after merging the epic base (W01, #494) into it.
 
 ## T1
 
@@ -22,6 +22,6 @@ Evidence for each check the [work item](w02.md) names, run in the task worktree 
 - **Procedure.**
   `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check`
 - **Observation.**
-  Exit 0. `make test` 1482 passed; `make harness` 1105 passed, the new check among them; lint, format, typecheck, steps, authoring, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock-scenarios all pass.
+  Exit 0. `make test` 1482 passed (1483 at `5cf609bf`); `make harness` 1105 passed, the new check among them; lint, format, typecheck, steps, authoring, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock-scenarios all pass.
 - **Result.**
   ✓
