@@ -28,4 +28,4 @@ The output-budget page states the derived boundary of `skills/work-planner/guide
 
 ## T5 Full Check
 
-`make check` exits 0 at fd58c2e0 before opening.
+`make check` exits 0 at fd58c2e0 before opening; the epic base held no newer commit before merging, CI on fd58c2e0 passes, and #504 merged into `i08/e00/main` as ec3033a4.
