@@ -13,6 +13,7 @@ This record holds its delivery of `AC12, AC13`: the work item, the validation ev
 | Artifact | What it holds |
 | --- | --- |
 | [W02 work item](w02.md) | `group-depth` as a list of pairs, the strict entry, the `group` refusal and membership in several groups |
+| [Validation](validation.md) | T1 to T4 at the revisions they ran |
 
 ## Links
 
