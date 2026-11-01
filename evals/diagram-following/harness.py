@@ -6,17 +6,21 @@ a sub-agent start, a session's end and the tokens it spent. The run's matrix,
 workspaces, budget, timeout and scoring are the same for every harness, so
 the harness is the whole of what an agent CLI differs in.
 
-Two harnesses are declared:
+`HARNESSES` declares three:
 
 - `claude`, the Claude Code CLI, whose session stream is a sequence of
   `assistant` and `user` messages carrying `tool_use` and `tool_result`
   blocks, and whose last message carries `total_cost_usd`;
 - `cursor`, the Cursor agent CLI, whose stream is `tool_call` events
   carrying `taskToolCall`, whose two starts in one message share a
-  `model_call_id`, and which reports tokens but no cost.
+  `model_call_id`, and which reports tokens but no cost;
+- `opencode`, the opencode CLI, whose stream is events each holding a
+  `part`, a sub-agent start being a `tool` part naming `task`, and which
+  reports tokens and cost on each model step's `step_finish` part.
 
 A harness reads its own stream: `starts()` returns the same `Start` values
-from either, so the scorer above it is unaware of which CLI produced them.
+from any of them, so the scorer above it is unaware of which CLI produced
+them.
 """
 
 from __future__ import annotations
@@ -77,19 +81,6 @@ ARGS = "args"
 CONVERSATION = "conversationSteps"
 ASSISTANT_MESSAGE = "assistantMessage"
 TEXT = "text"
-
-CLAUDE_USAGE = {
-    "input": "input_tokens",
-    "output": "output_tokens",
-    "cache_creation": "cache_creation_input_tokens",
-    "cache_read": "cache_read_input_tokens",
-}
-CURSOR_USAGE = {
-    "input": "inputTokens",
-    "output": "outputTokens",
-    "cache_creation": "cacheWriteTokens",
-    "cache_read": "cacheReadTokens",
-}
 
 
 @dataclass(frozen=True)
@@ -319,10 +310,8 @@ class Cursor:
     """The Cursor agent CLI: `-p` with a stream-json session stream."""
 
     name: str = "cursor"
-    config_variable: str = "CURSOR_CONFIG_DIR"
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
-    tools: str = ""
     shell: bool = True
     """Whether a session may run a command, which a shell form needs.
 
@@ -531,11 +520,9 @@ class Opencode:
     """
 
     name: str = "opencode"
-    config_variable: str = "OPENCODE_CONFIG_DIR"
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
-    tools: str = ""
     shell: bool = True
     """Whether a session may run a command, which a shell form needs.
 
@@ -553,7 +540,6 @@ class Opencode:
     It does: a session's `tool_use` parts include those its sub-agents made,
     so a trace naming a nested start is observable here.
     """
-    usage: tuple[str, str, str, str] = ("input", "output", "cache", "cache")
 
     def argv(
         self, agent: list[str], model: str, budget: int, workspace: Path | None = None
@@ -702,10 +688,10 @@ class Opencode:
         tokens = part.get(TOKENS) if isinstance(part, dict) else None
         if not isinstance(tokens, dict):
             return None
-        counts = [tokens.get(kind) for kind in ("input", "output", "reasoning")]
+        counts = [tokens.get(kind) for kind in TOKEN_KINDS]
         cache = tokens.get(CACHE)
         if isinstance(cache, dict):
-            counts += [cache.get("write"), cache.get("read")]
+            counts += [cache.get(kind) for kind in CACHE_KINDS]
         if not any(isinstance(count, int | float) for count in counts):
             return None
         return int(sum(count for count in counts if isinstance(count, int | float)))
