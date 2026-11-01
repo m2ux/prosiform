@@ -13,6 +13,7 @@ This record holds its delivery of `AC19, AC20, AC21`: the work item, the validat
 | Artifact | What it holds |
 | --- | --- |
 | [W09 work item](w09.md) | The three defects, their analysis, and the checks that carry them |
+| [Validation](validation.md) | What was observed before the fix, each case failing without it, and every test run |
 
 ## Links
 
