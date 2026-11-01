@@ -101,15 +101,24 @@ def test_a_drive_path_is_a_path_the_root_cannot_contain() -> None:
         resolve("C:/guide.md")
 
 
-@pytest.mark.parametrize("reference", ["/guide.md", "../outside.md", "sub/../../x.md"])
-def test_a_path_the_root_cannot_contain_is_refused(reference: str) -> None:
+def test_a_root_relative_path_is_refused() -> None:
     with pytest.raises(OutsideRoot):
-        resolve(reference)
+        resolve("/guide.md")
 
 
-def test_a_walk_above_the_referring_directory_leaves_the_root() -> None:
-    with pytest.raises(OutsideRoot):
-        resolve("../../outside.md", "docs")
+@pytest.mark.parametrize(
+    ("reference", "base", "path"),
+    [
+        ("../outside.md", "", "../outside.md"),
+        ("sub/../../x.md", "", "../x.md"),
+        ("../../outside.md", "docs", "../outside.md"),
+        ("../../a/../b.md", "", "../../b.md"),
+    ],
+)
+def test_a_walk_above_the_working_directory_keeps_its_parent_segments(
+    reference: str, base: str, path: str
+) -> None:
+    assert resolve(reference, base).path == path
 
 
 @pytest.mark.parametrize("reference", ["guide.md?view=raw", "guide.md?", "guide.md?#"])
@@ -247,9 +256,9 @@ def test_a_link_resolves_from_its_file_and_keeps_its_walk() -> None:
     assert found.walk == "docs/notes.md"
 
 
-def test_a_link_above_the_working_directory_is_refused() -> None:
-    with pytest.raises(OutsideRoot):
-        inside("guide.md", "../outside.md")
+def test_a_link_above_the_working_directory_keeps_its_parent_segments() -> None:
+    found = inside("guide.md", "../outside.md")
+    assert (found.path, found.walk) == ("../outside.md", "../outside.md")
 
 
 def test_a_parent_step_resolves_from_the_file_carrying_it() -> None:
@@ -258,9 +267,21 @@ def test_a_parent_step_resolves_from_the_file_carrying_it() -> None:
     assert found.walk == "modes/../artifacts/epic.md"
 
 
-def test_a_parent_step_from_the_working_directory_is_refused() -> None:
-    with pytest.raises(OutsideRoot):
-        inside("plan-mode.md", "../artifacts/epic.md")
+def test_a_parent_step_from_the_working_directory_names_the_path_above_it() -> None:
+    found = inside("skills/plan/guide.md", "../../../shared/conventions.md")
+    assert found.path == "../shared/conventions.md"
+
+
+def test_a_declaring_target_above_the_working_directory_is_a_dependency() -> None:
+    found = bundled("guide.md", "../shared/rules.md", "the rules")
+    assert found is not None
+    assert found.path == "../shared/rules.md"
+
+
+def test_a_withheld_target_above_the_working_directory_is_a_withheld_target() -> None:
+    found = withholding_target("guide.md", "../shared/rules.md", "¬ the rules")
+    assert found is not None
+    assert found.path == "../shared/rules.md"
 
 
 def test_a_fragment_alone_names_a_section_of_the_document_carrying_it() -> None:
@@ -320,7 +341,6 @@ def test_a_mark_written_inside_a_link_text_withholds_nothing() -> None:
 @pytest.mark.parametrize(
     "destination",
     [
-        "../rules.md",
         "/rules.md",
         "C:/rules.md",
         "https://example.com/rules.md",
@@ -351,7 +371,6 @@ def test_an_unmarked_reference_withholds_nothing() -> None:
 @pytest.mark.parametrize(
     "destination",
     [
-        "../rules.md",
         "/rules.md",
         "C:/rules.md",
         "https://example.com/rules.md",
@@ -534,5 +553,19 @@ def test_the_boundary_refuses_no_link_it_was_derived_from() -> None:
         assert found == "" or named.startswith(f"{found}/")
 
 
-def test_a_path_above_the_working_directory_names_nothing_the_boundary_holds() -> None:
-    assert bounded("skill/guide.md", "[Out](../../outside.md)\n") == "skill"
+def test_a_path_above_the_working_directory_widens_the_boundary_above_it() -> None:
+    assert bounded("skill/guide.md", "[Out](../../outside.md)\n") == ".."
+
+
+@pytest.mark.parametrize(
+    ("links", "expected"),
+    [
+        ("[A](../../x/a.md) [B](b.md)", ".."),
+        ("[A](../../../a/b.md) [B](../../c.md)", "../.."),
+        ("[A](../../a/one.md) [B](../../b/two.md)", ".."),
+    ],
+)
+def test_the_boundary_holds_paths_climbing_different_distances(
+    links: str, expected: str
+) -> None:
+    assert bounded("skill/guide.md", links + "\n") == expected

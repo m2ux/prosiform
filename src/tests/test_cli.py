@@ -3132,9 +3132,7 @@ def test_a_parallel_mark_with_the_dispatch_mark_is_refused(
     assert "two ways for one sub-agent" in diagnostic["message"]
 
 
-@pytest.mark.parametrize(
-    "destination", ["https://example.test/plan.md", "image.png", "../plan.md"]
-)
+@pytest.mark.parametrize("destination", ["https://example.test/plan.md", "image.png"])
 def test_a_parallel_link_naming_no_markdown_under_the_root_is_refused(
     root: Path, destination: str
 ) -> None:

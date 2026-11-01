@@ -35,7 +35,6 @@ from prosiform.cli import MOCK_UNUSED, main
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
-    OutsideRoot,
     Reference,
     Substitution,
     bundled,
@@ -198,7 +197,7 @@ def test_a_substitute_above_the_working_directory_is_reached() -> None:
 
 
 def test_a_path_above_the_working_directory_is_redirected_by_a_key() -> None:
-    """The mapping is asked before the working-directory bound refuses a path."""
+    """The mapping is asked of an identity above the working directory too."""
     mapped = Substitution(
         {("../notes.md", None): Reference("stand-in.md", "stand-in.md")}
     )
@@ -207,12 +206,10 @@ def test_a_path_above_the_working_directory_is_redirected_by_a_key() -> None:
     assert is_markdown(found.path)
 
 
-def test_an_unmapped_path_above_the_working_directory_is_still_refused() -> None:
-    """The mapping names what an identity becomes; it never widens the bound."""
-    with pytest.raises(OutsideRoot):
-        inside("guide.md", "../notes.md")
-    with pytest.raises(OutsideRoot):
-        inside("guide.md", "../notes.md", WHOLE)
+def test_an_unmapped_path_above_the_working_directory_names_itself() -> None:
+    """A path the mapping holds no key for names the document it normalized to."""
+    assert inside("guide.md", "../notes.md").path == "../notes.md"
+    assert inside("guide.md", "../notes.md", WHOLE).path == "../notes.md"
 
 
 def test_the_mapping_is_consulted_on_the_authored_identity_not_the_substitute() -> None:
@@ -1078,8 +1075,8 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
 
     A value carrying `..` names a substitute above the invocation working
     directory, and the group it joins is its own. Its links resolve from
-    the directory it sits in, which the working directory does not hold,
-    so a link beside it is carried as its author wrote it.
+    the directory it sits in, and a link beside it naming a document that
+    declares nothing is carried as its author wrote it.
     """
     tree = tmp_path / "tree"
     above = tmp_path / "above"

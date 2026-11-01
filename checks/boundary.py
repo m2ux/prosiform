@@ -26,7 +26,7 @@ from pathlib import Path
 
 import documents
 
-from prosiform.closure import boundary, named
+from prosiform.closure import PARENT, SEPARATOR, boundary, climb, named
 from prosiform.profile import parse
 from prosiform.source import MARK, frontmatter, lines, regions, uses
 
@@ -46,8 +46,22 @@ def body(text: str) -> tuple[str, int]:
 
 
 def held(path: str, within: str) -> bool:
-    """Whether a working-directory-relative path sits in one directory."""
-    return within == "" or path.startswith(f"{within}/")
+    """Whether a working-directory-relative path sits in one directory.
+
+    Either may open with parent segments. A directory that is only parent
+    segments holds every path climbing no further than it does; any other
+    holds the paths climbing as far and continuing below it.
+    """
+    climbs = climb(within)
+    below = [part for part in within.split(SEPARATOR)[climbs:] if part]
+    parts = path.split(SEPARATOR)
+    if not below:
+        return climb(path) <= climbs
+    return (
+        parts[:climbs] == [PARENT] * climbs
+        and parts[climbs : climbs + len(below)] == below
+        and len(parts) > climbs + len(below)
+    )
 
 
 def scope() -> list[Path]:
