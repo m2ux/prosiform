@@ -6,7 +6,7 @@
 
 Fifteen epics already merged into `main` were reviewed for delivered defects, and eighty-two findings were recorded: five blockers, thirty-six majors and forty-one minors.
 
-This initiative delivers forty-one of them across thirty-four criteria in fifteen tasks. Every blocker is delivered here. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
+This initiative delivers thirty-three of them across thirty-four criteria in fifteen tasks, and three further tasks carry five criteria closing what a review of the merged tasks found. Every blocker is delivered here. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
     10|
 The findings and their evidence are held in [the review record](../2026-10-31-merged-epic-review/README.md), whose disposition table names the task delivering each finding.
 
@@ -70,7 +70,7 @@ Each finding below is delivered by exactly one task, and each row's Coverage car
 | W04 | source | 37, 39 |
 | W05 | source | 28, 38, 40 |
 | W06 | source | 35, 36 |
-| W07 | eval | 1, 8 |
+| W07 | eval | 1, 2, 8 |
 | W08 | eval | 6, 7 |
 | W09 | eval | 9, 23, 24 |
 | W10 | eval | 21, 22 |
@@ -79,8 +79,13 @@ Each finding below is delivered by exactly one task, and each row's Coverage car
 | W13 | example | 26 |
 | W14 | example | 30, 31 |
 | W15 | example | 17, 29, 81 |
+| W16 | eval | Merged-task review: AC16 holds for the bootstrap form alone |
+| W17 | source | Merged-task review: W02's refusals stated in no page, catalogue row or fixture |
+| W18 | source | Merged-task review: the scalar ceiling absent from the catalogue |
 
-Findings 1 and 8 describe one defect from two directions and share one criterion. Finding 26 is delivered by W13, where its rule is stated.
+Findings 1 and 8 describe one defect from two directions and share one criterion. Finding 2 is delivered by W07 as AC16, which holds for the bootstrap form, the one form whose instruction names a sub-agent's trace; W16 states that name in every other dispatching form. Finding 26 is delivered by W13, where its rule is stated.
+
+W16, W17 and W18 answer a review of the four merged tasks rather than a finding of the merged-epic review. Each depends on the task whose delivered code it completes: W16 on W07, W17 on W02, W18 on W06.
 
 ## Taken Elsewhere
 
@@ -108,3 +113,7 @@ The epic was reviewed twice after it was raised, and these corrections are what 
 | Criteria renumbered in sequence | Two were appended out of order, and dependencies now read as earlier rows throughout |
 | The title widened | It named enforcement alone while the epic also refuses, derives and corrects |
 | Criteria grouped to their task | Each row's Coverage carries the criteria its findings need, one per finding |
+| W12, W14 and W15 hold AC28–AC34 | They returned to the epic after the merged tasks fixed AC1–AC27, so their criteria follow the last of those |
+| AC16 narrowed to the bootstrap form | Only the bootstrap instruction names a sub-agent's trace, so the criterion states the form its evidence covers |
+| W11 depends on W08 and W10 | The baseline it writes measures the scoring W08 changes and the linked form W10 changes |
+| W16–W18 added with AC35–AC39 | A review of the merged tasks found a criterion proved for one form, and refusals and a ceiling stated in no page, catalogue row or fixture |
