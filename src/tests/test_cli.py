@@ -80,6 +80,7 @@ from prosiform.cli import (
     entry,
     main,
     parser,
+    probe,
     publication,
     read_document,
     recheck,
@@ -98,6 +99,7 @@ from prosiform.dispatch import (
 )
 from prosiform.limits import (
     BUDGETS,
+    FILE_BYTES,
     FILES,
     NESTING,
     OUTPUT_BYTES,
@@ -928,6 +930,50 @@ def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
     ).source
     assert read.text == "# Guide\r\n"
     assert read.first_line == 4
+
+
+def bounded(file_bytes: int) -> Limits:
+    """The default budgets with `-B` at the figure given."""
+    return Limits({b: file_bytes if b is FILE_BYTES else b.default for b in BUDGETS})
+
+
+def test_a_probe_answers_a_silent_target_whatever_its_size(root: Path) -> None:
+    written(root, "huge.md", "# Huge\n\n" + "Body.\n" * 100)
+    written(root, "headed.md", "---\ntitle: Headed\n---\n" + "Body.\n" * 100)
+    assert not probe(root, resolve("huge.md"), bounded(64))
+    assert not probe(root, resolve("headed.md"), bounded(64))
+
+
+def test_a_probe_answers_a_declaring_target(root: Path) -> None:
+    written(root, "rules.md", "\ufeff---\r\nprosiform: {}\r\n...\r\n# Rules\n")
+    assert probe(root, resolve("rules.md"), bounded(64))
+
+
+def test_a_probe_crossing_the_byte_budget_before_its_closer_fails(
+    root: Path,
+) -> None:
+    written(root, "long.md", "---\nprosiform:\n" + "  # note\n" * 20 + "---\n")
+    with pytest.raises(Failure) as caught:
+        probe(root, resolve("long.md"), bounded(64))
+    assert caught.value.diagnostic.code == RESOURCE_LIMIT
+
+
+def test_a_probe_refuses_an_invalid_declaration(root: Path) -> None:
+    written(root, "rules.md", "---\nprosiform: {unknown: 1}\n---\n# Rules\n")
+    with pytest.raises(Failure) as caught:
+        probe(root, resolve("rules.md"), bounded(64))
+    assert caught.value.diagnostic.code == INVALID_CONVERSION_METADATA
+    written(root, "open.md", "---\nprosiform: {}\n")
+    with pytest.raises(Failure) as caught:
+        probe(root, resolve("open.md"), bounded(64))
+    assert caught.value.diagnostic.code == UNTERMINATED_FRONTMATTER
+
+
+def test_a_probe_refuses_a_link(root: Path) -> None:
+    os.symlink("guide.md", root / "linked.md")
+    with pytest.raises(Failure) as caught:
+        probe(root, resolve("linked.md"), bounded(64))
+    assert caught.value.diagnostic.code == SOURCE_SYMLINK
 
 
 def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> None:

@@ -13,7 +13,7 @@ from prosiform.closure import resolve
 from prosiform.diagnostics import Location
 from prosiform.limits import BUDGETS, Limits
 from prosiform.metadata import InvalidMetadata
-from prosiform.source import content, hashed
+from prosiform.source import closes_head, content, hashed
 
 
 def settings(group: str) -> str:
@@ -207,3 +207,23 @@ def test_deferred_metadata_change_is_rechecked_with_its_chain(
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == "E_SOURCE_CHANGED"
     assert diagnostic["chain"] == ["a.md", "b.md"]
+
+
+@pytest.mark.parametrize(
+    ("index", "line", "ends"),
+    [
+        (0, b"# Title\n", True),
+        (0, b"---\n", False),
+        (0, b"\xef\xbb\xbf---\r\n", False),
+        (0, b" ---\n", True),
+        (1, b"prosiform: {}\n", False),
+        (1, b"---\n", True),
+        (1, b"...\r\n", True),
+        (1, b"--- \n", False),
+        (1, b"\xff\n", True),
+    ],
+)
+def test_a_head_closes_at_the_first_line_or_the_closer(
+    index: int, line: bytes, ends: bool
+) -> None:
+    assert closes_head(index, line) is ends

@@ -28,6 +28,7 @@ from prosiform.access import (
     Symlinked,
     Unreadable,
     directory,
+    read_head,
     read_source,
 )
 from prosiform.access import (
@@ -147,7 +148,9 @@ from prosiform.source import (
     Selection,
     Source,
     Unterminated,
+    closes_head,
     content,
+    declaration,
     decode,
     external,
     fragments,
@@ -793,35 +796,18 @@ class Opened:
     capture: Capture
 
 
-def read_document(
-    root: Path, found: Reference, limits: Limits, total: int = 0
-) -> Opened:
-    """Capture bounded bytes, typed settings and no-follow source identities.
+@contextmanager
+def reading(found: Reference) -> Iterator[None]:
+    """One read of the document a reference names, its refusals as diagnostics.
 
-    Metadata resolves only after the source has been captured within the byte
-    and nesting limits. Every source is bounded by the invocation working
-    directory. Diagnostics retain physical coordinates and the referring
-    chain."""
+    A capture and a probe walk the same path, so the refusal a walk
+    meets — a symbolic link, a path naming no document, an access fault
+    — is reported alike whichever read met it.
+    """
     reference, name = found.original, found.path
     written = "the entry reference" if found.origin is None else "the reference"
-    chain = found.chain
-    if not is_markdown(name):
-        raise input_failure(
-            f"the entry reference {reference!r} names a document whose suffix is "
-            f"outside the {PROFILE} profile",
-            code=UNSUPPORTED_ENTRY_SUFFIX,
-            remedy=f"name a document ending {' or '.join(SUFFIXES)}",
-            reference=reference,
-            chain=chain,
-        )
     try:
-        observed: list[tuple[str, int, int]] = []
-        data = read_source(
-            root,
-            found.walk or name,
-            limit=min(limits.of(FILE_BYTES), limits.of(INPUT_BYTES) - total),
-            observed=observed,
-        )
+        yield
     except Symlinked as linked:
         raise input_failure(
             f"{written} {reference!r} reaches its source through {linked}, "
@@ -830,7 +816,7 @@ def read_document(
             remedy="name the document the link points at, under the source root",
             reference=reference,
             source=found.origin,
-            chain=chain,
+            chain=found.chain,
         ) from linked
     except Absent as absent:
         raise input_failure(
@@ -844,7 +830,7 @@ def read_document(
             reference=reference,
             resolved=name if found.folder is not None else None,
             source=found.origin,
-            chain=chain,
+            chain=found.chain,
         ) from absent
     except OSError as error:
         raise input_failure(
@@ -853,26 +839,85 @@ def read_document(
             remedy="check source permissions",
             reference=reference,
             source=found.origin,
-            chain=chain,
+            chain=found.chain,
         ) from error
+
+
+def decoded_text(found: Reference, data: bytes) -> str:
+    """The bytes a read returned as text, or the failure their encoding is."""
+    written = "the entry reference" if found.origin is None else "the reference"
+    try:
+        return decode(data)
+    except UnicodeDecodeError as undecodable:
+        raise input_failure(
+            f"{written} {found.original!r} names a document that is not valid "
+            f"{ENCODING.upper()}: byte {undecodable.start}, "
+            f"{undecodable.reason}",
+            code=INVALID_ENCODING,
+            remedy=f"save the document as {ENCODING.upper()}",
+            reference=found.original,
+            source=found.path,
+            chain=found.chain,
+        ) from undecodable
+
+
+@contextmanager
+def delimiting(found: Reference) -> Iterator[None]:
+    """One frontmatter decode, its refusals reported against the reference."""
+    written = "the entry reference" if found.origin is None else "the reference"
+    try:
+        yield
+    except InvalidMetadata as invalid:
+        raise Failure(
+            INPUT_FAILURE,
+            replace(invalid.diagnostic, reference=found.original, chain=found.chain),
+        ) from invalid
+    except Unterminated as unclosed:
+        raise input_failure(
+            f"{written} {found.original!r} names a document whose frontmatter "
+            f"opener is closed by no later line of exactly "
+            f"{' or '.join(CLOSERS)}",
+            code=UNTERMINATED_FRONTMATTER,
+            remedy=f"close the block with a line of exactly {' or '.join(CLOSERS)}",
+            reference=found.original,
+            source=location(found.path, unclosed.line),
+            chain=found.chain,
+        ) from unclosed
+
+
+def read_document(
+    root: Path, found: Reference, limits: Limits, total: int = 0
+) -> Opened:
+    """Capture bounded bytes, typed settings and no-follow source identities.
+
+    Metadata resolves only after the source has been captured within the byte
+    and nesting limits. Every source is bounded by the invocation working
+    directory. Diagnostics retain physical coordinates and the referring
+    chain."""
+    name, chain = found.path, found.chain
+    if not is_markdown(name):
+        raise input_failure(
+            f"the entry reference {found.original!r} names a document whose "
+            f"suffix is outside the {PROFILE} profile",
+            code=UNSUPPORTED_ENTRY_SUFFIX,
+            remedy=f"name a document ending {' or '.join(SUFFIXES)}",
+            reference=found.original,
+            chain=chain,
+        )
+    observed: list[tuple[str, int, int]] = []
+    with reading(found):
+        data = read_source(
+            root,
+            found.walk or name,
+            limit=min(limits.of(FILE_BYTES), limits.of(INPUT_BYTES) - total),
+            observed=observed,
+        )
     try:
         limits.hold(FILE_BYTES, len(data))
         limits.hold(INPUT_BYTES, total + len(data))
     except Crossed as crossed:
         raise unindexable(crossed, name, chain) from crossed
-    try:
-        text = decode(data)
-    except UnicodeDecodeError as undecodable:
-        raise input_failure(
-            f"{written} {reference!r} names a document that is not valid "
-            f"{ENCODING.upper()}: byte {undecodable.start}, "
-            f"{undecodable.reason}",
-            code=INVALID_ENCODING,
-            remedy=f"save the document as {ENCODING.upper()}",
-            reference=reference,
-            source=name,
-            chain=chain,
-        ) from undecodable
+    text = decoded_text(found, data)
     captured = Capture(
         observed[-1][0],
         hashed(data),
@@ -882,29 +927,51 @@ def read_document(
         (observed[-1][1], observed[-1][2]),
         len(data),
     )
-    try:
+    with delimiting(found):
         source = content(
             text,
             file=name,
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
-        return Opened(source, len(data), captured)
-    except InvalidMetadata as invalid:
-        raise Failure(
-            INPUT_FAILURE, replace(invalid.diagnostic, reference=reference, chain=chain)
-        ) from invalid
-    except Unterminated as unclosed:
-        raise input_failure(
-            f"{written} {reference!r} names a document whose frontmatter "
-            f"opener is closed by no later line of exactly "
-            f"{' or '.join(CLOSERS)}",
-            code=UNTERMINATED_FRONTMATTER,
-            remedy=f"close the block with a line of exactly {' or '.join(CLOSERS)}",
-            reference=reference,
-            source=location(name, unclosed.line),
-            chain=chain,
-        ) from unclosed
+    return Opened(source, len(data), captured)
+
+
+def probe(root: Path, found: Reference, limits: Limits) -> bool:
+    """Whether the document a reference names declares, its body unread.
+
+    The probe reads the document's head through the walk a capture
+    takes, within `-B`, and decodes it as a capture would, so an invalid
+    declaration fails the probe with the diagnostic it fails a capture
+    with. Nothing it reads is counted against `-I` or kept: answering
+    whether a document declares carries nothing into the bundle.
+
+    A head holding no opener declares nothing whatever the file's size,
+    so a document larger than `-B` that declares nothing is answered
+    without crossing it. A head crossing `-B` before its block closes
+    fails the run, since its declaration cannot be read within the
+    budget; a declaring document is captured afterwards, and the capture
+    holds `-B` over the whole file.
+    """
+    with reading(found):
+        head = read_head(
+            root,
+            found.walk or found.path,
+            limit=limits.of(FILE_BYTES),
+            ended=closes_head,
+        )
+    try:
+        limits.hold(FILE_BYTES, len(head))
+    except Crossed as crossed:
+        raise unindexable(crossed, found.path, found.chain) from crossed
+    with delimiting(found):
+        settings = declaration(
+            decoded_text(found, head),
+            file=found.path,
+            max_bytes=limits.of(FILE_BYTES),
+            max_depth=limits.of(NESTING),
+        )
+    return settings.declared
 
 
 def missing(found: Reference) -> str:
