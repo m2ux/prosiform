@@ -1196,6 +1196,26 @@ def test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name(
     assert "'Levels' at level 7" in reported["message"]
 
 
+def test_a_heading_overflowing_in_a_later_member_names_that_member_s_chain(
+    root: Path,
+) -> None:
+    written(root, "guide.md", "# Guide\n\nRead [a](a.md) and [b](b.md).\n")
+    written(root, "a.md", conversion("Notes", 1) + "# A\n\nFirst.\n")
+    written(
+        root,
+        "b.md",
+        conversion("Notes", 1)
+        + "# B\n\n## C\n\n### D\n\n#### E\n\n##### F\n\n###### G\n\nDeep.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == HEADING_DEPTH_OVERFLOW
+    assert reported["source"] == "b.md"
+    assert reported["chain"] == ["guide.md", "b.md"]
+
+
 def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     written(root, "guide.md", "# Guide\n\n## Run\n\nDo it.\n\n## Stop\n\nStop it.\n")
     run = invoke("guide.md#run", cwd=root)

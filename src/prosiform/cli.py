@@ -1902,21 +1902,20 @@ def assembled(
     parent = parent_document(entries)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
-    for path in selected:
-        selecting = selected[path]
-        named = read[path].conversion.group
-        if named is not None:
-            merging.setdefault(named, []).append(path)
-            continue
-        tokens = parsed[path]
-        with assembling(path, selecting):
+    with assembling(reaching(selected)):
+        for path in selected:
+            named = read[path].conversion.group
+            if named is not None:
+                merging.setdefault(named, []).append(path)
+                continue
+            tokens = parsed[path]
             groups.append(
                 group(
                     path,
                     tokens,
                     lines(read[path].text),
                     defined[path],
-                    selection(path, tokens, selecting, entries),
+                    selection(path, tokens, selected[path], entries),
                     assigned,
                     read[path].root,
                     path == parent,
@@ -1925,9 +1924,8 @@ def assembled(
                     substitution,
                 )
             )
-    for named, paths in merging.items():
-        depth = inforce[named]
-        with assembling(paths[0], selected[paths[0]]):
+        for named, paths in merging.items():
+            depth = inforce[named]
             groups.append(
                 merged(
                     named,
@@ -1957,14 +1955,16 @@ def assembled(
 
 
 @contextmanager
-def assembling(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
+def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     """One assembly, a source fault it meets reported as the input it is.
 
     A heading beyond the sixth level is a hierarchy the bundle cannot
     emit, and a dispatched link the bundle places no sub-section for is a
     handoff it cannot state. Both are properties of the sources the run
     was asked to bundle rather than faults in the tool, so each is
-    reported with the code the contract declares for it.
+    reported with the code the contract declares for it, and with the
+    chain that reached the document the fault was found in, whichever
+    member of a merged group that is.
     """
     try:
         yield
@@ -1976,7 +1976,7 @@ def assembling(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
             remedy="raise the heading in the source, or select a section of it",
             reference=beyond.path,
             source=beyond.path,
-            chain=selecting[0].chain if selecting else (),
+            chain=chains.get(beyond.path, ()),
         ) from beyond
     except Unplaced as unplaced:
         raise input_failure(
@@ -1988,7 +1988,7 @@ def assembling(path: str, selecting: Sequence[Reference]) -> Iterator[None]:
             "sub-section has a section to follow",
             reference=unplaced.destination,
             source=location(unplaced.path, unplaced.line),
-            chain=selecting[0].chain if selecting else (),
+            chain=chains.get(unplaced.path, ()),
         ) from unplaced
 
 
