@@ -1,12 +1,10 @@
 # Guides
 
-## Overview
-
-### Beta Notes
+## Beta/Notes
 
 ## Findings
 
-### Alpha Notes
+### Alpha/Notes
 
 #### Summary
 
@@ -14,9 +12,9 @@ The first run held throughout.
 
 #### Detail
 
-Each step was recorded as it ran, beside [the second run](#beta-notes).
+Each step was recorded as it ran, beside [the second run](#betanotes).
 
-### Beta Notes
+### Beta/Notes
 
 #### Summary
 

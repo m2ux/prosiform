@@ -2,20 +2,20 @@
 
 ## Overview
 
-### A Plan
+### A/Plan
 
 First preamble.
 
-### B Plan
+### B/Plan
 
 Second preamble.
 
 ## Procedure
 
-### A Plan
+### A/Plan
 
 First instruction.
 
-### B Plan
+### B/Plan
 
 Second instruction.

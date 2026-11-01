@@ -5,13 +5,19 @@ level in conversion metadata. Members of the same group merge at that
 level beneath its title-cased name. A document without conversion
 settings keeps its individual file group.
 
-A merged group emits its slug as an H1, a subsection naming each member
-and holding what that member carries above the grouping depth, and then
-one H2 for each distinct source heading text at that depth. A member's
-heading at the grouping depth is replaced by the merged one and its
-content moves to sit beneath it, so the level a heading is emitted at is
-the level its author wrote under a shift the arrangement supplies rather
-than a single shift for the whole group.
+A merged group emits its slug in title case as an H1, a subsection
+naming each member and holding what that member carries above the
+grouping depth, and then one H2 for each distinct source heading text at
+that depth. A member's heading at the grouping depth is replaced by the
+merged one and its content moves to sit beneath it, so the level a
+heading is emitted at is the level its author wrote under a shift the
+arrangement supplies rather than a single shift for the whole group.
+
+A name the group generates — its heading, a member's subsection and a
+variant heading — keeps every separator its source carries, as every
+heading the bundle generates does: a run of path segments keeps the
+slashes between them. A member whose name carries no word is named by
+its path text in title case.
 
 The members are read in placement order: the order in which the bundle
 first reaches each of them by a reference, reading the entry references
@@ -56,16 +62,19 @@ itself where that text occurs once in the group. No two members of one
 group therefore reach one destination.
 
 The subsections sit beneath an `Overview` section where the group also
-emits merged sections, so a member's preamble is read as that member's
-rather than as one more of the group's own sections. Where the group
-emits no merged section they are its whole structure and sit directly
-beneath its heading.
+emits merged sections and a member carries content above the grouping
+depth beneath its subsection, so that content is read as that member's
+rather than as one more of the group's own sections. Where every
+subsection is the heading alone, or the group emits no merged section,
+the subsections sit directly beneath the group's heading.
 
 The parent is the first entry document. Where that document is a member
 and carries a title, the title and the content above the grouping depth
-open the group at the levels the author wrote, and a whole-document
-reference to the parent resolves to its first H2 at the destination the
-bundle assigned that heading. The sections the parent carries at the grouping
+open the group at the levels the author wrote. A whole-document
+reference to a titled parent resolves to the heading carrying its title
+at every grouping depth: the H1 opening the group where the title sits
+above that depth, and the merged section or the variant naming the
+parent where it sits at that depth. The sections the parent carries at the grouping
 depth follow in the parent's order, with the parent's own contribution
 first where several members share one section. A section only another
 member contributes follows those, and the other members' subsections
@@ -79,7 +88,6 @@ the chain, so only a heading at or below that depth is ever emitted as a
 structural ancestor.
 """
 
-import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import PurePosixPath
@@ -89,7 +97,6 @@ from markdown_it.token import Token
 from prosiform.bundle import (
     ATX,
     MAX_LEVEL,
-    SPACE,
     Group,
     Overflow,
     Unplaced,
@@ -97,6 +104,7 @@ from prosiform.bundle import (
     ancestry,
     carried_headings,
     dispatched_in,
+    document_title,
     emitted_text,
     escaped,
     line_of,
@@ -108,6 +116,7 @@ from prosiform.bundle import (
     source_fragments,
 )
 from prosiform.closure import UNSUBSTITUTED, Substitution
+from prosiform.heading import WORD, title_cased, worded
 from prosiform.provenance import (
     GROUP_HEADING,
     MEMBER_OVERVIEW,
@@ -132,18 +141,8 @@ GROUP_AT = 0
 GROUP_LEVEL = 1
 SECTION_LEVEL = 2
 MEMBER_LEVEL = 3
-
-WORDS = re.compile(r"[-_\s]+")
-
-
-def words(text: str) -> list[str]:
-    """One name as the words it is written from, a hyphen reading as a space."""
-    return [word for word in WORDS.split(text) if word]
-
-
-def titled(text: str) -> str:
-    """One name in title case, each word keeping the spelling its source gave it."""
-    return SPACE.join(word[:1].upper() + word[1:] for word in words(text))
+SLASH = "/"
+MARKDOWN_SPACE = " \t"
 
 
 def states(heading: str, word: str) -> bool:
@@ -158,6 +157,18 @@ def states(heading: str, word: str) -> bool:
     return one in (other, f"{other}s")
 
 
+def without_stated(heading: str, named: str) -> str:
+    """One member's name, less a trailing word the group's heading states.
+
+    The word goes with the separator joining it to the rest of the name,
+    and a name of one word keeps it, so no name is left empty.
+    """
+    found = list(WORD.finditer(heading))
+    if len(found) > 1 and states(named, found[-1].group()):
+        return heading[: found[-2].end()]
+    return heading
+
+
 def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
     """The final displayed name distinguishing each member of a merged group.
 
@@ -165,7 +176,11 @@ def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
     added until the title-cased names, with the group's trailing word
     removed, distinguish the members. Where every segment is needed and
     removing that word still joins names, the complete names retain it.
-    Overview subsections and variants use this same group-wide mapping.
+    A run of segments keeps the slashes between them, as title case
+    keeps every separator a name carries. A member whose name carries
+    no word takes its path text in title case, which the Markdown suffix
+    always gives a word. Overview subsections and variants use this same
+    group-wide mapping.
     """
     spelled = {path: list(PurePosixPath(path).parts) for path in paths}
     shortest = min(len(one) for one in spelled.values())
@@ -183,17 +198,23 @@ def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
     complete: dict[str, str] = {}
     for run in range(1, longest + 1):
         complete = {
-            path: titled(SPACE.join(parts[-run:])) for path, parts in trimmed.items()
+            path: title_cased(SLASH.join(parts[-run:]))
+            for path, parts in trimmed.items()
         }
-        headings = {}
-        for path, heading in complete.items():
-            parts = heading.split(SPACE)
-            if len(parts) > 1 and states(named, parts[-1]):
-                parts = parts[:-1]
-            headings[path] = SPACE.join(parts)
+        headings = {
+            path: without_stated(heading, named) for path, heading in complete.items()
+        }
         if len(set(headings.values())) == len(headings):
-            return headings
-    return complete
+            return worded_names(headings)
+    return worded_names(complete)
+
+
+def worded_names(headings: Mapping[str, str]) -> dict[str, str]:
+    """Each member's name, or its path text in title case where it carries no word."""
+    return {
+        path: heading if worded(heading) else title_cased(path)
+        for path, heading in headings.items()
+    }
 
 
 @dataclass(frozen=True)
@@ -489,35 +510,21 @@ def arranged(
 
 
 def direct(into: Assembly, member: Member) -> None:
-    """Point a whole-document reference to the parent at its first H2.
+    """Point a whole-document reference to the parent at its own title heading.
 
-    The heading is the one the bundle emitted for that source heading,
-    so the destination is wherever the merge placed it.
+    The title heading is the one answering the parent's title, wherever
+    the merge placed it: the heading opening the group where the title
+    sits above the grouping depth, and the merged section or the variant
+    naming the parent where it sits at that depth. A parent with no
+    title, or whose title the selection left unselected, is answered as
+    any other member is.
     """
-    token = next(
-        (
-            one.token
-            for one in member.items
-            if not one.ancestor
-            and one.token.type == HEADING_OPEN
-            and level(one.token) == 2
-            and one.token.map is not None
-        ),
-        None,
-    )
-    if token is None or token.map is None:
+    title = document_title(member.tokens)
+    if title is None:
         return
-    line = token.map[0] + 1
-    fragment = member.named[id(token)]
+    target: Target = (member.path, member.named[id(title)])
     for at, heading in enumerate(into.headings):
-        if not isinstance(heading, Carried):
-            continue
-        if any(
-            origin.path == member.path
-            and origin.line == line
-            and origin.fragment == fragment
-            for origin in heading.origins
-        ):
+        if target in heading.answers:
             into.answer(at, (member.path, None))
             return
 
@@ -544,7 +551,7 @@ def merged(
         situate(into, parent_member, depth)
         kept = True
     else:
-        title = titled(named)
+        title = title_cased(named).strip(MARKDOWN_SPACE)
         into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
         into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
     pooled = contributions(depth, members)
@@ -652,10 +659,11 @@ def overview(
     one answer to what a member is called serves the whole group.
 
     The subsections sit beneath an `Overview` section where the group
-    also emits merged sections, so a member's preamble is read as that
-    member's rather than as one more of the group's own sections. Where
-    the group emits no merged section the subsections are its whole
-    structure, and they sit directly beneath its heading.
+    also emits merged sections and a member carries content above the
+    grouping depth, so that content is read as that member's rather than
+    as one more of the group's own sections. Where every subsection is
+    the heading alone, or the group emits no merged section, the
+    subsections sit directly beneath the group's heading.
     """
     above = {
         member.path: [
@@ -674,8 +682,11 @@ def overview(
     }
     if not any(named_here.values()):
         return
-    at = MEMBER_LEVEL if pooled else SECTION_LEVEL
-    if pooled:
+    wrapped = pooled and any(
+        above[member.path] for member in members if named_here[member.path]
+    )
+    at = MEMBER_LEVEL if wrapped else SECTION_LEVEL
+    if wrapped:
         text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
         into.part(text, recorded, [recorded])
     for member in members:

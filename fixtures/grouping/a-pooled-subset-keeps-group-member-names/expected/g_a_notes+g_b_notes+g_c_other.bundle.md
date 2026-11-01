@@ -2,15 +2,15 @@
 
 ## Overview
 
-### A Notes
+### A/Notes
 
 First preamble.
 
-### B Notes
+### B/Notes
 
 Second preamble.
 
-### C Other
+### C/Other
 
 Third preamble.
 
@@ -20,11 +20,11 @@ Only this member.
 
 ## Findings
 
-### B Notes
+### B/Notes
 
 Second finding.
 
-### C Other
+### C/Other
 
 #### Detail
 

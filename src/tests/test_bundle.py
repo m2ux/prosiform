@@ -28,7 +28,6 @@ from prosiform.bundle import (
     heading_text,
     openings,
     rewrite,
-    title_cased,
 )
 from prosiform.cli import INPUT_FAILURE, SUCCESS, main
 from prosiform.dispatch import (
@@ -36,6 +35,7 @@ from prosiform.dispatch import (
     HEADING_COLLISION,
     PARALLEL_PROTOCOL,
 )
+from prosiform.heading import title_cased
 from prosiform.profile import parse
 from prosiform.provenance import STRUCTURAL_ANCESTOR, Origin
 from prosiform.source import Selection, lines, regions, section

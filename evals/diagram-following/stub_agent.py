@@ -11,7 +11,9 @@ A workflow that dispatches takes a `Task` call per sub-agent start the
 scenario states, each naming its section as `<document>#<heading>`, with
 the outcome the scenario gives it. The entries a scenario marks `together`
 share one assistant message, so they read as started at once, and each
-call is answered by a `tool_result` carrying `question` or `done`.
+call is answered by a `tool_result` carrying `question` or `done`. Where its
+instruction names the sub-agent trace, each call's prompt hands that name on,
+and each sub-agent writes the trace its prompt names and no other.
 
 The environment scripts it:
 
@@ -51,11 +53,14 @@ import uuid
 from pathlib import Path
 
 from harness import QUESTION as RETURNED_QUESTION
-from score import ACTIONS, TRACE
+from score import ACTIONS, SUB_AGENT_TRACE, TRACE
 from workflow import Scenario, Workflow, walk, workflows
 
-SUB_AGENT_TRACE = "trace-{section}.log"
-"""The path a sub-agent writes, named for the section it was handed."""
+STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
+"""The sub-agent trace as an instruction states it."""
+
+HANDED_TRACE = re.compile(re.escape(SUB_AGENT_TRACE).replace(r"\{section\}", r"(\S+?)"))
+"""The sub-agent trace a `Task` prompt names, the section's name its group."""
 
 HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
 
@@ -110,37 +115,48 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
     ]
 
 
-def write_sub_agent_traces(
-    workspace: Path, started: list[tuple[str, str, bool]]
-) -> None:
-    """Record each dispatched sub-agent's own path, under the stated name.
+def handed(section: str, instruction: str) -> str:
+    """The prompt a session's `Task` call gives the sub-agent following a section.
 
-    The instruction names a sub-agent's path `trace-<section>.log`, so a
-    session that made no start writes none of them. A start was handed a
-    section, so the path is named for that section and holds the section's
-    title as its one state. What a nested chart draws is the sub-agent's own
-    material, which this stub does not read.
+    A sub-agent reads only this prompt, so it learns its trace's name only
+    where the session's instruction stated that name for the session to hand on.
     """
-    for section, _, _ in started:
-        document, _, heading = section.partition("#")
-        named = heading or document
-        (workspace / SUB_AGENT_TRACE.format(section=named)).write_text(
-            f"{named.title()}\n"
-        )
+    if STATED_TRACE not in instruction:
+        return f"Follow {section}."
+    document, _, heading = section.partition("#")
+    trace = SUB_AGENT_TRACE.format(section=heading or document)
+    return f"Follow {section}. Append each state you enter to {trace}."
 
 
-def message(identifier: str, start: tuple[str, str, bool]) -> dict[str, object]:
+def write_sub_agent_traces(workspace: Path, prompts: list[str]) -> None:
+    """Record each dispatched sub-agent's own path, where its prompt names one.
+
+    A sub-agent writes the trace its prompt names and nothing else, so a
+    prompt naming none leaves no trace. The path holds the section's name as
+    its one state; what a nested chart draws is the sub-agent's own material,
+    which this stub does not read.
+    """
+    for prompt in prompts:
+        if named := HANDED_TRACE.search(prompt):
+            (workspace / named.group(0)).write_text(f"{named.group(1).title()}\n")
+
+
+def message(
+    identifier: str, start: tuple[str, str, bool], instruction: str
+) -> dict[str, object]:
     """One `Task` call, its description naming the section it hands over."""
     section, _, _ = start
     return {
         "type": "tool_use",
         "id": identifier,
         "name": "Task",
-        "input": {"description": section, "prompt": f"Follow {section}."},
+        "input": {"description": section, "prompt": handed(section, instruction)},
     }
 
 
-def transcript_of(started: list[tuple[str, str, bool]]) -> list[dict[str, object]]:
+def transcript_of(
+    started: list[tuple[str, str, bool]], instruction: str
+) -> list[dict[str, object]]:
     """The assistant and user messages a session's sub-agent starts print.
 
     Two starts together share one assistant message, and each call is
@@ -161,7 +177,7 @@ def transcript_of(started: list[tuple[str, str, bool]]) -> list[dict[str, object
         identifier = f"toolu_{uuid.uuid4().hex[:12]}"
         if not together:
             flush()
-        group.append(message(identifier, start))
+        group.append(message(identifier, start, instruction))
         made.append((identifier, returned))
     flush()
     for identifier, returned in made:
@@ -217,7 +233,9 @@ def main() -> int:
             name, value = workflow.walked[state].action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
     dispatch = starts(scenario_of(workflow, inputs))
-    write_sub_agent_traces(workspace, dispatch)
+    write_sub_agent_traces(
+        workspace, [handed(section, prompt) for section, _, _ in dispatch]
+    )
     hang = os.environ.get("STUB_AGENT_HANG")
     if hang and not Path(hang).exists():
         Path(hang).touch()
@@ -235,7 +253,7 @@ def main() -> int:
             )
         )
     if dispatch:
-        for said in transcript_of(dispatch):
+        for said in transcript_of(dispatch, prompt):
             print(json.dumps(said))
     else:
         print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
