@@ -1,9 +1,1 @@
-[
-  {
-    "branch": "main",
-    "paths": ["src/prosiform", "checks", "evals"],
-    "criterion": "No page, docstring, diagnostic or catalogue entry states the behaviour this epic replaces, as a search of the repository shows.",
-    "phrase": "behaviour this epic replaces",
-    "row": "Sweep of the descriptions the change replaces"
-  }
-]
+[]
