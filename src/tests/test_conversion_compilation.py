@@ -130,7 +130,7 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
         )
     run = invoke("x/notes.md", "y/notes.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert "### X Notes\n" in run.bundle and "### Y Notes\n" in run.bundle
+    assert "### X/Notes\n" in run.bundle and "Y/Notes\n" in run.bundle
     assert "First." in run.bundle and "Second." in run.bundle
 
 

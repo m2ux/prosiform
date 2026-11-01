@@ -8,7 +8,13 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 - `bundle`: the diagram form bundled by `pf`, as one file;
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
 - `prose`: the prose form bundled by `pf`, as one file;
-- `linked`: the linked form's source tree as it is, entered at `workflow.md`.
+- `linked`: the linked form's source tree as it is, entered at `workflow.md`;
+- `compiled`: the compiled form's bundle set, the entry's bundle as
+  `workflow.md` and every dispatched target's beside it;
+- `authored`: the authored-protocol form's one bundle, as `workflow.md`;
+- `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
+  it compiles, with the build under test on the session's path; a harness
+  with no shell gives no session in it.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
@@ -37,10 +43,10 @@ Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
 agent printed; `stderr.log` when it printed any; `subagents.json`, the
 sub-agent starts the transcript records, in order, with what each returned;
-the final workspace's `trace.log` and `actions/`; and `session.json`,
-holding the session's identity, exit status, duration, the stream's
-`result` message with its `usage` and `total_cost_usd`, and the scorer's
-verdict record. `run.json`
+the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
+`actions/`; and `session.json`, holding the session's identity, exit status,
+duration, the stream's `result` message with its `usage` and
+`total_cost_usd`, and the scorer's verdict record. `run.json`
 holds the run's date, options, recorded cost, the sessions it did not
 start and the run's state. Once `run.json` is written, `report.py` writes
 the run's report beside it, compared with the committed baseline.
@@ -106,7 +112,7 @@ from report import (
 )
 from score import (
     ACTIONS,
-    TRACE,
+    TRACES,
     Failure,
     Verdict,
     read_trace,
@@ -353,16 +359,23 @@ def observable(
     included. A harness that does not surface a sub-agent's own dispatch can
     report only the starts the path's own sections make, so a scenario whose
     trace outruns that count is beyond it.
+
+    The corpus names its forms by what they hold, so the runner's form is
+    read as the corpus form it carries before its sections are asked for.
     """
     if harness.nested_starts:
         return True
-    root = workflow.form(FORMS[form])
+    written = FORMS[form]
+    sections = sections_of(workflow, written)
+    root = workflow.form(written)
     top = 0
     for state in scenario.path:
-        section = sections_of(workflow, form)[state]
+        section = sections[state]
         top += sum(
             len(targets)
-            for _, targets in dispatched(section.body, section.path.parent, root, form)
+            for _, targets in dispatched(
+                section.body, section.path.parent, root, written
+            )
         )
     return len(scenario.trace) <= top
 
@@ -420,7 +433,7 @@ def keep(workspace: Path, records: Path) -> None:
     `trace-<section>.log`, so both are kept and a nested workflow's states are
     evidence rather than a file the run discards.
     """
-    for path in sorted(workspace.glob(f"{TRACE}*")):
+    for path in sorted(workspace.glob(TRACES)):
         if path.is_file():
             shutil.copy2(path, records / path.name)
     if (workspace / ACTIONS).is_dir():
@@ -659,16 +672,14 @@ def outcome(
 ) -> tuple[str, str | None]:
     """A run's state, and the reason it records when it is refused.
 
-    A run is refused when it started every session of its matrix and every
-    one took the `errored` verdict: no session entered a state, so the
-    matrix is no result. A run its budget stopped part way, and one where
-    some sessions errored beside others that entered a state, is a
-    completed run whose failures are the result. The reason is the first
-    errored session's own `result` text, so a reader sees the limit the
-    agent reported.
+    A run is refused when it started a session and every session it
+    started took the `errored` verdict, whether or not its budget stopped
+    it before the rest: no session entered a state, so the matrix is no
+    result. A run where some sessions errored beside others that entered a
+    state is a completed run whose failures are the result. The reason is
+    the first errored session's own `result` text, so a reader sees the
+    limit the agent reported.
     """
-    if not all(started):
-        return COMPLETED, None
     records = [
         verdict_of(session.directory(run_directory))
         for session, began in zip(sessions, started, strict=True)

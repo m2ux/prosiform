@@ -43,9 +43,9 @@ Two entries whose paths derive one name, `a/b.md` and `a_b.md` among them, join 
 
 ## Publication
 
-The run folder is written whole beside the earlier one and renamed onto it. Whatever stood there is renamed aside first and removed once the new folder stands, so a reader sees one run's set or the one before it, never a mixture.
+The run folder is written whole beside the earlier one and renamed onto it. An earlier set standing there is renamed aside first and removed once the new folder stands, so a reader sees one run's set or the one before it, never a mixture.
 
-Nothing else in the output folder is touched, including an author's folder named like the entry. A symbolic link standing at the run folder's path is replaced as the link it is, and whatever it names is left as it was.
+Nothing else in the output folder is touched, including an author's folder named like the entry. A symbolic link standing at the run folder's path is replaced as the link it is, and whatever it names is left as it was. Anything else at that path, a regular file among them, is material no run wrote: the run refuses it with `E_PUBLICATION_FAILED`, under `-c` as without it, and leaves it where it stands.
 
 A failure before the new folder stands removes it and leaves the output folder as it was. An earlier set that cannot be removed once the new one stands leaves the run published, and warns with the path that holds it.
 
@@ -61,7 +61,7 @@ flowchart LR
 
 ## The output folder
 
-`-o DIR` names an existing folder the run's own folder is written into. The working directory is the default. `-o -` is refused: standard output carries no bundle, only the guide, an informational response, or nothing.
+`-o DIR` names the folder the run's own folder is written into, made with any absent parents if it is absent. The working directory is the default. `-o -` is refused: standard output carries no bundle, only the guide, an informational response, or nothing.
 
 A run folder holding any source the run reads is refused, so a run can never write over its own input.
 

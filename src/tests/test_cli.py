@@ -1301,6 +1301,26 @@ def test_a_structural_ancestor_beyond_the_sixth_level_fails_by_its_own_name(
     assert "'Levels' at level 7" in reported["message"]
 
 
+def test_a_heading_overflowing_in_a_later_member_names_that_member_s_chain(
+    root: Path,
+) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\nRead [a](a.md) and [b](b.md).\n")
+    written(root, "a.md", conversion("Notes", 1) + "# A\n\nFirst.\n")
+    written(
+        root,
+        "b.md",
+        conversion("Notes", 1)
+        + "# B\n\n## C\n\n### D\n\n#### E\n\n##### F\n\n###### G\n\nDeep.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == HEADING_DEPTH_OVERFLOW
+    assert reported["source"] == "b.md"
+    assert reported["chain"] == ["guide.md", "b.md"]
+
+
 def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     written(
         root,
@@ -2070,6 +2090,70 @@ def test_a_link_opening_with_two_dispatch_marks_is_refused(root: Path) -> None:
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
     assert diagnostic["reference"] == "\u21c9\u2afd the rules"
+
+
+@pytest.mark.parametrize("mark", ["\u21c9", "\u2afd"])
+def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> None:
+    """A title the file heading absorbs is no section, so it places no sub-section."""
+    written(root, "guide.md", DECLARED + "# Guide\n\nRead [the note](note.md).\n")
+    written(root, "note.md", DECLARED + f"# Note [{mark} Plan](plan.md)\n\nBody.\n")
+    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["reference"] == "plan.md"
+    assert diagnostic["source"] == "note.md:4"
+    assert diagnostic["chain"] == ["guide.md", "note.md"]
+    assert diagnostic["remedy"]
+
+
+def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
+    """A member's title the subsection absorbs places no sub-section either."""
+    front = "---\nprosiform:\n  group: Merge\n  group-depth: 2\n---\n\n"
+    member = "note-\u21c9-plan.md"
+    written(
+        root,
+        "entry.md",
+        front + f"# Entry\n\nRead [note]({member}) and [plan](plan.md).\n",
+    )
+    written(root, member, front + "# Note [\u21c9 Plan](plan.md)\n\nBody.\n")
+    written(root, "plan.md", "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "entry.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == f"{member}:7"
+
+
+def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> None:
+    """A title no group emits carries its link as text, so nothing compiles it."""
+    written(root, "guide.md", DECLARED + "# Guide\n\nRead [the part](note.md#part).\n")
+    written(
+        root, "note.md", DECLARED + "# Top [\u21c9 Plan](plan.md)\n\n## Part\n\nBody.\n"
+    )
+    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == "note.md:4"
+    assert diagnostic["chain"] == ["guide.md", "note.md#part"]
+
+
+def test_a_dispatch_in_the_entry_s_own_title_still_publishes(root: Path) -> None:
+    """The entry's title heads the bundle, so its sub-section stands beneath it."""
+    written(root, "guide.md", DECLARED + "# Guide [\u21c9 Plan](plan.md)\n\nBody.\n")
+    written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+    assert run.bundle.startswith(DISPATCHING)
+    assert "[Plan](#dispatch-plan)" in run.bundle
+    assert run.bundles["plan.bundle.md"] == "# Plan\n\n1. Go.\n"
 
 
 def test_a_link_opening_with_two_dispatch_marks_is_refused_where_it_names_nothing(
@@ -3292,3 +3376,77 @@ def test_an_entry_naming_no_document_is_a_missing_target(root: Path) -> None:
     assert reported["code"] == TARGET_NOT_FOUND
     assert reported["reference"] == "absent.md"
     assert "names no document" in reported["message"]
+
+
+def test_a_links_array_is_refused_naming_its_line(root: Path) -> None:
+    """An array renders a menu whose entries are named by their positions."""
+    written(
+        root,
+        "exchange.md",
+        DECLARED + "# Exchange\n\n```mermaid\nsequenceDiagram\n    participant Server\n"
+        '    links Server: ["docs/note.md", "guide.md"]\n```\n',
+    )
+    run = invoke("-d", "json", "exchange.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == "exchange.md:9"
+    assert diagnostic["remedy"]
+
+
+NOTE_ANCHOR = "<a href='docs/note.md'>the note</a>"
+
+
+@pytest.mark.parametrize(
+    "fence",
+    [
+        f'flowchart LR\n    A --> B\n    click B "docs/note.md" "{NOTE_ANCHOR}"\n',
+        f'pie title Share\n    "{NOTE_ANCHOR}" : 40\n    "Other" : 60\n',
+        f"sequenceDiagram\n    Alice->>Bob: hello\n"
+        f"    Note over Alice,Bob: {NOTE_ANCHOR}\n",
+    ],
+    ids=["tooltip", "pie-label", "sequence-note"],
+)
+def test_an_anchor_mermaid_draws_as_no_anchor_is_carried(
+    root: Path, fence: str
+) -> None:
+    """A tooltip, a pie label and a sequence note draw no anchor."""
+    written(root, "map.md", DECLARED + f"# Map\n\n```mermaid\n{fence}```\n")
+    run = invoke("-d", "json", "map.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert NOTE_ANCHOR in run.bundle
+
+
+def test_an_anchor_in_a_label_beside_a_click_is_still_refused(root: Path) -> None:
+    """A node statement on a click's line draws its label's anchor."""
+    written(
+        root,
+        "map.md",
+        DECLARED + "# Map\n\n```mermaid\nflowchart LR\n"
+        '    A["<a href=\'docs/note.md\'>N</a>"]; click A "guide.md" '
+        "\"<a href='guide.md'>tip</a>\"\n```\n",
+    )
+    run = invoke("-d", "json", "map.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["reference"] == "docs/note.md"
+    assert diagnostic["source"] == "map.md:8"
+
+
+def test_every_click_on_one_line_is_followed(root: Path) -> None:
+    """Each statement of the line is read, so both destinations are rewritten."""
+    written(root, "one.md", DECLARED + "# One\n")
+    written(root, "two.md", DECLARED + "# Two\n")
+    written(
+        root,
+        "map.md",
+        DECLARED + "# Map\n\n```mermaid\nflowchart LR\n    A --> B\n"
+        '    click A "one.md"; click B href "two.md" "Two"\n```\n',
+    )
+    run = invoke("map.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click A "#one"; click B href "#two" "Two"\n' in run.bundle
+    assert "\n# One\n" in run.bundle
+    assert "\n# Two\n" in run.bundle

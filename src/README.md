@@ -96,7 +96,7 @@ Paths below are relative to `src/`.
 
 ### Grouping
 
-`tests/test_grouping.py` checks title-cased directory and document names, redundant trailing-word removal, shortest distinguishing paths after shared segments, the `Overview` subsection each member takes — including one the arrangement emits nothing else from — and group selection from the deepest matching directory.
+`tests/test_grouping.py` checks title-cased group and member names that keep their separators, a member whose name carries no word taking its path text, redundant trailing-word removal, shortest distinguishing paths after shared segments, the subsection each member takes — including one the arrangement emits nothing else from — the `Overview` section emitted only over content a member carries beneath its subsection, a titled parent's whole-document reference reaching its title at each grouping depth, and group selection from the deepest matching directory.
 
 ### Reference resolution
 

@@ -1,0 +1,22 @@
+description = "A selection naming a section beneath a title leaves the title above it, emitted as heading text alone, so a dispatch the title writes is no link in the bundle; the run publishes nothing and fails, naming the link."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["⇉ Publish"]
+reference = "publish.md"
+source = "notes.md:4"
+chain = ["guide.md", "notes.md#procedure"]

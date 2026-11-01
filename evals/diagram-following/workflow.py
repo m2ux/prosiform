@@ -13,11 +13,12 @@ case and headed with the state's name.
 - `prose/` holds the same state documents and no diagram. Its entry
   document links the first state, and each section names the state that
   comes next.
-- `linked/` holds the same state documents and no diagram, and a decision
-  section names a branch by a document instead of a label. Each rule
-  document states one label, so the label a branch takes is reachable only
-  by following the link, and it is held to the edge the diagram draws all
-  the same. A label that names an edge exists on the diagram alone.
+- `linked/` holds the same state documents beneath the diagram's
+  flowchart drawn with no branch label, and a decision section names each
+  branch by a rule document. Each rule document states the one state its
+  branch enters, so the edge a branch takes is reachable only by following
+  the link, and it is held to an edge the diagram draws out of the deciding
+  state all the same.
 - `compiled/` and `authored/` hold the same workflow with its states
   dispatching targets of their own, so a state's section names a step that
   hands another document to a sub-agent. `compiled/` writes the step with
@@ -31,7 +32,7 @@ A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
 forms. A diagram section names the label of the edge to take, or takes the
 one edge out of its state; a prose section names the next state; a linked
-section names the document stating the label of the edge to take. A
+section names the document stating the state its edge enters. A
 terminal section says the workflow is complete. A decision is written as
 one condition with a branch for when it holds and one for when it does
 not, and a condition is one of two sentences: an input file reads a value,
@@ -108,6 +109,21 @@ SHELL_FORMS = (BOOTSTRAP,)
 
 BUNDLES = "workflow.bundles"
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
+UNDRAWN = (PROSE,)
+"""The forms whose entry document draws no diagram.
+
+A prose section names the state that comes next, so a diagram beside it
+would be a second statement of every edge and the form would no longer
+isolate what the diagram adds.
+"""
+UNLABELLED = (LINKED_FORM,)
+"""The forms whose entry document draws no branch label.
+
+A linked decision names the rule stating the state its branch enters, so a
+label on the entry's flowchart would let a session choose the branch without
+opening the rule, and the form would no longer measure whether a decision is
+resolved by following its link.
+"""
 DRAWN = (DIAGRAM, COMPILED_FORM)
 """The forms whose entry documents draw the workflow, in the order they are tried.
 
@@ -171,7 +187,7 @@ TERMINAL = "The workflow is complete."
 ONLY_EDGE = "Take the transition out of this state."
 LABEL = r"take the transition labelled `([^`]+)`"
 GO_TO = r"go to \[(\w+)\]\([^)]+\)"
-LINKED = r"take the transition labelled in \[([^\]]+)\]\(([^)]+)\)"
+LINKED = r"take the transition \[([^\]]+)\]\(([^)]+)\) names"
 LINK_TARGET = re.compile(
     rf"\[(?:{DISPATCH_OPERATOR}|{PARALLEL_OPERATOR})?\s*([^\]]+)\]"
     r"\(([^)#]*)(?:#([^)]*))?\)"
@@ -227,9 +243,7 @@ the whole statement of what a sub-agent follows and how a returned question
 is relayed."""
 OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
 """The operator a link's text opens with, where it opens with one."""
-LABEL_STATEMENT = re.compile(
-    r"^The transition labelled `([^`]+)` applies\.$", re.MULTILINE
-)
+RULE_STATEMENT = re.compile(r"^The transition into `(\w+)` applies\.$", re.MULTILINE)
 _DIAGRAM_DECISION = re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$")
 _DIAGRAM_ONLY_EDGE = re.compile(rf"^{re.escape(ONLY_EDGE)}$")
 DECISION = {
@@ -357,10 +371,11 @@ class Diagram:
 class Transition:
     """A section's transition: where to go, under which condition.
 
-    `then` and `otherwise` are edge labels in the diagram form and state
-    names in the prose form. An unconditional transition carries no
-    condition and no `otherwise`; in the diagram form it carries no label
-    either, since it takes the one edge out of its state.
+    `then` and `otherwise` are edge labels in the diagram form and state names
+    in the prose form and in the linked form's decisions. An unconditional
+    transition carries no condition and no `otherwise`; in the diagram form
+    it carries no label either, since it takes the one edge out of its
+    state.
     """
 
     condition: str | None
@@ -523,12 +538,11 @@ def read_diagram_text(
     return Diagram(starts[0], tuple(edges), terminals, clicks, shapes, labels)
 
 
-def labelled_rule(directory: Path, destination: str) -> str:
-    """The label a rule document states, as one backticked edge label.
+def ruled_state(directory: Path, destination: str) -> str:
+    """The state a rule document states its branch enters.
 
-    A linked transition names a document rather than a label, so the label
-    a branch takes is the one that document states. It sits outside the
-    diagram form's sections, so a bundle carries it and a diagram does not.
+    A linked transition names a document rather than a state or a label, so
+    the edge a branch takes is the one into the state that document states.
     `directory` is that of the section writing the link, which is where the
     document resolves from.
     """
@@ -536,12 +550,12 @@ def labelled_rule(directory: Path, destination: str) -> str:
     if not target.is_file():
         raise CorpusError(f"a transition links {destination}, which is no document")
     found = None
-    for match in LABEL_STATEMENT.finditer(target.read_text()):
+    for match in RULE_STATEMENT.finditer(target.read_text()):
         if found is not None:
-            raise CorpusError(f"{destination} states more than one label")
+            raise CorpusError(f"{destination} states more than one state")
         found = match.group(1)
     if found is None:
-        raise CorpusError(f"{destination} states no label")
+        raise CorpusError(f"{destination} states no state")
     return found
 
 
@@ -559,8 +573,8 @@ def parse_transition(
                 raise CorpusError(f"a linked transition reads {text!r} with no root")
             return Transition(
                 condition,
-                labelled_rule(directory, then_path),
-                labelled_rule(directory, otherwise_path),
+                ruled_state(directory, then_path),
+                ruled_state(directory, otherwise_path),
             )
         condition, then, otherwise = decision.groups()
         input_read(condition)
@@ -1001,11 +1015,14 @@ def successor(
     if TRANSITION[form] == PROSE:
         return chosen
     leaving = workflow.diagram.leaving(state)
-    targets = [edge.target for edge in leaving if edge.label == chosen]
+    if TRANSITION[form] == LINKED_FORM and transition.condition is not None:
+        targets = [edge.target for edge in leaving if edge.target == chosen]
+        named = f"into {chosen!r}"
+    else:
+        targets = [edge.target for edge in leaving if edge.label == chosen]
+        named = f"labelled {chosen!r}"
     if len(targets) != 1:
-        raise CorpusError(
-            f"{workflow.name}: {state} has {len(targets)} edges labelled {chosen!r}"
-        )
+        raise CorpusError(f"{workflow.name}: {state} has {len(targets)} edges {named}")
     return targets[0]
 
 

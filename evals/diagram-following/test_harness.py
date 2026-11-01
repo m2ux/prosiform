@@ -8,7 +8,10 @@ the CLIs print: Claude's `tool_use` and `tool_result` blocks, and Cursor's
 same `Start`, which is what lets the scorer above be unaware of the CLI.
 """
 
+import inspect
 import json
+import re
+from dataclasses import fields
 from pathlib import Path
 
 from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
@@ -73,6 +76,38 @@ def test_the_declared_harnesses_are_named() -> None:
         and Cursor().name == "cursor"
         and Opencode().name == "opencode"
     )
+
+
+def test_the_harness_module_names_every_declared_harness() -> None:
+    """AC3: the module docstring lists each harness `HARNESSES` declares."""
+    import harness
+
+    stated = harness.__doc__ or ""
+    for name in HARNESSES:
+        assert f"- `{name}`" in stated, name
+
+
+def test_no_harness_declares_a_field_nothing_reads() -> None:
+    """AC3: each field of a declared harness has a reader.
+
+    A field is read where its own class reads it as `self.<field>`, or where
+    an eval module reads it from any harness as `harness.<field>`.
+    """
+    here = Path(__file__).parent
+    modules = " ".join(
+        path.read_text()
+        for path in sorted(here.glob("*.py"))
+        if not path.name.startswith("test_")
+    )
+    for declared in HARNESSES.values():
+        own = inspect.getsource(type(declared))
+        unread = [
+            field.name
+            for field in fields(declared)
+            if not re.search(rf"\bself\.{field.name}\b", own)
+            and not re.search(rf"\bharness\.{field.name}\b", modules)
+        ]
+        assert not unread, f"{declared.name} declares {unread}, which nothing reads"
 
 
 def test_a_harness_without_a_shell_is_offered_every_form_bundled() -> None:
@@ -273,9 +308,15 @@ def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> Non
 
 
 def opencode_part(
-    *, tool: str, description: str, message: str = "m1"
+    *, tool: str, description: str, message: str = "m1", output: str | None = None
 ) -> dict[str, object]:
     """One opencode `tool_use` part, as the CLI prints it."""
+    state: dict[str, object] = {
+        "status": "completed",
+        "input": {"description": description, "prompt": "follow it"},
+    }
+    if output is not None:
+        state["output"] = output
     return {
         "type": "tool_use",
         "part": {
@@ -283,10 +324,38 @@ def opencode_part(
             "callID": f"call_{description}",
             "messageID": message,
             "tool": tool,
-            "state": {
-                "status": "completed",
-                "input": {"description": description, "prompt": "follow it"},
+            "state": state,
+        },
+    }
+
+
+def opencode_task_output(text: str, *, state: str = "completed") -> str:
+    """A `task` call's output, the sub-agent's text wrapped as opencode wraps it."""
+    element = "task_error" if state == "error" else "task_result"
+    return "\n".join(
+        [
+            f'<task id="ses_1" state="{state}">',
+            f"<{element}>",
+            text,
+            f"</{element}>",
+            "</task>",
+        ]
+    )
+
+
+def opencode_step(tokens: int, cost: float) -> dict[str, object]:
+    """One opencode `step_finish` part, its token kinds summing to `tokens`."""
+    return {
+        "type": "step_finish",
+        "part": {
+            "type": "step_finish",
+            "tokens": {
+                "input": tokens - 4,
+                "output": 1,
+                "reasoning": 1,
+                "cache": {"write": 1, "read": 1},
             },
+            "cost": cost,
         },
     }
 
@@ -334,7 +403,51 @@ def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
     assert Opencode().commands(held) == ("./bin/pf -o build sources/workflow.md",)
 
 
-def test_opencode_sums_tokens_and_reads_cost_from_its_last_step(
+def test_opencode_reads_what_each_sub_agent_returned(tmp_path: Path) -> None:
+    """A start returns what its sub-agent's text states, read inside the wrapper."""
+    held = transcript(
+        tmp_path,
+        [
+            opencode_part(
+                tool="task",
+                description="a#b",
+                output=opencode_task_output("Question: which source?"),
+            ),
+            opencode_part(
+                tool="task",
+                description="c#d",
+                message="m2",
+                output=opencode_task_output("done: read it"),
+            ),
+            opencode_part(
+                tool="task",
+                description="e#f",
+                message="m3",
+                output=opencode_task_output("question: stopped", state="error"),
+            ),
+            opencode_part(tool="task", description="g#h", message="m4"),
+        ],
+    )
+    assert Opencode().starts(held) == (
+        Start("a#b", "question", False),
+        Start("c#d", "done", False),
+        Start("e#f", "question", False),
+        Start("g#h", "done", False),
+    )
+
+
+def test_opencode_sums_every_step_of_a_session(tmp_path: Path) -> None:
+    """A session's tokens and cost are the sum of its steps, not its last one."""
+    held = transcript(
+        tmp_path,
+        [opencode_step(100, 0.25), opencode_step(40, 0.125), opencode_step(9, 0.0)],
+    )
+    result = Opencode().result(held)
+    assert Opencode().tokens(result) == 149
+    assert Opencode().cost(result) == 0.375
+
+
+def test_opencode_sums_the_token_kinds_of_one_step(
     tmp_path: Path,
 ) -> None:
     held = transcript(

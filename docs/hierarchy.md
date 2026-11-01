@@ -48,7 +48,7 @@ A **group** is one top-level division. By default a group is one source document
 
 A document declaring `prosiform.group` and `prosiform.group-depth` joins a **merged group** instead, sharing one heading with every other contributor declaring the same name.
 
-- The group's heading is the declared name in title case.
+- The group's heading is the declared name in title case. A name of hyphens, underscores and spaces alone carries no word for title case to name, and fails the run.
 - Every member must declare the same depth. A disagreement fails the run and names both declarations.
 - Membership is explicit. A declaration discovers no files, and an unannotated sibling keeps its own group.
 - A deferred-only target is validated but joins no group.
@@ -61,23 +61,23 @@ Where two or more members contribute the same heading text, that section splits 
 
 A member that contributes content above the grouping depth — its preamble, or a section shallower than the grouping depth — takes one subsection naming it.
 
-That name is the shortest run of the member's path that distinguishes it from the group's other members, in title case, after dropping segments they all share and a trailing word the group's heading already states. `artifacts/epic-issue-body.md` contributes `Epic Issue Body` under `Artifacts`; `guides/alpha/notes.md` beside `guides/beta/notes.md` contributes `Alpha Notes`.
+That name is the shortest run of the member's path that distinguishes it from the group's other members, in title case, after dropping segments they all share and a trailing word the group's heading already states. `artifacts/epic-issue-body.md` contributes `Epic-Issue-Body` under `Artifacts`; `guides/alpha/notes.md` beside `guides/beta/notes.md` contributes `Alpha/Notes`. A member whose name would carry no word, such as `rules/-.md`, is named by its path text instead: `Rules/-.md`.
 
 The same name serves the member's subsection and every variant heading it carries, so a reader meets each member named one way.
 
 A member contributing nothing above the grouping depth takes no subsection; the merged sections it contributes to name it.
 
-The member subsections sit beneath an `Overview` heading where the group also emits merged sections, and directly beneath the group heading where it does not.
+The member subsections sit beneath an `Overview` heading where the group also emits merged sections and a member carries content beneath its subsection. Where every subsection is the heading alone, or the group emits no merged section, they sit directly beneath the group heading.
 
 ```mermaid
 flowchart TD
   G["# Rules &nbsp;(merged group heading)"]
   G --> O["## Overview"]
   O --> M1["### Common"]
-  O --> M2["### Agent Rules"]
+  O --> M2["### Agent-Rules"]
   G --> S["## Workflow"]
   S --> V1["### Common &nbsp;(variant)"]
-  S --> V2["### Agent Rules &nbsp;(variant)"]
+  S --> V2["### Agent-Rules &nbsp;(variant)"]
 ```
 
 *Figure 2. A Merged Group: Members Above the Grouping Depth, Merged Sections Split into Variants.*

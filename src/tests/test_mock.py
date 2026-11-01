@@ -992,7 +992,7 @@ def test_a_substitute_declaring_a_group_joins_it_under_its_own_member_heading(
     status, published, _said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
     assert status == 0
     assert published.startswith("# Rules\n")
-    assert "### Stand In" in published
+    assert "### Stand-In" in published
     assert published.count("The stand-in preamble.") == 1
     assert "Every rule the tree under test holds." not in published
 
@@ -1063,7 +1063,7 @@ def test_a_substitute_reached_by_two_routes_joins_the_group_once(
     status, published, _said = grouped(tree, "-m", "rules.md=stand-in.md", "guide.md")
     assert status == 0
     # One overview subsection and one variant heading name the one member.
-    assert published.count("### Stand In") == 2
+    assert published.count("### Stand-In") == 2
     assert published.count("The stand-in preamble.") == 1
     assert published.count("The stand-in's scope.") == 1
 

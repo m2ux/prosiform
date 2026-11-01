@@ -73,8 +73,10 @@ a class diagram's `link` line, and a sequence diagram's participant
 menu, written one entry to a `link` line or several to a `links` line.
 Each form is read in the diagram that writes it, the diagram's type
 read as Mermaid detects it, and each is read where Mermaid's lexer
-ends it. Each destination is a use, on the line it is written, and opens with
-nothing, because a diagram gives a link no text to carry a mark. A
+ends it, so a line holding several `;`-ended statements names the
+destination of each. Each destination is a use, on the line it is
+written, and opens with nothing, because a diagram gives a link no
+text to carry a mark. A
 click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
 is a use.
@@ -158,6 +160,9 @@ QUOTED = (
 )
 CLICK_LINE = re.compile(rf'\s*click\s+[^\s"]+\s+(?:href\s+)?{QUOTED}', re.IGNORECASE)
 CLASS_LINK = re.compile(rf'\s*link\s+[^\s"]+\s+{QUOTED}', re.IGNORECASE)
+CLICK_STATEMENT = re.compile(r"\s*click\s", re.IGNORECASE)
+CLASS_STATEMENT = re.compile(r"\s*(?:link|callback)\s", re.IGNORECASE)
+QUOTE = '"'
 MENU_ENTRY = re.compile(r"\s*link\s+[^:]+:", re.IGNORECASE)
 MENU = re.compile(r"\s*links\s+[^:]+:", re.IGNORECASE)
 ENTRY_SEPARATOR = "@"
@@ -182,6 +187,21 @@ CLASS_DIAGRAM = "classDiagram"
 SEQUENCE_DIAGRAM = "sequenceDiagram"
 KANBAN = "kanban"
 DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM, KANBAN)
+TEXT_LABELS = (
+    SEQUENCE_DIAGRAM,
+    "pie",
+    "timeline",
+    "journey",
+    "gantt",
+    "quadrantChart",
+    "gitGraph",
+    "xychart",
+    "sankey",
+    "packet",
+    "radar",
+    "treemap",
+    "C4",
+)
 INITIALIZING = ("init", "initialize")
 CONFIG = "config"
 TICKET_BASE_URL = "ticketBaseUrl"
@@ -194,7 +214,7 @@ HTML_ANCHOR = re.compile(
 )
 COMMENT_LINE = re.compile(r"\s*%%")
 KANBAN_TICKET = "Kanban ticket's link"
-LABEL_ANCHOR = "HTML anchor in a node label"
+LABEL_ANCHOR = "HTML anchor in a label"
 AUTHORITY = "//"
 SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]+:")
 DIAGRAM_READ = "diagram links"
@@ -698,7 +718,7 @@ class Unfollowed:
 
     The form names it: a Kanban ticket's link, which Mermaid builds by
     putting the ticket in place of `#TICKET#` in the diagram's
-    `ticketBaseUrl`, or an HTML anchor in a node label. The destination
+    `ticketBaseUrl`, or an HTML anchor Mermaid draws in a label. The destination
     is the URL Mermaid renders, and the line is the line of this content
     that writes the ticket or the anchor.
     """
@@ -715,18 +735,26 @@ class Diagram:
     The clicks are its link destinations in written order. A broken line
     is a line of this content holding a `links` object one of whose
     values is no string, which Mermaid renders as a link opening
-    nothing; it names no destination. The unfollowed links are the
-    links Mermaid renders that no diagram link line writes, in written
-    order; none is a use.
+    nothing; it names no destination. A listed line is a line of this
+    content holding a `links` value that is a non-empty array, which
+    Mermaid renders as a menu whose entries are named by their positions
+    in the array; it names no destination either. The unfollowed links
+    are the links Mermaid renders that no diagram link line writes, in
+    written order; none is a use.
     """
 
     clicks: tuple[Click, ...] = ()
     broken: tuple[int, ...] = ()
+    listed: tuple[int, ...] = ()
     unfollowed: tuple[Unfollowed, ...] = ()
 
 
 class BrokenMenu(Exception):
     """A `links` object one of whose values is no string."""
+
+
+class ListedMenu(Exception):
+    """A `links` value that is a non-empty array."""
 
 
 def diagram(fence: Token) -> bool:
@@ -743,10 +771,30 @@ def diagram_type(content: str) -> str:
     diagram write a link form of their own, so every other diagram is
     named by the empty string.
     """
-    text = FRONT_MATTER.sub("", content, count=1)
-    text = COMMENT.sub(LINE_FEED, DIRECTIVE.sub("", text))
-    opening = text.lstrip()
+    opening = diagram_opening(content)
     return next((one for one in DIAGRAM_TYPES if opening.startswith(one)), "")
+
+
+def draws_anchors(content: str) -> bool:
+    """Whether one diagram draws an HTML anchor its label text writes.
+
+    A diagram whose labels Mermaid draws as HTML draws an anchor written
+    in one. A sequence, pie, timeline, journey, Gantt, quadrant, Git,
+    XY, Sankey, packet, radar, treemap or C4 diagram draws its label
+    text as SVG text, so an anchor written there shows as the characters
+    it is written in. Every other diagram is held to draw one.
+    """
+    return not diagram_opening(content).startswith(TEXT_LABELS)
+
+
+def diagram_opening(content: str) -> str:
+    """One diagram's text from the word that declares its type.
+
+    Mermaid sets aside a leading front matter block, every directive and
+    every comment line before reading that word.
+    """
+    text = FRONT_MATTER.sub("", content, count=1)
+    return COMMENT.sub(LINE_FEED, DIRECTIVE.sub("", text)).lstrip()
 
 
 def clicks(fence: Token) -> tuple[Click, ...]:
@@ -782,29 +830,36 @@ def read_diagram(fence: Token) -> Diagram:
       the JSON object being one destination.
 
     A quoted destination may be followed by a quoted tooltip and a link
-    target. A click naming a callback, or a `call` form, runs script and
-    names no destination, so it yields nothing, and neither does any line
-    of a fence holding no diagram.
+    target. A line may hold several statements, each ended by a `;`
+    outside a quoted string, and each `click` or class `link` statement
+    among them names its own destination. A click naming a callback, or
+    a `call` form, runs script and names no destination, so it yields
+    nothing, and neither does any line of a fence holding no diagram.
 
-    A Kanban ticket's link and an HTML anchor in a node label are links
-    Mermaid renders that the reader does not follow, so each is read as
-    unfollowed rather than as a click.
+    A Kanban ticket's link and an HTML anchor Mermaid draws in a label
+    are links Mermaid renders that the reader does not follow, so each
+    is read as unfollowed rather than as a click.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
     form = diagram_type(fence.content)
     base = ticket_base(fence.content) if form == KANBAN else None
+    anchors = draws_anchors(fence.content)
     first = fence.map[0] + 2
     found: list[Click] = []
     broken: list[int] = []
+    listed: list[int] = []
     unfollowed: list[Unfollowed] = []
     for at, physical in enumerate(lines(fence.content)):
         line = bare(physical)
-        unfollowed.extend(rendered(line, base, first + at))
+        unfollowed.extend(rendered(line, form, base, anchors, first + at))
         try:
             named = linked(line, form)
         except BrokenMenu:
             broken.append(first + at)
+            continue
+        except ListedMenu:
+            listed.append(first + at)
             continue
         for written, offset, anchor in named:
             destination = (
@@ -813,16 +868,22 @@ def read_diagram(fence: Token) -> Diagram:
                 else written
             )
             found.append(Click(destination, first + at, offset, anchor, written))
-    return Diagram(tuple(found), tuple(broken), tuple(unfollowed))
+    return Diagram(tuple(found), tuple(broken), tuple(listed), tuple(unfollowed))
 
 
-def rendered(line: str, base: str | None, at: int) -> Iterator[Unfollowed]:
+def rendered(
+    line: str, form: str, base: str | None, anchors: bool, at: int
+) -> Iterator[Unfollowed]:
     """Each link one diagram line renders that no diagram link line writes.
 
     A comment line renders nothing. A line writing a ticket in a Kanban
     diagram whose ticket base URL is `base` renders the link Mermaid
-    builds from them, and each HTML anchor a line carries renders its
-    `href`.
+    builds from them. In a diagram that draws anchors, each HTML anchor
+    a statement of the line writes renders its `href`, except in a
+    `click` statement or a class diagram's `link` or `callback`
+    statement: the only text those carry is a destination and a tooltip,
+    and Mermaid shows a tooltip on hover as a box that takes no pointer,
+    so an anchor there opens nothing.
     """
     if COMMENT_LINE.match(line):
         return
@@ -831,9 +892,35 @@ def rendered(line: str, base: str | None, at: int) -> Iterator[Unfollowed]:
         if ticket:
             destination = base.replace(TICKET_PLACEHOLDER, ticket, 1)
             yield Unfollowed(KANBAN_TICKET, destination, at)
-    for anchor in HTML_ANCHOR.finditer(line):
-        destination = next(group for group in anchor.groups() if group is not None)
-        yield Unfollowed(LABEL_ANCHOR, destination, at)
+    if not anchors:
+        return
+    for statement, _start in statements(line):
+        if CLICK_STATEMENT.match(statement) or (
+            form == CLASS_DIAGRAM and CLASS_STATEMENT.match(statement)
+        ):
+            continue
+        for anchor in HTML_ANCHOR.finditer(statement):
+            destination = next(g for g in anchor.groups() if g is not None)
+            yield Unfollowed(LABEL_ANCHOR, destination, at)
+
+
+def statements(line: str) -> list[tuple[str, int]]:
+    """Each statement one diagram line holds, with where it starts in the line.
+
+    Mermaid ends a statement at a `;` outside a double-quoted string, so
+    a `;` a destination or a label quotes is the statement's own text.
+    """
+    found = []
+    start = 0
+    quoted = False
+    for at, character in enumerate(line):
+        if character == QUOTE:
+            quoted = not quoted
+        elif character == STATEMENT_END and not quoted:
+            found.append((line[start:at], start))
+            start = at + 1
+    found.append((line[start:], start))
+    return found
 
 
 def yaml_mapping(text: str) -> dict[object, object]:
@@ -892,15 +979,19 @@ def linked(line: str, form: str) -> list[tuple[str, int, str]]:
     """Each destination one line of a diagram of one type names, in written order.
 
     Each comes as written, with its offset and the anchor spelling its
-    form writes.
+    form writes. A quoted destination is read from each statement the
+    line holds.
     """
-    quoted = CLICK_LINE.fullmatch(line)
-    if quoted is None and form == CLASS_DIAGRAM:
-        quoted = CLASS_LINK.fullmatch(line)
-    if quoted is not None:
-        return [(quoted.group("destination"), quoted.start("destination"), ANCHOR)]
-    if form != SEQUENCE_DIAGRAM:
-        return []
+    found = []
+    for statement, start in statements(line):
+        quoted = CLICK_LINE.fullmatch(statement)
+        if quoted is None and form == CLASS_DIAGRAM:
+            quoted = CLASS_LINK.fullmatch(statement)
+        if quoted is not None:
+            offset = start + quoted.start("destination")
+            found.append((quoted.group("destination"), offset, ANCHOR))
+    if found or form != SEQUENCE_DIAGRAM:
+        return found
     entry = MENU_ENTRY.match(line)
     if entry is not None:
         end = statement_end(line, entry.end())
@@ -953,14 +1044,18 @@ def entries(line: str, start: int, end: int) -> list[tuple[str, int]]:
     anything else names nothing. It is read as `JSON.parse` reads it: a
     key written twice keeps its last value, so an earlier value names
     nothing, and a value that is no string is a broken menu, which
-    `BrokenMenu` raises. A string value whose written text differs from
-    the string it decodes to, such as one holding an escape, is left out,
-    because the characters a rewrite replaces are the destination's own.
+    `BrokenMenu` raises. A non-empty array in the object's place is a
+    listed menu, which `ListedMenu` raises. A string value whose written
+    text differs from the string it decodes to, such as one holding an
+    escape, is left out, because the characters a rewrite replaces are
+    the destination's own.
     """
     try:
         members = decoded(line[start:end])
     except ValueError:
         return []
+    if isinstance(members, list) and members:
+        raise ListedMenu
     if not isinstance(members, tuple):
         return []
     last = {key: at for at, (key, _value) in enumerate(members)}

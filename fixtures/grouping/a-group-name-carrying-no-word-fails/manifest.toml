@@ -1,0 +1,20 @@
+description = "A group declaration whose name is hyphens, underscores and spaces alone carries no word, so its title case names nothing a reader could tell from another such name; it fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing."
+
+clauses = [
+  "Grouping — Group naming",
+  "Metadata failures",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["rules/common.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.group must carry a word"]
+reference = "rules/common.md"
+chain = ["rules/common.md"]

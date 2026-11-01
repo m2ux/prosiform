@@ -663,7 +663,7 @@ def test_a_shared_source_is_captured_once(stack: Stack) -> None:
     ):
         assert output.count(marker) == 1, marker
     headings = re.findall(r"^# (.+)$", output, re.M)
-    for group in ("Join", "Alpha Via", "Portal Via", "Notes", "Leaves"):
+    for group in ("Join", "Alpha-Via", "Portal-Via", "Notes", "Leaves"):
         assert headings.count(group) == 1, group
 
 

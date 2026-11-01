@@ -237,16 +237,16 @@ An error decides a failing run.
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
-| `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write, an output folder that does not exist, or two bundles of one run deriving one name. |
+| `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write, an output folder that cannot be made, a path at the run folder's own that is neither a folder nor a link, or two bundles of one run deriving one name. |
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
-| `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
+| `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it, or a numeric scalar longer than the 65,536 characters a byte budget admits. |
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the working directory cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the working directory. |
 | `E_TARGET_NOT_FOUND` | Link classification — an operator's reference naming no document, or a reference naming no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, or an operator naming no Markdown document or section; Dispatch sub-sections — a dispatched link with no text after its mark. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, or an operator naming no Markdown document or section; Dispatch sub-sections — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 

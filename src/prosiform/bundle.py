@@ -79,8 +79,9 @@ Each link in selected content that the bundle compiled is rewritten to
 the destination of the target it resolved to, through the map the
 bundle's own headings produce. A whole-document reference takes the
 destination of that file's heading, except the parent — the first entry
-document — whose whole-document reference takes the destination of its
-first H2, wherever the bundle placed that heading. A fragment takes the
+document — whose whole-document reference takes the destination of the
+heading carrying its title, whether it heads a file group of its own or
+is a member of a merged group. A fragment takes the
 destination of the heading it named, and a fragment-only link resolves
 inside its own source first and then takes that heading's destination. A destination
 is scoped to the whole bundle, so a reference from one group to another
@@ -128,6 +129,7 @@ from prosiform.closure import (
     unmarked,
     withholding_target,
 )
+from prosiform.heading import title_cased
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -185,8 +187,6 @@ HEADING_OPEN = "heading_open"
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
-WORD = re.compile(r"[^-_/\s]+")
-
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
@@ -199,6 +199,29 @@ class Overflow(Exception):
         self.heading = heading
         self.level = level
         self.path = path
+
+
+class Unplaced(Exception):
+    """A dispatched link no dispatch sub-section stands for.
+
+    A dispatch sub-section stands one level below the section holding the
+    link it serves. A title the file heading absorbs is emitted as that
+    heading rather than as a section of its own, so a link the title
+    carries has no section to stand beneath and the run states the
+    dispatch nowhere.
+    """
+
+    def __init__(
+        self, path: str, line: int | None, destination: str, opening: str
+    ) -> None:
+        super().__init__(
+            f"the dispatch {opening!r} in {path!r} names {destination!r} and no "
+            f"section holds it"
+        )
+        self.path = path
+        self.line = line
+        self.destination = destination
+        self.opening = opening
 
 
 def ending(run: str) -> str:
@@ -285,17 +308,6 @@ class Group:
     def targets(self) -> tuple[tuple[Target, ...], ...]:
         """The targets each emitted heading resolves, in bundle order."""
         return tuple(one.answers for one in self.record.headings)
-
-
-def title_cased(text: str) -> str:
-    """One generated heading in title case: each word capitalized, the rest as written.
-
-    A word runs between the separators a name carries, and only its
-    first letter is touched, so a nested name keeps its separators and
-    a hyphenated name keeps its hyphens. The convention changes
-    letters, not structure.
-    """
-    return WORD.sub(lambda word: word.group()[:1].upper() + word.group()[1:], text)
 
 
 def heading_text(path: str) -> str:
@@ -411,6 +423,7 @@ def rewrite(
     defined: Mapping[str, Definition],
     declarations: Declarations = DECLARING,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
@@ -436,7 +449,9 @@ def rewrite(
 
     A dispatched link takes the destination of the sub-section its
     region carries for its target, which the dispatch map holds by the
-    region's first line.
+    region's first line. A dispatch the map holds none for is refused,
+    and the line the refusal names is the line of the file the source was
+    read from, which the first line of its content states.
     """
     written = list(physical)
     served = {} if dispatching is None else dispatching
@@ -455,6 +470,7 @@ def rewrite(
                     assigned,
                     declarations,
                     dispatched_to=here,
+                    line=start + first_line,
                     substitution=substitution,
                 )
                 for one, opening in found
@@ -503,6 +519,7 @@ def target(
     declarations: Declarations = DECLARING,
     anchor: str = ANCHOR,
     dispatched_to: Mapping[Served, str] | None = None,
+    line: int | None = None,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
@@ -517,7 +534,10 @@ def target(
     path from the invocation working directory, so the run that
     compiles it later, from that directory, follows it as written. A
     dispatched one takes the destination of the dispatch sub-section
-    its region carries for its target. Neither is rewritten to the
+    its section carries for its target, and a dispatch the map holds no
+    sub-section for is refused rather than published: the link states a
+    handoff the bundle does not state, and a run that published it would
+    name a destination no heading carries. Neither is rewritten to the
     destination of the target's own heading, even where another
     reference carried its target into the bundle: what one author
     withheld cannot be changed by another author's reference.
@@ -543,6 +563,8 @@ def target(
     if dispatched(opening):
         held = {} if dispatched_to is None else dispatched_to
         served = ((withheld.path, withheld.fragment), parallel(opening))
+        if served not in held:
+            raise Unplaced(path, line, destination, opening)
         return f"{anchor}{held[served]}"
     return rebased(withheld, destination)
 
@@ -654,6 +676,33 @@ def converted(carried: Sequence[str], depth: int) -> str:
     ]
     text = literal_closing(SPACE.join(written))
     return f"{opening_markers(carried[0])}{ATX * depth} {text}"
+
+
+def line_of(token: Token, first_line: int = 1) -> int:
+    """The line of the file one token opens on."""
+    return first_line if token.map is None else token.map[0] + first_line
+
+
+def dispatched_in(tokens: Sequence[Token], token: Token) -> tuple[str, str] | None:
+    """The dispatch one heading carries, where it is emitted as text alone.
+
+    An ancestor heading the run did not select is emitted as its title and
+    nothing else, and a title is flattened to the one line an ATX heading
+    is. Its link is therefore no link in the bundle: nothing places a
+    sub-section for it, and the target it names is compiled by no run. The
+    heading's inline tokens are read rather than the copied line, because
+    the copy is what the run publishes, while the dispatch is what the
+    author wrote.
+    """
+    if token.type != HEADING_OPEN:
+        return None
+    for opening, inline in headings(tokens):
+        if opening is not token:
+            continue
+        for destination, opened in destinations(inline):
+            if dispatched(opened) and not deferred(opened):
+                return destination, opened
+    return None
 
 
 def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
@@ -802,13 +851,15 @@ def group(
     declarations: Declarations = DECLARING,
     situate: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
     The parent keeps its H1 and the content above its first H2 at the
     levels the author wrote, and a whole-document reference to it
-    resolves to that first H2.
+    resolves to the heading carrying its title, or to its first H1
+    where it carries no title.
 
     A selection of None is the whole document. A selection of sections
     emits the regions it names and nothing else.
@@ -840,6 +891,9 @@ def group(
     so both stand in the source order their author wrote, and an
     ancestor shared by two selections is emitted once.
 
+    The first line of the source's content is the line of the file it
+    stands on, which a refusal about a link names.
+
     The definition environment is this source's own, which is what its
     reference-style uses resolve against and which no other source
     reaches. Every line a definition occupies is dropped from the
@@ -867,6 +921,14 @@ def group(
         if titled is not None and id(titled) in emitting
         else None
     )
+    if absorbing is None and not situate and titled is not None:
+        # The title stands above the selection, so the file heading carries
+        # its text as literal heading text. A dispatch it writes is then no
+        # link at all: nothing places a sub-section for it and no run
+        # compiles its target.
+        held = dispatched_in(tokens, titled)
+        if held is not None:
+            raise Unplaced(path, line_of(titled, first_line), *held)
     by = 0 if situate or absorbing is not None else SHIFT
     emitted = [] if situate else [f"{ATX} {escaped(title)}"]
     named = source_fragments(tokens)
@@ -892,11 +954,15 @@ def group(
             environment,
             declarations,
             dispatching,
+            first_line,
             substitution,
         )
     )
     for token in regions(tokens):
         if id(token) in needed:
+            held = dispatched_in(tokens, token)
+            if held is not None:
+                raise Unplaced(path, line_of(token, first_line), *held)
             depth = level(token) + by
             shows = single_line(text[id(token)])
             ancestor = Ancestor(
@@ -952,40 +1018,25 @@ def group(
         )
         emitted.append(region(written, tokens, token, by, removed))
     if situate:
-        roots = {
-            token.map[0] + 1
-            for token in regions(tokens)
-            if token.type == HEADING_OPEN
-            and level(token) == 2
-            and token.map is not None
-        }
-        at = next(
-            (
-                index
-                for index, heading in enumerate(emitting_headings)
-                if isinstance(heading, Carried)
-                and any(
-                    origin.path == path and origin.line in roots
-                    for origin in heading.origins
-                )
-            ),
-            None,
+        opening = (
+            titled
+            if titled is not None
+            else next(
+                token
+                for token in regions(tokens)
+                if token.type == HEADING_OPEN and level(token) == 1
+            )
         )
-        if at is None:
-            at = next(
-                (
-                    index
-                    for index, heading in enumerate(emitting_headings)
-                    if isinstance(heading, Carried)
-                    and any(origin.path == path for origin in heading.origins)
-                ),
-                None,
-            )
-        if at is not None:
-            heading = emitting_headings[at]
-            emitting_headings[at] = replace(
-                heading, answers=(*heading.answers, (path, None))
-            )
+        target: Target = (path, named[id(opening)])
+        at = next(
+            index
+            for index, heading in enumerate(emitting_headings)
+            if target in heading.answers
+        )
+        heading = emitting_headings[at]
+        emitting_headings[at] = replace(
+            heading, answers=(*heading.answers, (path, None))
+        )
     return Group(
         tuple(emitted),
         Record(path, None, tuple(emitting_headings), tuple(recorded)),

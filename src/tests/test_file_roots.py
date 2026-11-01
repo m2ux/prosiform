@@ -176,7 +176,7 @@ def test_members_in_distinct_directories_are_named_by_their_paths(
         )
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
     assert run.status == 0
-    assert "### One Same\n" in run.bundle and "### Two Same\n" in run.bundle
+    assert "### One/Same\n" in run.bundle and "Two/Same\n" in run.bundle
 
 
 @pytest.mark.parametrize("linked", [False, True])

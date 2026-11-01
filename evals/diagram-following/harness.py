@@ -6,22 +6,27 @@ a sub-agent start, a session's end and the tokens it spent. The run's matrix,
 workspaces, budget, timeout and scoring are the same for every harness, so
 the harness is the whole of what an agent CLI differs in.
 
-Two harnesses are declared:
+`HARNESSES` declares three:
 
 - `claude`, the Claude Code CLI, whose session stream is a sequence of
   `assistant` and `user` messages carrying `tool_use` and `tool_result`
   blocks, and whose last message carries `total_cost_usd`;
 - `cursor`, the Cursor agent CLI, whose stream is `tool_call` events
   carrying `taskToolCall`, whose two starts in one message share a
-  `model_call_id`, and which reports tokens but no cost.
+  `model_call_id`, and which reports tokens but no cost;
+- `opencode`, the opencode CLI, whose stream is events each holding a
+  `part`, a sub-agent start being a `tool` part naming `task`, and which
+  reports tokens and cost on each model step's `step_finish` part.
 
 A harness reads its own stream: `starts()` returns the same `Start` values
-from either, so the scorer above it is unaware of which CLI produced them.
+from any of them, so the scorer above it is unaware of which CLI produced
+them.
 """
 
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -57,6 +62,15 @@ CACHE = "cache"
 COST = "cost"
 STATE = "state"
 INPUT = "input"
+OUTPUT = "output"
+TASK_TEXT = re.compile(r"<(task_result|task_error)>\s*(.*?)\s*</\1>", re.DOTALL)
+"""The sub-agent's own text within a `task` call's output.
+
+opencode wraps what a sub-agent returned in `<task id=… state=…>`, its text
+in `<task_result>`, or `<task_error>` where the sub-agent failed.
+"""
+TOKEN_KINDS = ("input", "output", "reasoning")
+CACHE_KINDS = ("write", "read")
 OPENCODE_CALL_ID = "callID"
 OPENCODE_MESSAGE_ID = "messageID"
 BASH = "bash"
@@ -67,19 +81,6 @@ ARGS = "args"
 CONVERSATION = "conversationSteps"
 ASSISTANT_MESSAGE = "assistantMessage"
 TEXT = "text"
-
-CLAUDE_USAGE = {
-    "input": "input_tokens",
-    "output": "output_tokens",
-    "cache_creation": "cache_creation_input_tokens",
-    "cache_read": "cache_read_input_tokens",
-}
-CURSOR_USAGE = {
-    "input": "inputTokens",
-    "output": "outputTokens",
-    "cache_creation": "cacheWriteTokens",
-    "cache_read": "cacheReadTokens",
-}
 
 
 @dataclass(frozen=True)
@@ -309,10 +310,8 @@ class Cursor:
     """The Cursor agent CLI: `-p` with a stream-json session stream."""
 
     name: str = "cursor"
-    config_variable: str = "CURSOR_CONFIG_DIR"
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
-    tools: str = ""
     shell: bool = True
     """Whether a session may run a command, which a shell form needs.
 
@@ -517,15 +516,13 @@ class Opencode:
     `type` names what happened. A tool a session ran is a `tool_use` part,
     distinct from an assistant message, so a start and a command are read from
     what the session did rather than from prose. Tokens and cost are reported
-    on each `step_finish` part and summed over the session.
+    on each `step_finish` part, one per model step, and summed over the session.
     """
 
     name: str = "opencode"
-    config_variable: str = "OPENCODE_CONFIG_DIR"
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
-    tools: str = ""
     shell: bool = True
     """Whether a session may run a command, which a shell form needs.
 
@@ -543,7 +540,6 @@ class Opencode:
     It does: a session's `tool_use` parts include those its sub-agents made,
     so a trace naming a nested start is observable here.
     """
-    usage: tuple[str, str, str, str] = ("input", "output", "cache", "cache")
 
     def argv(
         self, agent: list[str], model: str, budget: int, workspace: Path | None = None
@@ -599,23 +595,45 @@ class Opencode:
         return None
 
     def result(self, transcript: Path) -> dict[str, object] | None:
-        """The session's last step, holding what it reported spending.
+        """The session's spend, one `step_finish` record summing every step.
 
-        The CLI prints no closing `result` message, so the last `step_finish`
-        part is the session's last word on what it did.
+        The CLI prints no closing `result` message and reports each model
+        step's tokens and cost on that step's own part, so a session's spend
+        is the sum over its parts. Each token kind and the cost are summed
+        where any step reported them, and a session that printed no step
+        reports nothing.
         """
-        found = None
-        for held in messages(transcript):
-            if held.get("type") == STEP_FINISH:
-                found = held
-        return found
+        steps = [
+            part
+            for held in messages(transcript)
+            if held.get("type") == STEP_FINISH
+            and isinstance(part := held.get(OPENCODE_PART), dict)
+        ]
+        if not steps:
+            return None
+        counts = [
+            count for step in steps if isinstance(count := step.get(TOKENS), dict)
+        ]
+        caches = [
+            cache for count in counts if isinstance(cache := count.get(CACHE), dict)
+        ]
+        tokens: dict[str, object] = _summed(counts, TOKEN_KINDS)
+        if caches:
+            tokens[CACHE] = _summed(caches, CACHE_KINDS)
+        summed: dict[str, object] = {"type": STEP_FINISH, TOKENS: tokens}
+        costs = [step.get(COST) for step in steps]
+        if any(isinstance(cost, int | float) for cost in costs):
+            summed[COST] = sum(cost for cost in costs if isinstance(cost, int | float))
+        return {"type": STEP_FINISH, OPENCODE_PART: summed, "steps": len(steps)}
 
     def starts(self, transcript: Path) -> tuple[Start, ...]:
         """The sub-agents a session started, in order.
 
         A `tool_use` part naming `task` is one start; its input's
         `description` is the text the dispatching call carried. Two starts
-        sharing a `messageID` were dispatched in one message.
+        sharing a `messageID` were dispatched in one message. What a start
+        returned is what the sub-agent's text in the call's `output` states,
+        and a call printing no output returned `done`.
         """
         found: list[tuple[str, str, bool]] = []
         seen: set[str] = set()
@@ -638,8 +656,11 @@ class Opencode:
                 continue
             together = isinstance(message, str) and message in seen
             seen.add(message if isinstance(message, str) else key)
-            found.append((key, target, together))
-        return tuple(Start(target, DONE, together) for _, target, together in found)
+            output = state.get(OUTPUT) if isinstance(state, dict) else None
+            found.append((said(_returned(output)), target, together))
+        return tuple(
+            Start(target, returned, together) for returned, target, together in found
+        )
 
     def commands(self, transcript: Path) -> tuple[str, ...]:
         """The shell commands a session ran, in order."""
@@ -660,17 +681,17 @@ class Opencode:
         return tuple(found)
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
-        """The tokens one session processed, summed over its steps."""
+        """The tokens one session processed, every kind of its summed steps."""
         if result is None:
             return None
         part = result.get(OPENCODE_PART)
         tokens = part.get(TOKENS) if isinstance(part, dict) else None
         if not isinstance(tokens, dict):
             return None
-        counts = [tokens.get(kind) for kind in ("input", "output", "reasoning")]
+        counts = [tokens.get(kind) for kind in TOKEN_KINDS]
         cache = tokens.get(CACHE)
         if isinstance(cache, dict):
-            counts += [cache.get("write"), cache.get("read")]
+            counts += [cache.get(kind) for kind in CACHE_KINDS]
         if not any(isinstance(count, int | float) for count in counts):
             return None
         return int(sum(count for count in counts if isinstance(count, int | float)))
@@ -682,6 +703,27 @@ class Opencode:
         part = result.get(OPENCODE_PART)
         cost = part.get(COST) if isinstance(part, dict) else None
         return float(cost) if isinstance(cost, int | float) else None
+
+
+def _returned(output: object) -> str:
+    """The sub-agent's text within a `task` call's output, or the whole output."""
+    if not isinstance(output, str):
+        return ""
+    held = TASK_TEXT.search(output)
+    return held.group(2) if held else output
+
+
+def _summed(
+    counts: list[dict[str, object]], kinds: tuple[str, ...]
+) -> dict[str, object]:
+    """Each kind summed over the counts that reported it, a kind none did left out."""
+    summed: dict[str, object] = {}
+    for kind in kinds:
+        held = [count.get(kind) for count in counts]
+        numbers = [value for value in held if isinstance(value, int | float)]
+        if numbers:
+            summed[kind] = sum(numbers)
+    return summed
 
 
 def _tokens(

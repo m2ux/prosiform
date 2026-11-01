@@ -12,13 +12,15 @@ wrong reason fails where it fires.
 """
 
 import json
+import re
 import sys
 import time
 from pathlib import Path
 from typing import Any
 
 import pytest
-from harness import DONE, HARNESSES
+import workflow as source
+from harness import DONE, HARNESSES, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -29,6 +31,7 @@ from run import (
     LINKED_TREE,
     PROSE_BUNDLE,
     TRANSCRIPT,
+    TREE,
     Ledger,
     Session,
     bundles_of,
@@ -41,8 +44,10 @@ from run import (
 )
 from score import (
     ACTIONS,
+    SUB_AGENT_TRACE,
     SUBAGENTS,
     TRACE,
+    TRACES,
     Failure,
     Start,
     read_starts,
@@ -125,6 +130,30 @@ def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
     assert observable(workflow, scenario, COMPILED_SET, HARNESSES["cursor"]) is True
 
 
+def test_the_cursor_harness_completes_a_matrix_over_the_default_forms() -> None:
+    """AC15: every default form reaches the matrix the Cursor harness runs.
+
+    The runner names its forms by what a session receives, and the corpus
+    names its own by what they hold, so a form the run offers in the default
+    list is looked up as the corpus form it carries. One that is not resolves
+    to no sections at all, and the matrix stops before a single session.
+    """
+    corpus = list(CORPUS.values())
+    forms = list(FORMS)
+    sessions = matrix(corpus, ["m"], forms, 1, HARNESSES["cursor"])
+    reached = {(session.workflow, session.form) for session in sessions}
+    offered = {
+        (workflow.name, form)
+        for workflow in corpus
+        for form in forms
+        if FORMS[form] in workflow.forms
+    }
+    assert reached <= offered
+    assert {("linear", BUNDLE), ("linear", TREE)} <= reached
+    assert {("branching", PROSE_BUNDLE), ("branching", LINKED_TREE)} <= reached
+    assert {("dispatch-chain", COMPILED_SET)}.isdisjoint(reached)
+
+
 @pytest.fixture
 def log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """The directory the stub agent writes what it saw to, one file a session."""
@@ -205,6 +234,37 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
     assert len(sessions) == 2 * 5 * 28
+
+
+def readme_rows(header: str) -> list[list[str]]:
+    """The body rows of each README table whose first header cell is `header`.
+
+    Each cell is its text with code-span marks removed, so a form written as
+    code compares as the name the runner gives it.
+    """
+    lines = (source.ROOT / "README.md").read_text().splitlines()
+    rows: list[list[str]] = []
+    for index, line in enumerate(lines[:-1]):
+        cells = [cell.strip().strip("`") for cell in line.strip().split("|")[1:-1]]
+        if not cells or cells[0] != header or not lines[index + 1].startswith("| -"):
+            continue
+        for row in lines[index + 2 :]:
+            if not row.startswith("|"):
+                break
+            rows.append([cell.strip().strip("`") for cell in row.split("|")[1:-1]])
+    return rows
+
+
+def test_the_readme_states_every_form_the_runner_offers_and_its_default() -> None:
+    """AC2: the README's form table and `--forms` default read as `run.FORMS`.
+
+    A form the runner offers that the README omits is one a reader choosing a
+    run's forms cannot learn of, so the table names every form in the order
+    the runner holds them, and the option's default is the list it builds.
+    """
+    assert [row[0] for row in readme_rows("Form")] == list(FORMS)
+    forms = [row for row in readme_rows("Option") if row[0] == "--forms"]
+    assert [row[1] for row in forms] == [",".join(FORMS)]
 
 
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
@@ -299,7 +359,7 @@ def test_the_linked_form_walks_every_scenario_of_a_branching_workflow(
     assert len(written) == len(CORPUS["branching"].scenarios)
     linked = CORPUS["branching"].form(LINKED_FORM)
     rules = {str(path.relative_to(linked)) for path in (linked / "rules").iterdir()}
-    assert rules == {"rules/escalation.md", "rules/queue.md"}
+    assert rules == {"rules/a.md", "rules/b.md"}
     held = {tuple(sorted(entry["files"])) for entry in seen(log)}
     for files in held:
         assert "workflow.md" in files
@@ -325,7 +385,7 @@ def test_the_linked_form_walks_every_scenario_of_a_looping_workflow(
     assert len(written) == len(CORPUS["looping"].scenarios)
     linked = CORPUS["looping"].form(LINKED_FORM)
     rules = {str(path.relative_to(linked)) for path in (linked / "rules").iterdir()}
-    assert rules == {"rules/rework.md", "rules/release.md"}
+    assert rules == {"rules/a.md", "rules/b.md"}
     held = {tuple(sorted(entry["files"])) for entry in seen(log)}
     for files in held:
         assert "workflow.md" in files
@@ -459,6 +519,46 @@ def test_a_session_in_flight_holds_its_cap_against_the_budget() -> None:
     assert ledger.fits()
 
 
+def test_the_ledger_settles_an_opencode_session_for_every_step(
+    tmp_path: Path,
+) -> None:
+    """AC18: a session's reported spend is the sum of its steps.
+
+    opencode reports each model step's tokens on its own `step_finish` part,
+    so the ledger is settled with every step's tokens, not the last one's.
+    """
+    steps = [(120, 0.25), (60, 0.125), (20, 0.0625)]
+    held = tmp_path / TRANSCRIPT
+    held.write_text(
+        "".join(
+            json.dumps(
+                {
+                    "type": "step_finish",
+                    "part": {
+                        "type": "step_finish",
+                        "tokens": {
+                            "input": tokens - 4,
+                            "output": 1,
+                            "reasoning": 1,
+                            "cache": {"write": 1, "read": 1},
+                        },
+                        "cost": cost,
+                    },
+                }
+            )
+            + "\n"
+            for tokens, cost in steps
+        )
+    )
+    harness = Opencode()
+    result = harness.result(held)
+    ledger = Ledger(1000, 250)
+    assert ledger.reserve()
+    ledger.settle(harness.tokens(result))
+    assert ledger.spent == 200
+    assert harness.cost(result) == 0.4375
+
+
 def test_a_session_reporting_no_cost_is_charged_its_cap(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -548,7 +648,9 @@ def test_a_refused_run_writes_no_baseline(
         *("--budget-tokens", "1000"),
     )
     baseline = tmp_path / "baseline.json"
-    with pytest.raises(CorpusError, match="refused, so it has no cells"):
+    with pytest.raises(
+        CorpusError, match="measured no cell, so it writes no baseline: "
+    ):
         main(
             [
                 str(tmp_path / "results" / "test"),
@@ -578,11 +680,12 @@ def test_a_run_with_a_genuine_mix_of_errors_and_states_is_a_result(
     assert written["cells"] and written["cells"][0]["passed"] == 1
 
 
-def test_a_run_the_budget_stopped_part_way_is_not_refused(
+def test_a_run_the_budget_stopped_whose_sessions_all_errored_is_refused(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Sessions it never started leave the matrix incomplete, not refused."""
+    """Sessions it never started do not turn its errored ones into a result."""
     monkeypatch.setenv("STUB_AGENT_ERROR", "1")
+    monkeypatch.setenv("STUB_AGENT_REASON", "You've hit your weekly limit")
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     record = eval_run(
         tmp_path,
@@ -592,7 +695,10 @@ def test_a_run_the_budget_stopped_part_way_is_not_refused(
     assert record["started"] == 3 and record["sessions"] == 5
     assert len(record["not_started"]) == 2
     assert all(item["verdict"]["failure"] == "errored" for item in records(tmp_path))
-    assert record["state"] == "completed" and record["reason"] is None
+    assert record["state"] == "refused"
+    assert record["reason"] == "You've hit your weekly limit"
+    built = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
+    assert built["state"] == "refused" and built["cells"] == []
 
 
 def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:
@@ -965,26 +1071,104 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
 def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC6: a dispatched section's own path survives the workspace.
+    """AC16: a dispatched section's own path survives the workspace.
 
     A sub-agent following a section that holds a chart of its own records its
-    states to `trace-<section>.log`. The session's path is kept beside it, so
-    the two are read as one dispatch rather than as a nested chart's states
-    mistaken for the outer path.
+    states to `trace-<section>.log`, the name the instruction states. The
+    session's path is kept beside it, so the two are read as one dispatch
+    rather than as a nested chart's states mistaken for the outer path.
     """
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     (workspace / TRACE).write_text("Scope\nGather\n")
-    (workspace / f"{TRACE}-review.log").write_text("read\nrank\n")
+    stated = "trace-review.log"
+    (workspace / stated).write_text("read\nrank\n")
     records = tmp_path / "records"
     records.mkdir()
     keep(workspace, records)
-    assert sorted(path.name for path in records.glob(f"{TRACE}*")) == [
-        TRACE,
-        f"{TRACE}-review.log",
-    ]
+    assert sorted(path.name for path in records.glob(TRACES)) == [stated, TRACE]
     assert (records / TRACE).read_text() == "Scope\nGather\n"
-    assert (records / f"{TRACE}-review.log").read_text() == "read\nrank\n"
+    assert (records / stated).read_text() == "read\nrank\n"
+
+
+def handed_prompts(directory: Path) -> list[str]:
+    """The prompt each `Task` call in a session's transcript gave its sub-agent."""
+    return [
+        block["input"]["prompt"]
+        for line in (directory / TRANSCRIPT).read_text().splitlines()
+        if (said := json.loads(line)).get("type") == "assistant"
+        for block in said["message"]["content"]
+        if isinstance(block, dict) and block.get("name") == "Task"
+    ]
+
+
+@pytest.mark.parametrize("form", DISPATCH_FORMS)
+def test_a_scored_dispatch_keeps_the_sub_agents_trace_it_was_given(
+    tmp_path: Path, log: Path, form: str
+) -> None:
+    """AC16, AC25: each sub-agent is told its trace's name, and the run keeps it.
+
+    The session's instruction tells it to hand each sub-agent the name
+    `keep()` reads, and the stub's sub-agent writes only the trace its prompt
+    names. So the kept traces are those the instruction caused, in the
+    compiled and the authored form alike, beside the session's own path.
+    """
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", form, "--repetitions", "1"),
+        *("--budget-tokens", "2000"),
+    )
+    [record] = records(tmp_path)
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    [scenario] = CORPUS["dispatch-chain"].scenarios
+    stated = [
+        SUB_AGENT_TRACE.format(section=entry.section.partition("#")[2])
+        for entry in scenario.trace
+    ]
+    assert record["verdict"]["passed"] is True
+    prompts = handed_prompts(directory)
+    assert len(prompts) == len(stated)
+    assert all(name in prompt for name, prompt in zip(stated, prompts, strict=True))
+    assert sorted(path.name for path in directory.glob(TRACES)) == sorted(
+        [TRACE, *stated]
+    )
+    assert (directory / TRACE).read_text().split() == list(scenario.path)
+
+
+def test_a_sub_agent_untold_its_trace_name_keeps_none(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC25: the sub-agent trace exists only because the instruction names it.
+
+    An instruction without the sentence naming the sub-agent trace leaves the
+    session nothing to hand on, so the stub's sub-agents are told no name and
+    the run keeps the session's path alone.
+    """
+    text = source.INSTRUCTION.read_text()
+    untold = tmp_path / "instruction.md"
+    untold.write_text(
+        re.sub(
+            r"- When a state dispatches a sub-agent.*?\n(?=- )",
+            "",
+            text,
+            flags=re.DOTALL,
+        )
+    )
+    stated = SUB_AGENT_TRACE.format(section="<section>")
+    assert stated in text
+    assert stated not in untold.read_text()
+    monkeypatch.setattr(source, "INSTRUCTION", untold)
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain"),
+        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--budget-tokens", "2000"),
+    )
+    [record] = records(tmp_path)
+    directory = session_of(record).directory(tmp_path / "results" / "test")
+    assert all("trace-" not in prompt for prompt in handed_prompts(directory))
+    assert [path.name for path in directory.glob(TRACES)] == [TRACE]
 
 
 def test_a_run_starting_no_sub_agent_is_undispatched(

@@ -1,0 +1,14 @@
+description = "The titled entry heads its own file group and opens the bundle on its own title. A second document's whole-document reference back to the entry resolves to that title heading, not to the first section beneath it."
+
+clauses = [
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
