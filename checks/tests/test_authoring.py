@@ -41,7 +41,7 @@ INSTRUCTIONS = (
 HYPHENS = "hyphens rather than underscores"
 FENCE = re.compile(r"```bash\n(.*?)```", re.DOTALL)
 FRONT = re.compile(r"\A---\n(.*?)\n---", re.DOTALL)
-ROOT_VALUE = re.compile(r'^  root: "([^"]*)"', re.MULTILINE)
+ROOT_KEY = re.compile(r"\broot:")
 TAKES_VALUE = frozenset(
     {"-o", "-f", "-d", "-x", "-F", "-B", "-I", "-O", "-T", "-L", "-N", "-E"}
 )
@@ -128,7 +128,7 @@ def test_worked_commands_name_files_this_repository_holds() -> None:
     assert checked > 0
 
 
-def test_example_paths_use_hyphens_and_declare_file_relative_roots() -> None:
+def test_example_paths_use_hyphens_and_every_document_declares() -> None:
     declared = 0
     for path in sorted((ROOT / "example").rglob("*.md")):
         if path.name == "README.md":
@@ -138,14 +138,6 @@ def test_example_paths_use_hyphens_and_declare_file_relative_roots() -> None:
         block = FRONT.match(path.read_text(encoding="utf-8"))
         assert block is not None, relative
         assert "prosiform:" in block.group(1), relative
-        root = ROOT_VALUE.search(block.group(1))
-        if root is None:
-            continue
-        value = root.group(1)
-        assert value
-        assert not value.startswith("/")
-        assert not value.startswith("~")
-        assert "\\" not in value
-        assert "://" not in value
+        assert ROOT_KEY.search(block.group(1)) is None, relative
         declared += 1
     assert declared > 0

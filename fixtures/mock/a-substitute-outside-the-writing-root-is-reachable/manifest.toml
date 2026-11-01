@@ -1,4 +1,4 @@
-description = "A mock value carrying a parent segment reaches a substitute beside the source tree whose declared root cannot contain it, which is what the parameter exists for, and the run states the substitution it performed."
+description = "A mock value carrying a parent segment reaches a substitute beside the source tree, above the working directory the run reads from, which is what the parameter exists for, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -22,5 +22,5 @@ resolved = "../stand-in.md"
 
 [expected.diagnostics.location]
 file = "guide.md"
-line = 8
+line = 7
 column = 1
