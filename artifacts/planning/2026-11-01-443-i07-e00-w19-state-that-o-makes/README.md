@@ -13,6 +13,7 @@ This record holds its delivery of `AC30`: the work item, the validation evidence
 | Artifact | What it holds |
 | --- | --- |
 | [w19.md](w19.md) | W19 work item: the stale `-o` statements, their rewording, and the checks that observe AC30 |
+| [validation.md](validation.md) | Evidence for each check the work item names |
 
 ## Links
 
