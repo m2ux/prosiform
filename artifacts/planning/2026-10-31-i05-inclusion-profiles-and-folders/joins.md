@@ -102,16 +102,41 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | Pair | Two pull requests because |
 | --- | --- |
 | E06:W01 and E06:W02 | the option's removal and the preset read, and a pair resolving from its declaring file. The two share no file and neither reads the other's work. |
-| E06:W01 and E06:W03 | the option's removal and the preset read, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
+| E06:W01 and E06:W03 | the option's removal and the preset read, and the corpus rewritten. The two share no file and neither reads the other's work. |
 | E06:W01 and E06:W04 | the option's removal and the preset read, and E07's superseded criteria. The two share no file and neither reads the other's work. |
 | E06:W01 and E06:W05 | the option's removal and the preset read, and the table and the source page. The two share no file and neither reads the other's work. |
-| E06:W02 and E06:W03 | a pair resolving from its declaring file, and the four fixtures rewritten. The two share no file and neither reads the other's work. |
+| E06:W02 and E06:W03 | a pair resolving from its declaring file, and the corpus rewritten. The two share no file and neither reads the other's work. |
 | E06:W02 and E06:W05 | a pair resolving from its declaring file, and the table and the source page. The two share no file and neither reads the other's work. |
-| E06:W03 and E06:W04 | the four fixtures rewritten, and the option criterion. The two share no file and neither reads the other's work. |
-| E06:W03 and E06:W05 | the four fixtures rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
+| E06:W03 and E06:W04 | the corpus rewritten, and the option criterion. The two share no file and neither reads the other's work. |
+| E06:W03 and E06:W05 | the corpus rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
 | E06:W02 and E06:W04 | a pair resolving from its declaring file, and E07's superseded criteria. The superseded criteria cite a row, not a path basis. |
-| E06:W03 and E06:W05 | the four fixtures rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
+| E06:W03 and E06:W05 | the corpus rewritten, and the table and the source page. The corpus proves the substitution moved while the page states its new channel. |
 | E06:W04 and E06:W05 | E07's superseded criteria, and the table and the source page. Both amend a record of a channel that is gone. |
+| E06:W02 and E06:W06 | a pair resolving from its declaring file, and a pair reaching only its own document's links. Both change `closure.py`, so one pull request would collide in its own diff. |
+| E06:W02 and E06:W07 | a pair resolving from its declaring file, and an entry compiled as named. The preset read in `closure.py` and `cli.entry` share no file, and neither reads the other's work. |
+| E06:W02 and E06:W08 | a pair resolving from its declaring file, and the folder pair retired. Both change `closure.py`, so one pull request would collide in its own diff. |
+| E06:W02 and E06:W09 | a pair resolving from its declaring file, and the scenarios moved to presets. The preset read in `closure.py` and `checks/mock_scenarios.py` share no file, and neither reads the other's work. |
+| E06:W03 and E06:W06 | the corpus rewritten, and a pair reaching only its own document's links. `fixtures/mock` and `fixtures/inclusion` and the per-document lookup in `closure.py` and `cli.py` share no file, and neither reads the other's work. |
+| E06:W03 and E06:W07 | the corpus rewritten, and an entry compiled as named. `fixtures/mock` and `fixtures/inclusion` and `cli.entry` share no file, and neither reads the other's work. |
+| E06:W03 and E06:W08 | the corpus rewritten, and the folder pair retired. `fixtures/mock` and `fixtures/inclusion` and the folder lookup in `closure.py` and its fixtures share no file, and neither reads the other's work. |
+| E06:W04 and E06:W06 | E07's superseded criteria, and a pair reaching only its own document's links. E07's issue body and the per-document lookup in `closure.py` and `cli.py` share no file, and neither reads the other's work. |
+| E06:W04 and E06:W07 | E07's superseded criteria, and an entry compiled as named. E07's issue body and `cli.entry` share no file, and neither reads the other's work. |
+| E06:W04 and E06:W08 | E07's superseded criteria, and the folder pair retired. E07's issue body and the folder lookup in `closure.py` and its fixtures share no file, and neither reads the other's work. |
+| E06:W04 and E06:W09 | E07's superseded criteria, and the scenarios moved to presets. E07's issue body and `checks/mock_scenarios.py` share no file, and neither reads the other's work. |
+| E06:W05 and E06:W06 | the table and the source page, and a pair reaching only its own document's links. `invocation.md` and the source page and the per-document lookup in `closure.py` and `cli.py` share no file, and neither reads the other's work. |
+| E06:W05 and E06:W07 | the table and the source page, and an entry compiled as named. `invocation.md` and the source page and `cli.entry` share no file, and neither reads the other's work. |
+| E06:W05 and E06:W08 | the table and the source page, and the folder pair retired. `invocation.md` and the source page and the folder lookup in `closure.py` and its fixtures share no file, and neither reads the other's work. |
+| E06:W05 and E06:W09 | the table and the source page, and the scenarios moved to presets. `invocation.md` and the source page and `checks/mock_scenarios.py` share no file, and neither reads the other's work. |
+| E06:W06 and E06:W07 | a pair reaching only its own document's links, and an entry compiled as named. Both change `cli.py`, so one pull request would collide in its own diff. |
+| E06:W06 and E06:W08 | a pair reaching only its own document's links, and the folder pair retired. Both change `closure.py` and `cli.py`, so one pull request would collide in its own diff. |
+| E06:W06 and E06:W09 | a pair reaching only its own document's links, and the scenarios moved to presets. The per-document lookup in `closure.py` and `cli.py` and `checks/mock_scenarios.py` share no file, and neither reads the other's work. |
+| E06:W07 and E06:W08 | an entry compiled as named, and the folder pair retired. Both change `cli.py`, so one pull request would collide in its own diff. |
+| E06:W07 and E06:W09 | an entry compiled as named, and the scenarios moved to presets. `cli.entry` and `checks/mock_scenarios.py` share no file, and neither reads the other's work. |
+| E06:W08 and E06:W09 | the folder pair retired, and the scenarios moved to presets. The folder lookup in `closure.py` and its fixtures and `checks/mock_scenarios.py` share no file, and neither reads the other's work. |
+
+### Mock Substitution
+
+E07:W13 depends on W04, and every other row of the epic is delivered, so it forms no eligible pair.
 
 ## Across epics
 
@@ -121,7 +146,7 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | E02:W02 → E00:W03 | Exclusion narrows the region set discovery reads, and that row is where classification stops asking a root and asks the target. |
 | E02:W08 → E01:W02 | A preset carrying an exclusion reads the key rule that row lands. |
 
-The folder pairing the record once carried as its own epic is [I08:E07](https://github.com/m2ux/prosiform/issues/414)'s `W09` to `W11`, because a folder side is a shape of the `-m` option that epic owns. Its place in `E01:W05`'s chain travels with it.
+The folder pairing the record once carried as its own epic landed as [I08:E07](https://github.com/m2ux/prosiform/issues/414)'s `W09` and `W10`. It retires with `-m`: `E06:W08` refuses a side ending in a separator and removes the folder code, and E07's `W11` is withdrawn.
 
 ## Why this order rather than another
 
@@ -144,7 +169,7 @@ Every pair the dependency checker reports as eligible below names no other in Jo
 - **The pairs are named by the checker from the edges, not from intent.** Two rows with no dependency between them are reported as eligible, which states that nothing orders them. It does not state that they should share a pull request, and here they should not.
 - **A later pass may join a pair.** Where two rows turn out to touch disjoint files, joining them saves a pull request. That is a decision for the run that opens them, not one the plan can make before the change exists.
 
-The eligible pairs, per epic: E00 four, E01 two, E02 eight, E03 five, E04 four, E05 two, E06 four. Each is listed by the checker, and each is accounted for by the rule above.
+The eligible pairs, per epic: E00 four, E01 two, E02 eight, E03 five, E04 four, E05 two, E06 twenty-five. Each is listed by the checker, and each is accounted for by the rule above.
 
 
 ## Epic priority

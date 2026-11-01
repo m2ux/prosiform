@@ -14,7 +14,7 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 ## Proposal
 
 - **The epic is the migration and nothing else.** Every document in `example/` and every corpus source states its settings in a preset, declares no `group` and no `root`, and the published bundles are byte-identical.
-- **It depends on the epics that define the fields, not on the rows.** The tree is rewritten once its last field rule has landed, so this epic names the five epics it follows.
+- **It depends on the rows that settle the fields.** The tree is rewritten once its last field rule has landed: the rootless example tree, the preset that carries an exclusion, and the corpus moved to `path-sub`.
 - **The proof is the diff.** A changed expected bundle fails the run, so the epic is complete exactly when `make corpus` and `make examples` pass with unmodified expectations.
 - **The check that reads the declarations is rewritten here.** `checks/authoring.py`'s root reader went with Declared Inclusion; its division reader follows the same field and lands with the tree.
 - **The eval tree follows the same rule.** The diagram-following workflow documents declare to be included, and their forms must still bundle.
@@ -23,7 +23,7 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | The example tree declares presets, in one edit | AC1, AC4, AC6 | [I08:E00](https://github.com/m2ux/prosiform/issues/434), [I08:E01](https://github.com/m2ux/prosiform/issues/436), [I08:E02](https://github.com/m2ux/prosiform/issues/445) | | |
+| W00 | The example tree declares presets, in one edit | AC1, AC4, AC6 | [I08:E00:W06](https://github.com/m2ux/prosiform/issues/434), [I08:E02:W06](https://github.com/m2ux/prosiform/issues/445), [I08:E06:W03](https://github.com/m2ux/prosiform/issues/461) | | |
 | W01 | The corpus sources declare presets | AC2 | W00 | | |
 | W02 | The eval workflow tree declares | AC3 | W01 | | |
 | W03 | The checks that read a declaration | AC5 | W02 | | |
@@ -39,5 +39,5 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 
 ## References
 
-- **R0.** Epic — [I08:E09 Declared Tree](https://github.com/m2ux/prosiform/issues/465).
+- **R0.** Epic — [I08:E08 Declared Tree](https://github.com/m2ux/prosiform/issues/465).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the epics whose fields this migrates to.

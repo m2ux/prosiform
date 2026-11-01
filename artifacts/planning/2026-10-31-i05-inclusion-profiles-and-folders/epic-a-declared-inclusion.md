@@ -13,7 +13,7 @@ Inclusion is decided by directory, and the directory is authored twice.
 - **The boundary refuses material the bundle is responsible for.**
   A link above the root is a citation rather than a dependency, so a tree kept beside the skill — the fixture tree a mock exercises, the stand-in an author is drafting — is unreachable by the document being tested. [I08:E07](https://github.com/m2ux/prosiform/issues/414) exists only to exempt substitutes from that boundary.
 - **Link spelling is already known to be unsound.**
-  The [2026-10-24 note](../2026-10-24-root-declaration-roles/README.md) records that a root prefixes a link's spelling, that `[Codex](codex.md)` fails where `[Codex](rules/codex.md)` resolves, and that two commits to the example tree were wrong in exactly that way without any check reporting it.
+  The [2026-10-24 note](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-24-root-declaration-roles/README.md) records that a root prefixes a link's spelling, that `[Codex](codex.md)` fails where `[Codex](rules/codex.md)` resolves, and that two commits to the example tree were wrong in exactly that way without any check reporting it.
 
 ## Proposal
 
@@ -28,7 +28,7 @@ Inclusion is decided by directory, and the directory is authored twice.
 - **The boundary is derived from the links the document writes.**
   A document's boundary is the deepest directory holding every local Markdown path its own links name, normalised from the document's directory; a document linking none has its own directory. The property that follows is the point of the derivation: the boundary refuses no authored link, so a run compiles each link its author wrote and each document that declares.
 - **What the boundary still confines.**
-  A positional entry reference, and the path a diagnostic names when one leaves it. A substitute named on the command line and a path a profile names are command-line or frontmatter material rather than authored text, and each states its own confinement. `OutsideRoot` survives for the forms no path grammar admits — a drive path, an absolute path, a path normalising above the invocation working directory — and `E_SOURCE_OUTSIDE_ROOT` survives with them. `E_ROOT_NOT_FOUND` retires.
+  A positional entry reference, and the path a diagnostic names when one leaves it. A preset's `path-sub` pair is frontmatter material rather than an authored link, and its sides resolve from the declaring file under the confinement [I08:E06](https://github.com/m2ux/prosiform/issues/461) states. `OutsideRoot` survives for the forms no path grammar admits — a drive path, an absolute path, a path normalising above the invocation working directory — and `E_SOURCE_OUTSIDE_ROOT` survives with them. `E_ROOT_NOT_FOUND` retires with the `root` refusal, and with it `ROOT_REMEDIES`, `root_remedy` and the two tests in `src/tests/test_file_roots.py` that assert a root-not-found diagnostic — `test_a_missing_root_names_the_declaring_source_the_root_and_a_remedy` and `test_a_root_absent_from_the_working_directory_names_that_binding`, which prove [I07:E00](https://github.com/m2ux/prosiform/issues/443) AC14 and supersede it once this epic lands.
 - **Responsibility is stated by the mark.**
   A link naming a document that declares nothing is text; so is one naming a document that does not exist, because nothing states the bundle is answerable for it. A link whose text opens with an operator, and a fragment-only link, name a compilation or a section of the document itself, and each still fails with `E_TARGET_NOT_FOUND` when nothing is there.
 - **Every tree states its declaration.**
@@ -38,15 +38,16 @@ Inclusion is decided by directory, and the directory is authored twice.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | Design clause, retired codes and pin | AC10 | | | |
-| W01 | Declaration presence and the `root` refusal | AC4, AC5 | W00 | | |
+| [W00](https://github.com/m2ux/prosiform/pull/467) | Design clause, retired codes and pin | AC10 | | | |
+| W01 | Declaration presence and the `root` refusal | AC4, AC5, AC18 | W00 | | |
 | W02 | A declaration probed without a capture | AC6 | W01 | | |
 | W03 | Classification that asks the target | AC1, AC3 | W02 | | |
 | W04 | Absent targets and the operators that hold | AC7, AC8, AC15 | W03 | | |
 | W05 | The boundary a document's links state | AC2, AC9, AC17 | W04 | | |
-| W06 | Every corpus family declares | AC12 | W05 | | |
-| W07 | The pages that state the declaration | AC13, AC14 | W06 | | |
-| W08 | The one settled selection and the property it holds | AC16 | W07 | | |
+| W06 | The example tree declares, rootless | AC11 | W05 | | |
+| W07 | Every corpus family declares | AC12 | W06 | | |
+| W08 | The pages that state the declaration | AC13, AC14 | W07 | | |
+| W09 | The one settled selection and the property it holds | AC16 | W08 | | |
 
 ## Acceptance Criteria
 
@@ -60,12 +61,14 @@ Inclusion is decided by directory, and the directory is authored twice.
 - [ ] **AC8.** A link naming no document whose text opens with an operator fails with `E_TARGET_NOT_FOUND`, and a fragment-only link naming a heading its document does not carry fails with the same code, as the corpus fixtures `fixtures/inclusion/operators-keep-the-absent-target-refusal` and `fixtures/inclusion/a-fragment-naming-no-heading` show.
 - [ ] **AC9.** A document's derived boundary is the deepest directory holding every local Markdown path its own links name, as `make boundary` reports over the example tree.
 - [ ] **AC10.** The design states inclusion as a property of the target document, states the derived boundary and the refusal of `root`, names the retired code, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
+- [ ] **AC11.** Every document in [the example tree](https://github.com/m2ux/prosiform/blob/main/example/work-planner/SKILL.md) declares `prosiform` and none declares a root, as `make authoring` shows.
 - [ ] **AC12.** Every corpus family that declared a root declares its targets instead, and the corpus passes with the same expected bundles, as `make corpus` shows.
 - [ ] **AC13.** No page states a root as a property of a source: the source page, the reference page, the architecture page, the hierarchy page, the output-budget page, the destinations page, the validation page, the selection page, the docs index, the glossary and the invocation describe inclusion by declaration, as an inspection of those pages shows.
 - [ ] **AC14.** A page naming a root as a worked example of confinement states the derived boundary in its place, and the drawings whose panels carry `root:` are re-rendered from their cases, as `make examples` shows.
 - [ ] **AC15.** An entry reference names a document whose frontmatter declares `prosiform`, and one naming a document that declares nothing fails with `E_TARGET_NOT_FOUND` before any source is read, as the corpus fixture `fixtures/inclusion/an-entry-naming-a-silent-document` shows.
 - [ ] **AC16.** Discovery, emission, the withheld-target check and candidate validation all read one settled region set for a document, so a link no stage selects is the same link at every stage, as the corpus fixture `fixtures/inclusion/every-stage-reads-one-selection` shows.
 - [ ] **AC17.** The derived boundary refuses no authored link: a document whose link sits in the deepest directory it reaches derives a boundary containing that link, as `make boundary` reports over the example tree.
+- [ ] **AC18.** The build declares and reports no `E_ROOT_NOT_FOUND`, and no test asserts a root-not-found diagnostic — the two `src/tests/test_file_roots.py` tests proving [I07:E00](https://github.com/m2ux/prosiform/issues/443) AC14 among them — as `make conformance` and `make test` show.
 
 ## References
 
@@ -73,5 +76,5 @@ Inclusion is decided by directory, and the directory is authored twice.
 
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions, the work items and the debt this epic takes on.
-- **R2.** [The `root` declaration: three roles, one of them questionable](../2026-10-24-root-declaration-roles/README.md) — the note that found the spelling role unsound, and the change it declined to make.
+- **R2.** [The `root` declaration: three roles, one of them questionable](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-24-root-declaration-roles/README.md) — the note that found the spelling role unsound, and the change it declined to make.
 - **R3.** [I08:E07 Mock Substitution](https://github.com/m2ux/prosiform/issues/414) — the epic whose root exemption this one removes the need for.

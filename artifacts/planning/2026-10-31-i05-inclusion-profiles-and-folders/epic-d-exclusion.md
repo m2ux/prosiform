@@ -1,6 +1,6 @@
 ## Overview
 
-A preset's `exclude` removes named sections from a document reached whole by a link, scoped to the preset that governed that link. One preset carves one source several ways for several consumers, and an excluded section contributes nothing — its text, its division, and every link it wrote. A link that names a section selects that section and is never carved.
+A document's preset `exclude` removes named sections of that document where a link reaches it whole and selects the preset. One preset carves one source several ways for several consumers, and an excluded section contributes nothing — its text, its division, and every link it wrote. A link that names a section selects that section and is never carved.
 
 ## Problem
 
@@ -9,12 +9,12 @@ A bundle is the union of what its links reach, and a document has no way to say 
 - **Selection adds only.** `cli.selection` resolves each fragment through `source.section` and unions the results into a `Selection`. `docs/selection.md` states that consolidation unions overlaps, so the selection model has no subtractive operation at all.
 - **A shared document bundles whole.** A document holding material two consumers need differently reaches both bundles entire, so carving one source for several consumers means maintaining several near-copies of it — the duplication the tool exists to remove.
 - **The nearest lever is the tree.** An author who needs a variant edits a copy, and the copy drifts from the original exactly as the note in [I08:E07](https://github.com/m2ux/prosiform/issues/414) records.
-- **An exclusion belongs to the preset that asked for the reference.** A preset is selected by the section that writes a link, so what that section withholds of the document it names belongs in the same declaration, rather than on a command line that cannot know which section meant what.
+- **An exclusion belongs to the document it carves.** A document's presets govern its own content and are selected by the section that links it, so what a consumer withholds of the document is one of that document's presets, rather than a command line that cannot know which section meant what.
 
 ## Proposal
 
-- **A preset declares what a whole-file reference withholds.**
-  A `prosiform` preset holds an `exclude` of sections, and each named section is removed from the content the governing reference carries. The names are the **target document's** headings, and no document qualifier is written, because the reference the preset governs has already named the target.
+- **A document's preset declares what it withholds from a whole-file reference.**
+  A `prosiform` preset holds an `exclude` of sections, and each named section is removed from the content the selecting reference carries. The names are the **declaring document's own** headings, and no document qualifier is written, because a preset governs only the document that declares it.
 - **The carve applies only where the reference names the target whole.**
   `[Rules](rules.md)` under a section whose title selects a preset is carved by that preset's `exclude`. `[Rules](rules.md#Tests)` names one section, so there is nothing to subtract and the preset's `exclude` does not apply. Explicit selection is the more specific statement, and a run that names a section has said which part it wants.
 - **The grammar is a bare name, and a level where one is needed.**
@@ -23,11 +23,11 @@ A bundle is the union of what its links reach, and a document has no way to say 
 - **Exclusion narrows the closure.** A link written inside an excluded section is no dependency, so the document it names is not read through it. What the bundle then carries is what the remaining content reaches, and a document another link also reaches still arrives by that link.
 - **Exclusion happens where selection settles.** The settled region set is the region set the reference carries less the excluded ones, and every stage already reads that set — discovery, withheld targets, dispatches, operator refusals and emission. One seam removes the material, so no stage can disagree about what the bundle holds.
 - **The scope is the governing preset's, per reference.**
-  An exclusion is a preset entry, so it carves the content the reference that preset governed carries, and a second reference to the same document under a preset that excludes nothing carries the section. Nothing is refused, because the two references asked for two different things and both are stated. A dispatched target's exclusions are its own document's and never the entry's.
+  An exclusion is an entry of the document's own preset, so it carves the content the reference that selected that preset carries, and a second reference selecting a preset that excludes nothing carries the section. Nothing is refused, because the two references asked for two different things and both are stated. A dispatched target's exclusions are its own document's and never the entry's.
 - **A reference the preset empties is refused.** An exclusion removing the whole of the content a reference carries states a contradiction — a link that names a document whole and receives none of it — so the run refuses with `E_EXCLUDED_ENTRY`, naming the reference, the target and each exclusion that removed a region.
-- **An exclusion naming a heading the target does not carry is silent.** One preset serves many links and many documents, so a miss is ordinary rather than a fault.
+- **An exclusion naming a heading the document does not carry is silent.** The run reports only what it removed, so a miss changes nothing in the bundle and is not a fault.
 - **A deferral is not carried across.** An exclusion governs what this run compiles. A `¬` link inside an excluded section is never resolved, and a deferral the bundle publishes names a path rather than a set of exclusions, so what the later run withholds is that run's business.
-- **A malformed exclusion is invalid usage.** An empty section and a level outside one through six are refused before any source is read, which is where every command-line fault is stated.
+- **A malformed exclusion is refused where its document is decoded.** An empty section, a level outside one through six and a mapping entry holding two keys each fail with `E_INVALID_CONVERSION_METADATA` naming the entry, because an exclusion is frontmatter and is read with the rest of its document's declaration.
 
 ## Work Breakdown
 
@@ -51,7 +51,7 @@ A bundle is the union of what its links reach, and a document has no way to say 
 - [ ] **AC5.** A reference whose target is emptied by that preset's exclusions is refused with `E_EXCLUDED_ENTRY` naming the reference, the target and the exclusions, and nothing is published, as the corpus fixture `fixtures/exclusion/an-exclusion-of-the-whole-entry-is-refused` shows.
 - [ ] **AC6.** An entry mapping a name to a level excludes the heading at that level and leaves the heading of the same name at another level with its subsections, as the corpus fixture `fixtures/exclusion/a-level-tells-a-repeated-heading-apart` shows.
 - [ ] **AC7.** An exclusion naming a heading the target does not carry publishes, exits `0`, and reports no diagnostic, as the corpus fixture `fixtures/exclusion/an-unmatched-exclusion-is-silent` shows.
-- [ ] **AC8.** A preset's `exclude` holds a list whose entries are read by the exclusion grammar, and a top-level `exclude` is refused as a key that is neither an argument nor a preset, as the corpus fixtures `fixtures/exclusion/a-preset-carries-an-exclusion` and `fixtures/exclusion/a-top-level-exclude-is-refused` show.
+- [ ] **AC8.** A preset's `exclude` holds a list whose entries are read by the exclusion grammar, and a top-level `exclude` is refused as a key whose value is not a preset mapping, as the corpus fixtures `fixtures/exclusion/a-preset-carries-an-exclusion` and `fixtures/exclusion/a-top-level-exclude-is-refused` show.
 - [ ] **AC9.** The source page and the selection page state exclusion, its whole-file scope and its code, and the glossary carries the term, as `make vocabulary` and an inspection of those pages show.
 - [ ] **AC10.** The design states exclusion as the subtractive half of selection, applied to a whole-file reference under the preset that governs it, names the code, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
 - [ ] **AC11.** An empty name, a level outside one through six, and a mapping entry holding two keys are each refused with `E_INVALID_CONVERSION_METADATA` naming the entry, as the corpus fixture `fixtures/exclusion/a-malformed-exclusion-is-refused` shows.
