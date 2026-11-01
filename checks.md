@@ -1,48 +1,186 @@
 # Checks
 
-Every check is a named command. Continuous integration runs these same names, so a check cannot hold on a working copy and be absent remotely.
+Every check is a named `make` command. Continuous integration runs these same names, so a check cannot pass on a working copy and be missing remotely.
+
+## Running the Checks
+
+One command runs every check in the sections below, from [Python](#python) to [The Example Skill](#the-example-skill).
+
+| Command | Runs |
+| --- | --- |
+| `make check` | Every check in the order the [`Makefile`](Makefile) lists them, stopping at the first failure. |
 
 ```bash
 make check
 ```
 
+Three commands sit outside it, because each needs a tool or a budget the others do not. See [Outside `make check`](#outside-make-check).
+
+## What Each Check Asserts
+
+### Python
+
 | Command | Asserts |
 | --- | --- |
-| `make lock-check` | The lockfile describes the dependency list the project definition declares. |
-| `make lint` | The repository's Python carries no lint error. |
-| `make format-check` | That same Python is formatted as the declared configuration formats it. |
-| `make typecheck` | That same Python type checks in strict mode. |
-| `make test` | The Python build's suite passes. A run that collects no test fails. |
-| `make harness` | Every fixture the corpus holds matches the [manifest schema](fixtures/README.md), each catalogue of diagnostic codes is the set the design declares, the runner decides a fixture from its manifest and files alone, and the [diagram-following corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, its forms differ only in their transitions, each scenario's path is the walk of the diagram its inputs determine, its [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done and classifies each failing run by how it departs, and its [runner](evals/diagram-following/run.py), driving a stub agent, starts each session in a fresh workspace of its form and inputs, refuses a run whose config directory installs a plugin, enables one, or declares a hook in its settings file, before its first session, fails a run one of whose sessions carried context it did not supply, records each session's transcript, usage, cost and verdict, records a run every session of which errored as refused with the agent's own reason, and stops before its recorded cost would pass its spending cap, and its [report](evals/diagram-following/report.py), over recorded results, gives the pass rate and failure classes per model, form and scenario and each one's difference from a baseline, and names a refused run's state and reason in place of any pass rate. |
-| `make authoring` | Every document in the [work-planner example](example/work-planner/SKILL.md) meets the authoring rules its [guidelines](example/work-planner/guidelines.md) state: an operation states its Inputs and Outputs as `None` or a comma-separated list of links to contract sections on one line ahead of its first step, a shell command sits in an unindented fenced block within the step that runs it, no file carries a heading titled `Commands`, and a cross-file link is written from the file that holds it. It reports each departure by file and line, grouped by area. |
-| `make corpus` | Every fixture the corpus holds, run against the build under test, produces the result its manifest declares. A fixture declaring work a later epic delivers is reported as awaiting it; one that meets its manifest while awaiting fails, as does a run with no build configured. |
-| `make smoke` | The build installs into an environment and its entry point bundles a reference from a source root, resolved by name from a directory unrelated to this repository. |
+| `make lock-check` | The lockfile matches the dependencies the project definition declares. |
+| `make lint` | The repository's Python has no lint errors. |
+| `make format-check` | That Python is formatted as the declared configuration formats it. |
+| `make typecheck` | That Python type checks in strict mode. |
+| `make test` | The Python build's test suite passes. A run that collects no test fails. |
+
+### The Corpus
+
+| Command | Asserts |
+| --- | --- |
+| `make harness` | The corpus, its runner and the diagram-following eval are well formed. See [The harness](#the-harness). |
+| `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares. |
+| `make smoke` | The build installs into an environment, and its entry point bundles a reference from a source root. |
+
+#### The Harness
+
+`make harness` checks the corpus and the tools around it, not the build.
+
+- **Fixtures.** Every fixture matches the [manifest schema](fixtures/README.md).
+- **Diagnostic codes.** Each catalogue of diagnostic codes is exactly the set the design declares.
+- **Runner.** The runner decides a fixture's result from its manifest and files alone.
+- **Diagram-following corpus.** The [corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, and its forms differ only in their transitions. Each scenario's path is the walk through the diagram that its inputs determine.
+- **Scorer.** The [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done. It classifies each failing run by how it departs from the path.
+- **Eval runner.** The [runner](evals/diagram-following/run.py) is driven by a stub agent, and:
+  - starts each session in a fresh workspace holding its form and inputs;
+  - refuses a run, before its first session, when the config directory installs or enables a plugin or declares a hook in its settings file;
+  - fails a run when a session carried context the runner did not supply;
+  - records each session's transcript, usage, cost and verdict;
+  - records a run whose every session errored as refused, with the agent's own reason;
+  - stops before the recorded cost would pass the spending cap.
+- **Report.** The [report](evals/diagram-following/report.py) reads recorded results. It gives the pass rate and failure classes per model, form and scenario, and each one's difference from a baseline. For a refused run it names the run's state and reason in place of a pass rate.
+
+#### Corpus and Smoke Details
+
+- **Awaiting fixtures.** A fixture that declares work a later epic delivers is reported as awaiting it. One that already meets its manifest while awaiting fails.
+- **No build, no pass.** `make corpus` fails when no build is configured. See [Choosing the build under test](#choosing-the-build-under-test).
+- **Smoke location.** `make smoke` resolves the reference by name from a directory unrelated to this repository.
+
+### Documentation
+
+| Command | Asserts |
+| --- | --- |
 | `make layout` | Each of the four trees holds a tracked file. |
-| `make tables` | The command and dependency tables in the documentation name every target the [`Makefile`](Makefile) declares and every dependency [`src/pyproject.toml`](src/README.md) declares, and nothing besides. |
-| `make links` | Every reference every document in this repository carries resolves, the fixture corpus excepted. |
+| `make tables` | The command and dependency tables in the documentation name every target the [`Makefile`](Makefile) declares and every dependency [`src/pyproject.toml`](src/README.md) declares, and nothing else. |
+| `make links` | Every link in every document in this repository resolves, except those in the fixture corpus. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
-| `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing besides, each reproducing that build's own help output. |
-| `make conformance` | Each behavioural clause of the design carries the fixtures exercising it, each clause no fixture reaches is listed as uncovered, each clause no source tree and invocation can state is recorded as unfixturable with the reason and what states it instead, each section of the design that states no behaviour is declared as such and carries no clause, and each error code, warning code and exit status the contract declares is listed with the fixtures reaching it, one only an awaiting fixture declares named unfixturable with the work it awaits, each installation claim no run of the corpus observes listed as unfixturable with the reason it is unreachable and the smoke-run property that would observe it, and the codes the build under test reports for itself are exactly the codes the contract declares. It fails without a build configured. |
-| `make independence` | Every fixture declaration and every line of the conformance report names no implementation: a term written the way a type, a function, a field, a constant, a package or a language is written is one the contract names, whether in the design's prose and clause names, the terms the [glossary](docs/glossary.md) defines, the interface the contract declares, or the headings the [example tree](example/work-planner/SKILL.md) carries. It renders the conformance report, so it fails without a build configured. |
-| `make steps` | Every procedure in the [work-planner example](example/work-planner/SKILL.md) writes its steps as `N. Action` headings one level below it, each unique in its document, and carries no numbered list outside a code block. |
-| `make mock-scenarios` | The [work-planner example](example/work-planner/SKILL.md) bundles over stand-in material: a plan mode over a stubbed artifact, standing where that artifact's member heading stood inside the merged artifacts group, and a redirected conventions document naming a fake tracker command, so the bundle an agent follows tells it to run the fake while every other instruction stays the one that ships. Each scenario runs from a temporary copy made at run time, publishes outside it, and is compared with the bundle the same tree produces with no substitution. |
-| `make check` | All of the above, in the order listed, stopping at the first failure. |
-| `make render` | Each diagram link form the corpus bundles renders, under Mermaid, as one followable link per link line, opening the heading of the group its fixture's bundle rewrote it to: an anchor in the drawing, or, for a Gantt task, the URL a click on it opens in a running page. It fails without mermaid-cli configured, and `make check` leaves it out. |
-| `make examples` | Each case in [`scripts/examples.json`](scripts/examples.json) runs against the build, and its drawing under [`docs/images/`](docs/images/) shows the files the run read beside the bundles it wrote. It re-renders the architecture pages' pictures, so a case that stops producing its declared output is drawn as it now behaves. |
+| `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing else. Each one reproduces that build's own help output. |
 
-The tooling the checks that read Python and the corpus call — `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus` and `make mock-scenarios` — is pinned by [`src/uv.lock`](src/README.md), and `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too; `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make steps` and `make authoring` are standard-library scripts in [`checks/`](checks/README.md). `make smoke` builds and installs the wheel through `uv` and needs network access for the dependencies the wheel declares. `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+### The Contract
 
-`make conformance` reads the design, the corpus and the codes the build under test reports for itself, so the coverage it reports and the comparison it makes are both read from the contract and the build rather than from either alone. `make independence` reads those same three and the report between them, and holds what the corpus binds to the behaviour the design states rather than to the build that happens to be written beside it. `make corpus`, `make invocation`, `make conformance`, `make independence` and `make mock-scenarios` run a build named by configuration rather than one they choose, so one corpus, one documented invocation, one declared surface and one example-skill scenario bind every implementation of the contract. `PROSIFORM_BUILD` holds that build's command line, split as a shell splits one, and a corpus run resolves it from the fixture's own directory:
+These two checks keep the corpus tied to the design rather than to any one build.
+
+| Command | Asserts |
+| --- | --- |
+| `make conformance` | Every clause, code and exit status in the design is accounted for by fixtures, or recorded as out of their reach. See [Conformance](#conformance). |
+| `make independence` | No fixture declaration and no line of the conformance report names an implementation. See [Independence](#independence). |
+
+#### Conformance
+
+`make conformance` reads the design, the corpus, and the codes the build under test reports for itself. Its coverage and its comparison therefore come from the contract and the build together, never from either alone.
+
+- **Clauses.**
+  - Each behavioural clause in the design lists the fixtures that exercise it.
+  - A clause no fixture reaches is listed as uncovered.
+  - A clause no source tree and invocation can express is recorded as unfixturable, with the reason and what states it instead.
+  - A design section that states no behaviour is declared as such and carries no clause.
+- **Codes and exit statuses.**
+  - Each error code, warning code and exit status the contract declares is listed with the fixtures that reach it.
+  - One that only an awaiting fixture declares is named unfixturable, with the work it awaits.
+  - Each installation claim that no corpus run observes is listed as unfixturable, with the reason it is out of reach and the smoke-run property that would observe it.
+- **Build agreement.** The codes the build under test reports are exactly the codes the contract declares.
+- **Needs a build.** It fails when no build is configured.
+
+#### Independence
+
+`make independence` reads the same three inputs as conformance, plus the report between them. It keeps the corpus bound to the behaviour the design states, not to the build that happens to sit beside it.
+
+- **The rule.** Any term written the way a type, function, field, constant, package or language is written must be one the contract names.
+- **Where contract names come from.** The design's prose and clause names, the terms the [glossary](docs/glossary.md) defines, the interface the contract declares, and the headings of the [example tree](example/work-planner/SKILL.md).
+- **Needs a build.** It renders the conformance report, so it fails when no build is configured.
+
+### The Example Skill
+
+These checks cover the [work-planner example](example/work-planner/SKILL.md).
+
+| Command | Asserts |
+| --- | --- |
+| `make authoring` | Every document meets the authoring rules in its [guidelines](example/work-planner/guidelines.md). Each departure is reported by file and line, grouped by area. |
+| `make steps` | Every procedure writes its steps as `N. Action` headings one level below it, each unique in its document, and has no numbered list outside a code block. |
+| `make mock-scenarios` | The example bundles correctly over stand-in material. See [Mock scenarios](#mock-scenarios). |
+
+#### Authoring Rules
+
+`make authoring` asserts four rules:
+
+- An operation states its Inputs and Outputs on one line before its first step, as `None` or a comma-separated list of links to contract sections.
+- A shell command sits in an unindented fenced block within the step that runs it.
+- No file has a heading titled `Commands`.
+- A cross-file link is written from the file that holds it.
+
+#### Mock Scenarios
+
+`make mock-scenarios` runs two scenarios:
+
+- **Stubbed artifact.** A plan mode bundles over a stubbed artifact. The stub stands where that artifact's member heading stood inside the merged artifacts group.
+- **Fake tracker.** The conventions document is redirected to one naming a fake tracker command. The bundle tells the agent to run the fake, while every other instruction stays the one that ships.
+
+Each scenario runs from a temporary copy made at run time and publishes outside it. Its result is compared with the bundle the same tree produces with no substitution.
+
+## Outside `make check`
+
+| Command | Asserts |
+| --- | --- |
+| `make render` | Each diagram link form the corpus bundles renders under Mermaid as one followable link per link line. See [Rendering](#rendering). |
+| `make examples` | Each case in [`scripts/examples.json`](scripts/examples.json) runs against the build, and its drawing under [`docs/images/`](docs/images/) shows the files the run read beside the bundles it wrote. |
+
+### Rendering
+
+- **What a link must open.** Each link opens the heading of the group its fixture's bundle rewrote it to. That is an anchor in the drawing or, for a Gantt task, the URL a click on it opens in a running page.
+- **How it is drawn.** It draws each diagram-link fixture's expected bundle with [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) 11.16.0, which drives a headless Chromium, and reads the anchors in the drawings.
+- **Gantt diagrams.** A Gantt diagram binds its links as click handlers only when the page runs. So a Gantt fixture's bundle is loaded in a page, using the Mermaid and Chromium that mermaid-cli ships, and each clickable task is clicked to record the URL it opens.
+- **Why it is outside.** Neither tool is a dependency of the build. The check fails when mermaid-cli is not configured.
+
+### Example Drawings
+
+`make examples` re-renders the pictures on the architecture pages. A case that stops producing its declared output is therefore drawn as it now behaves.
+
+### The Diagram-Following Eval
+
+`make eval-diagrams` runs the [diagram-following eval](evals/diagram-following/README.md). It starts paid agent sessions, so no check depends on it. Instead, [the harness](#the-harness) holds its runner, scorer and report against a stub agent and recorded results.
+
+## Setup
+
+### Tool Environments
+
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus` and `make mock-scenarios`.
+- **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
+- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make steps` and `make authoring` are standard-library scripts in [`checks/`](checks/README.md).
+
+### Network Access
+
+- `make smoke` builds and installs the wheel through `uv`, so it needs network access for the dependencies the wheel declares.
+- `make links` reaches addresses outside this repository, so it needs network access and GitHub credentials.
+
+### Choosing the Build Under Test
+
+`make corpus`, `make invocation`, `make conformance`, `make independence` and `make mock-scenarios` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation, one declared surface and one set of example scenarios bind every implementation of the contract.
+
+`PROSIFORM_BUILD` holds that build's command line, split the way a shell splits one. A corpus run resolves it from the fixture's own directory.
 
 ```bash
 export PROSIFORM_BUILD="uv run --project $PWD/src --frozen pf"
 ```
 
-There is no default and no fallback: with nothing configured the run fails rather than passing over the corpus, because a corpus run that skips sits inside a passing suite saying nothing.
+There is no default and no fallback. With nothing configured, the run fails rather than skipping the corpus, because a skipped corpus run inside a passing suite says nothing.
 
-The [diagram-following eval](evals/diagram-following/README.md) itself is outside `make check`: `make eval-diagrams` starts paid agent sessions, so no check depends on it, and the checks hold its runner, scorer and report against a stub agent and recorded results instead.
+### Configuring mermaid-cli
 
-`make render` draws each diagram-link fixture's expected bundle with [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) 11.16.0, which drives a headless Chromium, and reads the anchors the drawings carry. A Gantt diagram binds its links as click handlers when the page runs, so a Gantt fixture's bundle is loaded in a page instead, with the Mermaid and the Chromium mermaid-cli ships, and each clickable task is clicked to record the URL it opens. Neither is a dependency of the build, so the check sits outside `make check`, and `MERMAID_CLI` holds the mermaid-cli command line, with no default. Its last word names `mmdc`, and the click program runs as `node` under the words before it:
+`MERMAID_CLI` holds the mermaid-cli command line for `make render`, with no default. Its last word names `mmdc`, and the click program runs as `node` under the words before it.
 
 ```bash
 export MERMAID_CLI="npx -p @mermaid-js/mermaid-cli@11.16.0 mmdc"
