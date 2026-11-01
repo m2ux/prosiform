@@ -340,6 +340,44 @@ def test_a_set_started_one_after_another_is_sequential_set(
     assert (verdict.passed, verdict.failure) == (False, Failure.SEQUENTIAL_SET)
 
 
+def test_a_set_split_across_two_messages_is_sequential_set(tmp_path: Path) -> None:
+    """A set passes only where its opener starts first and the rest beside it.
+
+    `together` says a start shares a message with the start above it, which
+    may be one the scenario does not expect. Each record below holds one
+    member opening no message, yet its set reached two messages.
+    """
+    [first, second] = CORPUS["dispatch-set"].scenarios[0].trace
+    split = {
+        "second message opened by another start": [
+            Start(first.section, first.returned, False),
+            Start("read the material", "done", False),
+            Start(second.section, second.returned, True),
+        ],
+        "opener beside an earlier start": [
+            Start("read the material", "done", False),
+            Start(first.section, first.returned, True),
+            Start(second.section, second.returned, False),
+        ],
+    }
+    for name, starts in split.items():
+        held = tmp_path / name.replace(" ", "-")
+        held.mkdir()
+        verdict = dispatched("dispatch-set", starts, held)
+        assert (verdict.passed, verdict.failure) == (
+            False,
+            Failure.SEQUENTIAL_SET,
+        ), name
+    together = tmp_path / "together"
+    together.mkdir()
+    beside = [
+        Start("read the material", "done", False),
+        Start(first.section, first.returned, True),
+        Start(second.section, second.returned, True),
+    ]
+    assert dispatched("dispatch-set", beside, together).passed
+
+
 def test_a_question_answered_in_the_sub_agents_place_is_unrelayed(
     tmp_path: Path,
 ) -> None:

@@ -49,7 +49,7 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the existing folder `-o` names: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
+Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the folder `-o` names, made if absent: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
 
 ### Print the Guide
 
