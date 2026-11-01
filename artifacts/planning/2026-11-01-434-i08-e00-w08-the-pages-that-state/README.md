@@ -13,6 +13,8 @@ This record holds its delivery of `AC13, AC14`: the work item, the validation ev
 | Artifact | What it holds |
 | --- | --- |
 | [W08](w08.md) | The work item: the pages rewritten for declaration, the boundary in place of the root, the declared drawing cases and the held sentences |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 
