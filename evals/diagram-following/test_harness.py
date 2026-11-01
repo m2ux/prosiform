@@ -8,7 +8,10 @@ the CLIs print: Claude's `tool_use` and `tool_result` blocks, and Cursor's
 same `Start`, which is what lets the scorer above be unaware of the CLI.
 """
 
+import inspect
 import json
+import re
+from dataclasses import fields
 from pathlib import Path
 
 from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
@@ -73,6 +76,38 @@ def test_the_declared_harnesses_are_named() -> None:
         and Cursor().name == "cursor"
         and Opencode().name == "opencode"
     )
+
+
+def test_the_harness_module_names_every_declared_harness() -> None:
+    """AC3: the module docstring lists each harness `HARNESSES` declares."""
+    import harness
+
+    stated = harness.__doc__ or ""
+    for name in HARNESSES:
+        assert f"- `{name}`" in stated, name
+
+
+def test_no_harness_declares_a_field_nothing_reads() -> None:
+    """AC3: each field of a declared harness has a reader.
+
+    A field is read where its own class reads it as `self.<field>`, or where
+    an eval module reads it from any harness as `harness.<field>`.
+    """
+    here = Path(__file__).parent
+    modules = " ".join(
+        path.read_text()
+        for path in sorted(here.glob("*.py"))
+        if not path.name.startswith("test_")
+    )
+    for declared in HARNESSES.values():
+        own = inspect.getsource(type(declared))
+        unread = [
+            field.name
+            for field in fields(declared)
+            if not re.search(rf"\bself\.{field.name}\b", own)
+            and not re.search(rf"\bharness\.{field.name}\b", modules)
+        ]
+        assert not unread, f"{declared.name} declares {unread}, which nothing reads"
 
 
 def test_a_harness_without_a_shell_is_offered_every_form_bundled() -> None:

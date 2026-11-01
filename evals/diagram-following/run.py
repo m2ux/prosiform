@@ -8,7 +8,13 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 - `bundle`: the diagram form bundled by `pf`, as one file;
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
 - `prose`: the prose form bundled by `pf`, as one file;
-- `linked`: the linked form's source tree as it is, entered at `workflow.md`.
+- `linked`: the linked form's source tree as it is, entered at `workflow.md`;
+- `compiled`: the compiled form's bundle set, the entry's bundle as
+  `workflow.md` and every dispatched target's beside it;
+- `authored`: the authored-protocol form's one bundle, as `workflow.md`;
+- `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
+  it compiles, with the build under test on the session's path; a harness
+  with no shell gives no session in it.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
