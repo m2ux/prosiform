@@ -31,9 +31,19 @@ def test_every_drawing_rewriting_fixture_is_rendered() -> None:
     assert sorted(drawing_fixtures() - listed) == []
 
 
-def test_every_listed_fixture_is_a_drawing_rewriting_fixture() -> None:
+def test_every_listed_fixture_draws_a_diagram() -> None:
+    """A listed fixture from any family is one whose bundle a renderer draws."""
     listed = set(render.RENDERED) | set(render.CLICKED)
-    assert sorted(listed - drawing_fixtures()) == []
+    assert (
+        sorted(
+            name
+            for name in listed
+            if not render.MERMAID_FENCE.search(
+                render.expected_bundle(render.FIXTURES / name).read_text()
+            )
+        )
+        == []
+    )
 
 
 def test_a_diagram_mermaid_cannot_parse_is_a_defect(tmp_path: Path) -> None:
