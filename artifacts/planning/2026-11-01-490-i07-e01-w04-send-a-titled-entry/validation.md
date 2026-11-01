@@ -14,3 +14,7 @@ Observes `AC4`.
 ## T2 Repository checks
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'` exits 0: lint, format, types, unit tests, harness, corpus (385 fixtures, 385 pass), smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock scenarios.
+
+## T2 rerun on the merged head
+
+After merging `origin/i07/e01/main` (W01, `0ad34feb`) into the task branch, `make check` at `e1b4b14c` exits 0 again: corpus 385 fixtures, 385 pass. CI `Checks` passes on that head.
