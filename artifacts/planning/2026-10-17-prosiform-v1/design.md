@@ -409,7 +409,7 @@ A preset is a property of the document that declares it. Its settings govern tha
 - **One document under several selections:** References from two sections may select different presets of one document in one run, and each reference bundles that document's content under the selection it made.
 - **A document in several groups:** A document whose presets in force pair it with several groups is a member of each, and its selected content is emitted under each group, because each group is a separate top-level division of the bundle. Within one group it is emitted once.
 - **`profile` and `preset` are two terms:** `skill-markdown-v4` is the profile, the grammar a run implements and reports with `-v`, and the glossary's one sense of that word. A preset is the per-reference setting stated here.
-- **A preset nothing selected warns:** `W_PRESET_UNUSED` names the document and a preset no reference selected, and accompanies a published bundle and exit status `0`. A document's `default` is in force wherever that document is compiled, so it is never unused. A preset on a document reached only through a deferral is not unused: the run compiling the deferral reads it then. Where a document's `default` is empty and its references select no preset, its presets substitute nothing and withhold nothing, and its references resolve as authored.
+- **A preset nothing selected warns:** A preset no reference selected raises a warning naming the document and the preset, which accompanies a published bundle and exit status `0`. A document's `default` is in force wherever that document is compiled, so it is never unused. A preset on a document reached only through a deferral is not unused: the run compiling the deferral reads it then. Where a document's `default` is empty and its references select no preset, its presets substitute nothing and withhold nothing, and its references resolve as authored.
 
 ### Metadata failures
 
@@ -662,8 +662,6 @@ Use stable error codes for individual defects and the following exit-status cate
 `W_EARLIER_SET_RETAINED` reports a published run whose earlier set, moved aside, could not be removed, naming that path in its message and remedy.
 
 `W_MOCK_SUBSTITUTED` reports the substitution mapping's work: one warning for each key a reference named, emitted at the first reference that named it, however many references named that key. It names that link as `location`, the destination the author wrote as `source`, and the substitute's identity as `resolved`, and its message states the identity the reference would have resolved to. `W_MOCK_UNUSED` reports each mapping key no reference named, carrying the key's authored spelling as `source` and no `location`, because it states a fact about the invocation rather than about a source. Both accompany a successful run and leave it at `0`, and a run given no mapping raises neither.
-
-`W_PRESET_UNUSED` reports a preset no reference selected, naming the document and the preset, as [Presets](#presets) states. It accompanies a successful run and leaves it at `0`. A document's `default` and a preset on a document reached only through a deferral raise none.
 
 An unexpected internal error carries `E_UNEXPECTED_INTERNAL_ERROR`. It names the run rather than any document the run read, so a caller reading it is not sent to look at its sources.
 
