@@ -49,21 +49,21 @@ A caller who needs a bundle built against other material than the tree holds has
 | [W02](https://github.com/m2ux/prosiform/pull/431) | Key and self-mock refusals | AC9, AC10, AC23 | W01 | | ✓ |
 | [W03](https://github.com/m2ux/prosiform/pull/438) | Entry redirect and derived name | AC2, AC13 | W01 | | ✓ |
 | [W04](https://github.com/m2ux/prosiform/pull/433) | Substitution warnings and check mode | AC7, AC8, AC19 | W01 | | ✓ |
-| W05 | Withheld and dispatched targets | AC4 | W01 | | |
+| [W05](https://github.com/m2ux/prosiform/pull/447) | Withheld and dispatched targets | AC4 | W01 | | ✓ |
 | [W06](https://github.com/m2ux/prosiform/pull/437) | Section keys and no chaining | AC3, AC12, AC14 | W01 | | ✓ |
 | [W07](https://github.com/m2ux/prosiform/pull/439) | Substitute as a full source | AC5, AC6, AC20 | W01 | | ✓ |
 | [W08](https://github.com/m2ux/prosiform/pull/440) | Example skill scenarios over the mechanism | AC21, AC22 | W04 | | ✓ |
-| W09 | A folder pairing and its precedence | AC25, AC26, AC30 | W01 | | |
-| W10 | A folder key's absent substitute and unused report | AC27, AC28 | W09 | | |
+| [W09](https://github.com/m2ux/prosiform/pull/448) | A folder pairing and its precedence | AC25, AC26, AC30 | W01 | | ✓ |
+| [W10](https://github.com/m2ux/prosiform/pull/469) | A folder key's absent substitute and unused report | AC27, AC28 | W09 | | ✓ |
 | W11 | The folder documented and demonstrated *(withdrawn: see [Supersession](#supersession))* | AC29, AC31 | W10 | | |
-| W12 | A value naming no Markdown document is refused | AC24 | W02 | | |
+| [W12](https://github.com/m2ux/prosiform/pull/446) | A value naming no Markdown document is refused | AC24 | W02 | | ✓ |
 
 ## Acceptance Criteria
 
 - [x] **AC1.** A link under the root naming a mocked identity compiles the substitute's document in place of the target, as the corpus fixture `fixtures/mock/a-mocked-dependency-is-compiled` shows.
 - [x] **AC2.** A positional entry naming a mocked identity compiles the substitute document and the run derives its output filename from the substitute, as the corpus fixture `fixtures/mock/a-redirected-entry-derives-its-name-from-the-substitute` shows.
 - [x] **AC3.** A mapping key carrying a fragment redirects that section alone and leaves the rest of its document real, as the corpus fixture `fixtures/mock/a-fragment-key-redirects-one-section` shows.
-- [ ] **AC4.** A withheld link's target is redirected, and the destination the bundle publishes for it is the substitute's working-directory-relative path, as the corpus fixture `fixtures/mock/a-deferred-target-is-redirected` shows.
+- [x] **AC4.** A withheld link's target is redirected, and the destination the bundle publishes for it is the substitute's working-directory-relative path, as the corpus fixture `fixtures/mock/a-deferred-target-is-redirected` shows.
 - [x] **AC5.** A substitute declaring a group and depth contributes to that merged group, as the corpus fixture `fixtures/mock/a-substitute-declaring-a-group-joins-it` shows.
 - [x] **AC6.** A substitute declaring a root bounds its own outgoing links by that root, as the corpus fixture `fixtures/mock/a-substitute-root-bounds-its-own-links` shows. *Superseded: see [Supersession](#supersession).*
 - [x] **AC7.** A redirected target raises `W_MOCK_SUBSTITUTED` naming the link's location, the identity it resolved from and the substitute, as the corpus fixture `fixtures/mock/a-substitution-warns-with-its-target` shows.
@@ -84,14 +84,14 @@ A caller who needs a bundle built against other material than the tree holds has
 - [x] **AC21.** The example skill's plan mode bundles against a stub artifact supplied by a mapping and no edit to the skill tree, with the stub standing where the real artifact's heading stood, as `make mock-scenarios` shows.
 - [x] **AC22.** The example skill's `conventions.md` is redirected to a document naming a fake `gh`, and the bundle carries the fake as the command the agent is told to run, as `make mock-scenarios` shows.
 - [x] **AC23.** A mapping key carrying no document, as `#section` does, is refused as invalid usage, as the corpus fixture `fixtures/mock/a-fragment-only-key-is-refused` shows.
-- [ ] **AC24.** A mapping value whose path names no Markdown document is refused with `E_INVALID_USAGE` and exit status 2, as the corpus fixture `fixtures/mock/a-value-naming-no-markdown-document-is-refused` shows.
+- [x] **AC24.** A mapping value whose path names no Markdown document is refused with `E_INVALID_USAGE` and exit status 2, as the corpus fixture `fixtures/mock/a-value-naming-no-markdown-document-is-refused` shows.
 
-- [ ] **AC25.** A reference under a key folder compiles the document at the same remainder under the substitute folder and keeps the section it named, as the corpus fixture `fixtures/mock/a-folder-key-redirects-each-reference-under-it` shows.
-- [ ] **AC26.** An exact key answers before a folder key, and of two folder keys holding one reference the longer is used, as the corpus fixture `fixtures/mock/an-exact-key-beats-a-folder-key` shows.
-- [ ] **AC27.** A folder key matching a reference whose substitute path holds no document fails with `E_TARGET_NOT_FOUND` naming the reference, the key and the path, as the corpus fixture `fixtures/mock/a-folder-substitute-that-is-absent-fails` shows.
-- [ ] **AC28.** A folder key no compiled reference reached raises `W_MOCK_UNUSED` and the run publishes with exit status 0, as the corpus fixture `fixtures/mock/an-unused-folder-key-warns` shows.
+- [x] **AC25.** A reference under a key folder compiles the document at the same remainder under the substitute folder and keeps the section it named, as the corpus fixture `fixtures/mock/a-folder-key-redirects-each-reference-under-it` shows.
+- [x] **AC26.** An exact key answers before a folder key, and of two folder keys holding one reference the longer is used, as the corpus fixture `fixtures/mock/an-exact-key-beats-a-folder-key` shows.
+- [x] **AC27.** A folder key matching a reference whose substitute path holds no document fails with `E_TARGET_NOT_FOUND` naming the reference, the key and the path, as the corpus fixture `fixtures/mock/a-folder-substitute-that-is-absent-fails` shows.
+- [x] **AC28.** A folder key no compiled reference reached raises `W_MOCK_UNUSED` and the run publishes with exit status 0, as the corpus fixture `fixtures/mock/an-unused-folder-key-warns` shows.
 - [ ] **AC29.** The option's documented row and the help string state the folder form and the precedence, and agree in both directions, as `make invocation` shows.
-- [ ] **AC30.** A pairing with a separator on one side and not the other, and a folder side carrying a section, are each invalid usage with exit status 2, as the corpus fixtures `fixtures/mock/a-half-folder-pair-is-refused` and `fixtures/mock/a-folder-key-carrying-a-section-is-refused` show.
+- [x] **AC30.** A pairing with a separator on one side and not the other, and a folder side carrying a section, are each invalid usage with exit status 2, as the corpus fixtures `fixtures/mock/a-half-folder-pair-is-refused` and `fixtures/mock/a-folder-key-carrying-a-section-is-refused` show.
 - [ ] **AC31.** One folder pair compiles the example skill's plan mode against a folder of stubs with no entry per file, as `make mock-scenarios` shows.
 
 ## Open Questions
