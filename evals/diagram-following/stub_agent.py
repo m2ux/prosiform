@@ -16,6 +16,8 @@ call is answered by a `tool_result` carrying `question` or `done`.
 The environment scripts it:
 
 - `STUB_AGENT_COST`: the cost its `result` message reports, in USD;
+- `STUB_AGENT_TOKENS`: the tokens its `result` message reports, each kind set so
+  their sum is this number;
 - `STUB_AGENT_STOP`: a number of states after which it stops walking;
 - `STUB_AGENT_NO_DISPATCH`: when set, it starts no sub-agent, as an agent
   that read the protocol and ignored it does;
@@ -48,7 +50,8 @@ import time
 import uuid
 from pathlib import Path
 
-from score import ACTIONS, RETURNED_QUESTION, TRACE
+from harness import QUESTION as RETURNED_QUESTION
+from score import ACTIONS, TRACE
 from workflow import Scenario, Workflow, walk, workflows
 
 HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
@@ -70,6 +73,16 @@ def scenario_of(workflow: Workflow, inputs: dict[str, str]) -> Scenario | None:
         if {name: value.strip() for name, value in item.inputs.items()} == wanted:
             return item
     return None
+
+
+def usage(path: tuple[str, ...]) -> dict[str, int]:
+    """The usage a session reports, its kinds summing to STUB_AGENT_TOKENS."""
+    total = os.environ.get("STUB_AGENT_TOKENS")
+    return (
+        {"input_tokens": int(total), "output_tokens": 0}
+        if total
+        else {"input_tokens": 100 * len(path), "output_tokens": 10}
+    )
 
 
 def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
@@ -216,7 +229,7 @@ def main() -> int:
             "result": os.environ.get("STUB_AGENT_REASON", ""),
             "num_turns": len(path),
             "total_cost_usd": float(os.environ.get("STUB_AGENT_COST", "0.01")),
-            "usage": {"input_tokens": 100 * len(path), "output_tokens": 10},
+            "usage": usage(path),
         }
         print(json.dumps(result))
     return 0

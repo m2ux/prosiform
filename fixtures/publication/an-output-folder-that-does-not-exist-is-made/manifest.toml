@@ -1,0 +1,17 @@
+description = "A run told to publish into a folder the fixture does not hold makes that folder and publishes into it, so it returns success, leaves standard output empty and writes the run's own folder under the named one."
+
+clauses = [
+  "Validation and failure contract — Publication",
+  "Compile before publishing — step 7",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-o", "made", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+]
+diagnostics = []

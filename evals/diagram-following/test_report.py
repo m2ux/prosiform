@@ -87,7 +87,7 @@ BASELINE = {
     "date": "2026-10-20T09:00:00+00:00",
     "models": [HAIKU, SONNET],
     "repetitions": 4,
-    "cost_usd": 3.5,
+    "tokens": 3500,
     "cells": [
         base_cell(HAIKU, "bundle", "linear", "straight-through", 2, unfinished=2),
         base_cell(HAIKU, "prose", "looping", "two-rounds", 2),
@@ -116,7 +116,7 @@ def recorded(tmp_path: Path) -> Path:
             "exit_status": status,
             "duration_seconds": 12.5,
             "usage": None if cost is None else USAGE,
-            "cost_usd": cost,
+            "tokens": None if cost is None else int(cost * 1000),
             "result": None,
             "verdict": {
                 "passed": failure is None,
@@ -133,9 +133,10 @@ def recorded(tmp_path: Path) -> Path:
         "date": "2026-10-27T10:00:00+00:00",
         "options": {"models": f"{HAIKU},{SONNET}", "repetitions": 4},
         "command": ["claude", "-p"],
+        "harness": "claude",
         "sessions": len(RECORDED) + len(NOT_STARTED),
         "started": len(RECORDED),
-        "cost_usd": 2.75,
+        "tokens": 2750,
         "not_started": NOT_STARTED,
     }
     (directory / RUN).write_text(json.dumps(run))
@@ -172,13 +173,7 @@ def test_each_cell_gives_its_pass_rate_failures_timeouts_tokens_and_cost(
     assert (cell["sessions"], cell["passed"], cell["pass_rate"]) == (4, 3, 0.75)
     assert cell["failures"] == counts(unfinished=1)
     assert cell["timeouts"] == 1
-    assert cell["tokens"] == {
-        "input": 1000,
-        "output": 200,
-        "cache_creation": 300,
-        "cache_read": 400,
-    }
-    assert cell["cost_usd"] == 0.2
+    assert cell["tokens"] == 200
     tree = row(built["cells"], HAIKU, "tree")
     assert tree["pass_rate"] == 0
     assert tree["failures"] == counts(skipped_state=1, missing_action=1)
@@ -201,9 +196,9 @@ def test_the_roll_ups_gather_each_model_and_form_and_each_model(
         unfinished=1, loop_miscount=1, skipped_state=1, missing_action=1
     )
     assert haiku["timeouts"] == 1
-    assert haiku["cost_usd"] == round(1.6 / 7, 6)
+    assert haiku["tokens"] == round(1600 / 7, 1)
     sonnet = row(built["by_model"], SONNET)
-    assert (sonnet["sessions"], sonnet["pass_rate"], sonnet["cost_usd"]) == (2, 1, 0.4)
+    assert (sonnet["sessions"], sonnet["pass_rate"], sonnet["tokens"]) == (2, 1, 400.0)
 
 
 def test_the_report_gives_the_run_cost_and_the_sessions_not_started(
@@ -213,7 +208,7 @@ def test_the_report_gives_the_run_cost_and_the_sessions_not_started(
     assert built["run_id"] == "recorded"
     assert built["models"] == [HAIKU, SONNET] and built["repetitions"] == 4
     assert (built["sessions"], built["started"]) == (12, 10)
-    assert built["cost_usd"] == 2.75
+    assert built["tokens"] == 2750
     assert built["not_started"] == NOT_STARTED
 
 
@@ -233,7 +228,6 @@ def test_each_row_carries_its_difference_from_the_baseline(
     assert built["baseline"] == {
         "run_id": "reviewed",
         "date": "2026-10-20T09:00:00+00:00",
-        "cost_usd": 3.5,
     }
     cell = row(built["cells"], HAIKU, "bundle")
     assert cell["in_baseline"] is True
@@ -315,7 +309,7 @@ def test_the_command_writes_the_report_beside_the_run(
     assert "- **Baseline:** `reviewed`, 2026-10-20T09:00:00+00:00" in text
     assert (
         f"| `{HAIKU}` | `bundle` | `linear` | `straight-through` | 4 | 3 | 75% "
-        "| +25 pts | unfinished 1 (-1) | 1 | 1000 / 200 / 300 / 400 | 0.2 |"
+        "| +25 pts | unfinished 1 (-1) | 1 | 200 | — |"
     ) in text
     assert (
         f"| `{SONNET}` | `bundle` | `linear` | `straight-through` | 2 | 2 | 100% "
@@ -340,7 +334,7 @@ def test_a_refused_run_gives_its_state_and_reason_and_no_row(
         "reason": "You've hit your weekly limit · resets Monday",
         "sessions": 1,
         "started": 1,
-        "cost_usd": 0.0,
+        "tokens": 0,
         "not_started": [],
     }
     (directory / RUN).write_text(json.dumps(run))
@@ -366,7 +360,7 @@ def test_writing_the_baseline_follows_the_comparison_with_the_one_it_replaces(
     written = json.loads(baseline.read_text())
     assert written == baseline_of(compared)
     assert written["run_id"] == "recorded" and written["repetitions"] == 4
-    assert written["models"] == [HAIKU, SONNET] and written["cost_usd"] == 2.75
+    assert written["models"] == [HAIKU, SONNET] and written["tokens"] == 2750
     assert set(written["cells"][0]) == {
         "model",
         "form",

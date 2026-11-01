@@ -266,8 +266,10 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
         raise Failed("the folder -o names does not hold the run's folder")
     shutil.rmtree(folder)
     run = invoke(environment, elsewhere, "-o", "missing", entry)
-    if run.returncode != 3 or run.stdout or list(elsewhere.iterdir()):
-        raise Failed("a folder that does not exist leaves output behind")
+    succeeded(run, "-o missing")
+    if run.stdout or not (elsewhere / "missing" / run_folder(name)).is_dir():
+        raise Failed("the folder -o names is not made, or holds no run's folder")
+    shutil.rmtree(elsewhere / "missing")
 
 
 def ships_glossary(environment: Path) -> Path:

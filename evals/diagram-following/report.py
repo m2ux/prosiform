@@ -13,7 +13,7 @@ A row gathers the sessions sharing a key. The report holds three levels:
 Each row gives its `sessions`, how many `passed`, the `pass_rate`, the
 count of each failure class in `failures`, zero included, how many ended
 at their timeout in `timeouts`, the mean `tokens` of each kind over the
-sessions recording usage, and the mean `cost_usd` over the sessions
+sessions recording tokens, and the mean `cost_usd` over the sessions
 recording a cost; a mean is null when no session records it. The report
 also gives the run's id, date, models, repetitions, matrix size, sessions
 started, recorded cost, and the sessions it did not start.
@@ -62,12 +62,6 @@ BASELINE = ROOT / "baseline.json"
 TIMEOUT = "timeout"
 
 FAILURES = tuple(str(failure) for failure in Failure)
-TOKENS = {
-    "input": "input_tokens",
-    "output": "output_tokens",
-    "cache_creation": "cache_creation_input_tokens",
-    "cache_read": "cache_read_input_tokens",
-}
 LEVELS = {
     "cells": ("model", "form", "workflow", "scenario"),
     "by_form": ("model", "form"),
@@ -108,19 +102,16 @@ def tally(records: list[Row]) -> Row:
     for record in records:
         if record["verdict"]["failure"] is not None:
             failures[record["verdict"]["failure"]] += 1
-    usages = [record["usage"] for record in records if record["usage"]]
-    costs = [record["cost_usd"] for record in records]
+    counts = [record["tokens"] for record in records if record.get("tokens")]
+    costs = [record["cost_usd"] for record in records if record.get("cost_usd")]
     return {
         "sessions": len(records),
         "passed": passed,
         "pass_rate": rate(passed, len(records)),
         "failures": failures,
         "timeouts": sum(1 for record in records if record["exit_status"] == TIMEOUT),
-        "tokens": {
-            kind: mean((usage.get(field, 0) for usage in usages), 1)
-            for kind, field in TOKENS.items()
-        },
-        "cost_usd": mean((cost for cost in costs if cost is not None), 6),
+        "tokens": mean(counts, 1),
+        "cost_usd": mean(costs, 6),
     }
 
 
@@ -209,11 +200,12 @@ def report(run_directory: Path, baseline: Path = BASELINE) -> Row:
         "repetitions": run["options"]["repetitions"],
         "sessions": run["sessions"],
         "started": run["started"],
-        "cost_usd": run["cost_usd"],
+        "harness": run.get("harness"),
+        "tokens": run["tokens"],
         "not_started": run["not_started"],
         "baseline": None
         if base is None or state == REFUSED
-        else {field: base[field] for field in ("run_id", "date", "cost_usd")},
+        else {field: base[field] for field in ("run_id", "date")},
         "baseline_only": {},
     }
     for name, key in LEVELS.items():
@@ -227,12 +219,19 @@ def report(run_directory: Path, baseline: Path = BASELINE) -> Row:
 
 
 def baseline_of(built: Row) -> Row:
-    """The baseline a report's run gives: its identity, cost and cells."""
+    """The baseline a report's run gives: its identity and cells."""
     key = LEVELS["cells"]
     return {
         **{
             field: built[field]
-            for field in ("run_id", "date", "models", "repetitions", "cost_usd")
+            for field in (
+                "run_id",
+                "date",
+                "models",
+                "repetitions",
+                "harness",
+                "tokens",
+            )
         },
         "cells": [
             {field: cell[field] for field in (*key, *COUNTS)} for cell in built["cells"]
@@ -280,7 +279,7 @@ def table(rows: list[Row], key: tuple[str, ...]) -> list[str]:
         "Change",
         "Failures",
         "Timeouts",
-        "Mean tokens (in / out / cache write / cache read)",
+        "Mean tokens",
         "Mean cost (USD)",
     ]
     lines = [
@@ -288,7 +287,6 @@ def table(rows: list[Row], key: tuple[str, ...]) -> list[str]:
         "|" + " --- |" * len(headers),
     ]
     for row in rows:
-        tokens = " / ".join(number(row["tokens"][kind]) for kind in TOKENS)
         cells = [
             *(f"`{row[field]}`" for field in key),
             str(row["sessions"]),
@@ -297,7 +295,7 @@ def table(rows: list[Row], key: tuple[str, ...]) -> list[str]:
             change(row),
             failures(row),
             str(row["timeouts"]),
-            tokens,
+            number(row["tokens"]),
             number(row["cost_usd"]),
         ]
         lines.append("| " + " | ".join(cells) + " |")
@@ -315,7 +313,7 @@ def markdown(built: Row) -> str:
         + f"; {built['repetitions']} repetitions.",
         f"- **Sessions:** {built['started']} of {built['sessions']} started; "
         f"{len(built['not_started'])} not started.",
-        f"- **Cost:** USD {built['cost_usd']:.4f}.",
+        f"- **Tokens:** {built['tokens']}.",
     ]
     if built["state"] == REFUSED:
         lines += [
@@ -331,8 +329,8 @@ def markdown(built: Row) -> str:
     lines += [
         "- **Baseline:** none."
         if base is None
-        else f"- **Baseline:** `{base['run_id']}`, {base['date']}; "
-        f"cost USD {base['cost_usd']:.4f}. Change is this run's pass rate less "
+        else f"- **Baseline:** `{base['run_id']}`, {base['date']}. "
+        f"Change is this run's pass rate less "
         "the baseline's, and a failure count's change follows it in brackets.",
     ]
     titles = {

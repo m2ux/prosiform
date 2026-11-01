@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from harness import DONE, HARNESSES
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -32,13 +33,14 @@ from run import (
     Session,
     bundles_of,
     injected,
+    keep,
     matrix,
+    observable,
     options,
     run,
 )
 from score import (
     ACTIONS,
-    RETURNED_DONE,
     SUBAGENTS,
     TRACE,
     Failure,
@@ -85,7 +87,7 @@ DEPARTURES: dict[str, tuple[str, dict[str, Failure | None]]] = {
         },
     ),
     "STUB_AGENT_ANSWER": (
-        RETURNED_DONE,
+        DONE,
         {
             "chain": None,
             "parallel-set": None,
@@ -107,6 +109,20 @@ absent fails here as surely as one that does not fire where it is present.
 def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
     """The sessions a run of the whole corpus starts."""
     return len(matrix(list(CORPUS.values()), models, forms, repetitions))
+
+
+def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
+    """A scenario whose trace outruns the path's own starts is beyond Cursor."""
+    corpus = list(CORPUS.values())
+    forms = [COMPILED_SET, AUTHORED_SET]
+    cursor = matrix(corpus, ["m"], forms, 1, HARNESSES["cursor"])
+    claude = matrix(corpus, ["m"], forms, 1, HARNESSES["claude"])
+    assert len(cursor) < len(claude)
+    assert all(item.workflow != "dispatch-chain" for item in cursor)
+    assert any(item.workflow == "dispatch-chain" for item in claude)
+    workflow = CORPUS["dispatch-set"]
+    scenario = workflow.scenarios[0]
+    assert observable(workflow, scenario, COMPILED_SET, HARNESSES["cursor"]) is True
 
 
 @pytest.fixture
@@ -138,6 +154,8 @@ def eval_run(tmp_path: Path, *extra: str) -> dict[str, Any]:
                 "test",
                 "--eval-root",
                 str(tmp_path / "eval"),
+                "--session-budget-tokens",
+                "250",
                 *extra,
             ]
         )
@@ -193,7 +211,7 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     tmp_path: Path, log: Path
 ) -> None:
     record = eval_run(
-        tmp_path, "--repetitions", "2", "--budget-usd", "100", "--parallel", "3"
+        tmp_path, "--repetitions", "2", "--budget-tokens", "100000", "--parallel", "3"
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
@@ -227,7 +245,13 @@ def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
 ) -> None:
     """A bundled form gives its set, a tree form its source documents."""
     eval_run(
-        tmp_path, "--workflows", "looping", "--repetitions", "1", "--budget-usd", "4"
+        tmp_path,
+        "--workflows",
+        "looping",
+        "--repetitions",
+        "1",
+        "--budget-tokens",
+        "4000",
     )
     looping = CORPUS["looping"]
     tree_document = f"states/{looping.diagram.start.lower()}.md"
@@ -246,7 +270,7 @@ def test_a_compiled_form_gives_its_whole_bundle_set(tmp_path: Path, log: Path) -
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
-        *("--repetitions", "1", "--budget-usd", "4"),
+        *("--repetitions", "1", "--budget-tokens", "4000"),
     )
     [workflow] = [CORPUS["dispatch-chain"]]
     published = (
@@ -269,7 +293,7 @@ def test_the_linked_form_walks_every_scenario_of_a_branching_workflow(
     eval_run(
         tmp_path,
         *("--workflows", "branching", "--forms", LINKED_TREE, "--repetitions", "1"),
-        *("--budget-usd", "4"),
+        *("--budget-tokens", "4000"),
     )
     written = records(tmp_path)
     assert len(written) == len(CORPUS["branching"].scenarios)
@@ -295,7 +319,7 @@ def test_the_linked_form_walks_every_scenario_of_a_looping_workflow(
     eval_run(
         tmp_path,
         *("--workflows", "looping", "--forms", LINKED_TREE, "--repetitions", "1"),
-        *("--budget-usd", "4"),
+        *("--budget-tokens", "4000"),
     )
     written = records(tmp_path)
     assert len(written) == len(CORPUS["looping"].scenarios)
@@ -317,8 +341,8 @@ def test_the_linked_form_walks_every_scenario_of_a_looping_workflow(
 def test_each_session_records_its_transcript_usage_cost_and_verdict(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
-    eval_run(tmp_path, "--repetitions", "1", "--budget-usd", "100")
+    monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
+    eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "100000")
     written = records(tmp_path)
     assert len(written) == every_session(["stub-model"], list(FORMS), 1)
     for record in written:
@@ -333,12 +357,9 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
         transcript = (directory / TRANSCRIPT).read_text().splitlines()
         assert json.loads(transcript[-1]) == record["result"]
         assert record["exit_status"] == 0
-        assert record["cost_usd"] == 0.125
+        assert record["tokens"] == 125
         trace = (directory / TRACE).read_text().split()
-        assert record["usage"] == {
-            "input_tokens": 100 * len(trace),
-            "output_tokens": 10,
-        }
+        assert record["usage"] == {"input_tokens": 125, "output_tokens": 0}
         verdict = record["verdict"]
         assert verdict["passed"] is True
         assert trace == verdict["actual"]
@@ -354,7 +375,7 @@ def test_a_failing_session_is_recorded_with_its_failure(
     eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     [record] = records(tmp_path)
     verdict = record["verdict"]
@@ -365,11 +386,11 @@ def test_a_failing_session_is_recorded_with_its_failure(
 def test_a_run_ends_by_writing_its_report(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
+    monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
     eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     written = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
     [cell] = written["cells"]
@@ -378,8 +399,8 @@ def test_a_run_ends_by_writing_its_report(
         BUNDLE,
         "straight-through",
     )
-    assert (cell["sessions"], cell["passed"], cell["cost_usd"]) == (2, 2, 0.125)
-    assert written["cost_usd"] == 0.25 and written["not_started"] == []
+    assert (cell["sessions"], cell["passed"], cell["tokens"]) == (2, 2, 125)
+    assert written["tokens"] == 250 and written["not_started"] == []
 
 
 def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
@@ -387,14 +408,14 @@ def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
 ) -> None:
     with pytest.raises(
         CorpusError,
-        match=r"--budget-usd 0\.5 does not cover the 12 sessions at "
-        r"--session-budget-usd 0\.5, which need USD 6\.0",
+        match=r"--budget-tokens 500 does not cover the 12 sessions at "
+        r"--session-budget-tokens 250, which need 3000",
     ):
         eval_run(
             tmp_path,
             *("--workflows", "linear,branching", "--repetitions", "1"),
-            "--budget-usd",
-            "0.5",
+            "--budget-tokens",
+            "500",
         )
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
@@ -403,15 +424,15 @@ def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
 def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("STUB_AGENT_COST", "0.5")
+    monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1"),
-        *("--budget-usd", "7", "--session-budget-usd", "0.25"),
+        *("--budget-tokens", "7000", "--session-budget-tokens", "250"),
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
     assert record["started"] == 14
-    assert record["cost_usd"] == 7.0
+    assert record["tokens"] == 7000
     assert len(seen(log)) == len(records(tmp_path)) == 14
     not_started = record["not_started"]
     assert not_started == [
@@ -429,12 +450,12 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
 
 
 def test_a_session_in_flight_holds_its_cap_against_the_budget() -> None:
-    ledger = Ledger(0.5, 0.25)
+    ledger = Ledger(500, 250)
     assert ledger.reserve() and ledger.reserve()
     assert not ledger.fits()
-    ledger.settle(0.1)
+    ledger.settle(100)
     assert not ledger.fits()
-    ledger.settle(0.1)
+    ledger.settle(100)
     assert ledger.fits()
 
 
@@ -445,11 +466,12 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
-        *("--budget-usd", "1.25", "--session-budget-usd", "0.25"),
+        *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 5
-    assert record["cost_usd"] == 1.25
-    assert all(item["cost_usd"] is None for item in records(tmp_path))
+    assert record["tokens"] == 0
+    assert record["tokens_unknown"] == 5
+    assert all(item["tokens"] is None for item in records(tmp_path))
 
 
 def test_a_refused_agent_is_errored_not_a_trace_failure(
@@ -460,7 +482,7 @@ def test_a_refused_agent_is_errored_not_a_trace_failure(
         tmp_path,
         *("--agent-command", f"{sys.executable} -c 'import sys; sys.exit(1)'"),
         *("--workflows", "linear", "--forms", LINKED_TREE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     assert record["started"] == 1
     [written] = records(tmp_path)
@@ -476,7 +498,7 @@ def test_an_agent_reporting_an_error_is_errored_though_it_wrote_a_trace(
     eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     [record] = records(tmp_path)
     assert record["exit_status"] == 0
@@ -497,7 +519,7 @@ def test_a_run_whose_every_session_errored_is_refused_and_reported_as_such(
     record = eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
-        *("--budget-usd", "4"),
+        *("--budget-tokens", "4000"),
     )
     written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
     assert record["state"] == written["state"] == "refused"
@@ -523,7 +545,7 @@ def test_a_refused_run_writes_no_baseline(
     eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     baseline = tmp_path / "baseline.json"
     with pytest.raises(CorpusError, match="refused, so it has no cells"):
@@ -546,7 +568,7 @@ def test_a_run_with_a_genuine_mix_of_errors_and_states_is_a_result(
     record = eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
-        *("--parallel", "1", "--budget-usd", "4"),
+        *("--parallel", "1", "--budget-tokens", "4000"),
     )
     failures = [item["verdict"]["failure"] for item in records(tmp_path)]
     assert sorted(failures, key=str) == [None, "errored"]
@@ -561,11 +583,11 @@ def test_a_run_the_budget_stopped_part_way_is_not_refused(
 ) -> None:
     """Sessions it never started leave the matrix incomplete, not refused."""
     monkeypatch.setenv("STUB_AGENT_ERROR", "1")
-    monkeypatch.setenv("STUB_AGENT_COST", "0.5")
+    monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
-        *("--budget-usd", "1.25", "--session-budget-usd", "0.25"),
+        *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 3 and record["sessions"] == 5
     assert len(record["not_started"]) == 2
@@ -576,7 +598,7 @@ def test_a_run_the_budget_stopped_part_way_is_not_refused(
 def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:
     (tmp_path / "eval" / "config" / ".credentials.json").unlink()
     with pytest.raises(CorpusError, match="holds no login.*claude`, then `/login`"):
-        eval_run(tmp_path, "--budget-usd", "1")
+        eval_run(tmp_path, "--budget-tokens", "1000")
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
 
@@ -586,22 +608,23 @@ def test_a_session_past_its_timeout_is_ended_scored_and_charged(
 ) -> None:
     monkeypatch.setenv("STUB_AGENT_HANG", str(tmp_path / "hung"))
     monkeypatch.setenv("STUB_AGENT_STOP", "2")
-    monkeypatch.setenv("STUB_AGENT_COST", "0.125")
+    monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
     began = time.monotonic()
     record = eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "2"),
         *("--parallel", "1", "--session-timeout-seconds", "1"),
-        *("--budget-usd", "1", "--session-budget-usd", "0.25"),
+        *("--budget-tokens", "1000", "--session-budget-tokens", "250"),
     )
     assert time.monotonic() - began < 60
     assert record["started"] == 2 and record["not_started"] == []
-    assert record["cost_usd"] == 0.25 + 0.125
+    assert record["tokens"] == 125
+    assert record["tokens_unknown"] == 1
     hung, finished = sorted(records(tmp_path), key=lambda item: item["repetition"])
-    assert hung["exit_status"] == TIMEOUT and hung["cost_usd"] is None
+    assert hung["exit_status"] == TIMEOUT and hung["tokens"] is None
     assert hung["verdict"]["failure"] == "unfinished"
     assert hung["verdict"]["actual"] == ["Plan", "Build"]
-    assert finished["exit_status"] == 0 and finished["cost_usd"] == 0.125
+    assert finished["exit_status"] == 0 and finished["tokens"] == 125
 
 
 def test_the_context_read_finds_each_form_of_injected_context(
@@ -672,8 +695,8 @@ def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-            "--budget-usd",
-            "1",
+            "--budget-tokens",
+            "1000",
         )
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
@@ -696,8 +719,8 @@ def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-            "--budget-usd",
-            "1",
+            "--budget-tokens",
+            "1000",
         )
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
@@ -716,7 +739,7 @@ def test_a_config_with_no_plugin_starts_every_session(
     record = eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     assert record["started"] == 1
     assert len(seen(log)) == 1
@@ -756,7 +779,7 @@ def test_a_run_whose_settings_file_declares_a_hook_starts_no_session(
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-            *("--budget-usd", "1"),
+            *("--budget-tokens", "1000"),
         )
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
@@ -772,7 +795,7 @@ def test_a_run_whose_settings_file_holds_only_preferences_starts_its_session(
     record = eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     assert record["started"] == 1
     assert len(seen(log)) == 1
@@ -785,7 +808,7 @@ def test_a_settings_file_that_is_not_json_is_refused(tmp_path: Path, log: Path) 
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-            *("--budget-usd", "1"),
+            *("--budget-tokens", "1000"),
         )
     assert seen(log) == [] and not (tmp_path / "results").exists()
 
@@ -804,7 +827,7 @@ def test_a_session_carrying_injected_context_fails_the_run(
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-            *("--budget-usd", "1"),
+            *("--budget-tokens", "1000"),
         )
     [entry] = seen(log)
     assert entry["config"] == str(tmp_path / "eval" / "config")
@@ -819,7 +842,7 @@ def test_a_run_naming_every_carrying_session_starts_its_sessions(
         eval_run(
             tmp_path,
             *("--workflows", "linear,branching", "--forms", BUNDLE),
-            *("--repetitions", "1", "--budget-usd", "4"),
+            *("--repetitions", "1", "--budget-tokens", "4000"),
         )
     message = str(raised.value)
     assert "3 session(s)" in message
@@ -843,7 +866,7 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
     eval_run(
         tmp_path,
         *("--workflows", workflow, "--forms", form),
-        *("--repetitions", "1", "--budget-usd", "2"),
+        *("--repetitions", "1", "--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
     assert (record["workflow"], record["form"]) == (workflow, form)
@@ -876,7 +899,7 @@ def test_the_report_gives_each_dispatch_scenarios_pass_rate_per_model_and_form(
         tmp_path,
         *("--models", "stub-a,stub-b"),
         *("--workflows", ",".join(DISPATCHING)),
-        *("--repetitions", "2", "--budget-usd", "20"),
+        *("--repetitions", "2", "--budget-tokens", "20000"),
     )
     built = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
     assert record["started"] == built["sessions"] == 2 * 4 * 2 * 2
@@ -923,7 +946,7 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
         tmp_path,
         *("--workflows", "dispatch-question"),
         *("--forms", COMPILED_SET, "--repetitions", "1"),
-        *("--budget-usd", "2"),
+        *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
     directory = session_of(record).directory(tmp_path / "results" / "test")
@@ -939,6 +962,31 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
     assert stated["starts"][0]["returned"] == "question"
 
 
+def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC6: a dispatched section's own path survives the workspace.
+
+    A sub-agent following a section that holds a chart of its own records its
+    states to `trace-<section>.log`. The session's path is kept beside it, so
+    the two are read as one dispatch rather than as a nested chart's states
+    mistaken for the outer path.
+    """
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    (workspace / TRACE).write_text("Scope\nGather\n")
+    (workspace / f"{TRACE}-review.log").write_text("read\nrank\n")
+    records = tmp_path / "records"
+    records.mkdir()
+    keep(workspace, records)
+    assert sorted(path.name for path in records.glob(f"{TRACE}*")) == [
+        TRACE,
+        f"{TRACE}-review.log",
+    ]
+    assert (records / TRACE).read_text() == "Scope\nGather\n"
+    assert (records / f"{TRACE}-review.log").read_text() == "read\nrank\n"
+
+
 def test_a_run_starting_no_sub_agent_is_undispatched(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -948,7 +996,7 @@ def test_a_run_starting_no_sub_agent_is_undispatched(
         tmp_path,
         *("--workflows", "dispatch-chain"),
         *("--forms", COMPILED_SET, "--repetitions", "1"),
-        *("--budget-usd", "2"),
+        *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "undispatched"
@@ -965,7 +1013,7 @@ def test_a_run_that_ran_a_set_in_sequence_is_sequential_set(
         tmp_path,
         *("--workflows", "dispatch-set"),
         *("--forms", COMPILED_SET, "--repetitions", "1"),
-        *("--budget-usd", "2"),
+        *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "sequential_set"
@@ -982,7 +1030,7 @@ def test_a_question_the_session_answered_is_unrelayed_question(
         tmp_path,
         *("--workflows", "dispatch-question"),
         *("--forms", AUTHORED_SET, "--repetitions", "1"),
-        *("--budget-usd", "2"),
+        *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "unrelayed_question"
@@ -1000,7 +1048,7 @@ def test_a_dispatch_run_that_stopped_short_is_unfinished(
         tmp_path,
         *("--workflows", "dispatch-chain"),
         *("--forms", COMPILED_SET, "--repetitions", "1"),
-        *("--budget-usd", "2"),
+        *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "unfinished"
@@ -1014,7 +1062,7 @@ def test_a_scenario_dispatching_nothing_records_no_start(
     eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
-        *("--budget-usd", "1"),
+        *("--budget-tokens", "1000"),
     )
     [record] = records(tmp_path)
     assert record["verdict"]["passed"] is True
@@ -1029,7 +1077,7 @@ def dispatch_run(tmp_path: Path) -> dict[tuple[str, str], dict[str, Any]]:
         tmp_path,
         *("--workflows", ",".join(DISPATCHING)),
         *("--forms", ",".join(DISPATCH_FORMS)),
-        *("--repetitions", "1", "--budget-usd", "8"),
+        *("--repetitions", "1", "--budget-tokens", "8000"),
     )
     written = records(tmp_path)
     cells = {(record["scenario"], record["form"]): record for record in written}
