@@ -1,6 +1,6 @@
 # Validation
 
-Evidence for each check the [work item](w02.md) names, run in the unit's worktree at `ec8fcdb7` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`.
+Evidence for each check the [work item](w02.md) names, run in the unit's worktree at `28f7c015` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`.
 
 ## T1 head read tests
 
@@ -34,4 +34,4 @@ Under `make corpus`:
 
 ## T5 full check
 
-`make check` exits 0: corpus `378 fixture(s), 376 pass, 0 fail, 2 awaited, 0 unexpected pass`; conformance `0 declaration(s) naming no clause`.
+`make check` exits 0 before opening and again after merging `origin/i08/e00/main` (#491); CI on `28f7c015` passes. Corpus `378 fixture(s), 376 pass, 0 fail, 2 awaited, 0 unexpected pass`; conformance `0 declaration(s) naming no clause`.
