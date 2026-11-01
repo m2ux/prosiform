@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 An HTML example inside a fence is content the bundle carries, not markup it emits.

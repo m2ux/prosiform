@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The run writes this document as a bundle under its derived name.

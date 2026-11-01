@@ -16,5 +16,5 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-source = "guide.md:11"
+source = "guide.md:14"
 chain = ["guide.md"]

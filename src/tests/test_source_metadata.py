@@ -15,6 +15,9 @@ from prosiform.limits import BUDGETS, Limits
 from prosiform.metadata import InvalidMetadata
 from prosiform.source import closes_head, content, hashed
 
+DECLARED = "---\nprosiform: {}\n---\n"
+"""The frontmatter block that makes a document a run's entry or compiled target."""
+
 
 def settings(group: str) -> str:
     return f"prosiform:\n  group: {group}\n  group-depth: 2\n"
@@ -88,7 +91,7 @@ def test_capture_hash_covers_frontmatter_and_body(tmp_path: Path) -> None:
 
 def test_metadata_is_not_a_markdown_dependency(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text(
-        '---\ndescription: "# Hidden [!missing](missing.md)"\n'
+        '---\nprosiform: {}\ndescription: "# Hidden [!missing](missing.md)"\n'
         'metadata: {owner: "[!missing](missing.md)"}\n---\n# A\n\nBody.\n'
     )
     run = invoke("a.md", cwd=tmp_path)
@@ -119,11 +122,19 @@ def test_metadata_error_preserves_output_and_coordinates(
         assert "location: a.md:2:12" in run.stderr
 
 
-@pytest.mark.parametrize("option", ["-B", "-I"])
+@pytest.mark.parametrize(
+    ("option", "raw"),
+    [
+        ("-B", b"---\na: [\n---\n\xff"),
+        # The entry's head is decoded before any source is read, so only its
+        # body can carry the bytes a held `-I` must refuse before decoding.
+        ("-I", DECLARED.encode() + b"\xff"),
+    ],
+)
 def test_raw_byte_budget_precedes_yaml_and_encoding(
-    tmp_path: Path, option: str
+    tmp_path: Path, option: str, raw: bytes
 ) -> None:
-    (tmp_path / "a.md").write_bytes(b"---\na: [\n---\n\xff")
+    (tmp_path / "a.md").write_bytes(raw)
     run = invoke("-d", "json", option, "3", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
@@ -141,7 +152,9 @@ def test_yaml_collection_depth_is_bounded(tmp_path: Path) -> None:
 def test_deferred_source_is_captured_once_and_contributes_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬ One](b.md#one) [¬ Two](b.md#two)\n")
+    (tmp_path / "a.md").write_text(
+        DECLARED + "# A\n\n[¬ One](b.md#one) [¬ Two](b.md#two)\n"
+    )
     (tmp_path / "b.md").write_text(
         "---\n" + settings("b") + "---\n# One\n\n## Two\n\nHidden.\n"
     )
@@ -165,7 +178,7 @@ def test_deferred_source_is_captured_once_and_contributes_nothing(
 def test_deferred_source_counts_towards_raw_budgets(
     tmp_path: Path, option: str
 ) -> None:
-    a = "# A\n\n[¬ B](b.md)\n"
+    a = DECLARED + "# A\n\n[¬ B](b.md)\n"
     (tmp_path / "a.md").write_text(a)
     (tmp_path / "b.md").write_text(
         "---\nprosiform: {}\nname: " + "x" * 100 + "\n---\n# B\n"
@@ -178,7 +191,7 @@ def test_deferred_source_counts_towards_raw_budgets(
 
 
 def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬ B](b.md)\n")
+    (tmp_path / "a.md").write_text(DECLARED + "# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\na: [\n---\n# B\n")
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
@@ -190,7 +203,7 @@ def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
 def test_deferred_metadata_change_is_rechecked_with_its_chain(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬ B](b.md)\n")
+    (tmp_path / "a.md").write_text(DECLARED + "# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\n" + settings("one") + "---\n# B\n")
     reads = 0
 

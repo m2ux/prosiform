@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The run reads this document during discovery and reads it again before it publishes.

@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 A paragraph carrying a `code span`, an inline link to [the steps](#steps), a

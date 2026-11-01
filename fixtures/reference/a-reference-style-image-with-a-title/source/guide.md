@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 ![The architecture \*as drawn\*][plan] illustrates [the house style][style],

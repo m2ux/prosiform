@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The run publishes this document to the path the invocation names.

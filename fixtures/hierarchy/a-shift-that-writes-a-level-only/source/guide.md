@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # The Standing Order
 
    ## Indented Three Spaces

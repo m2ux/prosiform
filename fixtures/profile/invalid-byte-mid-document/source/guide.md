@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 An opening paragraph the decode reads without difficulty.

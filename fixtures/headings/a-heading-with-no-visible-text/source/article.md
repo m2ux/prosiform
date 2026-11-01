@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 ## ...
 
 A heading whose visible text a renderer discards entirely.

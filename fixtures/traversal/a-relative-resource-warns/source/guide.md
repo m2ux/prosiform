@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 ![The architecture](architecture.png) illustrates the procedure, and

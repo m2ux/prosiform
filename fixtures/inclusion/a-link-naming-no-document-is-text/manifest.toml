@@ -1,0 +1,15 @@
+description = "A link naming a document the tree does not hold, and carrying no operator, is emitted as authored and the run publishes with no diagnostic, because nothing states the bundle is answerable for it."
+
+clauses = [
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

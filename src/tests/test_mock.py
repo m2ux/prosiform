@@ -394,7 +394,9 @@ def test_a_section_entry_derives_the_section_the_substitute_carries(
     tree: Path,
 ) -> None:
     """A substitute carrying a fragment contributes it in place of the authored one."""
-    (tree / "stand-in.md").write_text("# Stand-in\n\n## Answers\n\nAnswered.\n")
+    (tree / "stand-in.md").write_text(
+        DECLARED + "# Stand-in\n\n## Answers\n\nAnswered.\n"
+    )
     status, _published = invoke(
         tree, "-m", "guide.md#escalation=stand-in.md#answers", "guide.md#escalation"
     )
@@ -405,7 +407,9 @@ def test_a_section_entry_derives_the_section_the_substitute_carries(
 
 def test_a_document_key_leaves_a_section_entry_its_own_fragment(tree: Path) -> None:
     """A document key replaces the document, so the section the entry named stays."""
-    (tree / "stand-in.md").write_text("# Stand-in\n\n## Escalation\n\nAnswered.\n")
+    (tree / "stand-in.md").write_text(
+        DECLARED + "# Stand-in\n\n## Escalation\n\nAnswered.\n"
+    )
     status, _published = invoke(
         tree, "-m", "guide.md=stand-in.md", "guide.md#escalation"
     )
@@ -588,15 +592,21 @@ def test_a_folder_substitute_that_is_absent_publishes_nothing(paired: Path) -> N
 
 def test_a_document_key_naming_an_absent_document_keeps_its_shape(tree: Path) -> None:
     """A document key's absence is refused as every other absent target is."""
-    (tree / "guide.md").write_text("# Guide\n\nSee [the rules](absent.md).\n")
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\nRun [\u21c9 the rules](absent.md).\n"
+    )
     _status, said = refused(tree, "-o", str(tree / "out"), "guide.md")
+    assert [one["code"] for one in said] == ["E_TARGET_NOT_FOUND"]
+    assert said[0]["reference"] == "absent.md"
     assert "mapping key" not in said[0]["message"]
     assert "resolved" not in said[0]
 
 
 def test_a_folder_key_answering_only_text_is_unused(paired: Path) -> None:
     """A folder whose references are all text was consulted by no compiled reference."""
-    (paired / "guide.md").write_text("# Guide\n\nSee [the note](rules/notes.txt).\n")
+    (paired / "guide.md").write_text(
+        DECLARED + "# Guide\n\nSee [the note](rules/notes.txt).\n"
+    )
     (paired / "rules" / "notes.txt").write_text("note\n")
     (paired / "stubs" / "notes.txt").write_text("note\n")
     status, _published, said = grouped(paired, "-m", "rules/=stubs/", "guide.md")
@@ -612,7 +622,9 @@ def test_a_folder_key_answering_only_text_publishes_the_reference_as_authored(
     paired: Path,
 ) -> None:
     """Text is text, so the link publishes with the destination authored."""
-    (paired / "guide.md").write_text("# Guide\n\nSee [the note](rules/notes.txt).\n")
+    (paired / "guide.md").write_text(
+        DECLARED + "# Guide\n\nSee [the note](rules/notes.txt).\n"
+    )
     (paired / "rules" / "notes.txt").write_text("note\n")
     (paired / "stubs" / "notes.txt").write_text("note\n")
     _status, published, _said = grouped(paired, "-m", "rules/=stubs/", "guide.md")
@@ -737,8 +749,10 @@ def test_a_title_carrying_a_withheld_link_is_headed_by_the_text_it_emits(
     document titled plainly reads the same once the mark is gone, which is
     what the run warns about.
     """
-    (tree / "guide.md").write_text("# [\u00ac the rules](missing.md)\n\nSee.\n")
-    (tree / "sibling.md").write_text("# the rules\n\nAlso.\n")
+    (tree / "guide.md").write_text(
+        DECLARED + "# [\u00ac the rules](missing.md)\n\nSee.\n"
+    )
+    (tree / "sibling.md").write_text(DECLARED + "# the rules\n\nAlso.\n")
     out, err = io.StringIO(), io.StringIO()
     previous = Path.cwd()
     try:
@@ -797,7 +811,9 @@ def test_a_substitution_warning_states_the_identity_the_reference_would_have_nam
     tree: Path,
 ) -> None:
     """Two keys naming one stand-in are told apart only by what each replaces."""
-    (tree / "sibling.md").write_text("# Sibling\n\nSee [other rules](other.md).\n")
+    (tree / "sibling.md").write_text(
+        DECLARED + "# Sibling\n\nSee [other rules](other.md).\n"
+    )
     (tree / "other.md").write_text("# Other\n\nOther.\n")
     status, said = voices(
         tree,

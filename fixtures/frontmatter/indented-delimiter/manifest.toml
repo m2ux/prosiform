@@ -1,9 +1,8 @@
-description = "An indented line of three hyphens opens no frontmatter, so the document is bundled whole and keeps the indentation the source wrote."
+description = "An indented line of three hyphens opens no frontmatter, so the prosiform key below it declares nothing and the entry naming the document fails with E_TARGET_NOT_FOUND."
 
 clauses = [
   "Frontmatter policy, an indented delimiter, a trailing space, a TOML fence and a leading blank line are not v1 frontmatter",
-  "Parser and source-preserving edits — Untouched content",
-  "File-scoped hierarchy — Preamble",
+  "Input and output contract — Entry references",
   "Adversarial acceptance fixtures — Frontmatter, malformed delimiters",
 ]
 
@@ -12,6 +11,11 @@ cwd = "source"
 arguments = ["guide.md"]
 
 [expected]
-exit_status = 0
-bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "guide.md"
+chain = ["guide.md"]
+message_contains = ["declares no prosiform"]

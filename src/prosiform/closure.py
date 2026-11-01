@@ -22,6 +22,7 @@ import posixpath
 import re
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
+from enum import Enum
 from types import MappingProxyType
 from urllib.parse import quote
 
@@ -109,6 +110,10 @@ class Reference:
     A reference a folder key derived also holds that key as its caller
     wrote it, so the path it names is one no author wrote and the
     diagnostic refusing that path can say which entry named it.
+
+    A reference the substitution mapping redirected states that it is
+    one: the caller named the substitute, so a substitute naming no
+    document is refused rather than read as a link to nothing.
     """
 
     original: str
@@ -119,6 +124,7 @@ class Reference:
     chain: tuple[str, ...] = ()
     walk: str | None = None
     folder: str | None = None
+    redirected: bool = False
 
 
 @dataclass(frozen=True)
@@ -331,6 +337,7 @@ class Substitution:
             found.fragment if named.fragment is None else named.fragment,
             walk=named.walk,
             folder=named.folder,
+            redirected=True,
         )
 
     def redirect(self, found: Reference, origin: str | None = None) -> Reference:
@@ -704,6 +711,20 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
     )
 
 
+class Probed(Enum):
+    """What a probe found at the path one reference names.
+
+    A document that declares and one that declares nothing both exist;
+    a path naming no document is a third answer, because a link to
+    nothing and a link to a silent document are text for one reason and
+    refused for different ones.
+    """
+
+    DECLARING = "declaring"
+    SILENT = "silent"
+    ABSENT = "absent"
+
+
 class Declarations:
     """Whether each document a link names declares `prosiform`, asked once per path.
 
@@ -718,19 +739,23 @@ class Declarations:
     so a refusal the read meets names the link that asked for it.
     """
 
-    def __init__(self, probe: Callable[[Reference], bool]) -> None:
+    def __init__(self, probe: Callable[[Reference], Probed]) -> None:
         self._probe = probe
-        self._answers: dict[str, bool] = {}
+        self._answers: dict[str, Probed] = {}
 
-    def declares(self, found: Reference) -> bool:
-        """Whether the document one reference names declares, probed the first time."""
+    def answer(self, found: Reference) -> Probed:
+        """What the path one reference names holds, probed the first time."""
         answer = self._answers.get(found.path)
         if answer is None:
             answer = self._answers[found.path] = self._probe(found)
         return answer
 
+    def declares(self, found: Reference) -> bool:
+        """Whether the document one reference names exists and declares."""
+        return self.answer(found) is Probed.DECLARING
 
-DECLARING = Declarations(lambda _found: True)
+
+DECLARING = Declarations(lambda _found: Probed.DECLARING)
 """The record a caller holding no probe reads, answering every target as declaring."""
 
 
@@ -883,16 +908,34 @@ def resolvable(
     answers that question alone and leaves which run compiles it to the
     caller reading the mark.
     """
+    found = named(document, text, substitution, origin, reached)
+    if found is None or not declarations.declares(found):
+        return None
+    return replace(found, origin=None, chain=())
+
+
+def named(
+    document: str,
+    text: str,
+    substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
+    reached: Sequence[str] = (),
+) -> Reference | None:
+    """The local Markdown path one link names, as the occurrence written there.
+
+    A reference carrying a scheme or an authority, one naming no
+    Markdown document and one whose form the grammar does not admit
+    name no path a probe can ask, and each is answered as none. What
+    is returned carries the origin and the chain `reached` extended by
+    this reference, which is what a probe or a refusal names.
+    """
     try:
         found = inside(document, text, substitution, origin)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):
         return None
-    occurrence = replace(found, origin=origin, chain=(*reached, identity(found)))
-    if not declarations.declares(occurrence):
-        return None
-    return found
+    return replace(found, origin=origin, chain=(*reached, identity(found)))
 
 
 def rebased(found: Reference, text: str) -> str:

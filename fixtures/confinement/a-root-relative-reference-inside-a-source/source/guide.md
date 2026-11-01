@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 Cite [the shared rules](/rules.md) positionally, and the

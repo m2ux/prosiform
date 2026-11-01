@@ -16,5 +16,5 @@ exit_status = 1
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 reference = "plan.png"
-source = "guide.md:3"
+source = "guide.md:6"
 chain = ["guide.md", "plan.png"]
