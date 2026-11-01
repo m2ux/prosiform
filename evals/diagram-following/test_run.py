@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from harness import DONE, HARNESSES
+from harness import DONE, HARNESSES, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -483,6 +483,46 @@ def test_a_session_in_flight_holds_its_cap_against_the_budget() -> None:
     assert not ledger.fits()
     ledger.settle(100)
     assert ledger.fits()
+
+
+def test_the_ledger_settles_an_opencode_session_for_every_step(
+    tmp_path: Path,
+) -> None:
+    """AC18: a session's reported spend is the sum of its steps.
+
+    opencode reports each model step's tokens on its own `step_finish` part,
+    so the ledger is settled with every step's tokens, not the last one's.
+    """
+    steps = [(120, 0.25), (60, 0.125), (20, 0.0625)]
+    held = tmp_path / TRANSCRIPT
+    held.write_text(
+        "".join(
+            json.dumps(
+                {
+                    "type": "step_finish",
+                    "part": {
+                        "type": "step_finish",
+                        "tokens": {
+                            "input": tokens - 4,
+                            "output": 1,
+                            "reasoning": 1,
+                            "cache": {"write": 1, "read": 1},
+                        },
+                        "cost": cost,
+                    },
+                }
+            )
+            + "\n"
+            for tokens, cost in steps
+        )
+    )
+    harness = Opencode()
+    result = harness.result(held)
+    ledger = Ledger(1000, 250)
+    assert ledger.reserve()
+    ledger.settle(harness.tokens(result))
+    assert ledger.spent == 200
+    assert harness.cost(result) == 0.4375
 
 
 def test_a_session_reporting_no_cost_is_charged_its_cap(
