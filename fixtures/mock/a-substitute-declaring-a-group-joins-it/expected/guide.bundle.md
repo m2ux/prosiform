@@ -10,7 +10,7 @@ The guide preamble, pointing at [the notes](#notes) and [the shared rules](#stan
 
 The notes preamble.
 
-### Stand In
+### Stand-In
 
 The stand-in preamble.
 
@@ -24,6 +24,6 @@ The guide's scope.
 
 The notes' scope.
 
-### Stand In
+### Stand-In
 
 The stand-in's scope.

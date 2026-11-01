@@ -1,28 +1,28 @@
 # Entry
 
-Both runs are recorded: [Alpha](#alpha-notes) and [Beta](#beta-notes).
+Both runs are recorded: [Alpha](#alphanotes) and [Beta](#betanotes).
 
 # Guides
 
 ## Overview
 
-### Alpha Notes
+### Alpha/Notes
 
 What the first run recorded before its sections.
 
-### Beta Notes
+### Beta/Notes
 
 What the second run recorded before its sections.
 
 ## Findings
 
-### Alpha Notes
+### Alpha/Notes
 
 #### Summary
 
 The first run held throughout.
 
-### Beta Notes
+### Beta/Notes
 
 #### Detail
 

@@ -1,4 +1,4 @@
-description = "A member whose own title the subsection heading absorbs takes that subsection, though every other region it carries sits at the grouping depth, so a title is absorbed only into a heading the bundle emits and the group names the member. The member contributes a section at the grouping depth, so the group emits an overview section and the subsection sits beneath it."
+description = "A member whose own title the subsection heading absorbs takes that subsection, though every other region it carries sits at the grouping depth, so a title is absorbed only into a heading the bundle emits and the group names the member. The member carries nothing above the grouping depth but the title its subsection absorbs, so the group emits no overview section and the subsection sits directly beneath the group's heading."
 
 clauses = [
   "Grouping — A heading for every member",

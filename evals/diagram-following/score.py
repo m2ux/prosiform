@@ -40,8 +40,8 @@ scorer reads no transcript and takes no second read:
 - the sections the record names, in order, are the scenario's: otherwise
   *undispatched*, since a bundle the scenario dispatches reached no
   sub-agent or reached one in another order;
-- every start the scenario marks as opening a set beside the one above it
-  is recorded beside it: otherwise *sequential_set*;
+- every set the scenario states started in one message, its opener first
+  and each later member alongside it: otherwise *sequential_set*;
 - each start's return is the scenario's: otherwise *unrelayed_question*,
   which is a question the sub-agent returned and the session answered in
   its place.
@@ -74,7 +74,9 @@ from harness import Harness, Start
 __all__ = [
     "ACTIONS",
     "SUBAGENTS",
+    "SUB_AGENT_TRACE",
     "TRACE",
+    "TRACES",
     "Failure",
     "Start",
     "Verdict",
@@ -86,6 +88,19 @@ __all__ = [
 from workflow import FEWER, START, Dispatch, Scenario, Workflow
 
 TRACE = "trace.log"
+"""The path a session writes its own states to."""
+SUB_AGENT_TRACE = "trace-{section}.log"
+"""The path a dispatched sub-agent writes its states to, named for its section.
+
+Every instruction states it with `<section>` in place of the name, and tells
+the session to hand it to each sub-agent it dispatches.
+"""
+TRACES = "trace*.log"
+"""Every trace a workspace holds: the session's, and a sub-agent's beside it.
+
+Both `TRACE` and every `SUB_AGENT_TRACE` match it, so a finished workspace
+carries both and the run keeps them together.
+"""
 ACTIONS = "actions"
 SUBAGENTS = "subagents.json"
 TRANSCRIPT = "transcript.jsonl"
@@ -301,11 +316,13 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
         for index, _, _ in found:
             taken.add(index)
         if len(found) > 1:
-            # A set states no order, so its opener is whichever start came
-            # first: every member but one started beside another, and any
-            # second opener means the set was run one after another.
-            openers = [start for _, start, _ in found if not start.together]
-            if len(openers) != 1:
+            # A set states no order, so its opener is whichever member
+            # started first. Starts in one message are contiguous, so every
+            # later member started alongside it only where no start between
+            # them opened a message.
+            positions = [index for index, _, _ in found]
+            opener, last = min(positions), max(positions)
+            if not all(starts[index].together for index in range(opener + 1, last + 1)):
                 return Failure.SEQUENTIAL_SET
         elif any(due.together for _, _, due in found):
             return Failure.SEQUENTIAL_SET

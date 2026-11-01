@@ -202,6 +202,32 @@ def test_a_link_at_the_run_folder_is_replaced_and_never_followed(
         assert (precious / "data.txt").read_text() == "Keep.\n"
 
 
+@pytest.mark.parametrize("check", [False, True])
+def test_a_file_at_the_run_folder_s_path_is_refused_and_left_untouched(
+    tmp_path: Path, check: bool
+) -> None:
+    """Bytes no run wrote are never renamed aside and unlinked."""
+    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    standing = tmp_path / "a.bundles"
+    standing.write_text("unrelated bytes\n", encoding="utf-8")
+    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "a.md")
+    assert run.status == 3 and run.stdout == ""
+    [refused] = run.diagnostics()
+    assert refused["code"] == cli.PUBLICATION_FAILED
+    assert "a.bundles" in refused["message"]
+    assert standing.is_file() and not standing.is_symlink()
+    assert standing.read_text() == "unrelated bytes\n"
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
+
+
+def test_the_file_refusal_leaves_no_staged_folder_beside_it(tmp_path: Path) -> None:
+    """A refused run writes nothing, its staging folder included."""
+    written(tmp_path, "a.md", "# A\n\nComplete.\n")
+    (tmp_path / "a.bundles").write_text("unrelated bytes\n", encoding="utf-8")
+    assert invoke(tmp_path, "a.md").status == 3
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
+
+
 def test_a_run_folder_name_the_filesystem_accepts_publishes(tmp_path: Path) -> None:
     name = "n" * 240
     written(tmp_path, f"{name}.md", "# Long\n")

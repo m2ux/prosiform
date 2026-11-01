@@ -17,7 +17,6 @@ from prosiform.grouping import (
     merged,
     prepared,
     states,
-    titled,
 )
 from prosiform.profile import parse
 from prosiform.provenance import MEMBER_OVERVIEW, VARIANT_HEADING, Generated
@@ -37,17 +36,18 @@ def group_of(named: str, depth: int, documents: Mapping[str, str]) -> Group:
 
 
 @pytest.mark.parametrize(
-    ("text", "expected"),
+    ("named", "expected"),
     [
         ("modes", "Modes"),
-        ("epic-issue-body", "Epic Issue Body"),
-        ("plan_mode", "Plan Mode"),
+        ("epic-issue-body", "Epic-Issue-Body"),
+        ("plan_mode", "Plan_Mode"),
         ("SKILL", "SKILL"),
         ("two words", "Two Words"),
     ],
 )
-def test_a_name_is_emitted_in_title_case(text: str, expected: str) -> None:
-    assert titled(text) == expected
+def test_a_group_is_headed_by_its_name_in_title_case(named: str, expected: str) -> None:
+    one = group_of(named, 2, {"g/one.md": "## Findings\n\nHeld.\n"})
+    assert one.headings[0] == expected
 
 
 @pytest.mark.parametrize(
@@ -77,7 +77,7 @@ def test_a_member_is_named_by_its_stem_less_what_the_group_states() -> None:
     assert member_headings(
         ["artifacts/epic-issue-body.md", "artifacts/bare.md"], "artifacts"
     ) == {
-        "artifacts/epic-issue-body.md": "Epic Issue Body",
+        "artifacts/epic-issue-body.md": "Epic-Issue-Body",
         "artifacts/bare.md": "Bare",
     }
 
@@ -86,8 +86,8 @@ def test_members_of_one_stem_take_the_segments_that_tell_them_apart() -> None:
     assert member_headings(
         ["guides/alpha/notes.md", "guides/beta/notes.md"], "guides"
     ) == {
-        "guides/alpha/notes.md": "Alpha Notes",
-        "guides/beta/notes.md": "Beta Notes",
+        "guides/alpha/notes.md": "Alpha/Notes",
+        "guides/beta/notes.md": "Beta/Notes",
     }
 
 
@@ -106,11 +106,11 @@ def test_a_member_a_stem_distinguishes_is_named_by_that_stem_alone() -> None:
         (
             ["modes/a/plan.md", "modes/b/plan-mode.md"],
             "modes",
-            ["A Plan", "B Plan"],
+            ["A/Plan", "B/Plan"],
         ),
-        (["g/a/notes.md", "g/b/Notes.md"], "g", ["A Notes", "B Notes"]),
-        (["g/a/one-two.md", "g/b/one_two.md"], "g", ["A One Two", "B One Two"]),
-        (["modes/plan.md", "modes/plan-mode.md"], "modes", ["Plan", "Plan Mode"]),
+        (["g/a/notes.md", "g/b/Notes.md"], "g", ["A/Notes", "B/Notes"]),
+        (["g/a/one-two.md", "g/b/one_two.md"], "g", ["One-Two", "One_Two"]),
+        (["modes/plan.md", "modes/plan-mode.md"], "modes", ["Plan", "Plan-Mode"]),
     ],
 )
 def test_final_member_names_distinguish_after_formatting(
@@ -130,8 +130,8 @@ def test_a_shared_stem_takes_the_segments_that_tell_the_paths_apart() -> None:
     assert member_headings(
         ["guides/alpha/notes.md", "guides/beta/notes.md"], "guides"
     ) == {
-        "guides/alpha/notes.md": "Alpha Notes",
-        "guides/beta/notes.md": "Beta Notes",
+        "guides/alpha/notes.md": "Alpha/Notes",
+        "guides/beta/notes.md": "Beta/Notes",
     }
 
 
@@ -140,7 +140,7 @@ def test_the_segments_every_path_shares_are_dropped_before_the_run_is_measured()
 ):
     assert member_headings(["a/b/one.md", "a/b/c/one.md"], "b") == {
         "a/b/one.md": "One",
-        "a/b/c/one.md": "C One",
+        "a/b/c/one.md": "C/One",
     }
 
 
@@ -155,8 +155,7 @@ def test_a_member_the_group_emits_nothing_else_from_takes_a_subsection() -> None
     )
     assert one.parts == (
         "# Notes",
-        "## Overview",
-        "### Bare",
+        "## Bare",
         "## Findings\n",
         "Held.\n",
     )
@@ -185,11 +184,75 @@ def test_a_member_whose_title_the_subsection_absorbs_takes_one() -> None:
     one = group_of("notes", 2, {"notes/bare.md": "# Bare\n\n## Findings\n\nHeld.\n"})
     assert one.parts == (
         "# Notes",
-        "## Overview",
-        "### Bare",
+        "## Bare",
         "## Findings\n",
         "Held.\n",
     )
+
+
+def test_members_holding_only_a_first_heading_take_no_overview() -> None:
+    one = group_of(
+        "notes",
+        2,
+        {
+            "notes/bare.md": "# Bare\n\n## Findings\n\nHeld.\n",
+            "notes/kept.md": "# Kept\n\n## Findings\n\nKept too.\n",
+        },
+    )
+    assert "Overview" not in one.headings
+    assert one.headings[:3] == ("Notes", "Bare", "Kept")
+
+
+def test_a_member_carrying_content_above_the_depth_takes_the_overview() -> None:
+    one = group_of(
+        "notes",
+        2,
+        {
+            "notes/bare.md": "# Bare\n\n## Findings\n\nHeld.\n",
+            "notes/kept.md": "Read this first.\n\n## Findings\n\nKept too.\n",
+        },
+    )
+    assert one.parts[:5] == (
+        "# Notes",
+        "## Overview",
+        "### Bare",
+        "### Kept",
+        "Read this first.\n",
+    )
+
+
+@pytest.mark.parametrize("named", ["-", "_", "- _", "--"])
+def test_a_member_whose_name_carries_no_word_takes_its_path_text(named: str) -> None:
+    path = f"rules/{named}.md"
+    names = member_headings([path, "rules/kept.md"], "rules")
+    assert names == {path: f"Rules/{named}.md", "rules/kept.md": "Kept"}
+
+
+def test_a_titled_parent_s_whole_document_reference_reaches_its_title() -> None:
+    for depth, title in ((1, "Guide"), (2, "Guide"), (3, "Guide")):
+        documents = {
+            "rules/guide.md": "# Guide\n\nOpens.\n\n## Steps\n\n### Detail\n\nOne.\n",
+            "rules/other.md": "# Other\n\n## Steps\n\nTwo.\n",
+        }
+        one = merged(
+            "rules",
+            depth,
+            [
+                prepared(
+                    path,
+                    parse(text),
+                    lines(text),
+                    {},
+                    None,
+                    None,
+                    depth,
+                    keep_title=path == "rules/guide.md",
+                )
+                for path, text in sorted(documents.items())
+            ],
+            "rules/guide.md",
+        )
+        assert answering(one, "rules/guide.md") == title, depth
 
 
 def test_a_group_emitting_no_merged_section_carries_no_overview() -> None:
@@ -329,7 +392,7 @@ def test_a_sole_contributor_keeps_its_subheading_arrangement() -> None:
                 "g/b/notes.md": "Second.\n\n## Findings\n\nSecond finding.\n",
                 "g/c/other.md": "Third.\n\n## Findings\n\nThird finding.\n",
             },
-            ["B Notes", "C Other"],
+            ["B/Notes", "C/Other"],
         ),
         (
             "modes",

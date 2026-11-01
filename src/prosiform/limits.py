@@ -23,6 +23,18 @@ is a defect in indexing rather than a budget an author chose.
 Overrides are positive decimal integers. Zero is refused and does not mean
 unlimited, because a budget of nothing is a run that cannot open its first
 source, and a caller who wants a larger number says so.
+
+A byte budget bounds the work a run performs only where the work one byte
+can ask for is itself bounded. Canonicalising a numeric scalar costs time
+quadratic in its digits — a base-prefixed integer is converted through a
+binary value, and a float's exponent is accumulated a chunk at a time — so
+a source of a few hundred kilobytes can spend minutes inside a byte budget
+it never crosses. `SCALAR_DIGITS` is the ceiling that closes that gap: one
+numeric scalar carries at most that many characters, so the work a source
+of any size may ask for is linear in its bytes and the byte budget is the
+bound it reads as. The ceiling is a declared figure rather than an option,
+because it states what the byte budget means rather than a preference an
+author sets.
 """
 
 from collections.abc import Mapping
@@ -31,6 +43,15 @@ from dataclasses import dataclass
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 
 CODES = (RESOURCE_LIMIT,)
+
+SCALAR_DIGITS = 65_536
+"""The most characters one quadratically-canonicalised scalar may carry.
+
+A source at the byte budget of a megabyte holds a million digits, and a
+base-prefixed integer of that length takes minutes to canonicalise. This
+ceiling holds the work one such scalar may ask for to a figure whose cost
+stays well inside the second, whatever size the source holding it is.
+"""
 
 
 @dataclass(frozen=True)

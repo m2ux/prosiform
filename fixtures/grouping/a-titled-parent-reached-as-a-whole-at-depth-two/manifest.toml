@@ -1,0 +1,15 @@
+description = "The parent's title sits above grouping depth 2, so it opens the group as its H1. Another member's whole-document reference to the parent resolves to that title heading, not to the first section beneath it."
+
+clauses = [
+  "Grouping — The parent arrangement",
+  "Bundle destinations — Document destinations",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["rules/guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/rules_guide.bundle.md"]
+diagnostics = []

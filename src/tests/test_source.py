@@ -571,6 +571,30 @@ def test_a_diagram_link_keyword_matches_in_any_case(written: str, kind: str) -> 
     assert [one for one, _at in diagram_links(written, kind)] == ["a.md"]
 
 
+@pytest.mark.parametrize(
+    ("written", "kind"),
+    [
+        ('click A "one.md"; click B href "two.md" "Two"', "flowchart LR"),
+        ('click A href "one.md" _blank;click B "two.md";', "flowchart LR"),
+        ('click A callback "t"; click A "one.md"; click B "two.md"', "flowchart LR"),
+        ('link A "one.md"; link B "two.md"', "classDiagram"),
+    ],
+)
+def test_every_click_on_one_line_names_its_destination(written: str, kind: str) -> None:
+    found = diagram_links(written, kind)
+    assert [one for one, _at in found] == ["one.md", "two.md"]
+    assert [written[at : at + len(one)] for one, at in found] == ["one.md", "two.md"]
+
+
+def test_a_quoted_semicolon_ends_no_click_statement() -> None:
+    written = 'A["a; b"]; click A "o;ne.md" "t;ip"; click B "two.md"'
+    found = diagram_links(written)
+    assert found == [
+        ("o;ne.md", written.index("o;ne.md")),
+        ("two.md", written.index("two.md")),
+    ]
+
+
 def test_a_class_link_takes_no_href() -> None:
     assert diagram_links('link Cls href "a.md"', "classDiagram") == []
 
@@ -656,6 +680,23 @@ def test_a_sequence_menu_value_that_is_no_string_breaks_its_line(
     read = diagram_read(written)
     assert read.clicks == ()
     assert read.broken == (3,)
+
+
+@pytest.mark.parametrize(
+    "written",
+    ['links Alice: ["a.md", "b.md"]', 'links Alice: [{"Spec": "a.md"}]'],
+)
+def test_a_sequence_menu_value_that_is_an_array_lists_its_line(written: str) -> None:
+    read = diagram_read(written)
+    assert read.clicks == ()
+    assert read.listed == (3,)
+    assert read.broken == ()
+
+
+def test_an_empty_menu_array_lists_nothing() -> None:
+    read = diagram_read("links Alice: []")
+    assert read.listed == ()
+    assert read.clicks == ()
 
 
 def test_a_value_no_string_a_later_key_replaces_breaks_nothing() -> None:
@@ -986,7 +1027,7 @@ def unfollowed(content: str) -> list[tuple[str, str, int]]:
 
 
 KANBAN_TICKET = "Kanban ticket's link"
-LABEL_ANCHOR = "HTML anchor in a node label"
+LABEL_ANCHOR = "HTML anchor in a label"
 
 
 def test_a_kanban_ticket_renders_the_link_its_front_matter_base_builds() -> None:
@@ -1035,6 +1076,66 @@ def test_an_html_anchor_in_a_node_label_renders_its_href(
 ) -> None:
     content = f"flowchart LR\n{written}\n"
     assert unfollowed(content) == [(LABEL_ANCHOR, destination, 3)]
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        'flowchart LR\nA --> B\nclick B "plan.md" "<a href=\'plan.md\'>tip</a>"\n',
+        "flowchart LR\nclick B callback \"<a href='plan.md'>tip</a>\"\n",
+        'classDiagram\nclass A\nlink A "plan.md" "<a href=\'plan.md\'>tip</a>"\n',
+        'classDiagram\nclass A\ncallback A "go" "<a href=\'plan.md\'>tip</a>"\n',
+        "pie title Share\n\"<a href='plan.md'>Plan</a>\" : 40\n",
+        "pie title <a href='plan.md'>Share</a>\n\"Plan\" : 40\n",
+        "sequenceDiagram\nNote over A,B: <a href='plan.md'>the plan</a>\n",
+        "sequenceDiagram\nparticipant A as <a href='plan.md'>Al</a>\n",
+        "timeline\n2020 : <a href='plan.md'>E</a>\n",
+        "journey\nsection <a href='plan.md'>S</a>\n",
+        "gantt\ntitle <a href='plan.md'>G</a>\n",
+        "quadrantChart\ntitle <a href='plan.md'>Q</a>\n",
+        "gitGraph\ncommit id: \"<a href='plan.md'>c</a>\"\n",
+        "xychart-beta\ntitle \"<a href='plan.md'>X</a>\"\n",
+        "sankey-beta\n\"<a href='plan.md'>A</a>\",B,10\n",
+        "packet-beta\n0-15: \"<a href='plan.md'>P</a>\"\n",
+        "radar-beta\naxis a[\"<a href='plan.md'>A</a>\"]\n",
+        "treemap-beta\n\"<a href='plan.md'>A</a>\": 10\n",
+        'C4Context\nPerson(p, "<a href=\'plan.md\'>P</a>", "d")\n',
+    ],
+)
+def test_an_html_anchor_mermaid_draws_as_no_anchor_renders_nothing(
+    content: str,
+) -> None:
+    assert unfollowed(content) == []
+
+
+@pytest.mark.parametrize(
+    "kind",
+    [
+        "flowchart LR",
+        "graph TD",
+        "classDiagram",
+        "stateDiagram-v2",
+        "mindmap",
+        "erDiagram",
+        "block-beta",
+        "requirementDiagram",
+    ],
+)
+def test_an_html_anchor_in_a_drawing_diagram_renders_its_href(kind: str) -> None:
+    content = f"{kind}\nA[\"<a href='plan.md'>P</a>\"]\n"
+    assert unfollowed(content) == [(LABEL_ANCHOR, "plan.md", 3)]
+
+
+def test_an_html_anchor_in_a_label_beside_a_click_renders_its_href() -> None:
+    content = (
+        "flowchart LR\nA[\"<a href='node.md'>N</a>\"]; "
+        'click A "x.md" "<a href=\'tip.md\'>t</a>"; '
+        "A -->|<a href='edge.md'>e</a>| B\n"
+    )
+    assert unfollowed(content) == [
+        (LABEL_ANCHOR, "node.md", 3),
+        (LABEL_ANCHOR, "edge.md", 3),
+    ]
 
 
 def test_an_html_anchor_in_a_comment_renders_nothing() -> None:

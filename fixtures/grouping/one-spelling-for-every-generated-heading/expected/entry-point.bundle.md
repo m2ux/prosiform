@@ -2,17 +2,17 @@
 
 The work starts here.
 
-It reads the [Field Notes](#field-notes), the [Common Rules](#common) and the [Codex Rules](#codex).
+It reads the [Field Notes](#guidesfield-notes), the [Common Rules](#common) and the [Agent Harness Rules](#agent-harness).
 
-# Field Notes
+# Guides/Field-Notes
 
 What the work observed while it ran.
 
-## Procedure
+### Procedure
 
 Write each observation down as it is made.
 
-# Rules
+# Harness-Rules
 
 ## Overview
 
@@ -20,7 +20,7 @@ Write each observation down as it is made.
 
 The rules every harness reads.
 
-### Codex
+### Agent-Harness
 
 The rules one harness reads.
 
@@ -30,6 +30,6 @@ The rules one harness reads.
 
 Read the common rules first.
 
-### Codex
+### Agent-Harness
 
 Read the harness rules after the common ones.

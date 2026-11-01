@@ -16,6 +16,10 @@ fence of its expected bundle with the Mermaid and the browser mermaid-cli
 ships, binds the handlers, clicks each clickable task and records the URL
 each click opens.
 
+A fixture fails when Mermaid cannot parse a diagram its bundle holds, so
+every fixture listed is a bundle a renderer draws. Every fixture under
+`rewriting/` whose bundle holds a Mermaid diagram is listed here.
+
 A fixture passes when its drawings carry, or its clicks open, exactly the
 destinations its entry lists, one per link its bundle rewrote, and each
 opens `#<slug>` for a heading the bundle carries. A destination missing is
@@ -59,6 +63,8 @@ RENDERED: dict[str, list[str]] = {
     "rewriting/a-flowchart-click-in-each-form": ["#plan", "#build", "#test", "#ship"],
     "rewriting/a-diagram-click-destination": ["#open"],
     "rewriting/a-diagram-short-click-destination": ["#open", "#closing"],
+    "rewriting/every-click-on-one-diagram-line": ["#open", "#closed"],
+    "reference/an-html-anchor-mermaid-draws-as-no-anchor-is-text": ["#plan"],
     "rewriting/a-swimlanes-diagram-click-in-each-form": [
         "#draft",
         "#review",
@@ -79,6 +85,13 @@ RENDERED: dict[str, list[str]] = {
     "rewriting/a-sequence-diagram-menu-keywords-in-any-case": ["#client", "#server"],
     "rewriting/a-sequence-diagram-destination-naming-a-section": ["#setup", "#limits"],
     "rewriting/a-sequence-diagram-links-line-repeating-a-key": ["#server"],
+    "rewriting/a-sequence-diagram-destination-ending-at-a-semicolon": ["#client"],
+    "rewriting/a-diagram-reached-through-a-linked-document": [
+        "#open",
+        "#review",
+        "#closed",
+        "#notes",
+    ],
 }
 
 CLICKED: dict[str, list[str]] = {
@@ -101,17 +114,25 @@ def anchors(svg: Path) -> list[str]:
     ]
 
 
-def rendered(command: list[str], bundle: Path, work: Path) -> list[str]:
-    """Every anchor the bundle's diagrams carry once mermaid-cli has drawn them."""
-    configuration = work / "puppeteer.json"
-    configuration.write_text(PUPPETEER)
-    subprocess.run(
-        [*command, "-q", "-p", str(configuration), "-i", str(bundle)]
-        + ["-o", str(work / "rendered.md")],
-        check=True,
-    )
-    drawn = sorted(work.glob("rendered-*.svg"))
-    return [href for svg in drawn for href in anchors(svg)]
+def rendered(command: list[str], bundle: Path) -> tuple[list[str], list[str]]:
+    """Every anchor the bundle's diagrams carry once mermaid-cli has drawn them.
+
+    mermaid-cli draws nothing from a bundle holding a diagram Mermaid cannot
+    parse, which is a defect of its own, returned beside the anchors.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+        work = Path(directory)
+        configuration = work / "puppeteer.json"
+        configuration.write_text(PUPPETEER)
+        run = subprocess.run(
+            [*command, "-q", "-p", str(configuration), "-i", str(bundle)]
+            + ["-o", str(work / "rendered.md")],
+            check=False,
+        )
+        if run.returncode != 0:
+            return [], [f"mermaid-cli exits {run.returncode}: a diagram does not parse"]
+        drawn = sorted(work.glob("rendered-*.svg"))
+        return [href for svg in drawn for href in anchors(svg)], []
 
 
 def clicked(command: list[str], bundle: str) -> tuple[list[str], list[str]]:
@@ -164,9 +185,7 @@ def main() -> int:
         if name in CLICKED:
             found, defects = clicked(command, text)
         else:
-            with tempfile.TemporaryDirectory() as work:
-                found = rendered(command, bundle, Path(work))
-            defects = []
+            found, defects = rendered(command, bundle)
         defects += held(expected, found, text)
         print(f"{name}: {'pass' if not defects else 'fail'} {found}")
         for defect in defects:

@@ -1,0 +1,14 @@
+description = "An HTML anchor naming a local Markdown document in a click's tooltip, a pie diagram's label and a sequence diagram's note, each of which a renderer draws as text rather than as an anchor, is emitted as authored; the click's own destination is rewritten as any click's is."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
