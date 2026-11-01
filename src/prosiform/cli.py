@@ -1,10 +1,12 @@
-"""Compile captured Markdown sources with file-owned dependency roots.
+"""Compile captured Markdown sources, each link classified by its target's declaration.
 
-Positional files resolve from the invocation working directory. Each source
-uses its explicit file-relative root, or the invocation directory when absent.
-Bounded no-follow capture retains bytes, metadata and filesystem identities;
-publication rechecks every captured source and bound directory. Discovery,
-rewriting and candidate validation use the same per-source resolution context."""
+Positional files resolve from the invocation working directory, and every
+link resolves from the file carrying it. A link naming a Markdown document is
+a dependency when that document's frontmatter declares `prosiform`, which a
+frontmatter-only probe answers once per path. Bounded no-follow capture
+retains bytes, metadata and filesystem identities; publication rechecks every
+captured source and bound directory. Discovery, rewriting and candidate
+validation read one record of declarations."""
 
 import argparse
 import errno
@@ -56,12 +58,14 @@ from prosiform.candidate import (
     validate,
 )
 from prosiform.closure import (
+    DECLARING,
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
     PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
+    Declarations,
     Malformed,
     OutsideRoot,
     Pairing,
@@ -1205,24 +1209,25 @@ def required(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every dependency the selected content of one source carries.
 
-    A use resolving to a Markdown document under the allowed source
-    root is a reference the bundle carries, and every other use is
-    text: a mention leaving the root is not resolved further, the
-    document it names is not opened, and the link reaches the bundle as
-    its author wrote it. Where the reference resolves is the whole of
-    the question, so an author states what the bundle must carry by
-    where the target sits.
+    A use naming a Markdown document whose frontmatter declares
+    `prosiform` is a reference the bundle carries, and every other use
+    is text: a document declaring nothing is probed and never captured,
+    a path above the working directory is not opened, and the link
+    reaches the bundle as its author wrote it. The target's declaration
+    is the whole of the question, so a document states that it travels
+    and every link reaching it agrees.
 
     A withheld reference is not compiled: the run yields no dependency
     for it, so nothing it names is bundled through that reference, and
     the link reaches the bundle with its mark for the run that compiles
-    it. Its target is what `withheld` yields, because a reference under
-    the root is one the run stays responsible for whether or not it
-    carries what the reference names.
+    it. Its target is what `withheld` yields, because a reference naming
+    a declaring document is one the run stays responsible for whether
+    or not it carries what the reference names.
 
     A resource is no local Markdown document and an image is a
     resource whatever it points at, so neither is a dependency and both
@@ -1254,7 +1259,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, source.root, substitution, at)
+            found = inside(path, use.destination, substitution, at)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1272,7 +1277,10 @@ def required(
             continue
         if withholding(use.opening):
             continue
-        yield replace(found, origin=at, chain=(*chain, identity(found)))
+        occurrence = replace(found, origin=at, chain=(*chain, identity(found)))
+        if not declarations.declares(occurrence):
+            continue
+        yield occurrence
 
 
 def refusals_of_operators(
@@ -1281,6 +1289,7 @@ def refusals_of_operators(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
     """Refuse a link whose operators state no one compilation the run can carry out.
@@ -1290,9 +1299,9 @@ def refusals_of_operators(
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
-    compilation of a Markdown document or section under the source root,
-    so one opening a link or an image naming anything else — a remote
-    address, a resource, a document outside the root — states a
+    compilation of a declaring Markdown document or section, so one
+    opening a link or an image naming anything else — a remote address,
+    a resource, a document declaring nothing — states a
     compilation no run performs. Each is a source fault rather than a
     metadata fault: what the author wrote states no compilation the run
     can carry out, and the run reports the link rather than reading it
@@ -1335,7 +1344,9 @@ def refusals_of_operators(
             )
         if not operators(use.opening):
             continue
-        target = resolvable(path, use.destination, source.root, substitution)
+        target = resolvable(
+            path, use.destination, declarations, substitution, at, chain
+        )
         if not use.resource and target is not None:
             continue
         kind = "image" if use.resource else "link"
@@ -1359,15 +1370,16 @@ def withheld(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every target the selected content of one source withholds.
 
-    A withheld reference under the allowed source root naming a
-    Markdown document is one this run does not carry and stays
-    responsible for, so its target is yielded here to be confirmed. An
-    operator on a reference leaving the root, or on one naming no
-    Markdown document, withholds nothing, and the run refuses it before
+    A withheld reference naming a declaring Markdown document is one
+    this run does not carry and stays responsible for, so its target is
+    yielded here to be confirmed. An operator on a reference naming a
+    document that declares nothing, or on one naming no Markdown
+    document, withholds nothing, and the run refuses it before
     reading the withheld targets.
 
     What is yielded is a target and not a dependency. It joins no
@@ -1385,7 +1397,7 @@ def withheld(
             continue
         at = location(path, source.line(use.line))
         found = withholding_target(
-            path, use.destination, use.opening, source.root, substitution, at
+            path, use.destination, use.opening, declarations, substitution, at, chain
         )
         if found is None:
             continue
@@ -1398,6 +1410,7 @@ def dispatches(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Hop]:
     """Every dispatched link the selected content of one source carries.
@@ -1413,7 +1426,9 @@ def dispatches(
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
-        for link in written_in(path, source, tokens, region, substitution):
+        for link in written_in(
+            path, source, tokens, region, declarations, substitution
+        ):
             if not link.text:
                 raise input_failure(
                     f"the link {link.opening!r} dispatches {link.written!r} with "
@@ -1460,6 +1475,7 @@ def traverse(
     referrer: Reference | None,
     requested: Sequence[Reference],
     limits: Limits,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[
     dict[str, Source],
@@ -1567,19 +1583,43 @@ def traverse(
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
             refusals_of_operators(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             )
             for one in withheld(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             ):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
             for link in dispatches(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             ):
                 dispatching.setdefault(link.name, link)
             for one in required(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             ):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1712,6 +1752,7 @@ def file_named(
     source: Source,
     tokens: Sequence[Token],
     wrapped: bool,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Named | None:
     """One document's file heading, located at the title it carries or at the document.
@@ -1735,7 +1776,7 @@ def file_named(
     at = None if title is None or title.map is None else title.map[0] + 1
     line = source.line(at)
     return Named(
-        file_heading(path, tokens, source.root, substitution),
+        file_heading(path, tokens, declarations, substitution),
         Location(path, 1 if line is None else line, 1),
     )
 
@@ -1775,6 +1816,7 @@ def coincident(
     selected: Mapping[str, Sequence[Reference]],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Diagnostic]:
     """One warning for each set of generated headings that coincide.
@@ -1801,7 +1843,7 @@ def coincident(
         named = one.record.path
         if one.record.merged is None:
             heading = file_named(
-                named, read[named], parsed[named], one.filed, substitution
+                named, read[named], parsed[named], one.filed, declarations, substitution
             )
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
@@ -1856,6 +1898,7 @@ def placement(
     selected: Mapping[str, list[Reference]],
     referrer: Reference | None,
     entries: Collection[Reference],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, list[Reference]]:
     """Each document the bundle carries, in the order a reference first names it.
@@ -1877,7 +1920,9 @@ def placement(
         path = order[at]
         at += 1
         chosen = selection(path, parsed[path], selected[path], entries)
-        for one in required(path, read[path], parsed[path], chosen, (), substitution):
+        for one in required(
+            path, read[path], parsed[path], chosen, (), declarations, substitution
+        ):
             if one.path in selected and one.path not in order:
                 order.append(one.path)
     return {path: selected[path] for path in order}
@@ -1892,6 +1937,7 @@ def assembled(
     assigned: dict[tuple[str, str | None], str] | None,
     inforce: Mapping[str, int],
     dispatching: Anchors | None = None,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
@@ -1922,7 +1968,7 @@ def assembled(
                     defined[path],
                     selection(path, tokens, selecting, entries),
                     assigned,
-                    read[path].root,
+                    declarations,
                     path == parent,
                     dispatching,
                     substitution,
@@ -1944,7 +1990,7 @@ def assembled(
                             selection(path, parsed[path], selected[path], entries),
                             assigned,
                             depth,
-                            read[path].root,
+                            declarations,
                             path == parent,
                             dispatching,
                             substitution,
@@ -2008,6 +2054,7 @@ def compose(
     found: Sequence[Reference],
     limits: Limits,
     bundle_file: Callable[[Target], str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
@@ -2039,7 +2086,9 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    selected = placement(read, parsed, selected, referrer, entries, substitution)
+    selected = placement(
+        read, parsed, selected, referrer, entries, declarations, substitution
+    )
     try:
         headed, placed = subsections(
             assembled(
@@ -2051,11 +2100,13 @@ def compose(
                 None,
                 inforce,
                 None,
+                declarations,
                 substitution,
             ),
             parsed,
             read,
             bundle_file,
+            declarations,
             substitution,
         )
         collisions(headed)
@@ -2074,11 +2125,13 @@ def compose(
             targets,
             inforce,
             dispatching,
+            declarations,
             substitution,
         ),
         parsed,
         read,
         bundle_file,
+        declarations,
         substitution,
     )
     bundled = assemble(groups)
@@ -2092,12 +2145,15 @@ def compose(
             parsed,
             limits.of(NESTING),
             dispatching,
+            declarations,
             substitution,
         )
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, coincident(groups, selected, read, parsed, substitution)
+    return bundled, coincident(
+        groups, selected, read, parsed, declarations, substitution
+    )
 
 
 def resource(destination: str, embedded: bool) -> bool:
@@ -2516,9 +2572,10 @@ def compiled(
     resolves the substitute the caller named.
     """
     limits = budgets(options)
+    declarations = Declarations(lambda found: probe(root, found, limits))
     try:
         read, parsed, defined, captured, found, hops = traverse(
-            root, referrer, requested, limits, substitution
+            root, referrer, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
@@ -2537,6 +2594,7 @@ def compiled(
         found,
         limits,
         bundle_file,
+        declarations,
         substitution,
     )
     trailing: list[Diagnostic] = []

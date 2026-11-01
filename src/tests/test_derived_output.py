@@ -106,10 +106,10 @@ def test_derived_folder_cannot_hold_any_captured_source(
 ) -> None:
     mark = "¬ " if deferred else ""
     written(tmp_path, "a.md", f"# A\n\n[{mark}Captured](a.bundles/a.bundle.md)\n")
-    written(tmp_path, "a.bundles/a.bundle.md", "# Captured\n\nPreserve.\n")
+    written(tmp_path, "a.bundles/a.bundle.md", declared("# Captured\n\nPreserve.\n"))
     run = invoke(tmp_path, *(["-c"] if check else []), "a.md")
     assert run.status == 2 and run.stdout == ""
-    assert bundle(tmp_path, "a").read_text() == "# Captured\n\nPreserve.\n"
+    assert bundle(tmp_path, "a").read_text() == declared("# Captured\n\nPreserve.\n")
 
 
 def test_derived_publication_swaps_the_folder_in_whole(
@@ -211,8 +211,8 @@ def test_two_targets_deriving_one_name_are_refused_naming_both(
     tmp_path: Path, check: bool
 ) -> None:
     written(tmp_path, "e.md", "# E\n\n1. [⇉ x](a/b.md)\n2. [⇉ y](a_b.md)\n")
-    written(tmp_path, "a/b.md", "# B\n")
-    written(tmp_path, "a_b.md", "# B too\n")
+    written(tmp_path, "a/b.md", declared("# B\n"))
+    written(tmp_path, "a_b.md", declared("# B too\n"))
     run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "e.md")
     assert run.status == 3 and run.stdout == ""
     [refused] = run.diagnostics()
@@ -238,7 +238,7 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     written(tmp_path, "a.md", "# A\n\n[⇉ plan](plan.md)\n")
-    written(tmp_path, "plan.md", "# Plan\n")
+    written(tmp_path, "plan.md", declared("# Plan\n"))
     original = cli.compiled
     reads = []
 
@@ -246,7 +246,7 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
         one = original(*arguments, **options)
         reads.append(one.name)
         if len(reads) == 1:
-            (tmp_path / "plan.md").write_text("# Plan, edited\n")
+            (tmp_path / "plan.md").write_text(declared("# Plan, edited\n"))
         return one
 
     monkeypatch.setattr(cli, "compiled", edit_after_the_entry)

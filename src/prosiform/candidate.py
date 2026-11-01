@@ -72,7 +72,9 @@ from prosiform.bundle import (
     openings,
 )
 from prosiform.closure import (
+    DECLARING,
     UNSUBSTITUTED,
+    Declarations,
     Substitution,
     bundled,
     deferred,
@@ -332,7 +334,7 @@ def intended(
     at: int,
     children: Sequence[Token],
     targets: Mapping[tuple[str, str | None], str],
-    root: str = "",
+    declarations: Declarations = DECLARING,
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Use:
@@ -344,7 +346,7 @@ def intended(
     reference-style use at the inline form the definition it names
     gives it.
 
-    A deferred link under the allowed source root carries its target's
+    A deferred link naming a declaring document carries its target's
     path from the invocation working directory, so where it points is
     the destination the bundle rebased. A dispatched link points at the
     dispatch sub-section its region carries for its target. A link
@@ -366,7 +368,7 @@ def intended(
     the opening is read from the event the author wrote it on.
 
     A diagram's link destination opens with nothing, so it is compiled
-    wherever it resolves to a Markdown document under the root and is
+    wherever it resolves to a declaring Markdown document and is
     never withheld. The anchor it takes is the one the bundle writes in
     the line, which no parser normalizes, read as the destination it
     names: `#<slug>`, whichever spelling the line's form writes.
@@ -374,10 +376,10 @@ def intended(
     if one.kind == IMAGE:
         return one
     opening = "" if one.kind == CLICK else opening_text(children, at)
-    found = bundled(path, one.destination, opening, root, substitution)
+    found = bundled(path, one.destination, opening, declarations, substitution)
     if found is None:
         withheld = withholding_target(
-            path, one.destination, opening, root, substitution
+            path, one.destination, opening, declarations, substitution
         )
         if withheld is None:
             return one
@@ -1048,7 +1050,7 @@ def references(
     source: Side,
     published: Side,
     targets: Mapping[tuple[str, str | None], str],
-    root: str = "",
+    declarations: Declarations = DECLARING,
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
@@ -1062,7 +1064,9 @@ def references(
     preservation sets aside, so this is where each is held.
     """
     expected = [
-        intended(path, one, at, children, targets, root, dispatched_to, substitution)
+        intended(
+            path, one, at, children, targets, declarations, dispatched_to, substitution
+        )
         for children, at, one in carried(source.tokens, source.span)
     ]
     found = [one for _, _at, one in carried(published.tokens, published.span)]
@@ -1086,7 +1090,7 @@ def preserved(
     removed: Collection[int],
     source: Side,
     published: Side,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
     """Hold one region's untouched bytes and code examples to its source.
@@ -1125,11 +1129,11 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if emitted_visible(path, one, root, substitution) != visible(each):
+        if emitted_visible(path, one, declarations, substitution) != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{emitted_visible(path, one, root, substitution)!r} and the "
+                f"{emitted_visible(path, one, declarations, substitution)!r} and the "
                 f"candidate shows {visible(each)!r}",
             )
 
@@ -1191,6 +1195,7 @@ def validate(
     parsed: Mapping[str, Sequence[Token]],
     budget: int,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
@@ -1242,7 +1247,7 @@ def validate(
             source,
             published,
             targets,
-            read[carried.path].root,
+            declarations,
             served.get((carried.path, carried.lines[0]), {}),
             substitution,
         )
@@ -1251,6 +1256,6 @@ def validate(
             carried.removed,
             source,
             published,
-            read[carried.path].root,
+            declarations,
             substitution,
         )

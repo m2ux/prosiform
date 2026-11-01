@@ -16,8 +16,10 @@ kind declares rather than reaching a filesystem.
 import pytest
 
 from prosiform.closure import (
+    Declarations,
     Malformed,
     OutsideRoot,
+    Reference,
     bundled,
     conflicting,
     deferred,
@@ -27,6 +29,7 @@ from prosiform.closure import (
     operators,
     parallel,
     rebased,
+    resolvable,
     resolve,
     spaced,
     unmarked,
@@ -228,43 +231,33 @@ def test_the_marks_of_one_operator_go_together() -> None:
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
-    assert inside("docs/guide.md", "other.md", "docs").path == "docs/other.md"
+    assert inside("docs/guide.md", "other.md").path == "docs/other.md"
 
 
 def test_a_link_walking_out_of_its_own_directory_normalizes_against_it() -> None:
     assert inside("docs/guide.md", "../notes.md").path == "notes.md"
 
 
-def test_a_link_resolves_from_its_file_whatever_root_bounds_it() -> None:
-    found = inside("docs/guide.md", "notes.md", "")
+def test_a_link_resolves_from_its_file_and_keeps_its_walk() -> None:
+    found = inside("docs/guide.md", "notes.md")
     assert found.path == "docs/notes.md"
     assert found.walk == "docs/notes.md"
 
 
-def test_a_root_bounds_a_link_without_being_the_base_it_resolves_from() -> None:
-    with pytest.raises(OutsideRoot):
-        inside("docs/guide.md", "../notes.md", "docs")
-
-
-def test_a_link_above_the_root_names_a_document_the_root_cannot_contain() -> None:
+def test_a_link_above_the_working_directory_is_refused() -> None:
     with pytest.raises(OutsideRoot):
         inside("guide.md", "../outside.md")
 
 
-def test_a_parent_step_resolves_from_the_file_and_stays_inside_its_root() -> None:
-    found = inside("modes/plan-mode.md", "../artifacts/epic.md", "")
+def test_a_parent_step_resolves_from_the_file_carrying_it() -> None:
+    found = inside("modes/plan-mode.md", "../artifacts/epic.md")
     assert found.path == "artifacts/epic.md"
     assert found.walk == "modes/../artifacts/epic.md"
 
 
-def test_a_parent_step_from_the_working_directory_stays_inside_a_parent_root() -> None:
-    found = inside("plan-mode.md", "../artifacts/epic.md", "..")
-    assert found.path == "../artifacts/epic.md"
-
-
-def test_a_parent_step_above_the_declared_root_is_refused() -> None:
+def test_a_parent_step_from_the_working_directory_is_refused() -> None:
     with pytest.raises(OutsideRoot):
-        inside("plan-mode.md", "../../secret.md", "..")
+        inside("plan-mode.md", "../artifacts/epic.md")
 
 
 def test_a_fragment_alone_names_a_section_of_the_document_carrying_it() -> None:
@@ -430,3 +423,62 @@ def test_a_blank_between_the_marks_of_a_compound_operator_is_refused(
     opening: str,
 ) -> None:
     assert spaced(opening)
+
+
+def probing(answers: dict[str, bool]) -> tuple[Declarations, list[Reference]]:
+    """A record answering from a table, and the occurrences its probe was handed."""
+    asked: list[Reference] = []
+
+    def probe(found: Reference) -> bool:
+        asked.append(found)
+        return answers[found.path]
+
+    return Declarations(probe), asked
+
+
+def test_a_link_naming_a_declaring_document_is_a_dependency() -> None:
+    declarations, _ = probing({"rules.md": True})
+    found = bundled("guide.md", "rules.md", "the rules", declarations)
+    assert found is not None and found.path == "rules.md"
+
+
+def test_a_link_naming_a_silent_document_is_text() -> None:
+    declarations, _ = probing({"rules.md": False})
+    assert bundled("guide.md", "rules.md", "the rules", declarations) is None
+    assert resolvable("guide.md", "rules.md", declarations) is None
+
+
+def test_a_withheld_link_naming_a_silent_document_withholds_nothing() -> None:
+    declarations, _ = probing({"rules.md": False})
+    assert (
+        withholding_target("guide.md", "rules.md", "¬ the rules", declarations) is None
+    )
+
+
+def test_a_target_is_probed_once_however_many_links_name_it() -> None:
+    declarations, asked = probing({"rules.md": True})
+    bundled("guide.md", "rules.md", "the rules", declarations)
+    bundled("guide.md", "rules.md#alpha", "alpha", declarations)
+    withholding_target("guide.md", "./rules.md", "¬ the rules", declarations)
+    assert [one.path for one in asked] == ["rules.md"]
+
+
+def test_a_citation_naming_no_markdown_document_is_never_probed() -> None:
+    declarations, asked = probing({})
+    assert bundled("guide.md", "image.png", "the image", declarations) is None
+    assert bundled("guide.md", "https://example.test/a.md", "a", declarations) is None
+    assert asked == []
+
+
+def test_the_probe_is_handed_the_occurrence_that_asked() -> None:
+    declarations, asked = probing({"docs/rules.md": True})
+    resolvable(
+        "docs/guide.md",
+        "rules.md",
+        declarations,
+        origin="docs/guide.md:3",
+        reached=("docs/guide.md",),
+    )
+    [occurrence] = asked
+    assert occurrence.origin == "docs/guide.md:3"
+    assert occurrence.chain == ("docs/guide.md", "docs/rules.md")

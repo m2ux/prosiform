@@ -17,9 +17,9 @@ def declared(text: str) -> str:
 def test_entries_and_linked_files_default_to_invocation_directory(
     tmp_path: Path,
 ) -> None:
-    written(tmp_path, "entry/a.md", "# A\n\n[B](../linked/b.md)\n")
-    written(tmp_path, "linked/b.md", "# B\n\n[C](../c.md)\n")
-    written(tmp_path, "c.md", "# C\n\nShared cwd.\n\n[Above](../c.md)\n")
+    written(tmp_path, "entry/a.md", declared("# A\n\n[B](../linked/b.md)\n"))
+    written(tmp_path, "linked/b.md", declared("# B\n\n[C](../c.md)\n"))
+    written(tmp_path, "c.md", declared("# C\n\nShared cwd.\n\n[Above](../c.md)\n"))
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Shared cwd." in run.bundle
@@ -35,7 +35,7 @@ def test_links_resolve_from_their_own_file_and_a_fragment_names_its_document(
         declared("# A\n\n[Self](#a) [B](../library/b.md)\n"),
     )
     written(tmp_path, "library/b.md", declared("# B\n\n[C](../other/c.md)\n"))
-    written(tmp_path, "other/c.md", "# C\n\nSeparate library.\n")
+    written(tmp_path, "other/c.md", declared("# C\n\nSeparate library.\n"))
     run = invoke("entries/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Separate library." in run.bundle
@@ -102,7 +102,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
         "entry/a.md",
         declared("# A\n\n[¬ Later](../library/b%20%25%23%3F.md)\n"),
     )
-    written(tmp_path, "library/b %#?.md", "# B\n\nHidden.\n")
+    written(tmp_path, "library/b %#?.md", declared("# B\n\nHidden.\n"))
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "[Later](library/b%20%25%23%3F.md)" in run.bundle
@@ -183,7 +183,7 @@ def test_members_in_distinct_directories_are_named_by_their_paths(
 def test_a_cached_target_still_verifies_each_access_route(
     tmp_path: Path, linked: bool
 ) -> None:
-    written(tmp_path, "b.md", "# B\n")
+    written(tmp_path, "b.md", declared("# B\n"))
     (tmp_path / "real").mkdir()
     (tmp_path / "alias").symlink_to("real", target_is_directory=True)
     if linked:

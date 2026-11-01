@@ -251,7 +251,6 @@ class Source:
     text: str
     first_line: int = 1
     conversion: Conversion = Conversion()
-    root: str = ""
 
     def line(self, at: int | None) -> int | None:
         """The line of the original file one line of this content occupies."""
