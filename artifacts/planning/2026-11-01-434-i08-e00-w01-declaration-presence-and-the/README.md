@@ -12,6 +12,7 @@ This record holds its delivery of `AC4, AC5, AC18`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01](w01.md) | The work item: declaration presence, the `root` refusal, the retired code and the trees that drop the field |
 
 ## Links
 
