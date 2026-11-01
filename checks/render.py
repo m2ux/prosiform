@@ -59,6 +59,8 @@ RENDERED: dict[str, list[str]] = {
     "rewriting/a-flowchart-click-in-each-form": ["#plan", "#build", "#test", "#ship"],
     "rewriting/a-diagram-click-destination": ["#open"],
     "rewriting/a-diagram-short-click-destination": ["#open", "#closing"],
+    "rewriting/every-click-on-one-diagram-line": ["#open", "#closed"],
+    "reference/an-html-anchor-mermaid-draws-as-no-anchor-is-text": ["#plan"],
     "rewriting/a-swimlanes-diagram-click-in-each-form": [
         "#draft",
         "#review",
