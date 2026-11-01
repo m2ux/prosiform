@@ -52,13 +52,14 @@ pf -c modes/plan-mode.md
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter to be compiled, and the mapping may name its group and depth. `prosiform: {}` declares with no group. Group and group-depth occur together; a file declaring neither keeps a group of its own. A `root` key is refused.
+A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled, and may name its group and depth. `prosiform: {}` declares with no preset. Group and group-depth occur together; a file whose `default` declares neither keeps a group of its own. A `root` key is refused.
 
 ```yaml
 ---
 prosiform:
-  group: rules
-  group-depth: 2
+  default:
+    group: rules
+    group-depth: 2
 ---
 ```
 
