@@ -110,6 +110,7 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 | Command | Asserts |
 | --- | --- |
 | `make authoring` | Every document meets the authoring rules in its [guidelines](example/work-planner/guidelines.md). Each departure is reported by file and line, grouped by area. |
+| `make boundary` | Every document's boundary, the deepest directory holding every local Markdown path its own links name, is printed, and no link names a path outside it. |
 | `make steps` | Every procedure writes its steps as `N. Action` headings one level below it, each unique in its document, and has no numbered list outside a code block. |
 | `make mock-scenarios` | The example bundles correctly over stand-in material. See [Mock scenarios](#mock-scenarios). |
 
@@ -157,7 +158,7 @@ Each scenario runs from a temporary copy made at run time and publishes outside 
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus` and `make mock-scenarios`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus`, `make boundary` and `make mock-scenarios`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
 - **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make steps` and `make authoring` are standard-library scripts in [`checks/`](checks/README.md).
 

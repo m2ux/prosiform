@@ -195,3 +195,47 @@ def test_a_cached_target_still_verifies_each_access_route(
     assert run.status == 1
     assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
+
+
+def test_a_declaring_target_above_the_writing_directory_is_compiled(
+    tmp_path: Path,
+) -> None:
+    written(
+        tmp_path, "skill/modes/review.md", declared("# Review\n\n[R](../rules.md)\n")
+    )
+    written(tmp_path, "skill/rules.md", declared("# Rules\n\nEvery rule.\n"))
+    run = invoke("modes/review.md", cwd=tmp_path / "skill")
+    assert run.status == 0
+    assert "Every rule." in run.bundle
+    assert "[R](#rules)" in run.bundle
+
+
+def test_a_replaced_directory_a_link_resolved_through_prevents_publication(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    written(tmp_path, "modes/review.md", declared("# Review\n\n[R](../rules/a.md)\n"))
+    written(tmp_path, "rules/a.md", declared("# A\n"))
+    original = cli.compose
+
+    def replace_directory(*args: Any, **kwargs: Any) -> Any:
+        result = original(*args, **kwargs)
+        (tmp_path / "rules").rename(tmp_path / "old")
+        written(tmp_path, "rules/a.md", declared("# A\n"))
+        return result
+
+    monkeypatch.setattr(cli, "compose", replace_directory)
+    run = invoke("-d", "json", "modes/review.md", cwd=tmp_path)
+    assert run.status == 1
+    assert run.bundle == ""
+    assert run.diagnostics()[0]["code"] == cli.SOURCE_CHANGED
+
+
+def test_a_path_no_grammar_admits_is_refused_against_the_working_directory(
+    tmp_path: Path,
+) -> None:
+    run = invoke("-d", "json", "/outside.md", cwd=tmp_path)
+    assert run.status == 1
+    refusal = run.diagnostics()[0]
+    assert refusal["code"] == cli.SOURCE_OUTSIDE_ROOT
+    assert "invocation working directory" in refusal["message"]
+    assert "source root" not in refusal["message"]
