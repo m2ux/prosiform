@@ -14,7 +14,7 @@ A fixture is a directory holding `manifest.toml`. Discovery walks this tree and 
 fixtures/
 ├── manifest.schema.json
 └── normalization/
-    └── root-escape/
+    └── a-reference-above-the-working-directory-is-text/
         ├── manifest.toml
         ├── source/
         │   └── guide.md
@@ -28,7 +28,7 @@ fixtures/
 
 A source tree carries a symbolic link where the clause under test is about one. Git records a link as its own object — mode `120000`, the target as its content — so a fixture declaring the no-symlink source policy declares it as a link rather than as a file holding a path, and a runner materialises the tree the manifest describes.
 
-A link inside a source tree targets a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the allowed root is declared without naming anything of the host. The one link that leaves a fixture is the `source` of a `usage-example/` fixture, which is the tree itself rather than a file within it.
+A link inside a source tree targets a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the working directory is declared without naming anything of the host. The one link that leaves a fixture is the `source` of a `usage-example/` fixture, which is the tree itself rather than a file within it.
 
 A checkout whose filesystem or configuration cannot create a link writes the target path into a regular file instead. Such a tree no longer states what the fixture declares, and the fixture fails rather than passing against a file that looks like a document.
 
@@ -36,7 +36,7 @@ A checkout whose filesystem or configuration cannot create a link writes the tar
 
 Most families write their sources for the clause they exercise. The `real-source/` family does not: each of its sources is a document copied byte for byte from one of this workspace's skills, at the path that skill gives it. A source written to exercise one clause exercises that clause and says nothing about the documents the tool exists to bundle, so this family is where the corpus meets prose nobody wrote for it.
 
-A copied source is not edited. A document that needs an edit to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
+A copied source is not edited beyond its declaration. A document is compiled when its leading frontmatter declares `prosiform`, and an upstream document declares nothing, so each copy's leading frontmatter opens with `prosiform: {}`, in a frontmatter block of its own where the original carries none. That declaration is what a run reads, and the one thing the copy adds. Any other edit a document needs to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original, its declaration removed, with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
 
 A document joins the family when its closure is itself: no local Markdown document reference, and fragment-only references only where the destination the bundle generates is the fragment the source already spells. Such a document bundles to the same bytes under a build that traverses references and one that has nothing to traverse, so its expected bundle states the contract rather than a stage of the work.
 
@@ -51,7 +51,7 @@ Each of its fixtures reaches [`example/work-planner/`](../example/work-planner/S
 The manifest is the whole declaration. A runner reads it and the fixture's files, and decides pass or fail from them alone.
 
 ```toml
-description = "A reference normalizing to a path outside the allowed source root fails."
+description = "An entry reference normalizing to a path above the working directory fails."
 
 clauses = [
   "Resolution sequence — step 7",
@@ -76,7 +76,7 @@ chain = ["guide.md", "../outside.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, named as [The clause form](#the-clause-form) states, so every clause maps to the fixtures that cover it. |
-| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. Source metadata supplies dependency roots. |
+| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It bounds every source the run reads. |
 | `invocation.arguments` | The arguments of the invocation, in order. None declares the bare command. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes into its folder, each named as the run names the bundle. A run writing no bundle declares none. |
@@ -125,7 +125,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds every source the run reads. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
+A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits inside the working directory. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds every source the run reads. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
 
 ## Text an output carries
 
@@ -159,7 +159,7 @@ The contract gathers seven faults under the code, and each is a fixture, so what
 
 | Fault | Fixture |
 | --- | --- |
-| The retired `-r` option | [`cli/a-command-line-naming-no-allowed-source-root`](cli/a-command-line-naming-no-allowed-source-root/manifest.toml) |
+| The retired `-r` option | [`cli/the-retired-root-option-is-invalid-usage`](cli/the-retired-root-option-is-invalid-usage/manifest.toml) |
 | Arguments naming no entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
@@ -233,7 +233,7 @@ An error decides a failing run.
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow, and Link classification and resource handling, Dispatch sub-sections — an emitted heading beyond H6, a dispatch sub-section among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping, the refused `root` among them. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
-| `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML, duplicate keys, or an invalid root. |
+| `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML or duplicate keys. |
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
@@ -241,12 +241,12 @@ An error decides a failing run.
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it. |
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
-| `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the allowed root cannot contain. |
-| `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the root. |
-| `E_TARGET_NOT_FOUND` | Link classification — a reference under the root naming no document, or no heading in the document it resolves to. |
+| `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the working directory cannot contain. |
+| `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the working directory. |
+| `E_TARGET_NOT_FOUND` | Link classification — an operator's reference naming no document, or a reference naming no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, or an operator naming no Markdown document or section under the root; Dispatch sub-sections — a dispatched link with no text after its mark. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, or an operator naming no Markdown document or section; Dispatch sub-sections — a dispatched link with no text after its mark. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
