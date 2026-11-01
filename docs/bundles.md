@@ -39,7 +39,7 @@ A fragment-only entry derives its name from the document `-f` supplies. Roots an
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
 
-Two bundles deriving one name — `a/b.md` and `a_b.md` — fail the run before anything is written.
+Two entries whose paths derive one name, `a/b.md` and `a_b.md` among them, join into one name rather than colliding: the run publishes one folder, `a_b+a_b.bundles`, holding one bundle.
 
 ## Publication
 

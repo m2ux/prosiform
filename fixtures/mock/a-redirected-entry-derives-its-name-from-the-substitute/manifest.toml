@@ -1,0 +1,21 @@
+description = "A positional entry naming a mocked identity compiles the substitute and the run derives its output filename from the substitute rather than from the reference the caller wrote, because the redirect is total: the folder and the bundle both carry the stand-in's name, where the same run without a mapping publishes under the entry's."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Automatic output names, the run derives its filename from the substitute",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "entry.md=stand-in.md", "entry.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/stand-in.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "entry.md"
+resolved = "stand-in.md"

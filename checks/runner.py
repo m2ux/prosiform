@@ -91,7 +91,7 @@ RUN_FOLDER_SUFFIX = ".bundles"
 STDOUT_TEXT = "expected.stdout_contains"
 DIAGNOSTICS = "expected.diagnostics"
 
-DECLARED_FIELDS = ("reference", "resolved", "source", "chain")
+DECLARED_FIELDS = ("reference", "resolved", "source", "chain", "location")
 MESSAGE_TEXT = "message_contains"
 MESSAGE = "message"
 EXCERPT = 96

@@ -107,6 +107,7 @@ from prosiform.bundle import (
     single_line,
     source_fragments,
 )
+from prosiform.closure import UNSUBSTITUTED, Substitution
 from prosiform.provenance import (
     GROUP_HEADING,
     MEMBER_OVERVIEW,
@@ -245,6 +246,7 @@ def prepared(
     keep_title: bool = False,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     first_line: int = 1,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -266,7 +268,7 @@ def prepared(
         if selected is None
         else {id(token) for token in selected.regions}
     )
-    text = shown_text(path, tokens, root)
+    text = shown_text(path, tokens, root, substitution)
     named = source_fragments(tokens)
     titled_token = absorbed(tokens, PurePosixPath(path).stem)
     absorbing = (
@@ -295,6 +297,7 @@ def prepared(
             root,
             dispatching,
             first_line,
+            substitution,
         )
     )
     member = Member(
