@@ -27,4 +27,4 @@ Evidence for each check the [work item](w03.md) names, run in the unit's worktre
 
 ## T5 full check
 
-`make check` exits 0 before opening; corpus `380 fixture(s), 380 pass, 0 fail, 0 awaited, 0 unexpected pass`; harness and conformance pass.
+`make check` exits 0 before opening, and the epic base held no newer commit before merging; CI on `039ce9a7` passes. Corpus `380 fixture(s), 380 pass, 0 fail, 0 awaited, 0 unexpected pass`; harness and conformance pass.
