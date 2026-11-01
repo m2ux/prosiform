@@ -29,15 +29,16 @@ lists, per level, the keys of the baseline's rows the run lacks. With no
 baseline, `in_baseline` and `difference` are null and `baseline_only` is
 empty.
 
-A run's `state` is `completed`, or `refused` for one every session of
-which took the `errored` verdict. A refused run is no result to compare:
+A run's `state` is `completed`, or `refused` for one every started session
+of which took the `errored` verdict. A refused run is no result to compare:
 the report names the state and the reason `run.json` records, the `reason`
 being one session's own `result` text, and holds no row, so no pass rate
 is given and nothing is compared with a baseline.
 
 `--write-baseline` writes the run's cells as the baseline file, after the
-report has been compared with the baseline it replaces. A refused run
-writes no baseline.
+report has been compared with the baseline it replaces. A run whose report
+holds no cell, a refused run among them, writes no baseline and leaves the
+file as it was.
 """
 
 import argparse
@@ -388,10 +389,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     arguments = options(argv)
     built = write(arguments.run_directory, arguments.baseline)
     if arguments.write_baseline:
-        if built["state"] == REFUSED:
+        if not built["cells"]:
+            reason = f": {built['reason']}" if built["reason"] else ""
             raise CorpusError(
-                f"run {built['run_id']} is refused, so it has no cells to write "
-                f"as a baseline: {built['reason']}"
+                f"run {built['run_id']} measured no cell, so it writes no "
+                f"baseline{reason}"
             )
         arguments.baseline.write_text(json.dumps(baseline_of(built), indent=2) + "\n")
     print(arguments.run_directory / REPORT_MD)

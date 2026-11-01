@@ -574,7 +574,9 @@ def test_a_refused_run_writes_no_baseline(
         *("--budget-tokens", "1000"),
     )
     baseline = tmp_path / "baseline.json"
-    with pytest.raises(CorpusError, match="refused, so it has no cells"):
+    with pytest.raises(
+        CorpusError, match="measured no cell, so it writes no baseline: "
+    ):
         main(
             [
                 str(tmp_path / "results" / "test"),
@@ -604,11 +606,12 @@ def test_a_run_with_a_genuine_mix_of_errors_and_states_is_a_result(
     assert written["cells"] and written["cells"][0]["passed"] == 1
 
 
-def test_a_run_the_budget_stopped_part_way_is_not_refused(
+def test_a_run_the_budget_stopped_whose_sessions_all_errored_is_refused(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Sessions it never started leave the matrix incomplete, not refused."""
+    """Sessions it never started do not turn its errored ones into a result."""
     monkeypatch.setenv("STUB_AGENT_ERROR", "1")
+    monkeypatch.setenv("STUB_AGENT_REASON", "You've hit your weekly limit")
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     record = eval_run(
         tmp_path,
@@ -618,7 +621,10 @@ def test_a_run_the_budget_stopped_part_way_is_not_refused(
     assert record["started"] == 3 and record["sessions"] == 5
     assert len(record["not_started"]) == 2
     assert all(item["verdict"]["failure"] == "errored" for item in records(tmp_path))
-    assert record["state"] == "completed" and record["reason"] is None
+    assert record["state"] == "refused"
+    assert record["reason"] == "You've hit your weekly limit"
+    built = json.loads((tmp_path / "results" / "test" / REPORT_JSON).read_text())
+    assert built["state"] == "refused" and built["cells"] == []
 
 
 def test_a_run_without_a_login_starts_no_session(tmp_path: Path, log: Path) -> None:
