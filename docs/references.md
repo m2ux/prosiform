@@ -104,10 +104,12 @@ The lines are:
 - `link <actor>: <label> @ <destination>` in a sequence diagram, whose destination is the trimmed text after the first `@`
 - `links <actor>: {…}` in a sequence diagram, whose each string value is one destination
 
-The diagram's type is the word its text opens on, once front matter, `%%{…}%%` directives and `%%` comments are set aside. A line beginning `link` in any other diagram is carried as written. Keywords match in any letter case.
+The diagram's type is the word its text opens on, once front matter, `%%{…}%%` directives and `%%` comments are set aside. A line beginning `link` in any other diagram is carried as written. Keywords match in any letter case. A line may hold several statements, each ended by a `;` outside a quoted string, as Mermaid reads them, and each `click` or class `link` statement among them is followed.
 
 Two details follow from how Mermaid renders a link. A sequence diagram's destinations spell their anchor `#35;<slug>`, because Mermaid's sequence lexer reads a bare `#` as opening a comment. A Gantt task's `click` binds a click handler rather than drawing an anchor, so the rewritten destination is what the click opens.
 
-A click naming a callback, a destination outside the root, a destination naming no document, and a C4 diagram's `$link` are carried as written and open nothing. A Kanban ticket's link and an HTML anchor in a node label are links Mermaid renders and the reader does not follow; one naming a local Markdown document is refused, so its author writes it as a `click`.
+A click naming a callback, a destination outside the root, a destination naming no document, and a C4 diagram's `$link` are carried as written and open nothing. A `links` value that is an array, or that holds a value that is no string, is refused: Mermaid renders the first as a menu whose entries are named by their positions, and the second as a link opening nothing.
+
+A Kanban ticket's link and an HTML anchor Mermaid draws in a label are links Mermaid renders and the reader does not follow; one naming a local Markdown document is refused, so its author writes it as a `click`. Mermaid draws no anchor in a `click` tooltip or a class diagram's `link` tooltip, nor in a sequence, pie, timeline, journey, Gantt, quadrant, Git, XY, Sankey, packet, radar, treemap or C4 diagram, whose labels it draws as text, so an anchor written there is carried as written.
 
 Every other byte of the fence is carried as written. A diagram link carries no operator, because a diagram gives it no link text to open with one.

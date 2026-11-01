@@ -52,10 +52,15 @@ prose, and so is a brace block anywhere but the end of a heading.
 A Mermaid sequence diagram's `links` line whose JSON object holds a value
 that is no string names a link Mermaid renders opening nothing, so it is
 refused as an unsupported construct naming its line rather than bundled
-around the gap.
+around the gap. So is one whose value is a non-empty array, which
+Mermaid renders as a menu whose entries are named by their positions
+rather than by a label the author wrote.
 
-A Kanban ticket's link and an HTML anchor in a node label are links
-Mermaid renders that the diagram link reader does not follow. One naming
+A Kanban ticket's link and an HTML anchor Mermaid draws in a label are
+links Mermaid renders that the diagram link reader does not follow. An
+anchor in a `click` tooltip, or in a diagram Mermaid draws as SVG text,
+such as a pie or sequence diagram, is drawn as no anchor and is carried
+as written. One naming
 a local Markdown document would ship a link to a file the bundle does not
 hold, so it is refused as an unsupported construct naming its line, as raw
 HTML is, and the author writes it as a `click` line. One naming a remote
@@ -478,11 +483,23 @@ def local_markdown(destination: str) -> bool:
 def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     """Each line one diagram carries that the profile refuses, in written order.
 
-    A `links` line holding a value that is no string is refused, and so
-    is a link Mermaid renders that the reader does not follow, where it
-    names a local Markdown document.
+    A `links` line holding a value that is no string is refused, so is
+    one whose value is a non-empty array, and so is a link Mermaid
+    renders that the reader does not follow, where it names a local
+    Markdown document.
     """
     read = linking(fence)
+    for at in read.listed:
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the sequence diagram's links line holds an array, which Mermaid "
+                f"renders as a menu whose entries are named by their positions, so "
+                f"the {PROFILE} profile cannot carry it"
+            ),
+            remedy="write the links value as an object naming each entry",
+            line=at,
+        )
     for at in read.broken:
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,
