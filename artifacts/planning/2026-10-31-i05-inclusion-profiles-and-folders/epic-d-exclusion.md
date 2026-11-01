@@ -8,7 +8,7 @@ A bundle is the union of what its links reach, and a document has no way to say 
 
 - **Selection adds only.** `cli.selection` resolves each fragment through `source.section` and unions the results into a `Selection`. `docs/selection.md` states that consolidation unions overlaps, so the selection model has no subtractive operation at all.
 - **A shared document bundles whole.** A document holding material two consumers need differently reaches both bundles entire, so carving one source for several consumers means maintaining several near-copies of it — the duplication the tool exists to remove.
-- **The nearest lever is the tree.** An author who needs a variant edits a copy, and the copy drifts from the original exactly as the note in [the mock epic](https://github.com/m2ux/prosiform/issues/414) records.
+- **The nearest lever is the tree.** An author who needs a variant edits a copy, and the copy drifts from the original exactly as the note in [I08:E07](https://github.com/m2ux/prosiform/issues/414) records.
 - **An exclusion belongs to the preset that asked for the reference.** A preset is selected by the section that writes a link, so what that section withholds of the document it names belongs in the same declaration, rather than on a command line that cannot know which section meant what.
 
 ## Proposal
@@ -24,7 +24,7 @@ A bundle is the union of what its links reach, and a document has no way to say 
 - **Exclusion happens where selection settles.** The settled region set is the region set the reference carries less the excluded ones, and every stage already reads that set — discovery, withheld targets, dispatches, operator refusals and emission. One seam removes the material, so no stage can disagree about what the bundle holds.
 - **The scope is the governing preset's, per reference.**
   An exclusion is a preset entry, so it carves the content the reference that preset governed carries, and a second reference to the same document under a preset that excludes nothing carries the section. Nothing is refused, because the two references asked for two different things and both are stated. A dispatched target's exclusions are its own document's and never the entry's.
-- **A file withholding everything it holds is refused.** An exclusion emptying the whole of a target's contribution states a contradiction — a reference that names a document whole and receives none of it — so the run refuses with `E_EXCLUDED_ENTRY`, naming the reference, the target and each exclusion that removed a region.
+- **A reference the preset empties is refused.** An exclusion removing the whole of the content a reference carries states a contradiction — a link that names a document whole and receives none of it — so the run refuses with `E_EXCLUDED_ENTRY`, naming the reference, the target and each exclusion that removed a region.
 - **An exclusion naming a heading the target does not carry is silent.** One preset serves many links and many documents, so a miss is ordinary rather than a fault.
 - **A deferral is not carried across.** An exclusion governs what this run compiles. A `¬` link inside an excluded section is never resolved, and a deferral the bundle publishes names a path rather than a set of exclusions, so what the later run withholds is that run's business.
 - **A malformed exclusion is invalid usage.** An empty section and a level outside one through six are refused before any source is read, which is where every command-line fault is stated.

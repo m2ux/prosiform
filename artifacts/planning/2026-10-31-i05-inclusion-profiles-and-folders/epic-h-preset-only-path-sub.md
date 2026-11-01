@@ -6,7 +6,7 @@
 
 The option is a second channel for one thing.
 
-- **It duplicates the preset.** `-m ORIGINAL=ALTERNATIVE` states a substitution on the command line, and a preset states the same thing in the document. Two channels for one intent means a compilation has two possible answers.
+- **It duplicates the preset.** `-m ORIGINAL=ALTERNATIVE` states a substitution on the command line, and a preset states the same thing in the document. Two channels for one intent means a reference has two possible answers.
 - **It makes a preset optional.** While `-m` exists, a document needs no preset to be substituted; with it gone, a preset is the only way, which is what makes the section that writes a link the setting for the reference it makes.
 - **Its scope is the run.** `-m` is read once in `main` and folded into every compilation, so a caller cannot vary a substitution by section. A preset can.
 - **Its name states the wrong mechanism.** The option and the preset entry were both called `mock`, a word that names the test scaffolding the feature was raised for rather than the thing it does: it substitutes the path a reference resolves to. The entry is `path-sub`.
@@ -30,12 +30,12 @@ The option is a second channel for one thing.
 | W02 | The declared-file path basis | AC3 | W01 | | |
 | W03 | The corpus rewritten to presets | AC4 | W01 | | |
 | W04 | E07's superseded criteria and row | AC5 | W03 | | |
-| W05 | The guideless document and the table | AC6 | W02 | | |
+| W05 | A reference under no `path-sub`, and the table | AC6 | W02 | | |
 
 ## Acceptance Criteria
 
 - [ ] **AC1.** `-m` is not an option the build accepts, and a command line carrying it is invalid usage with exit status `2`, as the corpus fixture `fixtures/cli/the-mock-option-is-gone` shows.
-- [ ] **AC2.** A compilation under a preset stating `path-sub` substitutes by that preset, where the same tree and the same preset state the same pair the option used to, as the corpus fixture `fixtures/inclusion/a-preset-states-the-pair` shows.
+- [ ] **AC2.** A reference under a preset stating `path-sub` substitutes by that preset, where the same tree and the same preset state the same pair the option used to, as the corpus fixture `fixtures/inclusion/a-preset-states-the-pair` shows.
 - [ ] **AC3.** A preset's sides resolve from the file that declares it, so the same declaration reads the same from any working directory, as the corpus fixture `fixtures/inclusion/a-preset-pair-resolves-from-its-file` shows.
 - [ ] **AC4.** Every corpus fixture that passed `-m` states its pair in a preset, and its expected result is unchanged, as `make corpus` shows.
 - [ ] **AC5.** E07's `mock`-named criteria are marked superseded and its documented row withdrawn, and the `path-sub` entry it described is named against [I08:E01](https://github.com/m2ux/prosiform/issues/436), as an inspection of that epic shows.

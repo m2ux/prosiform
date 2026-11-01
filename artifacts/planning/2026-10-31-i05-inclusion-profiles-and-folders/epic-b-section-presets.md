@@ -26,7 +26,7 @@ A document's declaration is flat, and a run is one set of options for every comp
 - **`default` always applies.**
   Each document's own `default` is in force wherever that document is compiled or writes a reference, and a keyword match layers above it. A keyword match never replaces it, and a document with no keyword match is compiled under its own `default` alone.
 - **`default` is not selectable by keyword.**
-  The name is reserved, so a heading titled `default` selects nothing by that spelling. The fallback's one meaning is what applies when no keyword matches.
+  The name is reserved, so a heading titled `default` selects nothing by that spelling. Its one meaning is what is in force where no keyword matches.
 - **A command-line entry reads the presets of the file it names.**
   An entry reference is written in no document, so the file it names is the document being operated on and its presets are the ones in force. A whole-document entry matches keywords against that document's own title heading; a section entry matches them against the section it names.
 - **A preset covers the references its selection reaches, and nothing else.**
