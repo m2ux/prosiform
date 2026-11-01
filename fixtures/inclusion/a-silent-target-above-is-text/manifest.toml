@@ -1,0 +1,16 @@
+description = "A link naming a document above the writing document's directory that declares nothing is emitted as authored, so the target's declaration rather than its position decides inclusion on either side of the writing directory."
+
+clauses = [
+  "File-owned invocation conformance cases — Target declarations, a target declaring nothing emitted as authored",
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-F", "1", "modes/review.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_review.bundle.md"]
+diagnostics = []
