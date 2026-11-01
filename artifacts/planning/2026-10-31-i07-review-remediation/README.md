@@ -6,7 +6,7 @@
 
 Fifteen epics already merged into `main` were reviewed for delivered defects, and eighty-two findings were recorded: five blockers, thirty-six majors and forty-one minors.
 
-This initiative delivers twenty-six of them across twenty-seven criteria in twelve tasks, and three further tasks carry five criteria closing what a review of the merged tasks found. Four of the five blockers are delivered here; blocker 5 waits with the stale example. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
+This initiative delivers twenty-five of them across twenty-five criteria in eleven tasks, and three further tasks carry five criteria closing what a review of the merged tasks found. Four of the five blockers are delivered here; blocker 5 waits with the stale example. Eight majors and thirty-three minors are taken elsewhere: the findings whose fix no run of the tool shows belong to [I01:E03](https://github.com/m2ux/prosiform/issues/187) by its own stated boundary, and the example's missing script paths belong to [I06:E00](https://github.com/m2ux/prosiform/issues/406), whose Problem names the same lines.
     10|
 The findings and their evidence are held in [the review record](../2026-10-31-merged-epic-review/README.md), whose disposition table names the task delivering each finding.
 
@@ -53,7 +53,6 @@ Each decision was taken with the user before the initiative was raised, or on re
 | [W09 work item](w09.md) | A run that could not complete |
 | [W10 work item](w10.md) | The corpus held to what each form measures |
 | [W11 work item](w11.md) | The committed baseline |
-| [W13 work item](w13.md) | The overview rule and its condition |
 | [W16 work item](w16.md) | The sub-agent trace in every dispatching form |
 | [W17 work item](w17.md) | The publication and title-dispatch refusals stated |
 | [W18 work item](w18.md) | The scalar ceiling in the catalogue |
@@ -76,7 +75,6 @@ Each finding below is delivered by exactly one task, and each row's Coverage car
 | W09 | eval | 9, 23, 24 |
 | W10 | eval | 21, 22 |
 | W11 | eval | 61 |
-| W13 | example | 26 |
 | W16 | eval | Merged-task review: AC16 holds for the bootstrap form alone |
 | W17 | source | Merged-task review: W02's refusals stated in no page, catalogue row or fixture |
 | W18 | source | Merged-task review: the scalar ceiling absent from the catalogue |
@@ -92,7 +90,7 @@ W16, W17 and W18 answer a review of the four merged tasks rather than a finding 
 | [I01:E03](https://github.com/m2ux/prosiform/issues/187) | 10, 12, 13, 14, 15, 16, 33, 34, 52, 55, 56, 65, 71, 76, 77 | A rule the design or a check states imprecisely, whose fix no run of the tool shows, which is that epic's stated boundary |
 | [I06:E00](https://github.com/m2ux/prosiform/issues/406) | 32 | The example's command lines, named in that epic's own Problem |
 | [I09:E02](https://github.com/m2ux/prosiform/issues/458) | 29 | The hierarchy page states the grouping rule that epic rewrites |
-| Deferred with the example | 5, 17, 27, 30, 31, 81 | The example tree is stale and will be rewritten, so its defects are fixed with that rewrite |
+| Deferred with the example | 5, 17, 26, 27, 30, 31, 81 | The example tree is stale and will be rewritten, so its defects are fixed with that rewrite |
 | Recorded only | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 | Minors deferred by decision: they are addressed later, not by this initiative |
 
 ## Joins
@@ -111,7 +109,7 @@ The epic was reviewed twice after it was raised, and these corrections are what 
 | Criteria renumbered in sequence | Two were appended out of order, and dependencies now read as earlier rows throughout |
 | The title widened | It named enforcement alone while the epic also refuses, derives and corrects |
 | Criteria grouped to their task | Each row's Coverage carries the criteria its findings need, one per finding |
-| W12, W14 and W15 removed | The example tree they repair is stale and will be rewritten; finding 29, a docs page, moves to I09:E02 |
+| W12, W13, W14 and W15 removed | The example tree they repair is stale and will be rewritten; finding 29, a docs page, moves to I09:E02 |
 | AC16 narrowed to the bootstrap form | Only the bootstrap instruction names a sub-agent's trace, so the criterion states the form its evidence covers |
 | W11 depends on W08 and W10 | The baseline it writes measures the scoring W08 changes and the linked form W10 changes |
-| W16–W18 added with AC28–AC32 | A review of the merged tasks found a criterion proved for one form, and refusals and a ceiling stated in no page, catalogue row or fixture |
+| W16–W18 added with AC26–AC30 | A review of the merged tasks found a criterion proved for one form, and refusals and a ceiling stated in no page, catalogue row or fixture |
