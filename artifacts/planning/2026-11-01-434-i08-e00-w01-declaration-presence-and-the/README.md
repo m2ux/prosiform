@@ -13,6 +13,7 @@ This record holds its delivery of `AC4, AC5, AC18`: the work item, the validatio
 | Artifact | What it holds |
 | --- | --- |
 | [W01](w01.md) | The work item: declaration presence, the `root` refusal, the retired code and the trees that drop the field |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
 
 ## Links
 
@@ -20,4 +21,5 @@ This record holds its delivery of `AC4, AC5, AC18`: the work item, the validatio
 | --- | --- |
 | Epic | [I08:E00 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
+| Pull request | [#487](https://github.com/m2ux/prosiform/pull/487) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
