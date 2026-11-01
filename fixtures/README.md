@@ -51,10 +51,10 @@ Each of its fixtures reaches [`example/work-planner/`](../example/work-planner/S
 The manifest is the whole declaration. A runner reads it and the fixture's files, and decides pass or fail from them alone.
 
 ```toml
-description = "An entry reference normalizing to a path above the working directory fails."
+description = "A deferred link naming a document that declares nothing is refused."
 
 clauses = [
-  "Resolution sequence — step 7",
+  "Link classification and resource handling — An operator's target",
 ]
 
 [invocation]
@@ -66,17 +66,17 @@ exit_status = 1
 
 [[expected.diagnostics]]
 severity = "error"
-code = "E_SOURCE_OUTSIDE_ROOT"
-reference = "../outside.md"
-source = "guide.md:3"
-chain = ["guide.md", "../outside.md"]
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "../guidelines.md"
+source = "guide.md:6"
+chain = ["guide.md", "../guidelines.md"]
 ```
 
 | Field | Declares |
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, named as [The clause form](#the-clause-form) states, so every clause maps to the fixtures that cover it. |
-| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It bounds every source the run reads. |
+| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It bounds positional entries and the paths diagnostics name. |
 | `invocation.arguments` | The arguments of the invocation, in order. None declares the bare command. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes into its folder, each named as the run names the bundle. A run writing no bundle declares none. |
@@ -125,7 +125,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits inside the working directory. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds every source the run reads. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
+A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
 
 ## Text an output carries
 
