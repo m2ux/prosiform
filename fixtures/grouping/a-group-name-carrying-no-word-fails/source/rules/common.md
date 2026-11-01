@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "_ -"
-    group-depth: 2
+    group-depth: [{"_ -": 2}]
 ---
 # Common
 

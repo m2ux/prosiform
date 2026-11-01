@@ -19,5 +19,5 @@ severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["⇉ Publish"]
 reference = "publish.md"
-source = "checklist-⇉-publish.md:8"
+source = "checklist-⇉-publish.md:7"
 chain = ["guide.md", "checklist-⇉-publish.md"]

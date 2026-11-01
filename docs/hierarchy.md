@@ -46,7 +46,7 @@ Setext headings are converted to ATX when the shift requires it, keeping their v
 
 A **group** is one top-level division. By default a group is one source document and its division is that document's file heading.
 
-A document whose `default` preset declares `group` and `group-depth` joins a **merged group** instead, sharing one heading with every other contributor declaring the same name.
+A document whose `default` preset lists a group in `group-depth` joins that **merged group** instead, sharing one heading with every other contributor declaring the same name. A document listing several groups joins each, and its selected content is emitted under every one of them, once in each.
 
 - The group's heading is the declared name in title case. A name of hyphens, underscores and spaces alone carries no word for title case to name, and fails the run.
 - Every member must declare the same depth. A disagreement fails the run and names both declarations.

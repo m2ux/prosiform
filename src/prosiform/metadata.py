@@ -33,10 +33,11 @@ INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
+"""Refused: `group-depth` pairs each group with its depth in one entry."""
 DEPTH = "group-depth"
 EXCLUDE = "exclude"
 PATH_SUB = "path-sub"
-FIELDS = (GROUP, DEPTH, EXCLUDE, PATH_SUB)
+FIELDS = (DEPTH, EXCLUDE, PATH_SUB)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -81,19 +82,30 @@ class _MarkedScanner(Scanner):
 
 
 @dataclass(frozen=True)
-class Preset:
-    """One named preset's settings and their original value locations.
+class Membership:
+    """One `group-depth` entry: a merged group and the depth its document joins at.
 
-    `group` and `depth` decide which merged group the declaring document
-    joins, held to the depth every contributing member declares; a preset
-    stating neither leaves the document its individual file group.
+    The depth is held to the one every contributing member of the group
+    declares. Each location is where its half of the entry is written.
+    """
+
+    group: str
+    depth: int
+    group_location: Location
+    depth_location: Location
+
+
+@dataclass(frozen=True)
+class Preset:
+    """One named preset's settings.
+
+    `memberships` holds each `group-depth` entry in written order, so the
+    declaring document joins every group it names; a preset stating none
+    leaves the document its individual file group.
     """
 
     name: str
-    group: str | None = None
-    depth: int | None = None
-    group_location: Location | None = None
-    depth_location: Location | None = None
+    memberships: tuple[Membership, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -419,6 +431,8 @@ def decode(
         name = "prosiform." + key.value
         if key.value == ROOT:
             raise _refused_root(name, key.location)
+        if key.value == GROUP:
+            raise _refused_group(name, key.location)
         if value.kind != "map":
             remedy = (
                 f"; write the field within a preset, as prosiform.{DEFAULT}.{key.value}"
@@ -444,6 +458,16 @@ def _refused_root(name: str, location: Location) -> InvalidMetadata:
     )
 
 
+def _refused_group(name: str, location: Location) -> InvalidMetadata:
+    return _fail(
+        INVALID_CONVERSION_METADATA,
+        f"{name} is refused: {DEPTH} pairs each group with its depth in one "
+        f"entry; write the pair within a preset, as "
+        f"prosiform.{DEFAULT}.{DEPTH}: [{{<group>: <depth>}}]",
+        location,
+    )
+
+
 def _preset(preset: str, mapping: _Node) -> Preset:
     """One preset's settings, each field checked where it is written."""
     fields: dict[str, _Node] = {}
@@ -457,31 +481,47 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         name = f"prosiform.{preset}.{key.value}"
         if key.value == ROOT:
             raise _refused_root(name, key.location)
+        if key.value == GROUP:
+            raise _refused_group(name, key.location)
         if key.value not in FIELDS:
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
-        if key.value == GROUP and value.kind != "str":
-            raise _fail(
-                INVALID_CONVERSION_METADATA, f"{name} must be a string", value.location
-            )
-        if key.value in (EXCLUDE, PATH_SUB) and value.kind != "seq":
+        if value.kind != "seq":
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"{name} must be a list", value.location
             )
         fields[key.value] = value
-    if GROUP not in fields and DEPTH not in fields:
+    if DEPTH not in fields:
         return Preset(preset)
-    if GROUP not in fields or DEPTH not in fields:
-        present = GROUP if GROUP in fields else DEPTH
+    named = f"prosiform.{preset}.{DEPTH}"
+    return Preset(
+        preset,
+        tuple(
+            _membership(f"{named}[{at}]", entry)
+            for at, entry in enumerate(fields[DEPTH].children)
+        ),
+    )
+
+
+def _membership(name: str, entry: _Node) -> Membership:
+    """One `group-depth` entry, a single string key mapped to a depth."""
+    if entry.kind != "map" or len(entry.children) != 2:
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"prosiform.{preset}.{present} requires its paired field",
-            fields[present].location,
+            f"{name} must be a mapping holding one group and its depth, as "
+            "{<group>: <depth>}",
+            entry.location,
         )
-    group, depth = fields[GROUP], fields[DEPTH]
+    group, depth = entry.children
+    if group.kind != "str":
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            f"{name} must name its group with a string key",
+            entry.location,
+        )
     if not group.value.strip() or any(
-        char in ":/\u0085  "
+        char in ":/\u0085\u2028\u2029"
         or ord(char) < 32
         or 127 <= ord(char) <= 159
         or 0xD800 <= ord(char) <= 0xDFFF
@@ -490,14 +530,14 @@ def _preset(preset: str, mapping: _Node) -> Preset:
     ):
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"prosiform.{preset}.group must be printable, single-line and "
-            "nonblank, without ':' or '/'",
+            f"{name} must name a group printable, single-line and nonblank, "
+            "without ':' or '/'",
             group.location,
         )
     if not worded(group.value):
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"prosiform.{preset}.group must carry a word, since its title case "
+            f"{name} must name a group carrying a word, since its title case "
             "is the group's heading; name the group with a character other "
             "than a hyphen, an underscore or whitespace",
             group.location,
@@ -510,13 +550,7 @@ def _preset(preset: str, mapping: _Node) -> Preset:
     if not isinstance(numeric_depth, Decimal) or not 1 <= numeric_depth <= 6:
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"prosiform.{preset}.group-depth must be an integer from 1 through 6",
+            f"{name} for group {group.value!r} must be an integer from 1 through 6",
             depth.location,
         )
-    return Preset(
-        preset,
-        group=group.value,
-        depth=int(numeric_depth),
-        group_location=group.location,
-        depth_location=depth.location,
-    )
+    return Membership(group.value, int(numeric_depth), group.location, depth.location)

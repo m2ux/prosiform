@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: Review
-    group-depth: 2
+    group-depth: [{Review: 2}]
 ---
 
 # Guide

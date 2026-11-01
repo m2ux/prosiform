@@ -1,0 +1,26 @@
+description = "A group-depth entry holding two groups is no single pair, so it fails with E_INVALID_CONVERSION_METADATA at the entry, naming it, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — An entry is one string key with an integer value",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.group-depth[0] must be a mapping holding one group and its depth"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 19

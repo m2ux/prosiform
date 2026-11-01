@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "rules"
-    group-depth: 2
+    group-depth: [{rules: 2}]
 ---
 The guide preamble, pointing at [the notes](notes.md) and [the shared rules](rules.md).
 

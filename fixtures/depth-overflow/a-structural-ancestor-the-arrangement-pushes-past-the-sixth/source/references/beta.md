@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "references"
-    group-depth: 1
+    group-depth: [{references: 1}]
 ---
 # Conventions
 

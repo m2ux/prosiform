@@ -61,8 +61,7 @@ ARTIFACT = (
     "---\n"
     "prosiform:\n"
     "  default:\n"
-    '    group: "artifacts"\n'
-    "    group-depth: 2\n"
+    "    group-depth: [{{artifacts: 2}}]\n"
     "---\n"
     "# {title}\n"
     "\n"
@@ -81,8 +80,7 @@ MODE = (
     "---\n"
     "prosiform:\n"
     "  default:\n"
-    '    group: "modes"\n'
-    "    group-depth: 2\n"
+    "    group-depth: [{{modes: 2}}]\n"
     "---\n"
     "# Plan Mode\n"
     "\n"

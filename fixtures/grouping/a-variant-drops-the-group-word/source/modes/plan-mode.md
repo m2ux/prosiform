@@ -1,8 +1,7 @@
 ---
 prosiform:
   default:
-    group: "modes"
-    group-depth: 2
+    group-depth: [{modes: 2}]
 ---
 Plan preamble.
 
