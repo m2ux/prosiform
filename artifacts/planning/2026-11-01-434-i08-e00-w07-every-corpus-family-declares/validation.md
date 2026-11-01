@@ -20,4 +20,4 @@ A `grep` for `root` over `fixtures/*/*/manifest.toml`, excluding the refused `pr
 
 ## T5 Full check
 
-`make check` exits 0 at aa3dc350 before opening.
+`make check` exits 0 at aa3dc350 before opening; the epic base held no newer commit before merging, CI on aa3dc350 passes, and #502 merged into `i08/e00/main` as ae89392c.

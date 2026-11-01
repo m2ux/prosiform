@@ -23,3 +23,4 @@ This record holds its delivery of `AC12`: the work item, the validation evidence
 | Epic | [I08:E00 Declared Inclusion](https://github.com/m2ux/prosiform/issues/434) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
+| Pull request | [#502](https://github.com/m2ux/prosiform/pull/502) |
