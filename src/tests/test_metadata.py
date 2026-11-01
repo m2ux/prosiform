@@ -137,6 +137,22 @@ def test_group_grammar(group: str) -> None:
         parse("prosiform: {group: " + json.dumps(group) + ", group-depth: 2}")
 
 
+@pytest.mark.parametrize("group", ["-", "_", "--", "- _", "_-_"])
+def test_a_group_name_whose_title_case_is_empty_is_refused(group: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform: {group: " + json.dumps(group) + ", group-depth: 2}")
+    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.group must carry a word" in caught.value.diagnostic.message
+
+
+@pytest.mark.parametrize("group", ["a", "-a-", "x_1", "!"])
+def test_a_group_name_carrying_a_word_is_admitted(group: str) -> None:
+    assert (
+        parse("prosiform: {group: " + json.dumps(group) + ", group-depth: 2}").group
+        == group
+    )
+
+
 @pytest.mark.parametrize("depth", ["0", "7", "22", "٢", "2.0", " 2"])
 def test_depth_grammar(depth: str) -> None:
     with pytest.raises(InvalidMetadata):

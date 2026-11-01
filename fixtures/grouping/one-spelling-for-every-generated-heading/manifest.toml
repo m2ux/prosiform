@@ -1,10 +1,11 @@
-description = "Every heading one bundle generates carries one title casing: a hyphenated file heading keeps its hyphen and capitalizes each part of the name, a nested one keeps its separator and capitalizes each segment, and a merged group's heading is its declared name capitalized."
+description = "Every heading one bundle generates carries one title casing: an untitled file heading named by a nested, hyphenated path keeps its slash and its hyphen and capitalizes each part, a merged group's heading keeps the hyphen its declared name carries, and each member's subsection and variant heading keep the hyphen its filename carries."
 
 clauses = [
   "Input and output contract — Generated headings",
   "File-scoped hierarchy",
   "Grouping — Group naming",
   "Adversarial acceptance fixtures — File hierarchy, a nested path and a hyphenated name emitted in title case beside a merged group's heading",
+  "Grouping — Variants by document",
 ]
 
 [invocation]

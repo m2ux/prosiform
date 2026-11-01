@@ -80,7 +80,8 @@ the destination of the target it resolved to, through the map the
 bundle's own headings produce. A whole-document reference takes the
 destination of that file's heading, except the parent — the first entry
 document — whose whole-document reference takes the destination of its
-first H2, wherever the bundle placed that heading. A fragment takes the
+first H2 where it heads a file group of its own, and of the heading
+carrying its title where it is a member of a merged group. A fragment takes the
 destination of the heading it named, and a fragment-only link resolves
 inside its own source first and then takes that heading's destination. A destination
 is scoped to the whole bundle, so a reference from one group to another
@@ -126,6 +127,7 @@ from prosiform.closure import (
     unmarked,
     withholding_target,
 )
+from prosiform.heading import title_cased
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -182,8 +184,6 @@ HEADING_OPEN = "heading_open"
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
-
-WORD = re.compile(r"[^-_/\s]+")
 
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
@@ -306,17 +306,6 @@ class Group:
     def targets(self) -> tuple[tuple[Target, ...], ...]:
         """The targets each emitted heading resolves, in bundle order."""
         return tuple(one.answers for one in self.record.headings)
-
-
-def title_cased(text: str) -> str:
-    """One generated heading in title case: each word capitalized, the rest as written.
-
-    A word runs between the separators a name carries, and only its
-    first letter is touched, so a nested name keeps its separators and
-    a hyphenated name keeps its hyphens. The convention changes
-    letters, not structure.
-    """
-    return WORD.sub(lambda word: word.group()[:1].upper() + word.group()[1:], text)
 
 
 def heading_text(path: str) -> str:

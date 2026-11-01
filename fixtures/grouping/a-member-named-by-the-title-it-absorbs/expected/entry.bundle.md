@@ -4,9 +4,7 @@ The member [Titled](#titled) is named by the heading its own title is absorbed i
 
 # Notes
 
-## Overview
-
-### Titled
+## Titled
 
 ## Findings
 
