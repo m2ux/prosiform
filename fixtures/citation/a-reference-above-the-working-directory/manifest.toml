@@ -1,9 +1,8 @@
-description = "A document whose reference names material above the working directory bundles successfully: the citation is emitted as authored, the document it names is not opened, and the closure stays inside the working directory."
+description = "A document whose reference names material above the working directory that declares nothing bundles successfully: the citation is emitted as authored and the document it names contributes no content."
 
 clauses = [
   "Explicitly linked source structure — Explicit dependencies",
   "Link classification and resource handling — A link naming a document that declares nothing",
-  "Reference normalization and path identity, the invocation working directory confines the run",
 ]
 
 [invocation]

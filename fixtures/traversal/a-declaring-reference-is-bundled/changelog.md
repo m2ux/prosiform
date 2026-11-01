@@ -1,6 +1,3 @@
----
-prosiform: {}
----
 # Changelog
 
-A document the bundle does not carry.
+A document the bundle does not carry, which declares nothing.

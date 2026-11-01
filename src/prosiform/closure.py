@@ -3,9 +3,9 @@
 URI components split before decoding. Local path segments decode once.
 A link naming a Markdown document is a dependency when that document
 declares `prosiform`, and a citation the bundle carries as authored when
-it declares nothing; positional references permit parent bootstrap.
-Canonical source identities are relative to the invocation working
-directory, independent of the discovering parent.
+it declares nothing. Canonical source identities are relative to the
+invocation working directory, independent of the discovering parent, and
+one above it keeps its leading parent segments.
 
 Three operators open a link's text, each a mark followed by a space, and
 one link states one of them. Each withholds the same compilation from the
@@ -530,24 +530,18 @@ def segment(written: str) -> str:
     return decoding
 
 
-def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -> str:
-    """Normalize segments, permitting leading parents for positional references."""
+def normalized(base: str, segments: Sequence[str]) -> str:
+    """Normalize segments, keeping the leading parents of a path above the root."""
     walked = [part for part in base.split(SEPARATOR) if part]
     for part in segments:
         if part in ("", CURRENT):
             continue
         if part != PARENT:
             walked.append(part)
-            continue
-        if allow_parent and (not walked or walked[-1] == PARENT):
+        elif not walked or walked[-1] == PARENT:
             walked.append(PARENT)
-            continue
-        if not walked:
-            raise OutsideRoot(
-                "normalizes above the invocation working directory, which bounds "
-                "every document the run reads"
-            )
-        walked.pop()
+        else:
+            walked.pop()
     return SEPARATOR.join(walked)
 
 
@@ -675,7 +669,7 @@ def unmarked(text: str) -> str:
     return text[end:]
 
 
-def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:
+def resolve(text: str, base: str = "") -> Reference:
     """Decode a reference and normalize its path, retaining the authored access walk."""
     written = components(text)
     if DRIVE.match(written.path) is not None:
@@ -701,7 +695,7 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
             f"path the profile reads"
         )
     parts = [segment(part) for part in written.path.split(SEPARATOR)]
-    path = normalized(base, parts, allow_parent)
+    path = normalized(base, parts)
     walk = "/".join(parts) if written.path else None
     if written.fragment is None or not written.fragment:
         return Reference(text, path, walk=walk)
@@ -773,19 +767,20 @@ def inside(
     that file's directory. A fragment with no path names a section of
     the document that carries it. Where the result sits decides nothing
     about whether the run compiles it; the target's declaration does,
-    and `resolvable` asks it.
+    and `resolvable` asks it. A path normalizing above the invocation
+    working directory keeps its leading parent segments, so its target
+    is asked like any other and opened through the bounded no-follow
+    walk from the working directory, the access a positional entry
+    takes.
 
-    The grammar still bounds the path: a drive path, a root-relative
-    path and a path normalizing above the invocation working directory
-    name nothing the run can open, so each is refused as `OutsideRoot`.
+    The grammar still bounds the path: a drive path and a root-relative
+    path name nothing the run can open, so each is refused as
+    `OutsideRoot`.
 
     The mapping is consulted on the identity the reference normalized
-    to, which is the authored identity and never the substitute's, and
-    before the working-directory bound: a key decides what an identity
-    names, so a substitute is returned wherever it sits. It is opened
-    through the bounded no-follow walk from the invocation working
-    directory, the access a positional entry takes, so a redirected
-    reference is no wider a grant than an entry reference already is.
+    to, which is the authored identity and never the substitute's, so
+    a substitute is returned wherever it sits and opened through that
+    same walk.
 
     A remote reference is returned before the mapping is consulted: a
     key is the identity a reference normalized to, and a reference
@@ -798,7 +793,7 @@ def inside(
     same link again passes nothing and records nothing new.
     """
     base = posixpath.dirname(document)
-    found = resolve(text, base, allow_parent=True)
+    found = resolve(text, base)
     if found.external:
         return found
     if not components(text).path:
@@ -808,11 +803,6 @@ def inside(
     resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
     if substitution.key(resolved) is not None:
         return substitution.redirect(resolved, origin)
-    if found.path == PARENT or found.path.startswith(f"{PARENT}{SEPARATOR}"):
-        raise OutsideRoot(
-            "normalizes above the invocation working directory, which bounds "
-            "every document the run reads"
-        )
     return resolved
 
 
@@ -952,10 +942,13 @@ def boundary(document: str, tokens: Sequence[Token]) -> str:
     local Markdown path has its own directory.
 
     The working-directory-relative directory is returned, empty for the
-    working directory itself. A link the path grammar refuses, one naming
-    no Markdown document and an image name no path and contribute
-    nothing; so does a path above the working directory, which bounds
-    every document the run reads.
+    working directory itself, and one above it is spelled with leading
+    parent segments. A link the path grammar refuses, one naming no
+    Markdown document and an image name no path and contribute nothing.
+
+    A directory reached by climbing further than another holds it, so
+    where the paths climb different distances the boundary is the
+    directory the furthest climb reaches.
     """
     directories = [
         posixpath.dirname(found.path)
@@ -964,7 +957,19 @@ def boundary(document: str, tokens: Sequence[Token]) -> str:
     ]
     if not directories:
         return posixpath.dirname(document)
+    climbs = {climb(directory) for directory in directories}
+    if len(climbs) > 1:
+        return SEPARATOR.join([PARENT] * max(climbs))
     return posixpath.commonpath(directories)
+
+
+def climb(path: str) -> int:
+    """How many leading parent segments a normalized path opens with."""
+    parts = path.split(SEPARATOR)
+    count = 0
+    while count < len(parts) and parts[count] == PARENT:
+        count += 1
+    return count
 
 
 def rebased(found: Reference, text: str) -> str:

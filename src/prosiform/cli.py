@@ -437,8 +437,7 @@ def mock(value: str) -> Pairing:
     """One `ORIGINAL=ALTERNATIVE` pair, each side read from the working directory.
 
     Both sides are read by the grammar every other reference is read
-    by, with the parent bootstrap a positional entry permits, so a
-    substitute kept above the working directory is named as a
+    by, so a substitute kept above the working directory is named as a
     command-line reference names one. Neither side is matched against
     the mapping: a substitute is material rather than another
     indirection, and a value that is also a key is read from disk.
@@ -727,7 +726,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
 
 
 def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
-    """Normalize a positional reference with bounded relative-parent bootstrap.
+    """Normalize a positional reference, keeping the leading parents of a path above.
 
     The mapping names what the reference resolves to instead, and is
     read after the normalization: an entry reference is written in no
@@ -737,7 +736,7 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
     recorded with no source position.
     """
     try:
-        found = resolve(text, allow_parent=True)
+        found = resolve(text)
     except Malformed as malformed:
         raise usage_failure(
             f"the entry reference {text!r} {malformed}", reference=text
@@ -1265,9 +1264,8 @@ def required(
     A use naming a Markdown document whose frontmatter declares
     `prosiform` is a reference the bundle carries, and every other use
     is text: a document declaring nothing is probed and never captured,
-    a path naming no document states nothing the bundle answers for, a
-    path above the working directory is not opened, and the link
-    reaches the bundle as its author wrote it. The target's declaration
+    a path naming no document states nothing the bundle answers for,
+    and the link reaches the bundle as its author wrote it. The target's declaration
     is the whole of the question, so a document states that it travels
     and every link reaching it agrees.
 

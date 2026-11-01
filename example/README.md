@@ -188,10 +188,10 @@ The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-def
 ```markdown
 ### 1. Read the Guidelines
 
-Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
+Read the [shared skill guidelines](#skill-guidelines) and [skill guidelines](guidelines.md) whole before the first edit.
 ```
 
-The deferred link's destination names the guidelines from the working directory, so `pf guidelines.md` run from that directory compiles them. The guidelines contribute no content to this bundle. The shared guidelines lie above the working directory, so their link keeps its authored destination.
+The deferred link's destination names the guidelines from the working directory, so `pf guidelines.md` run from that directory compiles them. The guidelines contribute no content to this bundle. The shared guidelines lie above the working directory and declare `prosiform`, so the bundle carries them and their link names their heading.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml).
 

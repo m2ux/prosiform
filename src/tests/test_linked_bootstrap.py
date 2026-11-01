@@ -557,15 +557,17 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         assert stack.skill.name not in stack.entry(label)
 
 
-def test_sources_are_bounded_by_the_invocation_directory(stack: Stack) -> None:
-    """A link leaving the caller directory is carried as its author wrote it."""
+def test_a_declaring_link_above_the_invocation_directory_is_compiled(
+    stack: Stack,
+) -> None:
+    """A link leaving the caller directory compiles the declaring document it names."""
     other = stack.tree / "skills"
     for label in stack.targets():
         first = stack.compiled(stack.entry(label))
         second = stack.compiled(stack.entry(label, cwd=other), cwd=other)
         assert "RUN_LEAF_MARKER" in first
-        assert "RUN_LEAF_MARKER" not in second
-        assert "](../../../" in second
+        assert "RUN_LEAF_MARKER" in second
+        assert "](../../../" not in second
 
 
 def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:

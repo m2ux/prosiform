@@ -1,10 +1,10 @@
-description = "The usage example that compiles the Revise mode bundles that mode with the Rules and Conventions documents its links reach and the Plan Change artifact under the Artifacts heading. Its four deferred links to the skill guidelines are published with the mark removed and a destination naming the guidelines from the working directory, and the guidelines contribute no content. Its links to the shared guidelines resolve above the working directory and keep their authored destinations."
+description = "The usage example that compiles the Revise mode bundles that mode with the Rules and Conventions documents its links reach and the Plan Change artifact under the Artifacts heading. Its four deferred links to the skill guidelines are published with the mark removed and a destination naming the guidelines from the working directory, and the guidelines contribute no content. Its links to the shared guidelines resolve above the working directory to a document that declares, so the shared guidelines are compiled into the bundle and those links rewritten to their destinations."
 
 clauses = [
   "Usage examples",
   "Link classification and resource handling — The deferral mark",
   "Link classification and resource handling — A deferred link's destination",
-  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Link classification and resource handling — Local Markdown document links",
 ]
 
 [invocation]

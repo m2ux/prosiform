@@ -1,4 +1,4 @@
-description = "A link whose text opens with the deferral operator names a Markdown document above the working directory, which no run can open, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
+description = "A link whose text opens with the deferral operator names a Markdown document above the working directory that declares nothing, so it withholds no compilation and is refused with a diagnostic naming the reference and where it is written; no bundle is published."
 
 clauses = [
   "Link classification and resource handling — An operator's target",

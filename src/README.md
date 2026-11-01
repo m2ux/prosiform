@@ -100,7 +100,7 @@ Paths below are relative to `src/`.
 
 ### Reference resolution
 
-`tests/test_closure.py` checks splitting before decoding, valid percent escapes, exactly one decoding pass, and rejection of decoded separators or control characters. It also covers relative-path normalization, source-root confinement, scheme and authority classification, drive-letter paths, and exact decoded-fragment lookup.
+`tests/test_closure.py` checks splitting before decoding, valid percent escapes, exactly one decoding pass, and rejection of decoded separators or control characters. It also covers relative-path normalization, a path above the working directory keeping its parent segments, scheme and authority classification, drive-letter paths, and exact decoded-fragment lookup.
 
 ### Command interface
 
