@@ -43,7 +43,7 @@ Inclusion is decided by directory, and the directory is authored twice.
 | W02 | A declaration probed without a capture | AC6 | W01 | | |
 | W03 | Classification that asks the target | AC1, AC3 | W02 | | |
 | W04 | Absent targets and the operators that hold | AC7, AC8, AC15 | W03 | | |
-| W05 | The boundary a document's links state | AC2, AC9, AC17 | W03 | | |
+| W05 | The boundary a document's links state | AC2, AC9, AC17 | W04 | | |
 | W06 | Every corpus family declares | AC12 | W05 | | |
 | W07 | The pages that state the declaration | AC13, AC14 | W06 | | |
 | W08 | The one settled selection and the property it holds | AC16 | W07 | | |

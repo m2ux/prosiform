@@ -25,7 +25,7 @@ A shipped flag exists only for tests, and every surface presents it as a feature
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, the variable and the pin | AC7 | | | |
-| W01 | The parser and the run reading the variable | AC1, AC6 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | | |
+| W01 | The parser and the run reading the variable | AC1, AC6 | W00 | | |
 | W02 | The runner setting it from a manifest | AC2 | W01 | | |
 | W03 | The option table and the help output | AC3 | W01 | | |
 | W04 | The declaration the corpus carries | AC4 | W02 | | |
@@ -43,5 +43,5 @@ A shipped flag exists only for tests, and every surface presents it as a feature
 
 ## References
 
-- **R0.** Epic — [I08:E04 Faults Out of the Option Surface](https://github.com/m2ux/prosiform/issues/450).
+- **R0.** Epic — [I08:E04 Conformance Faults](https://github.com/m2ux/prosiform/issues/450).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions this change comes from.
