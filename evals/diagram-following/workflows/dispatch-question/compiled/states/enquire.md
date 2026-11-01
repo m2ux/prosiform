@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Enquire
 
 Write `actions/enquire.txt` containing `enquired`.

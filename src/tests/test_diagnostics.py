@@ -39,7 +39,7 @@ def reaching() -> Diagnostic:
 
 
 def test_a_diagnostic_carries_only_the_fields_it_was_given() -> None:
-    carried = Diagnostic(ERROR, "no root", code="E_ROOT_NOT_FOUND").fields()
+    carried = Diagnostic(ERROR, "no target", code="E_TARGET_NOT_FOUND").fields()
     assert set(carried) == {"severity", "message", "code"}
 
 

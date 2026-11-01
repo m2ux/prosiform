@@ -20,7 +20,7 @@ Each contributing source becomes a **file heading**, an H1. Its text is the docu
 
 The file heading carries the title, so the title is not emitted again beneath it. A self-reference to that title resolves to the file heading.
 
-There is no heading above the file headings. A root names no division.
+There is no heading above the file headings. A directory names no division.
 
 ```mermaid
 flowchart TD

@@ -41,13 +41,27 @@ def parse(
         "# comment\n",
         "{}",
         "name: test",
-        "prosiform: {}",
         "metadata: {owner: yes}",
         "metadata: {date: 2026-10-23, binary: 0b10, underscored: 1_000}",
     ],
 )
 def test_absent_settings(text: str) -> None:
     assert parse(text) == Conversion()
+    assert not parse(text).declared
+
+
+def test_absent_frontmatter_declares_nothing() -> None:
+    absent = decode(b"# Body\n", file="a.md", span=None, max_bytes=7, max_depth=1)
+    assert not absent.declared
+
+
+@pytest.mark.parametrize("text", ["prosiform: {}", "prosiform:\n  {}"])
+def test_an_empty_block_declares(text: str) -> None:
+    assert parse(text) == Conversion(declared=True)
+
+
+def test_a_grouped_block_declares() -> None:
+    assert parse("prosiform: {group: rules, group-depth: 2}").declared
 
 
 def test_group_and_marks() -> None:
@@ -279,55 +293,28 @@ def test_out_of_range_escape_mark_survives_parser_cleanup() -> None:
 
 
 @pytest.mark.parametrize(
-    "root",
-    [".", "..", "../library", "a/../b", "rules/", " règles ", " ", "a%20b", "a#b?c"],
-)
-def test_root_declaration_preserves_value_and_location(root: str) -> None:
-    result = parse("prosiform:\r\n  root: " + json.dumps(root), prefix="\ufeff---\r\n")
-    assert result.root == root
-    assert result.root_location == Location("rules/a.md", 3, 9)
-    assert result.group is None
-    assert result.depth is None
-    with pytest.raises(FrozenInstanceError):
-        result.root = "other"  # type: ignore[misc]
-
-
-@pytest.mark.parametrize(
-    "root",
+    "text",
     [
-        "",
-        "/tmp",
-        "//host/share",
-        "C:/rules",
-        "C:rules",
-        "https://host/rules",
-        "file:rules",
-        "~",
-        "~/rules",
-        "~user/rules",
-        "$HOME/rules",
-        "${HOME}/rules",
-        "%HOME%/rules",
-        "a\\b",
-        "a\0b",
-        "a\nb",
-        "a\tb",
-        "a\x7fb",
-        "a\u0085b",
+        'prosiform:\r\n  root: "."',
+        'prosiform:\r\n  root: ""',
+        "prosiform:\r\n  root: null",
+        'prosiform:\r\n  root: "/tmp"\r\n  group: rules\r\n  group-depth: 2',
     ],
 )
-def test_invalid_root_declaration(root: str) -> None:
+def test_a_declared_root_is_refused_at_its_key(text: str) -> None:
     with pytest.raises(InvalidMetadata) as caught:
-        parse("prosiform:\r\n  root: " + json.dumps(root), prefix="\ufeff---\r\n")
-    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
-    assert caught.value.diagnostic.location == Location("rules/a.md", 3, 9)
+        parse(text, prefix="\ufeff---\r\n")
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert diagnostic.location == Location("rules/a.md", 3, 3)
+    assert "prosiform.root is refused" in diagnostic.message
+    assert "remove the field" in diagnostic.message
 
 
-@pytest.mark.parametrize("field", ["root", "group"])
 @pytest.mark.parametrize("value", ["null", "true", "2", "2.0", "[]", "{}"])
-def test_string_fields_reject_other_core_types(field: str, value: str) -> None:
+def test_string_fields_reject_other_core_types(value: str) -> None:
     with pytest.raises(InvalidMetadata) as caught:
-        parse(f"prosiform: {{{field}: {value}, group-depth: 2}}")
+        parse(f"prosiform: {{group: {value}, group-depth: 2}}")
     assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
 
 
@@ -345,13 +332,10 @@ def test_core_integer_depth(depth: str) -> None:
     assert parse(f"prosiform: {{group: rules, group-depth: {depth}}}").depth == 2
 
 
-def test_root_is_independent_of_group_pair() -> None:
-    result = parse("prosiform: {root: .., group: rules, group-depth: 2}")
-    assert (result.root, result.group, result.depth) == ("..", "rules", 2)
+def test_a_group_field_requires_its_pair() -> None:
     for declaration in ("group: rules", "group-depth: 2"):
         with pytest.raises(InvalidMetadata):
-            parse(f"prosiform: {{root: .., {declaration}}}")
-    assert parse("prosiform: {group: rules, group-depth: 2}").root is None
+            parse(f"prosiform: {{{declaration}}}")
 
 
 @pytest.mark.parametrize(
@@ -388,9 +372,9 @@ def test_reserved_mapping_has_exact_keys(key: str) -> None:
 
 
 def test_root_mapping_nesting_budget() -> None:
-    assert parse("prosiform: {root: ..}", depth=2).root == ".."
+    assert parse("prosiform: {}", depth=2).declared
     with pytest.raises(InvalidMetadata) as caught:
-        parse("prosiform: {root: ..}", depth=1)
+        parse("prosiform: {}", depth=1)
     assert caught.value.diagnostic.code == "E_RESOURCE_LIMIT"
 
 

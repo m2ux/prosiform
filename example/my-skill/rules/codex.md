@@ -1,6 +1,5 @@
 ---
-prosiform:
-  root: ".."
+prosiform: {}
 ---
 - Keep patches focused.
 - Run relevant tests.

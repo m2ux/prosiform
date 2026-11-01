@@ -1,0 +1,19 @@
+description = "Every stage reads the one selection the run settled for a document: a section no reference selected carries a link to a declaring document, a dispatch, a deferral naming no heading of its document, a deferral naming no document and raw HTML, and the run that selected a sibling section publishes that section's bundle alone, with no diagnostic, so discovery, emission, the withheld-target check and candidate validation each answered for the selection rather than the document."
+
+clauses = [
+  "Validation scope, validate link resolution within the selected dependency closure",
+  "Validation scope, validate supported selected syntax within the selected dependency closure",
+  "Link classification and resource handling — Local Markdown document links",
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — A withheld link's target",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md#keep"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide__keep.bundle.md"]
+diagnostics = []

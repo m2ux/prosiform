@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The settings live in docs/note.md, and the archived copy sits at

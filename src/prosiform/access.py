@@ -1,8 +1,9 @@
-"""Bounded source capture through verified no-follow directory walks."""
+"""Bounded source reads through verified no-follow directory walks."""
 
 import errno
 import os
 import stat
+from collections.abc import Callable
 from pathlib import Path
 
 SEPARATOR = "/"
@@ -140,3 +141,32 @@ def read_source(
     """Read at most the supplied byte budget plus one byte to detect overflow."""
     with os.fdopen(opened(root, path, observed), "rb") as handle:
         return handle.read() if limit is None else handle.read(limit + 1)
+
+
+def read_head(
+    root: Path,
+    path: str,
+    *,
+    limit: int,
+    ended: Callable[[int, bytes], bool],
+    observed: list[tuple[str, int, int]] | None = None,
+) -> bytes:
+    """Read whole lines until one ends the head, the budget is crossed or the file ends.
+
+    The walk is the one `read_source` takes, so a head is read from no
+    file a capture would refuse. `ended` is asked of each physical line
+    by its index, a line ending at a line feed as `source.lines` ends
+    one, and the line it answers for is the last one read. At most the
+    budget plus one byte is read, so a head crossing the budget is told
+    from one that fills it.
+    """
+    head = bytearray()
+    with os.fdopen(opened(root, path, observed), "rb") as handle:
+        index = 0
+        while len(head) <= limit:
+            line = handle.readline(limit + 1 - len(head))
+            head += line
+            if not line or ended(index, line):
+                break
+            index += 1
+    return bytes(head)

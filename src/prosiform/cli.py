@@ -1,10 +1,12 @@
-"""Compile captured Markdown sources with file-owned dependency roots.
+"""Compile captured Markdown sources, each link classified by its target's declaration.
 
-Positional files resolve from the invocation working directory. Each source
-uses its explicit file-relative root, or the invocation directory when absent.
-Bounded no-follow capture retains bytes, metadata and filesystem identities;
-publication rechecks every captured source and bound directory. Discovery,
-rewriting and candidate validation use the same per-source resolution context."""
+Positional files resolve from the invocation working directory, and every
+link resolves from the file carrying it. A link naming a Markdown document is
+a dependency when that document's frontmatter declares `prosiform`, which a
+frontmatter-only probe answers once per path. Bounded no-follow capture
+retains bytes, metadata and filesystem identities; publication rechecks every
+captured source and bound directory. Discovery, rewriting and candidate
+validation read one record of declarations."""
 
 import argparse
 import errno
@@ -28,6 +30,7 @@ from prosiform.access import (
     Symlinked,
     Unreadable,
     directory,
+    read_head,
     read_source,
 )
 from prosiform.access import (
@@ -56,23 +59,26 @@ from prosiform.candidate import (
     validate,
 )
 from prosiform.closure import (
+    DECLARING,
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
     PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
+    Declarations,
     Malformed,
     OutsideRoot,
     Pairing,
+    Probed,
     Reference,
     Substitution,
     components,
     conflicting,
     identity,
     inside,
+    named,
     operators,
-    resolvable,
     resolve,
     spaced,
     withholding,
@@ -148,7 +154,9 @@ from prosiform.source import (
     Selection,
     Source,
     Unterminated,
+    closes_head,
     content,
+    declaration,
     decode,
     external,
     fragments,
@@ -183,7 +191,6 @@ INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
-ROOT_NOT_FOUND = "E_ROOT_NOT_FOUND"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_ACCESS = "E_SOURCE_ACCESS"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
@@ -211,7 +218,6 @@ CODES = tuple(
             GROUP_DEPTH_CONFLICT,
             INVALID_USAGE,
             PUBLICATION_FAILED,
-            ROOT_NOT_FOUND,
             SOURCE_CHANGED,
             SOURCE_ACCESS,
             SOURCE_OUTSIDE_ROOT,
@@ -432,8 +438,7 @@ def mock(value: str) -> Pairing:
     """One `ORIGINAL=ALTERNATIVE` pair, each side read from the working directory.
 
     Both sides are read by the grammar every other reference is read
-    by, with the parent bootstrap a positional entry permits, so a
-    substitute kept above the working directory is named as a
+    by, so a substitute kept above the working directory is named as a
     command-line reference names one. Neither side is matched against
     the mapping: a substitute is material rather than another
     indirection, and a value that is also a key is read from disk.
@@ -722,17 +727,17 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
 
 
 def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
-    """Normalize a positional reference with bounded relative-parent bootstrap.
+    """Normalize a positional reference, keeping the leading parents of a path above.
 
     The mapping names what the reference resolves to instead, and is
-    read after the normalization: an entry reference is exempt from the
-    writing source's root, so the mapping applies to the identity the
-    reference normalized to rather than to anything a source decides.
+    read after the normalization: an entry reference is written in no
+    source, so the mapping applies to the identity the reference
+    normalized to rather than to anything a source decides.
     An entry reference stands in no source, so a redirect of one is
     recorded with no source position.
     """
     try:
-        found = resolve(text, allow_parent=True)
+        found = resolve(text)
     except Malformed as malformed:
         raise usage_failure(
             f"the entry reference {text!r} {malformed}", reference=text
@@ -741,15 +746,15 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
         raise input_failure(
             f"the entry reference {text!r} {outside}",
             code=SOURCE_OUTSIDE_ROOT,
-            remedy="name a document the source root carries",
+            remedy="name a document under the invocation working directory",
             reference=text,
         ) from outside
     if found.external:
         raise input_failure(
             f"the entry reference {text!r} carries a scheme or an authority, so it "
-            f"names no document the allowed source root can contain",
+            f"names no local document",
             code=SOURCE_OUTSIDE_ROOT,
-            remedy="name a document the source root carries",
+            remedy="name a document under the invocation working directory",
             reference=text,
         )
     return substitution.redirect(found)
@@ -796,77 +801,27 @@ class Opened:
     capture: Capture
 
 
-ROOT_REMEDIES = {
-    ROOT_NOT_FOUND: "declare a root the declaring document's directory carries, "
-    "or remove prosiform.root to bind the invocation working directory",
-    SOURCE_SYMLINK: "declare a root the walk reaches without following a link",
-    SOURCE_ACCESS: "check the permissions of the declared root and its directories",
-}
+@contextmanager
+def reading(found: Reference) -> Iterator[None]:
+    """One read of the document a reference names, its refusals as diagnostics.
 
-
-def root_remedy(code: str) -> str:
-    """What a caller does about the root the walk could not reach."""
-    return ROOT_REMEDIES.get(code, "check the declared root and its permissions")
-
-
-def undeclared_root(name: str, declared: str | None, detail: str, code: str) -> str:
-    """The root one source declared and the reference that declared it.
-
-    The walk reports the segment it refused, which is a bare path and says
-    nothing about where the root was written or what it named. A reader who
-    is handed that segment alone has to guess which of a document's sources
-    declared it, so the message names the declaring source, the root as it
-    was written and the segment that stopped the walk.
+    A capture and a probe walk the same path, so the refusal a walk
+    meets — a symbolic link, a path naming no document, an access fault
+    — is reported alike whichever read met it.
     """
-    if declared is None:
-        return (
-            f"the source {name!r} declares no root, and the invocation working "
-            f"directory it binds reaches it no further: {detail}"
-        )
-    return (
-        f"the source {name!r} declares prosiform.root {declared!r}, which the "
-        f"walk cannot reach: {detail}"
-    )
-
-
-def read_document(
-    root: Path, found: Reference, limits: Limits, total: int = 0
-) -> Opened:
-    """Capture bounded bytes, typed settings and no-follow source/root identities.
-
-    Metadata resolves only after the source has been captured within the byte
-    and nesting limits. An explicit root is walked from its declaring directory;
-    absence binds the invocation working directory. Diagnostics retain physical
-    coordinates and the referring chain."""
     reference, name = found.original, found.path
     written = "the entry reference" if found.origin is None else "the reference"
-    chain = found.chain
-    if not is_markdown(name):
-        raise input_failure(
-            f"the entry reference {reference!r} names a document whose suffix is "
-            f"outside the {PROFILE} profile",
-            code=UNSUPPORTED_ENTRY_SUFFIX,
-            remedy=f"name a document ending {' or '.join(SUFFIXES)}",
-            reference=reference,
-            chain=chain,
-        )
     try:
-        observed: list[tuple[str, int, int]] = []
-        data = read_source(
-            root,
-            found.walk or name,
-            limit=min(limits.of(FILE_BYTES), limits.of(INPUT_BYTES) - total),
-            observed=observed,
-        )
+        yield
     except Symlinked as linked:
         raise input_failure(
             f"{written} {reference!r} reaches its source through {linked}, "
-            f"a symbolic link below the allowed source root",
+            f"a symbolic link",
             code=SOURCE_SYMLINK,
-            remedy="name the document the link points at, under the source root",
+            remedy="name the document the symbolic link points at",
             reference=reference,
             source=found.origin,
-            chain=chain,
+            chain=found.chain,
         ) from linked
     except Absent as absent:
         raise input_failure(
@@ -875,12 +830,12 @@ def read_document(
             remedy=(
                 "name a folder whose documents the key's remainder reaches"
                 if found.folder is not None
-                else "name a document the source root carries"
+                else "name a document that exists"
             ),
             reference=reference,
             resolved=name if found.folder is not None else None,
             source=found.origin,
-            chain=chain,
+            chain=found.chain,
         ) from absent
     except OSError as error:
         raise input_failure(
@@ -889,26 +844,85 @@ def read_document(
             remedy="check source permissions",
             reference=reference,
             source=found.origin,
-            chain=chain,
+            chain=found.chain,
         ) from error
+
+
+def decoded_text(found: Reference, data: bytes) -> str:
+    """The bytes a read returned as text, or the failure their encoding is."""
+    written = "the entry reference" if found.origin is None else "the reference"
+    try:
+        return decode(data)
+    except UnicodeDecodeError as undecodable:
+        raise input_failure(
+            f"{written} {found.original!r} names a document that is not valid "
+            f"{ENCODING.upper()}: byte {undecodable.start}, "
+            f"{undecodable.reason}",
+            code=INVALID_ENCODING,
+            remedy=f"save the document as {ENCODING.upper()}",
+            reference=found.original,
+            source=found.path,
+            chain=found.chain,
+        ) from undecodable
+
+
+@contextmanager
+def delimiting(found: Reference) -> Iterator[None]:
+    """One frontmatter decode, its refusals reported against the reference."""
+    written = "the entry reference" if found.origin is None else "the reference"
+    try:
+        yield
+    except InvalidMetadata as invalid:
+        raise Failure(
+            INPUT_FAILURE,
+            replace(invalid.diagnostic, reference=found.original, chain=found.chain),
+        ) from invalid
+    except Unterminated as unclosed:
+        raise input_failure(
+            f"{written} {found.original!r} names a document whose frontmatter "
+            f"opener is closed by no later line of exactly "
+            f"{' or '.join(CLOSERS)}",
+            code=UNTERMINATED_FRONTMATTER,
+            remedy=f"close the block with a line of exactly {' or '.join(CLOSERS)}",
+            reference=found.original,
+            source=location(found.path, unclosed.line),
+            chain=found.chain,
+        ) from unclosed
+
+
+def read_document(
+    root: Path, found: Reference, limits: Limits, total: int = 0
+) -> Opened:
+    """Capture bounded bytes, typed settings and no-follow source identities.
+
+    Metadata resolves only after the source has been captured within the byte
+    and nesting limits. Every source is bounded by the invocation working
+    directory. Diagnostics retain physical coordinates and the referring
+    chain."""
+    name, chain = found.path, found.chain
+    if not is_markdown(name):
+        raise input_failure(
+            f"the entry reference {found.original!r} names a document whose "
+            f"suffix is outside the {PROFILE} profile",
+            code=UNSUPPORTED_ENTRY_SUFFIX,
+            remedy=f"name a document ending {' or '.join(SUFFIXES)}",
+            reference=found.original,
+            chain=chain,
+        )
+    observed: list[tuple[str, int, int]] = []
+    with reading(found):
+        data = read_source(
+            root,
+            found.walk or name,
+            limit=min(limits.of(FILE_BYTES), limits.of(INPUT_BYTES) - total),
+            observed=observed,
+        )
     try:
         limits.hold(FILE_BYTES, len(data))
         limits.hold(INPUT_BYTES, total + len(data))
     except Crossed as crossed:
         raise unindexable(crossed, name, chain) from crossed
-    try:
-        text = decode(data)
-    except UnicodeDecodeError as undecodable:
-        raise input_failure(
-            f"{written} {reference!r} names a document that is not valid "
-            f"{ENCODING.upper()}: byte {undecodable.start}, "
-            f"{undecodable.reason}",
-            code=INVALID_ENCODING,
-            remedy=f"save the document as {ENCODING.upper()}",
-            reference=reference,
-            source=name,
-            chain=chain,
-        ) from undecodable
+    text = decoded_text(found, data)
     captured = Capture(
         observed[-1][0],
         hashed(data),
@@ -918,56 +932,102 @@ def read_document(
         (observed[-1][1], observed[-1][2]),
         len(data),
     )
-    try:
+    with delimiting(found):
         source = content(
             text,
             file=name,
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
-        declared = source.conversion.root
-        root_walk = str(Path(name).parent / declared) if declared is not None else "."
+    return Opened(source, len(data), captured)
+
+
+def probe(root: Path, found: Reference, limits: Limits) -> Probed:
+    """Whether the document a reference names exists and declares, its body unread.
+
+    The probe reads the document's head through the walk a capture
+    takes, within `-B`, and decodes it as a capture would, so an invalid
+    declaration fails the probe with the diagnostic it fails a capture
+    with. Nothing it reads is counted against `-I` or kept: answering
+    whether a document declares carries nothing into the bundle.
+
+    A head holding no opener declares nothing whatever the file's size,
+    so a document larger than `-B` that declares nothing is answered
+    without crossing it. A head crossing `-B` before its block closes
+    fails the run, since its declaration cannot be read within the
+    budget; a declaring document is captured afterwards, and the capture
+    holds `-B` over the whole file.
+
+    A path naming no document is answered as absent, and the caller
+    reading the link decides what that is. A substitute naming no
+    document is refused here: the caller who named it stated the run is
+    answerable for it.
+    """
+    with reading(found):
         try:
-            rooted = directory(root, root_walk)
-        except (Unreadable, OSError) as error:
-            code = (
-                SOURCE_SYMLINK
-                if isinstance(error, Symlinked)
-                else ROOT_NOT_FOUND
-                if isinstance(error, Absent)
-                else SOURCE_ACCESS
+            head = read_head(
+                root,
+                found.walk or found.path,
+                limit=limits.of(FILE_BYTES),
+                ended=closes_head,
             )
-            raise Failure(
-                INPUT_FAILURE,
-                Diagnostic(
-                    ERROR,
-                    undeclared_root(name, declared, str(error), code),
-                    code,
-                    location=source.conversion.root_location,
-                    reference=reference,
-                    remedy=root_remedy(code),
-                    chain=chain,
-                ),
-            ) from error
-        effective = os.path.relpath(rooted[-1][0], root)
-        source = replace(source, root="" if effective == "." else effective)
-        captured = replace(captured, directories=(*captured.directories, *rooted))
-        return Opened(source, len(data), captured)
-    except InvalidMetadata as invalid:
-        raise Failure(
-            INPUT_FAILURE, replace(invalid.diagnostic, reference=reference, chain=chain)
-        ) from invalid
-    except Unterminated as unclosed:
+        except Absent:
+            if found.redirected:
+                raise
+            return Probed.ABSENT
+    try:
+        limits.hold(FILE_BYTES, len(head))
+    except Crossed as crossed:
+        raise unindexable(crossed, found.path, found.chain) from crossed
+    with delimiting(found):
+        settings = declaration(
+            decoded_text(found, head),
+            file=found.path,
+            max_bytes=limits.of(FILE_BYTES),
+            max_depth=limits.of(NESTING),
+        )
+    return Probed.DECLARING if settings.declared else Probed.SILENT
+
+
+def declared_entries(
+    referrer: Reference | None,
+    requested: Sequence[Reference],
+    declarations: Declarations,
+) -> None:
+    """Hold every entry reference to naming a document that declares `prosiform`.
+
+    An entry reference names the procedure the bundle carries out, so a
+    document declaring nothing is no procedure and one naming nothing
+    is nothing to carry out: each fails with the code a reference
+    naming nothing fails with, before any source is read. A fragment
+    alone names a section of the referring document, which is the
+    document asked. An entry naming no Markdown document is refused by
+    its suffix when it is read, and is not asked.
+    """
+    for one in requested:
+        asked = one if one.path or referrer is None else referrer
+        if not is_markdown(asked.path):
+            continue
+        answer = declarations.answer(asked)
+        if answer is Probed.DECLARING:
+            continue
+        stated = (
+            "names no document"
+            if answer is Probed.ABSENT
+            else "names a document whose frontmatter declares no prosiform"
+        )
         raise input_failure(
-            f"{written} {reference!r} names a document whose frontmatter "
-            f"opener is closed by no later line of exactly "
-            f"{' or '.join(CLOSERS)}",
-            code=UNTERMINATED_FRONTMATTER,
-            remedy=f"close the block with a line of exactly {' or '.join(CLOSERS)}",
-            reference=reference,
-            source=location(name, unclosed.line),
-            chain=chain,
-        ) from unclosed
+            f"the entry reference {asked.original!r} {stated}, so it names no "
+            f"procedure the bundle can carry",
+            code=TARGET_NOT_FOUND,
+            remedy=(
+                "name a document that exists"
+                if answer is Probed.ABSENT
+                else "declare prosiform in the document's frontmatter"
+            ),
+            reference=asked.original,
+            chain=asked.chain,
+        )
 
 
 def missing(found: Reference) -> str:
@@ -980,14 +1040,10 @@ def missing(found: Reference) -> str:
     and the path the redirect resolved to.
     """
     if found.folder is None:
-        return (
-            f"the reference {found.original!r} names no document under the "
-            f"allowed source root"
-        )
+        return f"the reference {found.original!r} names no document"
     return (
         f"the reference {found.original!r} is redirected by the mapping key "
-        f"{found.folder!r} to {found.path!r}, which names no document under the "
-        f"allowed source root"
+        f"{found.folder!r} to {found.path!r}, which names no document"
     )
 
 
@@ -1201,24 +1257,25 @@ def required(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every dependency the selected content of one source carries.
 
-    A use resolving to a Markdown document under the allowed source
-    root is a reference the bundle carries, and every other use is
-    text: a mention leaving the root is not resolved further, the
-    document it names is not opened, and the link reaches the bundle as
-    its author wrote it. Where the reference resolves is the whole of
-    the question, so an author states what the bundle must carry by
-    where the target sits.
+    A use naming a Markdown document whose frontmatter declares
+    `prosiform` is a reference the bundle carries, and every other use
+    is text: a document declaring nothing is probed and never captured,
+    a path naming no document states nothing the bundle answers for,
+    and the link reaches the bundle as its author wrote it. The target's declaration
+    is the whole of the question, so a document states that it travels
+    and every link reaching it agrees.
 
     A withheld reference is not compiled: the run yields no dependency
     for it, so nothing it names is bundled through that reference, and
     the link reaches the bundle with its mark for the run that compiles
-    it. Its target is what `withheld` yields, because a reference under
-    the root is one the run stays responsible for whether or not it
-    carries what the reference names.
+    it. Its target is what `withheld` yields, because a reference naming
+    a declaring document is one the run stays responsible for whether
+    or not it carries what the reference names.
 
     A resource is no local Markdown document and an image is a
     resource whatever it points at, so neither is a dependency and both
@@ -1250,7 +1307,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, source.root, substitution, at)
+            found = inside(path, use.destination, substitution, at)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1268,7 +1325,10 @@ def required(
             continue
         if withholding(use.opening):
             continue
-        yield replace(found, origin=at, chain=(*chain, identity(found)))
+        occurrence = replace(found, origin=at, chain=(*chain, identity(found)))
+        if not declarations.declares(occurrence):
+            continue
+        yield occurrence
 
 
 def refusals_of_operators(
@@ -1277,6 +1337,7 @@ def refusals_of_operators(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
     """Refuse a link whose operators state no one compilation the run can carry out.
@@ -1286,13 +1347,18 @@ def refusals_of_operators(
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
-    compilation of a Markdown document or section under the source root,
-    so one opening a link or an image naming anything else — a remote
-    address, a resource, a document outside the root — states a
+    compilation of a declaring Markdown document or section, so one
+    opening a link or an image naming anything else — a remote address,
+    a resource, a document declaring nothing — states a
     compilation no run performs. Each is a source fault rather than a
     metadata fault: what the author wrote states no compilation the run
     can carry out, and the run reports the link rather than reading it
     one way.
+
+    An operator states that a run or an agent compiles its target, so
+    one naming a Markdown path that holds no document names a target
+    that cannot be read, and fails as a reference naming nothing does.
+    The same link without its operator is text.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -1331,18 +1397,45 @@ def refusals_of_operators(
             )
         if not operators(use.opening):
             continue
-        target = resolvable(path, use.destination, source.root, substitution)
-        if not use.resource and target is not None:
+        target = (
+            None
+            if use.resource
+            else named(path, use.destination, substitution, at, chain)
+        )
+        answer = None if target is None else declarations.answer(target)
+        if answer is Probed.DECLARING:
             continue
+        if answer is Probed.ABSENT:
+            raise input_failure(
+                f"the link {use.opening!r} opens with an operator and names "
+                f"{use.destination!r}, which names no document, so the operator "
+                f"states a compilation no run can read",
+                code=TARGET_NOT_FOUND,
+                remedy="name a Markdown document that exists, or remove the operator",
+                reference=use.destination,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if answer is Probed.SILENT:
+            raise input_failure(
+                f"the link {use.opening!r} opens with an operator and names "
+                f"{use.destination!r}, a document whose frontmatter declares no "
+                f"prosiform, so the operator states no compilation the run can "
+                f"carry out",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="declare prosiform in the target's frontmatter, or remove "
+                "the operator",
+                reference=use.destination,
+                source=at,
+                chain=(*chain, use.destination),
+            )
         kind = "image" if use.resource else "link"
         raise input_failure(
             f"the {kind} {use.opening!r} opens with an operator and names "
-            f"{use.destination!r}, which is no Markdown document or section under "
-            f"the source root, so the operator states no compilation the run "
-            f"can carry out",
+            f"{use.destination!r}, which is no Markdown document or section, so "
+            f"the operator states no compilation the run can carry out",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy="name a Markdown document or section the source root carries, "
-            "or remove the operator",
+            remedy="name a Markdown document or section, or remove the operator",
             reference=use.destination,
             source=at,
             chain=(*chain, use.destination),
@@ -1355,15 +1448,16 @@ def withheld(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every target the selected content of one source withholds.
 
-    A withheld reference under the allowed source root naming a
-    Markdown document is one this run does not carry and stays
-    responsible for, so its target is yielded here to be confirmed. An
-    operator on a reference leaving the root, or on one naming no
-    Markdown document, withholds nothing, and the run refuses it before
+    A withheld reference naming a declaring Markdown document is one
+    this run does not carry and stays responsible for, so its target is
+    yielded here to be confirmed. An operator on a reference naming a
+    document that declares nothing, or on one naming no Markdown
+    document, withholds nothing, and the run refuses it before
     reading the withheld targets.
 
     What is yielded is a target and not a dependency. It joins no
@@ -1381,7 +1475,7 @@ def withheld(
             continue
         at = location(path, source.line(use.line))
         found = withholding_target(
-            path, use.destination, use.opening, source.root, substitution, at
+            path, use.destination, use.opening, declarations, substitution, at, chain
         )
         if found is None:
             continue
@@ -1394,6 +1488,7 @@ def dispatches(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Hop]:
     """Every dispatched link the selected content of one source carries.
@@ -1409,7 +1504,9 @@ def dispatches(
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
-        for link in written_in(path, source, tokens, region, substitution):
+        for link in written_in(
+            path, source, tokens, region, declarations, substitution
+        ):
             if not link.text:
                 raise input_failure(
                     f"the link {link.opening!r} dispatches {link.written!r} with "
@@ -1456,6 +1553,7 @@ def traverse(
     referrer: Reference | None,
     requested: Sequence[Reference],
     limits: Limits,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[
     dict[str, Source],
@@ -1563,19 +1661,43 @@ def traverse(
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
             refusals_of_operators(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             )
             for one in withheld(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             ):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
             for link in dispatches(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             ):
                 dispatching.setdefault(link.name, link)
             for one in required(
-                path, read[path], parsed[path], chosen, reached, substitution
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
             ):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
@@ -1623,10 +1745,10 @@ def confirm(
     A deferral says that the material is reached in a run of its own,
     and a dispatch that a sub-agent reaches it, not that nobody is
     answerable for it, so the document is read and
-    the fragment is looked up. A reference the root does not carry is
-    refused by the read, and one naming no heading of the document it
-    resolves to is refused here, each with the code and the route a
-    compiled reference naming nothing reports.
+    the fragment is looked up. A withheld target naming no document is
+    refused with the operator that withholds it, and one naming no
+    heading of the document it resolves to is refused here, each with
+    the code and the route a compiled reference naming nothing reports.
 
     The question is whether the document carries the heading, asked of
     the index of every heading the profile recognizes. Which section a
@@ -1708,6 +1830,7 @@ def file_named(
     source: Source,
     tokens: Sequence[Token],
     wrapped: bool,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Named | None:
     """One document's file heading, located at the title it carries or at the document.
@@ -1731,7 +1854,7 @@ def file_named(
     at = None if title is None or title.map is None else title.map[0] + 1
     line = source.line(at)
     return Named(
-        file_heading(path, tokens, source.root, substitution),
+        file_heading(path, tokens, declarations, substitution),
         Location(path, 1 if line is None else line, 1),
     )
 
@@ -1771,6 +1894,7 @@ def coincident(
     selected: Mapping[str, Sequence[Reference]],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Diagnostic]:
     """One warning for each set of generated headings that coincide.
@@ -1797,7 +1921,7 @@ def coincident(
         named = one.record.path
         if one.record.merged is None:
             heading = file_named(
-                named, read[named], parsed[named], one.filed, substitution
+                named, read[named], parsed[named], one.filed, declarations, substitution
             )
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
@@ -1852,6 +1976,7 @@ def placement(
     selected: Mapping[str, list[Reference]],
     referrer: Reference | None,
     entries: Collection[Reference],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, list[Reference]]:
     """Each document the bundle carries, in the order a reference first names it.
@@ -1873,7 +1998,9 @@ def placement(
         path = order[at]
         at += 1
         chosen = selection(path, parsed[path], selected[path], entries)
-        for one in required(path, read[path], parsed[path], chosen, (), substitution):
+        for one in required(
+            path, read[path], parsed[path], chosen, (), declarations, substitution
+        ):
             if one.path in selected and one.path not in order:
                 order.append(one.path)
     return {path: selected[path] for path in order}
@@ -1888,6 +2015,7 @@ def assembled(
     assigned: dict[tuple[str, str | None], str] | None,
     inforce: Mapping[str, int],
     dispatching: Anchors | None = None,
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
@@ -1917,7 +2045,7 @@ def assembled(
                     defined[path],
                     selection(path, tokens, selected[path], entries),
                     assigned,
-                    read[path].root,
+                    declarations,
                     path == parent,
                     dispatching,
                     read[path].first_line,
@@ -1939,7 +2067,7 @@ def assembled(
                             selection(path, parsed[path], selected[path], entries),
                             assigned,
                             depth,
-                            read[path].root,
+                            declarations,
                             path == parent,
                             dispatching,
                             read[path].first_line,
@@ -2025,6 +2153,7 @@ def compose(
     found: Sequence[Reference],
     limits: Limits,
     bundle_file: Callable[[Target], str],
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
@@ -2056,7 +2185,9 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    selected = placement(read, parsed, selected, referrer, entries, substitution)
+    selected = placement(
+        read, parsed, selected, referrer, entries, declarations, substitution
+    )
     try:
         headed, placed = subsections(
             assembled(
@@ -2068,11 +2199,13 @@ def compose(
                 None,
                 inforce,
                 None,
+                declarations,
                 substitution,
             ),
             parsed,
             read,
             bundle_file,
+            declarations,
             substitution,
         )
         collisions(headed)
@@ -2091,11 +2224,13 @@ def compose(
             targets,
             inforce,
             dispatching,
+            declarations,
             substitution,
         ),
         parsed,
         read,
         bundle_file,
+        declarations,
         substitution,
     )
     bundled = assemble(groups)
@@ -2109,12 +2244,15 @@ def compose(
             parsed,
             limits.of(NESTING),
             dispatching,
+            declarations,
             substitution,
         )
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, coincident(groups, selected, read, parsed, substitution)
+    return bundled, coincident(
+        groups, selected, read, parsed, declarations, substitution
+    )
 
 
 def resource(destination: str, embedded: bool) -> bool:
@@ -2569,9 +2707,11 @@ def compiled(
     resolves the substitute the caller named.
     """
     limits = budgets(options)
+    declarations = Declarations(lambda found: probe(root, found, limits))
+    declared_entries(referrer, requested, declarations)
     try:
         read, parsed, defined, captured, found, hops = traverse(
-            root, referrer, requested, limits, substitution
+            root, referrer, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
@@ -2590,6 +2730,7 @@ def compiled(
         found,
         limits,
         bundle_file,
+        declarations,
         substitution,
     )
     trailing: list[Diagnostic] = []

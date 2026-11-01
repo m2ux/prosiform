@@ -33,12 +33,11 @@ import pytest
 from prosiform.candidate import carried, intended
 from prosiform.cli import MOCK_UNUSED, main
 from prosiform.closure import (
+    DECLARING,
     UNSUBSTITUTED,
-    OutsideRoot,
     Reference,
     Substitution,
     bundled,
-    covers,
     identity,
     inside,
     withholding_target,
@@ -47,6 +46,7 @@ from prosiform.limits import BUDGETS, NESTING, Limits
 from prosiform.profile import is_markdown, parse
 from prosiform.source import regions
 
+DECLARED = "---\nprosiform: {}\n---\n"
 BUDGET = Limits({budget: budget.default for budget in BUDGETS}).of(NESTING)
 
 SUBSTITUTE = Reference("stand-in.md", "stand-in.md", walk="stand-in.md")
@@ -59,32 +59,32 @@ FOLDERED = Substitution({}, {}, {"rules": Reference("stubs/", "stubs", walk="stu
 
 
 def test_no_mapping_leaves_a_reference_naming_what_it_named() -> None:
-    assert identity(inside("guide.md", "rules.md", "", UNSUBSTITUTED)) == "rules.md"
+    assert identity(inside("guide.md", "rules.md", UNSUBSTITUTED)) == "rules.md"
 
 
 def test_a_document_key_names_the_substitute() -> None:
-    assert identity(inside("guide.md", "rules.md", "", WHOLE)) == "stand-in.md"
+    assert identity(inside("guide.md", "rules.md", WHOLE)) == "stand-in.md"
 
 
 def test_a_document_key_covers_every_fragment_of_its_document() -> None:
-    found = inside("guide.md", "rules.md#escalation", "", WHOLE)
+    found = inside("guide.md", "rules.md#escalation", WHOLE)
     assert (found.path, found.fragment) == ("stand-in.md", "escalation")
 
 
 def test_a_fragment_key_takes_the_section_it_names() -> None:
-    found = inside("guide.md", "rules.md#escalation", "", FRAGMENTED)
+    found = inside("guide.md", "rules.md#escalation", FRAGMENTED)
     assert (found.path, found.fragment) == ("stand-in.md", "one")
 
 
 def test_a_fragment_key_leaves_another_section_of_the_document_alone() -> None:
-    found = inside("guide.md", "rules.md#other", "", FRAGMENTED)
+    found = inside("guide.md", "rules.md#other", FRAGMENTED)
     assert (found.path, found.fragment) == ("stand-in.md", "other")
 
 
 def test_a_section_key_serves_no_other_section_of_its_document() -> None:
     """A key carrying a section redirects that section and nothing beside it."""
     mapped = Substitution({("rules.md", "escalation"): SECTION})
-    found = inside("guide.md", "rules.md#other", "", mapped)
+    found = inside("guide.md", "rules.md#other", mapped)
     assert identity(found) == "rules.md#other"
     assert mapped.unserved() == ("rules.md#escalation",)
 
@@ -93,32 +93,32 @@ def test_a_section_keys_substitute_section_is_the_one_the_run_reads() -> None:
     """The redirect replaces the reference, so the substitute's section is the whole."""
     advised = Reference("stand-in.md#advised", "stand-in.md", "advised")
     mapped = Substitution({("rules.md", "escalation"): advised})
-    found = inside("guide.md", "rules.md#escalation", "", mapped)
+    found = inside("guide.md", "rules.md#escalation", mapped)
     assert (found.path, found.fragment) == ("stand-in.md", "advised")
 
 
 def test_a_whole_document_reference_takes_the_document_key() -> None:
-    found = inside("guide.md", "rules.md", "", FRAGMENTED)
+    found = inside("guide.md", "rules.md", FRAGMENTED)
     assert (found.path, found.fragment) == ("stand-in.md", None)
 
 
 def test_a_folder_key_redirects_a_reference_under_it_to_the_same_remainder() -> None:
     """The key folder answers for every path under it, and the remainder is kept."""
-    found = inside("guide.md", "rules/red.md", "", FOLDERED)
+    found = inside("guide.md", "rules/red.md", FOLDERED)
     assert (found.path, found.fragment) == ("stubs/red.md", None)
 
 
 def test_a_folder_key_leaves_the_section_the_reference_named() -> None:
     """A folder names no heading, so the section is the reference's whole."""
-    found = inside("guide.md", "rules/red.md#checks", "", FOLDERED)
+    found = inside("guide.md", "rules/red.md#checks", FOLDERED)
     assert (found.path, found.fragment) == ("stubs/red.md", "checks")
 
 
 def test_a_folder_key_holds_only_a_path_that_continues_it_past_a_separator() -> None:
     """A key is a folder rather than a prefix, so a neighbour sharing it is no match."""
     mapped = Substitution({}, {}, {"rules": Reference("stubs/", "stubs")})
-    assert inside("guide.md", "rules/red.md", "", mapped).path == "stubs/red.md"
-    assert inside("guide.md", "ruleset/red.md", "", mapped).path == "ruleset/red.md"
+    assert inside("guide.md", "rules/red.md", mapped).path == "stubs/red.md"
+    assert inside("guide.md", "ruleset/red.md", mapped).path == "ruleset/red.md"
 
 
 def test_an_exact_key_answers_before_a_folder_key() -> None:
@@ -128,8 +128,8 @@ def test_an_exact_key_answers_before_a_folder_key() -> None:
         {},
         {"rules": Reference("stubs/", "stubs")},
     )
-    assert inside("guide.md", "rules/red.md", "", both).path == "other.md"
-    assert inside("guide.md", "rules/blue.md", "", both).path == "stubs/blue.md"
+    assert inside("guide.md", "rules/red.md", both).path == "other.md"
+    assert inside("guide.md", "rules/blue.md", both).path == "stubs/blue.md"
 
 
 def test_the_longer_of_two_folder_keys_holding_one_reference_answers() -> None:
@@ -142,15 +142,15 @@ def test_the_longer_of_two_folder_keys_holding_one_reference_answers() -> None:
             "rules/visual": Reference("deepest/", "deepest"),
         },
     )
-    assert inside("guide.md", "rules/visual/red.md", "", both).path == "deepest/red.md"
-    assert inside("guide.md", "rules/red.md", "", both).path == "stubs/red.md"
+    assert inside("guide.md", "rules/visual/red.md", both).path == "deepest/red.md"
+    assert inside("guide.md", "rules/red.md", both).path == "stubs/red.md"
 
 
 def test_a_folder_key_is_served_once_however_many_references_it_answered() -> None:
     """The used set holds the key, not each reference it took."""
     mapped = Substitution({}, {}, {"rules": Reference("stubs/", "stubs")})
-    inside("guide.md", "rules/red.md", "", mapped, "guide.md:3")
-    inside("guide.md", "rules/blue.md", "", mapped, "guide.md:5")
+    inside("guide.md", "rules/red.md", mapped, "guide.md:3")
+    inside("guide.md", "rules/blue.md", mapped, "guide.md:5")
     assert mapped.unserved() == ()
     assert [one.resolved for one in mapped.redirects.targets()] == [
         "stubs/red.md",
@@ -179,59 +179,45 @@ def test_a_folder_key_and_a_document_key_of_one_path_are_two_keys() -> None:
 def test_a_key_is_the_identity_a_reference_normalized_to() -> None:
     """Two spellings of one path name one key, so one mapping serves both."""
     mapped = Substitution({("docs/rules.md", None): Reference("s.md", "s.md")})
-    assert inside("guide.md", "./docs/rules.md", "", mapped).path == "s.md"
-    assert inside("docs/guide.md", "rules.md", "", mapped).path == "s.md"
+    assert inside("guide.md", "./docs/rules.md", mapped).path == "s.md"
+    assert inside("docs/guide.md", "rules.md", mapped).path == "s.md"
 
 
 def test_the_substitute_is_the_target_whole_and_the_text_stays_authored() -> None:
-    found = inside("guide.md", "./rules.md", "", WHOLE)
+    found = inside("guide.md", "./rules.md", WHOLE)
     assert found.original == "./rules.md"
     assert (found.path, found.walk) == ("stand-in.md", "stand-in.md")
     assert is_markdown(found.path)
 
 
-def test_a_substitute_outside_the_writing_source_root_is_reached() -> None:
-    """The exemption is the case the parameter exists for."""
+def test_a_substitute_above_the_working_directory_is_reached() -> None:
+    """A key decides what an identity names, wherever its substitute sits."""
     mapped = Substitution({("docs/rules.md", None): Reference("../s.md", "../s.md")})
-    assert inside("docs/guide.md", "rules.md", "docs", mapped).path == "../s.md"
+    assert inside("docs/guide.md", "rules.md", mapped).path == "../s.md"
 
 
-def test_a_citation_outside_the_root_is_redirected_by_a_key() -> None:
-    """A reference the root refuses can name a stand-in.
-
-    Which is the case the parameter exists for: a substitute kept beside
-    the tree under test is reached from a source whose root excludes it.
-    """
+def test_a_path_above_the_working_directory_is_redirected_by_a_key() -> None:
+    """The mapping is asked of an identity above the working directory too."""
     mapped = Substitution(
-        {("notes.md", None): Reference("../stand-in.md", "../stand-in.md")}
+        {("../notes.md", None): Reference("stand-in.md", "stand-in.md")}
     )
-    found = inside("docs/guide.md", "../notes.md", "docs", mapped)
-    assert found.path == "../stand-in.md"
+    found = inside("guide.md", "../notes.md", mapped)
+    assert found.path == "stand-in.md"
     assert is_markdown(found.path)
 
 
-def test_an_unmapped_citation_outside_the_root_is_still_refused() -> None:
-    """The mapping names what an identity becomes; it never widens the root."""
-    with pytest.raises(OutsideRoot):
-        inside("docs/guide.md", "../notes.md", "docs")
-    with pytest.raises(OutsideRoot):
-        inside("docs/guide.md", "../notes.md", "docs", WHOLE)
+def test_an_unmapped_path_above_the_working_directory_names_itself() -> None:
+    """A path the mapping holds no key for names the document it normalized to."""
+    assert inside("guide.md", "../notes.md").path == "../notes.md"
+    assert inside("guide.md", "../notes.md", WHOLE).path == "../notes.md"
 
 
 def test_the_mapping_is_consulted_on_the_authored_identity_not_the_substitute() -> None:
-    """A key is the identity the reference normalized to.
-
-    The substitute is exempt from the writing source's root, so holding
-    the substitute's path to `covers` — or refusing the authored path
-    before asking the mapping — would refuse the case the parameter
-    exists for.
-    """
+    """A key is the identity the reference normalized to, never the substitute's."""
     mapped = Substitution(
         {("notes.md", None): Reference("../stand-in.md", "../stand-in.md")}
     )
-    citation = inside("docs/guide.md", "../notes.md", "docs", mapped)
-    assert not covers("docs", citation.path)
-    assert citation.path == "../stand-in.md"
+    assert inside("docs/guide.md", "../notes.md", mapped).path == "../stand-in.md"
 
 
 def test_only_the_authored_identity_is_matched_not_the_substitute_path() -> None:
@@ -242,21 +228,21 @@ def test_only_the_authored_identity_is_matched_not_the_substitute_path() -> None
             ("../stand-in.md", None): Reference("../other.md", "../other.md"),
         }
     )
-    assert (
-        inside("docs/guide.md", "../notes.md", "docs", mapped).path == "../stand-in.md"
-    )
+    assert inside("docs/guide.md", "../notes.md", mapped).path == "../stand-in.md"
 
 
 def test_an_external_reference_is_not_redirected() -> None:
-    found = inside("guide.md", "https://example.test/rules.md", "", WHOLE)
+    found = inside("guide.md", "https://example.test/rules.md", WHOLE)
     assert (found.external, found.path) == (True, "")
 
 
 def test_the_two_halves_of_one_resolution_take_the_same_mapping() -> None:
     """`bundled` and `withholding_target` read one answer, so both agree."""
-    assert bundled("guide.md", "rules.md", "the rules", "", WHOLE) is not None
-    assert bundled("guide.md", "rules.md", "\u00ac the rules", "", WHOLE) is None
-    assert withholding_target("guide.md", "rules.md", "\u00ac the rules", "", WHOLE)
+    assert bundled("guide.md", "rules.md", "the rules", DECLARING, WHOLE) is not None
+    assert bundled("guide.md", "rules.md", "\u00ac the rules", DECLARING, WHOLE) is None
+    assert withholding_target(
+        "guide.md", "rules.md", "\u00ac the rules", DECLARING, WHOLE
+    )
 
 
 def test_a_mapping_is_a_value_the_run_cannot_rewrite() -> None:
@@ -267,24 +253,24 @@ def test_a_mapping_is_a_value_the_run_cannot_rewrite() -> None:
 def test_one_key_serving_two_references_records_one_substitution() -> None:
     """A key names a target, so the two references it serves are one substitution."""
     mapped = Substitution({("rules.md", None): SUBSTITUTE})
-    inside("guide.md", "rules.md", "", mapped, "guide.md:3")
-    inside("guide.md", "rules.md#escalation", "", mapped, "guide.md:5")
+    inside("guide.md", "rules.md", mapped, "guide.md:3")
+    inside("guide.md", "rules.md#escalation", mapped, "guide.md:5")
     assert [one.resolved for one in mapped.redirects.targets()] == ["stand-in.md"]
 
 
 def test_a_substitution_names_the_first_link_that_redirected_it() -> None:
     """The record keeps the position the run first met the substitution at."""
     mapped = Substitution({("rules.md", None): SUBSTITUTE})
-    inside("guide.md", "rules.md", "", mapped, "guide.md:3")
-    inside("guide.md", "rules.md", "", mapped, "guide.md:9")
+    inside("guide.md", "rules.md", mapped, "guide.md:3")
+    inside("guide.md", "rules.md", mapped, "guide.md:9")
     assert [one.origin for one in mapped.redirects.targets()] == ["guide.md:3"]
 
 
 def test_a_stage_that_resolves_a_link_again_records_no_second_substitution() -> None:
     """Emission and candidate validation re-resolve a link and add nothing."""
     mapped = Substitution({("rules.md", None): SUBSTITUTE})
-    inside("guide.md", "rules.md", "", mapped, "guide.md:3")
-    bundled("guide.md", "rules.md", "the rules", "", mapped)
+    inside("guide.md", "rules.md", mapped, "guide.md:3")
+    bundled("guide.md", "rules.md", "the rules", DECLARING, mapped)
     assert len(mapped.redirects.targets()) == 1
 
 
@@ -300,13 +286,13 @@ def test_a_key_no_reference_named_is_unserved_and_keeps_its_authored_spelling() 
         {("docs/rules.md", None): SUBSTITUTE},
         {("docs/rules.md", None): "./docs/rules.md"},
     )
-    inside("guide.md", "notes.md", "", mapped)
+    inside("guide.md", "notes.md", mapped)
     assert mapped.unserved() == ("./docs/rules.md",)
 
 
 def test_a_served_key_is_not_unserved() -> None:
     mapped = Substitution({("rules.md", None): SUBSTITUTE})
-    inside("guide.md", "rules.md", "", mapped)
+    inside("guide.md", "rules.md", mapped)
     assert mapped.unserved() == ()
 
 
@@ -328,9 +314,11 @@ def invoke(cwd: Path, *arguments: str) -> tuple[int, str]:
 def tree(tmp_path: Path) -> Path:
     """A guide linking a document that holds a section, beside a stand-in."""
     (tmp_path / "out").mkdir()
-    (tmp_path / "guide.md").write_text("# Guide\n\nSee [the rules](rules.md).\n")
-    (tmp_path / "rules.md").write_text("# Rules\n\n## Escalation\n\nAsk.\n")
-    (tmp_path / "stand-in.md").write_text("# Stand-in\n\nA stand-in.\n")
+    (tmp_path / "guide.md").write_text(
+        DECLARED + "# Guide\n\nSee [the rules](rules.md).\n"
+    )
+    (tmp_path / "rules.md").write_text(DECLARED + "# Rules\n\n## Escalation\n\nAsk.\n")
+    (tmp_path / "stand-in.md").write_text(DECLARED + "# Stand-in\n\nA stand-in.\n")
     return tmp_path
 
 
@@ -339,14 +327,19 @@ def paired(tmp_path: Path) -> Path:
     """A guide linking two documents of one folder, and a folder standing in for it."""
     (tmp_path / "out").mkdir()
     (tmp_path / "guide.md").write_text(
-        "# Guide\n\nUse [red](rules/red.md#checks) and [blue](rules/blue.md).\n"
+        DECLARED
+        + "# Guide\n\nUse [red](rules/red.md#checks) and [blue](rules/blue.md).\n"
     )
     for name in ("rules", "stubs"):
         (tmp_path / name).mkdir()
-    (tmp_path / "rules" / "red.md").write_text("# Red\n\n## Checks\n\nAsk red.\n")
-    (tmp_path / "rules" / "blue.md").write_text("# Blue\n\nAsk blue.\n")
-    (tmp_path / "stubs" / "red.md").write_text("# Red stand-in\n\n## Checks\n\nAsk.\n")
-    (tmp_path / "stubs" / "blue.md").write_text("# Blue stand-in\n\nAsk.\n")
+    (tmp_path / "rules" / "red.md").write_text(
+        DECLARED + "# Red\n\n## Checks\n\nAsk red.\n"
+    )
+    (tmp_path / "rules" / "blue.md").write_text(DECLARED + "# Blue\n\nAsk blue.\n")
+    (tmp_path / "stubs" / "red.md").write_text(
+        DECLARED + "# Red stand-in\n\n## Checks\n\nAsk.\n"
+    )
+    (tmp_path / "stubs" / "blue.md").write_text(DECLARED + "# Blue stand-in\n\nAsk.\n")
     return tmp_path
 
 
@@ -398,7 +391,9 @@ def test_a_section_entry_derives_the_section_the_substitute_carries(
     tree: Path,
 ) -> None:
     """A substitute carrying a fragment contributes it in place of the authored one."""
-    (tree / "stand-in.md").write_text("# Stand-in\n\n## Answers\n\nAnswered.\n")
+    (tree / "stand-in.md").write_text(
+        DECLARED + "# Stand-in\n\n## Answers\n\nAnswered.\n"
+    )
     status, _published = invoke(
         tree, "-m", "guide.md#escalation=stand-in.md#answers", "guide.md#escalation"
     )
@@ -409,7 +404,9 @@ def test_a_section_entry_derives_the_section_the_substitute_carries(
 
 def test_a_document_key_leaves_a_section_entry_its_own_fragment(tree: Path) -> None:
     """A document key replaces the document, so the section the entry named stays."""
-    (tree / "stand-in.md").write_text("# Stand-in\n\n## Escalation\n\nAnswered.\n")
+    (tree / "stand-in.md").write_text(
+        DECLARED + "# Stand-in\n\n## Escalation\n\nAnswered.\n"
+    )
     status, _published = invoke(
         tree, "-m", "guide.md=stand-in.md", "guide.md#escalation"
     )
@@ -549,7 +546,7 @@ def test_a_folder_key_and_a_document_key_of_one_path_serve_together(
     paired: Path,
 ) -> None:
     """A folder key and a document key state two kinds of entry, so both hold."""
-    (paired / "other.md").write_text("# Other\n\n## checks\n\nAsk other.\n")
+    (paired / "other.md").write_text(DECLARED + "# Other\n\n## checks\n\nAsk other.\n")
     status, published = invoke(
         paired, "-m", "rules/=stubs/", "-m", "rules/red.md=other.md", "guide.md"
     )
@@ -592,15 +589,21 @@ def test_a_folder_substitute_that_is_absent_publishes_nothing(paired: Path) -> N
 
 def test_a_document_key_naming_an_absent_document_keeps_its_shape(tree: Path) -> None:
     """A document key's absence is refused as every other absent target is."""
-    (tree / "guide.md").write_text("# Guide\n\nSee [the rules](absent.md).\n")
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\nRun [\u21c9 the rules](absent.md).\n"
+    )
     _status, said = refused(tree, "-o", str(tree / "out"), "guide.md")
+    assert [one["code"] for one in said] == ["E_TARGET_NOT_FOUND"]
+    assert said[0]["reference"] == "absent.md"
     assert "mapping key" not in said[0]["message"]
     assert "resolved" not in said[0]
 
 
 def test_a_folder_key_answering_only_text_is_unused(paired: Path) -> None:
     """A folder whose references are all text was consulted by no compiled reference."""
-    (paired / "guide.md").write_text("# Guide\n\nSee [the note](rules/notes.txt).\n")
+    (paired / "guide.md").write_text(
+        DECLARED + "# Guide\n\nSee [the note](rules/notes.txt).\n"
+    )
     (paired / "rules" / "notes.txt").write_text("note\n")
     (paired / "stubs" / "notes.txt").write_text("note\n")
     status, _published, said = grouped(paired, "-m", "rules/=stubs/", "guide.md")
@@ -616,7 +619,9 @@ def test_a_folder_key_answering_only_text_publishes_the_reference_as_authored(
     paired: Path,
 ) -> None:
     """Text is text, so the link publishes with the destination authored."""
-    (paired / "guide.md").write_text("# Guide\n\nSee [the note](rules/notes.txt).\n")
+    (paired / "guide.md").write_text(
+        DECLARED + "# Guide\n\nSee [the note](rules/notes.txt).\n"
+    )
     (paired / "rules" / "notes.txt").write_text("note\n")
     (paired / "stubs" / "notes.txt").write_text("note\n")
     _status, published, _said = grouped(paired, "-m", "rules/=stubs/", "guide.md")
@@ -741,8 +746,10 @@ def test_a_title_carrying_a_withheld_link_is_headed_by_the_text_it_emits(
     document titled plainly reads the same once the mark is gone, which is
     what the run warns about.
     """
-    (tree / "guide.md").write_text("# [\u00ac the rules](missing.md)\n\nSee.\n")
-    (tree / "sibling.md").write_text("# the rules\n\nAlso.\n")
+    (tree / "guide.md").write_text(
+        DECLARED + "# [\u00ac the rules](missing.md)\n\nSee.\n"
+    )
+    (tree / "sibling.md").write_text(DECLARED + "# the rules\n\nAlso.\n")
     out, err = io.StringIO(), io.StringIO()
     previous = Path.cwd()
     try:
@@ -794,14 +801,16 @@ def test_a_substitution_warning_names_the_link_its_destination_and_the_substitut
     voice = said[0]
     assert voice["source"] == "rules.md"
     assert voice["resolved"] == "stand-in.md"
-    assert voice["location"] == {"file": "guide.md", "line": 3, "column": 1}
+    assert voice["location"] == {"file": "guide.md", "line": 6, "column": 1}
 
 
 def test_a_substitution_warning_states_the_identity_the_reference_would_have_named(
     tree: Path,
 ) -> None:
     """Two keys naming one stand-in are told apart only by what each replaces."""
-    (tree / "sibling.md").write_text("# Sibling\n\nSee [other rules](other.md).\n")
+    (tree / "sibling.md").write_text(
+        DECLARED + "# Sibling\n\nSee [other rules](other.md).\n"
+    )
     (tree / "other.md").write_text("# Other\n\nOther.\n")
     status, said = voices(
         tree,
@@ -870,11 +879,11 @@ def test_a_run_given_no_mapping_states_neither_warning(tree: Path) -> None:
 def test_a_section_key_leaves_the_rest_of_its_document_real(tree: Path) -> None:
     """One branch is redirected and the rest of its document compiles as it ships."""
     (tree / "guide.md").write_text(
-        "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
+        DECLARED + "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
         "Read [the escalation](rules.md#escalation) with it.\n"
     )
     (tree / "stand-in.md").write_text(
-        "# Stand-in\n\n## Escalation\n\nAsk the stand-in.\n"
+        DECLARED + "# Stand-in\n\n## Escalation\n\nAsk the stand-in.\n"
     )
     status, published = invoke(
         tree, "-m", "rules.md#escalation=stand-in.md", "guide.md"
@@ -890,12 +899,14 @@ def test_a_document_key_and_a_section_key_of_it_both_serve_their_references(
 ) -> None:
     """The narrower key takes the section, and the wider one takes the document."""
     (tree / "guide.md").write_text(
-        "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
+        DECLARED + "# Guide\n\nRequire [the rules](rules.md) whole.\n\n"
         "Read [the escalation](rules.md#escalation) with it.\n"
     )
-    (tree / "rules-copy.md").write_text("# Rules Copy\n\n## Escalation\n\nCopy.\n")
+    (tree / "rules-copy.md").write_text(
+        DECLARED + "# Rules Copy\n\n## Escalation\n\nCopy.\n"
+    )
     (tree / "escalation-copy.md").write_text(
-        "# Escalation Copy\n\n## Escalation\n\nEscalated.\n"
+        DECLARED + "# Escalation Copy\n\n## Escalation\n\nEscalated.\n"
     )
     status, published = invoke(
         tree,
@@ -914,10 +925,12 @@ def test_a_document_key_and_a_section_key_of_it_both_serve_their_references(
 
 def test_a_substitute_that_is_also_a_key_is_read_from_disk(tree: Path) -> None:
     """The mapping is applied once, so the second key is never followed."""
-    (tree / "first.md").write_text("# First\n\nFirst.\n")
-    (tree / "second.md").write_text("# Second\n\nSecond.\n")
-    (tree / "third.md").write_text("# Third\n\nThird.\n")
-    (tree / "guide.md").write_text("# Guide\n\nRequire [the first](first.md) whole.\n")
+    (tree / "first.md").write_text(DECLARED + "# First\n\nFirst.\n")
+    (tree / "second.md").write_text(DECLARED + "# Second\n\nSecond.\n")
+    (tree / "third.md").write_text(DECLARED + "# Third\n\nThird.\n")
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\nRequire [the first](first.md) whole.\n"
+    )
     status, said = voices(
         tree,
         "-m",
@@ -987,7 +1000,7 @@ def test_a_substitute_declaring_a_group_joins_it_under_its_own_member_heading(
 def test_a_substitute_declaring_no_group_joins_no_group(tmp_path: Path) -> None:
     """No setting travels from the document the key named."""
     tree = group_tree(tmp_path)
-    (tree / "plain.md").write_text("# Plain\n\nA plain stand-in.\n")
+    (tree / "plain.md").write_text(DECLARED + "# Plain\n\nA plain stand-in.\n")
     status, published, _said = grouped(tree, "-m", "rules.md=plain.md", "guide.md")
     assert status == 0
     assert "# Plain" in published
@@ -1055,56 +1068,15 @@ def test_a_substitute_reached_by_two_routes_joins_the_group_once(
     assert published.count("The stand-in's scope.") == 1
 
 
-def rooted(tmp_path: Path) -> Path:
-    """A guide linking a rule set, and a stand-in declaring its own root."""
-    (tmp_path / "out").mkdir()
-    (tmp_path / "guide.md").write_text("# Guide\n\nRequire [the rules](rules.md).\n")
-    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule.\n")
-    (tmp_path / "above.md").write_text("# Above\n\nAbove the stand-in root.\n")
-    (tmp_path / "stand-in").mkdir()
-    (tmp_path / "stand-in" / "entry.md").write_text(
-        "---\nprosiform:\n  root: .\n---\n"
-        "# Entry\n\nBeside [a detail](detail.md) and [above](../above.md).\n"
-    )
-    (tmp_path / "stand-in" / "detail.md").write_text("# Detail\n\nA detail.\n")
-    return tmp_path
-
-
-def test_a_substitutes_root_bounds_its_own_outgoing_links(tmp_path: Path) -> None:
-    """A link inside the stand-in's root compiles; one above it stays a citation."""
-    tree = rooted(tmp_path)
-    status, published, _said = grouped(
-        tree, "-m", "rules.md=stand-in/entry.md", "guide.md"
-    )
-    assert status == 0
-    assert "Beside [a detail](#detail)" in published
-    assert "[above](../above.md)" in published
-    assert "# Above" not in published
-
-
-def test_the_substitutes_root_is_read_from_its_own_bytes(tmp_path: Path) -> None:
-    """The authored target's root is not the boundary its substitute is held to."""
-    tree = rooted(tmp_path)
-    (tree / "rules.md").write_text(
-        "---\nprosiform:\n  root: ..\n---\n# Rules\n\nEvery rule.\n"
-    )
-    status, published, _said = grouped(
-        tree, "-m", "rules.md=stand-in/entry.md", "guide.md"
-    )
-    assert status == 0
-    assert "[above](../above.md)" in published
-    assert "# Above" not in published
-
-
 def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     tmp_path: Path,
 ) -> None:
     """AC20's parent segment, read through the substitute's own bytes.
 
     A value carrying `..` names a substitute above the invocation working
-    directory, and the group it joins and the root it declares are its
-    own, resolved from the directory it sits in rather than from the tree
-    the run started in.
+    directory, and the group it joins is its own. Its links resolve from
+    the directory it sits in, and a link beside it naming a document that
+    declares nothing is carried as its author wrote it.
     """
     tree = tmp_path / "tree"
     above = tmp_path / "above"
@@ -1117,9 +1089,8 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     )
     (tree / "rules.md").write_text("# Rules\n\nEvery rule.\n")
     (above / "entry.md").write_text(
-        "---\nprosiform:\n  group: rules\n  group-depth: 2\n  root: .\n---\n"
-        "The stand-in preamble, linking [its detail](detail.md) and "
-        "[the guide](../tree/guide.md).\n\n"
+        "---\nprosiform:\n  group: rules\n  group-depth: 2\n---\n"
+        "The stand-in preamble, linking [its detail](detail.md).\n\n"
         "## Scope\n\nThe stand-in's scope.\n"
     )
     (above / "detail.md").write_text("# Detail\n\nBeside the stand-in.\n")
@@ -1133,23 +1104,24 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     published = (folder / "guide.bundle.md").read_text()
     assert published.startswith("# Rules\n")
     assert "### Entry" in published
-    assert "[its detail](#detail)" in published
-    assert "Beside the stand-in." in published
-    assert "[the guide](../tree/guide.md)" in published
+    assert "[its detail](detail.md)" in published
+    assert "Beside the stand-in." not in published
 
 
 def withheld_tree(tmp_path: Path) -> Path:
     """A guide deferring one section, beside a stand-in holding a different one."""
     (tmp_path / "out").mkdir()
     (tmp_path / "guide.md").write_text(
-        "# Guide\n\nDefer [\u00ac the rules](rules.md#escalation) to a later run.\n"
+        DECLARED
+        + "# Guide\n\nDefer [\u00ac the rules](rules.md#escalation) to a later run.\n"
     )
     (tmp_path / "rules.md").write_text(
-        "# Rules\n\nEvery rule the tree under test holds.\n\n"
+        DECLARED + "# Rules\n\nEvery rule the tree under test holds.\n\n"
         "## Escalation\n\nAsk the maintainer.\n"
     )
     (tmp_path / "stand-in.md").write_text(
-        "# Stand-in\n\nOne section, redirected.\n\n## Answers\n\nAsk the stand-in.\n"
+        DECLARED
+        + "# Stand-in\n\nOne section, redirected.\n\n## Answers\n\nAsk the stand-in.\n"
     )
     return tmp_path
 
@@ -1191,11 +1163,11 @@ def test_a_deferred_destination_publishes_the_section_the_substitution_names(
     )
     assert "[the rules](stand-in.md#answers)" in the_run.read_text()
     (tree / "later.md").write_text(
-        "# Later\n\nFollow [the rules](stand-in.md#answers).\n"
+        DECLARED + "# Later\n\nFollow [the rules](stand-in.md#answers).\n"
     )
     assert invoke(tree, "later.md")[0] == 0
     (tree / "later.md").write_text(
-        "# Later\n\nFollow [the rules](stand-in.md#escalation).\n"
+        DECLARED + "# Later\n\nFollow [the rules](stand-in.md#escalation).\n"
     )
     assert invoke(tree, "later.md")[0] == 1
 
@@ -1224,11 +1196,13 @@ def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
     """A dispatch compiles the bundle of the substitute, not of the target."""
     (tmp_path / "out").mkdir()
     (tmp_path / "guide.md").write_text(
-        "# Guide\n\n## Steps\n\nApply [\u21c9 the rules](rules.md).\n"
+        DECLARED + "# Guide\n\n## Steps\n\nApply [\u21c9 the rules](rules.md).\n"
     )
-    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule the tree holds.\n")
+    (tmp_path / "rules.md").write_text(
+        DECLARED + "# Rules\n\nEvery rule the tree holds.\n"
+    )
     (tmp_path / "stand-in.md").write_text(
-        "# Stand-in\n\nEvery rule the stand-in holds.\n"
+        DECLARED + "# Stand-in\n\nEvery rule the stand-in holds.\n"
     )
     status, said = voices(
         tmp_path, "-m", "rules.md=stand-in.md", "-o", str(tmp_path / "out"), "guide.md"
@@ -1249,11 +1223,14 @@ def test_a_parallel_dispatched_target_is_redirected_and_listed_once(
     """The set a parallel mark publishes lists the substitute's bundle."""
     (tmp_path / "out").mkdir()
     (tmp_path / "guide.md").write_text(
-        "# Guide\n\n## Steps\n\nRun [\u2afd the rules](rules.md) beside the rest.\n"
+        DECLARED
+        + "# Guide\n\n## Steps\n\nRun [\u2afd the rules](rules.md) beside the rest.\n"
     )
-    (tmp_path / "rules.md").write_text("# Rules\n\nEvery rule the tree holds.\n")
+    (tmp_path / "rules.md").write_text(
+        DECLARED + "# Rules\n\nEvery rule the tree holds.\n"
+    )
     (tmp_path / "stand-in.md").write_text(
-        "# Stand-in\n\nEvery rule the stand-in holds.\n"
+        DECLARED + "# Stand-in\n\nEvery rule the stand-in holds.\n"
     )
     status, said = voices(
         tmp_path, "-m", "rules.md=stand-in.md", "-o", str(tmp_path / "out"), "guide.md"
@@ -1291,7 +1268,7 @@ def test_the_candidate_comparison_reads_the_same_substitute() -> None:
             at,
             children,
             {},
-            "",
+            DECLARING,
             None,
             mapped,
         )
@@ -1299,7 +1276,7 @@ def test_the_candidate_comparison_reads_the_same_substitute() -> None:
     ]
     assert [one.destination for one in found] == ["stand-in.md#answers"]
     unmapped = [
-        intended("guide.md", one, at, children, {}, "", None, UNSUBSTITUTED)
+        intended("guide.md", one, at, children, {}, DECLARING, None, UNSUBSTITUTED)
         for children, at, one in carried(tokens, span)
     ]
     assert [one.destination for one in unmapped] == ["rules.md#escalation"]

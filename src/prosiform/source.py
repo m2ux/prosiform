@@ -271,7 +271,6 @@ class Source:
     text: str
     first_line: int = 1
     conversion: Conversion = Conversion()
-    root: str = ""
 
     def line(self, at: int | None) -> int | None:
         """The line of the original file one line of this content occupies."""
@@ -337,6 +336,71 @@ def decode(data: bytes) -> str:
     return data.decode(ENCODING)
 
 
+def frontmatter(text: str) -> tuple[tuple[int, int], int] | None:
+    """Where one document's frontmatter payload sits, or nothing where none opens.
+
+    Exactly one byte-order mark is passed over, and a second is content.
+    The opener is the first physical line where that line is the three
+    characters of `OPENER`; the block closes at the next physical line
+    equal to one of `CLOSERS`. The answer is the payload's half-open
+    byte span in the text's encoding, delimiters excluded, and the index
+    of the closer among the physical lines after the mark. An opener no
+    later line closes is `Unterminated`.
+    """
+    body = text.removeprefix(MARK)
+    physical = lines(body)
+    if not physical or bare(physical[0]) != OPENER:
+        return None
+    start = len((text[: len(text) - len(body)] + physical[0]).encode(ENCODING))
+    end = start
+    for index, line in enumerate(physical[1:], start=1):
+        if bare(line) in CLOSERS:
+            return (start, end), index
+        end += len(line.encode(ENCODING))
+    raise Unterminated(1)
+
+
+def closes_head(index: int, line: bytes) -> bool:
+    """Whether one physical line ends the head a declaration is read from.
+
+    The head is what `frontmatter` needs to answer: a first line that
+    opens no block ends it, and so does a later line that closes one.
+    The line is compared by the rules `frontmatter` applies, so a probe
+    and a capture delimit one file alike. A line that is not valid
+    UTF-8 ends the head too, and decoding what was read reports it.
+    """
+    try:
+        text = line.decode(ENCODING)
+    except UnicodeDecodeError:
+        return True
+    if index == 0:
+        return bare(text.removeprefix(MARK)) != OPENER
+    return bare(text) in CLOSERS
+
+
+def declaration(
+    text: str,
+    *,
+    file: str = "",
+    max_bytes: int = FILE_BYTES.default,
+    max_depth: int = NESTING.default,
+) -> Conversion:
+    """The conversion settings a document's head declares, its body unread.
+
+    The head is the text up to and including the line `closes_head`
+    stopped at, so the span is found and decoded as a capture finds and
+    decodes it, and an invalid declaration is refused alike.
+    """
+    found = frontmatter(text)
+    return decode_metadata(
+        text.encode(ENCODING),
+        file=file,
+        span=None if found is None else found[0],
+        max_bytes=max_bytes,
+        max_depth=max_depth,
+    )
+
+
 def content(
     text: str,
     *,
@@ -346,34 +410,23 @@ def content(
 ) -> Source:
     """One source's content, its leading transport metadata removed.
 
-    Exactly one byte-order mark is removed, and a second is content. The
-    frontmatter opener is the first physical line where that line is the
-    three characters of `OPENER`; the block closes at the next physical
-    line equal to one of `CLOSERS`, and the opener, the metadata, the
-    closer and the closer's terminator go together.
+    The opener, the metadata, the closer and the closer's terminator
+    go together, as `frontmatter` delimits them.
     """
     raw = text.encode(ENCODING)
     body = text.removeprefix(MARK)
-    physical = lines(body)
-    if not physical or bare(physical[0]) != OPENER:
-        conversion = decode_metadata(
-            raw, file=file, span=None, max_bytes=max_bytes, max_depth=max_depth
-        )
+    found = frontmatter(text)
+    conversion = decode_metadata(
+        raw,
+        file=file,
+        span=None if found is None else found[0],
+        max_bytes=max_bytes,
+        max_depth=max_depth,
+    )
+    if found is None:
         return Source(body, conversion=conversion)
-    start = len((text[: len(text) - len(body)] + physical[0]).encode(ENCODING))
-    end = start
-    for index, line in enumerate(physical[1:], start=1):
-        if bare(line) in CLOSERS:
-            conversion = decode_metadata(
-                raw,
-                file=file,
-                span=(start, end),
-                max_bytes=max_bytes,
-                max_depth=max_depth,
-            )
-            return Source("".join(physical[index + 1 :]), index + 2, conversion)
-        end += len(line.encode(ENCODING))
-    raise Unterminated(1)
+    _span, closer = found
+    return Source("".join(lines(body)[closer + 1 :]), closer + 2, conversion)
 
 
 def visible(inline: Token) -> str:
@@ -718,7 +771,7 @@ def diagram_type(content: str) -> str:
     diagram write a link form of their own, so every other diagram is
     named by the empty string.
     """
-    opening = declaration(content)
+    opening = diagram_opening(content)
     return next((one for one in DIAGRAM_TYPES if opening.startswith(one)), "")
 
 
@@ -731,10 +784,10 @@ def draws_anchors(content: str) -> bool:
     text as SVG text, so an anchor written there shows as the characters
     it is written in. Every other diagram is held to draw one.
     """
-    return not declaration(content).startswith(TEXT_LABELS)
+    return not diagram_opening(content).startswith(TEXT_LABELS)
 
 
-def declaration(content: str) -> str:
+def diagram_opening(content: str) -> str:
     """One diagram's text from the word that declares its type.
 
     Mermaid sets aside a leading front matter block, every directive and

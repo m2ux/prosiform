@@ -1,0 +1,26 @@
+description = "A prosiform mapping carrying root fails with E_INVALID_CONVERSION_METADATA at the key, naming the field and the remedy, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — root is refused",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.root is refused", "remove the field"]
+reference = "rules.md"
+chain = ["guide.md", "rules.md"]
+
+[expected.diagnostics.location]
+file = "rules.md"
+line = 2
+column = 13

@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 from test_cli import conversion, invoke, written
 
+DECLARED = "---\nprosiform: {}\n---\n"
+
 
 @pytest.mark.parametrize(
     "references", [("a.md",), ("a.md#run",), ("a.md#run", "a.md#run")]
@@ -48,7 +50,7 @@ def test_diamond_cycle_and_unannotated_sibling_keep_source_ownership(
         "a.md",
         conversion("shared", 2) + "# A\n\n## Run\n\n[C](nested/c.md#run)\n",
     )
-    written(tmp_path, "b.md", "# B\n\n## Run\n\n[C](nested/c.md#run)\n")
+    written(tmp_path, "b.md", DECLARED + "# B\n\n## Run\n\n[C](nested/c.md#run)\n")
     written(
         tmp_path,
         "nested/c.md",
@@ -134,7 +136,7 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
 
 def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> None:
     written(tmp_path, "a.md", conversion("same", 2) + "# A\n\n[Other](same.md)\n")
-    written(tmp_path, "same.md", "# Same\n\nSeparate file.\n")
+    written(tmp_path, "same.md", DECLARED + "# Same\n\nSeparate file.\n")
     run = invoke("a.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     # The parent emits its own H1 in place of the group heading its

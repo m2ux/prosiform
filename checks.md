@@ -34,7 +34,7 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 | --- | --- |
 | `make harness` | The corpus, its runner and the diagram-following eval are well formed. See [The harness](#the-harness). |
 | `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares. |
-| `make smoke` | The build installs into an environment, and its entry point bundles a reference from a source root. |
+| `make smoke` | The build installs into an environment, and its entry point bundles a declaring reference. |
 
 #### The Harness
 
@@ -110,17 +110,19 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 | Command | Asserts |
 | --- | --- |
 | `make authoring` | Every document meets the authoring rules in its [guidelines](example/work-planner/guidelines.md). Each departure is reported by file and line, grouped by area. |
+| `make boundary` | Every document's boundary, the deepest directory holding every local Markdown path its own links name, is printed, and no link names a path outside it. |
 | `make steps` | Every procedure writes its steps as `N. Action` headings one level below it, each unique in its document, and has no numbered list outside a code block. |
 | `make mock-scenarios` | The example bundles correctly over stand-in material. See [Mock scenarios](#mock-scenarios). |
 
 #### Authoring Rules
 
-`make authoring` asserts four rules:
+`make authoring` asserts five rules:
 
 - An operation states its Inputs and Outputs on one line before its first step, as `None` or a comma-separated list of links to contract sections.
 - A shell command sits in an unindented fenced block within the step that runs it.
 - No file has a heading titled `Commands`.
 - A cross-file link is written from the file that holds it.
+- Every document declares `prosiform` in its frontmatter, and the declaration names no root.
 
 #### Mock Scenarios
 
@@ -157,7 +159,7 @@ Each scenario runs from a temporary copy made at run time and publishes outside 
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus` and `make mock-scenarios`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus`, `make boundary` and `make mock-scenarios`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
 - **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make steps` and `make authoring` are standard-library scripts in [`checks/`](checks/README.md).
 

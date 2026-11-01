@@ -1,5 +1,4 @@
 ---
-prosiform:
-  root: "../../.."
+prosiform: {}
 ---
 Use the deeper document.

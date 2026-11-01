@@ -8,7 +8,8 @@ severity decides which catalogue its code comes from, and the design
 prefixes an error code `E_` where it prefixes a warning code `W_`, so each
 prefix is held to the catalogue of the severity that carries it. A code
 the design adds fails this test until its catalogue carries it, and a code
-in a catalogue the design does not name fails it too.
+in a catalogue the design does not name fails it too. A code the design
+states retires is declared by no catalogue.
 
 A code is a statement about a run — an error decides a failing one, a
 warning accompanies a successful one — and the corpus is where such a
@@ -32,8 +33,15 @@ def design() -> str:
 
 
 def codes(prefix: str, text: str) -> set[str]:
-    """Every code the text carries under one prefix."""
-    return set(re.findall(rf"\b{prefix}[A-Z][A-Z0-9_]*\b", text))
+    """Every code the text carries under one prefix, less each it retires.
+
+    The design records a retired code by name, as a code span the word
+    `retires` follows, so the record is read as the retirement it states
+    rather than as a declaration.
+    """
+    named = set(re.findall(rf"\b{prefix}[A-Z][A-Z0-9_]*\b", text))
+    retired = set(re.findall(rf"`({prefix}[A-Z][A-Z0-9_]*)` retires\b", text))
+    return named - retired
 
 
 @pytest.mark.parametrize(("severity", "prefix"), sorted(PREFIXES.items()))

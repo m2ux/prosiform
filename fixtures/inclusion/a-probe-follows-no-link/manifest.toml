@@ -1,0 +1,20 @@
+description = "A cited target reached through a symbolic link below the working directory is refused, so asking whether it declares reaches nothing a capture cannot."
+
+clauses = [
+  "No-symlink source policy",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_SOURCE_SYMLINK"
+reference = "linked.md"
+source = "guide.md:6"
+chain = ["guide.md", "linked.md"]

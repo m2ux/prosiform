@@ -1,3 +1,3 @@
 # Secret
 
-A document the root does not hold.
+A document outside the working directory.

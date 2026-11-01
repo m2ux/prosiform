@@ -1,0 +1,20 @@
+description = "An entry reference naming a document that declares nothing fails with E_TARGET_NOT_FOUND before any source is read: the declaring entry before it carries a byte no encoding reads, and no diagnostic names it."
+
+clauses = [
+  "Input and output contract — Entry references",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md", "notes.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "notes.md"
+chain = ["notes.md"]
+message_contains = ["declares no prosiform"]

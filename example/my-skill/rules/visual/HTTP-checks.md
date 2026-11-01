@@ -1,6 +1,5 @@
 ---
-prosiform:
-  root: "../.."
+prosiform: {}
 ---
 # do NOT rewrite HTTP
 

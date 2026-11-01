@@ -276,7 +276,6 @@
         "E_PUBLICATION_FAILED",
         "E_RAW_HTML",
         "E_RESOURCE_LIMIT",
-        "E_ROOT_NOT_FOUND",
         "E_SOURCE_ACCESS",
         "E_SOURCE_CHANGED",
         "E_SOURCE_OUTSIDE_ROOT",

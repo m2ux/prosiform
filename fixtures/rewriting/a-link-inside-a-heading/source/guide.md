@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 ## The step [the shared rules](rules.md) governs

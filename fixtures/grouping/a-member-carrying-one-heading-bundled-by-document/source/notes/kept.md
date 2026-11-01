@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Kept
 
 What this document states before its first section.

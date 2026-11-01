@@ -3,7 +3,7 @@
 Require [the notes](#notes) and names
 [the notes](#notes) a second time.
 
-It also mentions [the archive](../archive.md), which sits above the root.
+It also mentions [the archive](../archive.md), which sits above the working directory.
 
 # Notes
 

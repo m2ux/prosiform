@@ -35,7 +35,7 @@ The example is a real run of a small skill: one mode that dispatches one protoco
 
 Each dispatched target's bundle sits in the same folder under its own selection's name.
 
-A fragment-only entry derives its name from the document `-f` supplies. Roots and group names never rename an output. Parent segments above the working directory are kept as filename text, never joined into the output path.
+A fragment-only entry derives its name from the document `-f` supplies. Directories and group names never rename an output. Parent segments above the working directory are kept as filename text, never joined into the output path.
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
 

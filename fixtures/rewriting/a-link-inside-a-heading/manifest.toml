@@ -1,7 +1,7 @@
 description = "A heading carrying a link is emitted with that link rewritten to its target's destination, and the destination the heading takes is the fragment a renderer generates for the heading a reader finds."
 
 clauses = [
-  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown document links",
   "Bundle destinations — Visible headings",
   "Post-compilation invariants — One intended destination",
 ]

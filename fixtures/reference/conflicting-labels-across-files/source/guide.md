@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The guide names [the runner][runner] its own definition points at, and

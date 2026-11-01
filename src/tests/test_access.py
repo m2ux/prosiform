@@ -12,7 +12,8 @@ from pathlib import Path
 
 import pytest
 
-from prosiform.access import Absent, Outside, Symlinked, read_source
+from prosiform.access import Absent, Outside, Symlinked, read_head, read_source
+from prosiform.source import closes_head
 
 GUIDE = "# Guide\n"
 SECRET = "# Secret\n"
@@ -101,3 +102,28 @@ def test_a_broken_link_is_refused_as_a_link_rather_than_as_a_missing_file(
     os.symlink("nowhere.md", root / "dangling.md")
     with pytest.raises(Symlinked):
         read_source(root, "dangling.md")
+
+
+DECLARING = b"---\nprosiform: {}\n---\n"
+
+
+def test_a_head_read_stops_at_the_line_that_answers(root: Path) -> None:
+    (root / "declaring.md").write_bytes(DECLARING + b"# Body\n" * 1000)
+    (root / "silent.md").write_bytes(b"# Silent\n" + b"Body.\n" * 1000)
+    head = read_head(root, "declaring.md", limit=100_000, ended=closes_head)
+    assert head == DECLARING
+    assert read_head(root, "silent.md", limit=100_000, ended=closes_head) == (
+        b"# Silent\n"
+    )
+
+
+def test_a_head_read_stops_at_its_budget(root: Path) -> None:
+    (root / "long.md").write_bytes(b"---\n" + b"key: value\n" * 100)
+    head = read_head(root, "long.md", limit=20, ended=closes_head)
+    assert len(head) == 21
+
+
+def test_a_head_read_follows_no_link(root: Path) -> None:
+    os.symlink("guide.md", root / "alias.md")
+    with pytest.raises(Symlinked):
+        read_head(root, "alias.md", limit=100, ended=closes_head)

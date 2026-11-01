@@ -18,5 +18,5 @@ severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["⇉ Publish"]
 reference = "publish.md"
-source = "notes.md:1"
+source = "notes.md:4"
 chain = ["guide.md", "notes.md#procedure"]

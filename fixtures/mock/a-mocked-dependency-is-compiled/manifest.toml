@@ -1,4 +1,4 @@
-description = "A link under its author's root naming a mocked identity compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry, and the run states the substitution it performed."
+description = "A link naming a mocked identity compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -22,5 +22,5 @@ resolved = "stand-in.md"
 
 [expected.diagnostics.location]
 file = "guide.md"
-line = 3
+line = 6
 column = 1

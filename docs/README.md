@@ -10,7 +10,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | --- | --- |
 | [Concept](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) | The original design concept |
 | [Architecture](architecture.md) | The whole run, and where each of the pages below fits |
-| [Sources](sources.md) | What a source is, how its root confines it, and what its frontmatter declares |
+| [Sources](sources.md) | What a source is, how its declaration includes it, and the boundary its links derive |
 | [References](references.md) | Which links are dependencies, which are text, and what an operator states |
 | [Selection](selection.md) | How the closure is reached, consolidated and ordered |
 | [Hierarchy](hierarchy.md) | File headings, groups, member names and the level shift |

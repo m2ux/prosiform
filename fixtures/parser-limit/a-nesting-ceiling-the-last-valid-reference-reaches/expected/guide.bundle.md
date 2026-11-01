@@ -1,6 +1,6 @@
 # Guide
 
-The guide cites [[[[[[[[[[[[[[[[[[[[[the plan](#plan) once.
+The guide cites [[[[[[[[[[[[[[[[[[[[[[the plan](#plan) once.
 
 # Plan
 

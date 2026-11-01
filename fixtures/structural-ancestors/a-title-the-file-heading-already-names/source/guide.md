@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The prose above the first eligible heading.

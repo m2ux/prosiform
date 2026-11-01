@@ -34,6 +34,7 @@ INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 DEPTH = "group-depth"
+ROOT = "root"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
     "null": re.compile(r"(?:~|null|Null|NULL|)"),
@@ -77,17 +78,17 @@ class _MarkedScanner(Scanner):
 class Conversion:
     """Immutable source settings and their original value locations.
 
-    The settings belong to the bytes they were decoded from. `group` and
+    The settings belong to the bytes they were decoded from. `declared`
+    holds where the frontmatter carries a `prosiform` mapping, an empty
+    one included, and is false for a document carrying none. `group` and
     `depth` decide which merged group that source joins, held to the
-    depth every contributing member declares, and `root` is the
-    confinement boundary for the links that source writes, resolved from
-    its own directory. A source the substitution mapping redirected is
-    read as the substitute, so the settings decoded here are the
-    substitute's: none travels from the document its key named.
+    depth every contributing member declares. A source the substitution
+    mapping redirected is read as the substitute, so the settings decoded
+    here are the substitute's: none travels from the document its key
+    named.
     """
 
-    root: str | None = None
-    root_location: Location | None = None
+    declared: bool = False
     group: str | None = None
     depth: int | None = None
     group_location: Location | None = None
@@ -388,7 +389,14 @@ def decode(
                 key.location,
             )
         name = "prosiform." + key.value
-        if key.value not in ("root", GROUP, DEPTH):
+        if key.value == ROOT:
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} is refused: a document declares its inclusion and "
+                "states no boundary; remove the field",
+                key.location,
+            )
+        if key.value not in (GROUP, DEPTH):
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
@@ -397,30 +405,8 @@ def decode(
                 INVALID_CONVERSION_METADATA, f"{name} must be a string", value.location
             )
         fields[key.value] = value
-    declared_root = fields.get("root")
-    if declared_root is not None and (
-        not declared_root.value
-        or declared_root.value.startswith(("/", "~"))
-        or re.match(r"[A-Za-z][A-Za-z0-9+.-]*:", declared_root.value)
-        or re.search(r"\$|%[A-Za-z_][A-Za-z0-9_]*%", declared_root.value)
-        or any(
-            char == "\\" or ord(char) < 32 or 127 <= ord(char) <= 159
-            for char in declared_root.value
-        )
-    ):
-        raise _fail(
-            INVALID_CONVERSION_METADATA,
-            "prosiform.root must be a nonempty relative directory path "
-            "without controls, backslashes or expansion",
-            declared_root.location,
-        )
-    root_value = declared_root.value if declared_root is not None else None
-    root_location = declared_root.location if declared_root is not None else None
     if GROUP not in fields and DEPTH not in fields:
-        return Conversion(
-            root=root_value,
-            root_location=root_location,
-        )
+        return Conversion(declared=True)
     if GROUP not in fields or DEPTH not in fields:
         present = GROUP if GROUP in fields else DEPTH
         raise _fail(
@@ -463,8 +449,7 @@ def decode(
             depth.location,
         )
     return Conversion(
-        root=root_value,
-        root_location=root_location,
+        declared=True,
         group=group.value,
         depth=int(numeric_depth),
         group_location=group.location,

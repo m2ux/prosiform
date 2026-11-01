@@ -1,6 +1,5 @@
 ---
 prosiform:
-  root: ".."
   group: "artifacts"
   group-depth: 1
 ---

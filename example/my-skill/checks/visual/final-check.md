@@ -1,5 +1,4 @@
 ---
-prosiform:
-  root: "../.."
+prosiform: {}
 ---
 Verify the final result.

@@ -1,30 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1139" viewBox="0 0 2142 1139" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1139" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="240" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1496" viewBox="0 0 2142 1496" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1496" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="314" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
 <path d="M32 134 H1032" stroke="#303b49"/>
 <text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
-<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">└─ modes/</text>
-<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">   ├─ review.md</text>
-<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">   └─ rules.md</text><rect x="32" y="342" width="1000" height="494" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="378" font-size="21" fill="#b1c6df" font-weight="400">modes/review.md</text>
-<path d="M32 396 H1032" stroke="#303b49"/>
-<text x="70" y="453" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="490" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="527" font-size="20" fill="#e6edf3" font-weight="400">  root: &quot;.&quot;</text>
-<text x="70" y="564" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="611" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="611" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
-<text x="70" y="659" font-size="20" fill="#e6edf3" font-weight="400">Follow the rules.</text>
-<text x="70" y="707" font-size="20" fill="#58a6ff" font-weight="400">• Read the rules: Rules.</text>
-<text x="70" y="744" font-size="20" fill="#58a6ff" font-weight="400">• Keep the diagram: !flow.</text>
-<text x="70" y="781" font-size="20" fill="#58a6ff" font-weight="400">• Read the upstream notes: Notes.</text>
-<text x="70" y="818" font-size="20" fill="#58a6ff" font-weight="400">• See the library: Library.</text><rect x="32" y="858" width="1000" height="241" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="894" font-size="21" fill="#b1c6df" font-weight="400">modes/rules.md</text>
-<path d="M32 912 H1032" stroke="#303b49"/>
-<text x="44" y="979" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="979" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="44" y="1033" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1033" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
-<text x="70" y="1081" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="80" width="1000" height="503" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ library/</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">│  └─ guide.md</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">└─ modes/</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">   ├─ review.md</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">   └─ rules.md</text><rect x="32" y="416" width="1000" height="187" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="452" font-size="21" fill="#b1c6df" font-weight="400">library/guide.md</text>
+<path d="M32 470 H1032" stroke="#303b49"/>
+<text x="44" y="537" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="537" font-size="30" fill="#e6edf3" font-weight="500">Library Guide</text>
+<text x="70" y="585" font-size="20" fill="#e6edf3" font-weight="400">The upstream library&#x27;s own notes.</text><rect x="32" y="625" width="1000" height="457" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="661" font-size="21" fill="#b1c6df" font-weight="400">modes/review.md</text>
+<path d="M32 679 H1032" stroke="#303b49"/>
+<text x="70" y="736" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="773" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
+<text x="70" y="810" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="857" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="857" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="70" y="905" font-size="20" fill="#e6edf3" font-weight="400">Follow the rules.</text>
+<text x="70" y="953" font-size="20" fill="#58a6ff" font-weight="400">• Read the rules: Rules.</text>
+<text x="70" y="990" font-size="20" fill="#58a6ff" font-weight="400">• Keep the diagram: !flow.</text>
+<text x="70" y="1027" font-size="20" fill="#58a6ff" font-weight="400">• Read the upstream notes: Notes.</text>
+<text x="70" y="1064" font-size="20" fill="#58a6ff" font-weight="400">• See the library: Library.</text><rect x="32" y="1104" width="1000" height="352" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="1140" font-size="21" fill="#b1c6df" font-weight="400">modes/rules.md</text>
+<path d="M32 1158 H1032" stroke="#303b49"/>
+<text x="70" y="1215" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="1252" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
+<text x="70" y="1289" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="1336" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="1336" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="44" y="1390" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1390" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="70" y="1438" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="80" width="1000" height="503" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/modes_review.bundle.md</text>
 <path d="M1110 134 H2110" stroke="#303b49"/>
 <text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>

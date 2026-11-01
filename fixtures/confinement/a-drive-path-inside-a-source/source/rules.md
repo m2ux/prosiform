@@ -1,3 +1,3 @@
 # Rules
 
-The document the root holds under that name, which this run never reaches.
+The document the working directory holds under that name, which this run never reaches.

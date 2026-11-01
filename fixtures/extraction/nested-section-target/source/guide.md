@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 A document-level heading follows, and a container-nested one after it.

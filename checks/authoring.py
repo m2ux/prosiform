@@ -16,9 +16,11 @@ by area: modes, protocols, artifacts, references and the entry files beside
   within a step: a step sub-section, or an operation or procedure of one step
   written with no step heading.
 - **File-relative links.** A cross-file link is written from the file that
-  holds it: never an absolute path, a URL into this repository naming a file
-  this checkout holds, or a path that resolves only from the root the file's
-  front matter declares.
+  holds it: never an absolute path, nor a URL into this repository naming a
+  file this checkout holds.
+- **Declaration.** A document's front matter declares `prosiform`, since a
+  target declaring nothing is cited rather than compiled, and its declaration
+  names no root: a document's boundary is derived from its links.
 
 Fenced blocks are blanked before headings and links are read, an indented
 fence included, since a heading or a link written inside one is an example.
@@ -52,7 +54,8 @@ INPUTS = "Inputs and Outputs"
 COMMANDS_SECTION = "Commands section"
 COMMAND_PLACEMENT = "Command placement"
 FILE_RELATIVE = "File-relative links"
-KINDS = (INPUTS, COMMANDS_SECTION, COMMAND_PLACEMENT, FILE_RELATIVE)
+DECLARATION = "Declaration"
+KINDS = (INPUTS, COMMANDS_SECTION, COMMAND_PLACEMENT, FILE_RELATIVE, DECLARATION)
 
 SIZE_LIMIT = 20 * 1024
 OPERATION_LIMIT = 8
@@ -61,7 +64,8 @@ FENCE_OPEN = re.compile(r"^(\s*)(`{3,}|~{3,})(.*)$")
 HEADING = re.compile(r"^(#{1,6})\s+(.*?)(?:\s+#+)?\s*$")
 STEP = re.compile(r"^\d+\.\s")
 FRONT_MATTER = re.compile(r"\A---\n(.*?)\n---\n", re.DOTALL)
-DECLARED_ROOT = re.compile(r'^  root: "([^"]*)"', re.MULTILINE)
+DECLARATION_KEY = "prosiform:"
+ROOT_KEY = re.compile(r"(?:^\s*|[{,]\s*)root\s*:")
 SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 SHELL = frozenset({"bash", "sh", "shell", "zsh", "console"})
 CONTRACT_LINK = r"\[[^\]]+\]\([^)\s#]*#[^)\s]+\)"
@@ -283,15 +287,43 @@ def placements(
     return out
 
 
-def declared_root(document: Path, text: str) -> Path | None:
+def declaration(name: str, text: str) -> list[Finding]:
+    """Each way one document's front matter breaks the declaration rule.
+
+    The `prosiform` block is its key's line and every indented line after it;
+    a root is a `root` key on any of them, in block or flow form.
+    """
     matched = FRONT_MATTER.match(text)
     if matched is None:
-        return None
-    root = DECLARED_ROOT.search(matched.group(1))
-    return None if root is None else (document.parent / root.group(1)).resolve()
+        return [Finding(name, 1, DECLARATION, "no front matter declares `prosiform`")]
+    block = matched.group(1).splitlines()
+    start = next(
+        (index for index, line in enumerate(block) if line.startswith(DECLARATION_KEY)),
+        None,
+    )
+    if start is None:
+        return [
+            Finding(name, 1, DECLARATION, "its front matter declares no `prosiform`")
+        ]
+    entries = [block[start][len(DECLARATION_KEY) :]]
+    for line in block[start + 1 :]:
+        if line and not line[0].isspace():
+            break
+        entries.append(line)
+    return [
+        Finding(
+            name,
+            start + offset + 2,
+            DECLARATION,
+            "`prosiform` declares a root; a document's boundary is derived from "
+            "its links",
+        )
+        for offset, entry in enumerate(entries)
+        if ROOT_KEY.search(entry)
+    ]
 
 
-def link_form(document: Path, root: Path | None, target: str) -> str | None:
+def link_form(target: str) -> str | None:
     """Why one link target is not file-relative, or None when it is."""
     if is_repository_tree_url(target):
         parts = target[len(REPOSITORY_URL_PREFIX) :].partition("#")[0].split("/")
@@ -306,32 +338,22 @@ def link_form(document: Path, root: Path | None, target: str) -> str | None:
         return None
     if path_part.startswith("/"):
         return f"{target} is an absolute path"
-    if (
-        root is not None
-        and root != document.parent.resolve()
-        and not (document.parent / path_part).exists()
-        and (root / path_part).exists()
-    ):
-        return f"{target} resolves from the declared root, not from the file"
     return None
 
 
-def link_findings(
-    name: str, document: Path, text: str, lines: list[str]
-) -> list[Finding]:
-    root = declared_root(document, text)
+def link_findings(name: str, lines: list[str]) -> list[Finding]:
     body = documents.strip_code_spans(documents.strip_indented_blocks("\n".join(lines)))
     found: list[Finding] = []
     for number, line in enumerate(body.splitlines(), 1):
         targets = INLINE_LINK.findall(line) + REFERENCE_DEFINITION.findall(line)
         for target in targets:
-            reason = link_form(document, root, target)
+            reason = link_form(target)
             if reason is not None:
                 found.append(Finding(name, number, FILE_RELATIVE, reason))
     return found
 
 
-def report(document: Path, name: str, text: str) -> tuple[list[Finding], int]:
+def report(name: str, text: str) -> tuple[list[Finding], int]:
     """Every finding in one document, and the number of operations it holds."""
     found, blanked = fences(front_matter(text).splitlines())
     heads = headings(blanked)
@@ -350,7 +372,8 @@ def report(document: Path, name: str, text: str) -> tuple[list[Finding], int]:
         if plain_title(heading.title) == "Commands"
     )
     out.extend(placements(name, found, heads, set(ops)))
-    out.extend(link_findings(name, document, text, blanked))
+    out.extend(link_findings(name, blanked))
+    out.extend(declaration(name, text))
     return sorted(out, key=lambda finding: finding.line), len(ops)
 
 
@@ -380,7 +403,7 @@ def main() -> int:
     for path in paths:
         name = path.relative_to(documents.ROOT).as_posix()
         text = path.read_text()
-        found, count = report(path, name, text)
+        found, count = report(name, text)
         by_area[area(name)].extend(found)
         size = len(text.encode())
         if oversized(size, count):

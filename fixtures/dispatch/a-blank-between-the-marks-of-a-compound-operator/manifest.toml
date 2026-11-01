@@ -17,5 +17,5 @@ severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 message_contains = ["written together"]
 reference = "¬ ⇉ the shared rules"
-source = "guide.md:3"
+source = "guide.md:6"
 chain = ["guide.md", "rules.md"]

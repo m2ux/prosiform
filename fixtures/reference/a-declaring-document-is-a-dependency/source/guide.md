@@ -1,0 +1,7 @@
+---
+prosiform: {}
+---
+# Guide
+
+Require [the shared rules](rules.md) whole and
+[the review step](process.md#review) in part.

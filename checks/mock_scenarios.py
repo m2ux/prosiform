@@ -71,7 +71,6 @@ SUBSTITUTED = "W_MOCK_SUBSTITUTED"
 ARTIFACT_STUB = """\
 ---
 prosiform:
-  root: ".."
   group: "artifacts"
   group-depth: 1
 ---
@@ -123,8 +122,7 @@ Placeholder for the delivery findings a drafted epic returns.
 
 CONVENTIONS_STUB = """\
 ---
-prosiform:
-  root: "."
+prosiform: {}
 ---
 # Conventions
 

@@ -1,0 +1,16 @@
+description = "A target carrying no prosiform mapping declares nothing, so the link naming it is emitted as authored and the target contributes no content."
+
+clauses = [
+  "Conversion metadata — An empty block declares",
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

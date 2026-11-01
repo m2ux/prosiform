@@ -35,7 +35,7 @@ These establish named syntax, reference and coverage properties. They do not est
 
 Source validation and candidate validation share one grammar but not one policy.
 
-- **Source mode** resolves fragments against one document's headings and refuses a path leaving the author's root. A source fragment names one heading and carries no ordinal.
+- **Source mode** enforces the declaration rules, resolves fragments against one document's headings and checks the self-references a source owns. A source fragment names one heading and carries no ordinal.
 - **Candidate mode** accepts the generated headings, shifted levels and structural ancestors, and checks destinations, coverage and boundaries against the recorded provenance.
 
 The candidate is never fed back through source frontmatter stripping or dependency discovery.

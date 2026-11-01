@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 ## The ![A diagram](plan.png) overview
 
 A heading carrying an image between two words.

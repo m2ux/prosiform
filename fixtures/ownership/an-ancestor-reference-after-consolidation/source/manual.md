@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Manual
 
 ## Procedure

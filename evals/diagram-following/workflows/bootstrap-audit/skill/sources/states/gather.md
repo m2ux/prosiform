@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Gather
 
 Write `actions/gather.txt` containing `gathered`.

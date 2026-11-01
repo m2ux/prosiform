@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Weigh
 
 Write `actions/weigh.txt` containing `weighed`.

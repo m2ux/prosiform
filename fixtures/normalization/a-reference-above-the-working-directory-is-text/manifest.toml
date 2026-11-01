@@ -1,0 +1,16 @@
+description = "A reference inside a source normalizing to a path above the working directory keeps its parent segments, and the document it names declares nothing, so the link is emitted as authored."
+
+clauses = [
+  "Link classification and resource handling — A link naming a document that declares nothing",
+  "Resolution sequence — step 7",
+  "Compile before publishing — step 1, the invocation working directory captured once",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

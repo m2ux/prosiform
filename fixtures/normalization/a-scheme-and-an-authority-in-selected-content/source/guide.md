@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 The [specification](https://example.com/spec.md) is published elsewhere, and

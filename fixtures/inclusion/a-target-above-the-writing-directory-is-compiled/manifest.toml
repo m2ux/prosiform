@@ -1,0 +1,16 @@
+description = "A link naming a declaring document above the writing document's directory is compiled and its destination rewritten, where the same tree under a declared root at the writing document's directory would have carried it as a citation: the boundary is derived from the links the document writes, so it holds the parent directory the link names."
+
+clauses = [
+  "File-owned invocation conformance cases — Target declarations, a target above the writing document's directory compiled",
+  "Link classification and resource handling — Local Markdown document links",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/review.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_review.bundle.md"]
+diagnostics = []

@@ -3,7 +3,7 @@ description = "A reference graph whose dependencies form a cycle bundles to a fi
 clauses = [
   "Compile before publishing, expanding coverage",
   "Self-reference and ancestor-reference behavior — Shared dependency",
-  "Link classification and resource handling — Local Markdown document links under the root",
+  "Link classification and resource handling — Local Markdown document links",
 ]
 
 [invocation]

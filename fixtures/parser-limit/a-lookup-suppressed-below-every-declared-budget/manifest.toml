@@ -16,5 +16,5 @@ exit_status = 1
 severity = "error"
 code = "E_PARSER_REFERENCE_LIMIT"
 reference = "plan.md"
-source = "guide.md:3"
+source = "guide.md:6"
 chain = ["guide.md"]

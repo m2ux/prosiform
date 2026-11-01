@@ -13,7 +13,10 @@ from prosiform.closure import resolve
 from prosiform.diagnostics import Location
 from prosiform.limits import BUDGETS, Limits
 from prosiform.metadata import InvalidMetadata
-from prosiform.source import content, hashed
+from prosiform.source import closes_head, content, hashed
+
+DECLARED = "---\nprosiform: {}\n---\n"
+"""The frontmatter block that makes a document a run's entry or compiled target."""
 
 
 def settings(group: str) -> str:
@@ -45,19 +48,17 @@ def test_settings_are_per_source_and_not_inherited() -> None:
     assert content("# Plain\n").conversion.group is None
 
 
-def test_root_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
+def test_a_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
     path = tmp_path / "a.md"
-    (tmp_path.parent / "library").mkdir(exist_ok=True)
-    raw = b"---\nprosiform:\n  root: ../library\n---\n# A\n"
+    raw = b"---\nprosiform: {}\n---\n# A\n"
     path.write_bytes(raw)
     opened = cli.read_document(
         tmp_path, resolve("a.md"), Limits({b: b.default for b in BUDGETS})
     )
-    path.write_bytes(raw.replace(b"../library", b"../other"))
-    assert opened.source.conversion.root == "../library"
-    assert opened.source.conversion.root_location == Location("a.md", 3, 9)
+    path.write_bytes(b"# A\n")
+    assert opened.source.conversion.declared
     assert opened.capture.digest == hashed(raw)
-    assert content("# Linked\n").conversion.root is None
+    assert not content("# Linked\n").conversion.declared
     with pytest.raises(cli.Failure) as caught:
         cli.recheck(tmp_path, {"a.md": opened.capture})
     assert caught.value.diagnostic.code == cli.SOURCE_CHANGED
@@ -90,7 +91,7 @@ def test_capture_hash_covers_frontmatter_and_body(tmp_path: Path) -> None:
 
 def test_metadata_is_not_a_markdown_dependency(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text(
-        '---\ndescription: "# Hidden [!missing](missing.md)"\n'
+        '---\nprosiform: {}\ndescription: "# Hidden [!missing](missing.md)"\n'
         'metadata: {owner: "[!missing](missing.md)"}\n---\n# A\n\nBody.\n'
     )
     run = invoke("a.md", cwd=tmp_path)
@@ -121,11 +122,19 @@ def test_metadata_error_preserves_output_and_coordinates(
         assert "location: a.md:2:12" in run.stderr
 
 
-@pytest.mark.parametrize("option", ["-B", "-I"])
+@pytest.mark.parametrize(
+    ("option", "raw"),
+    [
+        ("-B", b"---\na: [\n---\n\xff"),
+        # The entry's head is decoded before any source is read, so only its
+        # body can carry the bytes a held `-I` must refuse before decoding.
+        ("-I", DECLARED.encode() + b"\xff"),
+    ],
+)
 def test_raw_byte_budget_precedes_yaml_and_encoding(
-    tmp_path: Path, option: str
+    tmp_path: Path, option: str, raw: bytes
 ) -> None:
-    (tmp_path / "a.md").write_bytes(b"---\na: [\n---\n\xff")
+    (tmp_path / "a.md").write_bytes(raw)
     run = invoke("-d", "json", option, "3", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
@@ -143,7 +152,9 @@ def test_yaml_collection_depth_is_bounded(tmp_path: Path) -> None:
 def test_deferred_source_is_captured_once_and_contributes_nothing(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬ One](b.md#one) [¬ Two](b.md#two)\n")
+    (tmp_path / "a.md").write_text(
+        DECLARED + "# A\n\n[¬ One](b.md#one) [¬ Two](b.md#two)\n"
+    )
     (tmp_path / "b.md").write_text(
         "---\n" + settings("b") + "---\n# One\n\n## Two\n\nHidden.\n"
     )
@@ -167,9 +178,11 @@ def test_deferred_source_is_captured_once_and_contributes_nothing(
 def test_deferred_source_counts_towards_raw_budgets(
     tmp_path: Path, option: str
 ) -> None:
-    a = "# A\n\n[¬ B](b.md)\n"
+    a = DECLARED + "# A\n\n[¬ B](b.md)\n"
     (tmp_path / "a.md").write_text(a)
-    (tmp_path / "b.md").write_text("---\nname: " + "x" * 100 + "\n---\n# B\n")
+    (tmp_path / "b.md").write_text(
+        "---\nprosiform: {}\nname: " + "x" * 100 + "\n---\n# B\n"
+    )
     bound = "1" if option == "-F" else str(len(a.encode()) + 1)
     run = invoke("-d", "json", option, bound, "a.md", cwd=tmp_path)
     assert run.status == 1
@@ -178,7 +191,7 @@ def test_deferred_source_counts_towards_raw_budgets(
 
 
 def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬ B](b.md)\n")
+    (tmp_path / "a.md").write_text(DECLARED + "# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\na: [\n---\n# B\n")
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
@@ -190,7 +203,7 @@ def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
 def test_deferred_metadata_change_is_rechecked_with_its_chain(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    (tmp_path / "a.md").write_text("# A\n\n[¬ B](b.md)\n")
+    (tmp_path / "a.md").write_text(DECLARED + "# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\n" + settings("one") + "---\n# B\n")
     reads = 0
 
@@ -209,3 +222,23 @@ def test_deferred_metadata_change_is_rechecked_with_its_chain(
     diagnostic = run.diagnostics()[0]
     assert diagnostic["code"] == "E_SOURCE_CHANGED"
     assert diagnostic["chain"] == ["a.md", "b.md"]
+
+
+@pytest.mark.parametrize(
+    ("index", "line", "ends"),
+    [
+        (0, b"# Title\n", True),
+        (0, b"---\n", False),
+        (0, b"\xef\xbb\xbf---\r\n", False),
+        (0, b" ---\n", True),
+        (1, b"prosiform: {}\n", False),
+        (1, b"---\n", True),
+        (1, b"...\r\n", True),
+        (1, b"--- \n", False),
+        (1, b"\xff\n", True),
+    ],
+)
+def test_a_head_closes_at_the_first_line_or_the_closer(
+    index: int, line: bytes, ends: bool
+) -> None:
+    assert closes_head(index, line) is ends

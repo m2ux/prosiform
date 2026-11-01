@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Guide
 
 ![The architecture](https://example.com/architecture.png) illustrates the

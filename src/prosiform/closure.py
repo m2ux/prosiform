@@ -1,9 +1,11 @@
-"""Normalize each reference from the file that writes it, within a source-owned root.
+"""Normalize each reference from the file that writes it, and classify it by its target.
 
 URI components split before decoding. Local path segments decode once.
-Authored links that escape their source root remain citations; positional
-references permit parent bootstrap. Canonical source identities are relative
-to the invocation working directory, independent of the discovering parent.
+A link naming a Markdown document is a dependency when that document
+declares `prosiform`, and a citation the bundle carries as authored when
+it declares nothing. Canonical source identities are relative to the
+invocation working directory, independent of the discovering parent, and
+one above it keeps its leading parent segments.
 
 Three operators open a link's text, each a mark followed by a space, and
 one link states one of them. Each withholds the same compilation from the
@@ -18,13 +20,16 @@ syntax, and the bundle drops it."""
 
 import posixpath
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
+from enum import Enum
 from types import MappingProxyType
 from urllib.parse import quote
 
+from markdown_it.token import Token
+
 from prosiform.profile import is_markdown
-from prosiform.source import ENCODING, external
+from prosiform.source import ENCODING, external, regions, uses
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
@@ -66,7 +71,7 @@ ADMITTED = (
 
 
 class Unresolvable(Exception):
-    """A reference the sequence resolves to no document under the root.
+    """A reference the sequence resolves to no document the run can open.
 
     The message is a clause about the reference rather than a sentence
     about it, so a caller naming the reference it read states the
@@ -79,7 +84,7 @@ class Malformed(Unresolvable):
 
 
 class OutsideRoot(Unresolvable):
-    """A reference naming a local document the allowed source root cannot hold."""
+    """A reference whose path names a place above or outside the working directory."""
 
 
 @dataclass(frozen=True)
@@ -107,6 +112,10 @@ class Reference:
     A reference a folder key derived also holds that key as its caller
     wrote it, so the path it names is one no author wrote and the
     diagnostic refusing that path can say which entry named it.
+
+    A reference the substitution mapping redirected states that it is
+    one: the caller named the substitute, so a substitute naming no
+    document is refused rather than read as a link to nothing.
     """
 
     original: str
@@ -117,6 +126,7 @@ class Reference:
     chain: tuple[str, ...] = ()
     walk: str | None = None
     folder: str | None = None
+    redirected: bool = False
 
 
 @dataclass(frozen=True)
@@ -329,6 +339,7 @@ class Substitution:
             found.fragment if named.fragment is None else named.fragment,
             walk=named.walk,
             folder=named.folder,
+            redirected=True,
         )
 
     def redirect(self, found: Reference, origin: str | None = None) -> Reference:
@@ -519,24 +530,18 @@ def segment(written: str) -> str:
     return decoding
 
 
-def normalized(base: str, segments: Sequence[str], allow_parent: bool = False) -> str:
-    """Normalize segments, permitting leading parents for positional references."""
+def normalized(base: str, segments: Sequence[str]) -> str:
+    """Normalize segments, keeping the leading parents of a path above the root."""
     walked = [part for part in base.split(SEPARATOR) if part]
     for part in segments:
         if part in ("", CURRENT):
             continue
         if part != PARENT:
             walked.append(part)
-            continue
-        if allow_parent and (not walked or walked[-1] == PARENT):
+        elif not walked or walked[-1] == PARENT:
             walked.append(PARENT)
-            continue
-        if not walked:
-            raise OutsideRoot(
-                "normalizes above the allowed source root, which cannot contain "
-                "the document it names"
-            )
-        walked.pop()
+        else:
+            walked.pop()
     return SEPARATOR.join(walked)
 
 
@@ -664,13 +669,13 @@ def unmarked(text: str) -> str:
     return text[end:]
 
 
-def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Reference:
+def resolve(text: str, base: str = "") -> Reference:
     """Decode a reference and normalize its path, retaining the authored access walk."""
     written = components(text)
     if DRIVE.match(written.path) is not None:
         raise OutsideRoot(
-            f"names the drive path {written.path!r}, which the allowed source "
-            f"root cannot contain"
+            f"names the drive path {written.path!r}, which no path under the "
+            f"invocation working directory spells"
         )
     if external(written.path):
         return Reference(text, "", None, external=True)
@@ -681,8 +686,8 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
         )
     if written.path.startswith(SEPARATOR):
         raise OutsideRoot(
-            f"names the root-relative path {written.path!r}, which the allowed "
-            f"source root cannot contain"
+            f"names the root-relative path {written.path!r}, which no path under "
+            f"the invocation working directory spells"
         )
     if BACKSLASH in written.path:
         raise Malformed(
@@ -690,7 +695,7 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
             f"path the profile reads"
         )
     parts = [segment(part) for part in written.path.split(SEPARATOR)]
-    path = normalized(base, parts, allow_parent)
+    path = normalized(base, parts)
     walk = "/".join(parts) if written.path else None
     if written.fragment is None or not written.fragment:
         return Reference(text, path, walk=walk)
@@ -702,53 +707,85 @@ def resolve(text: str, base: str = "", *, allow_parent: bool = False) -> Referen
     )
 
 
-def covers(root: str, path: str) -> bool:
-    """Whether one working-directory-relative path sits inside the source root."""
-    anchor = "/anchor/cwd"
-    held = posixpath.normpath(posixpath.join(anchor, root or CURRENT))
-    named = posixpath.normpath(posixpath.join(anchor, path))
-    return posixpath.commonpath((held, named)) == held
+class Probed(Enum):
+    """What a probe found at the path one reference names.
+
+    A document that declares and one that declares nothing both exist;
+    a path naming no document is a third answer, because a link to
+    nothing and a link to a silent document are text for one reason and
+    refused for different ones.
+    """
+
+    DECLARING = "declaring"
+    SILENT = "silent"
+    ABSENT = "absent"
+
+
+class Declarations:
+    """Whether each document a link names declares `prosiform`, asked once per path.
+
+    A declaration lives in the target, so the answer comes from a read
+    this module cannot make: the caller supplies the probe that makes
+    it. The record keeps each answer under the path it was asked of, so
+    a second link to one target costs no read, and every stage that
+    classifies a link reads the answer discovery read.
+
+    The probe is handed the occurrence that first asked — the reference
+    with the position it is written at and the chain that reached it —
+    so a refusal the read meets names the link that asked for it.
+    """
+
+    def __init__(self, probe: Callable[[Reference], Probed]) -> None:
+        self._probe = probe
+        self._answers: dict[str, Probed] = {}
+
+    def answer(self, found: Reference) -> Probed:
+        """What the path one reference names holds, probed the first time."""
+        answer = self._answers.get(found.path)
+        if answer is None:
+            answer = self._answers[found.path] = self._probe(found)
+        return answer
+
+    def declares(self, found: Reference) -> bool:
+        """Whether the document one reference names exists and declares."""
+        return self.answer(found) is Probed.DECLARING
+
+
+DECLARING = Declarations(lambda _found: Probed.DECLARING)
+"""The record a caller holding no probe reads, answering every target as declaring."""
 
 
 def inside(
     document: str,
     text: str,
-    root: str = "",
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
 ) -> Reference:
-    """Resolve a link from the file that carries it, within the source root.
+    """Resolve a link from the file that carries it, held to the path grammar.
 
     A link is the path a reader of its file follows, so it resolves from
-    that file's directory. The root bounds the result: a path landing
-    outside it names nothing the root can contain, so it is a citation
-    rather than a dependency. A fragment with no path names a section
-    of the document that carries it.
+    that file's directory. A fragment with no path names a section of
+    the document that carries it. Where the result sits decides nothing
+    about whether the run compiles it; the target's declaration does,
+    and `resolvable` asks it. A path normalizing above the invocation
+    working directory keeps its leading parent segments, so its target
+    is asked like any other and opened through the bounded no-follow
+    walk from the working directory, the access a positional entry
+    takes.
+
+    The grammar still bounds the path: a drive path and a root-relative
+    path name nothing the run can open, so each is refused as
+    `OutsideRoot`.
 
     The mapping is consulted on the identity the reference normalized
-    to, which is the authored identity and never the substitute's: it
-    decides what an identity names, and the root decides what the run
-    does with that identity. A reference the root admits is redirected
-    to the substitute, and so is one the root refuses — a citation can
-    name a stand-in, which is what makes a tree under test reachable
-    from outside its own root. A reference no key names is returned as
-    it resolved, or refused as `OutsideRoot` where the root does not
-    hold it.
-
-    The substitute is exempt from the writing source's root and is
-    never held to it. It is opened through the bounded no-follow walk
-    from the invocation working directory, which is the same access a
-    positional entry takes, so a redirected citation is no wider a
-    grant than an entry reference already is. Holding the substitute to
-    the writing source's root, or reading the mapping after the check
-    had refused the authored path, would refuse every substitute kept
-    beside the tree under test.
+    to, which is the authored identity and never the substitute's, so
+    a substitute is returned wherever it sits and opened through that
+    same walk.
 
     A remote reference is returned before the mapping is consulted: a
     key is the identity a reference normalized to, and a reference
     carrying a scheme or an authority names no local path identity for
-    one to match. That is a decision rather than an omission, and the
-    one exception the reach of the mapping has.
+    one to match.
 
     The origin is where the link that wrote this reference stands, which
     the caller that read it supplies so the substitution can be reported
@@ -756,7 +793,7 @@ def inside(
     same link again passes nothing and records nothing new.
     """
     base = posixpath.dirname(document)
-    found = resolve(text, base, allow_parent=True)
+    found = resolve(text, base)
     if found.external:
         return found
     if not components(text).path:
@@ -766,11 +803,6 @@ def inside(
     resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
     if substitution.key(resolved) is not None:
         return substitution.redirect(resolved, origin)
-    if not covers(root, found.path):
-        raise OutsideRoot(
-            "normalizes above the allowed source root, which cannot contain "
-            "the document it names"
-        )
     return resolved
 
 
@@ -778,18 +810,16 @@ def bundled(
     document: str,
     text: str,
     opening: str,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
+    reached: Sequence[str] = (),
 ) -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
-    A dependency carries no scheme and no authority, normalizes under
-    the allowed source root, names a file the profile reads as Markdown,
-    and is not withheld. Everything else is text the bundle carries as
-    its author wrote it: a reference leaving the root cites material
-    rather than requiring it, and a reference naming no Markdown
-    document names nothing the bundle can carry.
+    A dependency is a reference `resolvable` answers that is not
+    withheld. Everything else is text the bundle carries as its author
+    wrote it.
 
     The opening is the literal text the link's content begins with,
     which is where an operator is written. A withheld link is no
@@ -799,78 +829,147 @@ def bundled(
     bundle leaves a link withholding it alone.
 
     Discovery, emission and candidate validation each ask this
-    question, and each asks it of the document the link was written in,
-    so the answer is a property of the reference rather than of the
-    stage that read it. A reference whose form the grammar does not
-    admit is answered here as no dependency; the command resolves such
-    a reference again where it names a Markdown document, and reports
-    the refusal it is.
+    question, of the document the link was written in and of the one
+    record of declarations, so the answer is a property of the reference
+    rather than of the stage that read it. A reference whose form the
+    grammar does not admit is answered here as no dependency; the
+    command resolves such a reference again where it names a Markdown
+    document, and reports the refusal it is.
     """
     if withholding(opening):
         return None
-    return resolvable(document, text, root, substitution, origin)
+    return resolvable(document, text, declarations, substitution, origin, reached)
 
 
 def withholding_target(
     document: str,
     text: str,
     opening: str,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
+    reached: Sequence[str] = (),
 ) -> Reference | None:
     """The target one withheld link names, where the run is responsible for it.
 
-    Withholding withholds a compilation position would have granted, so
-    what it withholds is a reference under the allowed source root
-    naming a Markdown document, and that is the reference answered
-    here. The run stays responsible for it: the target is required to
-    exist, and the destination the bundle publishes names it from the
-    root.
+    Withholding withholds a compilation the declaration would have
+    granted, so what it withholds is a reference `resolvable` answers,
+    and that is the reference answered here. The run stays responsible
+    for it: the target is required to exist, and the destination the
+    bundle publishes names it from the working directory.
 
     An operator on anything else states a compilation no run performs:
-    a reference leaving the root, one naming no Markdown document and
-    one whose form the grammar does not admit withhold nothing, so each
-    is answered here as no withheld target and the run refuses the link
-    that carries it.
+    a reference naming no Markdown document, one whose target declares
+    nothing and one whose form the grammar does not admit withhold
+    nothing, so each is answered here as no withheld target and the run
+    refuses the link that carries it.
 
     This and `bundled` are the two halves of one rule, read from one
-    resolution: a reference under the root naming a Markdown document is
+    resolution: a reference naming a declaring Markdown document is
     compiled by this run or withheld from it, and the operator is the
     whole of the difference.
     """
     if not withholding(opening):
         return None
-    return resolvable(document, text, root, substitution, origin)
+    return resolvable(document, text, declarations, substitution, origin, reached)
 
 
 def resolvable(
     document: str,
     text: str,
-    root: str = "",
+    declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
+    reached: Sequence[str] = (),
 ) -> Reference | None:
-    """The target one link names, where it resolves under the root to a document.
+    """The target one link names, where it is a document that declares `prosiform`.
 
-    Such a reference carries no scheme and no authority, normalizes
-    under the allowed source root, and names a file the profile reads
-    as Markdown. Everything else is text the bundle carries as its
-    author wrote it: a reference leaving the root cites material rather
-    than requiring it, and a reference naming no Markdown document
-    names nothing the bundle can carry.
+    Such a reference carries no scheme and no authority, resolves to a
+    file the profile reads as Markdown, and names a document whose
+    frontmatter declares. Everything else is text the bundle carries as
+    its author wrote it: a reference naming no Markdown document names
+    nothing the bundle can carry, and one whose target declares nothing
+    cites material rather than requiring it.
+
+    The declaration is asked of the record after every other test, so a
+    citation that is no Markdown document is never opened. The record is
+    handed the occurrence — the origin and the chain `reached` extended
+    by this reference — so a refusal its probe meets names the link.
 
     What a reference names is a property of the reference, so this
     answers that question alone and leaves which run compiles it to the
     caller reading the mark.
     """
+    found = named(document, text, substitution, origin, reached)
+    if found is None or not declarations.declares(found):
+        return None
+    return replace(found, origin=None, chain=())
+
+
+def named(
+    document: str,
+    text: str,
+    substitution: Substitution = UNSUBSTITUTED,
+    origin: str | None = None,
+    reached: Sequence[str] = (),
+) -> Reference | None:
+    """The local Markdown path one link names, as the occurrence written there.
+
+    A reference carrying a scheme or an authority, one naming no
+    Markdown document and one whose form the grammar does not admit
+    name no path a probe can ask, and each is answered as none. What
+    is returned carries the origin and the chain `reached` extended by
+    this reference, which is what a probe or a refusal names.
+    """
     try:
-        found = inside(document, text, root, substitution, origin)
+        found = inside(document, text, substitution, origin)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):
         return None
-    return found
+    return replace(found, origin=origin, chain=(*reached, identity(found)))
+
+
+def boundary(document: str, tokens: Sequence[Token]) -> str:
+    """The deepest directory holding every local Markdown path a document's links name.
+
+    Each link resolves from the document's directory, as a reader of the
+    file follows it, and a fragment-only link names the document itself.
+    The boundary is read from every link the document writes rather than
+    from a selected region, because the links are a property of the
+    document and one file has one boundary. It is derived from the links,
+    so it holds every one of them and refuses none. A document naming no
+    local Markdown path has its own directory.
+
+    The working-directory-relative directory is returned, empty for the
+    working directory itself, and one above it is spelled with leading
+    parent segments. A link the path grammar refuses, one naming no
+    Markdown document and an image name no path and contribute nothing.
+
+    A directory reached by climbing further than another holds it, so
+    where the paths climb different distances the boundary is the
+    directory the furthest climb reaches.
+    """
+    directories = [
+        posixpath.dirname(found.path)
+        for use in uses(tokens, tuple(regions(tokens)))
+        if not use.resource and (found := named(document, use.destination)) is not None
+    ]
+    if not directories:
+        return posixpath.dirname(document)
+    climbs = {climb(directory) for directory in directories}
+    if len(climbs) > 1:
+        return SEPARATOR.join([PARENT] * max(climbs))
+    return posixpath.commonpath(directories)
+
+
+def climb(path: str) -> int:
+    """How many leading parent segments a normalized path opens with."""
+    parts = path.split(SEPARATOR)
+    count = 0
+    while count < len(parts) and parts[count] == PARENT:
+        count += 1
+    return count
 
 
 def rebased(found: Reference, text: str) -> str:

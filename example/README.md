@@ -2,7 +2,7 @@
 
 These examples use [work-planner](work-planner/SKILL.md), a skill with a routing document, ten modes, twelve protocols and thirty-one artifact documents. The [usage-example fixtures](../fixtures/usage-example) use this same source tree and record the expected bundles.
 
-Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. Each link resolves from the directory of the file that writes it, the path a reader follows. A file's `prosiform.root`, when present, is a directory path relative to that file, and bounds what its links reach.
+Run the commands from the repository root after [installation](../README.md#installation). Markdown blocks below are exact excerpts; links beside them open the complete files. File and directory names use hyphens rather than underscores. Each link resolves from the directory of the file that writes it, the path a reader follows. Every document in the tree declares `prosiform` in its frontmatter and none declares a root: a link to a declaring document under the working directory is compiled, and any other link keeps its authored destination. `make authoring` holds the tree to that.
 
 ## Bundle a procedure and its dependencies
 
@@ -71,7 +71,7 @@ The bundle shows each of these constructs:
 - **Whole documents under their titles.** Rules, Conventions and Propose Mode declare no group, and each stands as an H1 headed by its own title.
 - **Declared groups.** `Artifacts`, `Protocols` and `References` head their members in title case, each member's H1 an H2 beneath the group: the eighteen artifacts the bundle's links reach, two protocols and one reference.
 - **Dependency order.** Rules and Conventions follow the entry's own sections, in the order its preamble links them.
-- **Compiled links.** Every link to a document or section under the root points at a heading in the bundle.
+- **Compiled links.** Every link to a declaring document or section under the working directory points at a heading in the bundle.
 - **Distinct destinations for coinciding headings.** The `Procedure` headings of Propose Mode and Initiative Publication take `#procedure-1` and `#procedure-2`, the destinations their preambles link.
 - **A dispatched link.** The `⇉` mark is dropped, the link points at a sub-section of its step naming the Sync Mode bundle the run publishes beside this one, and Sync Mode contributes no content here:
 
@@ -91,7 +91,7 @@ The bundle shows each of these constructs:
   [Dispatch](#dispatch) `modes_sync-mode.bundle.md` to a sub-agent.
   ```
 
-- **An outside-root link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.
+- **An external link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
@@ -188,10 +188,10 @@ The [expected bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-def
 ```markdown
 ### 1. Read the Guidelines
 
-Read the [shared skill guidelines](../../guidelines.md) and [skill guidelines](guidelines.md) whole before the first edit.
+Read the [shared skill guidelines](#skill-guidelines) and [skill guidelines](guidelines.md) whole before the first edit.
 ```
 
-The deferred link's destination names the guidelines from the working directory, so `pf guidelines.md` run from that directory compiles them. The guidelines contribute no content to this bundle. The shared guidelines lie outside the root, so their link keeps its authored destination.
+The deferred link's destination names the guidelines from the working directory, so `pf guidelines.md` run from that directory compiles them. The guidelines contribute no content to this bundle. The shared guidelines lie above the working directory and declare `prosiform`, so the bundle carries them and their link names their heading.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml).
 
@@ -265,14 +265,13 @@ cd example/work-planner
 pf modes/hoist-mode.md
 ```
 
-Every artifact file declares group `artifacts` at depth `1`. A mode file declares its root and no group.
+Every artifact file declares group `artifacts` at depth `1`. A mode file declares `prosiform: {}`, which includes it with no group.
 
 For example, the [epic](work-planner/artifacts/epic.md) begins with this declaration:
 
 ```yaml
 ---
 prosiform:
-  root: ".."
   group: "artifacts"
   group-depth: 1
 ---
