@@ -1,0 +1,26 @@
+description = "A preset carrying group fails with E_INVALID_CONVERSION_METADATA at the key, naming the field and the group-depth pair that replaces it, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — group is refused",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.group is refused", "prosiform.default.group-depth: [{<group>: <depth>}]"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 5
