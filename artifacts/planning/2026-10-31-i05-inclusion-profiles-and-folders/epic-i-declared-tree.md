@@ -39,5 +39,5 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 
 ## References
 
-- **R0.** Epic — [I08:E08 Declared Tree](https://github.com/m2ux/prosiform/issues/465).
+- **R0.** Epic — [I08:E09 Declared Tree](https://github.com/m2ux/prosiform/issues/465).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the epics whose fields this migrates to.

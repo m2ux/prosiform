@@ -129,7 +129,7 @@ An exclusion naming a heading the target does not carry is silent, because a pre
 
 I05's goal was a quality bar, true of every epic forever, so it could be neither reached nor reviewed against. Its 25 epics held three unrelated subjects, and each is now an initiative whose goal its epics can make true: [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) holds this record's epics, [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) holds the grouping work raised alongside it, and [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) holds the corpus and session work. I05 is closed.
 
-Every epic in this record is numbered in I08's series, and each letter below names the record's artifact for it: E00 Declared Inclusion, E01 Section Presets, E02 Exclusion, E03 Remove the Referrer, E04 Conformance Faults, E05 Named Budgets, E06 Preset-Only Substitution, E07 Mock Substitution and E08 Declared Tree. The letters predate the split and the tracker's numbers are authoritative; the work-item files keep their letter, so a file named `a-w03.md` holds E00's third row.
+Every epic in this record is numbered in I08's series, and each letter below names the record's artifact for it: E00 Declared Inclusion, E01 Section Presets, E02 Exclusion, E03 Remove the Referrer, E04 Conformance Faults, E05 Named Budgets, E06 Preset-Only Substitution, E07 Mock Substitution and E09 Declared Tree. The letters predate the split and the tracker's numbers are authoritative; the work-item files keep their letter, so a file named `a-w03.md` holds E00's third row. E08 is Mapping Refusal, a closed epic this record did not plan; it held E08 first, so the tree takes E09.
 
 ## Optimisation
 
@@ -156,7 +156,7 @@ The criteria are replanned at the initiative's own grain. Each states an outcome
 | AC5 | An excluded section contributes no dependency | E02 |
 | AC6 | Every ceiling is named rather than lettered | E05 |
 | AC7 | Every fault is driven by environment alone | E04 |
-| AC8 | The example and corpus trees state their settings in presets | E08 |
+| AC8 | The example and corpus trees state their settings in presets | E09 |
 | AC9 | Every added behaviour is reached by an end-to-end fixture | each epic adding surface |
 | AC10 | The documented surface describes every added behaviour | each epic adding surface |
 | AC11 | The checks pass on each delivering revision | every epic |
@@ -174,7 +174,7 @@ The criteria are replanned at the initiative's own grain. Each states an outcome
 - **A folder pair was a trailing separator on both sides, `-m rules/=stubs/`.** No glob, no second pattern syntax. It retired with `-m`: a preset states one pair per entry, so a folder of stubs is written one entry at a time. (User, 2026-10-31.)
 - **A preset is selected by keyword, in the title of the section that writes the link.** Case-insensitive, whole-word, and several keywords in one title select several presets. The setting belongs to the reference, so the section that asked for it is the one that states it. (User, 2026-11-01.)
 - **The epics are numbered in the order the graph orders them.** E00 changes the key rule and the classification every later epic reads; E01 is the largest and states the preset a carve-up is written as; E02 is the carve-up itself. (Agent, 2026-10-31.)
-- **Priority is the map the task graph derives.** An epic whose first row has no inbound edge carries the largest number, and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The current map is E00 8, E01 7 and E02 through E06 5, with E08 1 as the migration that waits on all of them. (User, 2026-10-31.)
+- **Priority is the map the task graph derives.** An epic whose first row has no inbound edge carries the largest number, and each other takes one less than the smallest its prerequisites carry, so the board mirrors the edges rather than a reading of effort. The current map is E00 8, E01 7 and E02 through E06 5, with E09 1 as the migration that waits on all of them. (User, 2026-10-31.)
 - **The folder pairing moved to I08:E07, and retired with its option.** A folder side was a shape of `-m`, which [I08:E06](https://github.com/m2ux/prosiform/issues/461) retires. A preset's `path-sub` entry inherits the pair syntax, so the folder form goes with the option and a preset states one pair per entry. (User, 2026-10-31.)
 - **`root` is refused rather than ignored.** A declaration that silently does nothing reads as declaration that took effect, and this repository carries no backward-compatibility layer. (Agent, 2026-10-31.)
 - **A declaration is probed, not captured.** Reading every cited document whole to learn that it declares nothing spends the source budget on material the bundle does not carry. (Agent, 2026-10-31.)
