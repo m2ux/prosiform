@@ -12,6 +12,7 @@ This record holds its delivery of `AC12`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W07](w07.md) | The work item: fixtures named for what they prove, the silent-target fixture reworked, descriptions and prose naming the working directory, and the copied-source declaration stated |
 
 ## Links
 
