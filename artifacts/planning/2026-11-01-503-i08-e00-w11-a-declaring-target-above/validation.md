@@ -16,4 +16,4 @@ Evidence for each check the [work item](w11.md) names, run in the unit's worktre
 
 ## T4 full check
 
-`make check` exits 0 before opening.
+`make check` exits 0 at 7b46e9b6 before opening, and CI on 7b46e9b6 passes. Before merging, `origin/i08/e00/main` (W08, #504) merged cleanly into the branch as 86fbe42b; `make check` exits 0 there (1410 tests, 386 fixtures) and CI on 86fbe42b passes.
