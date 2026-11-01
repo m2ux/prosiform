@@ -59,9 +59,13 @@ from prosiform.closure import (
     DISPATCH_MARK,
     DRIVE,
     PARALLEL_MARK,
+    SEPARATOR,
+    UNSUBSTITUTED,
     Malformed,
     OutsideRoot,
+    Pairing,
     Reference,
+    Substitution,
     components,
     conflicting,
     identity,
@@ -190,6 +194,8 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
+MOCK_SUBSTITUTED = "W_MOCK_SUBSTITUTED"
+MOCK_UNUSED = "W_MOCK_UNUSED"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -215,6 +221,8 @@ CODES = tuple(
             RESOURCE_PORTABILITY,
             COINCIDENT_HEADING,
             EARLIER_SET_RETAINED,
+            MOCK_SUBSTITUTED,
+            MOCK_UNUSED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -231,6 +239,8 @@ CLEANUP_FAULT = "cleanup-refused"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 
 DECIMAL = re.compile(r"^[0-9]+$")
+
+SUBSTITUTION_PAIR = "="
 
 EXIT_STATUSES = """exit statuses:
   0  successful compilation, validation, or informational response
@@ -417,6 +427,174 @@ def budgets(options: argparse.Namespace) -> Limits:
     return Limits({budget: getattr(options, budget.dest) for budget in BUDGETS})
 
 
+def mock(value: str) -> Pairing:
+    """One `ORIGINAL=ALTERNATIVE` pair, each side read from the working directory.
+
+    Both sides are read by the grammar every other reference is read
+    by, with the parent bootstrap a positional entry permits, so a
+    substitute kept above the working directory is named as a
+    command-line reference names one. Neither side is matched against
+    the mapping: a substitute is material rather than another
+    indirection, and a value that is also a key is read from disk.
+
+    A side ending in a separator names a folder rather than a document,
+    and that separator is read here, before the reference grammar
+    normalizes the path. `closure.normalized` drops an empty path
+    segment, so `rules/` and `rules` normalise to one path and the
+    separator that states the difference is gone before anything else
+    can read it. Both sides of one pair state one kind, because a folder
+    and a document answer different questions and one entry cannot ask
+    both. A folder side carries no section, because a folder names no
+    heading for one to select.
+    """
+    original, given, alternative = value.partition(SUBSTITUTION_PAIR)
+    if not given or not original or not alternative:
+        raise argparse.ArgumentTypeError(f"{value!r} is no ORIGINAL=ALTERNATIVE pair")
+    if marked(original) != marked(alternative):
+        raise argparse.ArgumentTypeError(
+            f"{value!r} names a folder on one side and a document on the other, so "
+            f"the entry states two different questions"
+        )
+    if marked(original) and (
+        components(original).fragment or components(alternative).fragment
+    ):
+        raise argparse.ArgumentTypeError(
+            f"{value!r} gives a folder side a section, and a folder names no heading"
+        )
+    return Pairing(entry(original), entry(alternative), marked(original))
+
+
+def marked(text: str) -> bool:
+    """Whether one mapping side names a folder, stated by a trailing separator.
+
+    The marker is read from the path component alone, so a side carrying
+    a section states its folder marker before the delimiter rather than
+    at the end of its text; `rules/#Checks` is then a folder side
+    carrying a section, which its own refusal names.
+
+    The marker belongs to the side rather than to its path. The
+    reference grammar drops an empty path segment, so `rules/` and
+    `rules` normalize to one path, and the separator is read here before
+    that normalization runs.
+    """
+    return components(text).path.endswith(SEPARATOR)
+
+
+def substitution(options: argparse.Namespace) -> Substitution:
+    """The mapping the command line names, by the identity each key normalized to.
+
+    Every key stands for one identity, so two spellings of one path name
+    one key and the section a key carries is part of what it names. The
+    sides were resolved while the grammar was read, before any source
+    was opened. Each key keeps the spelling the caller wrote, because a
+    key no reference named is reported as the caller wrote it.
+
+    A folder pairing states a folder on both sides, so its key is a path
+    and its substitute a folder: the remainder a reference carries past
+    the key is what the substitute folder takes. The Markdown-suffix test
+    is applied to the path each reference resolves to under the
+    substitute folder rather than to the folder, because a folder
+    legitimately names no document while the documents it holds are
+    read. A reference landing on something the profile does not read is
+    text, by the rule every destination is classified by.
+
+    A mapping shape that states nothing is refused here, because here is
+    where the whole mapping is known: a key carrying no document, a
+    substitute naming no Markdown document, a key and a substitute naming
+    one identity, and a second key naming an identity the first already
+    names. The four are decided from one set of identities, so no run
+    reaches a shape that would otherwise win silently by being read last.
+
+    The two tests of a pair's own sides answer before the two that
+    compare them, so a pair naming no document reports the side that
+    names none rather than a coincidence between two empty identities.
+    """
+    keys: dict[tuple[str, str | None], Reference] = {}
+    folders: dict[str, Reference] = {}
+    spelled: dict[tuple[str, str | None], str] = {}
+    for pairing in options.mock or ():
+        named = (pairing.original.path, pairing.original.fragment)
+        if pairing.folder:
+            if not (pairing.original.path and pairing.alternative.path):
+                raise folderless(pairing.original, pairing.alternative)
+        elif not pairing.original.path:
+            raise documentless(pairing.original)
+        elif not is_markdown(pairing.alternative.path):
+            raise unbundleable(pairing.original, pairing.alternative)
+        if identity(pairing.original) == identity(pairing.alternative):
+            raise self_mocked(pairing.original, pairing.alternative)
+        if named in spelled:
+            raise duplicated(spelled[named], pairing.original)
+        spelled[named] = pairing.original.original
+        if pairing.folder:
+            folders[pairing.original.path] = pairing.alternative
+        else:
+            keys[named] = pairing.alternative
+    return Substitution(keys, spelled, folders)
+
+
+def duplicated(earlier: str, later: Reference) -> Failure:
+    """Two mapping keys naming one identity, as the spellings their author wrote."""
+    return usage_failure(
+        f"the mapping keys {earlier!r} and {later.original!r} name one identity, "
+        f"so only one of them can redirect it",
+        reference=later.original,
+    )
+
+
+def self_mocked(original: Reference, alternative: Reference) -> Failure:
+    """One mapping entry whose substitute names the identity its key names.
+
+    A folder pair reaching this compares two paths, so its separator is
+    not part of what it states: `rules/=rules/` names one folder on both
+    sides exactly as `rules.md=rules.md` names one document.
+    """
+    return usage_failure(
+        f"the mapping entry {original.original!r}={alternative.original!r} names "
+        f"one identity on both sides, so the substitute stands in for itself",
+        reference=original.original,
+    )
+
+
+def folderless(original: Reference, alternative: Reference) -> Failure:
+    """One folder pair whose key or substitute names no folder.
+
+    The reference is the side that names none, as each of the other
+    refusals names the side the fault sits on: either side of the entry
+    can be edited, and the message names the pair whole.
+    """
+    unsided = original if not original.path else alternative
+    return usage_failure(
+        f"the mapping entry {original.original!r}={alternative.original!r} names a "
+        f"folder by a separator alone, so no folder is named to redirect",
+        reference=unsided.original,
+    )
+
+
+def documentless(original: Reference) -> Failure:
+    """One mapping key carrying no document, as a section alone does."""
+    return usage_failure(
+        f"the mapping key {original.original!r} names no document to redirect, so "
+        f"no reference can name it",
+        reference=original.original,
+    )
+
+
+def unbundleable(original: Reference, alternative: Reference) -> Failure:
+    """One mapping entry whose substitute names no Markdown document.
+
+    The substitute is the target outright, so a reference redirected to
+    one the profile classifies as a resource is a reference the run
+    publishes as text rather than bundles.
+    """
+    return usage_failure(
+        f"the mapping entry {original.original!r}={alternative.original!r} gives a "
+        f"substitute naming no Markdown document, so the reference it redirects "
+        f"could only be published as text",
+        reference=alternative.original,
+    )
+
+
 def parser() -> Parser:
     """The command's grammar: every option the contract declares, and no other."""
     grammar = Parser(
@@ -437,6 +615,17 @@ def parser() -> Parser:
         dest="referrer",
         metavar="DOC",
         help="working-directory-relative document for fragment-only references",
+    )
+    grammar.add_argument(
+        "-m",
+        "--mock",
+        dest="mock",
+        metavar="ORIGINAL=ALTERNATIVE",
+        action="append",
+        type=mock,
+        help="redirect one reference to the document or section the run reads "
+        "instead, given once per pairing; both sides read from the working "
+        "directory; repeatable; default none",
     )
     grammar.add_argument(
         "-o",
@@ -523,7 +712,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
         for at, option in enumerate(token[1:], start=1):
             if option in "cCvh":
                 continue
-            if option in "rfogdxFBIOTLNE":
+            if option in "rfogdxFBIOTLNEm":
                 value = token[at + 1 :].removeprefix("=") or next(tokens, "")
                 if option == "d" and value in FORMATS:
                     selected = value
@@ -531,8 +720,16 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     return selected
 
 
-def entry(text: str) -> Reference:
-    """Normalize a positional reference with bounded relative-parent bootstrap."""
+def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
+    """Normalize a positional reference with bounded relative-parent bootstrap.
+
+    The mapping names what the reference resolves to instead, and is
+    read after the normalization: an entry reference is exempt from the
+    writing source's root, so the mapping applies to the identity the
+    reference normalized to rather than to anything a source decides.
+    An entry reference stands in no source, so a redirect of one is
+    recorded with no source position.
+    """
     try:
         found = resolve(text, allow_parent=True)
     except Malformed as malformed:
@@ -554,7 +751,7 @@ def entry(text: str) -> Reference:
             remedy="name a document the source root carries",
             reference=text,
         )
-    return found
+    return substitution.redirect(found)
 
 
 def entered(
@@ -639,10 +836,15 @@ def read_document(
         ) from linked
     except Absent as absent:
         raise input_failure(
-            f"{written} {reference!r} names no document under the allowed source root",
+            missing(found),
             code=TARGET_NOT_FOUND,
-            remedy="name a document the source root carries",
+            remedy=(
+                "name a folder whose documents the key's remainder reaches"
+                if found.folder is not None
+                else "name a document the source root carries"
+            ),
             reference=reference,
+            resolved=name if found.folder is not None else None,
             source=found.origin,
             chain=chain,
         ) from absent
@@ -731,6 +933,27 @@ def read_document(
             source=location(name, unclosed.line),
             chain=chain,
         ) from unclosed
+
+
+def missing(found: Reference) -> str:
+    """One reference naming no document, as the reader who must fix it reads it.
+
+    A reference an author wrote names the document that author meant,
+    so the reader is told the document is absent. A reference a folder
+    key derived names a path nobody wrote, so the message states the
+    whole route: the reference as authored, the key that answered it,
+    and the path the redirect resolved to.
+    """
+    if found.folder is None:
+        return (
+            f"the reference {found.original!r} names no document under the "
+            f"allowed source root"
+        )
+    return (
+        f"the reference {found.original!r} is redirected by the mapping key "
+        f"{found.folder!r} to {found.path!r}, which names no document under the "
+        f"allowed source root"
+    )
 
 
 def refused(
@@ -943,6 +1166,7 @@ def required(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every dependency the selected content of one source carries.
 
@@ -991,7 +1215,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, source.root)
+            found = inside(path, use.destination, source.root, substitution, at)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1018,6 +1242,7 @@ def refusals_of_operators(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
     """Refuse a link whose operators state no one compilation the run can carry out.
 
@@ -1071,7 +1296,7 @@ def refusals_of_operators(
             )
         if not operators(use.opening):
             continue
-        target = resolvable(path, use.destination, source.root)
+        target = resolvable(path, use.destination, source.root, substitution)
         if not use.resource and target is not None:
             continue
         kind = "image" if use.resource else "link"
@@ -1095,6 +1320,7 @@ def withheld(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
     """Every target the selected content of one source withholds.
 
@@ -1118,10 +1344,12 @@ def withheld(
     for use in uses(tokens, selected):
         if use.resource:
             continue
-        found = withholding_target(path, use.destination, use.opening, source.root)
+        at = location(path, source.line(use.line))
+        found = withholding_target(
+            path, use.destination, use.opening, source.root, substitution, at
+        )
         if found is None:
             continue
-        at = location(path, source.line(use.line))
         yield replace(found, origin=at, chain=(*chain, identity(found)))
 
 
@@ -1131,6 +1359,7 @@ def dispatches(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Hop]:
     """Every dispatched link the selected content of one source carries.
 
@@ -1145,7 +1374,7 @@ def dispatches(
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
-        for link in written_in(path, source, tokens, region):
+        for link in written_in(path, source, tokens, region, substitution):
             if not link.text:
                 raise input_failure(
                     f"the link {link.opening!r} dispatches {link.written!r} with "
@@ -1192,6 +1421,7 @@ def traverse(
     referrer: Reference | None,
     requested: Sequence[Reference],
     limits: Limits,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[
     dict[str, Source],
     dict[str, list[Token]],
@@ -1297,13 +1527,21 @@ def traverse(
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
-            refusals_of_operators(path, read[path], parsed[path], chosen, reached)
-            for one in withheld(path, read[path], parsed[path], chosen, reached):
+            refusals_of_operators(
+                path, read[path], parsed[path], chosen, reached, substitution
+            )
+            for one in withheld(
+                path, read[path], parsed[path], chosen, reached, substitution
+            ):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
-            for link in dispatches(path, read[path], parsed[path], chosen, reached):
+            for link in dispatches(
+                path, read[path], parsed[path], chosen, reached, substitution
+            ):
                 dispatching.setdefault(link.name, link)
-            for one in required(path, read[path], parsed[path], chosen, reached):
+            for one in required(
+                path, read[path], parsed[path], chosen, reached, substitution
+            ):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment) in seen:
                     continue
@@ -1431,7 +1669,11 @@ class Named:
 
 
 def file_named(
-    path: str, source: Source, tokens: Sequence[Token], wrapped: bool
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    wrapped: bool,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Named | None:
     """One document's file heading, located at the title it carries or at the document.
 
@@ -1442,6 +1684,11 @@ def file_named(
     which names the document as a whole, so the heading is located at
     the document's first position; a parent the bundle opens without a
     file heading and without a single title is headed by nothing.
+
+    The text is the one the group emits, so it is read under the same
+    mapping: a title carrying a withheld link whose target the mapping
+    redirected publishes without its mark, and the heading this warning
+    compares is the heading a reader meets.
     """
     title = document_title(tokens)
     if title is None and not wrapped:
@@ -1449,7 +1696,7 @@ def file_named(
     at = None if title is None or title.map is None else title.map[0] + 1
     line = source.line(at)
     return Named(
-        file_heading(path, tokens, source.root),
+        file_heading(path, tokens, source.root, substitution),
         Location(path, 1 if line is None else line, 1),
     )
 
@@ -1489,6 +1736,7 @@ def coincident(
     selected: Mapping[str, Sequence[Reference]],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Diagnostic]:
     """One warning for each set of generated headings that coincide.
 
@@ -1513,7 +1761,9 @@ def coincident(
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
-            heading = file_named(named, read[named], parsed[named], one.filed)
+            heading = file_named(
+                named, read[named], parsed[named], one.filed, substitution
+            )
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
@@ -1567,6 +1817,7 @@ def placement(
     selected: Mapping[str, list[Reference]],
     referrer: Reference | None,
     entries: Collection[Reference],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, list[Reference]]:
     """Each document the bundle carries, in the order a reference first names it.
 
@@ -1587,7 +1838,7 @@ def placement(
         path = order[at]
         at += 1
         chosen = selection(path, parsed[path], selected[path], entries)
-        for one in required(path, read[path], parsed[path], chosen, ()):
+        for one in required(path, read[path], parsed[path], chosen, (), substitution):
             if one.path in selected and one.path not in order:
                 order.append(one.path)
     return {path: selected[path] for path in order}
@@ -1602,6 +1853,7 @@ def assembled(
     assigned: dict[tuple[str, str | None], str] | None,
     inforce: Mapping[str, int],
     dispatching: Anchors | None = None,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -1634,6 +1886,7 @@ def assembled(
                     read[path].root,
                     path == parent,
                     dispatching,
+                    substitution,
                 )
             )
     for named, paths in merging.items():
@@ -1655,6 +1908,7 @@ def assembled(
                             read[path].root,
                             path == parent,
                             dispatching,
+                            substitution,
                         )
                         for path in paths
                     ],
@@ -1715,6 +1969,7 @@ def compose(
     found: Sequence[Reference],
     limits: Limits,
     bundle_file: Callable[[Target], str],
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
@@ -1745,13 +2000,24 @@ def compose(
     """
     selected = contributing(referrer, found)
     inforce = group_depths(read, selected)
-    selected = placement(read, parsed, selected, referrer, entries)
+    selected = placement(read, parsed, selected, referrer, entries, substitution)
     try:
         headed, placed = subsections(
-            assembled(read, parsed, defined, selected, entries, None, inforce),
+            assembled(
+                read,
+                parsed,
+                defined,
+                selected,
+                entries,
+                None,
+                inforce,
+                None,
+                substitution,
+            ),
             parsed,
             read,
             bundle_file,
+            substitution,
         )
         collisions(headed)
     except Refused as refusal:
@@ -1761,11 +2027,20 @@ def compose(
     dispatching = anchors(placed, assigned)
     groups, _ = subsections(
         assembled(
-            read, parsed, defined, selected, entries, targets, inforce, dispatching
+            read,
+            parsed,
+            defined,
+            selected,
+            entries,
+            targets,
+            inforce,
+            dispatching,
+            substitution,
         ),
         parsed,
         read,
         bundle_file,
+        substitution,
     )
     bundled = assemble(groups)
     try:
@@ -1778,11 +2053,12 @@ def compose(
             parsed,
             limits.of(NESTING),
             dispatching,
+            substitution,
         )
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, coincident(groups, selected, read, parsed)
+    return bundled, coincident(groups, selected, read, parsed, substitution)
 
 
 def resource(destination: str, embedded: bool) -> bool:
@@ -1817,6 +2093,70 @@ def resourced(bundled: str, budget: int) -> bool:
         resource(use.destination, use.resource)
         for use in uses(tokens, tuple(regions(tokens)))
     )
+
+
+def substituted(mapping: Substitution) -> list[Diagnostic]:
+    """One warning for each mapping key a reference named.
+
+    A key names one substitution, so the references it served state one
+    warning at the first of them. The warning names that link as
+    `location` where the reference stands in a source, the destination
+    the author wrote as `source`, and the substitute's identity as
+    `resolved`; its message states the identity the reference would have
+    resolved to, which is what tells two keys naming one stand-in apart.
+    """
+    return [
+        Diagnostic(
+            WARNING,
+            f"the reference {one.source!r} is redirected to the substitute "
+            f"{one.resolved!r}, where it would have resolved to {one.would!r}",
+            code=MOCK_SUBSTITUTED,
+            source=one.source,
+            resolved=one.resolved,
+            location=None if one.origin is None else located(one.origin),
+        )
+        for one in mapping.redirects.targets()
+    ]
+
+
+def unused(mapping: Substitution) -> list[Diagnostic]:
+    """One warning for each mapping key no reference named.
+
+    A key that matched nothing mocks nothing, so whatever the run asserts
+    of its bundle holds of material the caller did not mean to test. The
+    key states a fact about the invocation rather than about any source,
+    so the warning carries the key's authored spelling and no location.
+
+    A folder key answers many references and is named once, at the first
+    of them, so a key reaching no compiled reference warns once however
+    many references its folder holds. A folder holding only documents
+    its references classify as text is such a key: the folder was never
+    consulted, and the warning is the fact that states it.
+    """
+    return [
+        Diagnostic(
+            WARNING,
+            f"the mapping key {spelling!r} names no reference the run resolved, "
+            f"so it substitutes nothing",
+            code=MOCK_UNUSED,
+            source=spelling,
+            remedy="name an identity a source of the run links, or drop the pairing",
+        )
+        for spelling in mapping.unserved()
+    ]
+
+
+def located(origin: str) -> Location:
+    """One diagnostic location from the source position a reference carries.
+
+    A position is written as its document and the line it stands on, and
+    a reference reached by a link is always on one; the document alone
+    is the whole of the position where no line is known.
+    """
+    document, marked, line = origin.rpartition(":")
+    if not marked or not DECIMAL.match(line):
+        return Location(origin, 1, 1)
+    return Location(document, int(line), 1)
 
 
 def publish(text: str, stream: IO[str]) -> None:
@@ -1858,6 +2198,7 @@ def publication(
     reporter: Reporter,
     check: bool,
     retained: bool = False,
+    notices: Sequence[Diagnostic] = (),
 ) -> None:
     """Validate every bundle a run publishes, then publish the set whole or not at all.
 
@@ -1866,11 +2207,18 @@ def publication(
     name and each bundle's are held to the length its filesystem allows,
     before any is written, so a set publication would refuse ends the run with its
     diagnostic and nothing written, whether or not the run only
-    validates. Every bundle's warnings follow, in turn, and then the set
-    is published into the run's folder, unless the run only validates,
-    which writes nothing. A run asked to retain the earlier set stands
-    an empty one at its folder where nothing stands there, once every
-    check has passed, and is refused its removal once the new set stands.
+    validates. Every bundle's warnings follow, in turn, then the
+    warnings that are facts about the run rather than about one of its
+    bundles, and then the set is published into the run's folder, unless
+    the run only validates, which writes nothing. A run asked to retain
+    the earlier set stands an empty one at its folder where nothing
+    stands there, once every check has passed, and is refused its removal
+    once the new set stands.
+
+    A run's own warnings follow the bundle checks for the same reason
+    they hold under `-c`: what a run states of itself is stated by a run
+    that would otherwise have published, so a substituted check reports
+    its substitutions exactly as a substituted publication does.
     """
     for one in bundles:
         try:
@@ -1903,6 +2251,8 @@ def publication(
     for one in bundles:
         for warning in one.warnings:
             reporter.emit(warning)
+    for notice in notices:
+        reporter.emit(notice)
     if not check:
         publish_folder(bundles, folder, reporter, retained)
 
@@ -2113,17 +2463,23 @@ def compiled(
     requested: Sequence[Reference],
     options: argparse.Namespace,
     folder: Path,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
     Each bundle is read by one agent, so each starts from a fresh count
     of what it opens, reaches and publishes, and its expansion depth is
     counted from its own entry.
+
+    The mapping is the command line's and not the bundle's: a dispatched
+    target's own bundle is compiled under every rule an entry's is, and
+    the mapping is one of them, so a link inside a dispatched document
+    resolves the substitute the caller named.
     """
     limits = budgets(options)
     try:
         read, parsed, defined, captured, found, hops = traverse(
-            root, referrer, requested, limits
+            root, referrer, requested, limits, substitution
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
@@ -2134,7 +2490,15 @@ def compiled(
                 f"{str(held)!r}"
             )
     bundled, coinciding = compose(
-        read, parsed, defined, referrer, requested, found, limits, bundle_file
+        read,
+        parsed,
+        defined,
+        referrer,
+        requested,
+        found,
+        limits,
+        bundle_file,
+        substitution,
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -2163,6 +2527,7 @@ def dispatched_set(
     single: Collection[str],
     options: argparse.Namespace,
     folder: Path,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, Compiled]:
     """Every bundle the entry's dispatches reach, transitively, by target.
 
@@ -2177,7 +2542,7 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, None, [target], options, folder)
+        one = compiled(root, None, [target], options, folder, substitution)
         built[hop.name] = one
         pending.extend(one.hops)
     return built
@@ -2237,7 +2602,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             "-o - names standard output, which carries no bundle; -o names the "
             "folder the run's bundles are written under"
         )
-    requested = [entry(reference) for reference in options.references]
+    mapping = substitution(options)
+    requested = [entry(reference, mapping) for reference in options.references]
     if not options.referrer:
         for one in requested:
             if not one.path:
@@ -2247,16 +2613,16 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
                 )
 
     root = Path.cwd().resolve()
-    referring = entry(options.referrer) if options.referrer else None
+    referring = entry(options.referrer, mapping) if options.referrer else None
     if referring is not None:
         referring = replace(referring, chain=(identity(referring),))
     requested = entered(referring, requested)
 
     selected = selections(referring, requested)
     folder = Path(options.output).resolve() / f"{run_name(selected)}{RUN_FOLDER_SUFFIX}"
-    first = compiled(root, referring, requested, options, folder)
+    first = compiled(root, referring, requested, options, folder, mapping)
     single = {requested[0].chain[0]} if len(selected) == 1 else set()
-    built = dispatched_set(root, first, single, options, folder)
+    built = dispatched_set(root, first, single, options, folder, mapping)
 
     def onward(target: Reference) -> Sequence[Hop]:
         name = identity(target)
@@ -2292,6 +2658,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         reporter,
         options.check,
         options.fault == CLEANUP_FAULT,
+        [*substituted(mapping), *unused(mapping)],
     )
     return SUCCESS
 

@@ -1,0 +1,27 @@
+description = "A substitute declaring a group and depth joins that merged group under its own settings, so its section appears beneath a member heading naming the substitute's own path while the document the link names contributes nothing."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Grouping — Group membership",
+  "Grouping — Document content above the grouping depth",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=stand-in.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "stand-in.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 6
+column = 1

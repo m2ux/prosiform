@@ -1,0 +1,21 @@
+description = "A referring document -f names is redirected, and a fragment-only entry resolves its section against the substitute, so the bundle carries the stand-in's section under the stand-in's derived name and the run states the substitution it performed."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Automatic output names, a fragment-only entry derives its name from the substitute",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "guide.md=stand-in.md", "-f", "guide.md", "#run"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/stand-in__run.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "guide.md"
+resolved = "stand-in.md"

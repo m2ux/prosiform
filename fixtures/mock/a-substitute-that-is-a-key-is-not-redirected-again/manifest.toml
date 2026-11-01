@@ -1,0 +1,30 @@
+description = "A substitute whose own path is another mapping key is read from disk rather than redirected a second time, so the bundle carries it and the key naming it is reported unused, which is what makes a mapping a lookup table rather than a chain."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "a.md=b.md", "-m", "b.md=c.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "a.md"
+resolved = "b.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_UNUSED"
+source = "b.md"

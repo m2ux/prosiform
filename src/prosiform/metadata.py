@@ -65,7 +65,16 @@ class _MarkedScanner(Scanner):
 
 @dataclass(frozen=True)
 class Conversion:
-    """Immutable source settings and their original value locations."""
+    """Immutable source settings and their original value locations.
+
+    The settings belong to the bytes they were decoded from. `group` and
+    `depth` decide which merged group that source joins, held to the
+    depth every contributing member declares, and `root` is the
+    confinement boundary for the links that source writes, resolved from
+    its own directory. A source the substitution mapping redirected is
+    read as the substitute, so the settings decoded here are the
+    substitute's: none travels from the document its key named.
+    """
 
     root: str | None = None
     root_location: Location | None = None

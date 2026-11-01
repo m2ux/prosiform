@@ -193,7 +193,7 @@
           "minLength": 1
         },
         "source": {
-          "description": "The referring source location, as a fixture-root-relative path and an optional line.",
+          "description": "The path the diagnostic concerns, as a fixture-root-relative path and an optional line: the referring document and line where a defect stands in a reference, and the destination or mapping key the author wrote where the diagnostic states an authored spelling.",
           "type": "string",
           "minLength": 1
         },
@@ -205,6 +205,33 @@
             "type": "string",
             "minLength": 1
           }
+        },
+        "location": {
+          "description": "The original source coordinate the diagnostic names, for a diagnostic whose defect stands at a link rather than at a whole document. A coordinate is a file, a line and a column, each compared as declared.",
+          "$ref": "#/$defs/coordinate"
+        }
+      }
+    },
+    "coordinate": {
+      "description": "One original physical source coordinate: the fixture-relative document, and the one-based line and column within it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "line",
+        "column"
+      ],
+      "properties": {
+        "file": {
+          "$ref": "#/$defs/fixturePath"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 1
         }
       }
     },
@@ -269,6 +296,8 @@
         "W_DISPATCH_DEPTH",
         "W_DISPATCH_SELF",
         "W_EARLIER_SET_RETAINED",
+        "W_MOCK_SUBSTITUTED",
+        "W_MOCK_UNUSED",
         "W_RESOURCE_PORTABILITY"
       ]
     }

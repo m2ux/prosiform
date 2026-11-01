@@ -1,0 +1,20 @@
+description = "A mapping entry whose folder side carries a section is refused as invalid usage, because a folder names no heading for a section to select, so the run publishes nothing rather than carrying a section nothing resolves."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "CLI contract",
+  "CLI contract — -m ORIGINAL=ALTERNATIVE",
+  "Exit status and JSON diagnostics — 2",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules/#checks=stubs/", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["rules/#checks", "folder side a section"]

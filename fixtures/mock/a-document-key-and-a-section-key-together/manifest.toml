@@ -1,0 +1,36 @@
+description = "A key naming a whole document and a key naming one of its sections both serve their references in one run, the narrower one taking the section it names and the wider one taking the document, so each link compiles the substitute its own key names and no real document is bundled."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-m", "rules.md=rules-copy.md", "-m", "rules.md#escalation=escalation-copy.md", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md"
+resolved = "rules-copy.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 3
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_MOCK_SUBSTITUTED"
+source = "rules.md#escalation"
+resolved = "escalation-copy.md#escalation"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 5
+column = 1
