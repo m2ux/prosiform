@@ -13,6 +13,7 @@ This record holds its delivery of `AC1`: the work item, the validation evidence 
 | Artifact | What it holds |
 | --- | --- |
 | [W01 work item](w01.md) | The plan for W01: component, design and the tests observing AC1 |
+| [Validation](validation.md) | The evidence for each check W01 names |
 
 ## Links
 
