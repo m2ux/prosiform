@@ -163,6 +163,8 @@ BOX = 2
 """The shape each bracket pair states: a marker, a decision and a state."""
 CLICK = re.compile(r'^\s*click\s+(\w+)\s+(?:href\s+)?"([^"]*)"')
 HEADING = re.compile(r"^# (\w+)\n")
+FRONTMATTER = re.compile(r"\A---\n.*?^---\n", re.DOTALL | re.MULTILINE)
+"""The declaration block every workflow document opens with, which `pf` strips."""
 NEXT = "**Next.** "
 ACTION = re.compile(r"^Write `actions/([^`]+)` containing `([^`]*)`\.$", re.MULTILINE)
 TERMINAL = "The workflow is complete."
@@ -583,6 +585,11 @@ than as half of a sentence naming two labels.
 """
 
 
+def authored(path: Path) -> str:
+    """One workflow document's text after its declaration block, as bundled."""
+    return FRONTMATTER.sub("", path.read_text(), count=1)
+
+
 def read_condition(path: Path) -> Transition:
     """One transition section's condition, and the edge it takes.
 
@@ -590,7 +597,7 @@ def read_condition(path: Path) -> Transition:
     from names the edge: a section naming no condition is the one edge out of
     its state, taken though the diagram draws it as a transition node.
     """
-    text = path.read_text()
+    text = authored(path)
     body = HEADING.sub("", text, count=1).strip()
     if not body:
         return Transition(None, None, None)
@@ -610,7 +617,7 @@ def read_condition(path: Path) -> Transition:
 
 def read_section(form: str, path: Path, directory: Path) -> Section:
     """One state's document, split into its shared body and its transition."""
-    text = path.read_text()
+    text = authored(path)
     heading = HEADING.match(text)
     if heading is None:
         raise CorpusError(f"{path} opens with no state heading")

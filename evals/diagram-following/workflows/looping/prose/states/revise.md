@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Revise
 
 Write `actions/revise.txt` containing `revised`.

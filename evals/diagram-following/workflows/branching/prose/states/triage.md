@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Triage
 
 Write `actions/triage.txt` containing `triaged`.

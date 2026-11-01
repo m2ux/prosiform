@@ -1,3 +1,6 @@
+---
+prosiform: {}
+---
 # Scope
 
 Write `actions/scope.txt` containing `scoped`.
