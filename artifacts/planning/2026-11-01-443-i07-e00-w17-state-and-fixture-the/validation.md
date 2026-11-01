@@ -45,3 +45,5 @@ Each fails its manifest, so each fixture observes the refusal it declares.
 ## T6 Make Check
 
 `make check` exited 0: lint, format, types, steps, authoring, `test` (1420 passed), `harness` (1062 passed), corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock scenarios.
+
+After merging `origin/i07/e00/main` (W19, `5b16c3b4`) into the branch, `make check` was rerun at `84ace049` and exited 0 with the same counts: `test` 1420 passed, `harness` 1062 passed, corpus 377 of 377.

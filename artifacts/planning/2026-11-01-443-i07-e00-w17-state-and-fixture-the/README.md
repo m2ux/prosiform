@@ -15,6 +15,7 @@ This record holds its delivery of `AC26, AC27, AC28, AC29`: the work item, the v
 | [W17](w17.md) | The work item for the publication and title-dispatch refusals |
 | [W18](w18.md) | The work item for the scalar ceiling in the catalogue |
 | [Validation](validation.md) | The evidence for every check the work items name |
+| [Plan changes](changes.md) | The plan changes the session applied and held |
 
 ## Links
 
@@ -22,4 +23,5 @@ This record holds its delivery of `AC26, AC27, AC28, AC29`: the work item, the v
 | --- | --- |
 | Epic | [I07:E00 Review Remediation](https://github.com/m2ux/prosiform/issues/443) |
 | Initiative | [I07 Review Remediation](https://github.com/m2ux/prosiform/issues/442) |
+| Pull request | [#476](https://github.com/m2ux/prosiform/pull/476) |
 | Epic record | [I07 Review Remediation](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i07-review-remediation) |
