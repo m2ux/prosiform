@@ -40,7 +40,7 @@ Verified completion of an issue and its linked delivery.
 3. Run [Check Issue Closure](#check-issue-closure) with `--issue`, `--development`, and `--prs` for those fresh records.
 4. Require normal delivery checks to pass, every criterion to be verified and ticked, and every currently linked pull request to be merged.
    - Keep the issue open for an open, draft, closed without merge, or unreadable linked pull request.
-   - Obtain the user's decision before removing an abandoned or incorrect Development link. A replacement pull request does not remove the requirement on a link still present.
+   - Return an abandoned or incorrect Development link to the caller for the user's decision on its removal. A replacement pull request does not remove the requirement on a link still present.
 5. Run [Close as Completed](#close-as-completed), which repeats the gate immediately before the write. A changed link set requires another capture and check.
 
 ### *Close* Transferred Work
@@ -85,20 +85,35 @@ The issue's current content and complete Development snapshot.
 
 **Inputs:** Issue identity, authenticated access, observed repository auto-closing setting and issue and Development output paths.
 
-1. Run [Read Issue Development](#read-issue-development) for the entire field across repositories and states. An inaccessible field returns incomplete evidence; an empty array means the field was checked and empty.
-2. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, observed link set, completeness result and repository setting, saving `development-943.json` or the supplied path.
+1. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
+2. Run [Read Issue Development](#read-issue-development) with that file for the entire field across repositories and states, saving `links-943.json` or the supplied path. An unreadable relation is incomplete evidence, which blocks the caller; an empty array means the field was checked and empty.
+3. Run [Write Development Snapshot](#write-development-snapshot) with the issue identity, completeness result and repository setting, saving `development-943.json` or the supplied path.
+   - Each `{repo, number}` entry under the issue's number in the links file is the pull request URL `https://github.com/<repo>/pull/<number>`; supply one URL per entry, in the file's order.
    - Set `complete` true only after the full read, and `auto_close_issues` false only after the repository setting is confirmed disabled.
-3. Run [Fetch Tracker Issue](#fetch-tracker-issue) into `issue-943.json` or the supplied path.
 4. Return both files and any incomplete evidence. The caller supplies fresh linked pull request records in `development-prs-943.json`.
 
 ### *Read* Issue Development
 
-The Development links observed for one issue through authenticated GitHub.
+The Development pull requests of one issue, or of every issue in one repository, keyed by issue number.
 
-**Inputs:** Issue identity and authenticated access.
+**Inputs:** One issue's JSON or one repository's issue collection, authenticated access and destination file.
 
-1. Read every page and state, across repositories, recording each linked pull request's identity.
-2. Return the observed links and whether the entire field was readable.
+1. Run [Capture Issue Links](#capture-issue-links) with the supplied issues and destination.
+2. Return each issue's observed pull requests, or stop and return each unreadable relation the capture names as a blocker.
+
+### *Audit* Closure Evidence
+
+Each closed issue in one repository whose criteria or Development links do not support its closure, with the reason it was closed.
+
+**Inputs:** Repository, authenticated access, the issue numbers to audit or every closed issue, and destination files for the issue collection and its issue-links file.
+
+1. Fetch the closed issues alone:
+   - For named issues, run [Fetch Selected Closed Issues](#fetch-selected-closed-issues) with their numbers.
+   - For the whole repository, run [Fetch Closed Issues](#fetch-closed-issues).
+   - An empty collection means none of the named issues is closed; return nothing listed.
+2. Run [Read Issue Development](#read-issue-development) with that collection; an unreadable relation is returned as a blocker and the sweep does not run.
+3. Run [Sweep Closure Evidence](#sweep-closure-evidence) with the collection and the issue-links file.
+4. Return each unsupported issue with its state reason and findings, and each unevaluable issue as missing evidence, as findings. Return the not-planned closures apart, as listed for reference. The audit changes no issue.
 
 ### *Confirm* Repository Auto-Close
 
@@ -308,6 +323,39 @@ cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/script
 cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure.py --issue issue-943.json --development development-943.json --prs development-prs-943.json
 ```
 
+### Sweep Closure Evidence
+
+Lists each closed issue whose acceptance criteria are missing or unticked, or whose Development field holds a pull request that has not merged, with the issue's state reason.
+
+**Inputs:** One repository's closed issues, as [Fetch Closed Issues](#fetch-closed-issues) or [Fetch Selected Closed Issues](#fetch-selected-closed-issues) saves them, and the issue-links file [Capture Issue Links](#capture-issue-links) wrote from them.
+
+- The sweep audits every closed issue in the collection, so the collection sets its scope. Criteria are read as [Check Issue Closure](#check-issue-closure) reads them. Open issues and pull requests in the collection are skipped.
+- `--issue-links` takes the issue-links file alone; a [Write Development Snapshot](#write-development-snapshot) file, or any other shape, is refused as unreadable evidence.
+- Each line names the issue, its state reason (`completed`, `not_planned`, or `unknown` when none is recorded) and its findings, under one of three labels:
+  - `unsupported:` for an issue closed for any reason but `not_planned` whose evidence does not support it.
+  - `unevaluable:` for a closed issue the file holds no link list for, which is missing evidence rather than an empty link set.
+  - `not planned:` for an issue closed as `not_planned` whose evidence would not support completion; these follow the findings, listed for reference.
+- The last line counts each label. Exit 0 means no issue is unsupported or unevaluable. Exit 1 means at least one is, or the evidence is unreadable. The command performs no network calls or writes.
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure-sweep.py --issues '<issues-json-file>' --issue-links '<issue-links-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && "<workspace>/scripts/sbx" python3 skills/work-planner/scripts/closure-sweep.py --issues closed-issues.json --issue-links issue-links.json
+```
+
+**Example output:**
+
+```text
+unsupported: owner/repo#943 closed as completed: acceptance criteria are missing or unticked; owner/repo#980 not merged (closed) - Work Title
+unevaluable: owner/repo#944 closed as completed: Development links not captured - Other Title
+not planned: owner/repo#945 closed as not_planned: acceptance criteria are missing or unticked - Moved Title
+1 unsupported, 1 unevaluable, 1 not planned
+```
+
 ### Close as Not Planned
 
 Closes an issue whose work another issue tracks.
@@ -402,6 +450,36 @@ Write the supplied values in this shape. Substitute the issue number as a JSON i
 }
 ```
 
+### Capture Issue Links
+
+Writes each issue's Development pull requests, read from the issue end of the relation, keyed by issue number.
+
+**Inputs:** One issue's JSON or one repository's issue collection, as [Fetch Tracker Issue](#fetch-tracker-issue) or [Fetch All Issues](#fetch-all-issues) saves it, and destination file.
+
+- Each issue maps to every pull request its Development field holds, open, closed and merged, as repository, number and state, or to an empty array. Pull requests in the collection are skipped.
+- Each batch of issues costs one `gh api graphql` call from a generated query file, so the command runs outside `sbx`, where `gh` reaches the tracker.
+- A relation is unreadable when any page of it does not arrive whole: the tracker returns no node for its subject, names the subject in an error, or reports a further page it does not supply.
+- Exit 0 means every relation was read. Exit 1 names each unreadable relation with the tracker's reason and writes nothing; the caller treats it as a blocker.
+- A call the tracker refuses outright, such as a rejected credential, exits 1 with `GraphQL read failed:` and what `gh` reported, and writes nothing.
+
+```bash
+cd "<workspace>" && python3 skills/work-planner/scripts/links-by-issue.py --issues '<issues-json-file>' --out '<issue-links-file>'
+```
+
+**Example:**
+
+```bash
+cd "<workspace>" && python3 skills/work-planner/scripts/links-by-issue.py --issues issue-943.json --out links-943.json
+```
+
+**Example payload:**
+
+```json
+{
+  "943": [{"repo": "owner/repo", "number": 980, "state": "MERGED"}]
+}
+```
+
 ### Fetch All Issues
 
 Saves every issue in the repository; the scripts skip the pull requests among them.
@@ -416,6 +494,38 @@ gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > '<issue
 
 ```bash
 gh api --paginate "repos/<owner>/<repo>/issues?state=all&per_page=100" > issues.json
+```
+
+### Fetch Closed Issues
+
+Saves every closed issue in the repository; the scripts skip the pull requests among them.
+
+**Inputs:** Repository and destination JSON file.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/issues?state=closed&per_page=100" > '<issues-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/issues?state=closed&per_page=100" > closed-issues.json
+```
+
+### Fetch Selected Closed Issues
+
+Saves the named issues that are closed, one per line; an issue that is open or absent is left out.
+
+**Inputs:** Repository, issue numbers separated by commas, and destination JSON file.
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/issues?state=closed&per_page=100" --jq '.[] | select([.number] | inside([<issue-numbers>]))' > '<issues-json-file>'
+```
+
+**Example:**
+
+```bash
+gh api --paginate "repos/<owner>/<repo>/issues?state=closed&per_page=100" --jq '.[] | select([.number] | inside([637, 943, 946]))' > closed-issues.json
 ```
 
 ### Find Initiative Issue

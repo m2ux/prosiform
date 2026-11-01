@@ -24,7 +24,7 @@ Read these files first.
    - For a task:
      - Retain the task delivery result its delivering pull request established.
    - For an epic:
-     - Run [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches) for the complete expected bases.
+     - Run [Read Delivery Branches](../artifacts/delivery-branches.md#read-delivery-branches) for the complete expected bases, at the revision [Branches](../artifacts/delivery-branches.md#branches) names for a read of one epic.
      - Run [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state) for their merge evidence.
      - Run [Check Epic Completion](../artifacts/epic.md#check-epic-completion) with the current epic JSON, delivery records, complete issue-link snapshot, criterion verification evidence and those base records.
    - For an initiative:
@@ -36,4 +36,8 @@ Read these files first.
    - If the operation reports a changed link set or missing evidence:
      - Refresh those inputs.
      - Repeat the completion check before trying again.
+   - If it returns an abandoned or incorrect link:
+     - Obtain the user's decision on removing it.
+     - On a decision to remove, run [Access Development Links](../artifacts/pull-request.md#access-development-links) with the link's pull request and issue identities, the removal request, that decision and the confirmed repository setting.
+     - Repeat from the issue step.
    - Report any unmerged link or unmet criterion.

@@ -138,6 +138,33 @@ class DocumentInterfaces(unittest.TestCase):
             with self.subTest(protocol=name):
                 self.assertIn(name, files)
 
+    def test_every_script_is_run_by_a_cited_command(self):
+        """A script exists because a procedure runs it. It is run where a
+        command specification names it and a procedure cites that
+        specification, or where a script so run imports it."""
+        paths = sorted(ROOT.rglob('*.md'))
+        _, called = checker.citations(paths)
+        run = set()
+        for path in paths:
+            lines, fenced, headings = checker.scan(path)
+            for start, title in checker.specifications(headings):
+                if not called.get(path, {}).get(checker.anchor_of(title)):
+                    continue
+                end = next((i for i, level, _ in headings if i > start and level <= 3), len(lines))
+                for line in lines[start:end]:
+                    run |= set(re.findall(r'skills/work-planner/scripts/([\w-]+)\.py', line))
+        scripts = {path.stem: path.read_text() for path in (ROOT / 'scripts').glob('*.py')}
+        grown = True
+        while grown:
+            imported = {name for name, text in scripts.items() if any(
+                re.search(rf'^(?:import|from) {re.escape(name)}\b', scripts[user], re.MULTILINE)
+                for user in run if user in scripts)}
+            grown = not imported <= run
+            run |= imported
+        for name in sorted(scripts):
+            with self.subTest(script=name):
+                self.assertIn(name, run)
+
     def test_protocols_are_entered_whole(self):
         """A protocol is one coordinated sequence, so a caller runs the file
         rather than reaching into a step of it."""
@@ -152,3 +179,45 @@ class DocumentInterfaces(unittest.TestCase):
                     if destination.parent.name == 'protocols' and destination != path:
                         with self.subTest(file=path.name, target=target):
                             self.assertEqual(fragment, '')
+
+
+RECORD_EPIC_DELIVERY = re.compile(
+    r'\b(?:[Rr]un|[Rr]e-run|[Rr]epeat(?:ing)?)\s+\[?Record Epic Delivery\b')
+
+
+class EpicDeliveryCallers(unittest.TestCase):
+    """Sync Epic reads the long-lived branch names at the epic's bases, so a
+    call to Record Epic Delivery without them never reports an epic closable."""
+
+    def calls(self):
+        found = []
+        for path in sorted(ROOT.rglob('*.md')):
+            for number, line in enumerate(path.read_text().splitlines(), 1):
+                if RECORD_EPIC_DELIVERY.search(line):
+                    found.append((f'{path.relative_to(ROOT)}:{number}', line))
+        return found
+
+    def test_record_epic_delivery_calls_pass_the_epic_bases(self):
+        calls = self.calls()
+        callers = {where.partition(':')[0] for where, _ in calls}
+        self.assertTrue({'modes/deliver-mode.md', 'modes/sync-mode.md',
+                         'modes/align-mode.md', 'protocols/review-pull-request.md',
+                         'protocols/task-merge.md', 'protocols/issue-delivery.md',
+                         'artifacts/epic-issue-body.md'} <= callers)
+        for where, line in calls:
+            with self.subTest(call=where):
+                self.assertIn('epic bases', line)
+
+    def test_record_epic_delivery_takes_the_epic_bases(self):
+        text = (ROOT / 'artifacts' / 'epic-issue-body.md').read_text()
+        section = text.split('### *Record* Epic Delivery', 1)[1].split('\n### ', 1)[0]
+        self.assertIn('fetched epic bases', section)
+        self.assertIn('`--revision`', section)
+
+    def test_a_report_of_the_operation_is_not_a_call(self):
+        self.assertIsNone(RECORD_EPIC_DELIVERY.search(
+            'When [Record Epic Delivery](x.md) reports an epic base unmerged'))
+        self.assertIsNone(RECORD_EPIC_DELIVERY.search(
+            'When the preceding Record Epic Delivery call reports a row done'))
+        self.assertIsNotNone(RECORD_EPIC_DELIVERY.search(
+            'Repeat Record Epic Delivery with the saved epic.'))
