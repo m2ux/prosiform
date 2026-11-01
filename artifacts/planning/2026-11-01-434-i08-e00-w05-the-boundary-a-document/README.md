@@ -12,6 +12,9 @@ This record holds its delivery of `AC2, AC9, AC17`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W05](w05.md) | The work item: the derived boundary, the `make boundary` report and the target above the writing directory |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 
