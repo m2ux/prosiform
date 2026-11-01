@@ -32,6 +32,7 @@ Three rows were migrated here from the folder-mocks epic, which was withdrawn. A
 | [W13 work item](w09.md) | The folder form documented and demonstrated |
 | [Joins](joins.md) | The independent row pairs that take separate pull requests, and why |
 | [Fixture inventory](fixtures.md) | Every fixture the epic lands, and the row that lands it |
+| [Agent review of #472](agent-review-472.json) | The agent review record of the integration pull request, by reviewed head and target |
 
 ## Design
 
