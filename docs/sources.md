@@ -2,13 +2,13 @@
 
 A run's raw material is Markdown files on disk: a skill's entry point, the procedures it links to, the rules those procedures cite. Every one of them is a **source**, and the run's answer can only be as good as the bytes it read.
 
-Each file is opened once, and everything the run decides about it is decided from that one reading: which of its links may be followed, which parts of it the bundle takes, and what its metadata declares.
+Each file is opened once, and everything the run decides about it is decided from that one reading: whether it declares itself part of a bundle, which parts of it the bundle takes, and where its links lead.
 
-The file below declares its root in leading frontmatter, then links a sibling document. The run reads the metadata and drops it, and resolves the `..` before the link is rewritten:
+Both files below declare `prosiform` in leading frontmatter, and the first links the second in the directory above. The run reads each declaration and drops it, and resolves the `..` before the link is rewritten:
 
-![modes/review.md and rules.md on the left, the latter with frontmatter declaring its root. On the right, the bundle: Review Mode with no frontmatter, and its link now pointing at #tests.](images/source.svg)
+![modes/review.md and rules.md on the left, each opening with frontmatter declaring prosiform. On the right, the bundle: Review Mode and Rules with no frontmatter, and the link now pointing at #tests.](images/source.svg)
 
-*The frontmatter is read and dropped, and the `..` in the link is resolved before it disappears.*
+*Each declaration is read and dropped, and the `..` in the link is resolved before it disappears.*
 
 ## Capture
 
@@ -16,27 +16,28 @@ The run opens each distinct source once and keeps its path, bytes, hash and meta
 
 Only files are sources. A directory, a symbolic link, or a path that cannot be read fails the run rather than being worked around.
 
-## The root
+## The declaration
 
-Every source has an effective **root**, a directory that bounds which of its links the run will follow.
+A document is compiled because it says so. A document whose leading frontmatter carries a `prosiform` mapping **declares**, an empty `prosiform: {}` included, and a link naming it is a dependency the bundle carries. A document carrying no `prosiform` mapping declares nothing: a link naming it is text, emitted as authored, and the run reads its frontmatter and no further byte of it. A link naming a document that does not exist is text on the same ground, because nothing states the bundle answers for it.
 
-An explicit root resolves from the declaring file's directory. Every absent root uses the invocation working directory, captured once at the start.
-
-The root bounds a link; it is not the base a link resolves from. Each path-bearing link resolves from the directory of the file that wrote it — the path a reader would follow in an editor — and the root then decides whether the result is inside. A link landing outside stays as the author wrote it and is never opened.
+Each path-bearing link resolves from the directory of the file that wrote it — the path a reader would follow in an editor — and the target's own declaration then decides whether it is compiled. Nothing about where either file sits decides it, so one document reached by two sources is one answer, and a link may name a declaring document anywhere, above the working directory included.
 
 ```mermaid
 flowchart LR
-  subgraph Root["the root: what this source may contain"]
-    Doc["modes/plan-mode.md"]
-    Rules["rules/common.md"]
-  end
-  Doc -- "resolves from the file's own directory" --> Rules
-  Doc -. "lands outside the root, carried as authored" .-> Outside["../library/guide.md"]
+  Doc["modes/plan-mode.md"] -- "resolves from the file's own directory" --> Ask{"does the target<br/>declare prosiform?"}
+  Ask -- "declares" --> Rules["../rules/common.md<br/><i>compiled</i>"]
+  Ask -. "declares nothing, carried as authored" .-> Guide["../library/guide.md"]
 ```
 
-*Figure 1. A Link Resolves from Its Own File, and the Root Decides Whether It Is Followed.*
+*Figure 1. A Link Resolves from Its Own File, and the Target's Declaration Decides Whether It Is Compiled.*
 
-A root may name a sibling library that does not contain its declaring source. It authorizes content; it does not require the file to move.
+Every entry reference names a document that declares. One naming a document that declares nothing fails with `E_TARGET_NOT_FOUND` before any source is read.
+
+## The boundary
+
+A document's **boundary** is the deepest directory holding every local Markdown path its own links name, normalised from the document's directory; a document naming none has its own directory. `modes/plan-mode.md` above links `../rules/common.md` and `../library/guide.md`, so its boundary is the skill's directory, the deepest one holding both. The boundary is derived from the links, so it admits every link its author wrote and is never stated beside them.
+
+What confines a run is the invocation working directory, captured once at the start. An entry reference resolves from it, and every path a diagnostic names is written from it.
 
 ## Frontmatter
 
@@ -44,15 +45,14 @@ Leading YAML frontmatter is read for metadata and excluded from the body. It ope
 
 The block is one YAML 1.2 Core mapping. Duplicate keys, aliases, merge keys and custom tags are invalid. An opener with no closer fails the run.
 
-`prosiform` holds the conversion settings. The only keys in `prosiform` are `root`, `group` and `group-depth`; a key outside them fails the run.
+`prosiform` holds the conversion settings, and its presence is the declaration. The keys in `prosiform` are `group` and `group-depth`; a key outside them fails the run. `root` fails with `E_INVALID_CONVERSION_METADATA`, naming the field: a boundary is derived from a document's links, so a declared one states nothing a run reads.
 
 | Key | Holds |
 | --- | --- |
-| `root` | a relative directory path using forward slashes |
 | `group` | a group name, containing neither `:` nor `/` |
 | `group-depth` | an integer from `1` to `6` |
 
-`group` and `group-depth` are declared together or not at all. Other top-level fields, `name` and `description` among them, are skill metadata and carry no conversion meaning. A file with no conversion fields keeps a group of its own.
+`group` and `group-depth` are declared together or not at all. Other top-level fields, `name` and `description` among them, are skill metadata and carry no conversion meaning. A file declaring no group keeps a group of its own.
 
 Frontmatter counts toward the byte budgets and obeys the nesting budget independently of Markdown containers. It supplies no headings, links or rendered content.
 

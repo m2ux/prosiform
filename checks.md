@@ -34,7 +34,7 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 | --- | --- |
 | `make harness` | The corpus, its runner and the diagram-following eval are well formed. See [The harness](#the-harness). |
 | `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares. |
-| `make smoke` | The build installs into an environment, and its entry point bundles a reference from a source root. |
+| `make smoke` | The build installs into an environment, and its entry point bundles a declaring reference. |
 
 #### The Harness
 

@@ -20,7 +20,7 @@ command by name from somewhere else entirely.
 
 The invoked process inherits nothing. Its `PATH` holds the installed
 environment's executable directory and no other, its working directory is
-a temporary one, and the source root it bundles from is a tree written
+a temporary one, and the sources it bundles from are a tree written
 beside that directory. An entry point the packaging never declared fails
 at the lookup, because there is no command to find; one that reads the
 repository fails at the bundle, because the repository is on neither the
@@ -194,7 +194,7 @@ def run_folder(name: str) -> str:
 
 
 def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
-    """A reference bundled from a source root the repository does not hold.
+    """A reference bundled from a source tree the repository does not hold.
 
     The folder `-o` names holds the run's folder, named by the entry's
     derived name and the run folder suffix, and nothing else; that folder

@@ -1,7 +1,7 @@
 """Audit active authoring guidance for file-only invocation.
 
 The invocation guide is the contract an author copies: the prosiform
-mapping, file-relative roots, the working-directory default, short flags,
+declaration, file-relative links, the working-directory bound, short flags,
 fragment names and combined destinations. The same guide, the repository
 readme and the worked examples recommend hyphens in source paths, because
 a derived filename writes each directory separator as an underscore.
@@ -27,9 +27,9 @@ SURFACES = (GUIDE, README, EXAMPLES)
 # keeps the command line; the architecture pages state the rules it links to.
 INSTRUCTIONS = (
     (GUIDE, "pf [OPTIONS] REF [REF ...]"),
-    (SOURCES, "The only keys in `prosiform` are `root`, `group` and `group-depth`"),
-    (SOURCES, "An explicit root resolves from the declaring file's directory."),
-    (SOURCES, "Every absent root uses the invocation working directory"),
+    (SOURCES, "The keys in `prosiform` are `group` and `group-depth`"),
+    (SOURCES, "the target's own declaration then decides whether it is compiled"),
+    (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
     (GUIDE, "`-f DOC`"),
     (GUIDE, "`-o DIR`"),
     (BUNDLES, "A section adds `__` and the fragment."),
