@@ -12,6 +12,9 @@ This record holds its delivery of `AC7, AC8, AC15`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04](w04.md) | The work item: the three-way probe, the operator and entry refusals, and the declared trees |
+| [Validation](validation.md) | The evidence for each check the work item names, by test id |
+| [Plan changes](changes.md) | Each plan change this session applied and held |
 
 ## Links
 
