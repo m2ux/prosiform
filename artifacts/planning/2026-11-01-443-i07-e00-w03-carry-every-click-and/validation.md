@@ -2,7 +2,7 @@
 
 > Evidence · 2026-11-01
 
-Every case below ran in the worktree `.worktrees/i07/e00/w03-carry-every-click-and`, on branch `i07/e00/w03-carry-every-click-and`. The branch was cut from `i07/e00/main` at `5bffb717`, and `origin/i07/e00/main` at `5b16c3b4` was merged in before the final check. The build under test is `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. Diagrams were rendered with mermaid-cli 11.16.0 (`mmdc`, headless Chrome, `--no-sandbox`).
+Every case below ran in the worktree `.worktrees/i07/e00/w03-carry-every-click-and`, on branch `i07/e00/w03-carry-every-click-and`. The branch was cut from `i07/e00/main` at `5bffb717`, and `origin/i07/e00/main` was merged in three times as sibling units landed: at `5b16c3b4`, `d8c18760` and `9b40ffdc`. The final head is `e6375445`. The build under test is `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`. Diagrams were rendered with mermaid-cli 11.16.0 (`mmdc`, headless Chrome, `--no-sandbox`).
 
 ## Where Mermaid draws an anchor
 
@@ -119,9 +119,9 @@ One existing profile case asserted the old behaviour: a sequence note naming `..
 
 ## Every check run
 
-`make check` ran in full twice with `PROSIFORM_BUILD` naming the worktree's own build, and both runs exited 0: once at `b7b6441c`, and once at the final head after merging the epic base.
+`make check` ran in full four times with `PROSIFORM_BUILD` naming the worktree's own build, and every run exited 0: at `b7b6441c`, then at `f05539a3`, `66d83007` and `e6375445`, each after merging the epic base. CI on `e6375445` completed with success.
 
-The final run's figures, at `f05539a3`:
+The figures at `f05539a3`. The runs at `66d83007` and `e6375445` match them, except `harness`, which grew to 1064 and then 1068 passed as the merged eval work added cases:
 
 | Target | Result |
 | --- | --- |

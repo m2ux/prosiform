@@ -15,7 +15,7 @@ The plan changes this session applied, the ones it held, and the technical debt 
 | The diagram links page states the statement split, the array refusal and where Mermaid draws an anchor | Docs | A refusal is stated with its case | `docs/references.md` |
 | Three corpus fixtures and two render-check entries | Test | Each finding ships with its case, and the render check proves which anchors Mermaid draws | `fixtures/`, `checks/render.py` |
 
-The epic body records the delivery: row `W03` on [#443](https://github.com/m2ux/prosiform/issues/443) links [#484](https://github.com/m2ux/prosiform/pull/484). No task was created, closed or renumbered, and no criterion changed.
+The epic body records the delivery: row `W03` on [#443](https://github.com/m2ux/prosiform/issues/443) links [#484](https://github.com/m2ux/prosiform/pull/484). The test plan passed and CI is green on `e6375445`. The merge into `i07/e00/main` was refused by the session's permission classifier as a merge without review, so the pull request stays open, and Done and `AC5`–`AC7` stay unticked until it merges. No task was created, closed or renumbered, and no criterion changed.
 
 ## Plan departures recorded here, not in the plan
 
