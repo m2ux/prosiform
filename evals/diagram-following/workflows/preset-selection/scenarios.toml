@@ -1,0 +1,26 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+#
+# Each state the path reaches through a link is placed by the presets the
+# title of the section writing that link selects of the state's document.
+
+# The review preset's subst redirects the policy note Audit links.
+warnings = ["W_SUBST_USED"]
+
+# Edit's title selects nothing of proof.md, so its default alone places Proof.
+[[scenario]]
+name = "default-alone"
+path = ["Receive", "Edit", "Proof", "Merge"]
+inputs = { "change.txt" = "docs", "risk.txt" = "low" }
+
+# Patch's title selects verify.md's patch preset, which places Verify.
+[[scenario]]
+name = "title-selected"
+path = ["Receive", "Assess", "Patch", "Verify", "Merge"]
+inputs = { "change.txt" = "code", "risk.txt" = "low" }
+
+# Security Review selects audit.md's security and review presets together.
+[[scenario]]
+name = "two-presets-one-title"
+path = ["Receive", "Assess", "Harden", "Audit", "Merge"]
+inputs = { "change.txt" = "code", "risk.txt" = "high" }

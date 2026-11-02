@@ -1,0 +1,27 @@
+---
+prosiform:
+  default:
+    subst:
+      - {states/approve.md: alternates/approve.md}
+---
+# Release
+
+The diagram is the workflow. Each state's section says what to do in that state and which transition to take out of it.
+
+```mermaid
+flowchart TD
+    start(( )) --> Outline
+    Outline -->|minor| Approve
+    Outline -->|major| Amend
+    Amend --> Inspect
+    Inspect -->|ship| Stage
+    Inspect -->|hold| Approve
+    Stage --> Gate
+    Gate --> Approve
+    Approve --> stop((( )))
+
+    click Outline href "states/outline.md"
+    click Approve href "states/approve.md"
+    click Amend href "states/amend.md"
+    click Stage href "states/stage.md"
+```
