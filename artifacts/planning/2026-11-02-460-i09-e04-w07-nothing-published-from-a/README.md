@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Publishes no partial bundle when any composition fails, on stdout or a named output.
+Publishes no partial bundle when any composition fails, on the default output, a named output folder or a check run, and refuses a dispatch mark written against a directive's label.
 
 This record holds its delivery of `AC14`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
 
@@ -12,6 +12,9 @@ This record holds its delivery of `AC14`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W07 work item](w07.md) | Composition failures publishing nothing, and a dispatch mark against a directive's label refused |
+| [Validation](validation.md) | T1 to T5 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
