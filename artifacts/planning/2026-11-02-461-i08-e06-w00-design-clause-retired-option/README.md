@@ -12,6 +12,9 @@ This record holds its delivery of `AC13`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W00](w00.md) | The work item: the substitution clause, the retired option, the renamed codes and the pin. |
+| [Validation](validation.md) | The conformance and repository-check evidence for AC13, at the tested revisions. |
+| [Change list](changes.md) | The plan changes the session applied and held. |
 
 ## Links
 
