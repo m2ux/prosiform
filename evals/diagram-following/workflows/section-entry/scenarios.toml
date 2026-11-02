@@ -1,0 +1,11 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+# The entry is the reference every form is compiled from: the Onboarding
+# section of the handbook, which leaves the handbook's other sections out.
+
+entry = "workflow.md#onboarding"
+
+[[scenario]]
+name = "document-fragment"
+path = ["Enrol", "Equip", "Greet"]
+inputs = {}
