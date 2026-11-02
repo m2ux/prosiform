@@ -1,11 +1,11 @@
 # Hierarchy
 
-A bundle is one Markdown document, and a document is read from its headings. Whatever the run gathered has to arrive as a readable outline: one top-level heading per contributing document, and each document's own headings kept beneath it in the shape its author wrote them.
+A bundle is one Markdown document, and a document is read from its headings. Whatever the run gathered has to arrive as a readable outline: one heading per contributing document or group, and each document's own headings kept beneath it in the shape its author wrote them.
 
 ```
 Guide                       ← the entry document's title
   Procedure                 ← its own first section
-  Rules                     ← another contributing document
+  Rules                     ← a group the guide's link placed, inside the guide
 ```
 
 A merged group is where this shows most: several files declaring one name share a heading, and their sections are pooled under it.
@@ -20,7 +20,7 @@ Each contributing source becomes a **file heading**, an H1. Its text is the docu
 
 The file heading carries the title, so the title is not emitted again beneath it. A self-reference to that title resolves to the file heading.
 
-There is no heading above the file headings. A directory names no division.
+There is no heading above the file headings: a file heading stands at the top level of the bundle wherever its document is placed. A directory names no division.
 
 ```mermaid
 flowchart TD
@@ -44,7 +44,7 @@ Setext headings are converted to ATX when the shift requires it, keeping their v
 
 ## Groups
 
-A **group** is one top-level division. By default a group is one source document and its division is that document's file heading.
+A **group** is one division of the bundle. By default a group is one source document and its division is that document's file heading.
 
 A document whose presets in force name a group in `group` joins that **merged group** instead, sharing one heading with every other contributor declaring the same name. Each link places the document under the one pair its selection puts in force, so two links selecting different pairs place it in each of their groups, its selected content emitted once in each.
 
@@ -57,6 +57,21 @@ Sections at the grouping depth are merged: each distinct heading text is emitted
 
 Where two or more members contribute the same heading text, that section splits into **variants** — one heading per contributing document, carrying that document's text, lists and subheadings. Each item stays with its document.
 
+## Where a group stands
+
+A merged group stands inside the division holding the document whose link placed its first member, after everything that division carries of its own. A group whose first member is an entry stands at the top level. A later member joins the group where it stands. The design's [Grouping](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) carries the rule in full.
+
+Each division enclosing a group moves every heading of the group one level deeper, so the group's heading takes the level below the heading of the division holding it:
+
+```
+Entry                       ← the entry's file heading, H1
+  Notes                     ← the group the entry's link placed, H2
+    Titled                  ← a member's subsection, H3
+    Findings                ← a merged section, H3
+```
+
+Nesting spends depth. A heading a nested group pushes beyond H6 fails the run, as [the level shift](#the-level-shift) states; the run does not lift the group to the top level. A shared document linked from deep divisions is where this bites. The author places the group's first member through a shallower document, such as the entry, or keeps the members' headings shallow.
+
 ## Member names
 
 A member that contributes content above the grouping depth — its preamble, or a section shallower than the grouping depth — takes one subsection naming it.
@@ -65,7 +80,11 @@ That name is the shortest run of the member's path that distinguishes it from th
 
 The same name serves the member's subsection and every variant heading it carries, so a reader meets each member named one way.
 
-A member contributing nothing above the grouping depth takes no subsection; the merged sections it contributes to name it.
+A member's subsection absorbs the member's own title where the title's slug agrees with the file's stem, as a file heading absorbs a document's title: `notes/titled.md` titled `Titled` takes the subsection `Titled`, and the title is not emitted again. A member whose title is absorbed takes its subsection even where everything else it carries sits at the grouping depth, and so does a member the group emits nothing else from; either subsection is the heading alone. A whole-document reference to the member, and a reference to the title its subsection absorbed, resolve to that subsection. A title above the grouping depth whose slug does not agree with the stem is that member's content, emitted beneath the subsection.
+
+A member whose content all sits at the grouping depth, with no title for a subsection to absorb, takes no subsection: the merged sections it contributes to name it, and a whole-document reference to it resolves to the first heading the group emits from it that no other member shares.
+
+Where the first entry document is itself a member and carries its title above the grouping depth, that title opens the group in place of the group's name, and the entry takes no subsection.
 
 The member subsections sit beneath an `Overview` heading where the group also emits merged sections and a member carries content beneath its subsection. Where every subsection is the heading alone, or the group emits no merged section, they sit directly beneath the group heading.
 
