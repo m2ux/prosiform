@@ -55,6 +55,7 @@ Printed as fixes to apply to the issue itself:
 Left to decide, since each needs new content or a judgement:
   - a type:task issue whose title prefix has no task id, which its row in its epic's Work Breakdown supplies
   - a type:hot-fix label on a title without an [F00] prefix, which is retitled or loses the label
+  - a hot-fix whose Overview does not name its target branch in exactly one Target: line
   - a body that follows another kind's template
   - a required section missing, an extra section, or text before the first section
   - prose in the Work Breakdown outside its table
@@ -78,7 +79,8 @@ Left to decide, since each needs new content or a judgement:
     or cites one that does not exist, and a criterion no row delivers. An empty cell stands only on
     a complete row another row depends on, the further task that adopted its criteria
   - a Description cell over eight words or holding a semicolon, whose detail belongs in criteria
-  - acceptance criteria or references partly labelled or numbered out of sequence
+  - acceptance criteria partly labelled, or labels that repeat or descend (labels ascending with a
+    gap stand), and references partly labelled or not numbered from R1 without a gap
   - a References section that links issues or pull requests on the same board
   - no theme:* label on an initiative, epic or hot-fix, a title without "Name: Subtitle" (after the prefix,
     or whole for a standalone issue), or a title whose name is not two or three words or whose
@@ -100,7 +102,7 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 
-from hotfix import HOTFIX, PRIORITY, is_hotfix
+from hotfix import HOTFIX, PRIORITY, is_hotfix, targets
 
 ARTIFACTS = Path(__file__).resolve().parent.parent / 'artifacts'
 BODY_ARTIFACTS = {
@@ -412,7 +414,9 @@ class Review:
         if 'type:proposal' in self.labels():
             return self.run_standalone_kind('proposal', PROPOSAL, '[P00]')
         if is_hotfix(self.issue):
-            return self.run_standalone_kind('hot-fix', HOTFIX, '[F00]')
+            fixed = self.run_standalone_kind('hot-fix', HOTFIX, '[F00]')
+            self.check_target()
+            return fixed
         m = PREFIX.match(title)
         if not m:
             self.kind, self.number = 'issue', None
@@ -456,6 +460,14 @@ class Review:
             self.check_title_shape(name, subtitle)
         self.check_labels()
         return self.check_body()
+
+    def check_target(self) -> None:
+        """A hot-fix's Overview names its target branch in one Target: line."""
+        named = targets(self.issue)
+        if not named:
+            self.decide.append('Overview: no Target: line naming the branch the hot-fix fixes')
+        elif len(named) > 1:
+            self.decide.append(f'Overview: {len(named)} Target: lines; a hot-fix names one target branch')
 
     def check_title(self, m: re.Match, parts: list[str]) -> None:
         title = self.issue['title']
@@ -1043,9 +1055,16 @@ class Review:
                 box = lines[i][:6] if checkbox else '- '
                 lines[i] = f'{box}**{tag}{n}.** ' + lines[i][len(box):]
             self.fixed.append(f'{len(items)} items labelled {tag}1–{tag}{len(items)}')
-        elif not all(numbers) or [int(m[1]) for m in numbers] != list(range(1, len(items) + 1)):
+        elif not all(numbers) or not self.in_sequence(tag, [int(m[1]) for m in numbers]):
             self.decide.append(f'{tag} labels partly missing or out of sequence')
         return lines
+
+    @staticmethod
+    def in_sequence(tag: str, numbers: list[int]) -> bool:
+        """Criterion labels ascend, keeping the gap a removed criterion leaves; references count from one."""
+        if tag == 'AC':
+            return numbers[0] >= 1 and all(a < b for a, b in zip(numbers, numbers[1:]))
+        return numbers == list(range(1, len(numbers) + 1))
 
 
 def main() -> int:

@@ -11,7 +11,7 @@ import textwrap
 import unittest
 from pathlib import Path
 
-from fixtures import SCRIPTS, issue, pr, run
+from fixtures import SCRIPTS, hotfix_body, issue, pr, run
 
 sys.path.insert(0, str(SCRIPTS))
 from format import DECLARATION, DECLARED_FIELDS, DEPENDENCY, Required, Review, required_criteria  # noqa: E402
@@ -152,6 +152,72 @@ class OneRow(unittest.TestCase):
                          labels=('type:epic', 'theme:mechanical')))
         r.run()
         self.assertFalse(any('cited by' in item or item.startswith('W01: delivers') for item in r.decide))
+
+
+
+def initiative_with(criteria: tuple[int, ...], references: tuple[int, ...] = (1,)) -> Review:
+    """An initiative whose rows cover the labelled criteria, the first row the first and the second the rest."""
+    labels = [f'AC{n}' for n in criteria]
+    text = ('## Overview\n\nWhy.\n\n## Problem\n\n- **Gap.**\n  Evidence.\n\n## Proposal\n\n- **Move.**\n  Design.\n\n'
+            '## Work Breakdown\n\n| Epic | Description | Coverage | Depends on | Done |\n'
+            '| --- | --- | --- | --- | --- |\n'
+            f'| [E00](https://github.com/o/r/issues/2) | Ledger Record | {labels[0]} | | |\n'
+            f'| [E01](https://github.com/o/r/issues/3) | Ledger Read | {", ".join(labels[1:])} | | |\n\n'
+            '## Acceptance Criteria\n\n'
+            + ''.join(f'- [ ] **{label}.** The ledger holds, as its check shows.\n' for label in labels)
+            + '\n## Non-Goals\n\n- It leaves the runtime alone.\n\n## References\n\n'
+            + ''.join(f'- **R{n}.** [Source](https://example.com/{n}) — background.\n' for n in references))
+    r = Review(issue(1, '[I01] Ledger Work: The Source Named', body=text,
+                     labels=('type:initiative', 'theme:mechanical')))
+    r.run()
+    return r
+
+
+class CriterionLabels(unittest.TestCase):
+    def test_labels_ascending_with_a_gap_stand(self):
+        r = initiative_with((1, 3, 4))
+        self.assertFalse(any('labels' in item for item in r.decide))
+
+    def test_labels_starting_past_one_stand(self):
+        r = initiative_with((2, 3))
+        self.assertFalse(any('labels' in item for item in r.decide))
+
+    def test_a_repeated_label_is_left_to_decide(self):
+        r = initiative_with((1, 2, 2))
+        self.assertIn('AC labels partly missing or out of sequence', r.decide)
+
+    def test_a_descending_label_is_left_to_decide(self):
+        r = initiative_with((1, 3, 2))
+        self.assertIn('AC labels partly missing or out of sequence', r.decide)
+
+    def test_a_reference_gap_is_left_to_decide(self):
+        r = initiative_with((1, 2), references=(1, 3))
+        self.assertIn('R labels partly missing or out of sequence', r.decide)
+
+
+INITIATIVE_GUIDE = SCRIPTS.parent / 'artifacts' / 'initiative-issue-body.md'
+
+
+def initiative_section(heading: str) -> str:
+    """One Fields subsection of the initiative guide, up to the next heading of its level."""
+    return INITIATIVE_GUIDE.read_text().split(f'\n### {heading}\n', 1)[1].split('\n### ', 1)[0]
+
+
+class NotPlannedEpic(unittest.TestCase):
+    def test_its_row_leaves_with_the_criteria_only_it_covers(self):
+        rule = next(line for line in initiative_section('Work Breakdown').splitlines()
+                    if 'closed as not planned' in line)
+        self.assertIn('leaves the table', rule)
+        self.assertIn('Each criterion only that row covers leaves with it', rule)
+        self.assertIn('another row also covers stays', rule)
+        self.assertIn('issue-body.md#criterion-labels', rule)
+
+    def test_references_name_where_its_work_went(self):
+        self.assertTrue(any("not-planned epic's row" in line and 'takes' in line
+                            for line in initiative_section('References').splitlines()))
+
+    def test_the_label_rule_has_its_heading(self):
+        self.assertIn('\n#### Criterion Labels\n', (SCRIPTS.parent / 'artifacts' / 'issue-body.md').read_text())
 
 
 def proposal_body() -> str:
@@ -384,14 +450,13 @@ def epic_with(criterion: str, title: str = '[I01:E00] First: Epic') -> dict:
 
 
 def required_review(criterion: str, base: str, required: Required | None = AUDIT,
-                    title: str = '[I01:E00] First: Epic', files: tuple[str, ...] | None = (DEFINITION,),
+                    files: tuple[str, ...] | None = (DEFINITION,),
                     more: tuple[dict, ...] = (), more_files: dict[int, list[str]] | None = None) -> Review:
     """An epic whose pull request #950 targets base and changes files, None when they are not supplied,
     reviewed for the criteria its project requires."""
-    prefix = title.split(']')[0] + ']'
     changed = {} if files is None else {950: list(files)}
     changed.update(more_files or {})
-    r = Review(epic_with(criterion, title), prs=[pr(950, f'{prefix} Work', base=base), *more],
+    r = Review(epic_with(criterion), prs=[pr(950, '[I01:E00] Work', base=base), *more],
                required=required, files=changed)
     r.run()
     return r
@@ -404,11 +469,6 @@ class RequiredReach(unittest.TestCase):
         self.assertEqual(len(found), 1)
         self.assertIn('#950 change corpus on workflows', found[0])
         self.assertIn('Canon audit of the changed definitions', found[0])
-
-    def test_a_deferred_debt_epic_reaching_the_branch_states_the_criterion(self):
-        r = required_review('Holds.', 'i01/e09/workflows',
-                            title='[I01:E09] Deferred Debt: The Clear-Up This Initiative Owes')
-        self.assertTrue(any(WANTED in item for item in r.decide))
 
     def test_an_epic_reaching_the_long_lived_branch_states_the_criterion(self):
         r = required_review('Holds.', 'workflows')
@@ -714,10 +774,11 @@ class CoverageNamesDelivery(unittest.TestCase):
 
 
 class HotFixes(unittest.TestCase):
-    """A hot-fix takes the standalone template under an [F00] title, type:hot-fix and a theme."""
+    """A hot-fix takes the standalone template under an [F00] title, type:hot-fix and a theme, and its
+    Overview names its target branch in one Target: line."""
 
     def check(self, title: str, labels: tuple[str, ...], text: str | None = None) -> Review:
-        r = Review(issue(1, title, labels=labels, body=text or body('Gap.', 'Design.')))
+        r = Review(issue(1, title, labels=labels, body=text or hotfix_body('workspace')))
         r.run()
         return r
 
@@ -746,6 +807,20 @@ class HotFixes(unittest.TestCase):
         self.assertIn('no theme:* label', r.decide)
 
     def test_a_hot_fix_states_its_boundary_in_the_proposal(self):
-        text = body('Gap.', 'Design.') + '\n## Non-Goals\n\n- Nothing else.\n'
+        text = hotfix_body() + '\n## Non-Goals\n\n- Nothing else.\n'
         r = self.check('[F00] Key Validation: Reject Bad Keys', ('type:hot-fix', 'theme:canon'), text)
         self.assertIn('Non-Goals: a hot-fix states its boundary in the Proposal', r.decide)
+
+    def test_a_hot_fix_names_its_target(self):
+        r = self.check('[F00] Key Validation: Reject Bad Keys', ('type:hot-fix', 'theme:canon', 'priority: 10'),
+                       hotfix_body(None))
+        self.assertEqual(r.decide, ['Overview: no Target: line naming the branch the hot-fix fixes'])
+
+    def test_a_hot_fix_names_one_target(self):
+        text = hotfix_body().replace('Target: `main`', 'Target: `main`\n\nTarget: `workspace`')
+        r = self.check('[F00] Key Validation: Reject Bad Keys', ('type:hot-fix', 'theme:canon', 'priority: 10'), text)
+        self.assertEqual(r.decide, ['Overview: 2 Target: lines; a hot-fix names one target branch'])
+
+    def test_a_standalone_issue_needs_no_target(self):
+        r = self.check('Key Validation: Reject Bad Keys', (), body('Gap.', 'Design.'))
+        self.assertEqual(r.decide, [])

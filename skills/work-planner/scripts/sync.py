@@ -19,8 +19,11 @@ With --names it reads one --revision and prints the long-lived branch names one 
 standard error. Unevaluable names print unevaluable: with the source and why, and exit 1.
 
 Each issue file is the issue as `gh api repos/{owner}/{repo}/issues/943` returns it. prs.json holds
-pull requests as JSON lines, as the REST API returns them:
+pull requests as JSON lines, as the REST API returns them: each one whose title names the initiative,
+and each one a row or a Development link of its issues names whatever its title, as Read Initiative
+Pull Requests fetches them:
   gh api --paginate "repos/{owner}/{repo}/pulls?state=all&per_page=100" --jq '.[] | select(.title | startswith("[I07"))' > prs.json
+  python3 linked-pull-requests.py --prs prs.json --issues issue-936.json issue-943.json issue-637.json
 
 links.json holds the closing issue references GitHub holds for those pull requests, as Fetch Pull
 Request Issue Links writes them: an array of {repo, number, closingIssuesReferences: [{repo, number}]}.
@@ -36,8 +39,8 @@ names the task's epic. Its criteria are ready to verify while that pull request 
 evidence is what the pull request and its planning record carry. The task is delivered, and so
 closable, once that pull request has merged.
 Hot-fix issue ([F00]): read as a task issue whose --pr is the pull request of its repository that
-delivers it, as hotfix.delivering_pulls tests it against --links and the default branch the pull
-request record names; a --pr that does not deliver it is refused with the condition it fails.
+delivers it, as hotfix.delivering_pulls tests it against --links and the target the hot-fix's
+Target: line names; a --pr that does not deliver it is refused with the condition it fails.
 Closed epics have their Work Breakdown normalized to the current columns before delivery is read;
 --fix holds the normalized body for publication. Ambiguous tables are refused. Linked merged pull
 requests with no prefix or a matching initiative/task prefix report the owning epic title to publish
@@ -1005,7 +1008,7 @@ def main() -> int:
     if args.links:
         attach_links(prs, args.links)
     if kind == 'hot-fix':
-        named = {p['number']: p for p in delivering_pulls(prs, issue_key(issue), task)}
+        named = {p['number']: p for p in delivering_pulls(prs, issue_key(issue), issue)}
     else:
         named = for_epic(prs, initiative, epic) if epic else {}
     links: dict[str, list[int]] = {}
@@ -1035,7 +1038,7 @@ def main() -> int:
             home = issue_key(issue)[0].lower()
             given = next((p for p in prs if p['number'] == args.pr and pr_repo(p).lower() == home), None)
             sys.exit(f'--pr {args.pr}: does not deliver {task}: '
-                     + (delivery_fault(given, issue_key(issue), task) if given else f'it is not among --prs for {home}'))
+                     + (delivery_fault(given, issue_key(issue), issue) if given else f'it is not among --prs for {home}'))
         if args.pr and not pr:
             sys.exit(f'--pr {args.pr}: no pull request naming I{initiative}:E{epic}')
         merged = bool(pr and pr.get('merged_at'))

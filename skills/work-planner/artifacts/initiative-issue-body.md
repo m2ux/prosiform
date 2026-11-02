@@ -8,7 +8,6 @@ Read these files first.
 
 - [Issue Body](issue-body.md)
 - [Requirement Characteristics](../references/requirement-characteristics.md)
-- [Epic Issue Body](epic-issue-body.md)
 - [Initiative](initiative.md)
 
 ## Operations
@@ -147,6 +146,7 @@ The columns are `Epic | Description | Coverage | Depends on | Done`. The table h
 - An epic row's id is the epic, linked to its issue: `[E01](…/issues/937)`.
 - An epic row's Description is the epic's title name, and its Coverage names the initiative criteria the epic serves.
 - An epic row is complete when its issue is closed as completed.
+- An epic row whose issue is closed as not planned leaves the table. Each criterion only that row covers leaves with it, and a criterion another row also covers stays. The criteria that remain keep their [labels](issue-body.md#criterion-labels).
 - Depends on names epics only. A cell that names a task fails. Name a prerequisite epic only when every task or joined unit in the dependent epic requires every task in that prerequisite epic, directly or through its dependencies. The consumed output and the work producing it establish that requirement. Dependencies on selected tasks remain in the task tables. An edge another named whole-epic prerequisite already implies is omitted.
 - An initiative dependency that only some tasks need, or that requires only part of its prerequisite epic, is overbroad. The output and its producing tasks establish the edge.
 - An epic depending on a later epic is a backward reference.
@@ -178,6 +178,7 @@ An initiative criterion meets the [shared acceptance criteria](issue-body.md#sha
 - A proposal-derived initiative identifies its originating proposal in References with the proposal's exact title and issue URL, labelled as the originating proposal.
 - A reference the criteria answer to carries **Source.** after its label: `- **R1.** **Source.** [Title](url) — what it binds`. An unmarked reference is background, and binds no criterion. What a marked one requires of the criteria is [Sources](#sources).
 - A cross-initiative overlap is recorded in References. An approved edit to another initiative's issue stays minimal.
+- An initiative that removes a not-planned epic's row carries a reference linking the issue that takes that epic's work.
 
 ### Sources
 
@@ -187,25 +188,6 @@ A marked source in References is a document the initiative's criteria answer to.
 - A requirement a marked source states that no criterion makes true, and no Non-Goal excludes, is a gap.
 - An epic is aligned against its initiative's marked sources, through the initiative criteria its row covers.
 - A marked source that cannot be read leaves its criteria unaligned until it is read.
-
-### Deferred Debt
-
-A final epic of the initiative holds the debt that initiative's delivery defers. Its title name is `Deferred Debt` and its subtitle names the clear-up it takes; it carries its initiative's theme label and `tech-debt`, and it is raised when the initiative defers its first item. The initiative carries this criterion, which the epic's row covers:
-
-```markdown
-- [ ] **ACn.** The technical debt this initiative's delivery defers is fixed, as the Done column of its final epic's Work Breakdown shows.
-```
-
-- **It is the initiative's last epic.**
-  Its number follows every other epic of the initiative, so the epics in flight are planned and delivered ahead of it and the clear-up competes with none of them.
-- **A deferred item is a task row.**
-  Each row covers the criterion stating what fixing that item makes true, and those statements are the epic's criteria.
-- **It takes the debt its own delivery defers.**
-  Debt a unit of this epic finds in resolving its row becomes a further row of the epic, so the clear-up absorbs what fixing it uncovers.
-- **It delivers like any other epic.**
-  It takes its bases from the long-lived branches its rows change, carries the [required criteria](epic-issue-body.md#required-criteria) its project declares for the paths those rows change on each branch, and remains open until every delivery base has merged and its completion conditions hold.
-- **The initiative stays open while it stands.**
-  Its row is undelivered and its criterion unticked until the epic closes.
 
 ### Breakdown Prose
 
