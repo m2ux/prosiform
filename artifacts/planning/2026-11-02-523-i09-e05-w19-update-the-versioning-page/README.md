@@ -26,3 +26,5 @@ This record holds its delivery of `AC20,AC21,AC22`: the work item, the validatio
 | Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
 | Epic record | [Grouping and Composition](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) |
 | Pull request | [#583](https://github.com/m2ux/prosiform/pull/583) |
+| Merge | #583 merged into `i09/e05/main` at a7eae14c |
+| Review pull request | [#585](https://github.com/m2ux/prosiform/pull/585) |
