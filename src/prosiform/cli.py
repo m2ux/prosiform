@@ -1783,11 +1783,18 @@ def traverse(
     The entry references are the first frontier. Each round reads the
     sources its frontier names, then reads every group's selected
     content for the dependencies it marks; a dependency naming a
-    document and section the run already carries adds nothing, and the
+    document and section the run already carries adds no target, and the
     round that discovers no new one is the fixed point. A reference
     graph with a cycle therefore terminates on the identity each
     reference normalized to rather than on a depth the traversal
     refuses at.
+
+    A dependency reaching a carried document and section from a section
+    title no earlier dependency reached it from is carried all the same,
+    because the title selects that document's presets and each reference
+    bundles the document under the selection it made. It joins the
+    references the run carries and not the frontier, since the content
+    it selects is content the run already reads.
 
     The selection of a group grows as later content marks more of its
     document, so every group is read again each round. What the
@@ -1832,6 +1839,7 @@ def traverse(
     captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
+    titled: set[tuple[str, str | None, str | None]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
@@ -1864,6 +1872,7 @@ def traverse(
                 environment.get(REFERENCES, {}), lines(source.text)
             )
         discovered: list[Reference] = []
+        reselecting: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
@@ -1915,13 +1924,18 @@ def traverse(
                 substitution,
             ):
                 verify_cached(root, one, captured)
+                if (one.path, one.fragment, one.title) in titled:
+                    continue
+                titled.add((one.path, one.fragment, one.title))
                 if (one.path, one.fragment) in seen:
+                    reselecting.append(one)
                     continue
                 limits.hold(EXPANSION_DEPTH, hop)
                 seen.add((one.path, one.fragment))
                 limits.hold(TARGETS, len(seen))
                 discovered.append(one)
         found.extend(discovered)
+        found.extend(reselecting)
         frontier = discovered
     for one in deferred.values():
         if one.path not in read:
