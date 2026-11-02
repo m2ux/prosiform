@@ -33,10 +33,10 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [B: divisions](b-w02.md) | `group-depth` as pairs, applied per reference |
 | [B: entry shapes](b-w03.md) | `exclude` and `path-sub` entries |
 | [B: selection](b-w04.md) | Choosing a preset by keyword, and `default` |
-| [B: union](b-w05.md) | Several governing presets, and the refusal of a disagreement |
-| [B: unused presets](b-w06.md) | The warning for a preset no site matched |
-| [B: deferred targets](b-w07.md) | A preset kept for the run that follows the deferral |
-| [B: documentation](b-w08.md) | The preset stated in the invocation and the source page |
+| [B: union](b-w10.md) | Several governing presets, and the refusal of a disagreement |
+| [B: unused presets](b-w11.md) | The warning for a preset no site matched |
+| [B: deferred targets](b-w12.md) | A preset kept for the run that follows the deferral |
+| [B: documentation](b-w13.md) | The preset stated in the invocation and the source page |
 | [D: design clause](d-w00.md) | The clause, the code and the pin |
 | [D: grammar and seam](d-w01.md) | The exclusion grammar, its refusals and the narrow settlement |
 | [D: closure](d-w02.md) | An excluded section's links are no dependency |
