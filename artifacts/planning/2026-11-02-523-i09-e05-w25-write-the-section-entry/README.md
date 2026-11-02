@@ -6,12 +6,17 @@
 
 Writes the diagram-following scenarios for a section entry, section composition and declared inclusion, each with the path its bundle states.
 
-This record holds its delivery of `AC26,AC27,AC28`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
+This record holds its delivery of AC26, AC27, AC28 and AC37: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
+| [W25 work item](w25.md) | The section-entry workflow and its scenario |
+| [W26 work item](w26.md) | The section-composition workflow and its scenarios |
+| [W27 work item](w27.md) | The declared-inclusion workflow and its scenarios |
+| [W33 work item](w33.md) | The harness compiling each workflow from the entry its scenarios name |
+| [Validation](validation.md) | Each check's result, and what each scenario proves in each default cell |
 
 ## Links
 
