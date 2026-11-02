@@ -23,7 +23,7 @@ Validation compares the finished document with the provenance the run recorded w
 | Preservation | selected wording and code survive the declared transformations unchanged |
 | Coverage | each selected region appears exactly once, and the closure is complete |
 | Expansion | the only unselected content emitted is a required structural ancestor's heading |
-| Group isolation | each group has one H1 and each source sits beneath its own group's heading |
+| Group isolation | each group opens on one heading at the level it stands at and each source sits beneath its own group's heading |
 | Outline | each selected heading keeps its ancestor chain and relative depth |
 | Depth | no emitted heading exceeds H6 |
 
