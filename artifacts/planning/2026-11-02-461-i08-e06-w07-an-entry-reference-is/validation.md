@@ -15,4 +15,4 @@ Evidence for the checks the work items [W07](w07.md) and [W10](w10.md) name, at 
 
 ## make check
 
-`make check` with `PROSIFORM_BUILD` naming the worktree build: exit `0` at `8d035af71`.
+`make check` with `PROSIFORM_BUILD` naming the worktree build: exit `0` at `8d035af71`, and again at `270ebd384` after merging `origin/i08/e06/main` (#565): corpus 433 fixtures, 433 pass. CI `Checks` passed at `270ebd384`; merged as `cb6ee8d13`.
