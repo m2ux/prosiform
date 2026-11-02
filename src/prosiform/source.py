@@ -630,7 +630,8 @@ class Use:
     and no picture is a document the bundle can carry.
 
     The title is the text of the heading whose section holds the use,
-    and is absent for a use in the preamble, which lies in no section.
+    and the heading is the line that heading opens on; both are absent
+    for a use in the preamble, which lies in no section.
 
     The label is a link's whole text where that text is plain: text
     events alone, entities and escapes already decoded. It is absent
@@ -646,6 +647,7 @@ class Use:
     resource: bool
     title: str | None = None
     label: str | None = None
+    heading: int | None = None
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
@@ -1188,18 +1190,22 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     held = sections(tokens)
     starts = [line for line, _ in held]
 
-    def title(line: int | None) -> str | None:
+    def holding(line: int | None) -> tuple[int, str] | tuple[None, None]:
         at = 0 if line is None else bisect_right(starts, line)
-        return held[at - 1][1] if at else None
+        return held[at - 1] if at else (None, None)
 
     for token in within(tokens, selected):
         if token.type == FENCE:
             for click in clicks(token):
-                yield Use(click.destination, "", click.line, False, title(click.line))
+                heading, title = holding(click.line)
+                yield Use(
+                    click.destination, "", click.line, False, title, heading=heading
+                )
             continue
         if token.type != INLINE:
             continue
         line = None if token.map is None else token.map[0] + 1
+        heading, title = holding(line)
         for children, at, child in events(token.children or []):
             if child.type == LINK_OPEN:
                 destination = child.attrGet(HREF)
@@ -1208,8 +1214,9 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     opening_text(children, at),
                     line,
                     False,
-                    title(line),
+                    title,
                     plain_label(children, at),
+                    heading,
                 )
             else:
                 destination = child.attrGet(SRC)
@@ -1218,7 +1225,8 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     alternative_text(child),
                     line,
                     True,
-                    title(line),
+                    title,
+                    heading=heading,
                 )
 
 
