@@ -1,6 +1,6 @@
 # The output budget, measured
 
-`-O` defaults to 262,144. The figure is an engineering default, and
+The `output-bytes` budget defaults to 262,144. The figure is an engineering default, and
 the bundling it has to admit or refuse is the one the proposal used as its evidence:
 the closure of Plan Mode in the `work-planner` skill, 39 documents and 318,018 bytes
 read whole.
@@ -9,8 +9,8 @@ read whole.
 45,065 over the budget, and the run publishes nothing:
 
 ```text
-E_RESOURCE_LIMIT: the run reached 307209 bytes of the complete bundle, which crosses the -O budget of 262144
-  remedy: restructure the sources, or raise -O
+E_RESOURCE_LIMIT: the run reached 307209 bytes of the complete bundle, which crosses the output-bytes budget of 262144
+  remedy: restructure the sources, or raise --budget output-bytes
 ```
 
 The bundle is 96.6% of the bytes its sources hold: the link-reference definitions it
@@ -64,7 +64,7 @@ find . -name '*.md' -print0 | xargs -0 perl -0pi -e 's/\A---\n/---\nprosiform: {
 
 The run is refused, so the figure is read off the refusal: `limits.Crossed` carries the
 budget, the limit and the counted figure, and the diagnostic reports all three. Raising
-`-O` publishes the bundle, and its size on disk equals the figure the
+`output-bytes` publishes the bundle, and its size on disk equals the figure the
 refusal named.
 
 ## What the measurement settles

@@ -3,7 +3,8 @@
 The check exists so documentation and command cannot drift apart, so the
 cases below drift them: a row the command does not offer, an argument the
 command offers that no row names, a row whose wording has moved away from
-the help text, an exit status meaning that no longer matches, a profile
+the help text, an exit status meaning that no longer matches, a budget
+whose default moved, a profile
 identifier the guide stopped naming, and a statement the contract
 requires that the guide stopped carrying. Each is one fault and is
 named as the fault it is.
@@ -28,6 +29,7 @@ from pathlib import Path
 import pytest
 from documents import tables
 from invocation import (
+    BUDGET,
     EXIT,
     INVOCATION,
     OPTION,
@@ -35,6 +37,7 @@ from invocation import (
     Unreadable,
     check,
     documented_arguments,
+    documented_budgets,
     documented_statuses,
 )
 from runner import BUILD, BuildNotConfigured
@@ -57,6 +60,10 @@ options:
                         the diagnostic format on standard error; default text
   -h                show this usage, the defaults, and the exit-status
                         meanings
+
+budgets:
+  files         default 256; distinct source documents opened
+  depth         default 8; link hops from the nearest entry reference
 
 exit statuses:
   0  successful compilation, validation, or informational response
@@ -101,6 +108,9 @@ def documentation() -> str:
     lines += ["", "| Exit | Meaning |", "| --- | --- |"]
     for status, meaning in documented_statuses(HELP):
         lines.append(f"| `{status}` | {meaning} |")
+    lines += ["", "| Budget | Effect |", "| --- | --- |"]
+    for name, effect in documented_budgets(HELP):
+        lines.append(f"| `{name}` | {effect} |")
     lines += ["", "### What the documented invocation states", ""]
     lines += [sentence for _, sentence in STATEMENTS]
     return "\n".join(lines) + "\n"
@@ -134,6 +144,7 @@ def test_every_compared_surface_is_reported_as_passing(documented: Path) -> None
     passed, _ = check()
     assert len([line for line in passed if " option " in line]) == 5
     assert len([line for line in passed if " status " in line]) == 2
+    assert len([line for line in passed if " budget " in line]) == 2
     assert len([line for line in passed if " profile " in line]) == 1
     assert len([line for line in passed if " statement " in line]) == len(STATEMENTS)
 
@@ -180,6 +191,21 @@ def test_an_exit_status_meaning_that_no_longer_matches_fails(
     assert any("the command's help reads" in fault for fault in reported)
 
 
+def test_a_budget_whose_default_moved_fails(documented: Path) -> None:
+    reported = faults(documented, "default 256", "default 512")
+    assert any(
+        "files" in fault and "the command's help reads" in fault for fault in reported
+    )
+
+
+def test_a_budget_the_command_lists_and_no_table_names_fails(
+    documented: Path,
+) -> None:
+    row = "| `depth` | default 8; link hops from the nearest entry reference |\n"
+    reported = faults(documented, row)
+    assert any("depth" in fault and "no table names it" in fault for fault in reported)
+
+
 def test_a_guide_that_stopped_naming_the_profile_fails(documented: Path) -> None:
     reported = faults(documented, f"the `{PROFILE}`", "the declared")
     assert any(PROFILE in fault and "names it nowhere" in fault for fault in reported)
@@ -213,3 +239,4 @@ def test_the_repository_carries_the_tables_the_check_compares() -> None:
     carried = tables(INVOCATION.read_text())
     assert [table for table in carried if OPTION in table.headers]
     assert [table for table in carried if EXIT in table.headers]
+    assert [table for table in carried if BUDGET in table.headers]
