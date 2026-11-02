@@ -60,3 +60,5 @@ AC7. `docs/README.md` against `make links` and every page under `docs/`.
 ## Checks Run
 
 `make check` in the worktree at af1248fb with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`: exit 0. 1663 check tests, 1161 build tests, 498 of 498 fixtures, smoke, layout (4 trees), tables, links (143 documents), vocabulary (49 terms), invocation (28 statements), conformance and independence all pass.
+
+After merging `origin/i09/e05/main` (a7eae14c, carrying W19–W21) into the branch, `make check` at 97d2b604 with the same setting: exit 0, with the same counts.
