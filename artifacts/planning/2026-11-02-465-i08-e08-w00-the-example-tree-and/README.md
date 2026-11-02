@@ -14,11 +14,13 @@ This record holds its delivery of `AC1, AC4, AC6`: the work item, the validation
 | --- | --- |
 | [W00 work item](w00.md) | The removal's scope, design and the checks that observe it. |
 | [Validation](validation.md) | The tested revision and the result of each check the work item names. |
+| [Change list](changes.md) | The plan changes this delivery applied and held. |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
+| Pull request | [#557](https://github.com/m2ux/prosiform/pull/557) |
 | Epic | [I08:E08 Declared Tree](https://github.com/m2ux/prosiform/issues/465) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Archive tag | [archive/example-work-planner](https://github.com/m2ux/prosiform/tree/archive/example-work-planner/example/work-planner) |
