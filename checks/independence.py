@@ -13,9 +13,9 @@ free text is where such a term arrives.
 A term names an implementation by its shape, not by its spelling. A struct
 field, a function, a package, a constant and a language name all carry a
 capital, an underscore or a dot: `KeyError`, `E_TARGET_NOT_FOUND`,
-`prosiform.group`, `Python`. The prose a claim is written in carries none of
-these, so the shape alone separates the two, and no list of admitted words
-is needed to tell them apart.
+`prosiform.default.group`, `Python`. The prose a claim is written in carries
+none of these, so the shape alone separates the two, and no list of admitted
+words is needed to tell them apart.
 
 A shaped term is admissible where the contract states it: the design's
 prose, the names the design gives its own clauses, the terms
@@ -237,9 +237,10 @@ def scan(text: str, where: str, names: set[str]) -> list[Reference]:
 
     A term a claim repeats is one reference: the claim is a single
     statement, and naming the term once locates the claim to fix. A dotted
-    term is read whole, because `prosiform.group` names a key where its
-    parts name a document and a grouping; a term carrying a path's
-    extension names the tree the claim is about and is read as that tree.
+    term is read whole, because `prosiform.default.group` names a key where
+    its parts name a declaration, a preset and a grouping; a term carrying a
+    path's extension names the tree the claim is about and is read as that
+    tree.
     """
     body = prose(text)
     found: dict[str, Reference] = {}

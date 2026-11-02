@@ -36,7 +36,7 @@ import links
 import pytest
 
 
-def test_a_link_resolves_from_its_file_whatever_root_it_declares(
+def test_a_link_resolves_from_the_file_that_writes_it(
     tmp_path: Path,
 ) -> None:
     author = tmp_path / "author"
@@ -45,7 +45,7 @@ def test_a_link_resolves_from_its_file_whatever_root_it_declares(
     library.mkdir()
     document = author / "entry.md"
     document.write_text(
-        "---\nprosiform:\n  root: ../library\n---\n"
+        "---\nprosiform: {}\n---\n"
         "# Entry\n\n[Self](#entry) and [Target](../library/target.md#target)"
         " and [Beside](target.md).\n"
     )

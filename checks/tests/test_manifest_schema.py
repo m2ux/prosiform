@@ -93,18 +93,9 @@ def test_a_complete_manifest_validates() -> None:
     assert errors(complete()) == []
 
 
-def test_a_manifest_naming_no_source_tree_validates() -> None:
-    """A run supplied no allowed source root is a run a manifest declares."""
-    manifest = without("invocation", "cwd")
-    manifest["expected"]["exit_status"] = 2
-    manifest["expected"]["diagnostics"] = [
-        {
-            "severity": "error",
-            "code": "E_INVALID_USAGE",
-            "message_contains": ["-r"],
-        }
-    ]
-    assert errors(manifest) == []
+def test_a_manifest_naming_no_working_directory_validates() -> None:
+    """A run started in the fixture's own directory is a run a manifest declares."""
+    assert errors(without("invocation", "cwd")) == []
 
 
 @pytest.mark.parametrize(("declaration", "field"), sorted(DECLARATIONS.items()))

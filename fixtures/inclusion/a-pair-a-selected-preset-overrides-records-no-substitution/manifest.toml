@@ -1,0 +1,27 @@
+description = "rules.md's default pair {steps.md: draft-steps.md} is in force for the link index.md reaches it by, and guide.md's link from ## Checks, read a round later, selects the Checks preset, whose {steps.md: checked-steps.md} holds over default's for that key. rules.md's link to steps.md compiles checked-steps.md, and the run states that substitution alone: the default pair the selection shadowed redirected no link the bundle carries, so it states none, and draft-steps.md is never bundled."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Presets — default always applies",
+  "Presets — Selected presets union",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["index.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/index.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "steps.md"
+resolved = "checked-steps.md"
+
+[expected.diagnostics.location]
+file = "rules.md"
+line = 10
+column = 1
