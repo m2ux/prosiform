@@ -1,0 +1,27 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/521",
+    "head": "38c028c3b5ff06dabcf63f4cc0faebda44f985f0",
+    "base": "b9a711e40724ba9feb2a75b7dcab5581a5150aa0",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders/agent-review-521.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-02T09:32:25Z",
+    "scope": "Complete integration diff main...i08/e03/main, base b9a711e4 (origin/main; Update Epic Base found main already merged, 0 commits behind) to head 38c028c3: 28 files, carried by task merges #520 and #522 and one review fix (#537, merged as 38c028c3). W05 is engineering commit aecd1081 and changes no file of this branch. Source read in the diff: cli.py parser (no -f, REF help), diagnostic_format (value-taking short options reduced to the declared ones, -m kept), execute (bare-fragment refusal with reference= set, raised after the substitution redirect and before any source is read), entered, declared_entries, contributing, traverse (frontier from the entries, no empty-path skip), placement, compose, selections, derived_name, compiled and dispatched_set (referrer parameter removed throughout). Callers checked over the repository graph (gitnexus detect-changes against origin/main, context of compiled): execute -> compiled -> declared_entries/traverse/compose/derived_name, dispatched_set -> compiled, compose -> contributing/placement. Pages and checks read: invocation.md, docs/glossary.md, docs/bundles.md, docs/selection.md, example/README.md, fixtures/README.md, the renamed and withdrawn fixtures, checks/tests/test_authoring.py, test_runner.py, test_invocation.py, src tests; the pinned design a0a3264a lines 109, 463 and 695. Tree searched for referrer, -f, fragment-only and fragment alone.",
+    "criteria": "AC1-AC7 of #449, all ticked. Re-verified at the reviewed tree: AC1 by fixture cli/a-bare-fragment-is-invalid-usage (exit 2, E_INVALID_USAGE, message carrying #stop and document#fragment) and the parser declaring no -f; AC2 by the section-entry fixtures and test_derived_output; AC3 by make harness and make corpus with no fixture naming -f; AC4 by make invocation and the guide naming document#fragment alone, docs/bundles.md included after #537; AC5 by inspection of #414 AC13, which names #449 AC2 as the rule that holds, the redirected-referrer mock fixture withdrawn; AC6 by the fragment-only link fixtures under rewriting/, inclusion/, deferral/ and dispatch/ passing unchanged; AC7 by make conformance at pin a0a3264a with 0 declarations naming no clause.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, steps, authoring, boundary, test 1571 passed, harness 1148 passed, corpus 421/421, smoke, layout, tables, links, vocabulary, invocation, conformance, independence, mock-scenarios 5/5) passed locally on the fix head f05910e5 and again on the epic base head 38c028c3, whose tree is the fix head's, with PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'. CI workflow Checks passed on f05910e5 (https://github.com/m2ux/prosiform/actions/runs/41419735836/job/125192139014) and on 38c028c3b5ff06dabcf63f4cc0faebda44f985f0 (https://github.com/m2ux/prosiform/actions/runs/41420514944/job/125194661578).",
+    "findings": [
+      {
+        "description": "Stale claim on a page: docs/bundles.md stated that a fragment-only entry derives its name from the document -f supplies, an option the epic retires and the build no longer declares. The sentence is removed; Derived names already states a section entry's name.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/537"
+      },
+      {
+        "description": "The invocation check's canned help in checks/tests/test_invocation.py described REF as admitting a fragment alone with -f. Its stand-in build now describes REF as a document or a document and a fragment.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/537"
+      }
+    ]
+  }
+]

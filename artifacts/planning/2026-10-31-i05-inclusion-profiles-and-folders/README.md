@@ -29,6 +29,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [A: invariants](a-w09.md) | The one settled selection and the boundary that refuses no link |
 | [A: agent review of #474](agent-review-474.json) | The agent review record of the I08:E00 integration pull request, by reviewed head and target |
 | [A: agent review of #508](agent-review-508.json) | The agent review record of the I08:E01 integration pull request, by reviewed head and target |
+| [A: agent review of #521](agent-review-521.json) | The agent review record of the I08:E03 integration pull request, by reviewed head and target |
 | [B: design clause](b-w00.md) | The clause, the term and the pin |
 | [B: presets only](b-w01.md) | `prosiform` holding presets and nothing else |
 | [B: divisions](b-w02.md) | `group-depth` as pairs, applied per reference |
