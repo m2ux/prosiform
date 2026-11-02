@@ -1,0 +1,27 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+#
+# Each substitute states the action and transition of the state it stands in
+# for, so the path is one walk whichever document a reader opens.
+
+# Every pair a link uses warns once.
+warnings = ["W_SUBST_USED"]
+
+# The entry's default redirects the diagram's Approve to another document.
+[[scenario]]
+name = "document-redirect"
+path = ["Outline", "Approve"]
+inputs = { "change.txt" = "minor", "release.txt" = "hold" }
+
+# Amend's default redirects its link to one section of the handbook.
+[[scenario]]
+name = "section-redirect"
+path = ["Outline", "Amend", "Inspect", "Approve"]
+inputs = { "change.txt" = "major", "release.txt" = "hold" }
+
+# The entry's title selects stage.md's release preset, whose pair for gate.md
+# holds over its default's.
+[[scenario]]
+name = "preset-over-default"
+path = ["Outline", "Amend", "Inspect", "Stage", "Gate", "Approve"]
+inputs = { "change.txt" = "major", "release.txt" = "ship" }

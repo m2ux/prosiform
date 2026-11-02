@@ -59,7 +59,16 @@ section of it a top-level `entry` key in `scenarios.toml` names as
 output folder it is given, `workflow.bundles/` holding `workflow.bundle.md`
 for the whole document. A form that dispatches publishes one bundle per
 target beside the entry's, so its set is every bundle `pf` writes; a form
-that does not publishes the entry's alone.
+that does not publishes the entry's alone. A run reports no diagnostic
+beyond the warning codes the workflow's `scenarios.toml` declares under
+`warnings`, which a feature such as `subst` raises wherever it is used.
+
+The diagram form's bundle states a path of its own: a state's section is
+the heading the previous section's link or the bundle's diagram names, and
+what `pf` placed into a group or redirected through `subst` is what that
+section holds. A scenario's path is held to that walk as well as to the
+sources', so a workflow built on a feature states the path its bundle
+states.
 
 A document under an `undeclared/` directory declares no `prosiform`, so a
 link to it is left as written rather than followed; every other document
@@ -265,6 +274,20 @@ FEWER = re.compile(
     r"^`trace\.log` holds the line `(\w+)` fewer times than the number in "
     r"`inputs/([^`]+)`$"
 )
+DIAGNOSTIC = re.compile(r"^([EW]_[A-Z_]+):", re.MULTILINE)
+"""The code opening each diagnostic `pf` writes to its standard error."""
+
+BUNDLE_HEADING = re.compile(r"^(#{1,6}) (.+?)[ \t]*$", re.MULTILINE)
+"""A heading of a bundle, at any level, with its text."""
+
+SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
+"""The characters a renderer drops from a heading's text in making its slug."""
+
+FRAGMENT_LINK = re.compile(r"\[([^\]]+)\]\(#([^)]+)\)")
+"""A link a bundle rewrote to a heading of its own, with its text and fragment."""
+
+NEXT_PARAGRAPH = re.compile(rf"^{re.escape(NEXT)}(.+)$", re.MULTILINE)
+"""A section's transition paragraph as a bundle carries it."""
 
 
 class CorpusError(Exception):
@@ -438,6 +461,9 @@ class Workflow:
     entry: str = ENTRY
     """The reference every form is compiled from: the entry document or one section."""
 
+    warnings: frozenset[str] = frozenset()
+    """The warning codes `pf` reports bundling this workflow, as it declares them."""
+
     @property
     def entry_bundle(self) -> Path:
         """Where the entry's bundle sits under a form's output folder."""
@@ -475,11 +501,16 @@ class Workflow:
 
 def mermaid(entry: Path) -> str:
     """The one Mermaid diagram an entry document holds."""
+    return mermaid_text(entry.read_text(), str(entry))
+
+
+def mermaid_text(text: str, named: str = "the bundle") -> str:
+    """The one Mermaid diagram a document's text holds."""
     blocks: list[str] = [
-        body for kind, body in FENCE.findall(entry.read_text()) if kind == "mermaid"
+        body for kind, body in FENCE.findall(text) if kind == "mermaid"
     ]
     if len(blocks) != 1:
-        raise CorpusError(f"{entry} holds {len(blocks)} mermaid diagrams, not one")
+        raise CorpusError(f"{named} holds {len(blocks)} mermaid diagrams, not one")
     return blocks[0]
 
 
@@ -704,6 +735,17 @@ def read_entry(path: Path) -> str:
         return str(tomllib.load(handle).get("entry", ENTRY))
 
 
+def read_warnings(path: Path) -> frozenset[str]:
+    """The warning codes a workflow's `scenarios.toml` declares its bundle raises.
+
+    A feature such as `subst` warns wherever it is used, so a workflow built
+    on it declares each code it expects, and its bundle is held to raising
+    those and no other diagnostic.
+    """
+    with path.open("rb") as handle:
+        return frozenset(tomllib.load(handle).get("warnings", ()))
+
+
 def read_scenarios(path: Path) -> tuple[Scenario, ...]:
     """The scenarios a workflow's `scenarios.toml` lists."""
     with path.open("rb") as handle:
@@ -764,6 +806,7 @@ def read_workflow(directory: Path) -> Workflow:
         if diagram.conditions
         else {},
         entry=read_entry(directory / SCENARIOS),
+        warnings=read_warnings(directory / SCENARIOS),
     )
     return replace(workflow, nested=nested_conditions(workflow, drawn_root))
 
@@ -816,6 +859,174 @@ def bundled(output: Path) -> list[Path]:
     folder under `output`.
     """
     return sorted(output.glob("*.bundles/*.bundle.md"))
+
+
+def stray(workflow: Workflow, stderr: bytes) -> str:
+    """The diagnostics a form's run reported beyond the warnings its workflow declares.
+
+    `pf` writes each diagnostic as a line opening with its code, followed by
+    lines of detail, so a diagnostic is the text from one code to the next.
+    Text before the first code is stray whatever it says.
+    """
+    text = stderr.decode()
+    starts = [match.start() for match in DIAGNOSTIC.finditer(text)]
+    kept = [text[: starts[0]] if starts else text]
+    for start, end in zip(starts, [*starts[1:], len(text)], strict=False):
+        block = text[start:end]
+        if block.partition(":")[0] not in workflow.warnings:
+            kept.append(block)
+    return "".join(kept)
+
+
+def reported(stderr: bytes) -> set[str]:
+    """Every diagnostic code a run reported."""
+    return {match.group(1) for match in DIAGNOSTIC.finditer(stderr.decode())}
+
+
+@dataclass(frozen=True)
+class BundledSection:
+    """One heading of a bundle, the fragment naming it and the text it holds.
+
+    `text` runs to the next heading at its level or above, less any subsection
+    holding an action of its own, which is another state's section placed
+    inside this one.
+    """
+
+    level: int
+    title: str
+    fragment: str
+    text: str
+
+
+def slug(title: str) -> str:
+    """The fragment a renderer generates for a heading carrying this text."""
+    return SLUG_DISCARDED.sub("", title.lower()).replace(" ", "-")
+
+
+def bundled_sections(bundle_text: str) -> dict[str, BundledSection]:
+    """Every heading a bundle carries outside its code blocks, by its fragment.
+
+    A later heading taking a slug an earlier one took carries the next free
+    ordinal, as the renderer numbers it and `pf` rewrites a link to it.
+    """
+    fenced = [match.span() for match in FENCE.finditer(bundle_text)]
+    found = [
+        match
+        for match in BUNDLE_HEADING.finditer(bundle_text)
+        if not any(start <= match.start() < end for start, end in fenced)
+    ]
+    counted: dict[str, int] = {}
+    taken: set[str] = set()
+    fragments: list[str] = []
+    for match in found:
+        name = slug(match.group(2))
+        if name in taken:
+            ordinal = counted.get(name, 0) + 1
+            while f"{name}-{ordinal}" in taken:
+                ordinal += 1
+            counted[name] = ordinal
+            name = f"{name}-{ordinal}"
+        else:
+            counted[name] = 0
+        taken.add(name)
+        fragments.append(name)
+    levels = [len(match.group(1)) for match in found]
+    ends = [
+        next(
+            (
+                found[later].start()
+                for later in range(index + 1, len(found))
+                if levels[later] <= levels[index]
+            ),
+            len(bundle_text),
+        )
+        for index in range(len(found))
+    ]
+    sections: dict[str, BundledSection] = {}
+    for index, match in enumerate(found):
+        end = next(
+            (
+                found[inner].start()
+                for inner in range(index + 1, len(found))
+                if found[inner].start() < ends[index]
+                and ACTION.search(bundle_text, found[inner].end(), ends[inner])
+            ),
+            ends[index],
+        )
+        sections[fragments[index]] = BundledSection(
+            levels[index],
+            match.group(2),
+            fragments[index],
+            bundle_text[match.end() : end],
+        )
+    return sections
+
+
+def bundle_walk(
+    workflow: Workflow, bundle_text: str, inputs: dict[str, str]
+) -> tuple[tuple[str, ...], list[str]]:
+    """The path a diagram form's bundle states for the inputs, and its faults.
+
+    The walk reads the bundle alone, as a session given it does: the
+    bundle's diagram names each edge, its clicks name the first state's
+    section, and each state is entered at the section the previous state's
+    own link names, or else at the one the diagram clicks. Each section
+    states its action and its transition, so what `pf` placed, redirected or
+    substituted is what the walk follows. A state whose bundled action is
+    not the one its source states is a fault, since the scorer holds a
+    session to the source's.
+    """
+    diagram = read_diagram_text(mermaid_text(bundle_text), named="the bundle")
+    sections = bundled_sections(bundle_text)
+    path: list[str] = []
+    state = diagram.start
+    fragment = diagram.clicks.get(state, "").removeprefix("#")
+    while True:
+        if len(path) == STEP_LIMIT:
+            return tuple(path), [f"no terminal state in {STEP_LIMIT}"]
+        path.append(state)
+        section = sections.get(fragment)
+        if section is None or section.title != state:
+            return tuple(path), [f"the bundle heads no {state} section at #{fragment}"]
+        actions = ACTION.findall(section.text)
+        if len(actions) != 1:
+            return tuple(path), [f"the bundle's {state} states {len(actions)} actions"]
+        faults = []
+        if actions[0] != workflow.walked[state].action:
+            faults.append(
+                f"the bundle's {state} writes {actions[0]}, not"
+                f" {workflow.walked[state].action}"
+            )
+        stated = NEXT_PARAGRAPH.findall(section.text)
+        if len(stated) != 1:
+            return tuple(path), [
+                *faults,
+                f"the bundle's {state} states {len(stated)} transitions",
+            ]
+        transition = parse_transition(DIAGRAM, stated[0].strip())
+        if transition is None:
+            return tuple(path), faults
+        chosen = transition.then
+        if transition.condition is not None and not holds(
+            transition.condition, inputs, path
+        ):
+            chosen = transition.otherwise
+        targets = [
+            edge.target for edge in diagram.leaving(state) if edge.label == chosen
+        ]
+        if len(targets) != 1:
+            return tuple(path), [*faults, f"the bundle's {state} has no edge {chosen}"]
+        if faults:
+            return tuple(path), faults
+        state = targets[0]
+        linked = [
+            target
+            for text, target in FRAGMENT_LINK.findall(section.text)
+            if text == state
+        ]
+        fragment = (
+            linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
+        )
 
 
 def section_body(directory: Path, document: str, heading: str) -> str:

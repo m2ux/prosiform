@@ -232,7 +232,7 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 40
+    assert len(sessions) == 2 * 5 * 58
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -485,18 +485,24 @@ def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
 def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The budget covers every session at its cap, and half start at twice it."""
+    """The budget covers every session's cap, and each records twice its cap.
+
+    A session starts while the tokens recorded and its own cap fit, so the
+    run starts one more session than the budget, less one cap, holds at the
+    tokens each records.
+    """
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
     budget = 250 * len(sessions)
-    started = budget // 500
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1"),
         *("--budget-tokens", str(budget), "--session-budget-tokens", "250"),
     )
+    started = (budget - 250) // 500 + 1
+    assert started < len(sessions)
     assert record["started"] == started
-    assert record["tokens"] == budget
+    assert record["tokens"] == 500 * started
     assert len(seen(log)) == len(records(tmp_path)) == started
     not_started = record["not_started"]
     assert not_started == [
