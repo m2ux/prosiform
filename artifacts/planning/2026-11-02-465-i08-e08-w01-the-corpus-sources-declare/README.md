@@ -12,6 +12,8 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The preset reading's scope, design and the checks that observe it. |
+| [Validation](validation.md) | The tested revision and the result of each check the work item names. |
 
 ## Links
 
