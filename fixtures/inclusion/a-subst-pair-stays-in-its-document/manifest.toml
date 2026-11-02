@@ -1,0 +1,32 @@
+description = "A subst pair redirects only the links its declaring document writes: guide.md's {rules.md: stub.md} compiles stub.md for the guide's own link, while the index linking the guide, the notes the guide links and the substitute stub.md each keep the real rules.md, stub.md's fragment-only link names stub.md's own section, and guide.md's {stub.md: other.md} reaches no link stub.md writes, so other.md is never read and that pair warns unused."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Link classification and resource handling — Fragment-only links",
+  "Presets — default always applies",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["index.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/index.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "rules.md"
+resolved = "stub.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 8
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "stub.md"
