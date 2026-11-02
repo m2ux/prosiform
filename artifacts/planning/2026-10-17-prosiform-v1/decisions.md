@@ -742,4 +742,4 @@ With its own board, a single initiative named for the whole production compiler 
 
 **Caller Cut-Over starts with the build's first epics.** Its caller inventory needs nothing else, so it carries no whole-epic prerequisite and takes the highest priority with Differential Conformance. Its later rows wait on Corpus Migration and Release Distribution through their task edges.
 
-**Distribution's platforms and channel are open.** The recommendation is release assets for the platforms the workspace's agents run on, installed by one documented command, with a package registry left for a later decision.
+**The binary ships as a Linux x86_64 release asset.** Each tagged release carries it, and one documented command installs it as `pf`. A further platform is added when a caller needs it. A package registry was rejected: it needs a Rust toolchain on every caller and publishes the crate.
