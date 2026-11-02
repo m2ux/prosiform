@@ -1,0 +1,16 @@
+description = "One step composes the Inputs sections of two documents whose parents are both titled Call. They share one Inputs destination section, and each directive keeps a contribution of its own beneath it, both headed Call and told apart by the renderer's ordinal, so each directive's link points at its own contribution. The guide also links each target document whole, so each keeps its own file group beside its contribution."
+
+clauses = [
+  "Section composition — Contributions",
+  "Section composition — Matching",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

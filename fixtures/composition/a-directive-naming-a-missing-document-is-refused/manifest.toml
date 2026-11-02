@@ -1,0 +1,20 @@
+description = "A directive names a section of a Markdown path that holds no document, so its composition has no source to read; the run fails with a diagnostic naming the link and where it is written, and publishes no bundle."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "read.md#inputs"
+source = "guide.md:8"
+chain = ["guide.md", "read.md#inputs"]
