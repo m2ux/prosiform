@@ -14,11 +14,14 @@ This record holds its delivery of `AC7`: the work item, the validation evidence 
 | --- | --- |
 | [W00 work item](w00.md) | The spelling clause, the retired option and the pin move |
 | [Validation](validation.md) | T1 and T2 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I08:E03 Remove the Referrer](https://github.com/m2ux/prosiform/issues/449) |
+| Pull request | [#520](https://github.com/m2ux/prosiform/pull/520) |
+| Review pull request | [#521](https://github.com/m2ux/prosiform/pull/521) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
