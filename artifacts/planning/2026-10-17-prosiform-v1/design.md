@@ -137,6 +137,14 @@ prosiform:
 
 `pf` with no arguments prints the *guide* to standard output and exits `0`: what an agent needs before it compiles anything. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. The guide is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. No option prints it, and `-h` states that a bare `pf` does.
 
+### Conformance faults
+
+Some clauses state behaviour no source tree can produce: a source changing between capture and publication at Source consistency, an unexpected internal error at Exit status and JSON diagnostics, and an earlier set that cannot be removed once the new one stands at Validation and failure contract. A fixture describing one has no tree to write, so a run reads `PROSIFORM_FAULT` from its environment and performs the fault it names; the detection and the report remain the run's own. The variable is not an option: a caller has no reason to ask the tool to fail in itself, and the option surface states only what a caller may ask for.
+
+- **Values:** `source-changed` changes the bytes of a source the run captured before the recheck preceding publication; `internal` fails the run in itself; `cleanup-refused` leaves the earlier set unremovable once the new one stands.
+- **Absent:** A run whose environment carries no `PROSIFORM_FAULT` performs no fault.
+- **Unknown value:** A value outside the three is refused with `E_INVALID_USAGE` and exits 2, so a mistyped conformance setting fails rather than passing silently.
+
 ### Automatic output names
 
 Count distinct explicit selections after canonical file and fragment resolution. Repeated equivalent references count once; absent and empty fragments share whole-document identity. Distinct sections of one file, or a whole document and one of its sections, remain distinct entries even when coverage consolidates them.
