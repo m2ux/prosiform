@@ -39,6 +39,14 @@ it. A source link a contribution carries stands in every copy of that
 contribution, so a composition is identified by its *placing*: the
 directives whose compositions placed it, outermost first, its own last.
 
+A deferred directive keeps its place and contributes no content: it
+takes its destination section and contribution heading as an immediate
+one does, and the contribution carries one generated line naming the
+target by its heading text and by the path the run that composes it
+compiles. That run reads the target as an entry, so its body is
+validated there, its immediate directives compose and its deferred
+ones keep their own lines.
+
 A composition whose target section holds its own directive, or one
 on the placing that reached it, would compose that target again
 within itself without end, so it is refused, naming the closing
@@ -99,12 +107,15 @@ from prosiform.bundle import (
 )
 from prosiform.closure import (
     DECLARING,
+    INLINE_MARK,
     UNSUBSTITUTED,
     Declarations,
     Reference,
     Substitution,
-    bundled,
+    deferred,
     directive,
+    rebased,
+    resolvable,
 )
 from prosiform.dispatch import region_of
 from prosiform.limits import OUTPUT_BYTES, Limits
@@ -116,6 +127,7 @@ from prosiform.provenance import (
     Contributing,
     Emitted,
     Generated,
+    Instruction,
     Located,
     Origin,
     Part,
@@ -220,6 +232,8 @@ class Directive:
 
     The title is the target heading's visible text, which decides the
     destination section the directive shares with others in its scope.
+    A deferred directive's target is composed by the run its
+    contribution names rather than by this one.
     """
 
     target: Reference
@@ -227,6 +241,7 @@ class Directive:
     line: int | None
     at: Located
     title: str
+    deferred: bool = False
 
     def overflowing(self, heading: str, depth: int) -> Overflowing:
         """The refusal of a heading this directive would compose past H6."""
@@ -288,13 +303,7 @@ class Composing:
                 if not directive(plain_label(children, at)):
                     continue
                 written = str(child.attrGet(HREF) or "")
-                found = bundled(
-                    path,
-                    written,
-                    opening_text(children, at),
-                    self.declarations,
-                    self.substitution,
-                )
+                found = resolvable(path, written, self.declarations, self.substitution)
                 if found is None or found.fragment is None:
                     continue
                 named = self.parsed[found.path]
@@ -310,6 +319,7 @@ class Composing:
                     line,
                     (path, inline.map[0], here),
                     single_line(shows[id(chosen[0])]),
+                    deferred(opening_text(children, at)),
                 )
 
     def emit(self, text: str, generated: bool = False) -> None:
@@ -328,6 +338,22 @@ class Composing:
         self.emit(f"{ATX * one.level} {escaped(one.text)}", generated=True)
         self.parts.append(one)
         self.headings.append(one)
+
+    def activation(self, one: Directive) -> None:
+        """Emit the one line a deferred directive's contribution carries.
+
+        The line names the target by its visible heading text and by the
+        path a later run compiles it from, as a deferred link's
+        destination names it, so that run composes the body this one
+        withholds. Every pass emits it alike.
+        """
+        text = (
+            f"[{INLINE_MARK} {escaped(one.title)}]({rebased(one.target, one.written)})"
+        )
+        self.emit(text, generated=True)
+        self.parts.append(
+            Instruction(text, activates=(one.target.path, one.target.fragment))
+        )
 
     def contribute(
         self, one: Directive, depth: int, chain: tuple[Directive, ...]
@@ -355,6 +381,9 @@ class Composing:
         placed = tuple(each.at for each in placing)
         self.placed.setdefault(placed, contribution)
         self.heading(contribution)
+        if one.deferred:
+            self.activation(one)
+            return
         body = list(chosen[1:])
         by = depth - level(opening)
         source = self.read[path]
@@ -422,7 +451,13 @@ class Composing:
         self.flush(pending, holding, placing)
 
     def cycle(self, one: Directive, chain: tuple[Directive, ...]) -> None:
-        """Refuse a directive whose target holds it or a directive on its chain."""
+        """Refuse a directive whose target holds it or a directive on its chain.
+
+        A deferred directive composes nothing in this run, so it closes
+        no cycle.
+        """
+        if one.deferred:
+            return
         tokens = self.parsed[one.target.path]
         chosen = section(tokens, one.target.fragment or "") or ()
         start = (chosen[0].map or (0, 0))[0]
