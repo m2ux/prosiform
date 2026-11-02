@@ -1,0 +1,16 @@
+description = "A section title naming two of a linked document's presets as words selects both: the section Checks and Draft puts the Checks and Draft presets of rules.md in force, so rules.md joins Reviews and Drafts."
+
+clauses = [
+  "Presets — Selection by keyword",
+  "Presets — A document in several groups",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

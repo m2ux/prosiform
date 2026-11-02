@@ -1,0 +1,16 @@
+description = "A whole-document entry reads the presets of the file it names against that file's own title: the title Guide names no preset, so guide.md is compiled under its default, which joins it to Modes. Its Checks section titles content of guide.md, not the entry, so the Checks preset stays out of force."
+
+clauses = [
+  "Presets — A command-line entry reads the file it names",
+  "Presets — default always applies",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
