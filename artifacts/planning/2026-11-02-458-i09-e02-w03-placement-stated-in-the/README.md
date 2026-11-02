@@ -12,6 +12,7 @@ This record holds its delivery of `AC5`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03](w03.md) | The work item: the placement clause and nesting paragraph the invocation guide gains, and the checks that hold them |
 
 ## Links
 
