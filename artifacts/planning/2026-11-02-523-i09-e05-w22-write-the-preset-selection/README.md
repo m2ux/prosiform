@@ -16,6 +16,7 @@ This record holds its delivery of `AC23,AC24,AC25`: the work item, the validatio
 | [W23](../2026-11-02-463-i09-grouping-and-composition/e05/w23.md) | The work item for the `group` placement scenarios |
 | [W24](../2026-11-02-463-i09-grouping-and-composition/e05/w24.md) | The work item for the `subst` scenarios |
 | [Validation](validation.md) | How `make harness` reads each bundle's path, each permutation's arrangement, what each default cell proves, and the `make check` result |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 

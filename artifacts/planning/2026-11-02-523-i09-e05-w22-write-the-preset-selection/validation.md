@@ -63,4 +63,4 @@ Eighteen scenarios of ten workflows, 46 cells, 460 sessions at five repetitions;
 
 ## Arising
 
-A document reached under two presets stands in each group, as the design states, but the second group stands in the division of the document whose reference placed the document first, not of the one whose reference placed that group's first member, as *Grouping — Nested groups* states. Recorded as an issue of its own, since the build is outside this unit's change.
+A document reached under two presets stands in each group, as the design states, but the second group stands in the division of the document whose reference placed the document first, not of the one whose reference placed that group's first member, as *Grouping — Nested groups* states. Recorded as [#592](https://github.com/m2ux/prosiform/issues/592), since the build is outside this unit's change.
