@@ -12,6 +12,9 @@ This record holds its delivery of `AC10, AC14`: the work item, the validation ev
 
 | Artifact | What it holds |
 | --- | --- |
+| [W07](w07.md) | The work item: an entry reference compiled as the document it names. |
+| [W10](w10.md) | The work item: a heading outside the selection records no substitution. |
+| [Validation](validation.md) | The evidence for each check the work items name. |
 
 ## Links
 
