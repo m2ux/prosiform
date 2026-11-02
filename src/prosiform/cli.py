@@ -1453,6 +1453,18 @@ def reaching(selected: dict[str, list[Reference]]) -> dict[str, tuple[str, ...]]
     }
 
 
+def included(found: Sequence[Reference]) -> list[Reference]:
+    """Every reference that includes what it names: each one composing nothing.
+
+    A document only composition directives reach contributes its content
+    to their contributions alone: it stands in no file group, joins no
+    merged group and is carried nowhere else. A document an inclusion
+    also reaches keeps that inclusion, carrying what the inclusions
+    select, beside its contributions.
+    """
+    return [one for one in found if not one.composes]
+
+
 def selection(
     path: str,
     tokens: Sequence[Token],
@@ -1572,6 +1584,11 @@ def required(
     so a reference pointing back adds nothing to it and expands nothing
     twice.
 
+    A composition directive naming a section is a dependency like any
+    other, since the run reads what it composes, and it states that it
+    composes, so the bundle places its section beneath the directive's
+    scope rather than in a group of its own.
+
     The chain passed in is the one that reached this source, and every
     reference the source carries stands one hop beyond it. A reference
     refused here therefore reports the route the run followed to the
@@ -1604,7 +1621,11 @@ def required(
         if withholding(use.opening):
             continue
         occurrence = replace(
-            found, origin=at, chain=(*chain, identity(found)), title=use.title
+            found,
+            origin=at,
+            chain=(*chain, identity(found)),
+            title=use.title,
+            composes=found.fragment is not None and directive(use.label),
         )
         if not declarations.declares(occurrence):
             continue
@@ -1909,7 +1930,10 @@ def traverse(
     A dependency reaching a carried document and section from a section
     title no earlier dependency reached it from is carried all the same,
     because the title selects that document's presets and each reference
-    bundles the document under the selection it made. It joins the
+    bundles the document under the selection it made. So is one reaching
+    it by the other kind, a directive where an inclusion reached it or
+    an inclusion where a directive did, because the bundle places a
+    document's content by the references of each kind. It joins the
     references the run carries and not the frontier, since the content
     it selects is content the run already reads.
 
@@ -1956,7 +1980,7 @@ def traverse(
     captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
-    titled: set[tuple[str, str | None, str | None]] = set()
+    titled: set[tuple[str, str | None, str | None, bool]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
@@ -2050,9 +2074,9 @@ def traverse(
                 substitution,
             ):
                 verify_cached(root, one, captured)
-                if (one.path, one.fragment, one.title) in titled:
+                if (one.path, one.fragment, one.title, one.composes) in titled:
                     continue
-                titled.add((one.path, one.fragment, one.title))
+                titled.add((one.path, one.fragment, one.title, one.composes))
                 if (one.path, one.fragment) in seen:
                     reselecting.append(one)
                     continue
@@ -2488,12 +2512,12 @@ def parent_document(entries: Collection[Reference]) -> str | None:
 def placement(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
-    selected: Mapping[str, list[Reference]],
+    found: Sequence[Reference],
     entries: Collection[Reference],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[dict[str, list[Reference]], dict[str, str]]:
-    """Each document the bundle carries, in the order a reference first names it.
+    """Each document the bundle includes, in the order a reference first names it.
 
     The entry references are read first, in the order the invocation
     gives them, and then the selected content of each placed document,
@@ -2504,23 +2528,51 @@ def placement(
     from an entry reference by a chain of the links read here, so the
     order covers them all.
 
-    The second mapping names, for each document a link placed, the
-    document that link is written in. An entry is placed by the
-    invocation rather than by a document, so it is absent there.
+    A composition directive places nothing: the section it names is
+    content of the document whose group carries the directive, so that
+    section is read where the directive is written, once, and a link
+    it carries places a document as one its scope's document writes. A
+    directive inside a contribution composes nothing, so it is the
+    inclusion its link is, and the section it names joins its document's
+    selection.
+
+    The first mapping holds the references including each document,
+    as `included` keeps them, with each such directive beside them. The
+    second names, for each document a link placed, the document whose
+    group carries that link. An entry is placed by the invocation
+    rather than by a document, so it is absent there.
     """
+    selected = contributing(included(found))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
     placers: dict[str, str] = {}
+    composed: set[tuple[str, str | None]] = set()
+
+    def place(path: str, chosen: Selection | None, holder: str, inside: bool) -> None:
+        for one in required(
+            path, read[path], parsed[path], chosen, (), declarations, substitution
+        ):
+            named = parsed[one.path]
+            if one.composes and not inside:
+                if (one.path, one.fragment) not in composed:
+                    composed.add((one.path, one.fragment))
+                    section_of = selection(one.path, named, [one], entries)
+                    place(one.path, section_of, holder, True)
+                continue
+            if one.composes:
+                one = replace(one, composes=False)
+                selected.setdefault(one.path, []).append(one)
+                if one.path in order:
+                    widened = selection(one.path, named, [one], entries)
+                    place(one.path, widened, one.path, False)
+            if one.path in selected and one.path not in order:
+                order.append(one.path)
+                placers[one.path] = holder
+
     at = 0
     while at < len(order):
         path = order[at]
         at += 1
-        chosen = selection(path, parsed[path], selected[path], entries)
-        for one in required(
-            path, read[path], parsed[path], chosen, (), declarations, substitution
-        ):
-            if one.path in selected and one.path not in order:
-                order.append(one.path)
-                placers[one.path] = path
+        place(path, selection(path, parsed[path], selected[path], entries), path, False)
     return {path: selected[path] for path in order}, placers
 
 
@@ -2614,6 +2666,7 @@ def assembled(
     assigned: dict[tuple[str, str | None], str] | None,
     joins: Mapping[str, Sequence[Membership]],
     placers: Mapping[str, str],
+    chains: Mapping[str, Sequence[str]],
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
@@ -2661,7 +2714,7 @@ def assembled(
         if holder is not None:
             nested.setdefault(holder, []).append(division)
     built: dict[Division, Group] = {}
-    with assembling(reaching(selected)):
+    with assembling(chains):
         for division in order:
             path, grouped = division
             if grouped:
@@ -2842,9 +2895,13 @@ def compose(
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
-    The candidate is one group per source, and it opens on the first
-    group's first part. The warnings name the generated headings that
-    coincide, which accompany the bundle rather than refuse it.
+    The candidate holds the groups each included source takes, and it
+    opens on the first group's first part. A source only composition
+    directives reach takes none: its content stands in their
+    contributions. A diagnostic names the route the run followed to a
+    source, whichever kind of reference reached it. The warnings name
+    the generated headings that coincide, which accompany the bundle
+    rather than refuse it.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -2867,11 +2924,11 @@ def compose(
     an authored heading equal to one pf emits, are refused as input
     failures too.
     """
-    selected = contributing(found)
-    joins = joined(read, parsed, selected, entries)
+    chains = reaching(contributing(found))
     selected, placers = placement(
-        read, parsed, selected, entries, declarations, substitution
+        read, parsed, found, entries, declarations, substitution
     )
+    joins = joined(read, parsed, selected, entries)
     try:
         built, contributed = assembled(
             read,
@@ -2882,6 +2939,7 @@ def compose(
             None,
             joins,
             placers,
+            chains,
             None,
             declarations,
             substitution,
@@ -2910,6 +2968,7 @@ def compose(
         targets,
         joins,
         placers,
+        chains,
         dispatching,
         declarations,
         substitution,
@@ -2939,7 +2998,7 @@ def compose(
             composing,
         )
     except Unsafe as boundary:
-        reached = reaching(selected).get(boundary.path or "", ())
+        reached = chains.get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
     return bundled, coincident(
         groups, selected, joins, read, parsed, declarations, substitution

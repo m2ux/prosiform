@@ -1,0 +1,16 @@
+description = "A dispatch inside a contribution whose document no group carries takes a sub-section of its own beneath the composed section holding it: the read document's Inputs, reached only by a directive, dispatches the report, so its sub-section stands one level below the Read contribution and the link points at it, while the guide's own dispatch in Prepare keeps its sub-section after the destination sections."
+
+clauses = [
+  "Section composition — Inline-only targets",
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/log.bundle.md", "expected/report.bundle.md"]
+diagnostics = []

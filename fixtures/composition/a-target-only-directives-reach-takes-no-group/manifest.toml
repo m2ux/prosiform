@@ -1,0 +1,15 @@
+description = "Documents only composition directives reach contribute their content to their contributions alone: the guide composes the Inputs of the read and write documents, so neither stands in a file group of its own, the write document's group pair places it in no merged group, and the read document's Outputs, which nothing includes, is carried nowhere."
+
+clauses = [
+  "Section composition — Inline-only targets",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
