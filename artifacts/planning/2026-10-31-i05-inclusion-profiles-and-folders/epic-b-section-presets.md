@@ -60,10 +60,10 @@ A document's declaration is flat, and a run is one set of options for every comp
 | [W03](https://github.com/m2ux/prosiform/pull/511) | `exclude` and `path-sub` entry shapes | AC14 | W02 | | ✓ |
 | [W04](https://github.com/m2ux/prosiform/pull/512) | Selecting a preset by keyword, and `default` | AC2, AC3, AC4 | W03, [I08:E00:W03](https://github.com/m2ux/prosiform/issues/434) | | ✓ |
 | [W09](https://github.com/m2ux/prosiform/pull/513) | `subst` holds colon pairs | AC15 | W04 | | ✓ |
-| W10 | Matched presets union, and a disagreement is refused | AC5, AC16 | W09 | | |
-| W11 | A preset nothing applied warns | AC6, AC7 | W10 | | |
+| [W10](https://github.com/m2ux/prosiform/pull/514) | Matched presets union, and a disagreement is refused | AC5, AC16 | W09 | | ✓ |
+| W11 | A preset nothing applied warns | AC6, AC7 | W10 | W13 | |
 | W12 | A deferred target keeps its preset | AC8 | W10 | | |
-| W13 | The invocation and source page state presets | AC9, AC10 | W11 | | |
+| W13 | The invocation and source page state presets | AC9, AC10 | W10 | W11 | |
 
 ## Acceptance Criteria
 
@@ -71,7 +71,7 @@ A document's declaration is flat, and a run is one set of options for every comp
 - [x] **AC2.** A linked document is governed by its own presets whose names appear as words in the title of the section that links it, matched case-insensitively and as whole words, so a title `Checks and Draft` selects both presets and `Checklist` selects neither, as the corpus fixtures `fixtures/inclusion/a-section-title-selects-its-preset`, `fixtures/inclusion/a-title-matching-two-keywords-selects-both` and `fixtures/inclusion/a-presets-pairs-reach-the-reference-it-governs` show.
 - [x] **AC3.** Each document's own `default` applies wherever that document is compiled, and a keyword match layers above it rather than replacing it, as the corpus fixtures `fixtures/inclusion/default-applies-in-every-section` and `fixtures/inclusion/a-section-matching-no-preset-selects-default` show.
 - [x] **AC4.** A command-line entry reads the presets of the file it names — a whole-document entry matching against that document's own title heading, and a section entry against the section it names — as the corpus fixtures `fixtures/inclusion/a-whole-document-entry-selects-default` and `fixtures/inclusion/an-entry-name-reads-its-documents-presets` show.
-- [ ] **AC5.** Matched presets union their settings, and a document's presets govern only that document's content — a linked document is governed by its own `default` and its own selected presets, never by the linking document's — as the corpus fixtures `fixtures/inclusion/a-preset-governs-its-own-document` and `fixtures/inclusion/a-dependencys-preset-comes-from-itself` show.
+- [x] **AC5.** Matched presets union their settings, and a document's presets govern only that document's content — a linked document is governed by its own `default` and its own selected presets, never by the linking document's — as the corpus fixtures `fixtures/inclusion/a-preset-governs-its-own-document` and `fixtures/inclusion/a-dependencys-preset-comes-from-itself` show.
 - [ ] **AC6.** A preset no site matched raises `W_PRESET_UNUSED` naming the document and the preset, and the run publishes with exit status `0`, as the corpus fixture `fixtures/inclusion/an-unused-preset-warns` shows.
 - [ ] **AC7.** A preset on a document reached only through a deferral raises no warning, and the run that compiles the deferral reads it then, as the corpus fixture `fixtures/inclusion/a-deferred-target-keeps-its-preset` shows.
 - [ ] **AC8.** A document declaring several presets is governed by the one its calling section's title selects for each reference, so one run reaching it twice may use two, as the corpus fixture `fixtures/inclusion/one-document-two-presets` shows.
@@ -82,7 +82,7 @@ A document's declaration is flat, and a run is one set of options for every comp
 - [x] **AC13.** `group-depth` holds a list of single-entry mappings, one document may join several divisions at different depths, a document's selected preset supplies the pairs that place its own sections, and a mapping entry holding two keys or a non-string key is refused, as the corpus fixtures `fixtures/inclusion/a-document-joins-two-divisions` and `fixtures/inclusion/a-malformed-group-entry-is-refused` show. The order composed results merge in is [I09:E02](https://github.com/m2ux/prosiform/issues/458)'s rule.
 - [x] **AC14.** `exclude` holds bare section names and single-entry name-to-level mappings in one list, and a mapping entry holding two keys, a non-string key or a level outside one through six is refused naming the entry, as the corpus fixtures `fixtures/inclusion/an-exclude-list-holds-names-and-levels` and `fixtures/inclusion/a-malformed-exclude-entry-is-refused` show. The level telling a repeated heading apart is [I08:E02](https://github.com/m2ux/prosiform/issues/445)'s AC6.
 - [x] **AC15.** `subst` holds single-entry mappings from an original reference to its alternative, each side read by the reference grammar, and an entry that is not a single-entry mapping is refused naming the entry, as the corpus fixtures `fixtures/inclusion/a-subst-entry-is-a-colon-pair` and `fixtures/inclusion/a-subst-side-is-read-by-the-reference-grammar` show.
-- [ ] **AC16.** Two matched presets disagreeing about one setting, two entries in one preset naming one division, two `subst` entries normalising to one identity, a `subst` key and value normalising to one identity, and a `subst` key naming a section alone, as `#section` does, are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/two-presets-disagreeing-are-refused`, `fixtures/inclusion/a-duplicate-subst-entry-is-refused` and `fixtures/inclusion/a-section-only-subst-key-is-refused` show.
+- [x] **AC16.** Two matched presets disagreeing about one setting, two entries in one preset naming one division, two `subst` entries normalising to one identity, a `subst` key and value normalising to one identity, and a `subst` key naming a section alone, as `#section` does, are each invalid usage with exit status `2`, as the corpus fixtures `fixtures/inclusion/two-presets-disagreeing-are-refused`, `fixtures/inclusion/a-duplicate-subst-entry-is-refused` and `fixtures/inclusion/a-section-only-subst-key-is-refused` show.
 
 ## References
 

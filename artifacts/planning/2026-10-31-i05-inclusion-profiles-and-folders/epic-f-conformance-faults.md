@@ -6,30 +6,40 @@ The fault a run performs on itself moves from `-x` to `PROSIFORM_FAULT`. The opt
 
 A shipped flag exists only for tests, and every surface presents it as a feature.
 
-- **It sits among the options.** `pf -h` lists `-x {source-changed,internal,cleanup-refused}` beside `-o` and `-c`, where a reader has no reason not to try it.
-- **The documented table states it.** `invocation.md` carries a row for it, and `make invocation` holds that table to the help output, so the option is presented as part of the contract a caller may use.
-- **Nothing in a real run wants it.** A caller has no reason to ask the tool to fail in itself, to change a source's bytes, or to refuse its own cleanup. The only consumer is the corpus.
-- **The corpus already abstracts it.** A manifest declares `fault = "internal"` and `runner.py` translates that into the command line, so the build's way of receiving the fault is already separated from how a fixture states it.
+- **It sits among the options.**
+  `pf -h` lists `-x {source-changed,internal,cleanup-refused}` beside `-o` and `-c`, where a reader has no reason not to try it.
+- **The documented table states it.**
+  `invocation.md` carries a row for it, and `make invocation` holds that table to the help output, so the option is presented as part of the contract a caller may use.
+- **Nothing in a real run wants it.**
+  A caller has no reason to ask the tool to fail in itself, to change a source's bytes, or to refuse its own cleanup. The only consumer is the corpus.
+- **The corpus already abstracts it.**
+  A manifest declares `fault = "internal"` and `runner.py` translates that into the command line, so the build's way of receiving the fault is already separated from how a fixture states it.
 
 ## Proposal
 
-- **The variable is the only channel.** `PROSIFORM_FAULT` holds one fault name, and the run reads it where `options.fault` was read. `-x` is removed from the parser, the help output and the option table.
-- **The runner sets it.** `runner.py` reads a manifest's `fault` field and passes it as an environment variable beside the working directory it already controls, so no fixture changes.
-- **The three faults are unchanged.** `source-changed`, `internal` and `cleanup-refused` keep their names, their positions and their effects.
-- **The contract states it in a section of its own.** The design gains a *Conformance faults* section rather than an option row: what the variable holds, that a run without it performs no fault, and that the mechanism exists so clauses no source tree can reach carry fixtures.
-- **An unrecognized value is refused.** A variable holding anything but the three names fails as invalid usage, so a mistyped conformance setting is a fault rather than a silent pass.
-- **`make invocation` loses the comparison for it.** The row goes with the option, so the two-way check no longer has it to compare — which is the point: it stops being presented as an option.
+- **The variable is the only channel.**
+  `PROSIFORM_FAULT` holds one fault name, and the run reads it where `options.fault` was read. `-x` is removed from the parser, the help output and the option table.
+- **The runner sets it.**
+  `runner.py` reads a manifest's `fault` field and passes it as an environment variable beside the working directory it already controls, so no fixture changes.
+- **The three faults are unchanged.**
+  `source-changed`, `internal` and `cleanup-refused` keep their names, their positions and their effects.
+- **The contract states it in a section of its own.**
+  The design gains a *Conformance faults* section rather than an option row: what the variable holds, that a run without it performs no fault, and that the mechanism exists so clauses no source tree can reach carry fixtures.
+- **An unrecognized value is refused.**
+  A variable holding anything but the three names fails as invalid usage, so a mistyped conformance setting is a fault rather than a silent pass.
+- **`make invocation` compares no row for it.**
+  The option has no row, so the two-way check has nothing to compare, and the variable is not presented as an option.
 
 ## Work Breakdown
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, the variable and the pin | AC7 | | | |
-| W01 | The parser and the run reading the variable | AC1, AC6 | W00 | | |
-| W02 | The runner setting it from a manifest | AC2 | W01 | | |
-| W03 | The option table and the help output | AC3 | W01 | | |
-| W04 | The declaration the corpus carries | AC4 | W02 | | |
-| W05 | The three fixtures unchanged | AC5 | W02 | | |
+| W01 | The parser and the run reading the variable | AC1, AC6 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434) | W02, W03, W04, W05 | |
+| W02 | The runner setting it from a manifest | AC2 | W00 | W01, W03, W04, W05 | |
+| W03 | The option table and the help output | AC3 | W00 | W01, W02, W04, W05 | |
+| W04 | The declaration the corpus carries | AC4 | W00 | W01, W02, W03, W05 | |
+| W05 | The three fixtures unchanged | AC5 | W00 | W01, W02, W03, W04 | |
 
 ## Acceptance Criteria
 
@@ -43,5 +53,4 @@ A shipped flag exists only for tests, and every surface presents it as a feature
 
 ## References
 
-- **R0.** Epic — [I08:E04 Conformance Faults](https://github.com/m2ux/prosiform/issues/450).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions this change comes from.

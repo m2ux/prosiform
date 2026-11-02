@@ -47,16 +47,17 @@ The option is a second channel for one thing.
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
 | W00 | Design clause, retired option | AC13 | | | |
-| W01 | The option's removal and the preset read | AC1, AC2 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434), [I08:E01:W09](https://github.com/m2ux/prosiform/issues/436) | | |
-| W02 | The declared-file path basis | AC3 | W01 | | |
-| W03 | The corpus rewritten to presets | AC4 | W01 | | |
-| W04 | The option's documented row withdrawn | AC5 | W03 | | |
-| W05 | A reference under no `subst`, and the table | AC6, AC7 | W02 | | |
-| W06 | A pair reaches only its own document's links | AC8, AC9 | W01 | | |
-| W07 | An entry reference is compiled as named | AC10 | W01 | | |
-| W08 | The folder pair retires | AC11 | W01 | | |
-| W09 | The example scenarios state their stand-ins in presets | AC12 | W03 | | |
-| W10 | A heading outside the selection records no substitution | AC14 | W01 | | |
+| W01 | The preset `subst` read beside `-m` | AC2 | W00, [I08:E00:W00](https://github.com/m2ux/prosiform/issues/434), [I08:E01:W09](https://github.com/m2ux/prosiform/issues/436) | | |
+| W02 | The declared-file path basis | AC3 | W01 | W06, W08 | |
+| W03 | The corpus rewritten to presets | AC4 | W02 | W04, W05, W09, W11 | |
+| W04 | The option's documented row withdrawn | AC5 | W02 | W03, W05, W09, W11 | |
+| W05 | A reference under no `subst`, and the table | AC6, AC7 | W02 | W03, W04, W09, W11 | |
+| W06 | A pair reaches only its own document's links | AC8, AC9 | W01 | W02, W08 | |
+| W07 | An entry reference is compiled as named | AC10 | W01 | W10 | |
+| W08 | The folder pair retires | AC11 | W01 | W02, W06 | |
+| W09 | The example scenarios state their stand-ins in presets | AC12 | W02 | W03, W04, W05, W11 | |
+| W10 | A heading outside the selection records no substitution | AC14 | W01 | W07 | |
+| W11 | `-m` retires with the corpus it carried | AC1 | W02 | W03, W04, W05, W09 | |
 
 ## Acceptance Criteria
 

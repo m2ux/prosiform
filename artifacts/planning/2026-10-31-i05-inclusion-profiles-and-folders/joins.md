@@ -4,12 +4,22 @@ Which rows share a pull request, which epic edges order the work, and how the ep
 
 ## Within an epic
 
-Rows of one epic extending one component are candidates to share a pull request. Each candidate unit is named below on one line with why its rows stay split.
+Each epic task pull request must pass `make check` alone, so a row retiring an option joins the rows that rewrite the fixtures and the option table using it. Joined units take one pull request each:
+
+- **E01:W11, E01:W13**: the unused-preset warning and the pages that state presets.
+- **E02:W02, E02:W05**: an excluded section's closure and the emptied refusal.
+- **E02:W04, E02:W06**: the level grammar and the preset carrying the filters.
+- **E03:W01, E03:W02, E03:W03, E03:W04**: the referrer option, the name derived without it, the corpus and the table, which fail apart.
+- **E04:W01, E04:W02, E04:W03, E04:W04, E04:W05**: the fault option, the runner setting the variable, the table and the corpus, which fail apart.
+- **E05:W01, E05:W03, E05:W04, E05:W05**: the budget option, the corpus, the table and the refusals, which fail apart.
+- **E06:W02, E06:W06, E06:W08**: the declared-file basis, a pair's reach and the folder refusal, all in `closure.py`.
+- **E06:W07, E06:W10**: an entry compiled as named, and a heading outside the selection.
+- **E06:W03, E06:W04, E06:W05, E06:W09, E06:W11**: `-m` retires with the corpus, scenarios and table that carried it; W01 reads the preset `subst` beside `-m` first, so every unit lands green.
+
+The dependency checker's remaining candidate units stay split:
 
 - **E02:W01, E02:W02, E02:W03, E02:W05** stay split by rule: together they cover seven criteria, above the bound of six for one pull request.
-- **E03:W01, E03:W02** stay split: W02 derives the run name through the parser W01 lands, and each row carries its own criterion and fixture family.
 - **E06:W01, E06:W07** stay split: W07 compiles an entry as named through the preset channel W01 installs, and each row carries its own criterion and fixture family.
-- **E06:W02, E06:W06, E06:W08** stay split: the declared-file path basis, a pair's reach and the folder refusal are three behaviours with their own criteria and fixtures, and one change to `closure.py` each keeps every refusal reviewable alone.
 
 ## Across epics
 
