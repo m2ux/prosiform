@@ -42,16 +42,16 @@ from prosiform.cli import (
 )
 from prosiform.closure import Reference
 from prosiform.composition import contributions
-from prosiform.limits import NESTING
+from prosiform.limits import NESTING, in_force
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     FILENAME_WRAPPER,
     PROSIFORM_SECTION,
     Ancestor,
     Carried,
+    Contributing,
     Generated,
     Instruction,
-    Located,
     Origin,
     Range,
     Record,
@@ -72,7 +72,7 @@ class Built:
     targets: dict[tuple[str, str | None], str]
     read: dict[str, Source]
     parsed: dict[str, list[Token]]
-    composing: dict[Located, str]
+    composing: Contributing
 
     def validate(self) -> None:
         """Run the validation pass over this candidate as a compilation does."""
@@ -128,6 +128,7 @@ def built(
         {path: () for path in selected},
         {},
         {},
+        in_force({}),
     )
     assigned = fragments([one for each in headed for one in each.headings])
     targets = destination_map(headed, assigned)
@@ -142,6 +143,7 @@ def built(
         {path: () for path in selected},
         {},
         {},
+        in_force({}),
         composing=composing,
     )
     bundled = assemble(groups)
@@ -239,12 +241,15 @@ def test_a_candidate_carrying_composed_sections_validates() -> None:
     one = built({"guide.md": COMPOSING, "note.md": HEADED}, ["guide.md"])
     one.validate()
     assert one.bundled.count("The detail the note holds.") == 3
-    assert len(one.composing) == 2
+    assert len(one.composing[()]) == 2
 
 
 def test_a_directive_pointing_at_another_heading_fails() -> None:
     one = built({"guide.md": COMPOSING, "note.md": HEADED}, ["guide.md"])
-    one.composing = {link: one.assigned[0] for link in one.composing}
+    one.composing = {
+        placing: {link: one.assigned[0] for link in links}
+        for placing, links in one.composing.items()
+    }
     assert refused(one).invariant == TARGET_INTEGRITY
 
 

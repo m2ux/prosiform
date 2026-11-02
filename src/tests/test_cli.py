@@ -4128,53 +4128,54 @@ def test_every_click_on_one_line_is_followed(root: Path) -> None:
     assert "\n# Two\n" in run.bundle
 
 
-def test_a_directive_inside_a_contribution_includes_its_target(root: Path) -> None:
-    """A directive a contribution carries composes nothing, so its target is included.
-
-    The contribution carries the link as an ordinary one, so the section
-    it names stands in its document's file group for the link to reach,
-    while the section only the outer directive reaches takes none.
-    """
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Prepare\n\nRead [→](read.md#inputs).\n",
-    )
-    written(
-        root, "read.md", DECLARED + "# Read\n\n## Inputs\n\nNote [→](extra.md#notes).\n"
-    )
-    written(root, "extra.md", DECLARED + "# Extra\n\n## Notes\n\nA note.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert run.bundle == (
-        "# Guide\n\n## Prepare\n\nRead [→](#read).\n\n### Inputs\n\n#### Read\n\n"
-        "Note [→](#notes).\n\n# Extra\n\n### Notes\n\nA note.\n"
-    )
-
-
-def test_a_directive_inside_a_contribution_widens_a_placed_document(
+def test_a_cycle_of_directives_names_each_earlier_directive_as_related(
     root: Path,
 ) -> None:
-    """A section a placed document gains this way is read for the links it carries."""
+    """The closing directive is the location; each earlier one is related."""
     written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\n## Before\n\nSee [other](extra.md#other) "
-        "and [the step](step.md).\n",
+        root, "guide.md", DECLARED + "# Guide\n\n## Prepare\n\nDo [→](plan.md#steps).\n"
     )
     written(
-        root, "step.md", DECLARED + "# Step\n\n## Do\n\nRead [→](read.md#inputs).\n"
-    )
-    written(
-        root, "read.md", DECLARED + "# Read\n\n## Inputs\n\nNote [→](extra.md#notes).\n"
+        root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nDo [→](review.md#checks).\n"
     )
     written(
         root,
-        "extra.md",
-        DECLARED + "# Extra\n\n## Other\n\nElse.\n\n## Notes\n\nSee [far](far.md).\n",
+        "review.md",
+        DECLARED + "# Review\n\n## Checks\n\nDo [→](plan.md#steps).\n",
     )
-    written(root, "far.md", DECLARED + "# Far\n\nAway.\n")
-    run = invoke("guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert "\n### Notes\n\nSee [far](#far).\n" in run.bundle
-    assert run.bundle.endswith("\n# Far\n\nAway.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["location"] == {"file": "review.md", "line": 8, "column": 1}
+    assert [(one["file"], one["line"]) for one in reported["related"]] == [
+        ("guide.md", 8),
+        ("plan.md", 8),
+    ]
+
+
+def test_a_multiplying_composition_fails_before_it_is_whole(root: Path) -> None:
+    """The output budget is held as each contribution is composed.
+
+    The figure the crossing reports stands below the bytes the whole
+    bundle carries, so the run stopped at the first emission crossing it.
+    """
+    many = ", ".join(["[→](call.md#steps)"] * 4)
+    calls = ", ".join(["[→](read.md#inputs)"] * 4)
+    written(root, "guide.md", DECLARED + f"# Guide\n\nRun {many}.\n")
+    written(root, "call.md", DECLARED + f"# Call\n\n## Steps\n\nRead {calls}.\n")
+    written(
+        root, "read.md", DECLARED + "# Read\n\n## Inputs\n\n" + "A path. " * 40 + "\n"
+    )
+    whole = invoke("guide.md", cwd=root)
+    assert whole.status == SUCCESS, whole.stderr
+    size = len(whole.bundle.encode())
+    run = invoke(
+        "-d", "json", "--budget", f"output-bytes={size // 2}", "guide.md", cwd=root
+    )
+    assert run.status == INPUT_FAILURE
+    [reported] = run.diagnostics()
+    assert reported["code"] == RESOURCE_LIMIT
+    counted = int(reported["message"].split("reached ")[1].split(" ")[0])
+    assert size // 2 < counted < size

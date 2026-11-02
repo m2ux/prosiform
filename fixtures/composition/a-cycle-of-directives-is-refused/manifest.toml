@@ -1,0 +1,26 @@
+description = "Two sections composing one another through a chain of directives would expand without end, so the run publishes nothing and fails, naming the directive that closes the cycle and the chain of sections from the entry."
+
+clauses = [
+  "Section composition — Composition cycles",
+  "Section composition — Nested directives",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "plan.md#steps"
+source = "review.md:8"
+chain = ["guide.md", "plan.md#steps", "review.md#checks", "plan.md#steps"]
+
+[expected.diagnostics.location]
+file = "review.md"
+line = 8
+column = 1

@@ -93,6 +93,7 @@ from prosiform.provenance import (
     PROSIFORM_SECTION,
     Ancestor,
     Carried,
+    Contributing,
     Emitted,
     Generated,
     Instruction,
@@ -1229,7 +1230,7 @@ def dispatches(
 
 def contributions(
     reached: Mapping[str, tuple[Record, Emitted]],
-    composing: Mapping[Located, str],
+    composing: Contributing,
 ) -> None:
     """Hold each composing link's destination to a contribution heading.
 
@@ -1237,7 +1238,9 @@ def contributions(
     composing link's destination is held to is the kind of heading it
     reaches.
     """
-    for (path, line, _at), destination in composing.items():
+    for (path, line, _at), destination in (
+        each for links in composing.values() for each in links.items()
+    ):
         found = reached.get(destination)
         if found is None or not (
             isinstance(found[1], Generated) and found[1].kind == CONTRIBUTION_HEADING
@@ -1286,7 +1289,7 @@ def validate(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-    composing: Mapping[Located, str] | None = None,
+    composing: Contributing | None = None,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
@@ -1342,7 +1345,7 @@ def validate(
             declarations,
             served.get((carried.path, carried.lines[0]), {}),
             substitution,
-            {} if carried.composed else contributing,
+            contributing.get(carried.placing, {}),
         )
         preserved(
             carried.path,
