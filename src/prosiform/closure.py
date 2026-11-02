@@ -311,6 +311,15 @@ class Substitution:
         """This mapping with each document's governing pairs, sharing its record."""
         return replace(self, documents=documents)
 
+    def unrecorded(self) -> "Substitution":
+        """This mapping, recording what it serves apart from the run's record.
+
+        A caller reading what a link shows rather than compiling it asks
+        through this, so what it resolves serves no key and states no
+        substitution the run performed.
+        """
+        return replace(self, redirects=Redirects())
+
     def writing(self, document: str) -> "Substitution":
         """The mapping in force for the links one document writes.
 
