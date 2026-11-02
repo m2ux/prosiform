@@ -5,6 +5,7 @@ clauses = [
   "Section composition — Operator marks",
   "Section composition — The destination scope",
   "Link classification and resource handling — The deferral mark",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

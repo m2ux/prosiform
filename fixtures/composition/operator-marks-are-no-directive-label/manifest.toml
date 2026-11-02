@@ -1,10 +1,11 @@
-description = "The lone deferral mark, the inline mark and a deferral mark with no blank after it open no operator and request no placement, so each is an ordinary link in the preamble, carried with its text as written."
+description = "Each operator mark alone — the deferral, dispatch and parallel dispatch marks and the inline mark — and a deferral mark with no blank after it open no operator and request no placement, so each is an ordinary link in the preamble, carried with its text as written."
 
 clauses = [
   "Section composition — Operator marks",
   "Link classification and resource handling — The deferral mark",
   "Explicitly linked source structure — Explicit dependencies",
   "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

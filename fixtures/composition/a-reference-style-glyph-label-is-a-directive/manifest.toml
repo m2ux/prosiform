@@ -3,6 +3,7 @@ description = "A shortcut reference link qualifies as an inline one does, so a r
 clauses = [
   "Section composition — Recognition",
   "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

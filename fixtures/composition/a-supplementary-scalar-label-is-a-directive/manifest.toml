@@ -3,6 +3,7 @@ description = "A label of one scalar outside the basic multilingual plane is one
 clauses = [
   "Section composition — Recognition",
   "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

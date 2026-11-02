@@ -2,6 +2,7 @@ description = "A link written inside a code span and bracketed text no definitio
 
 clauses = [
   "Section composition — Recognition",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

@@ -3,6 +3,7 @@ description = "A deferred link whose label, once the deferral mark is set aside,
 clauses = [
   "Section composition — Operator marks",
   "Link classification and resource handling — The deferral mark",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

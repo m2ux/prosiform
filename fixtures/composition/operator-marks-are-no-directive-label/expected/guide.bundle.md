@@ -1,4 +1,4 @@
-Read [¬](#output), [↳](#output) and [¬→](#output) before the guide.
+Read [¬](#output), [⇉](#output), [⫽](#output), [↳](#output) and [¬→](#output) before the guide.
 
 # Guide
 

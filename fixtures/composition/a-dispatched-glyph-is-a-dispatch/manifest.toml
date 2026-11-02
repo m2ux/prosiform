@@ -3,6 +3,7 @@ description = "Only the deferral mark is set aside before recognition, so a link
 clauses = [
   "Section composition — Operator marks",
   "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

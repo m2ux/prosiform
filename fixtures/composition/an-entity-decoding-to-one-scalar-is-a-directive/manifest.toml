@@ -3,6 +3,7 @@ description = "A label written as an entity is read once the entity is decoded, 
 clauses = [
   "Section composition — Recognition",
   "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]

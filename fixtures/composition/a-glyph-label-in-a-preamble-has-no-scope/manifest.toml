@@ -3,6 +3,7 @@ description = "A link whose label is one scalar above U+007F is a composition di
 clauses = [
   "Section composition — Recognition",
   "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]
