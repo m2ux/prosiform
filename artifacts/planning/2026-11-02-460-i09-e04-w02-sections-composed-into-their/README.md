@@ -12,6 +12,7 @@ This record holds its delivery of `AC3, AC4`: the work item, the validation evid
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The composition pass, its provenance, the directive anchor and visible labels |
 
 ## Links
 
