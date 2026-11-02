@@ -45,15 +45,15 @@ Each budget fails the run rather than truncating a bundle, and holds per bundle.
 
 ## Examples
 
-Run from the repository root; [worked examples](example/README.md) show input and output.
+Run from the repository root, over the source tree of the [corpus fixture](fixtures/cli/several-entries-joined-into-one-name/manifest.toml) that records the joined run's bundle.
 
 ```bash
-cd example/work-planner
-pf modes/plan-mode.md
-pf 'artifacts/epic.md#delivery-findings'
-pf -o build modes/plan-mode.md
-pf modes/plan-mode.md 'artifacts/epic.md#delivery-findings'
-pf -c modes/plan-mode.md
+cd fixtures/cli/several-entries-joined-into-one-name/source
+pf notes/rules.md
+pf 'guide.md#run'
+pf -o build notes/rules.md
+pf notes/rules.md 'guide.md#run'
+pf -c notes/rules.md
 ```
 
 ## Conversion metadata

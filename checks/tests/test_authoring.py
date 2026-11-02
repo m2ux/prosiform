@@ -116,4 +116,3 @@ def test_worked_commands_name_files_this_repository_holds() -> None:
                 assert (cwd / name).is_file(), f"{document.relative_to(ROOT)}: {name}"
                 checked += 1
     assert checked > 0
-
