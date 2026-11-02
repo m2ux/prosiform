@@ -24,6 +24,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **region** | A contiguous span of a source document selected for inclusion: a whole document, or a section. |
 | **preamble** | Content above a source document's first heading. It belongs to no section, so only a whole-document selection carries it. |
 | **frontmatter** | A leading delimited YAML block, validated and retained as source metadata, excluded from Markdown content and dependency discovery. |
+| **preset** | A named mapping of conversion settings a document declares in `prosiform` to govern its own content: `default` is always in force, and each other preset is in force where its name is a word of the title of the section holding the link that reaches the document. Distinct from the profile, the grammar a run implements. |
 
 ## References
 
