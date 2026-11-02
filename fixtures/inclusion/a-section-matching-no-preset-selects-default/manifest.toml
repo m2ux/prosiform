@@ -1,0 +1,16 @@
+description = "A section title naming none of a linked document's presets leaves it under its default alone: the section Other selects no preset of rules.md, so rules.md joins Modes, which default pairs it with, and not Reviews, which only its Checks preset names."
+
+clauses = [
+  "Presets — default always applies",
+  "Presets — Selection by keyword",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

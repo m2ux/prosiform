@@ -1,0 +1,17 @@
+description = "A section entry reads the presets of the file it names against the section it names, from a working directory declaring nothing: docs/guide.md#checks names the Checks section, so the Checks preset of guide.md is in force above its default and the section joins Modes and Reviews."
+
+clauses = [
+  "Presets — A command-line entry reads the file it names",
+  "Presets — default always applies",
+  "Presets — Selection by keyword",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["docs/guide.md#checks"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/docs_guide__checks.bundle.md"]
+diagnostics = []

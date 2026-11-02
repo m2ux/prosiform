@@ -88,9 +88,12 @@ class Membership:
     """One `group-depth` entry: a merged group and the depth its document joins at.
 
     The depth is held to the one every contributing member of the group
-    declares. Each location is where its half of the entry is written.
+    declares. Each location is where its half of the entry is written,
+    and the preset is the one stating the entry, which a diagnostic
+    about it names.
     """
 
+    preset: str
     group: str
     depth: int
     group_location: Location
@@ -532,7 +535,7 @@ def _preset(preset: str, mapping: _Node) -> Preset:
 
     return Preset(
         preset,
-        tuple(_membership(name, entry) for name, entry in entries(DEPTH)),
+        tuple(_membership(preset, name, entry) for name, entry in entries(DEPTH)),
         tuple(_exclusion(name, entry) for name, entry in entries(EXCLUDE)),
         tuple(_path_sub(name, entry) for name, entry in entries(PATH_SUB)),
     )
@@ -582,7 +585,7 @@ def _pair(name: str, entry: _Node, shape: str, noun: str) -> tuple[_Node, _Node]
     return key, value
 
 
-def _membership(name: str, entry: _Node) -> Membership:
+def _membership(preset: str, name: str, entry: _Node) -> Membership:
     """One `group-depth` entry, a single string key mapped to a depth."""
     group, depth = _pair(
         name,
@@ -612,7 +615,7 @@ def _membership(name: str, entry: _Node) -> Membership:
             f"{name} for group {group.value!r} must be an integer from 1 through 6",
             depth.location,
         )
-    return Membership(group.value, level, group.location, depth.location)
+    return Membership(preset, group.value, level, group.location, depth.location)
 
 
 def _exclusion(name: str, entry: _Node) -> Exclusion:

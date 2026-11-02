@@ -78,7 +78,10 @@ from prosiform.cli import (
     Bundle,
     Failure,
     entry,
+    keyworded,
+    keywords,
     main,
+    pairs,
     parser,
     probe,
     publication,
@@ -86,7 +89,7 @@ from prosiform.cli import (
     recheck,
 )
 from prosiform.closure import Probed, resolve
-from prosiform.diagnostics import WARNING, Diagnostic, Reporter
+from prosiform.diagnostics import WARNING, Diagnostic, Location, Reporter
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
     DISPATCH_CYCLE,
@@ -109,7 +112,12 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import INVALID_CONVERSION_METADATA
+from prosiform.metadata import (
+    INVALID_CONVERSION_METADATA,
+    Conversion,
+    Membership,
+    Preset,
+)
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -1262,6 +1270,160 @@ def test_a_group_its_preset_names_twice_holds_the_document_once(root: Path) -> N
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert run.bundle.count("Every rule.") == 1
+
+
+def presets(*declared: tuple[str, Sequence[tuple[str, int]]]) -> str:
+    """One source's conversion metadata declaring each preset with its pairs."""
+    lines = ["---", "prosiform:"]
+    for name, groups in declared:
+        entries = ", ".join(
+            "{" + json.dumps(group) + f": {depth}}}" for group, depth in groups
+        )
+        lines += [f"  {json.dumps(name)}:", f"    group-depth: [{entries}]"]
+    return "\n".join([*lines, "---", ""])
+
+
+@pytest.mark.parametrize(
+    ("name", "title", "selected"),
+    [
+        ("checks", "Checks and Draft", True),
+        ("Draft", "Checks and Draft", True),
+        ("CHECKS", "checks", True),
+        ("checks", "Self-checks", True),
+        ("checks", "checks_v2", True),
+        ("checks", "Checklist and checks", True),
+        ("release checks", "Release Checks", True),
+        ("checks", "Checklist", False),
+        ("check", "Checks", False),
+        ("checks", "Prechecks", False),
+        ("checks", "checks2", False),
+        ("checks", "Rückchecks", False),
+        ("", "Checks", False),
+    ],
+)
+def test_a_preset_name_appears_as_whole_words_in_a_title(
+    name: str, title: str, selected: bool
+) -> None:
+    assert keyworded(name, title) is selected
+
+
+def membership(preset: str, group: str, depth: int) -> Membership:
+    """One `group-depth` pair a named preset states."""
+    at = Location("rules.md", 1, 1)
+    return Membership(preset, group, depth, at, at)
+
+
+def test_default_is_selected_by_no_title() -> None:
+    declared = Conversion(True, (Preset("default"), Preset("checks")))
+    assert [one.name for one in keywords(declared, "Default checks")] == ["checks"]
+    assert keywords(declared, "Default") == ()
+    assert keywords(declared, None) == ()
+
+
+def test_a_selected_preset_holds_over_default_for_the_group_it_pairs() -> None:
+    declared = Conversion(
+        True,
+        (
+            Preset(
+                "default",
+                (membership("default", "modes", 1), membership("default", "rules", 1)),
+            ),
+            Preset("Checks", (membership("Checks", "modes", 2),)),
+        ),
+    )
+    assert pairs(declared, "Checks") == (
+        membership("default", "rules", 1),
+        membership("Checks", "modes", 2),
+    )
+    assert pairs(declared, "Other") == (
+        membership("default", "modes", 1),
+        membership("default", "rules", 1),
+    )
+
+
+def test_a_whole_document_entry_selects_by_its_title(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        presets(("Checks", [("reviews", 1)])) + "# Release Checks\n\nEvery check.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundle == "# Reviews\n\n## Release Checks\n\nEvery check.\n"
+
+
+def test_an_untitled_whole_document_entry_selects_no_preset(root: Path) -> None:
+    written(
+        root, "guide.md", presets(("Checks", [("reviews", 1)])) + "## Checks\n\nAll.\n"
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert not run.bundle.startswith("# Reviews")
+
+
+def test_a_reference_in_a_preamble_selects_no_preset(root: Path) -> None:
+    written(root, "guide.md", DECLARED + "Follow [the rules](rules.md).\n")
+    written(
+        root, "rules.md", presets(("Checks", [("reviews", 1)])) + "# Rules\n\nAll.\n"
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews" not in run.bundle
+    assert "# Rules\n\nAll.\n" in run.bundle
+
+
+@pytest.mark.parametrize(
+    ("between", "selected"),
+    [
+        ("### Detail\n\n", False),
+        ("> ### Quoted\n\n", True),
+    ],
+)
+def test_a_reference_selects_by_the_nearest_heading_rooting_a_section(
+    root: Path, between: str, selected: bool
+) -> None:
+    """A deeper heading titles what follows it, and a contained one titles nothing."""
+    written(
+        root,
+        "guide.md",
+        DECLARED
+        + "# Guide\n\n## Checks\n\n"
+        + between
+        + "Follow [the rules](rules.md).\n",
+    )
+    written(
+        root, "rules.md", presets(("Checks", [("reviews", 1)])) + "# Rules\n\nAll.\n"
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert ("# Reviews\n\n## Rules" in run.bundle) is selected
+
+
+def test_a_depth_disagreement_names_the_selected_preset(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nRead [a](a.md) and [rules](rules.md).\n",
+    )
+    written(root, "a.md", joining(("reviews", 2)) + "# A\n")
+    written(
+        root,
+        "rules.md",
+        presets(("default", [("modes", 1)]), ("Checks", [("reviews", 1)]))
+        + "# Rules\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == GROUP_DEPTH_CONFLICT
+    assert (
+        "prosiform.default.group-depth for group 'reviews' is 2"
+        in (diagnostic["message"])
+    )
+    assert diagnostic["related"][0]["message"] == (
+        "prosiform.Checks.group-depth for group 'reviews' is 1"
+    )
+    assert diagnostic["related"][0]["file"] == "rules.md"
 
 
 def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:

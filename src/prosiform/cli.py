@@ -133,6 +133,7 @@ from prosiform.metadata import (
     Conversion,
     InvalidMetadata,
     Membership,
+    Preset,
 )
 from prosiform.profile import (
     CODES as PROFILE_CODES,
@@ -175,6 +176,7 @@ from prosiform.source import (
     occurrences,
     regions,
     section,
+    sections,
     uses,
     within,
 )
@@ -1365,7 +1367,9 @@ def required(
             continue
         if withholding(use.opening):
             continue
-        occurrence = replace(found, origin=at, chain=(*chain, identity(found)))
+        occurrence = replace(
+            found, origin=at, chain=(*chain, identity(found)), title=use.title
+        )
         if not declarations.declares(occurrence):
             continue
         yield occurrence
@@ -1814,18 +1818,123 @@ def confirm(
     )
 
 
-def group_depths(
-    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
-) -> dict[str, int]:
+def keyworded(name: str, title: str) -> bool:
+    """Whether a preset name appears as words in one section title.
+
+    The comparison ignores case, and each end of the name meets the
+    start or end of the title or a character that is neither a letter
+    nor a digit, so `checks` appears in `Checks and Draft` and not in
+    `Checklist`. A name carrying no character appears nowhere.
+    """
+    word = name.casefold()
+    folded = title.casefold()
+    start = folded.find(word) if word else -1
+    while start >= 0:
+        end = start + len(word)
+        before = folded[start - 1] if start else ""
+        after = folded[end] if end < len(folded) else ""
+        if not before.isalnum() and not after.isalnum():
+            return True
+        start = folded.find(word, start + 1)
+    return False
+
+
+def keywords(conversion: Conversion, title: str | None) -> tuple[Preset, ...]:
+    """The presets one section title selects, in the order they are declared.
+
+    `default` is in force beneath every selection, so it is selected by
+    no spelling; a title absent, as a preamble's is, selects nothing.
+    """
+    if title is None:
+        return ()
+    return tuple(
+        preset
+        for preset in conversion.presets
+        if preset.name != DEFAULT and keyworded(preset.name, title)
+    )
+
+
+def pairs(conversion: Conversion, title: str | None) -> tuple[Membership, ...]:
+    """The `group-depth` pairs in force for content one section title selects.
+
+    `default`'s pairs come first, each but those for a group a selected
+    preset also pairs, since a selected preset's setting for a group
+    holds over the one `default` states; the selected presets' pairs
+    follow, in the order they are declared.
+    """
+    chosen = keywords(conversion, title)
+    stated = {one.group for preset in chosen for one in preset.memberships}
+    return (
+        *(one for one in conversion.default.memberships if one.group not in stated),
+        *(one for preset in chosen for one in preset.memberships),
+    )
+
+
+def entry_title(tokens: Sequence[Token], one: Reference) -> str | None:
+    """The title an entry reference selects its document's presets by.
+
+    An entry is written in no section, so the document it names supplies
+    the title: the heading of the section a section entry names, or the
+    document's own title for a whole-document entry, absent where the
+    document carries none.
+    """
+    if one.fragment is not None:
+        return next(
+            (
+                heading.text
+                for heading in index(tokens)
+                if heading.fragment == one.fragment
+            ),
+            None,
+        )
+    title = document_title(tokens)
+    if title is None or title.map is None:
+        return None
+    line = title.map[0] + 1
+    return next((text for at, text in sections(tokens) if at == line), None)
+
+
+def joined(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> dict[str, tuple[Membership, ...]]:
+    """The `group-depth` pairs in force for each document the bundle carries.
+
+    Each reference reaching a document selects that document's presets
+    by its own title, the title of the section it is written in or, for
+    an entry, the title `entry_title` reads, so a document's presets
+    govern its content and no other document's. A document carries the
+    pairs every reference reaching it put in force, each once.
+    """
+    return {
+        path: tuple(
+            dict.fromkeys(
+                one
+                for reference in references
+                for one in pairs(
+                    read[path].conversion,
+                    entry_title(parsed[path], reference)
+                    if reference in entries
+                    else reference.title,
+                )
+            )
+        )
+        for path, references in selected.items()
+    }
+
+
+def group_depths(joins: Mapping[str, Sequence[Membership]]) -> dict[str, int]:
     """Consistent depths for named groups, ordered by source path.
 
-    A document is a member of each group its preset in force pairs it
-    with, so one document may hold one depth in one group and another in
-    a second; within one group every membership must agree.
+    A document is a member of each group the pairs in force for it
+    name, so one document may hold one depth in one group and another
+    in a second; within one group every membership must agree.
     """
     members: dict[str, list[tuple[str, Membership]]] = {}
-    for path in sorted(selected):
-        for one in read[path].conversion.default.memberships:
+    for path in sorted(joins):
+        for one in joins[path]:
             members.setdefault(one.group, []).append((path, one))
     depths: dict[str, int] = {}
     for name in sorted(members):
@@ -1838,7 +1947,7 @@ def group_depths(
                     INPUT_FAILURE,
                     Diagnostic(
                         ERROR,
-                        f"prosiform.{DEFAULT}.group-depth for group "
+                        f"prosiform.{first.preset}.group-depth for group "
                         f"{name!r} is {first.depth}; "
                         f"another member declares {current.depth}",
                         code=GROUP_DEPTH_CONFLICT,
@@ -1848,7 +1957,7 @@ def group_depths(
                                 location.file,
                                 location.line,
                                 location.column,
-                                f"prosiform.{DEFAULT}.group-depth for group "
+                                f"prosiform.{current.preset}.group-depth for group "
                                 f"{name!r} is {current.depth}",
                             ),
                         ),
@@ -1858,12 +1967,9 @@ def group_depths(
     return depths
 
 
-def membership(source: Source, named: str) -> Membership | None:
+def membership(joins: Sequence[Membership], named: str) -> Membership | None:
     """The membership joining one document to the named group, where it joins it."""
-    return next(
-        (one for one in source.conversion.default.memberships if one.group == named),
-        None,
-    )
+    return next((one for one in joins if one.group == named), None)
 
 
 @dataclass(frozen=True)
@@ -1941,6 +2047,7 @@ def coincidence(
 def coincident(
     groups: Sequence[Group],
     selected: Mapping[str, Sequence[Reference]],
+    joins: Mapping[str, Sequence[Membership]],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     declarations: Declarations = DECLARING,
@@ -1975,16 +2082,16 @@ def coincident(
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
-        joined = {
-            path: joins
+        joining = {
+            path: pair
             for path in selected
-            if (joins := membership(read[path], named)) is not None
+            if (pair := membership(joins[path], named)) is not None
         }
-        names = member_headings(list(joined), named)
+        names = member_headings(list(joining), named)
         members: dict[str, list[Named]] = {}
-        for path, joins in joined.items():
+        for path, pair in joining.items():
             members.setdefault(names[path].casefold(), []).append(
-                Named(names[path], joins.group_location)
+                Named(names[path], pair.group_location)
             )
         found.extend(
             (
@@ -2064,7 +2171,7 @@ def assembled(
     selected: dict[str, list[Reference]],
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
-    inforce: Mapping[str, int],
+    joins: Mapping[str, Sequence[Membership]],
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
@@ -2072,7 +2179,7 @@ def assembled(
     """Each group the bundle carries, its links rewritten where a map says so.
 
     The documents arrive in placement order, which `placement` decides.
-    A document whose preset in force pairs it with no group is its own
+    A document the pairs in force for it pair with no group is its own
     file group. Every other document joins each merged group a membership
     names, once however often it is named, and each group carries its
     members in placement order. A group stands where its first document
@@ -2081,16 +2188,16 @@ def assembled(
     selection always bundles to the same bytes.
     """
     parent = parent_document(entries)
+    inforce = group_depths(joins)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
     with assembling(reaching(selected)):
         for path in selected:
-            joins = read[path].conversion.default.memberships
-            for one in joins:
+            for one in joins[path]:
                 members = merging.setdefault(one.group, [])
                 if path not in members:
                     members.append(path)
-            if joins:
+            if joins[path]:
                 continue
             tokens = parsed[path]
             groups.append(
@@ -2240,7 +2347,7 @@ def compose(
     failures too.
     """
     selected = contributing(referrer, found)
-    inforce = group_depths(read, selected)
+    joins = joined(read, parsed, selected, entries)
     selected = placement(
         read, parsed, selected, referrer, entries, declarations, substitution
     )
@@ -2253,7 +2360,7 @@ def compose(
                 selected,
                 entries,
                 None,
-                inforce,
+                joins,
                 None,
                 declarations,
                 substitution,
@@ -2278,7 +2385,7 @@ def compose(
             selected,
             entries,
             targets,
-            inforce,
+            joins,
             dispatching,
             declarations,
             substitution,
@@ -2307,7 +2414,7 @@ def compose(
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
     return bundled, coincident(
-        groups, selected, read, parsed, declarations, substitution
+        groups, selected, joins, read, parsed, declarations, substitution
     )
 
 
