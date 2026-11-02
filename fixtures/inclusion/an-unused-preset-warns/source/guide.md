@@ -1,7 +1,7 @@
 ---
 prosiform:
   Draft:
-    group-depth: [{drafts: 1}]
+    group: {drafts: 1}
 ---
 # Guide
 

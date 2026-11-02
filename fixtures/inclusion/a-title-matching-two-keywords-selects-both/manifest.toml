@@ -1,8 +1,9 @@
-description = "A section title naming two of a linked document's presets as words selects both: the section Checks and Draft puts the Checks and Draft presets of rules.md in force, so rules.md joins Reviews and Drafts."
+description = "A section title naming two of a linked document's presets as words selects both: the section Checks and Draft puts the Checks and Draft presets of rules.md in force. Both state the pair reviews at depth 1, so they union to one setting, rules.md joins Reviews once, and neither preset warns as unused."
 
 clauses = [
   "Presets — Selection by keyword",
-  "Presets — A document in several groups",
+  "Presets — Selected presets union",
+  "Presets — A preset nothing selected warns",
   "Grouping — Group membership",
 ]
 

@@ -16,6 +16,6 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_CONVERSION_METADATA"
-message_contains = ["prosiform.default.group-depth[0] must name a group carrying a word"]
+message_contains = ["prosiform.default.group must name a group carrying a word"]
 reference = "rules/common.md"
 chain = ["rules/common.md"]

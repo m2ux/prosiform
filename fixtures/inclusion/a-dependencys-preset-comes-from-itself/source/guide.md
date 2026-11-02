@@ -1,7 +1,7 @@
 ---
 prosiform:
   Checks:
-    group-depth: [{reviews: 1}]
+    group: {reviews: 1}
 ---
 # Release Checks
 

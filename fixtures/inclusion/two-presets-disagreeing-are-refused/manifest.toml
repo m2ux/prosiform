@@ -17,11 +17,11 @@ exit_status = 2
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["prosiform.Checks.group-depth and prosiform.Draft.group-depth", "pair group 'reviews' with depths 1 and 2"]
+message_contains = ["prosiform.Checks.group and prosiform.Draft.group", "state {reviews: 1} and {reviews: 2}"]
 reference = "rules.md"
 chain = ["guide.md", "rules.md"]
 
 [expected.diagnostics.location]
 file = "rules.md"
 line = 4
-column = 29
+column = 13

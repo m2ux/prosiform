@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    group-depth: [{Review: 2}]
+    group: {Review: 2}
 ---
 
 # Checklist [⇉ Publish](publish.md)

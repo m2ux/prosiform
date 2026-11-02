@@ -1,6 +1,6 @@
 ---
 prosiform:
   default:
-    group-depth: [{shared: 3}]
+    group: {shared: 3}
 ---
 # b

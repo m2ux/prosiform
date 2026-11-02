@@ -1,9 +1,9 @@
 ---
 prosiform:
   default:
-    group-depth: [{modes: 1}]
+    group: {modes: 1}
   Checks:
-    group-depth: [{reviews: 1}]
+    group: {reviews: 1}
 ---
 # Guide
 

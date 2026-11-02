@@ -1,9 +1,9 @@
 ---
 prosiform:
   default:
-    group-depth: [{rules: 1}]
+    group: {rules: 1}
   Checks:
-    group-depth: [{checks: 1}]
+    group: {checks: 1}
 ---
 # Rules
 

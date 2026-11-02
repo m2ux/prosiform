@@ -11,4 +11,4 @@ exit_status = 1
 
 [[expected.diagnostics]]
 severity = "error"
-code = "E_GROUP_DEPTH_CONFLICT"
+code = "E_GROUP_CONFLICT"

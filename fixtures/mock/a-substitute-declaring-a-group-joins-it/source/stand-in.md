@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    group-depth: [{rules: 2}]
+    group: {rules: 2}
 ---
 The stand-in preamble.
 

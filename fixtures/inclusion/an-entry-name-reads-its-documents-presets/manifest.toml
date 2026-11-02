@@ -1,4 +1,4 @@
-description = "A section entry reads the presets of the file it names against the section it names, from a working directory declaring nothing: docs/guide.md#checks names the Checks section, so the Checks preset of guide.md is in force above its default and the section joins Modes and Reviews."
+description = "A section entry reads the presets of the file it names against the section it names, from a working directory declaring nothing: docs/guide.md#checks names the Checks section, so the Checks preset of guide.md is in force, its pair holds over the one its default states, and the section joins Reviews."
 
 clauses = [
   "Presets — A command-line entry reads the file it names",

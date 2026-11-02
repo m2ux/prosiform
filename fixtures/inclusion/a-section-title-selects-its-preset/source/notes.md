@@ -1,7 +1,7 @@
 ---
 prosiform:
   checks:
-    group-depth: [{reviews: 1}]
+    group: {reviews: 1}
 ---
 # Notes
 
