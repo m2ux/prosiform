@@ -106,7 +106,7 @@ Each resource budget adds one option of its own, declared with its default and i
 
 `-c` accepts `-o DIR`, validating every bundle of the run without writing into that folder. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
-A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option (including `-r` and `-g`), an invalid option value, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option, an invalid option value, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
 ### Usage examples
 
@@ -398,7 +398,7 @@ A document whose governing presets supply no `group` pair keeps its individual f
 - **Bounded parsing:** Use a pinned established safe YAML parser, with documented scalar typing, duplicate detection, source marks and resource behavior verified by fixtures. Enforce raw source-byte limits before decoding and YAML collection nesting before constructing nested values. For `-N`, a root mapping or sequence has depth 1, each contained mapping or sequence adds 1, and scalars add 0. YAML depth and Markdown container depth are measured independently against the same limit; exceeding either fails with `E_RESOURCE_LIMIT`. Do not expand aliases or construct custom tagged objects.
 - **Source ownership:** Decode one immutable conversion value, including the declaration its boundary is derived from and every preset it declares, per captured canonical source. Direct entries, ordinary links, fragment-only links and transitive links all use that source's own presets for its content and outgoing references, and the reference reaching it decides which of them are in force. A fragment retains that value even when its frontmatter lies outside the selected region. A shared source reached through different parents has the same declaration and the same derived boundary. Repeated reachability, overlapping fragments and ordinary cycles retain one capture and the existing selection union.
 - **Selection boundary:** Validate syntax and local fields whenever the normal reader opens a source. Aggregate group declarations only after closure selection. Deferred-only targets contribute no content or membership; later activation uses their own settings. External and non-Markdown references retain their classification, and a local Markdown document that declares nothing retains its own, its frontmatter read and no further byte of it. Candidate validation uses the same per-source grouping decisions as rendering.
-- **Operational interface:** Entries, output destination, diagnostics, check mode and resource budgets are invocation parameters. Structural settings come only from source metadata. The unsupported `-r` and `-g` options receive invalid CLI usage, exit 2.
+- **Operational interface:** Entries, output destination, diagnostics, check mode and resource budgets are invocation parameters. Structural settings come only from source metadata.
 
 ### Presets
 
@@ -703,7 +703,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **File-wide safety:** Excessive parsing depth in an unselected sibling can fail with a file-indexing resource diagnostic, while an ordinary unselected broken link does not.
 - **Profile:** Task markers protected from definitions, disabled typographic rewriting, Markdown suffix classification, and explicit rejection of unsupported selected dependency constructs.
 - **Frontmatter:** Optional BOM, exact opening/closing delimiters, `...` termination, leading-blank-line distinction, malformed delimiters, and missing closers.
-- **CLI:** Rejection of `-r` and `-g` with `E_INVALID_USAGE` and exit 2; retained operational flags; working-directory resolution for positional files, a bare fragment refused as invalid usage naming `document#fragment`, `-c` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
+- **CLI:** Rejection of an undeclared option with `E_INVALID_USAGE` and exit 2; retained operational flags; working-directory resolution for positional files, a bare fragment refused as invalid usage naming `document#fragment`, `-c` with an output file and no publication, clean JSON diagnostics, and documented exit statuses.
 - **Limits:** Every limit fails at the first exceeded boundary without truncation; zero/negative overrides fail; parser nesting cannot silently fall back to different syntax.
 
 ### Metadata conformance cases
