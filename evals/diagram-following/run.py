@@ -139,6 +139,7 @@ from workflow import (
     dispatched,
     instruction,
     sections_of,
+    stray,
     workflows,
 )
 
@@ -381,13 +382,18 @@ def observable(
 
 
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
-    """One bundled form's bundle set, each bundle by the name `pf` gave it."""
+    """One bundled form's bundle set, each bundle by the name `pf` gave it.
+
+    A run reporting any diagnostic beyond the warnings the workflow declares
+    is refused, as one exiting nonzero is.
+    """
     with tempfile.TemporaryDirectory() as output:
         built = bundle(workflow.form(FORMS[form]), Path(output))
-        if built.returncode != 0 or built.stderr:
+        reported = stray(workflow, built.stderr)
+        if built.returncode != 0 or reported:
             raise CorpusError(
                 f"{workflow.name}: pf bundled the {form} form with exit "
-                f"{built.returncode} and {built.stderr.decode()!r}"
+                f"{built.returncode} and {reported!r}"
             )
         written = bundled(Path(output))
         if not written:

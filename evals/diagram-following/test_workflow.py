@@ -1,13 +1,14 @@
 """Hold the diagram-following corpus to what the eval relies on.
 
 Every workflow document declares `prosiform` as a mapping of presets;
-every form a workflow is written in bundles cleanly and carries every
-state's section, and its entry carries only what its form allows; the forms'
-sections differ only in their transition paragraphs, and a dispatch form's
-in the step handing a section to a sub-agent too; and each scenario's path
-is a walk of the diagram from its start to a terminal state that every
-form's sections lead through for the scenario's inputs, with the dispatch
-trace its sources state. Each property is a function returning the faults it
+every form a workflow is written in bundles cleanly, reporting only the
+warnings it declares, and carries every state's section, and its entry
+carries only what its form allows; the forms' sections differ only in their
+transition paragraphs, and a dispatch form's in the step handing a section
+to a sub-agent too; and each scenario's path is a walk of the diagram from
+its start to a terminal state that every form's sections lead through for
+the scenario's inputs, and the diagram form's bundle states, with the
+dispatch trace its sources state. Each property is a function returning the faults it
 finds, so the corpus is held to an empty list and a copy of it broken on
 purpose is held to a fault.
 """
@@ -46,19 +47,26 @@ from workflow import (
     Scenario,
     Workflow,
     bundle,
+    bundle_walk,
     bundled,
+    bundled_sections,
     dispatch_walk,
     dispatched,
     inputs_read,
     instruction,
     read_workflow,
+    reported,
+    stray,
     walk,
     workflows,
 )
 
-BUNDLED_HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
+BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 CORPUS = workflows()
 DISPATCHING = [workflow for workflow in CORPUS if COMPILED_FORM in workflow.forms]
+DRAWING = [workflow for workflow in CORPUS if DIAGRAM in workflow.forms]
+FEATURES = ["group-placement", "preset-selection", "subst-redirect"]
+"""The workflows whose sources use a feature that changes what `pf` emits."""
 
 
 def document(state: str) -> str:
@@ -95,7 +103,8 @@ def declaration_faults(root: Path) -> list[str]:
 def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
     """How one form's bundle set falls short of a clean run under `output`.
 
-    The run must exit 0 with no diagnostic and write the entry's bundle
+    The run must exit 0, report each warning its workflow declares and no
+    other diagnostic, and write the entry's bundle
     carrying every state. A dispatch form must publish a bundle for each
     document its steps dispatch, and a form that dispatches nothing must
     publish the entry's bundle alone.
@@ -104,8 +113,10 @@ def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
     faults = []
     if run.returncode != 0:
         faults.append(f"pf exited {run.returncode}")
-    if run.stderr:
-        faults.append(f"pf reported {run.stderr.decode()!r}")
+    if extra := stray(workflow, run.stderr):
+        faults.append(f"pf reported {extra!r}")
+    for code in sorted(workflow.warnings - reported(run.stderr)):
+        faults.append(f"pf reported no {code}")
     bundled_written = bundled(output)
     if output / ENTRY_BUNDLE not in bundled_written:
         faults.append(f"pf wrote {[path.name for path in bundled_written]}")
@@ -399,6 +410,43 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
     return faults
 
 
+def compiled_bundle(workflow: Workflow, output: Path) -> str:
+    """The entry bundle `pf` compiles from a workflow's diagram form."""
+    run = bundle(workflow.form(DIAGRAM), output)
+    assert run.returncode == 0, run.stderr.decode()
+    return (output / ENTRY_BUNDLE).read_text()
+
+
+def bundle_path_faults(
+    workflow: Workflow, scenario: Scenario, output: Path
+) -> list[str]:
+    """How a scenario's path fails to be the walk the diagram form's bundle states."""
+    walked, faults = bundle_walk(
+        workflow, compiled_bundle(workflow, output), scenario.inputs
+    )
+    if not faults and walked != scenario.path:
+        faults.append(f"the bundle leads {walked}")
+    return [f"{scenario.name}: {fault}" for fault in faults]
+
+
+def enclosing(bundle_text: str, title: str, occurrence: int = 0) -> list[str]:
+    """The headings enclosing one heading of a bundle, outermost first.
+
+    `occurrence` picks among headings carrying the same text, in bundle order.
+    """
+    stack: list[tuple[int, str]] = []
+    seen = 0
+    for section in bundled_sections(bundle_text).values():
+        while stack and stack[-1][0] >= section.level:
+            stack.pop()
+        if section.title == title:
+            if seen == occurrence:
+                return [text for _, text in stack]
+            seen += 1
+        stack.append((section.level, section.title))
+    raise AssertionError(f"the bundle carries no {title} #{occurrence}")
+
+
 def broken(
     tmp_path: Path, name: str, path: str, old: str, new: str, count: int = 1
 ) -> Workflow:
@@ -420,8 +468,11 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
         "dispatch-chain",
         "dispatch-question",
         "dispatch-set",
+        "group-placement",
         "linear",
         "looping",
+        "preset-selection",
+        "subst-redirect",
     ]
 
 
@@ -521,6 +572,157 @@ def test_each_scenario_path_is_the_walk_its_inputs_determine(
     workflow: Workflow, scenario: Scenario
 ) -> None:
     assert scenario_faults(workflow, scenario) == []
+
+
+@pytest.mark.parametrize(
+    ("workflow", "scenario"),
+    [(workflow, scenario) for workflow in DRAWING for scenario in workflow.scenarios],
+    ids=lambda item: item.name,
+)
+def test_each_scenario_path_is_the_walk_its_bundle_states(
+    workflow: Workflow, scenario: Scenario, tmp_path: Path
+) -> None:
+    """AC23, AC24, AC25: the path is the one the bundle `pf` compiles states."""
+    assert bundle_path_faults(workflow, scenario, tmp_path) == []
+
+
+def test_the_feature_workflows_are_preset_selection_group_placement_and_subst() -> None:
+    """Each holds a scenario per permutation of its feature."""
+    named = {workflow.name: workflow for workflow in CORPUS}
+    assert [scenario.name for scenario in named["preset-selection"].scenarios] == [
+        "default-alone",
+        "title-selected",
+        "two-presets-one-title",
+    ]
+    assert [scenario.name for scenario in named["group-placement"].scenarios] == [
+        "leaf-group",
+        "nested-intermediate",
+        "two-presets-one-document",
+    ]
+    assert [scenario.name for scenario in named["subst-redirect"].scenarios] == [
+        "document-redirect",
+        "section-redirect",
+        "preset-over-default",
+    ]
+    assert all(named[name].forms == (DIAGRAM,) for name in FEATURES)
+
+
+def test_the_title_linking_a_document_selects_the_presets_placing_it(
+    tmp_path: Path,
+) -> None:
+    """AC23: default alone, one preset a title selects, and two one title selects.
+
+    Proof's default places it, Patch selects Verify's `patch` preset, and
+    `Security Review` selects both Audit's `security` group and its `review`
+    pair, which redirects the policy note Audit links.
+    """
+    workflow = read_workflow(WORKFLOWS / "preset-selection")
+    text = compiled_bundle(workflow, tmp_path)
+    assert enclosing(text, "Proof") == ["Edit", "Proofs"]
+    assert enclosing(text, "Verify") == ["Patch", "Checks"]
+    assert enclosing(text, "Audit") == ["Harden", "Audits"]
+    assert "[policy](#strict-policy)" in bundled_sections(text)["audit"].text
+    assert "# Policy\n" not in text
+
+
+def test_group_pairs_place_each_file_from_the_leaves_up(tmp_path: Path) -> None:
+    """AC24: a leaf group, an intermediate file nested in its parent, two presets.
+
+    Lint and Unit share the leaf group `Checks`. Package stands in a group
+    inside Compile's division, and Sign in a group inside Package's, so the
+    intermediate file arrives in its parent with its own group composed. Notify
+    is reached under its default and under `announce`, so it stands in both
+    groups, its section emitted once in each.
+    """
+    workflow = read_workflow(WORKFLOWS / "group-placement")
+    text = compiled_bundle(workflow, tmp_path)
+    assert enclosing(text, "Lint") == enclosing(text, "Unit") == ["Delivery", "Checks"]
+    assert enclosing(text, "Package") == ["Compile", "Packaging"]
+    assert enclosing(text, "Sign") == ["Compile", "Packaging", "Signing"]
+    assert enclosing(text, "Notify", 0)[-1] == "Messages"
+    assert enclosing(text, "Notify", 1)[-1] == "Announcements"
+
+
+def test_subst_pairs_redirect_the_links_a_document_writes(tmp_path: Path) -> None:
+    """AC25: a document redirect, a section redirect, a preset holding over default.
+
+    The entry's default sends the diagram's Approve to another document,
+    Amend's default sends its Inspect link to one section of the handbook, and
+    the entry's title selects Stage's `release` preset, whose Gate pair holds
+    over the default's.
+    """
+    workflow = read_workflow(WORKFLOWS / "subst-redirect")
+    text = compiled_bundle(workflow, tmp_path)
+    sections = bundled_sections(text)
+    assert "against the release checklist" in sections["approve"].text
+    assert enclosing(text, "Inspect") == ["Handbook"]
+    assert "against the handbook" in sections["inspect"].text
+    assert "Archive" not in text
+    assert "against the release checklist" in sections["gate"].text
+    assert "as drafted" not in text
+
+
+def test_a_substitute_stating_another_branch_is_a_fault(tmp_path: Path) -> None:
+    """The bundle, not the source, states the path, so a substitute changes it."""
+    workflow = broken(
+        tmp_path,
+        "subst-redirect",
+        "diagram/alternates/handbook.md",
+        "take the transition labelled `ship`. Otherwise, take the transition"
+        " labelled `hold`",
+        "take the transition labelled `hold`. Otherwise, take the transition"
+        " labelled `ship`",
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    shipped = workflow.scenarios[2]
+    assert scenario_faults(workflow, shipped) == []
+    assert bundle_path_faults(workflow, shipped, output) == [
+        "preset-over-default: the bundle leads ('Outline', 'Amend', 'Inspect',"
+        " 'Approve')"
+    ]
+
+
+def test_a_substitute_stating_another_action_is_a_fault(tmp_path: Path) -> None:
+    """The scorer reads the source's actions, so the bundle must state the same."""
+    workflow = broken(
+        tmp_path,
+        "subst-redirect",
+        "diagram/alternates/release-gate.md",
+        "containing `gated`",
+        "containing `held`",
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    assert bundle_path_faults(workflow, workflow.scenarios[2], output) == [
+        "preset-over-default: the bundle's Gate writes ('gate.txt', 'held'), not"
+        " ('gate.txt', 'gated')"
+    ]
+
+
+def test_a_warning_the_workflow_does_not_declare_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path, "subst-redirect", "scenarios.toml", 'warnings = ["W_SUBST_USED"]', ""
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    [fault] = bundle_faults(workflow, DIAGRAM, output)
+    assert fault.startswith('pf reported "W_SUBST_USED: the reference')
+
+
+def test_a_declared_warning_the_bundle_does_not_raise_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    workflow = broken(
+        tmp_path,
+        "linear",
+        "scenarios.toml",
+        "[[scenario]]",
+        'warnings = ["W_SUBST_USED"]\n\n[[scenario]]',
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    assert bundle_faults(workflow, DIAGRAM, output) == ["pf reported no W_SUBST_USED"]
 
 
 def test_the_dispatch_scenarios_are_the_chain_the_set_the_pair_and_the_question() -> (
