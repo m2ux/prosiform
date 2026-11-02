@@ -68,7 +68,7 @@ A link under a section titled `Release checks` puts `default` and `checks` in fo
 
 A link places a document under one group. Two links selecting different pairs place it in each of their groups, and it is emitted under each. Contributing files declaring the same group must agree on depth.
 
-A named group nests inside the division of the document whose link placed its first member, and each enclosing division pushes its headings one level deeper; a group whose first member is an entry stands at the top level. A heading pushed past H6 fails the run with `E_HEADING_DEPTH_OVERFLOW`, so a shared library linked from a deep division overflows: link it from a shallower division, or keep its headings shallow. [Grouping](https://github.com/m2ux/prosiform/blob/b7e5a449996cf5c8b4ee24839508339ef55ded95/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) states where each group stands.
+A named group nests inside the division of the document whose link placed its first member, one heading level deeper per enclosing division, and a heading pushed past H6 fails the run with `E_HEADING_DEPTH_OVERFLOW`. [Hierarchy](docs/hierarchy.md#where-a-group-stands) states where each group stands and what an author changes when nesting overflows.
 
 [Sources](docs/sources.md) states the frontmatter grammar, the declaration, the fields, the derived boundary and the metadata codes.
 
