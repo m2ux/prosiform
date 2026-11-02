@@ -52,7 +52,7 @@ pf -c modes/plan-mode.md
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the groups the document joins and their depths (`group-depth`), what a whole-document link to it withholds (`exclude`), and where each reference the document writes resolves (`subst`); a selected preset's setting for a group or a `subst` key holds over `default`'s. They govern the document's own content alone. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `group` or `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
+A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the groups the document joins and their depths (`group-depth`) and where each reference the document writes resolves (`subst`); a selected preset's setting for a group or a `subst` key holds over `default`'s. They govern the document's own content alone. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `group` or `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
 
 ```yaml
 ---
@@ -61,12 +61,11 @@ prosiform:
     group-depth: [{rules: 2}]
   checks:
     group-depth: [{checks: 1}]
-    exclude: ["Draft"]
     subst: [{steps.md: strict-steps.md}]
 ---
 ```
 
-A link under a section titled `Release checks` puts `default` and `checks` in force: the document joins `rules` at depth 2 and `checks` at depth 1, a whole-document link to it withholds its `Draft` section, and its own links to `steps.md` resolve to `strict-steps.md`. Any other link puts `default` alone in force.
+A link under a section titled `Release checks` puts `default` and `checks` in force: the document joins `rules` at depth 2 and `checks` at depth 1, and its own links to `steps.md` resolve to `strict-steps.md`. Any other link puts `default` alone in force.
 
 A document may join several groups, and is emitted under each. Contributing files declaring the same group must agree on depth.
 
