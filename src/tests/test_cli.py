@@ -2648,7 +2648,7 @@ def test_an_authored_heading_equal_to_one_pf_emits_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_COLLISION
     assert heading in diagnostic["message"]
-    assert diagnostic["location"] == {"file": "guide.md", "line": 5, "column": 1}
+    assert diagnostic["location"] == {"file": "guide.md", "line": 8, "column": 1}
 
 
 @pytest.mark.parametrize(

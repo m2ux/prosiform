@@ -123,6 +123,7 @@ from prosiform.closure import (
     Substitution,
     bundled,
     deferred,
+    directive,
     dispatched,
     parallel,
     rebased,
@@ -157,11 +158,14 @@ from prosiform.source import (
     Selection,
     bare,
     clicks,
+    events,
     headings,
     inlines,
     level,
     lines,
     opening_markers,
+    opening_text,
+    plain_label,
     regions,
     shown,
     slug,
@@ -203,26 +207,33 @@ class Overflow(Exception):
 
 
 class Unplaced(Exception):
-    """A dispatched link no dispatch sub-section stands for.
+    """A link asking for a section beneath its own that no section holds.
 
     A dispatch sub-section stands one level below the section holding the
-    link it serves. A title the file heading absorbs is emitted as that
-    heading rather than as a section of its own, so a link the title
-    carries has no section to stand beneath and the run states the
-    dispatch nowhere.
+    link it serves, and a composition directive's destination section one
+    level below the section writing it. A title the file heading absorbs
+    is emitted as that heading rather than as a section of its own, so a
+    link the title carries has no section to stand beneath and the run
+    states the dispatch, or places the composition, nowhere.
     """
 
     def __init__(
-        self, path: str, line: int | None, destination: str, opening: str
+        self,
+        path: str,
+        line: int | None,
+        destination: str,
+        opening: str,
+        composing: bool,
     ) -> None:
         super().__init__(
-            f"the dispatch {opening!r} in {path!r} names {destination!r} and no "
+            f"the link {opening!r} in {path!r} names {destination!r} and no "
             f"section holds it"
         )
         self.path = path
         self.line = line
         self.destination = destination
         self.opening = opening
+        self.composing = composing
 
 
 def ending(run: str) -> str:
@@ -458,11 +469,15 @@ def rewrite(
 
     A composition directive takes the destination of the contribution
     it places, which the composition map holds by the link's own
-    position, so every directive stands for its own contribution.
+    position, so every directive stands for its own contribution. A
+    heading's directive naming a bundled section that the map holds no
+    contribution for is in a title its file heading or its subsection
+    absorbs, which is no section to compose beneath, and is refused.
     """
     written = list(physical)
     served = {} if dispatching is None else dispatching
     contributing = {} if composing is None else composing
+    titles = {id(inline) for _, inline in headings(tokens)}
     for region in selected:
         here = served.get((path, (region.map or (0, 0))[0]), {})
         for inline in inlines(tokens, [region]):
@@ -470,6 +485,16 @@ def rewrite(
             if inline.map is None or (not found and not defined):
                 continue
             start, end = inline.map
+            if composing is not None and id(inline) in titles:
+                unplaced(
+                    path,
+                    inline,
+                    start,
+                    contributing,
+                    declarations,
+                    first_line,
+                    substitution,
+                )
             targets = [
                 f"{ANCHOR}{contributing[(path, start, at)]}"
                 if (path, start, at) in contributing
@@ -505,6 +530,40 @@ def rewrite(
                 at = click.line - 1
                 written[at] = clicked(written[at], held[at - first], click, given)
     return written
+
+
+def unplaced(
+    path: str,
+    inline: Token,
+    start: int,
+    contributing: Mapping[Located, str],
+    declarations: Declarations,
+    first_line: int,
+    substitution: Substitution,
+) -> None:
+    """Refuse a heading's immediate directive that composes nowhere.
+
+    The composition pass composes each immediate directive naming a
+    bundled section in every heading the bundle emits as a section, so
+    one it placed no contribution for sits in a heading emitted as text
+    alone.
+    """
+    position = 0
+    for children, at, child in events(inline.children or []):
+        if child.type != LINK_OPEN:
+            continue
+        here = position
+        position += 1
+        opening = opening_text(children, at)
+        if (path, start, here) in contributing or deferred(opening):
+            continue
+        if not directive(plain_label(children, at)):
+            continue
+        destination = str(child.attrGet(HREF) or "")
+        found = bundled(path, destination, opening, declarations, substitution)
+        if found is None or found.fragment is None:
+            continue
+        raise Unplaced(path, start + first_line, destination, opening, composing=True)
 
 
 def clicked(physical: str, held: str, click: Click, given: str) -> str:
@@ -574,7 +633,7 @@ def target(
         held = {} if dispatched_to is None else dispatched_to
         served = ((withheld.path, withheld.fragment), parallel(opening))
         if served not in held:
-            raise Unplaced(path, line, destination, opening)
+            raise Unplaced(path, line, destination, opening, composing=False)
         return f"{anchor}{held[served]}"
     return rebased(withheld, destination)
 
@@ -693,25 +752,34 @@ def line_of(token: Token, first_line: int = 1) -> int:
     return first_line if token.map is None else token.map[0] + first_line
 
 
-def dispatched_in(tokens: Sequence[Token], token: Token) -> tuple[str, str] | None:
-    """The dispatch one heading carries, where it is emitted as text alone.
+def placing_in(tokens: Sequence[Token], token: Token) -> tuple[str, str, bool] | None:
+    """The link one heading carries that asks for a section beneath it.
 
-    An ancestor heading the run did not select is emitted as its title and
+    Where the heading is emitted as text alone, a dispatch or a
+    composition directive in it has no section to stand beneath. An
+    ancestor heading the run did not select is emitted as its title and
     nothing else, and a title is flattened to the one line an ATX heading
     is. Its link is therefore no link in the bundle: nothing places a
-    sub-section for it, and the target it names is compiled by no run. The
+    section for it, and the target it names is compiled by no run. The
     heading's inline tokens are read rather than the copied line, because
-    the copy is what the run publishes, while the dispatch is what the
-    author wrote.
+    the copy is what the run publishes, while the link is what the
+    author wrote. The link arrives with its destination, its opening and
+    whether it is a directive.
     """
     if token.type != HEADING_OPEN:
         return None
     for opening, inline in headings(tokens):
         if opening is not token:
             continue
-        for destination, opened in destinations(inline):
+        for children, at, child in events(inline.children or []):
+            if child.type != LINK_OPEN:
+                continue
+            destination = str(child.attrGet(HREF) or "")
+            opened = opening_text(children, at)
+            if directive(plain_label(children, at)):
+                return destination, opened, True
             if dispatched(opened) and not deferred(opened):
-                return destination, opened
+                return destination, opened, False
     return None
 
 
@@ -934,10 +1002,10 @@ def group(
     )
     if absorbing is None and not situate and titled is not None:
         # The title stands above the selection, so the file heading carries
-        # its text as literal heading text. A dispatch it writes is then no
-        # link at all: nothing places a sub-section for it and no run
-        # compiles its target.
-        held = dispatched_in(tokens, titled)
+        # its text as literal heading text. A dispatch or a directive it
+        # writes is then no link at all: nothing places a section for it
+        # and no run compiles its target.
+        held = placing_in(tokens, titled)
         if held is not None:
             raise Unplaced(path, line_of(titled, first_line), *held)
     by = 0 if situate or absorbing is not None else SHIFT
@@ -972,7 +1040,7 @@ def group(
     )
     for token in regions(tokens):
         if id(token) in needed:
-            held = dispatched_in(tokens, token)
+            held = placing_in(tokens, token)
             if held is not None:
                 raise Unplaced(path, line_of(token, first_line), *held)
             depth = level(token) + by

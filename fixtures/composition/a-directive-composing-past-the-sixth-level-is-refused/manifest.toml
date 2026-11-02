@@ -1,0 +1,20 @@
+description = "A directive written in a level-5 section composes its destination section at level 6 and its contribution heading at level 7, which Markdown cannot emit; the run fails with a diagnostic naming the directive and where it is written, and publishes no bundle."
+
+clauses = [
+  "Section composition — Heading depth",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "read.md#inputs"
+source = "guide.md:14"
+chain = ["guide.md", "read.md#inputs"]

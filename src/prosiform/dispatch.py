@@ -762,17 +762,26 @@ def subsections(
     return rebuilt, placing.placed
 
 
-def authored(record: Record) -> Iterator[tuple[Emitted, Location | None]]:
-    """Each heading of a group whose text an author or a source path gave it."""
+def authored(
+    record: Record, read: Mapping[str, Source]
+) -> Iterator[tuple[Emitted, Location | None]]:
+    """Each heading of a group whose text an author or a source path gave it.
+
+    An authored heading is located at the line of the file it stands on,
+    which its origin states as a line of its source's content.
+    """
     for one in record.headings:
         if isinstance(one, Carried | Ancestor):
             origin = one.origins[0]
-            yield one, Location(origin.path, origin.line or 1, 1)
+            yield (
+                one,
+                Location(origin.path, read[origin.path].line(origin.line) or 1, 1),
+            )
         elif isinstance(one, Generated) and one.kind == FILENAME_WRAPPER:
             yield one, None
 
 
-def collisions(groups: Sequence[Group]) -> None:
+def collisions(groups: Sequence[Group], read: Mapping[str, Source]) -> None:
     """Refuse an authored heading whose text equals one pf emits in the bundle."""
     emitted = {
         one.text
@@ -782,7 +791,7 @@ def collisions(groups: Sequence[Group]) -> None:
         and one.kind in (DISPATCH_SECTION, PROSIFORM_SECTION)
     }
     for group in groups:
-        for one, at in authored(group.record):
+        for one, at in authored(group.record, read):
             if one.text not in emitted:
                 continue
             where = (

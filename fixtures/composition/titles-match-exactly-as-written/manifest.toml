@@ -1,0 +1,16 @@
+description = "Three directives in one step name sections whose titles read alike: an accented word spelled with its accented letter as one precomposed scalar, the same word spelled as a letter and a combining acute accent, and the first spelling in lower case. Titles match exactly as their headings show them, with no Unicode normalisation or case folding, so each takes a destination section of its own in the order its directive is written. The guide also links each target document whole, so each keeps its own file group beside its contribution."
+
+clauses = [
+  "Section composition — Matching",
+  "Section composition — Destination sections",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

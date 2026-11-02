@@ -1,0 +1,20 @@
+description = "A document the guide links whole writes a directive in its title, which the document's file heading absorbs and emits as text alone. The title is no section a destination section can stand beneath, so the run refuses the directive with a diagnostic naming the link and where it is written, and publishes no bundle."
+
+clauses = [
+  "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "read.md#inputs"
+source = "step.md:4"
+chain = ["guide.md", "step.md"]

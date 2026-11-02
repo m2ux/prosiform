@@ -1,0 +1,43 @@
+# Guide
+
+Each menu is stated whole: [read](#read-1), [write](#write-1) and [list](#list-1).
+
+## Prepare
+
+Read [→](#read), write [→](#write) and list [→](#list).
+
+### Café
+
+#### Read
+
+The precomposed title.
+
+### Café
+
+#### Write
+
+The decomposed title.
+
+### café
+
+#### List
+
+The lower-case title.
+
+# Read
+
+## Café
+
+The precomposed title.
+
+# Write
+
+## Café
+
+The decomposed title.
+
+# List
+
+## café
+
+The lower-case title.

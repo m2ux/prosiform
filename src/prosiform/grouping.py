@@ -105,11 +105,11 @@ from prosiform.bundle import (
     absorbed,
     ancestry,
     carried_headings,
-    dispatched_in,
     document_title,
     emitted_text,
     escaped,
     line_of,
+    placing_in,
     region,
     required,
     rewrite,
@@ -412,7 +412,7 @@ def carried_part(
 
 def ancestor_part(member: Member, token: Token, by: int) -> tuple[str, Ancestor]:
     """One eligible ancestor the run did not select, emitted as a heading alone."""
-    held = dispatched_in(member.tokens, token)
+    held = placing_in(member.tokens, token)
     if held is not None:
         raise Unplaced(member.path, line_of(token, member.first_line), *held)
     depth = level(token) + by
