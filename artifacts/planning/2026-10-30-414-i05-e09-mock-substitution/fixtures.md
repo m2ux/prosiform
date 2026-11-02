@@ -50,7 +50,7 @@ None declares `absent`: the refusals are raised before any source is read, and t
 | Fixture | Criterion | Declares |
 | --- | --- | --- |
 | `a-redirected-entry-derives-its-name-from-the-substitute` | AC2 | With an explicit `-o`, the run writes the name the caller gave; the derived name follows the substitute when no `-o` is given, which the unit test covers because the runner always passes one. |
-| `a-redirected-referrer-carries-its-entry` | AC13 | A fragment-only entry resolves its section against the substituted referrer. |
+| `a-redirected-referrer-carries-its-entry` | AC13 | A fragment-only entry resolves its section against the substituted referrer. *Withdrawn: see [Supersession](epic.md#supersession).* |
 
 ## W04 — Substitution warnings and check mode
 
