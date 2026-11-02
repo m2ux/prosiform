@@ -4,7 +4,7 @@ The plan changes the W09 delivery session applied and held.
 
 ## Applied
 
-None yet.
+- **Delivery recorded.** [#575](https://github.com/m2ux/prosiform/pull/575) merged into `i09/e04/main` at `cb72fee2`. W09's row links it and is marked Done, `AC18` and `AC19` are ticked on [#460](https://github.com/m2ux/prosiform/issues/460), and review pull request [#556](https://github.com/m2ux/prosiform/pull/556) carries the change under Section Composition and Integration. These record the delivery and do not change the plan.
 
 ## Held
 
