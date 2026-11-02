@@ -2,7 +2,7 @@ description = "A mock value carrying a parent segment reaches a substitute besid
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE, both sides read from the working directory",
+  "Link classification and resource handling — The substitution mapping, both sides read from the working directory",
   "Exit status and JSON diagnostics — 0",
 ]
 
@@ -16,7 +16,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "../stand-in.md"
 

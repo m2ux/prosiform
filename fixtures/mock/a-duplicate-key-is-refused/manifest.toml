@@ -3,7 +3,6 @@ description = "Two mapping keys whose spellings normalize to one identity are re
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE",
   "Exit status and JSON diagnostics — 2",
 ]
 

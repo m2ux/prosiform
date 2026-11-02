@@ -15,7 +15,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "stand-in.md"
 message_contains = ["rules.md"]

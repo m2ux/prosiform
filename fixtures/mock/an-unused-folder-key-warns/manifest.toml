@@ -20,7 +20,7 @@ code = "W_RESOURCE_PORTABILITY"
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules/red.md"
 resolved = "stubs/red.md"
 
@@ -31,7 +31,7 @@ column = 1
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules/blue.md"
 resolved = "stubs/blue.md"
 
@@ -42,12 +42,12 @@ column = 1
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_UNUSED"
+code = "W_SUBST_UNUSED"
 source = "notes/"
 message_contains = ["notes/", "substitutes nothing"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_UNUSED"
+code = "W_SUBST_UNUSED"
 source = "other/"
 message_contains = ["other/", "substitutes nothing"]

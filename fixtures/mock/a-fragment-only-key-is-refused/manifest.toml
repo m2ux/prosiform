@@ -3,7 +3,6 @@ description = "A mapping key carrying no document, as a section alone does, is r
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE",
   "Exit status and JSON diagnostics — 2",
 ]
 

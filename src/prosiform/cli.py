@@ -219,8 +219,8 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
-MOCK_SUBSTITUTED = "W_MOCK_SUBSTITUTED"
-MOCK_UNUSED = "W_MOCK_UNUSED"
+SUBST_USED = "W_SUBST_USED"
+SUBST_UNUSED = "W_SUBST_UNUSED"
 PRESET_UNUSED = "W_PRESET_UNUSED"
 
 OPERATOR_NAMES = {
@@ -246,8 +246,8 @@ CODES = tuple(
             RESOURCE_PORTABILITY,
             COINCIDENT_HEADING,
             EARLIER_SET_RETAINED,
-            MOCK_SUBSTITUTED,
-            MOCK_UNUSED,
+            SUBST_USED,
+            SUBST_UNUSED,
             PRESET_UNUSED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
@@ -2859,7 +2859,7 @@ def substituted(mapping: Substitution) -> list[Diagnostic]:
             WARNING,
             f"the reference {one.source!r} is redirected to the substitute "
             f"{one.resolved!r}, where it would have resolved to {one.would!r}",
-            code=MOCK_SUBSTITUTED,
+            code=SUBST_USED,
             source=one.source,
             resolved=one.resolved,
             location=None if one.origin is None else located(one.origin),
@@ -2887,7 +2887,7 @@ def unused(mapping: Substitution) -> list[Diagnostic]:
             WARNING,
             f"the mapping key {spelling!r} names no reference the run resolved, "
             f"so it substitutes nothing",
-            code=MOCK_UNUSED,
+            code=SUBST_UNUSED,
             source=spelling,
             remedy="name an identity a source of the run links, or drop the pairing",
         )

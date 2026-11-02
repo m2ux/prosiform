@@ -2,7 +2,7 @@ description = "A link naming a mocked identity compiles the substitute's documen
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE, a key naming a dependency redirects the reference the run reads in its place",
+  "Link classification and resource handling — The substitution mapping, a key naming a dependency redirects the reference the run reads in its place",
   "Exit status and JSON diagnostics — 0",
 ]
 
@@ -16,7 +16,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "stand-in.md"
 

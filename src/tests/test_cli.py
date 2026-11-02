@@ -63,8 +63,6 @@ from prosiform.cli import (
     INTERNAL_ERROR,
     INVALID_ENCODING,
     INVALID_USAGE,
-    MOCK_SUBSTITUTED,
-    MOCK_UNUSED,
     PRESET_UNUSED,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
@@ -73,6 +71,8 @@ from prosiform.cli import (
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
     SOURCE_SYMLINK,
+    SUBST_UNUSED,
+    SUBST_USED,
     SUCCESS,
     TARGET_NOT_FOUND,
     UNEXPECTED_INTERNAL_ERROR,
@@ -295,8 +295,8 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         RESOURCE_PORTABILITY,
         COINCIDENT_HEADING,
         EARLIER_SET_RETAINED,
-        MOCK_SUBSTITUTED,
-        MOCK_UNUSED,
+        SUBST_USED,
+        SUBST_UNUSED,
         PRESET_UNUSED,
     }
     for published in (

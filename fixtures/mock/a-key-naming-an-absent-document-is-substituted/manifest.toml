@@ -2,7 +2,7 @@ description = "A key naming a document the tree does not hold compiles its subst
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE, given once per pairing and repeatable",
+  "Link classification and resource handling — The substitution mapping, given once per pairing and repeatable",
   "Exit status and JSON diagnostics — 0",
 ]
 
@@ -16,7 +16,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "stub.md"
 

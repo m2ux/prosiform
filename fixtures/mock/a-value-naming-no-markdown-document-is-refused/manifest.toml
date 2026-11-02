@@ -3,7 +3,6 @@ description = "A mapping value naming no Markdown document is refused as invalid
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE",
   "Exit status and JSON diagnostics — 2",
 ]
 
