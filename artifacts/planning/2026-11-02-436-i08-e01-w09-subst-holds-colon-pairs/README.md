@@ -13,6 +13,7 @@ This record holds its delivery of `AC15`: the work item, the validation evidence
 | Artifact | What it holds |
 | --- | --- |
 | [W09 work item](w09.md) | `subst` as single-entry colon pairs read by the shared pair reader, and the design clause stating them |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
