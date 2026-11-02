@@ -4,8 +4,8 @@
 
 Follow [the rules](#rules).
 
-# Modes
+## Modes
 
-## Rules
+### Rules
 
 Every rule the guide follows.

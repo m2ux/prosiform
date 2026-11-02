@@ -5,6 +5,7 @@ clauses = [
   "Presets — Selection by keyword",
   "Presets — A document in several groups",
   "Grouping — Group membership",
+  "Grouping — Nested groups",
 ]
 
 [invocation]

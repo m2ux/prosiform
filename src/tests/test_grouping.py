@@ -4,14 +4,22 @@ The corpus declares what a grouped run publishes. These are the cases
 beneath it: the slug a group is headed by, the name a member's
 subsection carries, the members a group carries a subsection for and
 where those subsections sit, the run of a path a variant heading is
-shortened to.
+shortened to, and where a group a linked file declares stands in the
+result its parent merges.
 """
 
+import json
+import re
 from collections.abc import Mapping
+from contextlib import chdir
+from io import StringIO
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pytest
 
 from prosiform.bundle import Group
+from prosiform.cli import main
 from prosiform.grouping import (
     member_headings,
     merged,
@@ -420,3 +428,200 @@ def test_variant_names_match_the_overview_across_the_whole_group(
     ]
     assert [heading.text for heading in variants] == expected
     assert all(heading.text == overview[heading.answers[0][0]] for heading in variants)
+
+
+DECLARED = "---\nprosiform: {}\n---\n"
+
+
+def paired(group: str, depth: int) -> str:
+    """Frontmatter whose default preset pairs its document with one group."""
+    return f"---\nprosiform:\n  default:\n    group: {{{group}: {depth}}}\n---\n"
+
+
+def composed(
+    root: Path, documents: Mapping[str, str], entry: str = "guide.md"
+) -> tuple[int, str, list[dict[str, object]]]:
+    """One run over a tree: its exit status, its entry bundle and its diagnostics."""
+    for path, text in documents.items():
+        target = root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text)
+    out, err = StringIO(), StringIO()
+    with TemporaryDirectory() as folder, chdir(root):
+        status = main(["-o", folder, "-d", "json", entry], out, err)
+        written = sorted(Path(folder).glob("*.bundles/*.bundle.md"))
+        bundle = written[0].read_text() if written else ""
+    diagnostics = [json.loads(line) for line in err.getvalue().splitlines() if line]
+    return status, bundle, diagnostics
+
+
+def outline(bundle: str) -> list[str]:
+    """Every heading line a bundle carries, in bundle order."""
+    return re.findall(r"^#+ .+$", bundle, re.MULTILINE)
+
+
+def test_a_nested_group_moves_every_heading_down_one_level_per_division() -> None:
+    documents = {
+        "g/one.md": "Above.\n\n## Findings\n\nOne.\n",
+        "g/two.md": "## Findings\n\nTwo.\n",
+    }
+    top = group_of("notes", 2, documents)
+    nested = merged(
+        "notes",
+        2,
+        [
+            prepared(path, parse(text), lines(text), {}, None, None, 2)
+            for path, text in sorted(documents.items())
+        ],
+        at=3,
+    )
+    assert nested.level == 3
+    assert [one.level for one in nested.record.headings] == [
+        one.level + 2 for one in top.record.headings
+    ]
+    assert nested.headings == top.headings
+
+
+def test_a_file_s_pair_places_its_own_sections(tmp_path: Path) -> None:
+    status, bundle, _ = composed(
+        tmp_path,
+        {
+            "guide.md": paired("modes", 2)
+            + "# Guide\n\nRead [the rules](rules.md).\n\n## Procedure\n\nGuide.\n",
+            "rules.md": paired("rules", 2) + "# Rules\n\n## Procedure\n\nRules.\n",
+        },
+    )
+    assert status == 0
+    assert outline(bundle) == [
+        "# Guide",
+        "## Procedure",
+        "## Rules",
+        "### Rules",
+        "### Procedure",
+    ]
+    assert bundle.index("Guide.") < bundle.index("## Rules") < bundle.index("Rules.")
+
+
+def test_a_parent_s_pair_leaves_the_sections_it_links_alone(tmp_path: Path) -> None:
+    status, bundle, _ = composed(
+        tmp_path,
+        {
+            "guide.md": paired("modes", 2)
+            + "# Guide\n\nRead [the rules](rules.md).\n\n## Procedure\n\nGuide.\n",
+            "rules.md": DECLARED + "# Rules\n\n## Procedure\n\nRules.\n",
+        },
+    )
+    assert status == 0
+    assert outline(bundle) == ["# Guide", "## Procedure", "# Rules", "## Procedure"]
+
+
+def test_a_linked_file_is_composed_before_its_parent_merges_it(
+    tmp_path: Path,
+) -> None:
+    status, bundle, _ = composed(
+        tmp_path,
+        {
+            "guide.md": DECLARED + "# Guide\n\nFollow [the steps](steps.md).\n",
+            "steps.md": paired("steps", 2)
+            + "# Steps\n\n## Run\n\nRun, then [check](checks.md).\n",
+            "checks.md": paired("checks", 2) + "# Checks\n\n## Verify\n\nVerify.\n",
+        },
+    )
+    assert status == 0
+    assert outline(bundle) == [
+        "# Guide",
+        "## Steps",
+        "### Steps",
+        "### Run",
+        "### Checks",
+        "#### Checks",
+        "#### Verify",
+    ]
+
+
+def test_an_intermediate_group_nests_inside_its_parent(tmp_path: Path) -> None:
+    status, bundle, _ = composed(
+        tmp_path,
+        {
+            "guide.md": paired("guides", 2)
+            + "# Guide\n\nRead [notes](notes.md) and [plain](plain.md).\n\n"
+            "## Procedure\n\nWalk.\n",
+            "notes.md": paired("notes", 2)
+            + "# Notes\n\n## Findings\n\nHeld, as [extra](extra.md) says.\n",
+            "plain.md": DECLARED + "# Plain\n\nPlain.\n",
+            "extra.md": DECLARED + "# Extra\n\nExtra.\n",
+        },
+    )
+    assert status == 0
+    assert outline(bundle) == [
+        "# Guide",
+        "## Procedure",
+        "## Notes",
+        "### Notes",
+        "### Findings",
+        "# Plain",
+        "# Extra",
+    ]
+
+
+def test_a_group_placed_by_a_document_in_two_groups_nests_in_the_first(
+    tmp_path: Path,
+) -> None:
+    status, bundle, _ = composed(
+        tmp_path,
+        {
+            "guide.md": DECLARED + "# Guide\n\n## Checks\n\nSee [rules](rules.md).\n\n"
+            "## Draft\n\nSee [rules](rules.md).\n",
+            "rules.md": "---\nprosiform:\n  Checks:\n    group: {reviews: 1}\n"
+            "  Draft:\n    group: {drafts: 1}\n---\n"
+            "# Rules\n\nTo [the leaf](leaf.md).\n",
+            "leaf.md": paired("leaves", 2) + "# Leaf\n\n## Payload\n\nLeaf.\n",
+        },
+    )
+    assert status == 0
+    assert outline(bundle) == [
+        "# Guide",
+        "## Checks",
+        "## Draft",
+        "## Reviews",
+        "### Rules",
+        "### Leaves",
+        "#### Leaf",
+        "#### Payload",
+        "## Drafts",
+        "### Rules",
+    ]
+    assert bundle.count("Leaf.") == 1
+
+
+def test_a_nested_heading_pushed_beyond_h6_fails(tmp_path: Path) -> None:
+    status, bundle, diagnostics = composed(
+        tmp_path,
+        {
+            "guide.md": DECLARED + "# Guide\n\nRead [deep](deep.md).\n",
+            "deep.md": paired("deep", 1)
+            + "# Deep\n\n## Two\n\n### Three\n\n#### Four\n\n##### Five\n\nDeep.\n",
+        },
+    )
+    assert status == 1
+    assert bundle == ""
+    assert [one["code"] for one in diagnostics] == ["E_HEADING_DEPTH_OVERFLOW"]
+
+
+def test_a_link_a_file_does_not_bundle_stays_its_content(tmp_path: Path) -> None:
+    status, bundle, _ = composed(
+        tmp_path,
+        {
+            "guide.md": DECLARED + "# Guide\n\nRead [the notes](notes.md).\n",
+            "notes.md": paired("notes", 2) + "# Notes\n\n## Findings\n\n"
+            "See [the draft](draft.md) and [the web](https://example.com/page).\n",
+            "draft.md": "# Draft\n\nUndeclared.\n",
+        },
+    )
+    assert status == 0
+    assert (
+        "### Findings\n\nSee [the draft](draft.md) and "
+        "[the web](https://example.com/page).\n"
+    ) in bundle
+    assert "Undeclared." not in bundle
+    assert outline(bundle) == ["# Guide", "## Notes", "### Notes", "### Findings"]

@@ -4,56 +4,56 @@ The work starts here.
 
 It runs through [Plan Mode](#plan) and then through [Review Mode](#review).
 
-# Modes
+## Modes
 
-## Overview
+### Overview
 
-### Plan
+#### Plan
 
 Scopes the solution before any work starts.
 
-### Review
+#### Review
 
 Reads a plan back against the goal it states.
 
-## Procedure
+### Procedure
 
-### Plan
+#### Plan
 
 Walk the plan from the goal down.
 
 1. Name the goal.
 2. Name the work that meets it.
 
-### Review
+#### Review
 
 Walk the plan from the goal up.
 
 1. Read the goal.
 2. Read the work against it.
 
-## Operations
+### Operations
 
-### Plan
+#### Plan
 
-#### Draft
+##### Draft
 
 Write the first pass.
 
-#### Review
+##### Review
 
 Read the draft back against the goal.
 
-### Review
-
 #### Review
+
+##### Review
 
 Read each line of the plan against its goal.
 
-#### Record
+##### Record
 
 Write the findings down.
 
-## Outcomes
+### Outcomes
 
 A plan whose findings are recorded.

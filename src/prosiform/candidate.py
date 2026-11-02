@@ -87,6 +87,8 @@ from prosiform.closure import (
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     DISPATCH_SECTION,
+    FILENAME_WRAPPER,
+    GROUP_HEADING,
     PROSIFORM_SECTION,
     Ancestor,
     Emitted,
@@ -160,6 +162,8 @@ ONE_DESTINATION = "one intended destination"
 NO_OMISSIONS = "no accidental omissions"
 NO_EXPANSION = "no accidental expansion"
 PRESERVATION = "preservation"
+
+OPENINGS = (FILENAME_WRAPPER, GROUP_HEADING)
 
 
 class Invalid(Exception):
@@ -655,11 +659,11 @@ def structure(
     for one in groups:
         if one.wrapped:
             opening = spans[at]
-            if opening.type != HEADING_OPEN or level(opening) != 1:
+            if opening.type != HEADING_OPEN or level(opening) != one.level:
                 raise Invalid(
                     GROUP_ISOLATION,
                     f"the group for {one.record.path!r} opens on a {opening.type!r} "
-                    f"rather than on its own heading",
+                    f"rather than on its own heading at level {one.level}",
                 )
             at += 1
         for part in one.record.parts:
@@ -830,8 +834,7 @@ def coverage(groups: Sequence[Group]) -> None:
     group arranges one document's regions among another's and two
     regions of one source overlap wherever the group emits them. A
     document two links place in different groups is carried once in
-    each, since each group is a separate top-level division of the
-    bundle.
+    each, since each group is a separate division of the bundle.
     """
     carried: dict[tuple[int, str], list[tuple[int, int]]] = {}
     for at, one in enumerate(groups):
@@ -917,7 +920,19 @@ def levels(record: Record) -> None:
     no heading to a parser: a candidate the record claims an H7 of
     carries a paragraph there, and reading the candidate first would
     report the missing heading rather than the depth that lost it.
+
+    A heading the group places sits below the heading opening the group,
+    at whatever level that opening stands, so a nested group's own
+    headings stay beneath it rather than at the level of its division.
     """
+    opening = next(
+        (
+            heading.level
+            for heading in record.headings
+            if isinstance(heading, Generated) and heading.kind in OPENINGS
+        ),
+        None,
+    )
     at = 0
     for one in record.placed():
         for origin in one.origins:
@@ -935,12 +950,7 @@ def levels(record: Record) -> None:
                 f"the heading {one.text!r} of {record.path!r} is emitted at level "
                 f"{one.level}, which is beyond H{MAX_LEVEL}",
             )
-        if one.level == 1 and any(
-            isinstance(heading, Generated)
-            and heading.level == 1
-            and heading.kind not in (DISPATCH_SECTION, PROSIFORM_SECTION)
-            for heading in record.headings
-        ):
+        if opening is not None and one.level <= opening:
             raise Invalid(
                 GROUP_ISOLATION,
                 f"the heading {one.text!r} of {record.path!r} is emitted at the "

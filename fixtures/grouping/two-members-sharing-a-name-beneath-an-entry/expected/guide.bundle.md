@@ -2,12 +2,12 @@
 
 Read [the first note](#note) and [the second note](#note-1).
 
-# Notes
+## Notes
 
-## Note
+### Note
 
 The note whose path ends in one of the two suffixes.
 
-## Note
+### Note
 
 The note whose path ends in the other.

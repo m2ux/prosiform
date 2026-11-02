@@ -4,8 +4,8 @@
 
 Follow [the rules](#rules).
 
-# Reviews
+## Reviews
 
-## Rules
+### Rules
 
 Every rule the guide follows.

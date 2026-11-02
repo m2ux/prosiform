@@ -66,16 +66,11 @@ def run_bundle(folder: Path, name: str) -> Path:
 
 
 def document(body: str, *, group: str | None = None, depth: Any = None) -> str:
-    """A document with the declared default preset and its original body."""
-    fields = []
-    if group is not None:
-        fields.append("  default:")
-        fields.append(
-            "    group: {" + json.dumps(group) + ": " + json.dumps(depth) + "}"
-        )
-    if not fields:
-        return body
-    return "---\nprosiform:\n" + "\n".join(fields) + "\n---\n" + body
+    """A declaring document, its default preset pairing it where a group is named."""
+    if group is None:
+        return "---\nprosiform: {}\n---\n" + body
+    pair = "    group: {" + json.dumps(group) + ": " + json.dumps(depth) + "}"
+    return "---\nprosiform:\n  default:\n" + pair + "\n---\n" + body
 
 
 def slug(name: str) -> str:
@@ -275,8 +270,6 @@ class Stack:
             document(
                 "# Shared\n\n## Content\n\nALPHA_SHARED_MARKER\n\n"
                 "Read [Leaf](../../run/leaf.md).\n",
-                group="shared",
-                depth=2,
             ),
         )
         self.write(
@@ -293,8 +286,6 @@ class Stack:
             document(
                 "# Shared\n\n## Content\n\nBETA_SHARED_MARKER\n\n"
                 "Read [Leaf](../../run/leaf.md).\n",
-                group="shared",
-                depth=2,
             ),
         )
         self.write_tail(self.tree / "run", "RUN")
@@ -470,15 +461,18 @@ class Stack:
         return output
 
     def assert_content(
-        self, output: str, markers: list[str], groups: list[str]
+        self, output: str, markers: list[str], outline: list[str]
     ) -> None:
-        """Each named marker and group heading once, with pooled payload sections."""
+        """Each named marker once, and the headings in the outline given.
+
+        Each linked file is composed under its own pairs before the file
+        linking it merges the result, so a group a file places stands
+        inside that file's division, one level deeper, and the shared
+        payload sections pool into one.
+        """
         for marker in markers:
             assert output.count(marker) == 1, marker
-        headings = re.findall(r"^# (.+)$", output, re.M)
-        for group in groups:
-            assert headings.count(group) == 1, group
-        assert len(re.findall(r"^## Payload$", output, re.M)) == 1
+        assert re.findall(r"^#+ .+$", output, re.M) == outline
 
 
 @pytest.fixture(scope="session")
@@ -519,7 +513,25 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
                 "CHECKS_MARKER",
                 "ALPHA_SHARED_MARKER",
             ],
-            ["Rules", "Checks", "Shared", "Leaves"],
+            [
+                "# Assemble",
+                "## Steps",
+                "## Rules",
+                "### Checks",
+                "### Checks",
+                "#### Overview",
+                "##### Checks",
+                "###### Gate",
+                "#### Verify",
+                "# Shared",
+                "## Content",
+                "## Leaves",
+                "### Leaf",
+                "### Tail",
+                "### Payload",
+                "#### Leaf",
+                "#### Tail",
+            ],
             [
                 "REVIEW_MARKER",
                 "DEFAULTS_MARKER",
@@ -529,12 +541,36 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
         ),
         "Review": (
             ["REVIEW_MARKER", "BETA_RULES_MARKER", "BETA_SHARED_MARKER"],
-            ["Rules", "Shared", "Leaves"],
+            [
+                "# Review",
+                "## Checklist",
+                "## Inspect",
+                "## Rules",
+                "### Rules",
+                "### Checks",
+                "# Shared",
+                "## Content",
+                "## Leaves",
+                "### Leaf",
+                "### Tail",
+                "### Payload",
+                "#### Leaf",
+                "#### Tail",
+            ],
             ["ASSEMBLE_MARKER", "DEFAULTS_MARKER", "ALPHA_RULES_MARKER"],
         ),
         "Defaults": (
             ["DEFAULTS_MARKER"],
-            ["Leaves"],
+            [
+                "# Defaults",
+                "## Steps",
+                "## Leaves",
+                "### Leaf",
+                "### Tail",
+                "### Payload",
+                "#### Leaf",
+                "#### Tail",
+            ],
             [
                 "ASSEMBLE_MARKER",
                 "REVIEW_MARKER",
@@ -546,16 +582,12 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
     assert len(stack.targets()) >= 3
     for label in stack.targets():
         output = stack.compiled(stack.entry(label))
-        markers, groups, absent = cases[label]
+        markers, outline, absent = cases[label]
         stack.assert_content(
-            output, [*markers, "RUN_LEAF_MARKER", "RUN_TAIL_MARKER"], groups
+            output, [*markers, "RUN_LEAF_MARKER", "RUN_TAIL_MARKER"], outline
         )
         for marker in absent:
             assert marker not in output
-        if label == "Assemble":
-            assert re.search(r"(?m)^## Verify$", output)
-        if label == "Review":
-            assert re.search(r"(?m)^## Inspect$", output)
         assert stack.skill.name not in stack.entry(label)
 
 
@@ -579,7 +611,25 @@ def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
     stack.assert_content(
         output,
         ["ASSEMBLE_MARKER", "CHECKS_MARKER", "RUN_TAIL_MARKER"],
-        ["Procedures", "Checks", "Leaves"],
+        [
+            "# Procedures",
+            "## Steps",
+            "## Rules",
+            "### Checks",
+            "### Checks",
+            "#### Overview",
+            "##### Checks",
+            "###### Gate",
+            "#### Verify",
+            "# Shared",
+            "## Content",
+            "## Leaves",
+            "### Leaf",
+            "### Tail",
+            "### Payload",
+            "#### Leaf",
+            "#### Tail",
+        ],
     )
 
 
@@ -664,9 +714,25 @@ def test_a_shared_source_is_captured_once(stack: Stack) -> None:
         "RUN_TAIL_MARKER",
     ):
         assert output.count(marker) == 1, marker
-    headings = re.findall(r"^# (.+)$", output, re.M)
-    for group in ("Join", "Alpha-Via", "Portal-Via", "Notes", "Leaves"):
-        assert headings.count(group) == 1, group
+    assert re.findall(r"^#+ .+$", output, re.M) == [
+        "# Join",
+        "## Body",
+        "## Alpha-Via",
+        "### Via",
+        "### Body",
+        "### Notes",
+        "#### Common",
+        "#### Body",
+        "#### Leaves",
+        "##### Leaf",
+        "##### Tail",
+        "##### Payload",
+        "###### Leaf",
+        "###### Tail",
+        "## Portal-Via",
+        "### Via",
+        "### Body",
+    ]
 
 
 def test_rewritten_destinations_are_stable(stack: Stack) -> None:
@@ -677,7 +743,7 @@ def test_rewritten_destinations_are_stable(stack: Stack) -> None:
     assert first == second
     assert "[Rules](#checks)" in first
     assert "[Checks](#checks-2)" in first
-    assert "[Shared](#shared-1)" in first
+    assert "[Shared](#shared)" in first
     assert "[Leaf](#leaf)" in first
     assert "[Tail](#tail)" in first
     assert "libraries/alpha/rules.md" not in first

@@ -6,9 +6,10 @@ two things the shipped tree cannot give: an artifact varied without editing the
 skill, and a tracker answered without a live repository. Both arrive as a
 mapping, so neither touches the tree under test.
 
-Two scenarios run here. The plan mode is bundled over `artifacts/epic.md`
+Two scenarios run here. The align mode is bundled over `artifacts/epic.md`
 stubbed, so the stub's words stand where that artifact's stood inside the merged
-artifacts group and the `## Epic` heading the group emits still stands; and
+artifacts group, which nests inside the mode's own division, and the `### Epic`
+heading the group emits still stands; and
 `conventions.md` is redirected to a document naming a fake tracker command, so
 the bundle an agent follows tells it to run the stand-in while every other
 instruction stays the one that ships.
@@ -59,8 +60,8 @@ from runner import (
 
 ROOT = Path(__file__).resolve().parent.parent
 SKILL = ROOT / "example" / "work-planner"
-ENTRY = "modes/plan-mode.md"
-BUNDLE = "modes_plan-mode.bundles/modes_plan-mode.bundle.md"
+ENTRY = "modes/align-mode.md"
+BUNDLE = "modes_align-mode.bundles/modes_align-mode.bundle.md"
 
 MAPPING = "mapping"
 BUNDLES = "bundle"
@@ -230,13 +231,13 @@ class Scenario:
     @property
     def replaces(self) -> str:
         """The heading the stand-in would carry as a document of its own."""
-        return self.heading[1:]
+        return "# " + self.heading.lstrip("#").lstrip()
 
 
 ARTIFACTS = Scenario(
     name="an-example-mode-bundled-against-a-stub",
     stub=Stub("epic-minimal.md", ARTIFACT_STUB, "artifacts/epic.md"),
-    heading="## Epic",
+    heading="### Epic",
     member=True,
     command="Placeholder for the prerequisite check a drafted epic states.",
     avoided="The evidence required before starting an epic's work.",

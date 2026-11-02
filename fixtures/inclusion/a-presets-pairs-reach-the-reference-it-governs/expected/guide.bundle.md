@@ -4,8 +4,8 @@
 
 Follow [the rules](#rules).
 
-# Targets
+## Targets
 
-## Rules
+### Rules
 
 Every rule the guide follows.
