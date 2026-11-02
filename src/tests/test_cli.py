@@ -397,8 +397,6 @@ def test_diagnostic_selection_respects_values_terminators_and_last_option(
 
 def test_every_option_the_contract_declares_is_accepted(root: Path) -> None:
     run = invoke(
-        "-f",
-        "guide.md",
         "-o",
         str(root.parent),
         "-c",
@@ -431,20 +429,16 @@ def test_a_run_naming_no_entry_reference_is_invalid_usage(root: Path) -> None:
     assert run.bundle == ""
 
 
-def test_a_fragment_only_reference_needs_a_referring_document(root: Path) -> None:
-    run = invoke("#a-section", cwd=root)
-    assert run.status == USAGE_FAILURE
-    assert "-f" in run.stderr
-
-
-def test_a_fragment_only_reference_selects_from_the_referring_document(
+def test_a_bare_fragment_is_invalid_usage_naming_the_section_spelling(
     root: Path,
 ) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n## Run\n\nDo it.\n")
-    assert "Do it." in invoke("guide.md#run", cwd=root).bundle
-    assert invoke("-f", "guide.md", "#run", cwd=root).bundle == (
-        invoke("guide.md#run", cwd=root).bundle
-    )
+    written(root, "guide.md", DECLARED + "# Guide\n\n## A section\n")
+    run = invoke("-d", "json", "#a-section", cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert run.bundle == ""
+    [reported] = run.diagnostics()
+    assert reported["reference"] == "#a-section"
+    assert "document#fragment" in reported["message"]
 
 
 def test_an_entry_naming_a_member_of_one_heading_opens_on_its_title(
@@ -760,9 +754,9 @@ def test_a_source_the_profile_accepts_bundles(root: Path, source: str) -> None:
     assert invoke("guide.md", cwd=root).status == SUCCESS
 
 
-def test_the_referring_document_is_read_under_the_profile(root: Path) -> None:
+def test_a_section_entry_is_read_under_the_profile(root: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\n## A section\n\n<div>raw</div>\n")
-    run = invoke("-f", "guide.md", "#a-section", cwd=root)
+    run = invoke("guide.md#a-section", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.stderr.startswith(RAW_HTML)
     assert "guide.md" in run.stderr
@@ -943,13 +937,13 @@ def test_a_crlf_delimited_block_is_stripped_by_the_command(root: Path) -> None:
     assert run.diagnostics()[0]["source"] == "guide.md:5"
 
 
-def test_a_referring_document_is_stripped_too(root: Path) -> None:
+def test_a_section_entry_is_stripped_too(root: Path) -> None:
     written(
         root,
         "guide.md",
         "---\nprosiform: {}\ntitle: Guide\n---\n# Guide\n\n## Run\n\n<div>raw</div>\n",
     )
-    run = invoke("-d", "json", "-f", "guide.md", "#run", cwd=root)
+    run = invoke("-d", "json", "guide.md#run", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.diagnostics()[0]["source"] == "guide.md:9"
 
@@ -1944,15 +1938,6 @@ def test_an_empty_fragment_is_a_whole_document_reference(root: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\nBody.\n")
     assert invoke("guide.md#", cwd=root).bundle == "# Guide\n\nBody.\n"
     assert invoke("guide.md#", cwd=root).bundle == (invoke("guide.md", cwd=root).bundle)
-
-
-def test_a_referring_document_contributes_no_group(root: Path) -> None:
-    written(root, "docs/note.md", DECLARED + "# Note\n")
-    written(root, "guide.md", "# Guide\n")
-    run = invoke("-f", "guide.md", "docs/note.md", cwd=root)
-    assert run.status == SUCCESS
-    assert "# Guide\n" not in run.bundle
-    assert "# Note\n" in run.bundle
 
 
 def test_a_run_folder_is_published_through_one_rename(

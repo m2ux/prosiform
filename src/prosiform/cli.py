@@ -816,12 +816,6 @@ def parser() -> Parser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     grammar.add_argument(
-        "-f",
-        dest="referrer",
-        metavar="DOC",
-        help="working-directory-relative document for fragment-only references",
-    )
-    grammar.add_argument(
         "-m",
         "--mock",
         dest="mock",
@@ -894,7 +888,7 @@ def parser() -> Parser:
         "references",
         metavar="REF",
         nargs="*",
-        help="document, document#fragment, or #fragment with -f; paths from cwd",
+        help="document or document#fragment; paths from cwd",
     )
     return grammar
 
@@ -917,7 +911,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
         for at, option in enumerate(token[1:], start=1):
             if option in "cCvh":
                 continue
-            if option in "rfogdxFBIOTLNEm":
+            if option in "odxFBIOTLNEm":
                 value = token[at + 1 :].removeprefix("=") or next(tokens, "")
                 if option == "d" and value in FORMATS:
                     selected = value
@@ -959,18 +953,13 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
     return substitution.redirect(found)
 
 
-def entered(
-    referrer: Reference | None, requested: Sequence[Reference]
-) -> list[Reference]:
+def entered(requested: Sequence[Reference]) -> list[Reference]:
     """Each entry reference standing at the head of the chain it opens.
 
     An entry reference is reached by nothing, so the chain a
-    diagnostic about it carries is the one identity it names. A
-    fragment alone names a section of the referring document, which is
-    the base its identity is written against.
+    diagnostic about it carries is the one identity it names.
     """
-    base = referrer.path if referrer is not None else ""
-    return [replace(one, chain=(identity(one, base),)) for one in requested]
+    return [replace(one, chain=(identity(one),)) for one in requested]
 
 
 def sources(root: Path, read: Collection[str]) -> set[Path]:
@@ -1191,22 +1180,18 @@ def probe(root: Path, found: Reference, limits: Limits) -> Probed:
 
 
 def declared_entries(
-    referrer: Reference | None,
-    requested: Sequence[Reference],
-    declarations: Declarations,
+    requested: Sequence[Reference], declarations: Declarations
 ) -> None:
     """Hold every entry reference to naming a document that declares `prosiform`.
 
     An entry reference names the procedure the bundle carries out, so a
     document declaring nothing is no procedure and one naming nothing
     is nothing to carry out: each fails with the code a reference
-    naming nothing fails with, before any source is read. A fragment
-    alone names a section of the referring document, which is the
-    document asked. An entry naming no Markdown document is refused by
-    its suffix when it is read, and is not asked.
+    naming nothing fails with, before any source is read. An entry
+    naming no Markdown document is refused by its suffix when it is
+    read, and is not asked.
     """
-    for one in requested:
-        asked = one if one.path or referrer is None else referrer
+    for asked in requested:
         if not is_markdown(asked.path):
             continue
         answer = declarations.answer(asked)
@@ -1342,13 +1327,10 @@ def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
             handle.write(b"\n")
 
 
-def contributing(
-    referrer: Reference | None, requested: Sequence[Reference]
-) -> dict[str, list[Reference]]:
+def contributing(requested: Sequence[Reference]) -> dict[str, list[Reference]]:
     """Each file group the bundle carries, by the path that names it.
 
-    A reference naming a document selects from that document, and a
-    fragment alone selects from the document `-f` names. The path
+    A reference selects from the document it names. The path
     is the identity the reference normalized to, so two references
     spelling one document name one group, which carries what each of
     them selected. The documents are in path order, which is the order
@@ -1357,8 +1339,7 @@ def contributing(
     """
     selected: dict[str, list[Reference]] = {}
     for one in requested:
-        name = one.path or (referrer.path if referrer is not None else "")
-        selected.setdefault(name, []).append(one)
+        selected.setdefault(one.path, []).append(one)
     return dict(sorted(selected.items()))
 
 
@@ -1753,7 +1734,6 @@ def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -
 
 def traverse(
     root: Path,
-    referrer: Reference | None,
     requested: Sequence[Reference],
     limits: Limits,
     declarations: Declarations = DECLARING,
@@ -1834,12 +1814,12 @@ def traverse(
     dispatching: dict[str, Hop] = {}
     total = 0
     hop = 0
-    frontier = ([referrer] if referrer is not None else []) + list(requested)
+    frontier = list(requested)
     while frontier:
         hop += 1
         for one in frontier:
             verify_cached(root, one, captured)
-            if not one.path or one.path in read:
+            if one.path in read:
                 continue
             limits.hold(FILES, len(read) + 1)
             opened = read_document(root, one, limits, total)
@@ -1861,7 +1841,7 @@ def traverse(
             )
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
-        for path, selecting in contributing(referrer, found).items():
+        for path, selecting in contributing(found).items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
                 tuple(regions(parsed[path])) if chosen is None else chosen.regions
@@ -2351,7 +2331,6 @@ def placement(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     selected: Mapping[str, list[Reference]],
-    referrer: Reference | None,
     entries: Collection[Reference],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
@@ -2367,9 +2346,7 @@ def placement(
     from an entry reference by a chain of the links read here, so the
     order covers them all.
     """
-    base = referrer.path if referrer is not None else ""
-    placed = [one.path or base for one in entries]
-    order = list(dict.fromkeys(path for path in placed if path in selected))
+    order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
     at = 0
     while at < len(order):
         path = order[at]
@@ -2530,7 +2507,6 @@ def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
     defined: dict[str, dict[str, Definition]],
-    referrer: Reference | None,
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
@@ -2565,11 +2541,9 @@ def compose(
     an authored heading equal to one pf emits, are refused as input
     failures too.
     """
-    selected = contributing(referrer, found)
+    selected = contributing(found)
     joins = joined(read, parsed, selected, entries)
-    selected = placement(
-        read, parsed, selected, referrer, entries, declarations, substitution
-    )
+    selected = placement(read, parsed, selected, entries, declarations, substitution)
     try:
         headed, placed = subsections(
             assembled(
@@ -3012,16 +2986,9 @@ def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
     )
 
 
-def selections(
-    referrer: Reference | None, requested: Sequence[Reference]
-) -> tuple[Target, ...]:
+def selections(requested: Sequence[Reference]) -> tuple[Target, ...]:
     """Each distinct selection the command line names, in first-named order."""
-    return tuple(
-        dict.fromkeys(
-            (one.path or (referrer.path if referrer else ""), one.fragment)
-            for one in requested
-        )
-    )
+    return tuple(dict.fromkeys((one.path, one.fragment) for one in requested))
 
 
 def run_name(selected: Sequence[Target]) -> str:
@@ -3046,9 +3013,9 @@ def bundle_file(target: Target) -> str:
     return f"{run_name((target,))}{BUNDLE_SUFFIX}"
 
 
-def derived_name(referrer: Reference | None, requested: Sequence[Reference]) -> str:
+def derived_name(requested: Sequence[Reference]) -> str:
     """The entry bundle's file name, joined from each distinct selection's name."""
-    return f"{run_name(selections(referrer, requested))}{BUNDLE_SUFFIX}"
+    return f"{run_name(selections(requested))}{BUNDLE_SUFFIX}"
 
 
 @dataclass(frozen=True)
@@ -3074,7 +3041,6 @@ class Compiled:
 
 def compiled(
     root: Path,
-    referrer: Reference | None,
     requested: Sequence[Reference],
     options: argparse.Namespace,
     folder: Path,
@@ -3093,10 +3059,10 @@ def compiled(
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
-    declared_entries(referrer, requested, declarations)
+    declared_entries(requested, declarations)
     try:
         read, parsed, defined, captured, found, hops = traverse(
-            root, referrer, requested, limits, declarations, substitution
+            root, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
@@ -3110,7 +3076,6 @@ def compiled(
         read,
         parsed,
         defined,
-        referrer,
         requested,
         found,
         limits,
@@ -3131,12 +3096,12 @@ def compiled(
         )
     return Compiled(
         bundled,
-        derived_name(referrer, requested),
+        derived_name(requested),
         hops,
         [*coinciding, *(selfward(hop) for hop in hops if hop.own)],
         trailing,
         captured,
-        unselected(read, parsed, contributing(referrer, found), requested),
+        unselected(read, parsed, contributing(found), requested),
     )
 
 
@@ -3193,7 +3158,7 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, None, [target], options, folder, substitution)
+        one = compiled(root, [target], options, folder, substitution)
         built[hop.name] = one
         pending.extend(one.hops)
     return built
@@ -3255,23 +3220,21 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         )
     mapping = substitution(options)
     requested = [entry(reference, mapping) for reference in options.references]
-    if not options.referrer:
-        for one in requested:
-            if not one.path:
-                raise usage_failure(
-                    f"the fragment-only reference {one.original!r} needs -f to "
-                    f"name the document it resolves against"
-                )
+    for one in requested:
+        if not one.path:
+            raise usage_failure(
+                f"the entry reference {one.original!r} names a fragment alone, and "
+                f"a fragment alone names no document; name the section as "
+                f"document#fragment",
+                reference=one.original,
+            )
 
     root = Path.cwd().resolve()
-    referring = entry(options.referrer, mapping) if options.referrer else None
-    if referring is not None:
-        referring = replace(referring, chain=(identity(referring),))
-    requested = entered(referring, requested)
+    requested = entered(requested)
 
-    selected = selections(referring, requested)
+    selected = selections(requested)
     folder = Path(options.output).resolve() / f"{run_name(selected)}{RUN_FOLDER_SUFFIX}"
-    first = compiled(root, referring, requested, options, folder, mapping)
+    first = compiled(root, requested, options, folder, mapping)
     single = {requested[0].chain[0]} if len(selected) == 1 else set()
     built = dispatched_set(root, first, single, options, folder, mapping)
 
