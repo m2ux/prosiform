@@ -71,7 +71,7 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 Each budget is a deterministic limit that fails the run rather than truncating a bundle. Every budget holds per bundle, because each bundle is read by one agent from its own entry.
 
-The [options table](../invocation.md#options) names each budget and what it counts. Crossing one fails with a diagnostic naming the budget and the figure that crossed it.
+The [budgets table](../invocation.md#budgets) names each budget, its default and what it counts, and `--budget NAME=VALUE` sets one. Crossing one fails with a diagnostic naming the budget and the figure that crossed it.
 
 The remedies are the same either way — restructure the sources or raise the number — so one code covers them all. Overrides are positive decimal integers: zero does not mean unlimited.
 

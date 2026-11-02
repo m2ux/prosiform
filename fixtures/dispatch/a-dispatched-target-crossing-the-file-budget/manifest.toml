@@ -2,14 +2,14 @@ description = "Each bundle holds every budget for its own closure: the entry ope
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
-  "Resource limits — -F",
+  "Resource limits — files",
   "Resource limits, every budget holds per bundle",
   "Adversarial acceptance fixtures — Dispatch",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-F", "3", "guide.md"]
+arguments = ["--budget", "files=3", "guide.md"]
 
 [expected]
 exit_status = 1

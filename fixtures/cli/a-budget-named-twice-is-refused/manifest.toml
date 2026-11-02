@@ -1,0 +1,18 @@
+description = "Two budget entries naming one budget are refused as invalid usage, because only one of the two orders would make the run reproducible, and the message names the budget."
+
+clauses = [
+  "Resource limits — Name given twice",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "files=1", "--budget", "files=2", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["files budget is named twice"]

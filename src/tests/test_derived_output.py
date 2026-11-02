@@ -159,7 +159,7 @@ def test_atomic_failure_preserves_existing_folder(
 
 
 @pytest.mark.parametrize(
-    ("fault", "flags"), [("source-changed", ()), (None, ("-O", "1"))]
+    ("fault", "flags"), [("source-changed", ()), (None, ("--budget", "output-bytes=1"))]
 )
 def test_failed_validation_preserves_existing_derived_output(
     tmp_path: Path,
@@ -303,7 +303,7 @@ def test_a_failing_run_under_the_cleanup_fault_writes_nothing(
 ) -> None:
     monkeypatch.setenv(cli.FAULT_VARIABLE, cli.CLEANUP_FAULT)
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
-    run = invoke(tmp_path, "-O", "1", "a.md")
+    run = invoke(tmp_path, "--budget", "output-bytes=1", "a.md")
     assert run.status == 1 and run.stdout == ""
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
 

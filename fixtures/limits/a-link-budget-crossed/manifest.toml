@@ -1,12 +1,12 @@
 description = "A run examining more authored link and image occurrences in selected content than the link budget names fails, each occurrence counted once where the source wrote it."
 
 clauses = [
-  "Resource limits — -L",
+  "Resource limits — links",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-L", "2", "guide.md"]
+arguments = ["--budget", "links=2", "guide.md"]
 
 [expected]
 exit_status = 1

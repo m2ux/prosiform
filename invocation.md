@@ -13,7 +13,7 @@ pf
 
 ## Options
 
-Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid.
+Flags are case-sensitive.
 `pf -h` and these tables agree; `make invocation` verifies them. The profile is `skill-markdown-v4`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
@@ -23,17 +23,25 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | `-o DIR` | folder the run's own folder of bundles is written into, made if absent, swapped in whole; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
-| `-F N` | distinct source documents opened; positive decimal integer, default 256 |
-| `-B N` | raw bytes in one source; positive decimal integer, default 1048576 |
-| `-I N` | raw source bytes, counted once per source; positive decimal integer, default 16777216 |
-| `-O N` | bytes of the complete bundle; positive decimal integer, default 262144 |
-| `-T N` | distinct document and section targets discovered; positive decimal integer, default 4096 |
-| `-L N` | authored link and image occurrences in selected content; positive decimal integer, default 32768 |
-| `-N N` | levels of container nesting and, independently, YAML collection nesting in one source; positive decimal integer, default 64 |
-| `-E N` | link hops from the nearest entry reference; positive decimal integer, default 8 |
+| `--budget NAME=VALUE` | set the budget NAME to VALUE, a positive decimal integer, given once per budget; repeatable; the budgets, their defaults and what each counts are listed below |
 | `-C, --codes` | list this build's error and warning codes |
 | `-v, --version` | tool version and profile identifier |
 | `-h, --help` | usage, defaults and exit statuses |
+
+### Budgets
+
+Each budget fails the run rather than truncating a bundle, and holds per bundle. An entry naming a budget outside these, an entry carrying no `=`, an empty name or a value that is no positive decimal integer, a budget named twice, and `nesting` below 2 are each invalid usage.
+
+| Budget | Effect |
+| --- | --- |
+| `files` | default 256; distinct source documents opened |
+| `file-bytes` | default 1048576; raw bytes in one source |
+| `input-bytes` | default 16777216; raw source bytes, counted once per source |
+| `output-bytes` | default 262144; bytes of the complete bundle |
+| `targets` | default 4096; distinct document and section targets discovered |
+| `links` | default 32768; authored link and image occurrences in selected content |
+| `nesting` | default 64; levels of container nesting and, independently, YAML collection nesting in one source; at least 2 |
+| `depth` | default 8; link hops from the nearest entry reference |
 
 ## Examples
 

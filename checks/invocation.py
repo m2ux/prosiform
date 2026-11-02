@@ -15,13 +15,16 @@ line, as it does for the corpus — so nothing here imports a package,
 names a module or names a language, and the documentation binds every
 implementation of the contract rather than the first one.
 
-Four things are compared:
+Five things are compared:
 
 - **Every argument.** A table whose header carries a cell `Option`
   enumerates them. Each row's `Option` cell is one argument as the help
   writes its invocation, and the `Effect` cell beside it is that
   argument's own help text, reproduced word for word. A default is part
   of that text, so a default that moves is a row that no longer matches.
+- **Every budget.** A table whose header carries a cell `Budget`
+  enumerates them, each row's `Effect` reproducing the budget's own line
+  from the help output: its default and what it counts.
 - **Every exit status.** A table whose header carries a cell `Exit`
   enumerates them, each row's `Meaning` reproducing the status's own
   line from the help output.
@@ -63,15 +66,18 @@ OPTION = "Option"
 EFFECT = "Effect"
 EXIT = "Exit"
 MEANING = "Meaning"
+BUDGET = "Budget"
 
 ARGUMENTS = ("positional arguments", "options")
 STATUSES = "exit statuses"
+BUDGETS = "budgets"
 
 HEADING = re.compile(r"^(\S[^:]*):\s*$")
 ENTRY = re.compile(r"^ {2}(\S.*?)\s*$")
 CONTINUATION = re.compile(r"^ {4,}(\S.*?)\s*$")
 COLUMN = re.compile(r"\s{2,}")
 STATUS = re.compile(r"^ {2}([0-9]+)\s{2,}(\S.*?)\s*$")
+NAMED = re.compile(r"^ {2}(\S+)\s{2,}(\S.*?)\s*$")
 PROFILE = re.compile(r"\(([^()\s]+)\)\s*$")
 
 STATEMENTS = (
@@ -156,21 +162,31 @@ def documented_arguments(text: str) -> list[Argument]:
     return found
 
 
-def documented_statuses(text: str) -> list[tuple[str, str]]:
-    """Every exit status the command's help output names, with its meaning."""
+def listed(text: str, heading: str, line: re.Pattern[str]) -> list[tuple[str, str]]:
+    """Every entry one section of the help output lists, with its own text."""
     found: list[tuple[str, str]] = []
     section = ""
-    for line in text.splitlines():
-        heading = HEADING.match(line)
-        if heading is not None:
-            section = heading.group(1)
+    for written in text.splitlines():
+        title = HEADING.match(written)
+        if title is not None:
+            section = title.group(1)
             continue
-        if section != STATUSES:
+        if section != heading:
             continue
-        status = STATUS.match(line)
-        if status is not None:
-            found.append((status.group(1), flat(status.group(2))))
+        entry = line.match(written)
+        if entry is not None:
+            found.append((entry.group(1), flat(entry.group(2))))
     return found
+
+
+def documented_statuses(text: str) -> list[tuple[str, str]]:
+    """Every exit status the command's help output names, with its meaning."""
+    return listed(text, STATUSES, STATUS)
+
+
+def documented_budgets(text: str) -> list[tuple[str, str]]:
+    """Every budget the command's help output names, with its default and rule."""
+    return listed(text, BUDGETS, NAMED)
 
 
 def profile(version: str) -> str:
@@ -244,8 +260,16 @@ def check() -> tuple[list[str], list[str]]:
             for record in rows(text, EXIT)
         ],
     )
-    passed += status_passed
-    failures += status_failures
+    budget_passed, budget_failures = compare(
+        "budget",
+        dict(documented_budgets(usage)),
+        [
+            (plain(record.get(BUDGET, "")), plain(record.get(EFFECT, "")))
+            for record in rows(text, BUDGET)
+        ],
+    )
+    passed += status_passed + budget_passed
+    failures += status_failures + budget_failures
 
     identifier = profile(reported(VERSION))
     if identifier in text:

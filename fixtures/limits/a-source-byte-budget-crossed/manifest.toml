@@ -1,12 +1,12 @@
 description = "A source whose raw bytes exceed the per-source budget fails the run, the figure counted over the bytes the file holds."
 
 clauses = [
-  "Resource limits — -B",
+  "Resource limits — file-bytes",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-B", "16", "alpha.md"]
+arguments = ["--budget", "file-bytes=16", "alpha.md"]
 
 [expected]
 exit_status = 1

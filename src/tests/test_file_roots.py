@@ -153,7 +153,7 @@ def test_raw_limit_stops_before_complete_read(
         return data
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("-B", "30", "-d", "json", "a.md", cwd=tmp_path)
+    run = invoke("--budget", "file-bytes=30", "-d", "json", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert sizes == [31]
