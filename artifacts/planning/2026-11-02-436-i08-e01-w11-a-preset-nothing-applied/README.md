@@ -12,6 +12,8 @@ This record holds its delivery of `AC6, AC7, AC9, AC10`: the work item, the vali
 
 | Artifact | What it holds |
 | --- | --- |
+| [W11 work item](w11.md) | The unused-preset warning, the per-bundle record of unselected presets, the deferral exclusion and the fixtures |
+| [W13 work item](w13.md) | The invocation, source page and glossary stating presets, the refused keys and the warning |
 
 ## Links
 
