@@ -1,4 +1,4 @@
-description = "A target declaring nothing is text: the link is emitted as authored, the target contributes no content and no group, and -F 1 passes because the target is not counted as a source."
+description = "A target declaring nothing is text: the link is emitted as authored, the target contributes no content and no group, and files=1 passes because the target is not counted as a source."
 
 clauses = [
   "Link classification and resource handling — A link naming a document that declares nothing",
@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-F", "1", "guide.md"]
+arguments = ["--budget", "files=1", "guide.md"]
 
 [expected]
 exit_status = 0
