@@ -12,6 +12,14 @@ This record holds its delivery of `AC14,AC15,AC16,AC17,AC18,AC19`: the work item
 
 | Artifact | What it holds |
 | --- | --- |
+| [W13 work item](w13.md) | The hierarchy page read against the build |
+| [W14 work item](w14.md) | The output-budget page read against the build |
+| [W15 work item](w15.md) | The references page read against the build |
+| [W16 work item](w16.md) | The selection page read against the build |
+| [W17 work item](w17.md) | The sources page read against the build |
+| [W18 work item](w18.md) | The validation page read against the build |
+| [Validation](validation.md) | T1 and T2 for each page, at the revisions they ran |
+
 
 ## Links
 
