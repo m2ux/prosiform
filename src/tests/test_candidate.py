@@ -41,7 +41,7 @@ from prosiform.cli import (
     destination_map,
 )
 from prosiform.closure import Reference
-from prosiform.limits import BUDGETS, NESTING, Limits
+from prosiform.limits import NESTING
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -57,7 +57,7 @@ from prosiform.provenance import (
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import Source, fragments, lines, regions
 
-BUDGET = Limits({budget: budget.default for budget in BUDGETS}).of(NESTING)
+BUDGET = NESTING.default
 
 
 @dataclass

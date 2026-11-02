@@ -42,12 +42,12 @@ from prosiform.closure import (
     inside,
     withholding_target,
 )
-from prosiform.limits import BUDGETS, NESTING, Limits
+from prosiform.limits import NESTING
 from prosiform.profile import is_markdown, parse
 from prosiform.source import regions
 
 DECLARED = "---\nprosiform: {}\n---\n"
-BUDGET = Limits({budget: budget.default for budget in BUDGETS}).of(NESTING)
+BUDGET = NESTING.default
 
 SUBSTITUTE = Reference("stand-in.md", "stand-in.md", walk="stand-in.md")
 SECTION = Reference("stand-in.md#one", "stand-in.md", "one", walk="stand-in.md")

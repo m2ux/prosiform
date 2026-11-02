@@ -124,6 +124,7 @@ from prosiform.limits import (
     Budget,
     Crossed,
     Limits,
+    in_force,
 )
 from prosiform.limits import (
     CODES as LIMITS_CODES,
@@ -516,9 +517,7 @@ class BudgetEntries(argparse.Action):
 
 def budgets(options: argparse.Namespace) -> Limits:
     """Every budget in force: each the command line names, the rest at default."""
-    return Limits(
-        {budget: options.budgets.get(budget, budget.default) for budget in BUDGETS}
-    )
+    return in_force(options.budgets)
 
 
 def mock(value: str) -> Pairing:
