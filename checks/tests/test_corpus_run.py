@@ -12,6 +12,10 @@ piece of work, the corpus reports them from the manifests alone, so a
 session starting that work reads what it unblocks before it changes
 anything.
 
+A fixture's sources declare every setting in a preset, so a source key
+naming a setting or holding anything but a preset's mapping fails its
+fixture, unless the fixture expects the run to refuse that declaration.
+
 The build under test is a canned program each case configures, as in the
 runner's own tests: the comparison belongs to the runner and what these
 cases exercise is the verdict drawn from it. A corpus with no build
@@ -35,6 +39,7 @@ from corpus import (
     summary,
     unblocked,
     unblocked_report,
+    undeclared,
 )
 from manifests import MANIFEST_NAME, errors, missing_files, read
 from runner import BUILD, Difference, Result
@@ -323,3 +328,73 @@ def test_a_request_names_the_work_it_asks_about() -> None:
 
 def test_a_run_naming_no_work_runs_the_corpus() -> None:
     assert requested([]) is None
+
+
+def declaring(fixture: Path, frontmatter: str) -> Path:
+    """The fixture with a second source carrying the frontmatter named."""
+    (fixture / "source" / "rules.md").write_text(
+        f"---\n{frontmatter}\n---\n# Rules\n", encoding="utf-8"
+    )
+    return fixture
+
+
+def refusing(fixture: Path) -> Path:
+    """The fixture rewritten to expect the run to refuse a declaration."""
+    manifest = fixture / MANIFEST_NAME
+    text = manifest.read_text(encoding="utf-8")
+    text = text.replace("exit_status = 0", "exit_status = 1")
+    text = text.replace('bundles = ["expected/guide.bundle.md"]\n', "")
+    text = text.replace(
+        "diagnostics = []",
+        '[[expected.diagnostics]]\nseverity = "error"\n'
+        'code = "E_INVALID_CONVERSION_METADATA"',
+    )
+    manifest.write_text(text, encoding="utf-8")
+    assert errors(read(manifest)) == []
+    return fixture
+
+
+def test_settings_in_presets_are_declared(tmp_path: Path) -> None:
+    fixture = declaring(
+        write_fixture(tmp_path / "fixture"),
+        "prosiform:\n  default: {group: {modes: 1}}\n"
+        "  Checks: {subst: [{a.md: b.md}]}\n  Draft: {}",
+    )
+    assert undeclared(fixture) == ()
+
+
+@pytest.mark.parametrize(
+    ("declared", "key"),
+    [
+        ("{group: {modes: 1}}", "group"),
+        ("{subst: [{a.md: b.md}]}", "subst"),
+        ('{root: "."}', "root"),
+        ("{Target: x}", "Target"),
+    ],
+)
+def test_a_setting_outside_a_preset_is_named(
+    tmp_path: Path, declared: str, key: str
+) -> None:
+    fixture = declaring(write_fixture(tmp_path / "fixture"), f"prosiform: {declared}")
+    assert undeclared(fixture) == (f"source/rules.md: prosiform.{key}",)
+
+
+def test_a_fixture_expecting_the_refusal_declares_its_subject(tmp_path: Path) -> None:
+    fixture = refusing(
+        declaring(write_fixture(tmp_path / "fixture"), 'prosiform: {root: "."}')
+    )
+    assert undeclared(fixture) == ()
+
+
+def test_a_setting_outside_a_preset_fails_a_fixture_meeting_its_manifest(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    fixture = declaring(
+        write_fixture(tmp_path / "corpus" / "one"), "prosiform: {group: {modes: 1}}"
+    )
+    monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
+    assert outcome(fixture).verdict is Verdict.FAILED
+    assert main(tmp_path / "corpus") == 1
+    printed = capsys.readouterr().out
+    assert f"{fixture}: declares a setting outside a preset" in printed
+    assert "source/rules.md: prosiform.group" in printed
