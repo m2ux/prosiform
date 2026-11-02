@@ -44,7 +44,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [D: level](d-w04.md) | A level telling a repeated heading apart |
 | [D: empty contribution](d-w05.md) | A reference the preset empties is refused |
 | [D: frontmatter](d-w06.md) | A preset carrying an exclusion, and the top-level key refused |
-| [D: documentation](d-w07.md) | The selection page and the source page state it |
+| [D: documentation](d-w11.md) | The selection page and the source page state inclusion and exclusion |
 | [Remove the Referrer](epic-e-remove-referrer.md) | [I08:E03](https://github.com/m2ux/prosiform/issues/449): the epic removing `-f` and the bare-fragment form |
 | [E: design clause](e-w00.md) | The clause, the retired option and the pin |
 | [E: parser and refusal](e-w01.md) | The option's removal and the usage error that replaces it |
@@ -152,26 +152,21 @@ The joins record accounts for every pair the changes made eligible. What remains
 
 I05's criteria were a quality bar true of every epic forever, and the split renumbered the epics without replanning them. Every I08 row therefore cited all three bars, which made the Coverage column say the same thing nine times and left the initiative with no way to record partial delivery.
 
-The criteria are replanned at the initiative's own grain. Each states an outcome the epics realise together, not one an epic realises alone.
+The criteria are replanned at the initiative's own grain: each states the outcome one epic delivers to the argument surface.
 
 | Criterion | Outcome | Served by |
 | --- | --- | --- |
-| AC1 | No argument reaches a run outside one grammar | E01, E02, E03, E04, E05 |
-| AC2 | Whether a reference is compiled follows from its target's declaration | E00 |
-| AC3 | A conversion setting reaches a compilation only through a named preset | E01, E06, E07 |
-| AC4 | A bundle can be carved by keeping or removing named sections | E02 |
-| AC5 | A section left out contributes no dependency | E02 |
-| AC6 | Every ceiling is named rather than lettered | E05 |
-| AC7 | Every fault is driven by environment alone | E04 |
-| AC8 | The example and corpus trees state their settings in presets | E09 |
-| AC9 | Every added behaviour is reached by an end-to-end fixture | each epic adding surface |
-| AC10 | The documented surface describes every added behaviour | each epic adding surface |
-| AC11 | The checks pass on each delivering revision | every epic |
-| AC12 | The initiative may close once every epic is delivered | none; it is the closure condition |
+| AC1 | Whether a reference is compiled follows from its target's declaration | E00 |
+| AC2 | A conversion setting reaches a compilation only through a preset of the document it governs, selected by the linking section | E01 |
+| AC3 | A preset keeps only the sections its `include` names and withholds those its `exclude` names, and a section left out adds no dependency | E02 |
+| AC4 | A section is named only as `document#fragment`, and no option names a referrer | E03 |
+| AC5 | Every fault a run performs on itself is driven by environment alone | E04 |
+| AC6 | Every ceiling is set as `--budget NAME=VALUE` and none is lettered | E05 |
+| AC7 | A stand-in reaches a compilation only through the writing document's `subst` | E06 |
+| AC8 | A substitute compiles in place of its key, each redirect and unused key is reported, and an unhonourable shape is refused | E07 |
+| AC9 | The example tree and every corpus source state their settings in presets alone | E08 |
 
-- **AC1, AC3, AC4, AC5, AC6, AC7 and AC8 are coarser than any epic's own criteria.** Each states what the argument surface achieves once several epics have landed, which is why several epics serve one.
-- **AC9, AC10 and AC11 survive from I05 deliberately.** They were bars rather than outcomes, and at initiative grain a quality gate over the whole surface is the right shape for them.
-- **AC12 is the only criterion no epic serves.** Closure rests on it and on the Done column, which is what makes partial delivery readable.
+Each criterion is one epic's outcome at initiative grain, as [I08](https://github.com/m2ux/prosiform/issues/462) states it; the epic's own criteria make it true.
 
 ## Decisions
 
@@ -226,6 +221,8 @@ The criteria are replanned at the initiative's own grain. Each states an outcome
 - **A preset's `include` keeps only the sections it names, with `exclude`'s grammar and whole-file scope.** A consumer that needs a few sections of a long document states those rather than excluding the rest, and a section added later stays out. (User, 2026-11-02.)
 - **`include` applies first, then `exclude`.** One preset may hold both, so an excluded subsection of an included section is withheld. (User, 2026-11-02.)
 - **One code refuses a reference either filter empties.** `E_EMPTIED_ENTRY` names the inclusions and exclusions responsible, so an include matching nothing and an exclusion of everything are one contradiction. (User, 2026-11-02.)
+- **An include narrows a reference only when every governing preset states one.** A reference is governed by its target's `default` and the presets its section title selects; if any states no `include`, the whole document is carried before exclusion, and otherwise the union of their includes. (User, 2026-11-02.)
+- **E02's fixtures share one folder, `fixtures/filter/`.** `fixtures/inclusion/` keeps its declared-inclusion meaning, and the two filters of one feature sit together. (User, 2026-11-02.)
 - **Inclusion is planned in E02.** It shares E02's grammar, seam and scope, and E02 had not started, so the epic is retitled Section Filters rather than a second epic duplicating them. (User, 2026-11-02.)
 - **No option carries an exclusion.** There is no `--exclude` and no letter to spend: an exclusion is a preset entry, so what a document withholds is stated by that document's own preset rather than by the caller. (User, 2026-11-01.)
 - **The initiative's `Depends on` cells are empty.** The rule derives a whole-epic edge only where every row of the dependent requires every row of the prerequisite, and no row pair here meets it. The gates live in the task edges and in the priority numbers. (User, 2026-10-31.)
