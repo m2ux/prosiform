@@ -1,0 +1,26 @@
+description = "A contribution whose own body names the section it is would compose it again inside itself without end, so the run publishes nothing and fails, naming the closing directive in the read document and the chain of sections that reached it."
+
+clauses = [
+  "Section composition — Composition cycles",
+  "Section composition — Nested directives",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "#inputs"
+source = "read.md:8"
+chain = ["guide.md", "read.md#inputs", "read.md#inputs"]
+
+[expected.diagnostics.location]
+file = "read.md"
+line = 8
+column = 1

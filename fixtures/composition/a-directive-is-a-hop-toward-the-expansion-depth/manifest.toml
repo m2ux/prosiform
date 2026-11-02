@@ -1,0 +1,18 @@
+description = "A directive is a link hop as any reference is, so a section a contribution's own directive reaches stands two hops from the entry and crosses an expansion depth of one."
+
+clauses = [
+  "Section composition — Budgets",
+  "Resource limits — depth",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "depth=1", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"
+message_contains = ["depth"]

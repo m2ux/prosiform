@@ -88,6 +88,7 @@ from prosiform.closure import (
 from prosiform.composition import (
     Colliding,
     Composed,
+    Cycling,
     Overflowing,
     Parentless,
     compositions,
@@ -163,7 +164,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Located, Target
+from prosiform.provenance import Contributing, Target
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -2462,39 +2463,30 @@ def placement(
     A composition directive places nothing: the section it names is
     content of the document whose group carries the directive, so that
     section is read where the directive is written, once, and a link
-    it carries places a document as one its scope's document writes. A
-    directive inside a contribution composes nothing, so it is the
-    inclusion its link is, and the section it names joins its document's
-    selection.
+    it carries places a document as one its scope's document writes,
+    a directive it carries reading its own section the same way.
 
     The first mapping holds the references including each document,
-    as `included` keeps them, with each such directive beside them. The
-    second names, for each document a link placed, the document whose
-    group carries that link. An entry is placed by the invocation
-    rather than by a document, so it is absent there.
+    as `included` keeps them. The second names, for each document a
+    link placed, the document whose group carries that link. An entry
+    is placed by the invocation rather than by a document, so it is
+    absent there.
     """
     selected = contributing(included(found))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
     placers: dict[str, str] = {}
     composed: set[tuple[str, str | None]] = set()
 
-    def place(path: str, chosen: Selection | None, holder: str, inside: bool) -> None:
+    def place(path: str, chosen: Selection | None, holder: str) -> None:
         for one in required(
             path, read[path], parsed[path], chosen, (), declarations, substitution
         ):
-            named = parsed[one.path]
-            if one.composes and not inside:
+            if one.composes:
                 if (one.path, one.fragment) not in composed:
                     composed.add((one.path, one.fragment))
-                    section_of = selection(one.path, named, [one], entries)
-                    place(one.path, section_of, holder, True)
+                    section_of = selection(one.path, parsed[one.path], [one], entries)
+                    place(one.path, section_of, holder)
                 continue
-            if one.composes:
-                one = replace(one, composes=False)
-                selected.setdefault(one.path, []).append(one)
-                if one.path in order:
-                    widened = selection(one.path, named, [one], entries)
-                    place(one.path, widened, one.path, False)
             if one.path in selected and one.path not in order:
                 order.append(one.path)
                 placers[one.path] = holder
@@ -2503,7 +2495,7 @@ def placement(
     while at < len(order):
         path = order[at]
         at += 1
-        place(path, selection(path, parsed[path], selected[path], entries), path, False)
+        place(path, selection(path, parsed[path], selected[path], entries), path)
     return {path: selected[path] for path in order}, placers
 
 
@@ -2598,10 +2590,11 @@ def assembled(
     joins: Mapping[str, Sequence[Membership]],
     placers: Mapping[str, str],
     chains: Mapping[str, Sequence[str]],
+    limits: Limits,
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-    composing: Mapping[Located, str] | None = None,
+    composing: Contributing | None = None,
 ) -> tuple[list[Group], Composed]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -2625,7 +2618,11 @@ def assembled(
 
     The sections the bundle's directives compose are placed once every
     group stands where it is emitted, and the contribution heading each
-    composing link points at is returned beside the groups.
+    composing link points at is returned beside the groups. The
+    composing map holds each composing link's destination by the placing
+    of the region writing it: the authored links' under none, which the
+    groups are rewritten through, and every contribution's own beside
+    them.
     """
     parent = parent_document(entries)
     inforce = group_depths(joins)
@@ -2645,6 +2642,7 @@ def assembled(
         if holder is not None:
             nested.setdefault(holder, []).append(division)
     built: dict[Division, Group] = {}
+    authored = None if composing is None else composing.get((), {})
     with assembling(chains):
         for division in order:
             path, grouped = division
@@ -2663,7 +2661,7 @@ def assembled(
                 dispatching,
                 read[path].first_line,
                 substitution,
-                composing,
+                authored,
             )
         for named, paths in merging.items():
             depth = inforce[named]
@@ -2684,7 +2682,7 @@ def assembled(
                         dispatching,
                         read[path].first_line,
                         substitution,
-                        composing,
+                        authored,
                     )
                     for path in paths
                 ],
@@ -2701,10 +2699,12 @@ def assembled(
             parsed,
             read,
             defined,
+            limits,
             assigned,
             dispatching,
             declarations,
             substitution,
+            composing,
         )
 
 
@@ -2716,13 +2716,16 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     emit, a dispatched link the bundle places no sub-section for is a
     handoff it cannot state, and a directive whose composition has no
     section, parent or level to take, or a name its scope already
-    holds, is a placement it cannot make. Each is a property of the
-    sources the run was asked to bundle rather than a fault in the tool,
-    so each is reported with the code the contract declares for it, and
-    with the chain that reached the document the fault was found in,
+    holds, is a placement it cannot make, and a composition reaching a
+    section that holds a directive on its own chain is one that would
+    not end. Each is a property of the sources the run was asked to
+    bundle rather than a fault in the tool, so each is reported with
+    the code the contract declares for it, and with the chain that
+    reached the document the fault was found in,
     whichever member of a merged group that is. A composition fault
     names the directive, where it is written, and the chain extended by
-    it.
+    it; a cycle names each earlier directive on its chain as related. A
+    contribution crossing the output budget is the crossing it is.
     """
     try:
         yield
@@ -2760,6 +2763,37 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             source=location(beyond.path, beyond.line),
             chain=(*chains.get(beyond.path, ()), beyond.destination),
         ) from beyond
+    except Cycling as cycling:
+        first, closing = cycling.chain[0], cycling.chain[-1]
+        sections = tuple(identity(each.target) for each in cycling.chain)
+        raise Failure(
+            INPUT_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"the directive {closing.written!r} in {closing.at[0]!r} composes "
+                f"{sections[-1]!r}, which holds a directive on the chain of "
+                f"compositions that placed it, so the composition would not end",
+                code=UNSUPPORTED_CONSTRUCT,
+                reference=closing.written,
+                source=location(closing.at[0], closing.line),
+                chain=(*chains.get(first.at[0], ()), *sections),
+                remedy="remove a directive from the chain, or give one a label "
+                "that requests no placement",
+                location=Location(closing.at[0], closing.line or 1, 1),
+                related=tuple(
+                    RelatedLocation(
+                        each.at[0],
+                        each.line or 1,
+                        1,
+                        f"composes {identity(each.target)!r}",
+                    )
+                    for each in cycling.chain[:-1]
+                )
+                or None,
+            ),
+        ) from cycling
+    except Crossed as crossed:
+        raise crossing(crossed) from crossed
     except Colliding as colliding:
         raise input_failure(
             f"the directive {colliding.destination!r} in {colliding.path!r} "
@@ -2871,6 +2905,7 @@ def compose(
             joins,
             placers,
             chains,
+            limits,
             None,
             declarations,
             substitution,
@@ -2900,6 +2935,7 @@ def compose(
         joins,
         placers,
         chains,
+        limits,
         dispatching,
         declarations,
         substitution,

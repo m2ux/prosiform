@@ -30,6 +30,29 @@ pairs redirect the links the contribution writes, since those are the
 target document's own. A `group` pair places a document where an
 ordinary reference bundles it, so it places no contribution.
 
+A directive a contribution carries composes as one its source writes
+anywhere: beneath the heading holding it there, which is the
+contribution heading for one in the target's own body and a carried
+subsection's heading for one in a subsection. Its destination sections
+follow that heading's content, ahead of the subsections that follow
+it. A source link a contribution carries stands in every copy of that
+contribution, so a composition is identified by its *placing*: the
+directives whose compositions placed it, outermost first, its own last.
+
+A composition whose target section holds its own directive, or one
+on the placing that reached it, would compose that target again
+within itself without end, so it is refused, naming the closing
+directive and the chain. A target reached twice along distinct
+placings is no cycle: each composes once.
+
+Each contribution is bundle content, so its bytes count toward the
+output budget as it is composed, and a multiplying composition fails
+at the first emission crossing the budget rather than once it is
+whole. Without a destination map a link's published destination is
+not yet known, so that pass counts only the headings composition
+generates, which every pass emits alike; with one, every byte emitted
+counts.
+
 Composition runs on the built groups ahead of the dispatch pass, which
 reads what a destination section carries as the scope's own content:
 a scope's dispatch sub-sections follow its destination sections, and
@@ -84,21 +107,25 @@ from prosiform.closure import (
     directive,
 )
 from prosiform.dispatch import region_of
+from prosiform.limits import OUTPUT_BYTES, Limits
 from prosiform.provenance import (
     CONTRIBUTION_HEADING,
     DESTINATION_SECTION,
     Ancestor,
     Carried,
+    Contributing,
     Emitted,
     Generated,
     Located,
     Origin,
     Part,
+    Placing,
     Range,
     Served,
 )
 from prosiform.rewrite import Definition
 from prosiform.source import (
+    ENCODING,
     HREF,
     LINK_OPEN,
     Source,
@@ -111,8 +138,8 @@ from prosiform.source import (
     section,
 )
 
-Composed = dict[Located, Generated]
-"""Each composing link's contribution heading, by the link's position."""
+Composed = dict[Placing, Generated]
+"""Each contribution's heading, by the placing of the composition it heads."""
 
 
 class Parentless(Exception):
@@ -171,6 +198,22 @@ class Colliding(Exception):
         self.authored = authored
 
 
+class Cycling(Exception):
+    """A composition whose target holds a directive on the chain that reached it.
+
+    The chain holds each directive whose composition placed the next,
+    the closing one last.
+    """
+
+    def __init__(self, chain: tuple["Directive", ...]) -> None:
+        closing = chain[-1]
+        super().__init__(
+            f"the directive {closing.written!r} in {closing.at[0]!r} composes a "
+            f"section holding a directive on the chain that placed it"
+        )
+        self.chain = chain
+
+
 @dataclass(frozen=True)
 class Directive:
     """One composing link: the section it names and where it is written.
@@ -204,18 +247,23 @@ class Composing:
         parsed: Mapping[str, Sequence[Token]],
         read: Mapping[str, Source],
         defined: Mapping[str, Mapping[str, Definition]],
+        limits: Limits,
         assigned: Mapping[tuple[str, str | None], str] | None = None,
         dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
+        composing: Contributing | None = None,
     ) -> None:
         self.parsed = parsed
         self.read = read
         self.defined = defined
+        self.limits = limits
         self.assigned = assigned
         self.dispatching = dispatching
         self.declarations = declarations
         self.substitution = substitution
+        self.composing = {} if composing is None else composing
+        self.counted = 0
         self.placed: Composed = {}
         self.emitted: list[str] = []
         self.parts: list[Part] = []
@@ -264,28 +312,48 @@ class Composing:
                     single_line(shows[id(chosen[0])]),
                 )
 
+    def emit(self, text: str, generated: bool = False) -> None:
+        """Emit one part's text, holding the output budget against it.
+
+        Every pass emits a generated heading alike, so it counts in each;
+        any other text counts once its links carry their destinations.
+        """
+        self.emitted.append(text)
+        if generated or self.assigned is not None:
+            self.counted += len(text.encode(ENCODING))
+            self.limits.hold(OUTPUT_BYTES, self.counted)
+
     def heading(self, one: Generated) -> None:
         """Emit one generated heading of a composition."""
-        self.emitted.append(f"{ATX * one.level} {escaped(one.text)}")
+        self.emit(f"{ATX * one.level} {escaped(one.text)}", generated=True)
         self.parts.append(one)
         self.headings.append(one)
 
-    def contribute(self, one: Directive, depth: int) -> None:
-        """Emit one directive's contribution at the depth its heading takes."""
+    def contribute(
+        self, one: Directive, depth: int, chain: tuple[Directive, ...]
+    ) -> None:
+        """Emit one directive's contribution at the depth its heading takes.
+
+        The chain holds the directives whose compositions placed this
+        one, outermost first. The directives the contribution carries
+        compose beneath the heading holding each, as the scope's do.
+        """
         path = one.target.path
         tokens = self.parsed[path]
         chosen = section(tokens, one.target.fragment or "") or ()
+        placing = (*chain, one)
         opening = chosen[0]
-        chain = ancestry(tokens)[id(opening)]
-        if not chain:
+        parents = ancestry(tokens)[id(opening)]
+        if not parents:
             raise Parentless(one.at[0], one.line, one.written)
         shows = shown_text(path, tokens, self.declarations, self.substitution)
         contribution = Generated(
-            single_line(shows[id(chain[-1])]), depth, CONTRIBUTION_HEADING
+            single_line(shows[id(parents[-1])]), depth, CONTRIBUTION_HEADING
         )
         if depth > MAX_LEVEL:
             raise one.overflowing(contribution.text, depth)
-        self.placed.setdefault(one.at, contribution)
+        placed = tuple(each.at for each in placing)
+        self.placed.setdefault(placed, contribution)
         self.heading(contribution)
         body = list(chosen[1:])
         by = depth - level(opening)
@@ -307,14 +375,21 @@ class Composing:
                 self.dispatching,
                 source.first_line,
                 self.substitution,
+                self.composing.get(placed, {}),
             )
         )
         named = source_fragments(tokens)
+        pending: dict[str, list[Directive]] = {}
+        holding = depth
         for token in body:
             carried = carried_headings(tokens, token)
             for held in carried:
                 if level(held) + by > MAX_LEVEL:
                     raise one.overflowing(shows[id(held)], level(held) + by)
+            if token.type == HEADING_OPEN:
+                self.flush(pending, holding, placing)
+                pending = {}
+                holding = level(token) + by
             self.headings.extend(
                 Carried(
                     emitted_text(held, shows[id(held)], by),
@@ -332,31 +407,63 @@ class Composing:
                 )
                 for held in carried
             )
-            start, end = token.map or (0, 0)
+            lower, upper = token.map or (0, 0)
             self.parts.append(
                 Range(
                     path,
-                    (start, end),
-                    tuple(at for at in range(start, end) if at in removed),
-                    composed=True,
+                    (lower, upper),
+                    tuple(at for at in range(lower, upper) if at in removed),
+                    placed,
                 )
             )
-            self.emitted.append(region(written, tokens, token, by, removed))
+            self.emit(region(written, tokens, token, by, removed))
+            for found in self.directives(path, token):
+                pending.setdefault(found.title, []).append(found)
+        self.flush(pending, holding, placing)
 
-    def flush(self) -> None:
-        """Emit the destination sections the section just closed composes."""
-        if self.level is None or not self.pending:
-            self.pending = {}
+    def cycle(self, one: Directive, chain: tuple[Directive, ...]) -> None:
+        """Refuse a directive whose target holds it or a directive on its chain."""
+        tokens = self.parsed[one.target.path]
+        chosen = section(tokens, one.target.fragment or "") or ()
+        start = (chosen[0].map or (0, 0))[0]
+        end = max((token.map or (0, 0))[1] for token in chosen)
+        placing = (*chain, one)
+        if any(
+            each.at[0] == one.target.path and start <= each.at[1] < end
+            for each in placing
+        ):
+            raise Cycling(placing)
+
+    def flush(
+        self,
+        pending: Mapping[str, Sequence[Directive]],
+        holding: int | None,
+        chain: tuple[Directive, ...],
+    ) -> None:
+        """Emit the destination sections one closed section composes.
+
+        The holding level is the level of the heading the directives
+        stand beneath, and the chain is the directives whose
+        compositions placed that heading, none for an authored one.
+        """
+        if holding is None:
             return
-        depth = self.level + 1
-        for title, found in self.pending.items():
+        for each in pending.values():
+            for one in each:
+                self.cycle(one, chain)
+        depth = holding + 1
+        for title, found in pending.items():
             if depth > MAX_LEVEL:
                 raise found[0].overflowing(title, depth)
             destination = Generated(title, depth, DESTINATION_SECTION)
             self.opened[id(destination)] = found[0]
             self.heading(destination)
             for one in found:
-                self.contribute(one, depth + 1)
+                self.contribute(one, depth + 1, chain)
+
+    def close(self) -> None:
+        """Emit the destination sections the authored section just closed composes."""
+        self.flush(self.pending, self.level, ())
         self.pending = {}
 
     def collide(self) -> None:
@@ -391,7 +498,9 @@ class Composing:
     def group(self, one: Group) -> Group:
         """One group with the sections its directives compose."""
         offset = 1 if one.wrapped else 0
-        self.emitted = list(one.parts[:offset])
+        self.emitted = []
+        for text in one.parts[:offset]:
+            self.emit(text)
         self.opened = {}
         self.parts = []
         self.headings = list(one.record.headings[:offset])
@@ -399,7 +508,7 @@ class Composing:
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
             if isinstance(part, Ancestor | Generated):
-                self.flush()
+                self.close()
                 self.level = part.level
                 self.headings.append(one.record.headings[at])
                 at += 1
@@ -408,16 +517,16 @@ class Composing:
                 token = region_of(tokens, part)
                 held = len(carried_headings(tokens, token))
                 if token.type == HEADING_OPEN:
-                    self.flush()
+                    self.close()
                     self.level = one.record.headings[at].level
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
                 if not part.composed:
                     for found in self.directives(part.path, token):
                         self.pending.setdefault(found.title, []).append(found)
-            self.emitted.append(text)
+            self.emit(text)
             self.parts.append(part)
-        self.flush()
+        self.close()
         self.collide()
         return Group(
             tuple(self.emitted),
@@ -432,31 +541,52 @@ def compositions(
     parsed: Mapping[str, Sequence[Token]],
     read: Mapping[str, Source],
     defined: Mapping[str, Mapping[str, Definition]],
+    limits: Limits,
     assigned: Mapping[tuple[str, str | None], str] | None = None,
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Contributing | None = None,
 ) -> tuple[list[Group], Composed]:
     """Every group with the sections its directives compose, and each contribution.
 
     The contributions are the headings each composing link points at,
-    held by the link's position, so the destinations they take are read
-    once every heading of the bundle is known.
+    held by the composition's placing, so the destinations they take
+    are read once every heading of the bundle is known. A destination
+    map comes with the composing links' destinations, which a
+    contribution's own directives are rewritten through.
     """
-    composing = Composing(
-        parsed, read, defined, assigned, dispatching, declarations, substitution
+    composer = Composing(
+        parsed,
+        read,
+        defined,
+        limits,
+        assigned,
+        dispatching,
+        declarations,
+        substitution,
+        composing,
     )
-    return [composing.group(one) for one in groups], composing.placed
+    return [composer.group(one) for one in groups], composer.placed
 
 
 def contributions(
     placed: Composed, headed: Sequence[Group], assigned: Sequence[str]
-) -> dict[Located, str]:
-    """The destination each composing link takes: its contribution heading's."""
+) -> Contributing:
+    """The destination each composing link takes: its contribution heading's.
+
+    The links are held by the placing of the region writing them, so a
+    region's links are read together, each by its own position.
+    """
     position = {
         id(heading): at
         for at, heading in enumerate(
             heading for one in headed for heading in one.record.headings
         )
     }
-    return {link: assigned[position[id(heading)]] for link, heading in placed.items()}
+    found: Contributing = {}
+    for placing, heading in placed.items():
+        found.setdefault(placing[:-1], {})[placing[-1]] = assigned[
+            position[id(heading)]
+        ]
+    return found
