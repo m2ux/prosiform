@@ -230,7 +230,7 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
 
     A run naming no folder writes its folder into its working directory, a
     folder `-o` names holds the run's folder, and a folder that does not
-    exist refuses the write and keeps no temporary folder.
+    exist is made to hold it.
     """
     entry = os.path.relpath(sources / ENTRY, elsewhere)
     name = derived(entry)
