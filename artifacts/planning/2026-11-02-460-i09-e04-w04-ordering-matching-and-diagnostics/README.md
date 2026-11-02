@@ -13,6 +13,7 @@ This record holds its delivery of `AC7,AC8`: the work item, the validation evide
 | Artifact | What it holds |
 | --- | --- |
 | [W04 work item](w04.md) | Deterministic order and exact matching pinned, and each structural composition failure refused naming its directive |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
