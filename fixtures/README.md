@@ -16,7 +16,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `candidate-validation/` | Candidate validation of the compiled bundle against the post-compilation invariants. |
 | `citation/` | A link above the working directory cited as text. |
 | `cli/` | The command-line grammar, its options, budgets, exit statuses and JSON diagnostics. |
-| `composition/` | Section composition: directive labels, scopes, contributions, deferral, cycles and refusals. |
+| `composition/` | [Section composition](../docs/composition.md): directive labels, scopes, contributions, deferral, cycles and refusals. |
 | `confinement/` | Path forms, symbolic links and unreadable paths a reference inside a source names. |
 | `consolidation/` | Two selections of one document consolidated into one. |
 | `deferral/` | The deferral mark: what a deferred link contributes and how it is published. |
