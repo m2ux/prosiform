@@ -14,7 +14,7 @@ pf
 ## Options
 
 Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid.
-`pf -h` and these tables agree; `make invocation` verifies them. The profile is `skill-markdown-v4`, which `-v` reports beside the version.
+`pf -h` and these tables agree; `make invocation` verifies them. The profile is `skill-markdown-v4`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
 | --- | --- |
@@ -23,7 +23,6 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 | `-o DIR` | folder the run's own folder of bundles is written into, made if absent, swapped in whole; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
-| `-x {source-changed,internal,cleanup-refused}` | inject a conformance run fault no source tree expresses; default none |
 | `-F N` | distinct source documents opened; positive decimal integer, default 256 |
 | `-B N` | raw bytes in one source; positive decimal integer, default 1048576 |
 | `-I N` | raw source bytes, counted once per source; positive decimal integer, default 16777216 |

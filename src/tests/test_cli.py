@@ -55,6 +55,8 @@ from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
     EARLIER_SET_RETAINED,
+    FAULT_VARIABLE,
+    FAULTS,
     GROUP_CONFLICT,
     GUIDE,
     INPUT_FAILURE,
@@ -324,13 +326,9 @@ def test_an_informational_long_option_responds_as_its_short_form(
 @pytest.mark.parametrize(
     "option",
     [
-        "--root",
-        "--from",
         "--output",
-        "--group",
         "--check",
         "--diagnostics",
-        "--fault",
         "--max-files",
         "--max-file-bytes",
         "--max-input-bytes",
@@ -3384,33 +3382,52 @@ def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) ->
 
 
 def test_the_source_changed_fault_fails_the_run_and_publishes_nothing(
-    root: Path, tmp_path: Path
+    root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """The fault writes to the tree, and the run's own recheck is what fails it."""
-    run = invoke("-d", "json", "-x", "source-changed", "guide.md", cwd=root)
+    monkeypatch.setenv(FAULT_VARIABLE, "source-changed")
+    run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundle == ""
     assert [one["code"] for one in run.diagnostics()] == [SOURCE_CHANGED]
     assert (root / "guide.md").read_bytes() != (DECLARED + "# Guide\n").encode()
 
 
-def test_the_internal_fault_names_the_run_and_publishes_nothing(root: Path) -> None:
-    run = invoke("-d", "json", "-x", "internal", "guide.md", cwd=root)
+def test_the_internal_fault_names_the_run_and_publishes_nothing(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv(FAULT_VARIABLE, "internal")
+    run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INTERNAL_ERROR
     assert run.bundle == ""
     assert [one["code"] for one in run.diagnostics()] == [UNEXPECTED_INTERNAL_ERROR]
 
 
-def test_a_run_asking_for_no_fault_meets_none(root: Path) -> None:
+def test_a_run_asking_for_no_fault_meets_none(
+    root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.delenv(FAULT_VARIABLE, raising=False)
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
+    assert run.diagnostics() == []
     assert (root / "guide.md").read_bytes() == (DECLARED + "# Guide\n").encode()
 
 
-def test_a_fault_the_contract_does_not_declare_is_a_usage_failure(root: Path) -> None:
-    run = invoke("-d", "json", "-x", "other", "guide.md", cwd=root)
+@pytest.mark.parametrize("value", ["other", ""])
+def test_a_fault_the_contract_does_not_declare_is_a_usage_failure(
+    root: Path, monkeypatch: pytest.MonkeyPatch, value: str
+) -> None:
+    """The refusal names the value and the three faults the variable admits."""
+    monkeypatch.setenv(FAULT_VARIABLE, value)
+    run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == USAGE_FAILURE
-    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
+    assert run.bundle == ""
+    [refused] = run.diagnostics()
+    assert refused["code"] == INVALID_USAGE
+    assert repr(value) in refused["message"]
+    for admitted in FAULTS:
+        assert admitted in refused["message"]
+    assert (root / "guide.md").read_bytes() == (DECLARED + "# Guide\n").encode()
 
 
 def test_a_declined_lookup_names_the_reference_under_the_default_budgets(

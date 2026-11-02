@@ -1,0 +1,21 @@
+description = "A run asked for a fault the contract does not name refuses it as invalid usage, and the message names the value and the three faults admitted, so a mistyped conformance setting fails rather than passing as a run meeting no fault."
+
+clauses = [
+  "Conformance faults — Unknown value",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+  "CLI contract, one code for the form of the command line, and the message says which fault it was",
+]
+
+fault = "unrecognized"
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["unrecognized", "source-changed", "internal", "cleanup-refused"]
