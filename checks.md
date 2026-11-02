@@ -4,7 +4,7 @@ Every check is a named `make` command. Continuous integration runs these same na
 
 ## Running the Checks
 
-One command runs every check in the sections below, from [Python](#python) to [The Example Skill](#the-example-skill).
+One command runs every check in the sections below, from [Python](#python) to [The Contract](#the-contract).
 
 | Command | Runs |
 | --- | --- |
@@ -33,7 +33,7 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 | Command | Asserts |
 | --- | --- |
 | `make harness` | The corpus, its runner and the diagram-following eval are well formed. See [The harness](#the-harness). |
-| `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares. |
+| `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares, and every fixture source declares its settings in a preset. |
 | `make smoke` | The build installs into an environment, and its entry point bundles a declaring reference. |
 
 #### The Harness
@@ -100,28 +100,8 @@ These two checks keep the corpus tied to the design rather than to any one build
 `make independence` reads the same three inputs as conformance, plus the report between them. It keeps the corpus bound to the behaviour the design states, not to the build that happens to sit beside it.
 
 - **The rule.** Any term written the way a type, function, field, constant, package or language is written must be one the contract names.
-- **Where contract names come from.** The design's prose and clause names, the terms the [glossary](docs/glossary.md) defines, the interface the contract declares, and the headings of the [example tree](example/work-planner/SKILL.md).
+- **Where contract names come from.** The design's prose and clause names, the terms the [glossary](docs/glossary.md) defines, and the interface the contract declares.
 - **Needs a build.** It renders the conformance report, so it fails when no build is configured.
-
-### The Example Skill
-
-These checks cover the [work-planner example](example/work-planner/SKILL.md).
-
-| Command | Asserts |
-| --- | --- |
-| `make authoring` | Every document meets the authoring rules in its [guidelines](example/work-planner/guidelines.md). Each departure is reported by file and line, grouped by area. |
-| `make boundary` | Every document's boundary, the deepest directory holding every local Markdown path its own links name, is printed, and no link names a path outside it. |
-| `make steps` | Every procedure writes its steps as `N. Action` headings one level below it, each unique in its document, and has no numbered list outside a code block. |
-
-#### Authoring Rules
-
-`make authoring` asserts five rules:
-
-- An operation states its Inputs and Outputs on one line before its first step, as `None` or a comma-separated list of links to contract sections.
-- A shell command sits in an unindented fenced block within the step that runs it.
-- No file has a heading titled `Commands`.
-- A cross-file link is written from the file that holds it.
-- Every document declares `prosiform` in its frontmatter, and the declaration names no root.
 
 ## Outside `make check`
 
@@ -149,9 +129,9 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus` and `make boundary`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness` and `make corpus`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
-- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make steps` and `make authoring` are standard-library scripts in [`checks/`](checks/README.md).
+- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md).
 
 ### Network Access
 

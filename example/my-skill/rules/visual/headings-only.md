@@ -1,6 +1,0 @@
----
-prosiform: {}
----
-# Style
-
-# Limits
