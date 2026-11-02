@@ -305,7 +305,7 @@ def test_an_empty_prosiform_block_beside_other_keys_declares() -> None:
 
 def test_a_declared_root_is_a_declaration_finding_at_its_line() -> None:
     text = (
-        '---\nprosiform:\n  root: ".."\n  default:\n    group-depth: [{artifacts: 1}]\n'
+        '---\nprosiform:\n  root: ".."\n  default:\n    group: {artifacts: 1}\n'
         "---\n# Epic\n"
     )
     found = authoring.declaration("artifacts/epic.md", text)
@@ -318,7 +318,7 @@ def test_a_declared_root_is_a_declaration_finding_at_its_line() -> None:
 
 
 def test_a_root_key_outside_the_prosiform_block_is_no_finding() -> None:
-    text = "---\nprosiform:\n  default:\n    group-depth: [{x: 1}]\nroot: y\n---\n# A\n"
+    text = "---\nprosiform:\n  default:\n    group: {x: 1}\nroot: y\n---\n# A\n"
     assert authoring.declaration("artifacts/a.md", text) == []
 
 

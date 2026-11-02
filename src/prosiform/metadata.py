@@ -33,10 +33,8 @@ INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
-"""Refused: `group-depth` pairs each group with its depth in one entry."""
-DEPTH = "group-depth"
 SUBST = "subst"
-FIELDS = (DEPTH, SUBST)
+FIELDS = (GROUP, SUBST)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -82,7 +80,7 @@ class _MarkedScanner(Scanner):
 
 @dataclass(frozen=True)
 class Membership:
-    """One `group-depth` entry: a merged group and the depth its document joins at.
+    """A preset's `group` pair: a merged group and the depth its document joins at.
 
     The depth is held to the one every contributing member of the group
     declares. Each location is where its half of the entry is written,
@@ -114,14 +112,14 @@ class Subst:
 class Preset:
     """One named preset's settings.
 
-    `memberships` holds each `group-depth` entry in written order, so the
-    declaring document joins every group it names; a preset stating none
-    leaves the document its individual file group. `substs` holds each
-    `subst` entry in written order.
+    `membership` holds the `group` pair, the one group the declaring
+    document joins; a preset stating none leaves the document its
+    individual file group. `substs` holds each `subst` entry in written
+    order.
     """
 
     name: str
-    memberships: tuple[Membership, ...] = ()
+    membership: Membership | None = None
     substs: tuple[Subst, ...] = ()
 
 
@@ -448,8 +446,6 @@ def decode(
         name = "prosiform." + key.value
         if key.value == ROOT:
             raise _refused_root(name, key.location)
-        if key.value == GROUP:
-            raise _refused_group(name, key.location)
         if value.kind != "map":
             remedy = (
                 f"; write the field within a preset, as prosiform.{DEFAULT}.{key.value}"
@@ -475,16 +471,6 @@ def _refused_root(name: str, location: Location) -> InvalidMetadata:
     )
 
 
-def _refused_group(name: str, location: Location) -> InvalidMetadata:
-    return _fail(
-        INVALID_CONVERSION_METADATA,
-        f"{name} is refused: {DEPTH} pairs each group with its depth in one "
-        f"entry; write the pair within a preset, as "
-        f"prosiform.{DEFAULT}.{DEPTH}: [{{<group>: <depth>}}]",
-        location,
-    )
-
-
 def _preset(preset: str, mapping: _Node) -> Preset:
     """One preset's settings, each field checked where it is written."""
     fields: dict[str, _Node] = {}
@@ -498,27 +484,22 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         name = f"prosiform.{preset}.{key.value}"
         if key.value == ROOT:
             raise _refused_root(name, key.location)
-        if key.value == GROUP:
-            raise _refused_group(name, key.location)
         if key.value not in FIELDS:
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
-        if value.kind != "seq":
+        if key.value == SUBST and value.kind != "seq":
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"{name} must be a list", value.location
             )
         fields[key.value] = value
     named = f"prosiform.{preset}."
 
-    def entries(field: str) -> list[tuple[str, _Node]]:
-        held = fields[field].children if field in fields else []
-        return [(f"{named}{field}[{at}]", entry) for at, entry in enumerate(held)]
-
+    held = fields[SUBST].children if SUBST in fields else []
     return Preset(
         preset,
-        tuple(_membership(preset, name, entry) for name, entry in entries(DEPTH)),
-        tuple(_subst(name, entry) for name, entry in entries(SUBST)),
+        _membership(preset, named + GROUP, fields[GROUP]) if GROUP in fields else None,
+        tuple(_subst(f"{named}{SUBST}[{at}]", entry) for at, entry in enumerate(held)),
     )
 
 
@@ -567,7 +548,7 @@ def _pair(name: str, entry: _Node, shape: str, noun: str) -> tuple[_Node, _Node]
 
 
 def _membership(preset: str, name: str, entry: _Node) -> Membership:
-    """One `group-depth` entry, a single string key mapped to a depth."""
+    """A preset's `group` pair, a single string key mapped to a depth."""
     group, depth = _pair(
         name,
         entry,

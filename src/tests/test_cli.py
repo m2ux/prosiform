@@ -55,7 +55,7 @@ from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
     EARLIER_SET_RETAINED,
-    GROUP_DEPTH_CONFLICT,
+    GROUP_CONFLICT,
     GUIDE,
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -82,7 +82,7 @@ from prosiform.cli import (
     keyworded,
     keywords,
     main,
-    pairs,
+    pair,
     parser,
     probe,
     publication,
@@ -274,7 +274,7 @@ def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
 
 def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
     declared = {
-        GROUP_DEPTH_CONFLICT,
+        GROUP_CONFLICT,
         INVALID_ENCODING,
         INVALID_USAGE,
         PUBLICATION_FAILED,
@@ -661,11 +661,11 @@ def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
 def conversion(group: str, depth: int) -> str:
     """One source's complete conversion metadata."""
     return (
-        "---\nprosiform:\n  default:\n    group-depth: [{"
+        "---\nprosiform:\n  default:\n    group: {"
         + json.dumps(group)
         + ": "
         + str(depth)
-        + "}]\n---\n"
+        + "}\n---\n"
     )
 
 
@@ -1085,7 +1085,7 @@ def test_groups_are_ordered_by_first_link(root: Path) -> None:
 
 
 def test_members_are_ordered_by_first_link(root: Path) -> None:
-    member = "---\nprosiform: {default: {group-depth: [{notes: 2}]}}\n---\n"
+    member = "---\nprosiform: {default: {group: {notes: 2}}}\n---\n"
     written(
         root,
         "guide.md",
@@ -1214,82 +1214,6 @@ def test_headings_an_author_repeats_warn_of_nothing(root: Path) -> None:
     assert run.diagnostics() == []
 
 
-def joining(*groups: tuple[str, int]) -> str:
-    """One source's conversion metadata joining each group at its depth."""
-    entries = ", ".join(
-        "{" + json.dumps(name) + f": {depth}}}" for name, depth in groups
-    )
-    return "---\nprosiform:\n  default:\n    group-depth: [" + entries + "]\n---\n"
-
-
-def test_a_document_joining_two_groups_is_emitted_under_each(root: Path) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\nFollow [the rules](rules.md).\n")
-    written(
-        root,
-        "rules.md",
-        joining(("modes", 1), ("targets", 2))
-        + "# Rules\n\nThe preamble.\n\n## Checks\n\nEvery check.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS, run.stderr
-    assert run.diagnostics() == []
-    assert run.bundle == (
-        "# Guide\n\nFollow [the rules](#rules).\n\n"
-        "# Modes\n\n## Rules\n\nThe preamble.\n\n### Checks\n\nEvery check.\n\n"
-        "# Targets\n\n## Overview\n\n### Rules\n\nThe preamble.\n\n"
-        "## Checks\n\nEvery check.\n"
-    )
-
-
-def test_a_depth_disagreement_in_one_of_a_documents_groups_refuses(
-    root: Path,
-) -> None:
-    """Depth is held per group, so the group the members disagree about is named."""
-    written(
-        root,
-        "guide.md",
-        DECLARED + "# Guide\n\nRead [a](a.md) and [b](b.md).\n",
-    )
-    written(root, "a.md", joining(("modes", 1), ("targets", 2)) + "# A\n")
-    written(root, "b.md", joining(("modes", 1), ("targets", 3)) + "# B\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == GROUP_DEPTH_CONFLICT
-    assert "for group 'targets' is 2" in diagnostic["message"]
-    assert diagnostic["location"]["file"] == "a.md"
-    assert diagnostic["related"][0]["file"] == "b.md"
-
-
-@pytest.mark.parametrize("depths", [(1, 1), (1, 2)])
-def test_a_group_its_preset_names_twice_is_refused(
-    root: Path, depths: tuple[int, int]
-) -> None:
-    """One preset pairing one group twice is refused, at one depth or two."""
-    written(root, "guide.md", DECLARED + "# Guide\n\nFollow [the rules](rules.md).\n")
-    written(
-        root,
-        "rules.md",
-        joining(("modes", depths[0]), ("modes", depths[1])) + "# Rules\n\nAll.\n",
-    )
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == USAGE_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == INVALID_USAGE
-    assert diagnostic["message"].startswith(
-        "prosiform.default.group-depth[1] names group 'modes', which "
-        "prosiform.default.group-depth[0] already names"
-    )
-    assert diagnostic["reference"] == "rules.md"
-    assert diagnostic["chain"] == ["guide.md", "rules.md"]
-    assert diagnostic["location"]["file"] == "rules.md"
-    assert diagnostic["related"][0]["message"] == (
-        "prosiform.default.group-depth[0] names group 'modes'"
-    )
-
-
 def substituting(*entries: str) -> str:
     """One source's conversion metadata whose `default` holds each `subst` entry."""
     return "---\nprosiform:\n  default:\n    subst: [" + ", ".join(entries) + "]\n---\n"
@@ -1360,9 +1284,14 @@ def test_subst_keys_naming_distinct_identities_are_admitted(
     assert run.status == SUCCESS, run.stderr
 
 
-def test_two_selected_presets_pairing_one_group_at_two_depths_are_refused(
-    root: Path,
+@pytest.mark.parametrize(
+    ("drafted", "stated"),
+    [(("reviews", 2), "{reviews: 2}"), (("drafts", 1), "{drafts: 1}")],
+)
+def test_two_selected_presets_stating_different_group_pairs_are_refused(
+    root: Path, drafted: tuple[str, int], stated: str
 ) -> None:
+    """One reference places its document under one pair, so two pairs disagree."""
     written(
         root,
         "guide.md",
@@ -1371,8 +1300,7 @@ def test_two_selected_presets_pairing_one_group_at_two_depths_are_refused(
     written(
         root,
         "rules.md",
-        presets(("Checks", [("reviews", 1)]), ("Draft", [("reviews", 2)]))
-        + "# Rules\n",
+        presets(("Checks", ("reviews", 1)), ("Draft", drafted)) + "# Rules\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == USAGE_FAILURE
@@ -1380,17 +1308,16 @@ def test_two_selected_presets_pairing_one_group_at_two_depths_are_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == INVALID_USAGE
     assert diagnostic["message"] == (
-        "prosiform.Checks.group-depth and prosiform.Draft.group-depth, both "
-        "selected by the title 'Checks and Draft', pair group 'reviews' with "
-        "depths 1 and 2"
+        "prosiform.Checks.group and prosiform.Draft.group, both selected by the "
+        f"title 'Checks and Draft', state {{reviews: 1}} and {stated}"
     )
     assert diagnostic["reference"] == "rules.md"
-    assert diagnostic["location"] == {"file": "rules.md", "line": 4, "column": 31}
+    assert diagnostic["location"] == {"file": "rules.md", "line": 4, "column": 13}
     assert diagnostic["related"][0] == {
         "file": "rules.md",
         "line": 6,
-        "column": 31,
-        "message": "prosiform.Draft.group-depth for group 'reviews' is 2",
+        "column": 13,
+        "message": f"prosiform.Draft.group is {stated}",
     }
 
 
@@ -1422,7 +1349,7 @@ def test_two_selected_presets_mapping_one_key_two_ways_are_refused(
 
 
 def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
-    """One group at one depth, and one key to one alternative, state one setting."""
+    """One group pair, and one key to one alternative, state one setting."""
     written(
         root,
         "guide.md",
@@ -1432,16 +1359,15 @@ def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
         root,
         "rules.md",
         "---\nprosiform:\n"
-        "  Checks:\n    group-depth: [{reviews: 1}]\n    subst: [{steps.md: a.md}]\n"
-        "  Draft:\n    group-depth: [{reviews: 1}, {drafts: 1}]\n"
+        "  Checks:\n    group: {reviews: 1}\n    subst: [{steps.md: a.md}]\n"
+        "  Draft:\n    group: {reviews: 1}\n"
         "    subst: [{./steps.md: ./a.md}]\n"
         "---\n# Rules\n\nAll.\n",
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert run.bundle.count("All.") == 2
+    assert run.bundle.count("All.") == 1
     assert "# Reviews\n\n## Rules" in run.bundle
-    assert "# Drafts\n\n## Rules" in run.bundle
 
 
 def test_a_selected_preset_disagreeing_with_default_holds_over_it(
@@ -1457,8 +1383,8 @@ def test_a_selected_preset_disagreeing_with_default_holds_over_it(
         root,
         "rules.md",
         "---\nprosiform:\n"
-        "  default:\n    group-depth: [{reviews: 2}]\n    subst: [{steps.md: a.md}]\n"
-        "  Checks:\n    group-depth: [{reviews: 1}]\n    subst: [{steps.md: b.md}]\n"
+        "  default:\n    group: {reviews: 2}\n    subst: [{steps.md: a.md}]\n"
+        "  Checks:\n    group: {reviews: 1}\n    subst: [{steps.md: b.md}]\n"
         "---\n# Rules\n\nAll.\n",
     )
     run = invoke("guide.md", cwd=root)
@@ -1477,7 +1403,7 @@ def test_presets_one_title_leaves_unselected_disagree_with_nothing(
     written(
         root,
         "rules.md",
-        presets(("Checks", [("reviews", 1)]), ("Draft", [("reviews", 2)]))
+        presets(("Checks", ("reviews", 1)), ("Draft", ("reviews", 2)))
         + "# Rules\n\nAll.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -1491,22 +1417,16 @@ def test_a_linking_documents_presets_never_reach_the_document_it_links(
     written(
         root,
         "guide.md",
-        presets(("default", [("guides", 1)]), ("Checks", [("reviews", 1)]))
+        presets(("default", ("guides", 1)), ("Checks", ("reviews", 1)))
         + "# Release Checks\n\n## Checks\n\nFollow [the rules](rules.md).\n",
     )
-    written(
-        root,
-        "rules.md",
-        presets(("default", [("rules", 1)]), ("Checks", [("checks", 1)]))
-        + "# Rules\n\nAll.\n",
-    )
+    written(root, "rules.md", presets(("default", ("rules", 1))) + "# Rules\n\nAll.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "# Guides\n\n## Release Checks" in run.bundle
     assert "# Reviews\n\n## Release Checks" in run.bundle
+    assert "# Guides" not in run.bundle
     assert "# Rules\n\n## Rules\n\nAll." in run.bundle
-    assert "# Checks\n\n## Rules\n\nAll." in run.bundle
-    assert run.bundle.count("All.") == 2
+    assert run.bundle.count("All.") == 1
 
 
 def unused_presets_of(run: Run) -> list[tuple[str, str]]:
@@ -1528,9 +1448,9 @@ def test_a_preset_no_title_selects_warns_and_the_run_publishes(root: Path) -> No
     written(
         root,
         "rules.md",
-        "---\nprosiform:\n  default:\n    group-depth: [{modes: 1}]\n"
-        "  Draft:\n    group-depth: [{drafts: 1}]\n"
-        "  Checks:\n    group-depth: [{reviews: 1}]\n"
+        "---\nprosiform:\n  default:\n    group: {modes: 1}\n"
+        "  Draft:\n    group: {drafts: 1}\n"
+        "  Checks:\n    group: {reviews: 1}\n"
         "---\n# Rules\n\nAll.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -1564,8 +1484,8 @@ def test_selected_presets_and_default_warn_nothing(root: Path) -> None:
     written(
         root,
         "rules.md",
-        "---\nprosiform:\n  default:\n    group-depth: [{modes: 1}]\n"
-        "  Checks:\n    group-depth: [{reviews: 1}]\n"
+        "---\nprosiform:\n  default:\n    group: {modes: 1}\n"
+        "  Checks:\n    group: {reviews: 1}\n"
         "---\n# Rules\n\nAll.\n",
     )
     run = invoke("guide.md", cwd=root)
@@ -1586,7 +1506,7 @@ def test_a_preset_one_reference_selects_is_used_though_another_leaves_it(
     written(
         root,
         "rules.md",
-        "---\nprosiform:\n  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
         "---\n# Rules\n\n## Alpha\n\nOne.\n\n## Beta\n\nTwo.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -1609,8 +1529,7 @@ def test_a_preset_a_dispatched_bundle_selects_is_used(root: Path) -> None:
     written(
         root,
         "rules.md",
-        "---\nprosiform:\n  Checks:\n    group-depth: [{reviews: 1}]\n"
-        "---\n# Rules\n\nAll.\n",
+        "---\nprosiform:\n  Checks:\n    group: {reviews: 1}\n---\n# Rules\n\nAll.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
@@ -1628,7 +1547,7 @@ def test_a_preset_on_a_deferred_only_document_warns_nothing(root: Path) -> None:
     written(
         root,
         "noted.md",
-        "---\nprosiform:\n  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
         "---\n# Noted\n\n## Draft\n\nAll.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -1648,7 +1567,7 @@ def test_a_document_both_deferred_and_compiled_is_weighed(root: Path) -> None:
     written(
         root,
         "noted.md",
-        "---\nprosiform:\n  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
         "---\n# Noted\n\n## Draft\n\nAll.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -1669,7 +1588,7 @@ def test_two_sections_reaching_one_document_each_select_its_presets(
     written(
         root,
         "rules.md",
-        presets(("Checks", [("reviews", 1)]), ("Draft", [("drafts", 1)]))
+        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
         + "# Rules\n\nAll.\n",
     )
     run = invoke("guide.md", cwd=root)
@@ -1697,7 +1616,7 @@ def test_a_document_a_later_round_reaches_again_takes_that_selection(
     written(
         root,
         "rules.md",
-        presets(("Checks", [("reviews", 1)]), ("Draft", [("drafts", 1)]))
+        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
         + "# Rules\n\nAll.\n",
     )
     run = invoke("guide.md", cwd=root)
@@ -1714,13 +1633,13 @@ def test_two_sections_selecting_two_depths_for_one_group_conflict(
     written(
         root,
         "rules.md",
-        presets(("Checks", [("reviews", 1)]), ("Draft", [("reviews", 2)]))
+        presets(("Checks", ("reviews", 1)), ("Draft", ("reviews", 2)))
         + "# Rules\n\nAll.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == GROUP_DEPTH_CONFLICT
+    assert diagnostic["code"] == GROUP_CONFLICT
 
 
 def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
@@ -1729,7 +1648,7 @@ def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
     written(
         root,
         "rules.md",
-        presets(("Checks", [("reviews", 1)]), ("Draft", [("drafts", 1)]))
+        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
         + "# Rules\n\nAll.\n",
     )
     run = invoke("-T", "2", "guide.md", cwd=root)
@@ -1737,14 +1656,14 @@ def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
     assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
 
 
-def presets(*declared: tuple[str, Sequence[tuple[str, int]]]) -> str:
-    """One source's conversion metadata declaring each preset with its pairs."""
+def presets(*declared: tuple[str, tuple[str, int]]) -> str:
+    """One source's conversion metadata declaring each preset with its pair."""
     lines = ["---", "prosiform:"]
-    for name, groups in declared:
-        entries = ", ".join(
-            "{" + json.dumps(group) + f": {depth}}}" for group, depth in groups
-        )
-        lines += [f"  {json.dumps(name)}:", f"    group-depth: [{entries}]"]
+    for name, (group, depth) in declared:
+        lines += [
+            f"  {json.dumps(name)}:",
+            f"    group: {{{json.dumps(group)}: {depth}}}",
+        ]
     return "\n".join([*lines, "---", ""])
 
 
@@ -1773,7 +1692,7 @@ def test_a_preset_name_appears_as_whole_words_in_a_title(
 
 
 def membership(preset: str, group: str, depth: int) -> Membership:
-    """One `group-depth` pair a named preset states."""
+    """One `group` pair a named preset states."""
     at = Location("rules.md", 1, 1)
     return Membership(preset, group, depth, at, at)
 
@@ -1785,32 +1704,26 @@ def test_default_is_selected_by_no_title() -> None:
     assert keywords(declared, None) == ()
 
 
-def test_a_selected_preset_holds_over_default_for_the_group_it_pairs() -> None:
+def test_a_selected_preset_pair_holds_over_default() -> None:
     declared = Conversion(
         True,
         (
-            Preset(
-                "default",
-                (membership("default", "modes", 1), membership("default", "rules", 1)),
-            ),
-            Preset("Checks", (membership("Checks", "modes", 2),)),
+            Preset("default", membership("default", "modes", 1)),
+            Preset("Checks", membership("Checks", "reviews", 2)),
+            Preset("Draft"),
         ),
     )
-    assert pairs(declared, "Checks") == (
-        membership("default", "rules", 1),
-        membership("Checks", "modes", 2),
-    )
-    assert pairs(declared, "Other") == (
-        membership("default", "modes", 1),
-        membership("default", "rules", 1),
-    )
+    assert pair(declared, "Checks") == membership("Checks", "reviews", 2)
+    assert pair(declared, "Draft") == membership("default", "modes", 1)
+    assert pair(declared, "Other") == membership("default", "modes", 1)
+    assert pair(Conversion(True, (Preset("Draft"),)), "Draft") is None
 
 
 def test_a_whole_document_entry_selects_by_its_title(root: Path) -> None:
     written(
         root,
         "guide.md",
-        presets(("Checks", [("reviews", 1)])) + "# Release Checks\n\nEvery check.\n",
+        presets(("Checks", ("reviews", 1))) + "# Release Checks\n\nEvery check.\n",
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
@@ -1819,7 +1732,7 @@ def test_a_whole_document_entry_selects_by_its_title(root: Path) -> None:
 
 def test_an_untitled_whole_document_entry_selects_no_preset(root: Path) -> None:
     written(
-        root, "guide.md", presets(("Checks", [("reviews", 1)])) + "## Checks\n\nAll.\n"
+        root, "guide.md", presets(("Checks", ("reviews", 1))) + "## Checks\n\nAll.\n"
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
@@ -1828,9 +1741,7 @@ def test_an_untitled_whole_document_entry_selects_no_preset(root: Path) -> None:
 
 def test_a_reference_in_a_preamble_selects_no_preset(root: Path) -> None:
     written(root, "guide.md", DECLARED + "Follow [the rules](rules.md).\n")
-    written(
-        root, "rules.md", presets(("Checks", [("reviews", 1)])) + "# Rules\n\nAll.\n"
-    )
+    written(root, "rules.md", presets(("Checks", ("reviews", 1))) + "# Rules\n\nAll.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert "# Reviews" not in run.bundle
@@ -1856,9 +1767,7 @@ def test_a_reference_selects_by_the_nearest_heading_rooting_a_section(
         + between
         + "Follow [the rules](rules.md).\n",
     )
-    written(
-        root, "rules.md", presets(("Checks", [("reviews", 1)])) + "# Rules\n\nAll.\n"
-    )
+    written(root, "rules.md", presets(("Checks", ("reviews", 1))) + "# Rules\n\nAll.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert ("# Reviews\n\n## Rules" in run.bundle) is selected
@@ -1870,23 +1779,19 @@ def test_a_depth_disagreement_names_the_selected_preset(root: Path) -> None:
         "guide.md",
         DECLARED + "# Guide\n\n## Checks\n\nRead [a](a.md) and [rules](rules.md).\n",
     )
-    written(root, "a.md", joining(("reviews", 2)) + "# A\n")
+    written(root, "a.md", conversion("reviews", 2) + "# A\n")
     written(
         root,
         "rules.md",
-        presets(("default", [("modes", 1)]), ("Checks", [("reviews", 1)]))
-        + "# Rules\n",
+        presets(("default", ("modes", 1)), ("Checks", ("reviews", 1))) + "# Rules\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == GROUP_DEPTH_CONFLICT
-    assert (
-        "prosiform.default.group-depth for group 'reviews' is 2"
-        in (diagnostic["message"])
-    )
+    assert diagnostic["code"] == GROUP_CONFLICT
+    assert "prosiform.default.group for group 'reviews' is 2" in (diagnostic["message"])
     assert diagnostic["related"][0]["message"] == (
-        "prosiform.Checks.group-depth for group 'reviews' is 1"
+        "prosiform.Checks.group for group 'reviews' is 1"
     )
     assert diagnostic["related"][0]["file"] == "rules.md"
 
@@ -1913,12 +1818,12 @@ def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
             "reader tells apart only by where each stands",
             "code": COINCIDENT_HEADING,
             "remedy": "rename a member so its path distinguishes it in the group",
-            "location": {"file": "notes/note.md", "line": 4, "column": 20},
+            "location": {"file": "notes/note.md", "line": 4, "column": 13},
             "related": [
                 {
                     "file": "notes/note.markdown",
                     "line": 4,
-                    "column": 20,
+                    "column": 13,
                     "message": "member heading 'Note'",
                 }
             ],
@@ -2798,7 +2703,7 @@ def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> No
 
 def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     """A member's title the subsection absorbs places no sub-section either."""
-    front = "---\nprosiform:\n  default:\n    group-depth: [{Merge: 2}]\n---\n\n"
+    front = "---\nprosiform:\n  default:\n    group: {Merge: 2}\n---\n\n"
     member = "note-\u21c9-plan.md"
     written(
         root,
