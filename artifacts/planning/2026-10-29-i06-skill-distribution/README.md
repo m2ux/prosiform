@@ -69,6 +69,7 @@ Every clause the seven usage-example fixtures declare was counted against the re
 | `Validation scope`, `Grouping — The parent arrangement`, `CLI contract — -c`, `CLI contract — -f DOC` | 6–7 | Covered |
 
 ## Decisions
+- **Closed as not planned.** (User, 2026-11-02.) [I08:E08](https://github.com/m2ux/prosiform/issues/465) removes `example/work-planner`, its checks and the usage-example fixtures, keeping the tree at the tag `archive/example-work-planner`. This initiative drew its documents from that tree and its proof from those fixtures, so it and its epics (#406, #407, #408) are closed. The skill is maintained in workflow-server; a prosiform skill tree would start from a new proposal on that live skill.
 
 - **The initiative is new, not an epic of I05.** I05's goal is bundling enhancements proven by end-to-end fixtures, and a branch restructure serves none of its criteria. The work stands as I06 with its own goal and criteria. (User, 2026-10-29.)
 - **An orphan branch, not a directory on main.** The skill is material the project publishes, so it takes a branch of the project as the planning record does, and main keeps only what reaches it. (User, 2026-10-29.)
