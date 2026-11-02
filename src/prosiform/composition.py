@@ -1,10 +1,11 @@
 """Recognise the links that request composition.
 
 A composition directive is a link whose label, read as plain text with
-its entities decoded, is exactly one Unicode scalar above U+007F. The
-label requests placement and nothing else, so every qualifying scalar
-means the same and the meaning an author gives one stays with the
-author.
+its entities decoded, is exactly one Unicode scalar above U+007F that
+shows something: a whitespace, control or format scalar shows nothing,
+so a reader could not see the placement it would request. The label
+requests placement and nothing else, so every qualifying scalar means
+the same and the meaning an author gives one stays with the author.
 
 Deferral is read before recognition and apart from it: the deferral
 mark and the blanks after it are set aside, so a deferred link is a
@@ -14,6 +15,8 @@ no directive, and the marks that open an operator or a convention are
 no directive's label. Nothing is trimmed or normalised to make a label
 qualify.
 """
+
+from unicodedata import category
 
 from prosiform.closure import (
     DEFERRAL_MARK,
@@ -30,6 +33,10 @@ INLINE_MARK = "↳"
 MARKS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK, INLINE_MARK)
 
 ASCII_CEILING = 0x7F
+
+# The general categories of a scalar that shows nothing: a control and a
+# format character. Whitespace is read from the scalar's own property.
+UNSHOWN = ("Cc", "Cf")
 
 
 def directive(label: str | None) -> bool:
@@ -50,4 +57,6 @@ def directive(label: str | None) -> bool:
         len(requested) == 1
         and ord(requested) > ASCII_CEILING
         and requested not in MARKS
+        and not requested.isspace()
+        and category(requested) not in UNSHOWN
     )

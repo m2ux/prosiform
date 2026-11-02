@@ -2,10 +2,11 @@
 
 A directive is a link whose label, read as plain text once entities are
 decoded and the deferral mark set aside, is one Unicode scalar above
-U+007F. Each case is written as Markdown and read through the source
-reader, so the label a case judges is the label the parser produced:
-an entity, an emphasis or a reference form arrives as the build reads
-it rather than as a test spells it.
+U+007F that is no whitespace, control or format scalar. Each case is
+written as Markdown and read through the source reader, so the label a
+case judges is the label the parser produced: an entity, an emphasis or
+a reference form arrives as the build reads it rather than as a test
+spells it.
 
 Deferral is read apart from recognition, so each deferred case is
 paired with what the deferral alone states.
@@ -35,7 +36,6 @@ def first(text: str) -> Use:
         "[&#8594;](a.md#out)",
         "[𝔸](a.md#out)",
         "[&#x1D538;](a.md#out)",
-        "[ ](a.md#out)",
         '[→](a.md#out "a title")',
         "[→]\n\n[→]: a.md#out",
         "[→][]\n\n[→]: a.md#out",
@@ -49,7 +49,6 @@ def first(text: str) -> Use:
         "a decimal reference",
         "a supplementary scalar",
         "a supplementary scalar reference",
-        "a no-break space",
         "a titled link",
         "a shortcut reference",
         "a collapsed reference",
@@ -82,6 +81,13 @@ def test_a_label_of_one_scalar_above_ascii_is_a_directive(written: str) -> None:
         "[👩‍💻](a.md#out)",
         "[🇬🇧](a.md#out)",
         "[x][→]\n\n[→]: a.md#out",
+        "[ ](a.md#out)",
+        "[&nbsp;](a.md#out)",
+        "[　](a.md#out)",
+        "[\x85](a.md#out)",
+        "[​](a.md#out)",
+        "[&#xAD;](a.md#out)",
+        "[&#xFEFF;](a.md#out)",
     ],
     ids=[
         "an ascii letter",
@@ -103,6 +109,13 @@ def test_a_label_of_one_scalar_above_ascii_is_a_directive(written: str) -> None:
         "a joined emoji",
         "a flag of two scalars",
         "a full reference whose own text is ascii",
+        "a no-break space",
+        "a no-break space entity",
+        "an ideographic space",
+        "a next-line control",
+        "a zero-width space",
+        "a soft hyphen",
+        "a byte order mark",
     ],
 )
 def test_a_label_that_is_not_one_plain_scalar_is_no_directive(written: str) -> None:
