@@ -1,4 +1,4 @@
-description = "A label of one scalar outside the basic multilingual plane is one scalar, so it is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
+description = "A label of one arrow outside the basic multilingual plane is one arrow, so it is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
 
 clauses = [
   "Section composition — Recognition",

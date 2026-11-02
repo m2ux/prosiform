@@ -1,7 +1,7 @@
 ---
 prosiform: {}
 ---
-Read [𝔸](step.md#output) before the guide.
+Read [🡒](step.md#output) before the guide.
 
 # Guide
 

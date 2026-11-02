@@ -20,11 +20,13 @@ target, which states the dispatch. Every mark is therefore authoring
 syntax, and the bundle drops it.
 
 A composition directive is a link whose label, read as plain text with
-its entities decoded, is exactly one Unicode scalar above U+007F that
-shows something: a whitespace, control or format scalar shows nothing,
-so a reader could not see the placement it would request. The label
-requests placement and nothing else, so every qualifying scalar means
-the same and the meaning an author gives one stays with the author.
+its entities decoded, is exactly one Unicode arrow: an assigned scalar
+of the four Arrows blocks, or a scalar of the Dingbats or Miscellaneous
+Symbols and Arrows block whose character name holds the word `ARROW`.
+Any other single scalar — a footnote mark, a superscript, a letter —
+labels an ordinary link. The label requests placement and nothing
+else, so every arrow means the same and the meaning an author gives
+one stays with the author.
 
 Symbols are written together, and the one blank stands between the
 last of them and the link's text. The deferral mark written against a
@@ -41,7 +43,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from enum import Enum
 from types import MappingProxyType
-from unicodedata import category
+from unicodedata import category, name
 from urllib.parse import quote
 
 from markdown_it.common.utils import unescapeAll
@@ -55,15 +57,24 @@ DISPATCH_MARK = "⇉"
 PARALLEL_MARK = "⫽"
 INLINE_MARK = "↳"
 
-# The marks that open an operator or a convention, which no label
+# The arrows that open an operator or a convention, which no label
 # requests placement with.
-MARKS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK, INLINE_MARK)
+MARKS = (DISPATCH_MARK, INLINE_MARK)
 
-ASCII_CEILING = 0x7F
+# The blocks every assigned scalar of which is an arrow: Arrows and
+# Supplemental Arrows-A, -B and -C.
+ARROW_BLOCKS = (
+    (0x2190, 0x21FF),
+    (0x27F0, 0x27FF),
+    (0x2900, 0x297F),
+    (0x1F800, 0x1F8FF),
+)
 
-# The general categories of a scalar that shows nothing: a control and a
-# format character. Whitespace is read from the scalar's own property.
-UNSHOWN = ("Cc", "Cf")
+# The blocks holding arrows among other symbols, Dingbats and
+# Miscellaneous Symbols and Arrows, where a scalar's name tells an arrow.
+NAMED_ARROW_BLOCKS = ((0x2700, 0x27BF), (0x2B00, 0x2BFF))
+ARROW_WORD = re.compile(r"\bARROWS?\b")
+UNASSIGNED = "Cn"
 
 SPACE = " "
 BLANKS = " \t"
@@ -483,20 +494,29 @@ class Opened:
     blank: bool
 
 
-def placing(requested: str) -> bool:
-    """Whether a label is one scalar above U+007F that shows something.
+def arrow(scalar: str) -> bool:
+    """Whether one scalar is a Unicode arrow.
 
-    A whitespace, control or format scalar shows nothing, and a mark
-    opening an operator or a convention states something else, so
-    neither requests placement.
+    Every assigned scalar of an Arrows block is one, and a scalar of a
+    block mixing arrows with other symbols is one where its character
+    name says so.
     """
+    at = ord(scalar)
+    if any(low <= at <= high for low, high in ARROW_BLOCKS):
+        return category(scalar) != UNASSIGNED
     return (
-        len(requested) == 1
-        and ord(requested) > ASCII_CEILING
-        and requested not in MARKS
-        and not requested.isspace()
-        and category(requested) not in UNSHOWN
+        any(low <= at <= high for low, high in NAMED_ARROW_BLOCKS)
+        and ARROW_WORD.search(name(scalar, "")) is not None
     )
+
+
+def placing(requested: str) -> bool:
+    """Whether a label is one Unicode arrow requesting placement.
+
+    An arrow opening an operator or a convention states something else,
+    so it requests no placement.
+    """
+    return len(requested) == 1 and requested not in MARKS and arrow(requested)
 
 
 def against(text: str, raw: bool = False) -> bool:

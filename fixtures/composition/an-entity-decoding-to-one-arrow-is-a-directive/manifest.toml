@@ -1,4 +1,4 @@
-description = "A label written as an entity is read once the entity is decoded, so one decoding to a single scalar above U+007F is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
+description = "A label written as an entity is read once the entity is decoded, so one decoding to a single arrow is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
 
 clauses = [
   "Section composition — Recognition",
