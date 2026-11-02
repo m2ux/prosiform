@@ -12,6 +12,13 @@ This record holds its delivery of `AC1, AC4, AC5, AC6, AC7, AC12`: the work item
 
 | Artifact | What it holds |
 | --- | --- |
+| [w03.md](w03.md) | The work item for W03: the corpus's `-m` pairs restated as preset `subst` pairs. |
+| [w04.md](w04.md) | The work item for W04: the option's documented row and descriptions withdrawn. |
+| [w05.md](w05.md) | The work item for W05: the preset as the only channel, and a link under no `subst`. |
+| [w09.md](w09.md) | The work item for W09: the example mock scenarios removed. |
+| [w11.md](w11.md) | The work item for W11: `-m` retired from the build. |
+| [validation.md](validation.md) | The validation evidence for every check the work items name. |
+| [changes.md](changes.md) | The plan changes this session applied and held. |
 
 ## Links
 
