@@ -62,6 +62,10 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E05 W27 work item](e05/w27.md) | The declared inclusion workflow and its scenarios |
 | [E05 W28 work item](e05/w28.md) | The live default-matrix run committed as `mvp-proof.json` |
 | [E05 W29 work item](e05/w29.md) | The eval page stating the feature workflows and the proof |
+| [E05 W30 work item](e05/w30.md) | The design stating the output folder made where absent |
+| [E05 W31 work item](e05/w31.md) | The design stating how `subst` pairs combine across references |
+| [E05 W32 work item](e05/w32.md) | The design's option table declaring the code listing |
+| [E05 review](e05/review.md) | Every clause changed since `contract/v0.15.0` read against the merged build, and the three departures |
 | [Joins](joins.md) | The candidate unit that ships as separate pull requests, and why |
 | [Change list](change-list.md) | The plan changes this run applied and held |
 | [A: agent review of #541](agent-review-541.json) | The agent review record of the I09:E02 integration pull request, by reviewed head and target |
@@ -162,6 +166,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **E05 rows name their work and join by area.** (User, 2026-11-02.) Each E05 Description names the work done rather than restating its criterion, and the twenty page rows join into four delivery units: the top-level pages (W02–W06), `docs/` architecture to glossary (W07–W12), `docs/` hierarchy to validation (W13–W18), and versioning with the fixtures and eval READMEs (W19–W21).
 - **A nested group past H6 fails.** (User, 2026-11-02.) A shared group nests under the division of the document that placed its first member, and a heading pushed past H6 is refused with `E_HEADING_DEPTH_OVERFLOW`; the build does not lift shared groups to the top level. The refusal makes the author choose a shallower grouping. The guide (W03) and the hierarchy page (W04) state the nesting cost and that remedy.
 - **Earlier decisions stand.** (User, 2026-11-02.) E00 and E03 are closed; an earlier E02 row was dropped as delivered by I08; a composed target declaring no `prosiform` is refused.
+- **The review's findings bring the design to the build.** (Delivery, 2026-11-02.) The [review](e05/review.md) found three departures, and in each the build carries a deliberate decision: the output folder is made, `subst` pairs combine across every reference reaching a document, and `-C` lists the codes. W30–W32 amend the design to it and join, moving the README pin once.
 
 ## MVP Proof
 
