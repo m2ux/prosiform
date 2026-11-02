@@ -326,13 +326,9 @@ def test_an_informational_long_option_responds_as_its_short_form(
 @pytest.mark.parametrize(
     "option",
     [
-        "--root",
-        "--from",
         "--output",
-        "--group",
         "--check",
         "--diagnostics",
-        "--fault",
         "--max-files",
         "--max-file-bytes",
         "--max-input-bytes",

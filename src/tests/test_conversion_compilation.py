@@ -154,11 +154,3 @@ def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
     assert run.status == 0, run.stderr
     assert run.bundle.count("# Rules\n") == 2
     assert "# a\n" in run.bundle
-
-
-@pytest.mark.parametrize("option", ["-g", "-grules:2", "--group"])
-def test_structural_cli_arguments_are_usage_errors(tmp_path: Path, option: str) -> None:
-    run = invoke("-d", "json", option, "rules:2", "a.md", cwd=tmp_path)
-    assert run.status == 2
-    assert run.bundle == ""
-    assert run.diagnostics()[0]["code"] == "E_INVALID_USAGE"

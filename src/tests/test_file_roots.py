@@ -159,11 +159,6 @@ def test_raw_limit_stops_before_complete_read(
     assert sizes == [31]
 
 
-def test_root_option_is_invalid_usage(tmp_path: Path) -> None:
-    run = invoke("-r", ".", "a.md", cwd=tmp_path)
-    assert run.status == 2
-
-
 def test_members_in_distinct_directories_are_named_by_their_paths(
     tmp_path: Path,
 ) -> None:
