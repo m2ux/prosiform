@@ -12,6 +12,9 @@ This record holds its delivery of `AC5, AC16`: the work item, the validation evi
 
 | Artifact | What it holds |
 | --- | --- |
+| [W10 work item](w10.md) | Selected presets agreeing or refused, a preset stating each rule once, and the fixtures showing union and own-document governance |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
