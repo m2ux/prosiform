@@ -1,0 +1,18 @@
+description = "One paragraph links a section ordinarily, composes it, and links it ordinarily again. The directive contributes the section beneath the step and points at its contribution, while each ordinary link keeps pointing at the section in its own document's file group, which the ordinary links keep in the bundle beside the contribution."
+
+clauses = [
+  "Section composition — Every occurrence composes",
+  "Section composition — Contributions",
+  "Section composition — The directive's link",
+  "Section composition — Inline-only targets",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
