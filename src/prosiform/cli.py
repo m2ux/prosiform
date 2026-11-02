@@ -76,6 +76,7 @@ from prosiform.closure import (
     Unresolvable,
     components,
     conflicting,
+    contradicting,
     directive,
     gapped,
     identity,
@@ -1567,7 +1568,10 @@ def refusals_of_operators(
     A deferral says when the material is compiled and a dispatch says who
     compiles it, so the two are carried out together, their marks written
     together: a blank between two symbols — two marks, or a mark and a
-    composition directive's label — states no one operation. Two dispatch marks
+    composition directive's label — states no one operation. A dispatch
+    sends material to a sub-agent and a directive places it inline, so a
+    dispatch mark written against a directive's label states two
+    contradicting operations. Two dispatch marks
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
@@ -1599,6 +1603,23 @@ def refusals_of_operators(
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="write the symbols with no space between them, and one "
                 "space between the last of them and the link's text",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if use.label is not None and contradicting(use.label):
+            raise input_failure(
+                f"the link {use.opening!r} writes "
+                + " and ".join(
+                    OPERATOR_NAMES[mark]
+                    for mark in dict.fromkeys(use.label[:-1])
+                    if mark != DEFERRAL_MARK
+                )
+                + " against a composition directive's label, so it sends its "
+                "material to a sub-agent and places it inline at once",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="write the directive's label alone to compose the section, "
+                "or the dispatch mark, a space and text to dispatch it",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),

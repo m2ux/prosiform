@@ -14,7 +14,13 @@ paired with what the deferral alone states.
 
 import pytest
 
-from prosiform.closure import deferred, directive, dispatched, gapped
+from prosiform.closure import (
+    contradicting,
+    deferred,
+    directive,
+    dispatched,
+    gapped,
+)
 from prosiform.profile import parse
 from prosiform.source import Use, regions, uses
 
@@ -228,14 +234,55 @@ def test_a_deferral_mark_beside_no_qualifying_label_is_no_directive(
 
 @pytest.mark.parametrize(
     "written",
-    ["[⇉→](a.md#out)", "[⫽→](a.md#out)", "[ ¬→](a.md#out)"],
+    [
+        "[⇉→](a.md#out)",
+        "[⫽→](a.md#out)",
+        "[⇉&rarr;](a.md#out)",
+        "[¬⇉→](a.md#out)",
+        "[⇉𝔸](a.md#out)",
+    ],
     ids=[
-        "a dispatch mark written against a glyph",
-        "a parallel mark written against a glyph",
-        "a deferred glyph after a blank",
+        "a dispatch mark",
+        "a parallel mark",
+        "a dispatch mark and an entity",
+        "a deferred dispatch",
+        "a dispatch mark and a supplementary scalar",
     ],
 )
-def test_a_mark_written_against_a_glyph_it_cannot_defer_is_text(written: str) -> None:
+def test_a_dispatch_mark_written_against_a_glyph_is_refused_and_no_directive(
+    written: str,
+) -> None:
+    use = first(written)
+    assert use.label is not None
+    assert contradicting(use.label)
+    assert not directive(use.label)
+    assert not gapped(use.opening, use.label)
+
+
+@pytest.mark.parametrize(
+    "written",
+    ["[ ¬→](a.md#out)", "[ ⇉→](a.md#out)", "[⇉step](a.md#out)", "[¬→](a.md#out)"],
+    ids=[
+        "a deferred glyph after a blank",
+        "a dispatched glyph after a blank",
+        "a dispatch mark written against text",
+        "the deferral mark written against a glyph",
+    ],
+)
+def test_a_mark_written_against_no_dispatchable_glyph_is_no_contradiction(
+    written: str,
+) -> None:
+    use = first(written)
+    assert use.label is not None
+    assert not contradicting(use.label)
+
+
+@pytest.mark.parametrize(
+    "written",
+    ["[ ¬→](a.md#out)", "[ ⇉→](a.md#out)"],
+    ids=["a deferred glyph after a blank", "a dispatched glyph after a blank"],
+)
+def test_a_mark_written_against_a_glyph_after_a_blank_is_text(written: str) -> None:
     use = first(written)
     assert not directive(use.label)
     assert not deferred(use.opening)
