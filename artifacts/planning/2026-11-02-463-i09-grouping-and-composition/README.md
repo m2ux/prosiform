@@ -126,6 +126,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 ## Decisions
 
+- **Activation is its own entry run.** (User, 2026-11-02.) The run a deferred directive's generated line names compiles the target as an entry and publishes its own bundle; the earlier bundle keeps the line. A nested deferral may be taken conditionally, so only the agent following the bundle can decide whether to run `pf` on it. AC13 is reworded to this outcome.
 - **E01 restated to enforcement.** (Planning, from the brief.) The delivered reference rule leaves the epic with its criteria; the invariant check and its page stay.
 - **Preset `include` and `exclude` removed.** (User, 2026-11-02.) E04 drops AC20 and its Proposal clause; W09 covers presets and `subst`.
 - **Vocabulary.** (User.) "`group` pairs" replaces "group rules" in the initiative and E02, E02's title included.
