@@ -101,11 +101,6 @@ FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
 
 A bootstrap form's tree is its skill, which carries the documents it names.
 """
-"""The directory each form's document tree sits in.
-
-A bootstrap form's documents sit beside its skill, so the workflow is read
-from them while the skill that names them sits apart.
-"""
 MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
 """The forms whose dispatch steps are written as marked links and no prose.
 
@@ -283,18 +278,6 @@ class Edge:
     source: str
     target: str
     label: str | None
-
-
-QUESTION = "?"
-"""What a condition's name ends with, telling it from a state."""
-"""The name a transition node takes: lower case, so it reads as an edge.
-
-A diagram may draw a labelled transition as a node of its own between the two
-states it joins — `Gather -->|two halves| Weigh` drawn as
-`Gather --> two-halves --> Weigh` — and click that node to the section stating
-when the transition applies. The node's name is lower case and hyphenated, so
-a state, which is capitalised, is told apart from it.
-"""
 
 
 @dataclass(frozen=True)

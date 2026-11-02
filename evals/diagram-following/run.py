@@ -170,6 +170,7 @@ FORMS = {
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
 BUILD = "build"
+"""The existing folder a bootstrapping session compiles into."""
 BIN = "bin"
 SKILL = "SKILL.md"
 SKILL_HOME = Path(".claude") / "skills"
@@ -181,7 +182,6 @@ instruction naming it.
 """
 SKILL_FILES = (SKILL,)
 """The files a bootstrap skill carries beside the documents it compiles."""
-"""The existing folder a bootstrapping session compiles into."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
