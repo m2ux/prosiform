@@ -5,6 +5,7 @@ clauses = [
   "Grouping — Document content above the grouping depth",
   "Grouping — Variants by document",
   "Bundle destinations — Document destinations",
+  "Grouping — Nested groups",
 ]
 
 [invocation]

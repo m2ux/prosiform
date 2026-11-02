@@ -1,0 +1,6 @@
+---
+prosiform: {}
+---
+# Plain
+
+Plain content.

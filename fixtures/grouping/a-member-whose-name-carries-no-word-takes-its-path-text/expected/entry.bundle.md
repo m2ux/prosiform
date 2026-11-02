@@ -2,24 +2,24 @@
 
 It reads the [common rules](#common) and the [unnamed rules](#rules-md).
 
-# Rules
+## Rules
 
-## Overview
+### Overview
 
-### Common
+#### Common
 
 The rules every harness reads.
 
-### Rules/-.md
+#### Rules/-.md
 
 The rules a file without a name holds.
 
-## Procedure
+### Procedure
 
-### Common
+#### Common
 
 Read the common rules first.
 
-### Rules/-.md
+#### Rules/-.md
 
 Read these rules last.

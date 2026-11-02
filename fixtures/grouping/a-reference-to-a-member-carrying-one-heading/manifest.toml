@@ -5,6 +5,7 @@ clauses = [
   "Grouping — Document content above the grouping depth",
   "Grouping — The overview section",
   "Bundle destinations — Internal links",
+  "Grouping — Nested groups",
 ]
 
 [invocation]

@@ -6,8 +6,8 @@
 
 Follow [the rules](#rules).
 
-# Checks
+## Checks
 
-## Rules
+### Rules
 
 Every rule the guide follows.

@@ -1,0 +1,16 @@
+description = "A document whose references select presets pairing it with two groups contributes to each, and a group its link places nests inside the first of those groups the bundle places: the rules join Reviews and Drafts, and the Leaves group the rules' link to the leaf places stands inside Reviews."
+
+clauses = [
+  "Grouping — Nested groups",
+  "Presets — A document in several groups",
+  "Post-compilation invariants — Group isolation",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

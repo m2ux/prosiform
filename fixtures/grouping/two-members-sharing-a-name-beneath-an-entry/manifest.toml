@@ -6,6 +6,7 @@ clauses = [
   "Grouping — A heading for every member",
   "Bundle destinations — Ordinal assignment",
   "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+  "Grouping — Nested groups",
 ]
 
 [invocation]
