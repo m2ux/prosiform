@@ -195,6 +195,49 @@ class CriterionLabels(unittest.TestCase):
         self.assertIn('R labels partly missing or out of sequence', r.decide)
 
 
+def labelled(criteria: str, references: str) -> tuple[Review, str]:
+    """A standalone issue with the given Acceptance Criteria and References items, and its fixed body."""
+    text = ('## Overview\n\nWhy.\n\n## Problem\n\n- **Gap.**\n  Evidence.\n\n## Proposal\n\n- **Move.**\n  Design.\n\n'
+            f'## Acceptance Criteria\n\n{criteria}\n## References\n\n{references}')
+    r = Review(issue(1, 'Key Validation: Reject Bad Keys', body=text))
+    return r, r.run()
+
+
+class PlainLabels(unittest.TestCase):
+    def test_plain_criterion_labels_are_made_bold(self):
+        r, fixed = labelled('- [ ] AC1. The key is checked.\n- [ ] AC2. A bad key is refused.\n'
+                            '- [ ] AC4. The refusal names the key.\n', '- **R1.** [Source](https://example.com/1)\n')
+        self.assertIn('- [ ] **AC1.** The key is checked.\n- [ ] **AC2.** A bad key is refused.\n'
+                      '- [ ] **AC4.** The refusal names the key.\n', fixed)
+        self.assertIn('3 plain AC labels made bold', r.fixed)
+        self.assertFalse(any('labels' in item for item in r.decide))
+
+    def test_plain_reference_labels_are_made_bold(self):
+        r, fixed = labelled('- [ ] **AC1.** Holds.\n',
+                            '- R1. [Source](https://example.com/1)\n- R2. [Other](https://example.com/2)\n')
+        self.assertIn('- **R1.** [Source](https://example.com/1)\n- **R2.** [Other](https://example.com/2)\n', fixed)
+        self.assertIn('2 plain R labels made bold', r.fixed)
+        self.assertFalse(any('labels' in item for item in r.decide))
+
+    def test_plain_criterion_labels_partly_missing_are_left_to_decide(self):
+        items = '- [ ] AC1. The key is checked.\n- [ ] A bad key is refused.\n'
+        r, fixed = labelled(items, '- **R1.** [Source](https://example.com/1)\n')
+        self.assertIn('AC labels partly missing or out of sequence', r.decide)
+        self.assertIn(items, fixed)
+
+    def test_plain_criterion_labels_out_of_sequence_are_left_to_decide(self):
+        items = '- [ ] AC2. The key is checked.\n- [ ] AC1. A bad key is refused.\n'
+        r, fixed = labelled(items, '- **R1.** [Source](https://example.com/1)\n')
+        self.assertIn('AC labels partly missing or out of sequence', r.decide)
+        self.assertIn(items, fixed)
+
+    def test_plain_reference_labels_with_a_gap_are_left_to_decide(self):
+        items = '- R1. [Source](https://example.com/1)\n- R3. [Other](https://example.com/3)\n'
+        r, fixed = labelled('- [ ] **AC1.** Holds.\n', items)
+        self.assertIn('R labels partly missing or out of sequence', r.decide)
+        self.assertIn(items, fixed)
+
+
 INITIATIVE_GUIDE = SCRIPTS.parent / 'artifacts' / 'initiative-issue-body.md'
 
 
@@ -603,6 +646,20 @@ class DeclarationAtRevision(unittest.TestCase):
         self.assertIn(f'`{DECLARATION}` at its root', section)
         self.assertEqual(tuple(re.findall(r'^\| `(\w+)` \|', section, re.MULTILINE)), DECLARED_FIELDS)
 
+    def test_the_guide_requires_nothing_of_a_project_declaring_nothing(self):
+        section = guide_section('Required Criteria')
+        nothing = re.search(r'^- \*\*A project declaring nothing requires nothing\.\*\*\n(.*)$', section, re.MULTILINE)
+        unreadable = re.search(r'^- \*\*An unreadable statement is unevaluable\.\*\*\n(.*)$', section, re.MULTILINE)
+        self.assertIsNotNone(nothing)
+        self.assertIsNotNone(unreadable)
+        for absent in ('missing', 'empty file', 'empty array'):
+            with self.subTest(absent=absent):
+                self.assertIn(absent, nothing[1])
+                self.assertNotIn(absent, unreadable[1])
+        for fault in ('resolving to no commit', 'unreadable JSON', 'other than an array', 'lacking a field'):
+            with self.subTest(fault=fault):
+                self.assertIn(fault, unreadable[1])
+
     def test_the_criteria_and_their_source_come_from_the_resolved_commit(self):
         commit = commit_declaration(self.checkout, guide_example())
         read = self.read('HEAD')
@@ -640,29 +697,40 @@ class DeclarationAtRevision(unittest.TestCase):
         self.assertIn('no-such-branch resolves to no commit', read.unevaluable)
         self.assertEqual(read.criteria, ())
 
-    def test_a_project_declaring_none_is_unevaluable(self):
-        commit_declaration(self.checkout, None)
-        self.assertTrue(self.read('HEAD').unevaluable.startswith(f'no {DECLARATION} at '))
+    def test_a_project_declaring_none_requires_nothing(self):
+        commit = commit_declaration(self.checkout, None)
+        read = self.read('HEAD')
+        self.assertEqual((read.criteria, read.unevaluable), ((), ''))
+        self.assertIn(f'{DECLARATION} at {commit}', read.source)
 
     def test_a_declaration_at_another_revision_supplies_nothing(self):
         declared = commit_declaration(self.checkout, guide_example())
         removed = commit_declaration(self.checkout, None, 'remove')
         self.assertEqual(self.read(declared).criteria, AUDIT.criteria)
-        self.assertIn(f'no {DECLARATION} at {removed}', self.read('HEAD').unevaluable)
+        self.assertIn(f'{DECLARATION} at {removed}', self.read('HEAD').source)
         (self.checkout / DECLARATION).write_text(guide_example())
-        self.assertEqual(self.read('HEAD').criteria, ())
+        self.assertEqual((self.read('HEAD').criteria, self.read('HEAD').unevaluable), ((), ''))
 
-    def test_an_empty_declaration_is_unevaluable(self):
-        for text in ('', '[]', '{}'):
+    def test_an_empty_declaration_requires_nothing(self):
+        for text in ('', ' \n', '[]'):
             with self.subTest(text=text):
                 commit_declaration(self.checkout, text)
                 read = self.read('HEAD')
-                self.assertTrue(read.unevaluable.endswith('declares no criterion'))
+                self.assertEqual((read.criteria, read.unevaluable), ((), ''))
+
+    def test_a_declaration_other_than_an_array_is_unevaluable(self):
+        for text in ('{}', 'null', '"canon audit"', json.dumps(LOAD_TEST)):
+            with self.subTest(text=text):
+                commit_declaration(self.checkout, text)
+                read = self.read('HEAD')
+                self.assertEqual(read.unevaluable, f'{read.source} is not an array')
                 self.assertEqual(read.criteria, ())
 
     def test_an_unreadable_declaration_is_unevaluable(self):
         commit_declaration(self.checkout, 'branch: workflows')
-        self.assertTrue(self.read('HEAD').unevaluable.endswith('is not JSON'))
+        read = self.read('HEAD')
+        self.assertEqual(read.unevaluable, f'{read.source} is not JSON')
+        self.assertEqual(read.criteria, ())
 
     def test_an_entry_lacking_a_field_is_unevaluable(self):
         entry = {'branch': 'workflows', 'criterion': 'Holds.', 'phrase': ''}
@@ -701,14 +769,26 @@ class CheckFormat(unittest.TestCase):
         self.assertIn(f'source: {DECLARATION} at {commit} in ', done.stdout)
         self.assertIn(WANTED, done.stdout)
 
-    def test_a_missing_declaration_is_reported_unevaluable(self):
-        commit_declaration(self.checkout, None)
-        (self.checkout / DECLARATION).parent.mkdir(exist_ok=True)
-        (self.checkout / DECLARATION).write_text(guide_example())
-        done = self.check('--project', str(self.checkout), '--revision', 'HEAD')
-        self.assertEqual(done.returncode, 1)
-        self.assertIn('required criteria unevaluable: no ' + DECLARATION, done.stdout)
-        self.assertNotIn('no criterion carries', done.stdout)
+    def test_a_project_declaring_nothing_is_held_to_nothing(self):
+        for text in (None, '', '[]'):
+            with self.subTest(text=text):
+                commit = commit_declaration(self.checkout, text)
+                (self.checkout / DECLARATION).parent.mkdir(exist_ok=True)
+                (self.checkout / DECLARATION).write_text(guide_example())
+                done = self.check('--project', str(self.checkout), '--revision', 'HEAD')
+                self.assertIn(f'source: {DECLARATION} at {commit} in ', done.stdout)
+                self.assertNotIn('required criteria', done.stdout)
+                self.assertNotIn('no criterion carries', done.stdout)
+
+    def test_an_unreadable_declaration_is_reported_with_its_fault(self):
+        for text, fault in (('{}', 'is not an array'), ('branch: workflows', 'is not JSON')):
+            with self.subTest(text=text):
+                commit_declaration(self.checkout, text)
+                done = self.check('--project', str(self.checkout), '--revision', 'HEAD')
+                self.assertEqual(done.returncode, 1)
+                self.assertIn(f'required criteria unevaluable: {DECLARATION} at ', done.stdout)
+                self.assertIn(fault, done.stdout)
+                self.assertNotIn('no criterion carries', done.stdout)
 
     def test_changed_files_touching_no_declared_path_bring_nothing(self):
         commit_declaration(self.checkout, guide_example())

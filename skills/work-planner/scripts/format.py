@@ -10,10 +10,11 @@ Usage:
 An epic checked with --project and --revision is held to the criteria its project requires. They are
 the ones config/required-criteria.json declares at the commit --revision resolves to, in the repository
 --project locates. Which worktree --project is, and what its working files hold, choose nothing. The
-run prints the declaration path, the resolved commit and the repository as its source. A revision
-resolving to no commit, and a missing, empty or malformed declaration at that commit, leave the
-required criteria unevaluable: the run reports that and names what is missing, and reports no
-criterion as lacking. Each declared criterion is required of an epic one of whose pull requests, from
+run prints the declaration path, the resolved commit and the repository as its source. A missing or
+empty declaration at that commit, or an empty array, requires no criterion. A revision resolving to
+no commit, unreadable JSON, a value other than an array, or an entry lacking a field leaves the
+required criteria unevaluable: the run reports that and names the fault, and reports no criterion
+as lacking. Each declared criterion is required of an epic one of whose pull requests, from
 --prs, reaches its branch through an epic base or initiative branch and changes a file at or under one
 of its paths. --files gives each pull request's changed files, the path list the tracker returns for
 it. A pull request reaching a declared branch without its changed files leaves that criterion
@@ -46,7 +47,7 @@ Fixed in the body written to --fix, keeping the issue's wording:
     indented under the bullet, except a bulleted item with sub-bullets, whose line introducing
     them stays on, or rejoins, its bold statement's line
   - acceptance criteria made checkboxes, labelled **ACn.** when none is labelled; references
-    labelled **Rn.** when none is
+    labelled **Rn.** when none is; plain ACn. or Rn. labels made bold in place, keeping their numbers
 Printed as fixes to apply to the issue itself:
   - a title prefix that separates levels with spaces, with its colon form
   - a type:* label that does not match the issue's kind, a theme:* label on a proposal, any type:* label on
@@ -81,7 +82,8 @@ Left to decide, since each needs new content or a judgement:
     a complete row another row depends on, the further task that adopted its criteria
   - a Description cell over eight words or holding a semicolon, whose detail belongs in criteria
   - acceptance criteria partly labelled, or labels that repeat or descend (labels ascending with a
-    gap stand), and references partly labelled or not numbered from R1 without a gap
+    gap stand), and references partly labelled or not numbered from R1 without a gap, whether the
+    labels are bold or plain
   - a References section that links issues or pull requests on the same board
   - no theme:* label on an initiative, epic or hot-fix, a title without "Name: Subtitle" (after the prefix,
     or whole for a standalone issue), or a title whose name is not two or three words or whose
@@ -351,7 +353,7 @@ DECLARED_FIELDS = ('branch', 'paths', 'criterion', 'phrase', 'row')
 class Required(NamedTuple):
     """The criteria a project requires of its epics and the source they were read from.
 
-    unevaluable names what is missing when the declaration cannot be read, and then criteria is empty."""
+    unevaluable names the fault when the declaration cannot be read, and then criteria is empty."""
     criteria: tuple[dict, ...]
     source: str
     unevaluable: str = ''
@@ -383,8 +385,9 @@ def required_criteria(project: str, revision: str) -> Required:
     The checkout locates the repository and nothing more: its working files, and which of the
     repository's worktrees it is, do not choose the criteria. The source names the declaration path,
     the resolved commit and the repository's shared git directory, which every worktree of it
-    resolves to. A revision that resolves to no commit, and a missing, empty or malformed declaration
-    at that commit, leave the criteria unevaluable."""
+    resolves to. A missing or empty declaration at that commit, or an empty array, requires no
+    criterion. A revision that resolves to no commit, unreadable JSON, a value other than an array, or
+    an entry lacking a field leaves the criteria unevaluable."""
     resolved = git(project, 'rev-parse', '--verify', '--quiet', '--end-of-options', f'{revision}^{{commit}}')
     if resolved.returncode != 0:
         source = f'{DECLARATION} at {revision} in {project}'
@@ -393,14 +396,14 @@ def required_criteria(project: str, revision: str) -> Required:
     repository = git(project, 'rev-parse', '--path-format=absolute', '--git-common-dir').stdout.strip()
     source = f'{DECLARATION} at {commit} in {repository}'
     stated = git(project, 'cat-file', 'blob', f'{commit}:{DECLARATION}')
-    if stated.returncode != 0:
-        return Required((), source, f'no {source}')
+    if stated.returncode != 0 or not stated.stdout.strip():
+        return Required((), source)
     try:
-        entries = json.loads(stated.stdout or 'null')
+        entries = json.loads(stated.stdout)
     except json.JSONDecodeError:
         return Required((), source, f'{source} is not JSON')
-    if not isinstance(entries, list) or not entries:
-        return Required((), source, f'{source} declares no criterion')
+    if not isinstance(entries, list):
+        return Required((), source, f'{source} is not an array')
     for entry in entries:
         missing = [f for f in DECLARED_FIELDS if not isinstance(entry, dict) or not filled(entry.get(f), f)]
         if missing:
@@ -1053,14 +1056,23 @@ class Review:
                 lines[i] = '- [ ] ' + lines[i][2:]
             if plain:
                 self.fixed.append(f'{len(plain)} {tag} items made checkboxes')
+        box = 6 if checkbox else 2
         label = {'AC': AC, 'R': REF}[tag]
         numbers = [label.match(lines[i]) for i in items]
         if not any(numbers):
-            for n, i in enumerate(items, 1):
-                box = lines[i][:6] if checkbox else '- '
-                lines[i] = f'{box}**{tag}{n}.** ' + lines[i][len(box):]
-            self.fixed.append(f'{len(items)} items labelled {tag}1–{tag}{len(items)}')
-        elif not all(numbers) or not self.in_sequence(tag, [int(m[1]) for m in numbers]):
+            bare = re.compile(rf'{tag}(\d+)\. ')
+            numbers = [bare.match(lines[i], box) for i in items]
+            if not any(numbers):
+                for n, i in enumerate(items, 1):
+                    lines[i] = f'{lines[i][:box]}**{tag}{n}.** ' + lines[i][box:]
+                self.fixed.append(f'{len(items)} items labelled {tag}1–{tag}{len(items)}')
+                return lines
+            if all(numbers) and self.in_sequence(tag, [int(m[1]) for m in numbers]):
+                for i, m in zip(items, numbers):
+                    lines[i] = f'{lines[i][:box]}**{tag}{m[1]}.** ' + lines[i][m.end():]
+                self.fixed.append(f'{len(items)} plain {tag} labels made bold')
+                return lines
+        if not all(numbers) or not self.in_sequence(tag, [int(m[1]) for m in numbers]):
             self.decide.append(f'{tag} labels partly missing or out of sequence')
         return lines
 
