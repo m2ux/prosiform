@@ -92,7 +92,7 @@ None remain. Every clause has a criterion, every criterion is delivered by one e
 - **Composition and leaves-up assembly meet in `cli.py`.** E02 W01–W02 and E04 W07–W09 contend; the priority map separates the epics.
 - **E04 W09 waits on undelivered I08 work.** It depends on I08:E06 W06, the writer's `subst` reaching only its own document's links.
 - **The example tree is removed.** I08:E08 W00 removes it and every check and fixture built on it; no row here changes, reads or proves on it.
-- **E05 reviews I08's work without a gate on it.** E05 W01 waits on E02 and E04 through its task edges; I08's completion is ordered by priority labels, not an edge.
+- **E05 waits on I08.** (User, 2026-11-02.) E05 W01 depends on E02 and E04 and on I08's final rows (E03 W05, E04 W05, E05 W02 and W05, E06 W10 and W11, E08 W03), so the review starts only once everything it reviews has merged.
 
 ## E01 Against Earlier Work
 
