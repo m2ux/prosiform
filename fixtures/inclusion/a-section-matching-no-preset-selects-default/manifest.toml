@@ -1,6 +1,7 @@
-description = "A section title naming none of a linked document's presets leaves it under its default alone: the section Other selects no preset of rules.md, so rules.md joins Modes, which default pairs it with, and not Reviews, which only its Checks preset names."
+description = "A section title naming none of a linked document's presets leaves it under its default alone: the section Other selects no preset of rules.md, so rules.md joins Modes, which default pairs it with, and not Reviews, which only its Checks preset names. No reference selects the Checks preset of rules.md, so the run warns that it governs nothing."
 
 clauses = [
+  "Presets — A preset nothing selected warns",
   "Presets — default always applies",
   "Presets — Selection by keyword",
   "Grouping — Group membership",
@@ -13,4 +14,9 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "rules.md"
+message_contains = ["the preset 'Checks'"]

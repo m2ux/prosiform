@@ -1,0 +1,20 @@
+description = "A preset no reference selects governs nothing, and the run says so beside the bundle it publishes: guide.md declares a Draft preset, its own title Guide names no Draft, and no other document links it, so the run warns once, naming guide.md and Draft, and exits 0."
+
+clauses = [
+  "Presets — A preset nothing selected warns",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "guide.md"
+message_contains = ["the preset 'Draft'"]

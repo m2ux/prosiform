@@ -260,6 +260,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |
 | `W_MOCK_SUBSTITUTED` | Exit status and JSON diagnostics — a reference a substitution mapping redirected, named once per substitute at the first reference that redirects it. |
 | `W_MOCK_UNUSED` | Exit status and JSON diagnostics — a mapping key no reference named, which substitutes nothing. |
+| `W_PRESET_UNUSED` | Presets, A preset nothing selected warns — a preset of a document the run carries that no reference reaching it selected. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.

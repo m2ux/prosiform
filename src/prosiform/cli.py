@@ -16,7 +16,7 @@ import re
 import shutil
 import sys
 import uuid
-from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
@@ -218,6 +218,7 @@ COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 MOCK_SUBSTITUTED = "W_MOCK_SUBSTITUTED"
 MOCK_UNUSED = "W_MOCK_UNUSED"
+PRESET_UNUSED = "W_PRESET_UNUSED"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -244,6 +245,7 @@ CODES = tuple(
             EARLIER_SET_RETAINED,
             MOCK_SUBSTITUTED,
             MOCK_UNUSED,
+            PRESET_UNUSED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -2079,6 +2081,49 @@ def entry_title(tokens: Sequence[Token], one: Reference) -> str | None:
     return next((text for at, text in sections(tokens) if at == line), None)
 
 
+def selecting_title(
+    tokens: Sequence[Token], reference: Reference, entries: Collection[Reference]
+) -> str | None:
+    """The title one reference selects its document's presets by.
+
+    An entry is written in no section, so `entry_title` reads the title
+    its own document supplies; any other reference selects by the title
+    of the section holding it.
+    """
+    return entry_title(tokens, reference) if reference in entries else reference.title
+
+
+def unselected(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> dict[str, tuple[str, ...]]:
+    """The presets of each carried document that no reference reaching it selected.
+
+    `default` is in force wherever its document is compiled, so it is
+    never among them. The names keep the order the document declares
+    them in. A document reached only through a deferral is carried by
+    no bundle, so its presets are weighed by none.
+    """
+    left: dict[str, tuple[str, ...]] = {}
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        chosen = {
+            preset.name
+            for reference in references
+            for preset in keywords(
+                conversion, selecting_title(parsed[path], reference, entries)
+            )
+        }
+        left[path] = tuple(
+            preset.name
+            for preset in conversion.presets
+            if preset.name != DEFAULT and preset.name not in chosen
+        )
+    return left
+
+
 def joined(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
@@ -2100,11 +2145,7 @@ def joined(
         conversion = read[path].conversion
         held: dict[Membership, None] = {}
         for reference in references:
-            title = (
-                entry_title(parsed[path], reference)
-                if reference in entries
-                else reference.title
-            )
+            title = selecting_title(parsed[path], reference, entries)
             agreed(conversion, title, reference, path)
             held.update(dict.fromkeys(pairs(conversion, title)))
         joins[path] = tuple(held)
@@ -3025,7 +3066,9 @@ class Compiled:
     The dispatches are each distinct target the bundle dispatches, at the
     first link naming it. The warnings are held in two runs so a depth
     warning, which only the run's entry raises and only once every
-    bundle is compiled, takes its place between them.
+    bundle is compiled, takes its place between them. The unselected
+    presets are those `unselected` returns for the documents the bundle
+    carries, which the run weighs against its other bundles'.
     """
 
     text: str
@@ -3034,6 +3077,7 @@ class Compiled:
     leading: Sequence[Diagnostic]
     trailing: Sequence[Diagnostic]
     captured: Mapping[str, Capture]
+    unselected: Mapping[str, tuple[str, ...]]
 
 
 def compiled(
@@ -3100,7 +3144,40 @@ def compiled(
         [*coinciding, *(selfward(hop) for hop in hops if hop.own)],
         trailing,
         captured,
+        unselected(read, parsed, contributing(referrer, found), requested),
     )
+
+
+def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
+    """One warning for each preset no reference of the run selected.
+
+    A preset one bundle leaves unselected and another selects governed
+    content the run published, so a preset is unused only where every
+    bundle carrying its document left it unselected. The warning states
+    a fact about the document rather than about one reference, so it
+    carries the document as `source` and no location, in path order and
+    then in the order the document declares its presets.
+    """
+    left: dict[str, tuple[str, ...]] = {}
+    for one in bundles:
+        for path, names in one.unselected.items():
+            earlier = left.get(path, names)
+            left[path] = tuple(name for name in earlier if name in names)
+    return [
+        Diagnostic(
+            WARNING,
+            f"the preset {name!r} of {path!r} is selected by no reference the run "
+            f"compiled, so it governs nothing",
+            code=PRESET_UNUSED,
+            source=path,
+            remedy=(
+                "name the preset as a word in the title of a section reaching the "
+                "document, or drop the preset"
+            ),
+        )
+        for path in sorted(left)
+        for name in left[path]
+    ]
 
 
 def dispatched_set(
@@ -3240,7 +3317,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         reporter,
         options.check,
         options.fault == CLEANUP_FAULT,
-        [*substituted(mapping), *unused(mapping)],
+        [
+            *substituted(mapping),
+            *unused(mapping),
+            *unused_presets((first, *built.values())),
+        ],
     )
     return SUCCESS
 

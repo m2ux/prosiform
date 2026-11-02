@@ -297,6 +297,7 @@
         "W_EARLIER_SET_RETAINED",
         "W_MOCK_SUBSTITUTED",
         "W_MOCK_UNUSED",
+        "W_PRESET_UNUSED",
         "W_RESOURCE_PORTABILITY"
       ]
     }

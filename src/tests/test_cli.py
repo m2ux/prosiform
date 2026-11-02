@@ -63,6 +63,7 @@ from prosiform.cli import (
     INVALID_USAGE,
     MOCK_SUBSTITUTED,
     MOCK_UNUSED,
+    PRESET_UNUSED,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     RESOURCE_PORTABILITY,
@@ -290,6 +291,7 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         EARLIER_SET_RETAINED,
         MOCK_SUBSTITUTED,
         MOCK_UNUSED,
+        PRESET_UNUSED,
     }
     for published in (
         BUNDLE_CODES,
@@ -1505,6 +1507,153 @@ def test_a_linking_documents_presets_never_reach_the_document_it_links(
     assert "# Rules\n\n## Rules\n\nAll." in run.bundle
     assert "# Checks\n\n## Rules\n\nAll." in run.bundle
     assert run.bundle.count("All.") == 2
+
+
+def unused_presets_of(run: Run) -> list[tuple[str, str]]:
+    """Each unused-preset warning a JSON run carries, as its document and message."""
+    return [
+        (one["source"], one["message"])
+        for one in run.diagnostics()
+        if one["code"] == PRESET_UNUSED
+    ]
+
+
+def test_a_preset_no_title_selects_warns_and_the_run_publishes(root: Path) -> None:
+    """The warning names the document and the preset, and accompanies exit `0`."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  default:\n    group-depth: [{modes: 1}]\n"
+        "  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "  Checks:\n    group-depth: [{reviews: 1}]\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Modes" in run.bundle
+    assert unused_presets_of(run) == [
+        (
+            "rules.md",
+            "the preset 'Draft' of 'rules.md' is selected by no reference the run "
+            "compiled, so it governs nothing",
+        ),
+        (
+            "rules.md",
+            "the preset 'Checks' of 'rules.md' is selected by no reference the run "
+            "compiled, so it governs nothing",
+        ),
+    ]
+    [warning] = run.diagnostics()[:1]
+    assert warning["severity"] == WARNING
+    assert "location" not in warning
+    assert warning["remedy"].startswith("name the preset as a word")
+
+
+def test_selected_presets_and_default_warn_nothing(root: Path) -> None:
+    """A preset a title selects governed content, and `default` always does."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  default:\n    group-depth: [{modes: 1}]\n"
+        "  Checks:\n    group-depth: [{reviews: 1}]\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stderr == ""
+
+
+def test_a_preset_one_reference_selects_is_used_though_another_leaves_it(
+    root: Path,
+) -> None:
+    """Selection is per reference, so one selecting reference is enough."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nFollow [the steps](rules.md#alpha).\n\n"
+        "## Draft\n\nDraft [the rest](rules.md#beta).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "---\n# Rules\n\n## Alpha\n\nOne.\n\n## Beta\n\nTwo.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert unused_presets_of(run) == []
+
+
+def test_a_preset_a_dispatched_bundle_selects_is_used(root: Path) -> None:
+    """The run weighs every bundle it compiles, a dispatched target's among them."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nHand [⇉ the review](review.md) off.\n",
+    )
+    written(
+        root,
+        "review.md",
+        DECLARED + "# Review\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  Checks:\n    group-depth: [{reviews: 1}]\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert len(run.bundles) == 2
+    assert unused_presets_of(run) == []
+
+
+def test_a_preset_on_a_deferred_only_document_warns_nothing(root: Path) -> None:
+    """A deferral contributes no content, so the run weighs none of its presets."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nDefer [¬ the notes](noted.md#draft).\n",
+    )
+    written(
+        root,
+        "noted.md",
+        "---\nprosiform:\n  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "---\n# Noted\n\n## Draft\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "(noted.md#draft)" in run.bundle
+    assert run.diagnostics() == []
+
+
+def test_a_document_both_deferred_and_compiled_is_weighed(root: Path) -> None:
+    """A document a bundle carries is weighed whatever else reaches it."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nDefer [¬ the notes](noted.md#draft).\n\n"
+        "Read [the notes](noted.md).\n",
+    )
+    written(
+        root,
+        "noted.md",
+        "---\nprosiform:\n  Draft:\n    group-depth: [{drafts: 1}]\n"
+        "---\n# Noted\n\n## Draft\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [source for source, _ in unused_presets_of(run)] == ["noted.md"]
 
 
 TWO_SECTIONS = (
