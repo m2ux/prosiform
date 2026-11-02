@@ -7,8 +7,8 @@ readme and the worked examples recommend hyphens in source paths, because
 a derived filename writes each directory separator as an underscore.
 
 Worked commands are copied as written. Each names a file this repository
-holds, passes no retired root option, and leaves an output path as an
-output. Every example source declares `prosiform` and names no root.
+holds, passes only options the contract declares, and leaves an output
+path as an output. Every example source declares `prosiform` and names no root.
 """
 
 import re
@@ -86,7 +86,7 @@ def source_paths(argv: list[str]) -> list[str]:
     index = 0
     while index < len(argv):
         token = argv[index]
-        assert token != "-r" and not token.startswith("--")
+        assert not token.startswith("--"), token
         if token in TAKES_VALUE:
             index += 2
             continue
@@ -116,7 +116,6 @@ def test_worked_commands_name_files_this_repository_holds() -> None:
     checked = 0
     for document in SURFACES:
         for cwd, argv in commands(document):
-            assert "-r" not in argv
             for name in source_paths(argv):
                 assert "_" not in name
                 assert (cwd / name).is_file(), f"{document.relative_to(ROOT)}: {name}"

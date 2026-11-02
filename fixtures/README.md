@@ -125,7 +125,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
+A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
 
 ## Text an output carries
 
@@ -155,11 +155,10 @@ message_contains = ["#stop", "document#fragment"]
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the run folder that held an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
 
-The contract gathers eight faults under the code, and each is a fixture, so what the corpus covers under one code is read from the corpus rather than assumed from the code:
+The contract gathers seven faults under the code, and each is a fixture, so what the corpus covers under one code is read from the corpus rather than assumed from the code:
 
 | Fault | Fixture |
 | --- | --- |
-| The retired `-r` option | [`cli/the-retired-root-option-is-invalid-usage`](cli/the-retired-root-option-is-invalid-usage/manifest.toml) |
 | Arguments naming no entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
