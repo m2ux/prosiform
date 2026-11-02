@@ -77,6 +77,7 @@ from prosiform.closure import (
     components,
     conflicting,
     contradicting,
+    deferred,
     directive,
     gapped,
     identity,
@@ -180,6 +181,7 @@ from prosiform.source import (
     Selection,
     Source,
     Unterminated,
+    Use,
     closes_head,
     content,
     declaration,
@@ -1708,10 +1710,16 @@ def refusals_of_directives(
     source fault: the run reports the link rather than reading it as an
     ordinary one.
 
+    A section is composed in a scope or deferred from it, so a scope
+    holding an immediate and a deferred directive naming one section
+    states two placements for it, and the run refuses the later one,
+    naming both.
+
     A reference whose form the grammar does not admit is left to the
     refusal every dependency meets.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    placed: dict[tuple[int | None, str, str | None, bool], tuple[str, str]] = {}
     for use in uses(tokens, selected):
         if not directive(use.label):
             continue
@@ -1740,6 +1748,12 @@ def refusals_of_directives(
             elif target.fragment is None:
                 ineligible = "a whole document rather than a section of it"
             else:
+                later = deferred(use.opening)
+                section = (use.heading, target.path, target.fragment)
+                other = placed.get((*section, not later))
+                if other is not None:
+                    raise placed_twice(use, at, other, later, chain)
+                placed.setdefault((*section, later), (use.label or "", at))
                 continue
             raise input_failure(
                 f"the directive {use.label!r} names {use.destination!r}, "
@@ -1762,6 +1776,67 @@ def refusals_of_directives(
             source=at,
             chain=(*chain, use.destination),
         )
+
+
+def placed_twice(
+    use: Use,
+    at: str,
+    other: tuple[str, str],
+    later: bool,
+    chain: Sequence[str],
+) -> Failure:
+    """One scope composing a section and deferring it, naming both directives."""
+    this = (use.label or "", at)
+    immediate, deferring = (other, this) if later else (this, other)
+    return input_failure(
+        f"the directive {immediate[0]!r} at {immediate[1]} composes "
+        f"{use.destination!r} in its scope and the deferred directive "
+        f"{deferring[0]!r} at {deferring[1]} defers it from the same scope, so "
+        f"the section would be placed now and left to a later run at once",
+        code=UNSUPPORTED_CONSTRUCT,
+        remedy="keep one of the two directives: compose the section, or defer it",
+        reference=use.destination,
+        source=at,
+        chain=(*chain, use.destination),
+    )
+
+
+def refusals_of_deferrals(
+    tokens: Sequence[Token], conversion: Conversion, one: Reference
+) -> None:
+    """Refuse a deferred directive whose scope selects other presets than its target.
+
+    A directive's scope title selects its target's presets, and the run
+    activating a deferred directive compiles the target section as an
+    entry, which selects them by that section's own heading: no option
+    names the referrer. Where the two titles select different presets the
+    deferred content would compile otherwise than composed, so the run
+    refuses the directive, naming the link and both selections.
+    """
+    heading = entry_title(tokens, one)
+    scoped = tuple(preset.name for preset in keywords(conversion, one.title))
+    activated = tuple(preset.name for preset in keywords(conversion, heading))
+    if scoped == activated:
+        return
+
+    def named_presets(names: tuple[str, ...]) -> str:
+        return ", ".join(repr(name) for name in names) if names else "no preset"
+
+    raise input_failure(
+        f"the deferred directive naming {one.original!r} sits in the section "
+        f"{one.title!r}, which selects {named_presets(scoped)} of {one.path!r}, "
+        f"and the run activating it selects by the target's heading "
+        f"{heading!r}, which selects {named_presets(activated)}, so the "
+        f"deferred section would compile under other presets than its scope "
+        f"selects",
+        code=UNSUPPORTED_CONSTRUCT,
+        remedy="title the scope and the target's heading so they select the "
+        "same presets, or compose the section rather than defer it",
+        reference=one.original,
+        resolved=identity(one),
+        source=one.origin,
+        chain=one.chain,
+    )
 
 
 def withheld(
@@ -1789,7 +1864,10 @@ def withheld(
 
     The chain is the one a compiled reference in the same place would
     carry, because a refusal reports the route the run followed to the
-    link whichever half of the rule the link falls under.
+    link whichever half of the rule the link falls under. Each target
+    holds the title of the section the link is written in, and a
+    deferred directive's states that it composes, so the run activating
+    it is held to the presets that title selects.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -1801,7 +1879,13 @@ def withheld(
         )
         if found is None:
             continue
-        yield replace(found, origin=at, chain=(*chain, identity(found)))
+        yield replace(
+            found,
+            origin=at,
+            chain=(*chain, identity(found)),
+            title=use.title,
+            composes=directive(use.label),
+        )
 
 
 def dispatches(
@@ -1959,7 +2043,7 @@ def traverse(
     titled: set[tuple[str, str | None, str | None, bool]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
-    deferred: dict[tuple[str, str | None], Reference] = {}
+    postponed: dict[tuple[str, str | None, str | None, bool], Reference] = {}
     dispatching: dict[str, Hop] = {}
     total = 0
     hop = 0
@@ -2033,7 +2117,9 @@ def traverse(
                 mapping,
             ):
                 verify_cached(root, one, captured)
-                deferred.setdefault((one.path, one.fragment), one)
+                postponed.setdefault(
+                    (one.path, one.fragment, one.title, one.composes), one
+                )
             for link in dispatches(
                 path,
                 read[path],
@@ -2067,7 +2153,7 @@ def traverse(
         found.extend(discovered)
         found.extend(reselecting)
         frontier = discovered
-    for one in deferred.values():
+    for one in postponed.values():
         if one.path not in read:
             limits.hold(FILES, len(read) + 1)
             opened = read_document(root, one, limits, total)
@@ -2085,6 +2171,8 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
+        if one.composes:
+            refusals_of_deferrals(parsed[one.path], read[one.path].conversion, one)
     return (
         read,
         parsed,
