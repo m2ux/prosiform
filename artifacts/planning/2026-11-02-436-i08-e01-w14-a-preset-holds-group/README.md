@@ -1,10 +1,10 @@
-# I08:E01 W14 A Preset Holds Group-Depth and Subst Alone — November 2026
+# I08:E01 W14 A Preset Holds Its Division Pairs and Subst Alone — November 2026
 
-> Task delivery · Created 2026-11-02
+> Task delivery · Created 2026-11-02 · Revised 2026-11-02
 
 ## Executive Summary
 
-Removes the exclude entry, so a preset holds group-depth and subst alone and an exclude key is refused as any unknown preset key is.
+A preset holds its division pairs and subst alone, and an exclude key is refused as any unknown preset key is.
 
 This record holds its delivery of `AC14`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
 
@@ -12,6 +12,8 @@ This record holds its delivery of `AC14`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W14 work item](w14.md) | The exclude reader, value, tests, fixtures and prose removed, so a preset admits two keys |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
