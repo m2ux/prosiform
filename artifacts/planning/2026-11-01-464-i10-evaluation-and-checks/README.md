@@ -123,6 +123,7 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **Managed settings.** The host's managed settings file is a settings file a session reads, so E02 refuses one declaring a hook, on its own row after W01.
 - **Grouping Targets joins as E03.** (2026-11-02.) I09:E01 (#455) holds an existing reference rule by validation, a check that can fail, so it moves here as E03 with `priority: 1`, adding goal clause G4 and AC10. Its work items stay in the [I09 record](../2026-11-02-463-i09-grouping-and-composition/e01/), and I10 now follows I09 (`priority: 1` against I09's `2`).
 - **AC1 and AC2.** They stand as written, although E00 AC3 and AC4 differ from them only by naming the dispatch forms and one model.
+- **MVP order.** (User, 2026-11-02.) Initiative priority labels are I08 `priority: 4`, I09 `priority: 3`, I11 MVP Release ([#524](https://github.com/m2ux/prosiform/issues/524)) `priority: 2` and I10 `priority: 1`, so I10 follows the MVP and its release; I07 keeps its label. This supersedes I09's `2` above. `baseline.json` stays E00 W02's: I09:E05's proof run writes `mvp-proof.json` beside it.
 
 ## Links
 
