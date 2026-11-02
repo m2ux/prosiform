@@ -28,70 +28,9 @@ cd example/work-planner
 pf modes/plan-mode.md
 ```
 
-It writes the bundle to `modes_plan-mode.bundles/modes_plan-mode.bundle.md` in that directory, the [derived output name](../invocation.md#output) for the entry, beside a bundle for each target its dispatches reach, and writes nothing to stdout. Each run writes the same bytes, those of the expected bundle below.
-
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) opens with its Prosiform section, which states the Dispatch protocol its dispatch sub-section follows, then the mode's own title and preamble, which tell the agent what to follow:
-
-```markdown
-# Prosiform
-
-## Dispatch
-
-Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
-
-# Plan Mode
-
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
-
-Follow the [Procedure](#procedure), adhering to [Rules](#rules) and [Conventions](#conventions) and ensure all [Outcomes](#outcomes) are met.
-```
-
-Its step [6. Publish](work-planner/modes/plan-mode.md#6-publish) reads:
-
-```markdown
-### 6. Publish
-
-Put the proposed [Epic Priority](#epic-priority) map for the reviewed epics to the user as an [interview](#rules), the proposal the recommended answer.
-
-- Take the positive integer the user confirms for each epic.
-- Follow [Initiative Publication](#initiative-publication) with the repository, initiative prefix letter, the reviewed initiative and epic body files with their existing issue numbers, titles and labels, each epic's confirmed [priority label](#priority-sets) among them, each label's colour and description, the current pull request records, corpus branch and requirement sources, the kind templates, the record identity, folder path, evidence and decisions, and a commit message file.
-- Put each blocker it returns to the user.
-```
-
-The four documents the step links arrive in the bundle, and their headings are destinations its links point at. A link to a whole document points at the heading the bundle gives it, here `Rules` and `Initiative Publication`.
-
-### Constructs
-
-The bundle shows each of these constructs:
-
-- **The Prosiform section.** The bundle dispatches, so it opens with `# Prosiform` and its `## Dispatch` protocol, in wording every bundle shares.
-- **The entry's own content.** Plan Mode's title, preamble, `Procedure` and `Outcomes` follow, without the entry's frontmatter.
-- **Whole documents under their titles.** Rules, Conventions and Propose Mode declare no group, and each stands as an H1 headed by its own title.
-- **Declared groups.** `Artifacts`, `Protocols` and `References` head their members in title case, each member's H1 an H2 beneath the group: the eighteen artifacts the bundle's links reach, two protocols and one reference.
-- **Dependency order.** Rules and Conventions follow the entry's own sections, in the order its preamble links them.
-- **Compiled links.** Every link to a declaring document or section under the working directory points at a heading in the bundle.
-- **Distinct destinations for coinciding headings.** The `Procedure` headings of Propose Mode and Initiative Publication take `#procedure-1` and `#procedure-2`, the destinations their preambles link.
-- **A dispatched link.** The `⇉` mark is dropped, the link points at a sub-section of its step naming the Sync Mode bundle the run publishes beside this one, and Sync Mode contributes no content here:
-
-  ```markdown
-  ### 9. Record Delivered Work
-
-  When work has landed:
-
-  - Follow [Sync Mode](#dispatch-sync-mode) for the affected initiative.
-  - For each unplaced task row it returns pending:
-    - Apply [Place Unplaced Task Row](#place-unplaced-task-row) with the epic JSON, that task issue, no allowance, the returned change list and delivery evidence, and an output body file.
-    - Repeat Sync Mode with the refreshed epic.
-  - Return the saved delivery state or blockers.
-
-  #### Dispatch Sync Mode
-
-  [Dispatch](#dispatch) `modes_sync-mode.bundle.md` to a sub-agent.
-  ```
-
-- **An external link.** The pull request artifact's link to GitHub's documentation keeps its authored destination.
+The run publishes nothing. The procedure dispatches Sync Mode, which keeps its own file group, so the Artifacts group its links place nests inside that division one level deeper, and the fifth-level headings of [Delivery Evidence](work-planner/artifacts/delivery-evidence.md) would be emitted beyond H6. The run fails with `E_HEADING_DEPTH_OVERFLOW`.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml).
 
@@ -232,27 +171,7 @@ pf modes/advance-mode.md
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) points the link at the compiled `Run Board Reads` section, whose steps sit one level below it and whose calls point at their headings in the bundle:
-
-```markdown
-##### 1. Apply the Board Reads
-
-Apply the [board reads](#run-board-reads).
-
-##### 2. Return the Board Delivery Evidence
-
-Return the [board snapshot](#board-snapshot), pull request records and complete issue-link snapshot to the caller, reporting incomplete evidence as a blocker.
-
-##### Run Board Reads
-
-###### 1. Read Board State
-
-Apply [Read Board State](#read-board-state) with the board owner and number for its items, Status field and [repositories](#repositories).
-
-###### 2. Fetch Initiative Pull Requests
-
-Apply [Fetch All Initiative Pull Requests](#fetch-all-initiative-pull-requests) for each repository Read Board State returned, for the pull request records.
-```
+The run publishes nothing. The board procedure keeps its own file group, so the Artifacts group its links place nests inside it one level deeper, and the `Run Board Reads` steps, fifth-level headings in their source, would be emitted beyond H6. The run fails with `E_HEADING_DEPTH_OVERFLOW`.
 
 [Fixture and expected diagnostics](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/manifest.toml).
 
@@ -338,11 +257,11 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 
 | Example | Invocation fixture | Expected output |
 | --- | --- | --- |
-| Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) |
+| Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | None: the run refuses a heading nested beyond H6 |
 | Select a section | [Manifest](../fixtures/usage-example/a-section-entry-and-its-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-section-entry-and-its-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/artifacts_epic-issue-body__record-epic-delivery+artifacts_epic__delivery-findings.bundle.md) |
 | Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) |
-| Read in steps | [Manifest](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) |
+| Read in steps | [Manifest](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/manifest.toml) | None: the run refuses a heading nested beyond H6 |
 | Compile declared groups | [Manifest](../fixtures/usage-example/artifacts-and-references-under-declared-groups/manifest.toml) | [Bundle](../fixtures/usage-example/artifacts-and-references-under-declared-groups/expected/modes_hoist-mode.bundle.md) |
 | Validate with `-c` | [Manifest](../fixtures/usage-example/validation-without-publication/manifest.toml) | None: the run writes no bundle |
 

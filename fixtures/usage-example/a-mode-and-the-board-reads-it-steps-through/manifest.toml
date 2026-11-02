@@ -1,8 +1,10 @@
-description = "The usage example that compiles the Advance mode bundles that mode with the Rules and Conventions documents its links reach, the eight artifacts its links reach under the Artifacts heading, and the Configuration document those artifacts link. The Read Board Delivery Evidence operation links its Run Board Reads section as an ordinary section, which the bundle carries beneath that operation as five numbered step sub-sections, each headed by its position and action, with no warning. The dispatched link to Sync Mode is published without its mark, pointing at a sub-section of its step naming the Sync Mode bundle, which the run publishes beside it with every bundle its own dispatches reach; Sync Mode contributes no content to the Advance mode bundle."
+description = "The usage example that compiles the Advance mode reaches the Delivery Evidence artifact, whose Run Board Reads steps are fifth-level headings. The mode declares no pair, so the Artifacts group its links place nests inside its division one level deeper, and those steps would be emitted beyond H6: the run fails before publication and publishes no bundle."
 
 clauses = [
   "Usage examples",
-  "Link classification and resource handling — The dispatch operator",
+  "Grouping — Nested groups",
+  "File-scoped hierarchy — Depth overflow",
+  "Compile before publishing — step 5",
 ]
 
 [invocation]
@@ -10,6 +12,11 @@ cwd = "source"
 arguments = ["modes/advance-mode.md"]
 
 [expected]
-exit_status = 0
-bundles = ["expected/modes_advance-mode.bundle.md", "expected/modes_sync-mode.bundle.md", "expected/modes_understand-mode.bundle.md", "expected/protocols_delivery-recording.bundle.md", "expected/protocols_epic-closure.bundle.md"]
-diagnostics = []
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "artifacts/delivery-evidence.md"
+source = "artifacts/delivery-evidence.md"
+chain = ["modes/advance-mode.md", "artifacts/delivery-evidence.md#read-board-delivery-evidence"]
