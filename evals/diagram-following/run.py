@@ -126,7 +126,6 @@ from workflow import (
     COMPILED_FORM,
     DIAGRAM,
     ENTRY,
-    ENTRY_BUNDLE,
     LINKED_FORM,
     PROSE,
     ROOT,
@@ -172,6 +171,7 @@ FORMS = {
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
 BUILD = "build"
+"""The existing folder a bootstrapping session compiles into."""
 BIN = "bin"
 SKILL = "SKILL.md"
 SKILL_HOME = Path(".claude") / "skills"
@@ -183,7 +183,6 @@ instruction naming it.
 """
 SKILL_FILES = (SKILL,)
 """The files a bootstrap skill carries beside the documents it compiles."""
-"""The existing folder a bootstrapping session compiles into."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
@@ -388,7 +387,7 @@ def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
     is refused, as one exiting nonzero is.
     """
     with tempfile.TemporaryDirectory() as output:
-        built = bundle(workflow.form(FORMS[form]), Path(output))
+        built = bundle(workflow, FORMS[form], Path(output))
         reported = stray(workflow, built.stderr)
         if built.returncode != 0 or reported:
             raise CorpusError(
@@ -417,7 +416,7 @@ def prepare(
     """
     if form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
-            written = ENTRY if name == ENTRY_BUNDLE.name else name
+            written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
     elif form == BOOTSTRAP_SET:
         placed = workspace / SKILL_HOME / workflow.name

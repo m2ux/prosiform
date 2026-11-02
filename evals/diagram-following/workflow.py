@@ -51,14 +51,17 @@ A run writes each input to `inputs/<name>` as the value followed by a
 newline, and a condition reads the file with surrounding whitespace removed.
 
 A form is bundled by the `pf` command the environment provides, run from
-the form's directory, so the bundle is the one this checkout builds. `pf`
-writes its bundle set into `workflow.bundles/` under the output folder it is
-given, and the entry's bundle there is `workflow.bundle.md`. A form that
-dispatches publishes one bundle per target beside the entry's, so its set
-is every bundle `pf` writes; a form that does not publishes the entry's
-alone. A run reports no diagnostic beyond the warning codes the workflow's
-`scenarios.toml` declares under `warnings`, which a feature such as `subst`
-raises wherever it is used.
+the form's directory, so the bundle is the one this checkout builds. The
+reference `pf` is given is the workflow's entry: `workflow.md`, or the
+section of it a top-level `entry` key in `scenarios.toml` names as
+`workflow.md#<fragment>`, which leaves the document's other sections out.
+`pf` writes its bundle set into a folder named for that entry under the
+output folder it is given, `workflow.bundles/` holding `workflow.bundle.md`
+for the whole document. A form that dispatches publishes one bundle per
+target beside the entry's, so its set is every bundle `pf` writes; a form
+that does not publishes the entry's alone. A run reports no diagnostic
+beyond the warning codes the workflow's `scenarios.toml` declares under
+`warnings`, which a feature such as `subst` raises wherever it is used.
 
 The diagram form's bundle states a path of its own: a state's section is
 the heading the previous section's link or the bundle's diagram names, and
@@ -66,6 +69,10 @@ what `pf` placed into a group or redirected through `subst` is what that
 section holds. A scenario's path is held to that walk as well as to the
 sources', so a workflow built on a feature states the path its bundle
 states.
+
+A document under an `undeclared/` directory declares no `prosiform`, so a
+link to it is left as written rather than followed; every other document
+declares.
 """
 
 import re
@@ -81,7 +88,8 @@ INSTRUCTION = ROOT / "instruction.md"
 INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
 
 ENTRY = "workflow.md"
-ENTRY_BUNDLE = Path("workflow.bundles", "workflow.bundle.md")
+UNDECLARED = "undeclared"
+"""The directory whose documents declare no `prosiform`, so a link to one stays text."""
 STATES = "states"
 SCENARIOS = "scenarios.toml"
 DIAGRAM = "diagram"
@@ -102,11 +110,6 @@ FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
 
 A bootstrap form's tree is its skill, which carries the documents it names.
 """
-"""The directory each form's document tree sits in.
-
-A bootstrap form's documents sit beside its skill, so the workflow is read
-from them while the skill that names them sits apart.
-"""
 MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
 """The forms whose dispatch steps are written as marked links and no prose.
 
@@ -116,7 +119,6 @@ step states its dispatch by its marks there as it does in the compiled form.
 SHELL_FORMS = (BOOTSTRAP,)
 """The forms a session runs a command to read, which no other form needs."""
 
-BUNDLES = "workflow.bundles"
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
 UNDRAWN = (PROSE,)
 """The forms whose entry document draws no diagram.
@@ -301,18 +303,6 @@ class Edge:
     label: str | None
 
 
-QUESTION = "?"
-"""What a condition's name ends with, telling it from a state."""
-"""The name a transition node takes: lower case, so it reads as an edge.
-
-A diagram may draw a labelled transition as a node of its own between the two
-states it joins — `Gather -->|two halves| Weigh` drawn as
-`Gather --> two-halves --> Weigh` — and click that node to the section stating
-when the transition applies. The node's name is lower case and hyphenated, so
-a state, which is capitalised, is told apart from it.
-"""
-
-
 @dataclass(frozen=True)
 class Diagram:
     """The workflow the diagram form draws."""
@@ -468,8 +458,16 @@ class Workflow:
     nested: tuple[str, ...] = ()
     """Each criterion a nested chart states, read from the section holding it."""
 
+    entry: str = ENTRY
+    """The reference every form is compiled from: the entry document or one section."""
+
     warnings: frozenset[str] = frozenset()
     """The warning codes `pf` reports bundling this workflow, as it declares them."""
+
+    @property
+    def entry_bundle(self) -> Path:
+        """Where the entry's bundle sits under a form's output folder."""
+        return entry_bundle(self.entry)
 
     def form(self, form: str) -> Path:
         """The directory holding one form's source tree.
@@ -716,6 +714,27 @@ def read_sections(form_directory: Path, form: str) -> dict[str, Section]:
     return {section.state: section for section in sections}
 
 
+def entry_bundle(entry: str) -> Path:
+    """The entry's bundle under an output folder, by the name `pf` derives.
+
+    A selection's name is its path without the Markdown suffix, each
+    separator written as `_`, and a section adds `__` and its fragment. The
+    run's folder takes that name with `.bundles`, and the entry's bundle with
+    `.bundle.md`.
+    """
+    document, _, fragment = entry.partition("#")
+    name = Path(document).with_suffix("").as_posix().replace("/", "_")
+    if fragment:
+        name = f"{name}__{fragment}"
+    return Path(f"{name}.bundles", f"{name}.bundle.md")
+
+
+def read_entry(path: Path) -> str:
+    """The reference a workflow's `scenarios.toml` names its forms' entry by."""
+    with path.open("rb") as handle:
+        return str(tomllib.load(handle).get("entry", ENTRY))
+
+
 def read_warnings(path: Path) -> frozenset[str]:
     """The warning codes a workflow's `scenarios.toml` declares its bundle raises.
 
@@ -786,6 +805,7 @@ def read_workflow(directory: Path) -> Workflow:
         conditions=read_conditions(diagram, diagram.clicks, drawn_root)
         if diagram.conditions
         else {},
+        entry=read_entry(directory / SCENARIOS),
         warnings=read_warnings(directory / SCENARIOS),
     )
     return replace(workflow, nested=nested_conditions(workflow, drawn_root))
@@ -812,26 +832,33 @@ def instruction(entry: str, form: str = "") -> str:
     return blocks[0].replace(ENTRY_PLACEHOLDER, entry)
 
 
-def bundle(form_directory: Path, output: Path) -> subprocess.CompletedProcess[bytes]:
-    """The `pf` run bundling one form from its entry document under `output`.
+def bundle(
+    workflow: Workflow, form: str, output: Path
+) -> subprocess.CompletedProcess[bytes]:
+    """The `pf` run bundling one form from the workflow's entry under `output`.
 
-    The entry's bundle is `output / ENTRY_BUNDLE` once the run succeeds, and
-    every other bundle the run writes sits beside it in the same folder.
+    The entry's bundle is `output / workflow.entry_bundle` once the run
+    succeeds, and every other bundle the run writes sits beside it in the
+    same folder.
     """
     command = shutil.which("pf")
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, ENTRY, "-o", str(output)],
-        cwd=form_directory,
+        [command, workflow.entry, "-o", str(output)],
+        cwd=workflow.form(form),
         capture_output=True,
         check=False,
     )
 
 
 def bundled(output: Path) -> list[Path]:
-    """Every bundle a form's run wrote under `output`, in name order."""
-    return sorted(path for path in (output / BUNDLES).glob("*.bundle.md"))
+    """Every bundle a form's run wrote under `output`, in name order.
+
+    A run writes one folder of its own, so every bundle sits in the one
+    folder under `output`.
+    """
+    return sorted(output.glob("*.bundles/*.bundle.md"))
 
 
 def stray(workflow: Workflow, stderr: bytes) -> str:

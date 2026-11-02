@@ -54,7 +54,6 @@ from score import (
 )
 from workflow import (
     ENTRY,
-    ENTRY_BUNDLE,
     LINKED_FORM,
     CorpusError,
     workflows,
@@ -219,7 +218,7 @@ def material(session: Session) -> set[str]:
             | {
                 name
                 for name in bundles_of(workflow, session.form)
-                if name != ENTRY_BUNDLE.name
+                if name != workflow.entry_bundle.name
             }
         )
     tree = workflow.form(FORMS[session.form])
@@ -233,7 +232,7 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 46
+    assert len(sessions) == 2 * 5 * 58
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -334,7 +333,9 @@ def test_a_compiled_form_gives_its_whole_bundle_set(tmp_path: Path, log: Path) -
     )
     [workflow] = [CORPUS["dispatch-chain"]]
     published = (
-        name for name in bundles_of(workflow, COMPILED_SET) if name != ENTRY_BUNDLE.name
+        name
+        for name in bundles_of(workflow, COMPILED_SET)
+        if name != workflow.entry_bundle.name
     )
     expected = {ENTRY, *published}
     for entry in seen(log):

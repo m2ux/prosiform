@@ -1,0 +1,17 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+
+[[scenario]]
+name = "merged-sources"
+path = ["Lodge", "Configure", "Close"]
+inputs = { "kind.txt" = "config", "scope.txt" = "small" }
+
+[[scenario]]
+name = "deferred-occurrence"
+path = ["Lodge", "Assess", "Migrate", "Close"]
+inputs = { "kind.txt" = "code", "scope.txt" = "large" }
+
+[[scenario]]
+name = "nested-composition"
+path = ["Lodge", "Assess", "Amend", "Close"]
+inputs = { "kind.txt" = "code", "scope.txt" = "small" }
