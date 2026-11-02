@@ -144,3 +144,12 @@ class Limits:
     def of(self, budget: Budget) -> int:
         """The number one budget stands at for this run."""
         return self.declared[budget]
+
+
+def in_force(named: Mapping[Budget, int]) -> Limits:
+    """Every budget in force: each figure `named` holds, the rest at default.
+
+    The result holds one entry per declared budget, so a run naming no
+    budget stands at every default and no stage reads a budget it lacks.
+    """
+    return Limits({budget: named.get(budget, budget.default) for budget in BUDGETS})

@@ -11,7 +11,7 @@ from prosiform import cli
 from prosiform.access import read_source
 from prosiform.closure import resolve
 from prosiform.diagnostics import Location
-from prosiform.limits import BUDGETS, Limits
+from prosiform.limits import in_force
 from prosiform.metadata import InvalidMetadata
 from prosiform.source import Source, closes_head, content, hashed
 
@@ -60,9 +60,7 @@ def test_a_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
     path = tmp_path / "a.md"
     raw = b"---\nprosiform: {}\n---\n# A\n"
     path.write_bytes(raw)
-    opened = cli.read_document(
-        tmp_path, resolve("a.md"), Limits({b: b.default for b in BUDGETS})
-    )
+    opened = cli.read_document(tmp_path, resolve("a.md"), in_force({}))
     path.write_bytes(b"# A\n")
     assert opened.source.conversion.declared
     assert opened.capture.digest == hashed(raw)
@@ -85,9 +83,7 @@ def test_capture_hash_covers_frontmatter_and_body(tmp_path: Path) -> None:
     path = tmp_path / "a.md"
     raw = ("\ufeff---\n" + settings("one") + "---\n# A\n").encode()
     path.write_bytes(raw)
-    opened = cli.read_document(
-        tmp_path, resolve("a.md"), Limits({b: b.default for b in BUDGETS})
-    )
+    opened = cli.read_document(tmp_path, resolve("a.md"), in_force({}))
     path.write_text("---\n" + settings("two") + "---\n# A\n")
     assert opened.size == len(raw)
     assert opened.capture.digest == hashed(raw)

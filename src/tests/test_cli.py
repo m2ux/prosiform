@@ -114,6 +114,7 @@ from prosiform.limits import (
     RESOURCE_LIMIT,
     Budget,
     Limits,
+    in_force,
 )
 from prosiform.limits import (
     CODES as LIMITS_CODES,
@@ -988,16 +989,14 @@ def test_a_stripped_source_the_profile_accepts_bundles(root: Path) -> None:
 
 def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
     (root / "guide.md").write_bytes(b"---\r\ntitle: Guide\r\n---\r\n# Guide\r\n")
-    read = read_document(
-        root, resolve("guide.md"), Limits({b: b.default for b in BUDGETS})
-    ).source
+    read = read_document(root, resolve("guide.md"), in_force({})).source
     assert read.text == "# Guide\r\n"
     assert read.first_line == 4
 
 
 def bounded(file_bytes: int) -> Limits:
     """The default budgets with `file-bytes` at the figure given."""
-    return Limits({b: file_bytes if b is FILE_BYTES else b.default for b in BUDGETS})
+    return in_force({FILE_BYTES: file_bytes})
 
 
 def test_a_probe_answers_a_silent_target_whatever_its_size(root: Path) -> None:
@@ -2031,7 +2030,7 @@ def test_an_output_path_the_run_cannot_make_is_a_publication_failure(
 
 def outputs(budget: int) -> Limits:
     """Every budget at its default, the output budget at the one supplied."""
-    return Limits({b: budget if b is OUTPUT_BYTES else b.default for b in BUDGETS})
+    return in_force({OUTPUT_BYTES: budget})
 
 
 def bundle_set(*texts: str) -> list[Bundle]:
@@ -3269,11 +3268,7 @@ def test_an_error_the_contract_does_not_name_is_an_internal_error_as_text(
 
 def captured_for(root: Path, path: str) -> dict[str, Capture]:
     """What one source was when it was read, as discovery captures it."""
-    return {
-        path: read_document(
-            root, entry(path), Limits({b: b.default for b in BUDGETS})
-        ).capture
-    }
+    return {path: read_document(root, entry(path), in_force({})).capture}
 
 
 def test_a_source_nothing_wrote_passes_the_recheck(root: Path) -> None:
