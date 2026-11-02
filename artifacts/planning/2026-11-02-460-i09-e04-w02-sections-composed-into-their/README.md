@@ -13,6 +13,8 @@ This record holds its delivery of `AC3, AC4`: the work item, the validation evid
 | Artifact | What it holds |
 | --- | --- |
 | [W02 work item](w02.md) | The composition pass, its provenance, the directive anchor and visible labels |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
