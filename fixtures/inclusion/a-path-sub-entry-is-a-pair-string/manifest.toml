@@ -1,0 +1,26 @@
+description = "A path-sub entry written as a mapping is no ORIGINAL=ALTERNATIVE string, so it fails with E_INVALID_CONVERSION_METADATA at the entry, naming it and the string form, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — path-sub holds pairs written as strings",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.path-sub[0] must be one ORIGINAL=ALTERNATIVE string, each side a reference"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 16

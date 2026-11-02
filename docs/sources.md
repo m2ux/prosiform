@@ -50,8 +50,10 @@ The block is one YAML 1.2 Core mapping. Duplicate keys, aliases, merge keys and 
 | Key | Holds |
 | --- | --- |
 | `group-depth` | a list of single-entry mappings, each a group name, containing neither `:` nor `/`, mapped to an integer from `1` to `6` |
+| `exclude` | a list whose entries are a section name, or a single-entry mapping of a section name to a heading level from `1` to `6` |
+| `path-sub` | a list of `ORIGINAL=ALTERNATIVE` strings, each side a reference |
 
-`group-depth: [{modes: 1}, {targets: 2}]` joins the document to two groups at two depths. An entry holding two keys, or a key that is not a string, fails the run naming the entry. Other top-level fields, `name` and `description` among them, are skill metadata and carry no conversion meaning. A file whose `default` preset names no group keeps a group of its own.
+`group-depth: [{modes: 1}, {targets: 2}]` joins the document to two groups at two depths. `exclude: ["Draft", {Tests: 3}]` names the section `Draft` and the level-3 heading `Tests`, by their text rather than as references, so no `#` is written. `path-sub: ["rules.md=stub.md"]` pairs two references at the first `=`, and each side is read by the reference grammar a link is read by. A mapping entry holding two keys, a key that is not a string, an entry of neither shape, and a side the reference grammar refuses each fail the run with `E_INVALID_CONVERSION_METADATA` naming the entry. Other top-level fields, `name` and `description` among them, are skill metadata and carry no conversion meaning. A file whose `default` preset names no group keeps a group of its own.
 
 Frontmatter counts toward the byte budgets and obeys the nesting budget independently of Markdown containers. It supplies no headings, links or rendered content.
 

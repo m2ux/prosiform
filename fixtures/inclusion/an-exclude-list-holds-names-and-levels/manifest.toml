@@ -1,0 +1,16 @@
+description = "An exclude list holding a bare section name and a single-entry mapping of a name to a heading level declares, and the document carrying neither heading is compiled with no diagnostic."
+
+clauses = [
+  "Conversion metadata — exclude holds names",
+  "Conversion metadata — An entry is one string key with an integer value",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

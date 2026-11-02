@@ -2242,6 +2242,55 @@ def test_an_unknown_prosiform_key_fails(root: Path, key: str) -> None:
     assert run.diagnostics()[0]["code"] == INVALID_CONVERSION_METADATA
 
 
+@pytest.mark.parametrize(
+    "pair,side,clause",
+    [
+        ("rules.md?x=stub.md", "rules.md?x", "carries the query 'x'"),
+        ("rules.md=stub%zz.md", "stub%zz.md", "carries the escape '%zz'"),
+        ("rules.md=stub%2Fx.md", "stub%2Fx.md", "decodes to a path separator"),
+        ("/rules.md=stub.md", "/rules.md", "names the root-relative path"),
+        ("C:/rules.md=stub.md", "C:/rules.md", "names the drive path"),
+        ("rules\\\\x.md=stub.md", "rules\\x.md", "with a backslash"),
+        (
+            "rules.md=https://example.com/stub.md",
+            "https://example.com/stub.md",
+            "carries a scheme or an authority, so it names no local document",
+        ),
+    ],
+)
+def test_a_path_sub_side_is_read_by_the_reference_grammar(
+    root: Path, pair: str, side: str, clause: str
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "---\nprosiform:\n  default:\n    path-sub:\n"
+        f'      - "a.md=b.md"\n      - "{pair}"\n---\n# Guide\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE, run.stderr
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_CONVERSION_METADATA
+    message = diagnostic["message"]
+    assert message.startswith(f"prosiform.default.path-sub[1] side {side!r} ")
+    assert clause in message
+    assert diagnostic["location"] == {"file": "guide.md", "line": 6, "column": 9}
+
+
+def test_a_path_sub_pair_the_reference_grammar_reads_is_admitted(root: Path) -> None:
+    """A side above the working directory is a reference the grammar admits."""
+    written(
+        root,
+        "guide.md",
+        "---\nprosiform:\n  default:\n"
+        '    path-sub: ["rules.md#Checks=../stub.md", "a%20b.md=./c.md"]\n'
+        "---\n# Guide\n\nEvery step.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.diagnostics() == []
+
+
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
     declaration = "---\nprosiform: {}\nmetadata:\n  dispatch: One rule.\n---\n"
     written(

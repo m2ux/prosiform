@@ -37,6 +37,8 @@ GROUP = "group"
 DEPTH = "group-depth"
 EXCLUDE = "exclude"
 PATH_SUB = "path-sub"
+SUBSTITUTION = "="
+"""What separates a `path-sub` entry's original from its alternative."""
 FIELDS = (DEPTH, EXCLUDE, PATH_SUB)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
@@ -96,16 +98,46 @@ class Membership:
 
 
 @dataclass(frozen=True)
+class Exclusion:
+    """One `exclude` entry: a section of the declaring document, named by its text.
+
+    `level` is the heading level a mapping entry names, which tells two
+    headings of one name apart; a bare name leaves it absent and names
+    the section at whatever level it stands. The location is the entry's.
+    """
+
+    name: str
+    level: int | None
+    location: Location
+
+
+@dataclass(frozen=True)
+class PathSub:
+    """One `path-sub` entry: an `ORIGINAL=ALTERNATIVE` pair, each side as written.
+
+    The pair is split at its first `=`, and each side is a reference the
+    reference grammar reads. The location is the entry's.
+    """
+
+    original: str
+    alternative: str
+    location: Location
+
+
+@dataclass(frozen=True)
 class Preset:
     """One named preset's settings.
 
     `memberships` holds each `group-depth` entry in written order, so the
     declaring document joins every group it names; a preset stating none
-    leaves the document its individual file group.
+    leaves the document its individual file group. `exclusions` and
+    `path_subs` hold each `exclude` and `path-sub` entry in written order.
     """
 
     name: str
     memberships: tuple[Membership, ...] = ()
+    exclusions: tuple[Exclusion, ...] = ()
+    path_subs: tuple[PathSub, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -492,42 +524,73 @@ def _preset(preset: str, mapping: _Node) -> Preset:
                 INVALID_CONVERSION_METADATA, f"{name} must be a list", value.location
             )
         fields[key.value] = value
-    if DEPTH not in fields:
-        return Preset(preset)
-    named = f"prosiform.{preset}.{DEPTH}"
+    named = f"prosiform.{preset}."
+
+    def entries(field: str) -> list[tuple[str, _Node]]:
+        held = fields[field].children if field in fields else []
+        return [(f"{named}{field}[{at}]", entry) for at, entry in enumerate(held)]
+
     return Preset(
         preset,
-        tuple(
-            _membership(f"{named}[{at}]", entry)
-            for at, entry in enumerate(fields[DEPTH].children)
-        ),
+        tuple(_membership(name, entry) for name, entry in entries(DEPTH)),
+        tuple(_exclusion(name, entry) for name, entry in entries(EXCLUDE)),
+        tuple(_path_sub(name, entry) for name, entry in entries(PATH_SUB)),
     )
 
 
-def _membership(name: str, entry: _Node) -> Membership:
-    """One `group-depth` entry, a single string key mapped to a depth."""
-    if entry.kind != "map" or len(entry.children) != 2:
-        raise _fail(
-            INVALID_CONVERSION_METADATA,
-            f"{name} must be a mapping holding one group and its depth, as "
-            "{<group>: <depth>}",
-            entry.location,
-        )
-    group, depth = entry.children
-    if group.kind != "str":
-        raise _fail(
-            INVALID_CONVERSION_METADATA,
-            f"{name} must name its group with a string key",
-            entry.location,
-        )
-    if not group.value.strip() or any(
-        char in ":/\u0085\u2028\u2029"
+def _single_line(text: str) -> bool:
+    """Whether one name is nonblank, printable and written on one line."""
+    return bool(text.strip()) and not any(
+        char in "\u0085\u2028\u2029"
         or ord(char) < 32
         or 127 <= ord(char) <= 159
         or 0xD800 <= ord(char) <= 0xDFFF
         or ord(char) in (0xFFFE, 0xFFFF)
-        for char in group.value
-    ):
+        for char in text
+    )
+
+
+def _level(node: _Node) -> int | None:
+    """A heading level from 1 through 6 one integer scalar states, or None."""
+    level = (
+        _scalar(node.value, PREFIX + "int", True, node.location)[1]
+        if node.kind == "int"
+        else None
+    )
+    if not isinstance(level, Decimal) or not 1 <= level <= 6:
+        return None
+    return int(level)
+
+
+def _pair(name: str, entry: _Node, shape: str, noun: str) -> tuple[_Node, _Node]:
+    """One single-entry mapping's string key and its value, or the entry's refusal.
+
+    `shape` completes the sentence stating what the entry must be, and
+    `noun` names what its key names.
+    """
+    if entry.kind != "map" or len(entry.children) != 2:
+        raise _fail(
+            INVALID_CONVERSION_METADATA, f"{name} must be {shape}", entry.location
+        )
+    key, value = entry.children
+    if key.kind != "str":
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            f"{name} must name its {noun} with a string key",
+            entry.location,
+        )
+    return key, value
+
+
+def _membership(name: str, entry: _Node) -> Membership:
+    """One `group-depth` entry, a single string key mapped to a depth."""
+    group, depth = _pair(
+        name,
+        entry,
+        "a mapping holding one group and its depth, as {<group>: <depth>}",
+        "group",
+    )
+    if not _single_line(group.value) or any(char in ":/" for char in group.value):
         raise _fail(
             INVALID_CONVERSION_METADATA,
             f"{name} must name a group printable, single-line and nonblank, "
@@ -542,15 +605,59 @@ def _membership(name: str, entry: _Node) -> Membership:
             "than a hyphen, an underscore or whitespace",
             group.location,
         )
-    numeric_depth = (
-        _scalar(depth.value, PREFIX + "int", True, depth.location)[1]
-        if depth.kind == "int"
-        else None
-    )
-    if not isinstance(numeric_depth, Decimal) or not 1 <= numeric_depth <= 6:
+    level = _level(depth)
+    if level is None:
         raise _fail(
             INVALID_CONVERSION_METADATA,
             f"{name} for group {group.value!r} must be an integer from 1 through 6",
             depth.location,
         )
-    return Membership(group.value, int(numeric_depth), group.location, depth.location)
+    return Membership(group.value, level, group.location, depth.location)
+
+
+def _exclusion(name: str, entry: _Node) -> Exclusion:
+    """One `exclude` entry, a section name or one name mapped to its level.
+
+    The name is the heading's text rather than a reference, so no `#` is
+    written and nothing in it is decoded.
+    """
+    if entry.kind == "str":
+        section, level = entry, None
+    else:
+        section, written = _pair(
+            name,
+            entry,
+            "a section name, or a mapping holding one section and its heading "
+            "level, as {<section>: <level>}",
+            "section",
+        )
+        level = _level(written)
+        if level is None:
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} for section {section.value!r} must be a heading level, "
+                "an integer from 1 through 6",
+                written.location,
+            )
+    if not _single_line(section.value):
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            f"{name} must name a section printable, single-line and nonblank",
+            section.location,
+        )
+    return Exclusion(section.value, level, entry.location)
+
+
+def _path_sub(name: str, entry: _Node) -> PathSub:
+    """One `path-sub` entry, a string pairing two references at its first `=`."""
+    original, given, alternative = (
+        entry.value.partition(SUBSTITUTION) if entry.kind == "str" else ("", "", "")
+    )
+    if not given or not original or not alternative:
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            f"{name} must be one ORIGINAL=ALTERNATIVE string, each side a "
+            'reference, as "rules.md=stub.md"',
+            entry.location,
+        )
+    return PathSub(original, alternative, entry.location)
