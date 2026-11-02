@@ -13,8 +13,10 @@ share: a sentence repeated in two sections is two ranges, so repeated
 identical prose is not duplication and a count of occurrences is not a
 coverage test. A *generated* record names a heading the bundle wrote
 itself — the filename wrapper, and the group, overview and variant
-headings a metadata-declared group produces, and each dispatch
-sub-section with the one line of instruction beneath it — which carries
+headings a metadata-declared group produces, each dispatch
+sub-section with the one line of instruction beneath it, and the
+destination section and contribution heading a composition directive
+places its target beneath — which carries
 no source range and so can never stand in for selected body content a
 group failed to emit. A
 *structural ancestor* names a heading the bundle emits to place a
@@ -63,11 +65,19 @@ STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
 DISPATCH_SECTION = "dispatch sub-section"
 PROSIFORM_SECTION = "Prosiform section"
+DESTINATION_SECTION = "destination section"
+CONTRIBUTION_HEADING = "contribution heading"
+
+COMPOSED_HEADINGS = (DESTINATION_SECTION, CONTRIBUTION_HEADING)
 
 Target = tuple[str, str | None]
 
 Served = tuple[Target, bool]
 """A dispatched link's target, and whether the link dispatches it in parallel."""
+
+Located = tuple[str, int, int]
+"""One link, as its document, the line of content its inline block opens on and
+its position among the links that block writes."""
 
 
 @dataclass(frozen=True)
@@ -95,12 +105,18 @@ class Carried:
     A heading one document contributes holds one origin. A merged
     heading several documents contribute one text to holds one origin
     for each of them, and is emitted once for all of them.
+
+    A composed heading is a subsection of a section a directive placed
+    beneath another: it answers no target, since the section's own
+    heading answers wherever the bundle carries it, and it stands in no
+    outline of its source's but the one its contribution places it in.
     """
 
     text: str
     level: int
     origins: tuple[Origin, ...]
     answers: tuple[Target, ...] = ()
+    composed: bool = False
 
 
 @dataclass(frozen=True)
@@ -162,11 +178,17 @@ class Range:
     content, which is the text the parse read. The removed lines are the
     lines a link-reference definition occupies inside the range, which
     the group drops, so the content the range stands for is the rest.
+
+    A composed range is a region of a section a directive placed beneath
+    the section writing it. Every directive contributes its own copy, so
+    a composed range stands outside the group's own coverage and its own
+    source order, and is held to its source's bytes alone.
     """
 
     path: str
     lines: tuple[int, int]
     removed: tuple[int, ...]
+    composed: bool = False
 
     def kept(self) -> list[int]:
         """Each line of the source the bundle carries, in source order."""

@@ -137,6 +137,7 @@ from prosiform.provenance import (
     Carried,
     Emitted,
     Generated,
+    Located,
     Origin,
     Part,
     Range,
@@ -426,6 +427,7 @@ def rewrite(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Mapping[Located, str] | None = None,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -453,9 +455,14 @@ def rewrite(
     region's first line. A dispatch the map holds none for is refused,
     and the line the refusal names is the line of the file the source was
     read from, which the first line of its content states.
+
+    A composition directive takes the destination of the contribution
+    it places, which the composition map holds by the link's own
+    position, so every directive stands for its own contribution.
     """
     written = list(physical)
     served = {} if dispatching is None else dispatching
+    contributing = {} if composing is None else composing
     for region in selected:
         here = served.get((path, (region.map or (0, 0))[0]), {})
         for inline in inlines(tokens, [region]):
@@ -464,7 +471,9 @@ def rewrite(
                 continue
             start, end = inline.map
             targets = [
-                target(
+                f"{ANCHOR}{contributing[(path, start, at)]}"
+                if (path, start, at) in contributing
+                else target(
                     path,
                     one,
                     opening,
@@ -474,7 +483,7 @@ def rewrite(
                     line=start + first_line,
                     substitution=substitution,
                 )
-                for one, opening in found
+                for at, (one, opening) in enumerate(found)
             ]
             written[start:end] = rewritten(written[start:end], inline, targets, defined)
     for fence in within(tokens, selected):
@@ -854,6 +863,7 @@ def group(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Mapping[Located, str] | None = None,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -957,6 +967,7 @@ def group(
             dispatching,
             first_line,
             substitution,
+            composing,
         )
     )
     for token in regions(tokens):

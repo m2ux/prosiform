@@ -85,7 +85,13 @@ from prosiform.closure import (
     withholding,
     withholding_target,
 )
-from prosiform.composition import directive
+from prosiform.composition import (
+    Composed,
+    Parentless,
+    compositions,
+    contributions,
+    directive,
+)
 from prosiform.diagnostics import (
     ERROR,
     FORMATS,
@@ -155,7 +161,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Target
+from prosiform.provenance import Located, Target
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -2578,7 +2584,8 @@ def assembled(
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-) -> list[Group]:
+    composing: Mapping[Located, str] | None = None,
+) -> tuple[list[Group], Composed]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
     The documents arrive in placement order, which `placement` decides,
@@ -2598,6 +2605,10 @@ def assembled(
     the top level where its first document is placed, so the group
     carrying the parent leads and one selection always bundles to the
     same bytes.
+
+    The sections the bundle's directives compose are placed once every
+    group stands where it is emitted, and the contribution heading each
+    composing link points at is returned beside the groups.
     """
     parent = parent_document(entries)
     inforce = group_depths(joins)
@@ -2635,6 +2646,7 @@ def assembled(
                 dispatching,
                 read[path].first_line,
                 substitution,
+                composing,
             )
         for named, paths in merging.items():
             depth = inforce[named]
@@ -2655,18 +2667,28 @@ def assembled(
                         dispatching,
                         read[path].first_line,
                         substitution,
+                        composing,
                     )
                     for path in paths
                 ],
                 parent,
                 levels[(named, True)],
             )
-    return [
-        one
-        for division in order
-        if division not in held
-        for one in composed(division, built, nested)
-    ]
+        return compositions(
+            [
+                one
+                for division in order
+                if division not in held
+                for one in composed(division, built, nested)
+            ],
+            parsed,
+            read,
+            defined,
+            assigned,
+            dispatching,
+            declarations,
+            substitution,
+        )
 
 
 @contextmanager
@@ -2693,6 +2715,18 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             source=beyond.path,
             chain=chains.get(beyond.path, ()),
         ) from beyond
+    except Parentless as parentless:
+        raise input_failure(
+            f"the directive {parentless.destination!r} in {parentless.path!r} "
+            f"names a section no heading stands above, so its contribution "
+            f"has no parent to name",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy="name a section that stands beneath a heading of its document, "
+            "or give the link a label that requests no placement",
+            reference=parentless.destination,
+            source=location(parentless.path, parentless.line),
+            chain=(*chains.get(parentless.path, ()), parentless.destination),
+        ) from parentless
     except Unplaced as unplaced:
         raise input_failure(
             f"the dispatch {unplaced.opening!r} in {unplaced.path!r} names "
@@ -2775,20 +2809,21 @@ def compose(
         read, parsed, selected, entries, declarations, substitution
     )
     try:
+        built, contributed = assembled(
+            read,
+            parsed,
+            defined,
+            selected,
+            entries,
+            None,
+            joins,
+            placers,
+            None,
+            declarations,
+            substitution,
+        )
         headed, placed = subsections(
-            assembled(
-                read,
-                parsed,
-                defined,
-                selected,
-                entries,
-                None,
-                joins,
-                placers,
-                None,
-                declarations,
-                substitution,
-            ),
+            built,
             parsed,
             read,
             bundle_file,
@@ -2801,20 +2836,23 @@ def compose(
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
     dispatching = anchors(placed, assigned)
+    composing = contributions(contributed, headed, assigned)
+    built, _ = assembled(
+        read,
+        parsed,
+        defined,
+        selected,
+        entries,
+        targets,
+        joins,
+        placers,
+        dispatching,
+        declarations,
+        substitution,
+        composing,
+    )
     groups, _ = subsections(
-        assembled(
-            read,
-            parsed,
-            defined,
-            selected,
-            entries,
-            targets,
-            joins,
-            placers,
-            dispatching,
-            declarations,
-            substitution,
-        ),
+        built,
         parsed,
         read,
         bundle_file,
@@ -2834,6 +2872,7 @@ def compose(
             dispatching,
             declarations,
             substitution,
+            composing,
         )
     except Unsafe as boundary:
         reached = reaching(selected).get(boundary.path or "", ())
