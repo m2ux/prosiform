@@ -3,4 +3,4 @@ prosiform: {}
 ---
 # Stand-in
 
-Every rule the stand-in states.
+Every step the stand-in names.

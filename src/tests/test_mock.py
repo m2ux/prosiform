@@ -30,6 +30,7 @@ from typing import Any
 
 import pytest
 
+from prosiform.bundle import shown_text
 from prosiform.candidate import carried, intended
 from prosiform.cli import SUBST_UNUSED, main
 from prosiform.closure import (
@@ -266,76 +267,6 @@ def test_a_run_given_a_mapping_publishes_the_substitute(tree: Path) -> None:
 def test_the_option_is_reached_by_its_long_form(tree: Path) -> None:
     status, published = invoke(tree, "--mock", "rules.md=stand-in.md", "guide.md")
     assert (status, "# Stand-in" in published) == (0, True)
-
-
-def test_a_mapped_entry_derives_its_name_from_the_substitute(tree: Path) -> None:
-    """The redirect is total, so the document the run opens is the one it names."""
-    status, _published = invoke(tree, "-m", "guide.md=stand-in.md", "guide.md")
-    assert status == 0
-    assert (tree / "out" / "stand-in.bundles" / "stand-in.bundle.md").is_file()
-
-
-def test_an_explicit_folder_leaves_the_derived_name_following_the_substitute(
-    tree: Path,
-) -> None:
-    """`-o` names the folder and no file, so the name still follows the substitute."""
-    out, err = io.StringIO(), io.StringIO()
-    previous = Path.cwd()
-    try:
-        os.chdir(tree)
-        status = main(["-m", "guide.md=stand-in.md", "-o", "out", "guide.md"], out, err)
-    finally:
-        os.chdir(previous)
-    assert status == 0
-    assert (tree / "out" / "stand-in.bundles" / "stand-in.bundle.md").is_file()
-    assert not (tree / "out" / "guide.bundles").exists()
-
-
-def test_a_section_entry_derives_the_section_the_substitute_carries(
-    tree: Path,
-) -> None:
-    """A substitute carrying a fragment contributes it in place of the authored one."""
-    (tree / "stand-in.md").write_text(
-        DECLARED + "# Stand-in\n\n## Answers\n\nAnswered.\n"
-    )
-    status, _published = invoke(
-        tree, "-m", "guide.md#escalation=stand-in.md#answers", "guide.md#escalation"
-    )
-    assert status == 0
-    bundle = tree / "out" / "stand-in__answers.bundles" / "stand-in__answers.bundle.md"
-    assert "Answered." in bundle.read_text()
-
-
-def test_a_document_key_leaves_a_section_entry_its_own_fragment(tree: Path) -> None:
-    """A document key replaces the document, so the section the entry named stays."""
-    (tree / "stand-in.md").write_text(
-        DECLARED + "# Stand-in\n\n## Escalation\n\nAnswered.\n"
-    )
-    status, _published = invoke(
-        tree, "-m", "guide.md=stand-in.md", "guide.md#escalation"
-    )
-    assert status == 0
-    bundle = (
-        tree / "out" / "stand-in__escalation.bundles" / "stand-in__escalation.bundle.md"
-    )
-    assert "Answered." in bundle.read_text()
-
-
-def test_two_entries_naming_one_substitute_derive_one_name(tree: Path) -> None:
-    """Both entries resolve to one identity, so the run publishes one bundle of it."""
-    (tree / "other.md").write_text("# Other\n\nOther.\n")
-    status, _published = invoke(
-        tree,
-        "-m",
-        "guide.md=stand-in.md",
-        "-m",
-        "other.md=stand-in.md",
-        "guide.md",
-        "other.md",
-    )
-    assert status == 0
-    assert (tree / "out" / "stand-in.bundles" / "stand-in.bundle.md").is_file()
-    assert not (tree / "out" / "guide+other.bundles").exists()
 
 
 def test_a_value_that_is_no_pair_is_invalid_usage(tree: Path) -> None:
@@ -1052,6 +983,26 @@ def test_a_documents_pair_records_to_the_runs_record() -> None:
     assert mapped.redirects.served(("guide.md", ("rules.md", None)))
 
 
+def test_reading_what_a_heading_shows_records_no_substitution() -> None:
+    """The heading-text path decides what a heading shows and serves no key."""
+    mapped = Substitution({("rules.md", None): SUBSTITUTE})
+    tokens = parse("# Guide\n\n## [\u00ac Rules](rules.md)\n", BUDGET)
+    shown = shown_text("guide.md", tokens, DECLARING, mapped)
+    assert list(shown.values()) == ["Guide", "Rules"]
+    assert mapped.redirects.targets() == ()
+    assert mapped.unserved() == ("rules.md",)
+
+
+def test_an_unrecorded_mapping_answers_as_the_mapping_does() -> None:
+    mapped = Substitution({("rules.md", None): SUBSTITUTE})
+    quiet = mapped.unrecorded()
+    assert quiet.redirect(Reference("rules.md", "rules.md"), "guide.md:3").path == (
+        "stand-in.md"
+    )
+    assert mapped.redirects.targets() == ()
+    assert mapped.unserved() == ("rules.md",)
+
+
 def presetted(tree: Path, presets: str) -> None:
     """The tree's guide, declaring the presets given as its prosiform mapping."""
     (tree / "guide.md").write_text(
@@ -1107,6 +1058,22 @@ def test_a_pair_no_link_names_warns_unused_naming_its_document(tree: Path) -> No
     ]
     assert "prosiform.default in 'guide.md'" in said[0]["message"]
     assert "location" not in said[0]
+
+
+def test_a_pair_reached_only_by_a_heading_outside_the_selection_is_unused(
+    tree: Path,
+) -> None:
+    """A heading the run did not select compiles nothing, so its link uses no pair."""
+    (tree / "guide.md").write_text(
+        "---\nprosiform:\n  default:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Guide\n\n## Keep\n\nFollow the guide.\n\n## [\u00ac Rules](rules.md)\n\n"
+        "Read the rules.\n"
+    )
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md#keep")
+    assert status == 0
+    assert [(one["code"], one["source"]) for one in said] == [
+        ("W_SUBST_UNUSED", "rules.md")
+    ]
 
 
 def test_two_titles_selecting_disagreeing_pairs_are_refused(tree: Path) -> None:

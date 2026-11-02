@@ -164,8 +164,8 @@ class Redirect:
     one record serves however many references that key served. `would` is
     the identity the first reference to reach it was written to name,
     `source` the destination that reference was written as, and `origin`
-    the source position it stands at, absent where the reference is a
-    command-line entry and stands in no source.
+    the source position it stands at, absent where the stage that first
+    reached it knows no position.
     """
 
     resolved: str
@@ -297,6 +297,15 @@ class Substitution:
         """This mapping with each document's governing pairs, sharing its record."""
         return replace(self, documents=documents)
 
+    def unrecorded(self) -> "Substitution":
+        """This mapping, recording what it serves apart from the run's record.
+
+        A caller reading what a link shows rather than compiling it asks
+        through this, so what it resolves serves no key and states no
+        substitution the run performed.
+        """
+        return replace(self, redirects=Redirects())
+
     def writing(self, document: str) -> "Substitution":
         """The mapping in force for the links one document writes.
 
@@ -370,11 +379,10 @@ class Substitution:
         the first reference to reach one keeps the record, so a warning
         naming a substitution names where the run first met it.
 
-        The origin is the position the caller read the link at, absent for
-        a reference the command line names, which stands in no source. A
-        stage that resolves the same link again records the same pair and
-        adds no position of its own, so which caller answers does not
-        change what the record states.
+        The origin is the position the caller read the link at. A stage
+        that resolves the same link again records the same pair and adds no
+        position of its own, so which caller answers does not change what
+        the record states.
         """
         named = self.substitute(found)
         if named is found:
