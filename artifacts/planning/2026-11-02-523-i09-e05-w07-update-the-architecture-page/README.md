@@ -18,6 +18,7 @@ This record holds its delivery of `AC8,AC9,AC10,AC11,AC12,AC13`: the work item, 
 | [W10 work item](w10.md) | The diagram-renderer page's plan and its test |
 | [W11 work item](w11.md) | The dispatch page's plan and its test |
 | [W12 work item](w12.md) | The glossary's plan and its test |
+| [Validation](validation.md) | The evidence for AC8–AC13 |
 
 ## Links
 
