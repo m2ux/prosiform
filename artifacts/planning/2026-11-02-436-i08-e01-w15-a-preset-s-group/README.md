@@ -12,6 +12,8 @@ This record holds its delivery of `AC12`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W15 work item](w15.md) | The key renamed group holding one pair, the list readers and refusals removed, and E_GROUP_CONFLICT |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
