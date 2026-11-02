@@ -126,7 +126,6 @@ from workflow import (
     COMPILED_FORM,
     DIAGRAM,
     ENTRY,
-    ENTRY_BUNDLE,
     LINKED_FORM,
     PROSE,
     ROOT,
@@ -383,7 +382,7 @@ def observable(
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
     """One bundled form's bundle set, each bundle by the name `pf` gave it."""
     with tempfile.TemporaryDirectory() as output:
-        built = bundle(workflow.form(FORMS[form]), Path(output))
+        built = bundle(workflow, FORMS[form], Path(output))
         if built.returncode != 0 or built.stderr:
             raise CorpusError(
                 f"{workflow.name}: pf bundled the {form} form with exit "
@@ -411,7 +410,7 @@ def prepare(
     """
     if form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
-            written = ENTRY if name == ENTRY_BUNDLE.name else name
+            written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
     elif form == BOOTSTRAP_SET:
         placed = workspace / SKILL_HOME / workflow.name
