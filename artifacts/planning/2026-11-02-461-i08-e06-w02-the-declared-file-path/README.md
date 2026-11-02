@@ -15,6 +15,7 @@ This record holds its delivery of `AC3, AC8, AC9, AC11`: the work item, the vali
 | [w02.md](w02.md) | The work item for W02: the declared-file path basis of a `subst` pair. |
 | [w06.md](w06.md) | The work item for W06: a pair's reach confined to its declaring document's links, and its record keyed by that document. |
 | [w08.md](w08.md) | The work item for W08: the folder pair's retirement and the separator refusal. |
+| [validation.md](validation.md) | The validation evidence for every check the work items name. |
 
 ## Links
 
