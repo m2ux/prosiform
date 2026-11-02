@@ -158,10 +158,17 @@ def test_atomic_failure_preserves_existing_folder(
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
 
 
-@pytest.mark.parametrize("flags", [("-x", "source-changed"), ("-O", "1")])
+@pytest.mark.parametrize(
+    ("fault", "flags"), [("source-changed", ()), (None, ("-O", "1"))]
+)
 def test_failed_validation_preserves_existing_derived_output(
-    tmp_path: Path, flags: tuple[str, ...]
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    fault: str | None,
+    flags: tuple[str, ...],
 ) -> None:
+    if fault is not None:
+        monkeypatch.setenv(cli.FAULT_VARIABLE, fault)
     written(tmp_path, "a.md", DECLARED + "# A\n")
     written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
     run = invoke(tmp_path, *flags, "a.md")
@@ -291,19 +298,23 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
     assert not (tmp_path / "a.bundles").exists()
 
 
-def test_a_failing_run_under_the_cleanup_fault_writes_nothing(tmp_path: Path) -> None:
+def test_a_failing_run_under_the_cleanup_fault_writes_nothing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv(cli.FAULT_VARIABLE, cli.CLEANUP_FAULT)
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
-    run = invoke(tmp_path, "-x", "cleanup-refused", "-O", "1", "a.md")
+    run = invoke(tmp_path, "-O", "1", "a.md")
     assert run.status == 1 and run.stdout == ""
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
 
 
 def test_a_dangling_link_under_the_cleanup_fault_is_retained_and_warned(
-    tmp_path: Path,
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    monkeypatch.setenv(cli.FAULT_VARIABLE, cli.CLEANUP_FAULT)
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     (tmp_path / "a.bundles").symlink_to("nowhere")
-    run = invoke(tmp_path, "-d", "json", "-x", "cleanup-refused", "a.md")
+    run = invoke(tmp_path, "-d", "json", "a.md")
     assert run.status == 0 and run.stdout == ""
     assert [one["code"] for one in run.diagnostics()] == [cli.EARLIER_SET_RETAINED]
     assert "Complete." in bundle(tmp_path, "a").read_text()
