@@ -604,12 +604,14 @@ def test_a_message_carrying_the_declared_text_passes(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=2,
-        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "-f"]},),
+        diagnostics=(
+            {**INVALID_USAGE, "message_contains": ["#stop", "document#fragment"]},
+        ),
     )
     emitted = dict(INVALID_USAGE)
     emitted["message"] = (
-        "the fragment-only reference '#a-section' needs -f "
-        "to name the document it resolves against"
+        "the entry reference '#stop' names a fragment alone, and a fragment "
+        "alone names no document; name the section as document#fragment"
     )
     configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
     result = run_fixture(fixture)
@@ -623,15 +625,17 @@ def test_a_message_declaration_tells_two_faults_under_one_code_apart(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=2,
-        diagnostics=({**INVALID_USAGE, "message_contains": ["#a-section", "-f"]},),
+        diagnostics=(
+            {**INVALID_USAGE, "message_contains": ["#stop", "document#fragment"]},
+        ),
     )
     emitted = dict(INVALID_USAGE)
     emitted["message"] = "the command line names no entry reference"
     configure(monkeypatch, replaying(tmp_path, b"", diagnostic_lines(emitted), 2))
     detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
     assert "diagnostic 1's message does not carry 2 declared texts" in detail
-    assert "'#a-section' is absent" in detail
-    assert "'-f' is absent" in detail
+    assert "'#stop' is absent" in detail
+    assert "'document#fragment' is absent" in detail
     assert "names no entry reference" in detail
 
 
@@ -641,14 +645,14 @@ def test_a_diagnostic_carrying_no_message_is_reported(
     fixture = write_fixture(
         tmp_path / "fixture",
         exit_status=2,
-        diagnostics=({**INVALID_USAGE, "message_contains": ["-f"]},),
+        diagnostics=({**INVALID_USAGE, "message_contains": ["document#fragment"]},),
     )
     configure(
         monkeypatch, replaying(tmp_path, b"", diagnostic_lines(dict(INVALID_USAGE)), 2)
     )
     detail = detail_of(run_fixture(fixture), DIAGNOSTICS)
     assert "diagnostic 1 carries no message" in detail
-    assert "expected text '-f'" in detail
+    assert "expected text 'document#fragment'" in detail
 
 
 def test_a_diagnostic_declaring_no_message_text_reads_no_message(
