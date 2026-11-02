@@ -38,7 +38,7 @@ Result: pass.
 
 ## T3 Make Check
 
-`PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` exited 0. Results:
+`PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` exited 0 at `243793e5`, before opening and again before merging. Results:
 
 - Unit tests: 1653 passed. The harness ran 1183.
 - Corpus: 453 fixtures, all pass.

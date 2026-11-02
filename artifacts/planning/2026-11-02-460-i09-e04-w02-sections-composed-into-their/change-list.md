@@ -8,6 +8,7 @@ The plan changes the W02 delivery session applied and held.
   W02 refuses a directive whose target has no heading above it with `E_UNSUPPORTED_CONSTRUCT`, naming the link. This is one case of W04's *A missing containing heading, a missing source or parent section* (AC8). A contribution heading has to name a parent, so composition needs this refusal for every target. W04 keeps the rest of AC8.
 - **Debt fixed: invisible labels.**
   The design's *Recognition* clause (engineering `ee8df501`), the predicate, the glossary, W01's unit test and a new fixture now treat a whitespace, control or format scalar as no directive. W01 had pinned a no-break space as a directive.
+- **Delivery recorded.** [#564](https://github.com/m2ux/prosiform/pull/564) merged into `i09/e04/main` at `f74a70d5`. W02's row links it and is marked Done, `AC3` and `AC4` are ticked on [#460](https://github.com/m2ux/prosiform/issues/460), and review pull request [#556](https://github.com/m2ux/prosiform/pull/556) carries the change under Section Composition. These record the delivery and do not change the plan.
 
 ## Held
 
