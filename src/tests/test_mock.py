@@ -31,7 +31,7 @@ from typing import Any
 import pytest
 
 from prosiform.candidate import carried, intended
-from prosiform.cli import MOCK_UNUSED, main
+from prosiform.cli import SUBST_UNUSED, main
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
@@ -610,7 +610,7 @@ def test_a_folder_key_answering_only_text_is_unused(paired: Path) -> None:
     assert status == 0
     assert [one["code"] for one in said] == [
         "W_RESOURCE_PORTABILITY",
-        "W_MOCK_UNUSED",
+        "W_SUBST_UNUSED",
     ]
     assert said[1]["source"] == "rules/"
 
@@ -772,7 +772,7 @@ def test_a_title_carrying_a_withheld_link_is_headed_by_the_text_it_emits(
     voices = [json.loads(line) for line in err.getvalue().splitlines() if line]
     assert [one["code"] for one in voices] == [
         "W_COINCIDENT_HEADING",
-        "W_MOCK_SUBSTITUTED",
+        "W_SUBST_USED",
     ]
     assert "read 'the rules'" in voices[0]["message"]
 
@@ -797,7 +797,7 @@ def test_a_substitution_warning_names_the_link_its_destination_and_the_substitut
         tree, "-m", "rules.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED"]
     voice = said[0]
     assert voice["source"] == "rules.md"
     assert voice["resolved"] == "stand-in.md"
@@ -825,8 +825,8 @@ def test_a_substitution_warning_states_the_identity_the_reference_would_have_nam
     )
     assert status == 0
     assert [one["code"] for one in said] == [
-        "W_MOCK_SUBSTITUTED",
-        "W_MOCK_SUBSTITUTED",
+        "W_SUBST_USED",
+        "W_SUBST_USED",
     ]
     assert ["'rules.md'" in said[0]["message"], "'other.md'" in said[1]["message"]] == [
         True,
@@ -843,7 +843,7 @@ def test_an_unused_key_warns_with_no_location_and_publishes(tree: Path) -> None:
         tree, "-m", "unrelated.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_UNUSED"]
+    assert [one["code"] for one in said] == ["W_SUBST_UNUSED"]
     assert said[0]["source"] == "unrelated.md"
     assert "location" not in said[0]
 
@@ -853,7 +853,7 @@ def test_a_served_key_warns_unused_for_nothing(tree: Path) -> None:
     _status, said = voices(
         tree, "-m", "rules.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
     )
-    assert MOCK_UNUSED not in [one["code"] for one in said]
+    assert SUBST_UNUSED not in [one["code"] for one in said]
 
 
 def test_a_check_run_reports_the_substitution_and_publishes_nothing(
@@ -864,7 +864,7 @@ def test_a_check_run_reports_the_substitution_and_publishes_nothing(
         tree, "-c", "-m", "rules.md=stand-in.md", "-o", str(tree / "out"), "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED"]
     assert said[0]["resolved"] == "stand-in.md"
     assert not (tree / "out" / "guide.bundles").exists()
 
@@ -942,7 +942,7 @@ def test_a_substitute_that_is_also_a_key_is_read_from_disk(tree: Path) -> None:
         "guide.md",
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED", "W_MOCK_UNUSED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED", "W_SUBST_UNUSED"]
     assert said[0]["resolved"] == "second.md"
     assert said[1]["source"] == "second.md"
     _status, published = invoke(
@@ -1099,7 +1099,7 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
         tree, "-m", "rules.md=../above/entry.md", "-o", str(tree / "out"), "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tree / "out" / "guide.bundles"
     published = (folder / "guide.bundle.md").read_text()
     assert published.startswith("# Rules\n")
@@ -1138,7 +1138,7 @@ def test_a_deferred_target_is_redirected_to_the_substitute(tmp_path: Path) -> No
         tree, "-m", "rules.md#escalation=stand-in.md#answers", "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED"]
     assert "[the rules](stand-in.md#answers)" in published
     assert "Every rule the tree under test holds." not in published
     assert "Ask the stand-in." not in published
@@ -1208,7 +1208,7 @@ def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
         tmp_path, "-m", "rules.md=stand-in.md", "-o", str(tmp_path / "out"), "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tmp_path / "out" / "guide.bundles"
     assert (folder / "stand-in.bundle.md").is_file()
     assert not (folder / "rules.bundle.md").exists()
@@ -1236,7 +1236,7 @@ def test_a_parallel_dispatched_target_is_redirected_and_listed_once(
         tmp_path, "-m", "rules.md=stand-in.md", "-o", str(tmp_path / "out"), "guide.md"
     )
     assert status == 0
-    assert [one["code"] for one in said] == ["W_MOCK_SUBSTITUTED"]
+    assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tmp_path / "out" / "guide.bundles"
     assert (folder / "stand-in.bundle.md").is_file()
     listed = (folder / "guide.bundle.md").read_text()

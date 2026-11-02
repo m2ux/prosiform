@@ -67,7 +67,7 @@ MAPPING = "mapping"
 BUNDLES = "bundle"
 SUBSTITUTION = "substitution"
 TREE = "tree"
-SUBSTITUTED = "W_MOCK_SUBSTITUTED"
+SUBSTITUTED = "W_SUBST_USED"
 
 ARTIFACT_STUB = """\
 ---

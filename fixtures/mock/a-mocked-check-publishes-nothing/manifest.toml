@@ -15,7 +15,7 @@ exit_status = 0
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "stand-in.md"
 

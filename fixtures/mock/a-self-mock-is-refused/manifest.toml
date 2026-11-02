@@ -3,7 +3,6 @@ description = "A mapping entry whose key and value normalize to one identity is 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "CLI contract",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE",
   "Exit status and JSON diagnostics — 2",
 ]
 

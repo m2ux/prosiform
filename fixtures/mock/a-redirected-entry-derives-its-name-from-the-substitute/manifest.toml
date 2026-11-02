@@ -16,6 +16,6 @@ bundles = ["expected/stand-in.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "entry.md"
 resolved = "stand-in.md"

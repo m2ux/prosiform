@@ -15,5 +15,5 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_UNUSED"
+code = "W_SUBST_UNUSED"
 source = "unrelated.md"
