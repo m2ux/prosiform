@@ -234,6 +234,7 @@ EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 SUBST_USED = "W_SUBST_USED"
 SUBST_UNUSED = "W_SUBST_UNUSED"
 PRESET_UNUSED = "W_PRESET_UNUSED"
+COMPOSE_SELF = "W_COMPOSE_SELF"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -261,6 +262,7 @@ CODES = tuple(
             SUBST_USED,
             SUBST_UNUSED,
             PRESET_UNUSED,
+            COMPOSE_SELF,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -1801,6 +1803,45 @@ def placed_twice(
     )
 
 
+def composing_itself(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
+) -> Iterator[Diagnostic]:
+    """One warning for each directive composing a section of the document writing it.
+
+    The section is material that document already carries, so its author
+    moves it to a document of its own or links it without a directive's
+    label. A directive composing the section holding it is a cycle, which
+    composition refuses, and a deferred directive composes nothing in the
+    run, so it warns of nothing.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.title is None or not directive(use.label) or deferred(use.opening):
+            continue
+        at = location(path, source.line(use.line))
+        target = named(path, use.destination, substitution, at, chain)
+        if target is None or target.fragment is None or target.path != path:
+            continue
+        yield Diagnostic(
+            WARNING,
+            f"the directive {use.label!r} composes {identity(target)!r} in the "
+            f"document that writes it, so it places material that document "
+            f"already carries",
+            code=COMPOSE_SELF,
+            reference=use.destination,
+            resolved=identity(target),
+            chain=target.chain,
+            remedy="move the section to a document of its own, or link it "
+            "without a directive's label",
+            location=Location(path, source.line(use.line) or 1, 1),
+        )
+
+
 def refusals_of_deferrals(
     tokens: Sequence[Token], conversion: Conversion, one: Reference
 ) -> None:
@@ -1967,6 +2008,7 @@ def traverse(
     dict[str, Capture],
     list[Reference],
     list[Hop],
+    list[Diagnostic],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -2032,7 +2074,8 @@ def traverse(
 
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
-    for the bundles the run compiles from them.
+    for the bundles the run compiles from them, and so is one warning
+    for each directive composing a section of the document writing it.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -2045,6 +2088,7 @@ def traverse(
     counted: dict[str, int] = {}
     postponed: dict[tuple[str, str | None, str | None, bool], Reference] = {}
     dispatching: dict[str, Hop] = {}
+    composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
     hop = 0
     frontier = list(requested)
@@ -2107,6 +2151,12 @@ def traverse(
                 declarations,
                 substitution,
             )
+            for warning in composing_itself(
+                path, read[path], parsed[path], chosen, reached, mapping
+            ):
+                composed_itself.setdefault(
+                    (warning.location, warning.reference), warning
+                )
             for one in withheld(
                 path,
                 read[path],
@@ -2180,6 +2230,7 @@ def traverse(
         captured,
         found,
         list(dispatching.values()),
+        list(composed_itself.values()),
     )
 
 
@@ -2993,6 +3044,7 @@ def compose(
     bundle_file: Callable[[Target], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_bundle: bool = False,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
@@ -3053,6 +3105,7 @@ def compose(
             bundle_file,
             declarations,
             substitution,
+            dispatched_bundle,
         )
         collisions(headed, read)
     except Refused as refusal:
@@ -3084,6 +3137,7 @@ def compose(
         bundle_file,
         declarations,
         substitution,
+        dispatched_bundle,
     )
     bundled = assemble(groups)
     try:
@@ -3518,12 +3572,15 @@ def compiled(
     options: argparse.Namespace,
     folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_bundle: bool = False,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
     Each bundle is read by one agent, so each starts from a fresh count
     of what it opens, reaches and publishes, and its expansion depth is
-    counted from its own entry.
+    counted from its own entry. A dispatched bundle is followed by a
+    sub-agent that has run no `pf`, which its Prosiform section answers
+    where the bundle carries a link a later run compiles.
 
     Each document's links resolve under the `subst` pairs its own presets
     put in force for the references this bundle carries, and every bundle
@@ -3533,7 +3590,7 @@ def compiled(
     declarations = Declarations(lambda found: probe(root, found, limits))
     declared_entries(requested, declarations)
     try:
-        read, parsed, defined, captured, found, hops = traverse(
+        read, parsed, defined, captured, found, hops, itself = traverse(
             root, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
@@ -3555,6 +3612,7 @@ def compiled(
         bundle_file,
         declarations,
         governed(substitution, pairs),
+        dispatched_bundle,
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -3571,7 +3629,7 @@ def compiled(
         bundled,
         derived_name(requested),
         hops,
-        [*coinciding, *(selfward(hop) for hop in hops if hop.own)],
+        [*coinciding, *(selfward(hop) for hop in hops if hop.own), *itself],
         trailing,
         captured,
         unselected(read, parsed, contributing(found), requested),
@@ -3664,7 +3722,9 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, folder, substitution)
+        one = compiled(
+            root, [target], options, folder, substitution, dispatched_bundle=True
+        )
         built[hop.name] = one
         pending.extend(one.hops)
     return built

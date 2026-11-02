@@ -36,7 +36,17 @@ sub-section content above the first heading takes, so its protocols
 take the destinations their slugs name and an agent reading top-down
 meets each before the instruction that invokes it. Its levels are
 fixed, so each protocol sub-section is the same bytes in every bundle
-carrying it. A bundle that dispatches nothing carries none.
+carrying it.
+
+A dispatched bundle's sub-agent has run no `pf`, so one carrying a link
+a later run of `pf` compiles — a deferred dispatch, or a deferred
+directive's `↳` line — opens with a Prosiform section as well: its
+first sub-section, `Run pf first`, states that `pf` is run before the
+bundle is followed, and a line directly above the section refers to
+it. A plain deferred link asks for no run of `pf`, and the entry's
+bundle is followed by the agent that ran `pf`, so neither takes it. A
+bundle that dispatches nothing and needs no first run carries no
+Prosiform section.
 
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so three dispatches publish nothing:
@@ -134,6 +144,7 @@ HEADING_COLLISION = "E_HEADING_COLLISION"
 CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 
 PROSIFORM = "Prosiform"
+FIRST_RUN = "Run pf first"
 PARALLEL = "Dispatch in parallel"
 DISPATCH = "Dispatch"
 PARALLEL_DISPATCH = "Parallel dispatch"
@@ -152,6 +163,14 @@ def rules_link(name: str, text: str) -> str:
     """A link to one protocol sub-section, carrying its own link text."""
     return f"[{text}](#{slug(name)})"
 
+
+FIRST_RUN_PROTOCOL = (
+    "Run `pf` first, with no arguments, and follow the guide it prints."
+)
+
+FIRST_RUN_LINE = (
+    f"Before following this bundle, {rules_link(FIRST_RUN, 'run pf first')}."
+)
 
 PARALLEL_PROTOCOL = (
     "Dispatch every listed bundle at once, each to a sub-agent of its own per "
@@ -472,12 +491,38 @@ def region_of(tokens: Sequence[Token], part: Range) -> Token:
     return next(one for one in regions(tokens) if one.map == list(part.lines))
 
 
+def first_run(groups: Sequence[Group], parsed: Mapping[str, Sequence[Token]]) -> bool:
+    """Whether a bundle carries a link a later run of `pf` compiles.
+
+    Such a link is a deferred dispatch, or the line a deferred
+    directive's contribution carries. A plain deferred link asks for no
+    run of `pf`.
+    """
+    for one in groups:
+        if any(
+            isinstance(part, Instruction) and part.activates is not None
+            for part in one.record.parts
+        ):
+            return True
+        for part in one.record.ranges:
+            tokens = parsed[part.path]
+            for inline in inlines(tokens, [region_of(tokens, part)]):
+                for children, at, child in events(inline.children or []):
+                    if child.type != LINK_OPEN:
+                        continue
+                    opening = opening_text(children, at)
+                    if deferred(opening) and dispatched(opening):
+                        return True
+    return False
+
+
 class Placing:
     """One bundle's groups rebuilt with its Prosiform section and its sub-sections.
 
     The operators are those the bundle's dispatched links carry, `False`
     for `⇉` and `True` for `⫽`, which decide the protocols the
-    Prosiform section states.
+    Prosiform section states. A bundle needing a first run of `pf`
+    states that first, with the line referring to it above the section.
 
     The grouped regions are those a group carries as its own, by the
     document and first line naming each. A dispatch a contribution
@@ -498,8 +543,10 @@ class Placing:
         grouped: Collection[tuple[str, int]],
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
+        first: bool = False,
     ) -> None:
         self.parsed = parsed
+        self.first = first
         self.grouped = grouped
         self.read = read
         self.bundle_file = bundle_file
@@ -537,16 +584,26 @@ class Placing:
         return at
 
     def open(self) -> bool:
-        """Emit the Prosiform section once, where the bundle dispatches.
+        """Emit the Prosiform section once, where the bundle carries one.
 
         It is called ahead of the bundle's first heading, and reports
         whether it emitted the section there.
         """
-        if self.opened or not self.operators:
+        if self.opened or not (self.operators or self.first):
             return False
         self.opened = True
+        if self.first:
+            self.emitted.append(FIRST_RUN_LINE)
+            self.parts.append(Instruction(FIRST_RUN_LINE))
         self.heading(PROSIFORM, 1, [], PROSIFORM_SECTION)
-        self.heading(DISPATCH, 2, [Instruction(DISPATCH_PROTOCOL)], PROSIFORM_SECTION)
+        if self.first:
+            self.heading(
+                FIRST_RUN, 2, [Instruction(FIRST_RUN_PROTOCOL)], PROSIFORM_SECTION
+            )
+        if self.operators:
+            self.heading(
+                DISPATCH, 2, [Instruction(DISPATCH_PROTOCOL)], PROSIFORM_SECTION
+            )
         if True in self.operators:
             self.heading(
                 PARALLEL_DISPATCH,
@@ -718,6 +775,7 @@ def subsections(
     bundle_file: Callable[[Target], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_bundle: bool = False,
 ) -> tuple[list[Group], Placed]:
     """Every group with the bundle's generated sections, and where each one stands.
 
@@ -734,6 +792,9 @@ def subsections(
     of the scope that composes them, so they close none of its sections,
     and a dispatch a contribution carries takes its sub-section as
     `Placing` states.
+
+    A dispatched bundle carrying a link a later run of `pf` compiles
+    opens with the Prosiform section stating that first run.
     """
     grouped = {
         (part.path, part.lines[0])
@@ -756,7 +817,14 @@ def subsections(
         )
     }
     placing = Placing(
-        parsed, read, bundle_file, operators, grouped, declarations, substitution
+        parsed,
+        read,
+        bundle_file,
+        operators,
+        grouped,
+        declarations,
+        substitution,
+        dispatched_bundle and first_run(groups, parsed),
     )
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.placed

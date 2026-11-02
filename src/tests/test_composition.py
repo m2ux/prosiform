@@ -1,8 +1,8 @@
 """Assert a link is a composition directive exactly where the design declares one.
 
 A directive is a link whose label, read as plain text once entities are
-decoded and the deferral mark set aside, is one Unicode scalar above
-U+007F that is no whitespace, control or format scalar. Each case is
+decoded and the deferral mark set aside, is one Unicode arrow; every
+other single scalar labels an ordinary link. Each case is
 written as Markdown and read through the source reader, so the label a
 case judges is the label the parser produced: an entity, an emphasis or
 a reference form arrives as the build reads it rather than as a test
@@ -35,12 +35,15 @@ def first(text: str) -> Use:
     "written",
     [
         "[→](a.md#out)",
-        "[é](a.md#out)",
+        "[⟶](a.md#out)",
+        "[⤴](a.md#out)",
+        "[➔](a.md#out)",
+        "[⬅](a.md#out)",
         "[&rarr;](a.md#out)",
         "[&#x2192;](a.md#out)",
         "[&#8594;](a.md#out)",
-        "[𝔸](a.md#out)",
-        "[&#x1D538;](a.md#out)",
+        "[🡒](a.md#out)",
+        "[&#x1F852;](a.md#out)",
         '[→](a.md#out "a title")',
         "[→]\n\n[→]: a.md#out",
         "[→][]\n\n[→]: a.md#out",
@@ -48,19 +51,22 @@ def first(text: str) -> Use:
     ],
     ids=[
         "an arrow",
-        "a precomposed letter",
+        "a supplemental arrows-a arrow",
+        "a supplemental arrows-b arrow",
+        "a dingbat arrow",
+        "a miscellaneous symbols and arrows arrow",
         "a named entity",
         "a hexadecimal reference",
         "a decimal reference",
-        "a supplementary scalar",
-        "a supplementary scalar reference",
+        "a supplementary arrow",
+        "a supplementary arrow reference",
         "a titled link",
         "a shortcut reference",
         "a collapsed reference",
         "a full reference",
     ],
 )
-def test_a_label_of_one_scalar_above_ascii_is_a_directive(written: str) -> None:
+def test_a_label_of_one_arrow_is_a_directive(written: str) -> None:
     assert directive(first(written).label)
 
 
@@ -68,6 +74,19 @@ def test_a_label_of_one_scalar_above_ascii_is_a_directive(written: str) -> None:
     "written",
     [
         "[A](a.md#out)",
+        "[†](a.md#out)",
+        "[‡](a.md#out)",
+        "[&dagger;](a.md#out)",
+        "[¹](a.md#out)",
+        "[é](a.md#out)",
+        "[𝔸](a.md#out)",
+        "[&#x1D538;](a.md#out)",
+        "[٣](a.md#out)",
+        "[★](a.md#out)",
+        "[⬒](a.md#out)",
+        "[➤](a.md#out)",
+        "[&#x1F80C;](a.md#out)",
+        "[¬†](a.md#out)",
         "[&amp;](a.md#out)",
         "[\\*](a.md#out)",
         "[ → ](a.md#out)",
@@ -96,6 +115,19 @@ def test_a_label_of_one_scalar_above_ascii_is_a_directive(written: str) -> None:
     ],
     ids=[
         "an ascii letter",
+        "a footnote dagger",
+        "a footnote double dagger",
+        "a footnote dagger entity",
+        "a superscript",
+        "a precomposed letter",
+        "a supplementary letter",
+        "a supplementary letter reference",
+        "a non-ascii digit",
+        "a star",
+        "a symbol of an arrows block named for no arrow",
+        "a dingbat arrowhead",
+        "an unassigned scalar of an arrows block",
+        "the deferral mark against a footnote mark",
         "an entity decoding to ascii",
         "an escaped ascii mark",
         "a scalar between spaces",
@@ -123,7 +155,7 @@ def test_a_label_of_one_scalar_above_ascii_is_a_directive(written: str) -> None:
         "a byte order mark",
     ],
 )
-def test_a_label_that_is_not_one_plain_scalar_is_no_directive(written: str) -> None:
+def test_a_label_that_is_not_one_plain_arrow_is_no_directive(written: str) -> None:
     assert not directive(first(written).label)
 
 
@@ -162,8 +194,8 @@ def test_a_lone_operator_or_convention_mark_is_no_directive(written: str) -> Non
 
 @pytest.mark.parametrize(
     "written",
-    ["[¬→](a.md#out)", "[¬&rarr;](a.md#out)", "[¬𝔸](a.md#out)"],
-    ids=["an arrow", "an entity", "a supplementary scalar"],
+    ["[¬→](a.md#out)", "[¬&rarr;](a.md#out)", "[¬🡒](a.md#out)"],
+    ids=["an arrow", "an entity", "a supplementary arrow"],
 )
 def test_a_glyph_the_deferral_mark_is_written_against_is_a_deferred_directive(
     written: str,
@@ -239,14 +271,14 @@ def test_a_deferral_mark_beside_no_qualifying_label_is_no_directive(
         "[⫽→](a.md#out)",
         "[⇉&rarr;](a.md#out)",
         "[¬⇉→](a.md#out)",
-        "[⇉𝔸](a.md#out)",
+        "[⇉🡒](a.md#out)",
     ],
     ids=[
         "a dispatch mark",
         "a parallel mark",
         "a dispatch mark and an entity",
         "a deferred dispatch",
-        "a dispatch mark and a supplementary scalar",
+        "a dispatch mark and a supplementary arrow",
     ],
 )
 def test_a_dispatch_mark_written_against_a_glyph_is_refused_and_no_directive(

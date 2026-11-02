@@ -54,6 +54,7 @@ from prosiform.candidate import (
 from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
+    COMPOSE_SELF,
     EARLIER_SET_RETAINED,
     FAULT_VARIABLE,
     FAULTS,
@@ -100,6 +101,8 @@ from prosiform.dispatch import (
     DISPATCH_DEPTH,
     DISPATCH_PROTOCOL,
     DISPATCH_SELF,
+    FIRST_RUN_LINE,
+    FIRST_RUN_PROTOCOL,
     HEADING_COLLISION,
     PARALLEL_PROTOCOL,
     TOGETHER,
@@ -298,6 +301,7 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         SUBST_USED,
         SUBST_UNUSED,
         PRESET_UNUSED,
+        COMPOSE_SELF,
     }
     for published in (
         BUNDLE_CODES,
@@ -3656,6 +3660,63 @@ def test_a_fragment_only_dispatch_names_its_own_document(root: Path) -> None:
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert [one["code"] for one in run.diagnostics()] == [DISPATCH_SELF]
+
+
+def test_a_directive_composing_a_section_of_its_own_document_warns(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [→](#rules)\n\n"
+        "## Reference\n\n### Rules\n\nEvery rule.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    [warning] = run.diagnostics()
+    assert warning["code"] == COMPOSE_SELF
+    assert warning["reference"] == "#rules"
+    assert warning["resolved"] == "guide.md#rules"
+    assert warning["location"] == {"file": "guide.md", "line": 10, "column": 1}
+
+
+def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [¬→](#rules)\n\n"
+        "## Reference\n\n### Rules\n\nEvery rule.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+
+
+def test_a_dispatched_bundle_carrying_a_deferred_dispatch_runs_pf_first(
+    root: Path,
+) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\n1. Run [⇉ a](a.md).\n")
+    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬⇉ b](b.md).\n")
+    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.bundles["a.bundle.md"].startswith(
+        f"{FIRST_RUN_LINE}\n\n# Prosiform\n\n## Run pf first\n\n"
+        f"{FIRST_RUN_PROTOCOL}\n\n# A\n"
+    )
+    assert "Run pf first" not in run.bundles["guide.bundle.md"]
+
+
+def test_an_entry_carrying_a_deferred_dispatch_needs_no_first_run(
+    root: Path,
+) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\n1. Defer [¬⇉ b](b.md).\n")
+    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.bundles["guide.bundle.md"].startswith("# Guide\n")
 
 
 def test_a_dispatched_target_whose_compilation_fails_publishes_nothing(

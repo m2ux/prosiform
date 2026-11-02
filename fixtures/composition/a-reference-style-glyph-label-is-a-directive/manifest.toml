@@ -1,4 +1,4 @@
-description = "A shortcut reference link qualifies as an inline one does, so a reference-style link whose label is one scalar above U+007F is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
+description = "A shortcut reference link qualifies as an inline one does, so a reference-style link whose label is one arrow is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
 
 clauses = [
   "Section composition — Recognition",

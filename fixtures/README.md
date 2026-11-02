@@ -250,6 +250,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | Code | Declared by |
 | --- | --- |
 | `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
+| `W_COMPOSE_SELF` | Section composition, Composing its own document — a composition directive naming a section of the document that writes it, by fragment or by path, closing no cycle. |
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
 | `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |
