@@ -1,0 +1,26 @@
+description = "A dispatched target's bundle resolves its links under its own document's presets alone: guide.md's {rules.md: stub.md} compiles stub.md for the guide's link, and task.md, which the guide dispatches and which declares no subst, carries the real rules.md in its own bundle."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Link classification and resource handling — Dispatched bundles",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/task.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "rules.md"
+resolved = "stub.md"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 8
+column = 1

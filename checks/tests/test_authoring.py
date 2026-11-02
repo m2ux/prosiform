@@ -38,7 +38,7 @@ INSTRUCTIONS = (
 
 HYPHENS = "hyphens rather than underscores"
 FENCE = re.compile(r"```bash\n(.*?)```", re.DOTALL)
-TAKES_VALUE = frozenset({"-o", "-m", "-d", "--budget"})
+TAKES_VALUE = frozenset({"-o", "-d", "--budget"})
 SWITCH = frozenset({"-c", "-C", "-v", "-h"})
 
 

@@ -253,10 +253,10 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
 | `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |
-| `W_MOCK_SUBSTITUTED` | Exit status and JSON diagnostics — a reference a substitution mapping redirected, named once per substitute at the first reference that redirects it. |
-| `W_MOCK_UNUSED` | Exit status and JSON diagnostics — a mapping key no reference named, which substitutes nothing. |
 | `W_PRESET_UNUSED` | Presets, A preset nothing selected warns — a preset of a document the run carries that no reference reaching it selected. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
+| `W_SUBST_UNUSED` | Exit status and JSON diagnostics — a `subst` pair no reference used, which substitutes nothing. |
+| `W_SUBST_USED` | Exit status and JSON diagnostics — a reference a `subst` pair redirected, named once per pair at the first reference that used it. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
 
