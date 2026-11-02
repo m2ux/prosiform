@@ -14,11 +14,14 @@ This record holds its delivery of `AC7`: the work item, the validation evidence 
 | --- | --- |
 | [W00 work item](w00.md) | The leaves-up composition clauses, the nested-group clause and the pin move |
 | [Validation](validation.md) | T1 and T2 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I09:E02 Section Placement](https://github.com/m2ux/prosiform/issues/458) |
+| Pull request | [#539](https://github.com/m2ux/prosiform/pull/539) |
+| Review pull request | [#541](https://github.com/m2ux/prosiform/pull/541) |
 | Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
 | Epic record | [Grouping and Composition](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) |
