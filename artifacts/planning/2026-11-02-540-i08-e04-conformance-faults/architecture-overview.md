@@ -133,16 +133,16 @@ sequenceDiagram
 ### Retired Options
 
 - **Refused as undeclared.**
-  No fixture, smoke step or unit test refuses `-r`, `-g` or a retired long form by name.
+  No fixture, smoke step or unit test refuses `-r`, `-g` or a retired long form by name, and the pinned design names none of them.
 
 ## Reading Order
 
-1. **[src/prosiform/cli.py `conformance_fault`](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/src/prosiform/cli.py#L1310-L1326)** — the variable, its values and the refusal.
-2. **[src/prosiform/cli.py `execute`](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/src/prosiform/cli.py#L3228)** — where the fault is read, and its uses at [L3265](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/src/prosiform/cli.py#L3265-L3269) and [L3289](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/src/prosiform/cli.py#L3289).
-3. **[checks/runner.py `environment`](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/checks/runner.py#L521-L532)** — the child environment, and `run_fixture` at [L567](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/checks/runner.py#L567).
-4. **[fixtures/cli/an-unknown-fault-is-invalid-usage/manifest.toml](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/fixtures/cli/an-unknown-fault-is-invalid-usage/manifest.toml)** — the refusal as the corpus states it.
-5. **[fixtures/README.md](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/fixtures/README.md)** — the `fault` field, the `E_INVALID_USAGE` table and the fault section.
-6. **[invocation.md](https://github.com/m2ux/prosiform/blob/9510d2d5c358242b93b41860876249df8d4356b8/invocation.md)** — the option table without `-x`.
+1. **[src/prosiform/cli.py `conformance_fault`](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/src/prosiform/cli.py#L1310-L1326)** — the variable, its values and the refusal.
+2. **[src/prosiform/cli.py `execute`](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/src/prosiform/cli.py#L3228)** — where the fault is read, and its uses at [L3265](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/src/prosiform/cli.py#L3265-L3269) and [L3289](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/src/prosiform/cli.py#L3289).
+3. **[checks/runner.py `environment`](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/checks/runner.py#L521-L532)** — the child environment, and `run_fixture` at [L567](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/checks/runner.py#L567).
+4. **[fixtures/cli/an-unknown-fault-is-invalid-usage/manifest.toml](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/fixtures/cli/an-unknown-fault-is-invalid-usage/manifest.toml)** — the refusal as the corpus states it.
+5. **[fixtures/README.md](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/fixtures/README.md)** — the `fault` field, the `E_INVALID_USAGE` table and the fault section.
+6. **[invocation.md](https://github.com/m2ux/prosiform/blob/2a4068077bd4ba4a0f5c619bc6d7f5c3505738ad/invocation.md)** — the option table without `-x`.
 
 ## Risks and Watch Points
 
