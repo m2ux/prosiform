@@ -1,6 +1,6 @@
 # I08:E01 W11+W13 A Preset Nothing Applied Warns, and the Pages State Presets — November 2026
 
-> Task delivery · Created 2026-11-02
+> Task delivery · Created 2026-11-02 · Revised 2026-11-02
 
 ## Executive Summary
 
@@ -15,11 +15,14 @@ This record holds its delivery of `AC6, AC7, AC9, AC10`: the work item, the vali
 | [W11 work item](w11.md) | The unused-preset warning, the per-bundle record of unselected presets, the deferral exclusion and the fixtures |
 | [W13 work item](w13.md) | The invocation, source page and glossary stating presets, the refused keys and the warning |
 | [Validation](validation.md) | T1 to T4 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I08:E01 Section Presets](https://github.com/m2ux/prosiform/issues/436) |
+| Pull request | [#516](https://github.com/m2ux/prosiform/pull/516) |
+| Review pull request | [#508](https://github.com/m2ux/prosiform/pull/508) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
