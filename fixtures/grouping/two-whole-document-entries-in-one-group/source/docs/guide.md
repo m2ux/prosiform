@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    group-depth: [{docs: 1}]
+    group: {docs: 1}
 ---
 # Guide
 

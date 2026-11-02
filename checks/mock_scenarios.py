@@ -72,7 +72,7 @@ ARTIFACT_STUB = """\
 ---
 prosiform:
   default:
-    group-depth: [{artifacts: 1}]
+    group: {artifacts: 1}
 ---
 # Epic
 

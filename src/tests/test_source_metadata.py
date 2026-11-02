@@ -20,11 +20,12 @@ DECLARED = "---\nprosiform: {}\n---\n"
 
 
 def settings(group: str) -> str:
-    return f"prosiform:\n  default:\n    group-depth:\n      - {group}: 2\n"
+    return f"prosiform:\n  default:\n    group:\n      {group}: 2\n"
 
 
 def groups(source: Source) -> list[str]:
-    return [one.group for one in source.conversion.default.memberships]
+    one = source.conversion.default.membership
+    return [] if one is None else [one.group]
 
 
 @pytest.mark.parametrize("ending", ["\n", "\r\n"])
@@ -39,9 +40,10 @@ def test_settings_and_body_share_physical_coordinates(
     source = content(text, file="rules/a.md")
     assert source.text == "# Body" + ending
     assert source.line(1) == 7
-    (pairing,) = source.conversion.default.memberships
+    pairing = source.conversion.default.membership
+    assert pairing is not None
     assert (pairing.group, pairing.depth) == ("règles", 2)
-    assert pairing.group_location == Location("rules/a.md", 5, 9)
+    assert pairing.group_location == Location("rules/a.md", 5, 7)
     with pytest.raises(FrozenInstanceError):
         pairing.group = "other"  # type: ignore[misc]
 

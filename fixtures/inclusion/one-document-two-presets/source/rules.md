@@ -1,9 +1,9 @@
 ---
 prosiform:
   Checks:
-    group-depth: [{reviews: 1}]
+    group: {reviews: 1}
   Draft:
-    group-depth: [{drafts: 1}]
+    group: {drafts: 1}
 ---
 # Rules
 

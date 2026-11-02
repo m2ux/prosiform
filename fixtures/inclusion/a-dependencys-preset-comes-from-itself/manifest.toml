@@ -1,9 +1,8 @@
-description = "A linked document is governed by its own default and its own selected presets, never by the linking document's: the title Release Checks selects the Checks preset of guide.md, placing guide.md under Reviews, and the section Checks selects the Checks preset of rules.md, which unions with its default to place rules.md under Rules and Checks and never under Reviews."
+description = "A linked document is governed by its own default and its own selected presets, never by the linking document's: the title Release Checks selects the Checks preset of guide.md, placing guide.md under Reviews, and the section Checks selects the Checks preset of rules.md, whose pair holds over its default to place rules.md under Checks and never under Reviews."
 
 clauses = [
   "Presets — What a selection governs",
-  "Presets — Selected presets union",
-  "Presets — A document in several groups",
+  "Presets — default always applies",
   "Grouping — Group membership",
 ]
 

@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    group-depth: [{rules: 1}]
+    group: {rules: 1}
 ---
 Select rules for your harness:
 

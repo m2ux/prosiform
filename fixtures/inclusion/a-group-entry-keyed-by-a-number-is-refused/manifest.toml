@@ -1,4 +1,4 @@
-description = "A group-depth entry whose key is an integer names no group, so it fails with E_INVALID_CONVERSION_METADATA at the entry, naming it, and the run publishes nothing."
+description = "A group pair whose key is an integer names no group, so it fails with E_INVALID_CONVERSION_METADATA at the entry, naming it, and the run publishes nothing."
 
 clauses = [
   "Conversion metadata — An entry is one string key with an integer value",
@@ -16,11 +16,11 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_CONVERSION_METADATA"
-message_contains = ["prosiform.default.group-depth[0] must name its group with a string key"]
+message_contains = ["prosiform.default.group must name its group with a string key"]
 reference = "guide.md"
 chain = ["guide.md"]
 
 [expected.diagnostics.location]
 file = "guide.md"
 line = 4
-column = 19
+column = 12

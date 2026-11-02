@@ -1,7 +1,7 @@
 ---
 prosiform:
   Targets:
-    group-depth: [{targets: 1}]
+    group: {targets: 1}
 ---
 # Rules
 

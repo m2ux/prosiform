@@ -829,8 +829,9 @@ def coverage(groups: Sequence[Group]) -> None:
     The ranges are read by source within each group, because a declared
     group arranges one document's regions among another's and two
     regions of one source overlap wherever the group emits them. A
-    document joining several groups is carried once in each, since
-    each group is a separate top-level division of the bundle.
+    document two links place in different groups is carried once in
+    each, since each group is a separate top-level division of the
+    bundle.
     """
     carried: dict[tuple[int, str], list[tuple[int, int]]] = {}
     for at, one in enumerate(groups):

@@ -171,7 +171,7 @@ def test_members_in_distinct_directories_are_named_by_their_paths(
         written(
             tmp_path,
             f"{folder}/same.md",
-            "---\nprosiform: {default: {group-depth: [{rules: 2}]}}\n---\n"
+            "---\nprosiform: {default: {group: {rules: 2}}}\n---\n"
             "# Same\n\n## Run\n\nContent.\n",
         )
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)

@@ -128,7 +128,7 @@ from prosiform.limits import (
 )
 from prosiform.metadata import (
     DEFAULT,
-    DEPTH,
+    GROUP,
     INVALID_CONVERSION_METADATA,
     SUBST,
     Conversion,
@@ -202,7 +202,7 @@ SUBSTITUTION = "="
 """What separates an `-m` pair's original from its alternative."""
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
-GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
+GROUP_CONFLICT = "E_GROUP_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
@@ -230,7 +230,7 @@ CODES = tuple(
     sorted(
         {
             INVALID_ENCODING,
-            GROUP_DEPTH_CONFLICT,
+            GROUP_CONFLICT,
             INVALID_USAGE,
             PUBLICATION_FAILED,
             SOURCE_CHANGED,
@@ -564,33 +564,15 @@ def preset_refusal(
 def stated_once(conversion: Conversion, found: Reference) -> None:
     """Hold each preset a document declares to stating each of its rules once.
 
-    A preset naming one group in two `group-depth` entries, mapping two
-    `subst` keys that normalise to one identity, mapping a key to an
-    alternative of its own identity, or writing a key naming a section
-    alone states a rule the run cannot apply as written, so each is
-    invalid usage at the entry. A key names the document whose
+    A preset mapping two `subst` keys that normalise to one identity,
+    mapping a key to an alternative of its own identity, or writing a key
+    naming a section alone states a rule the run cannot apply as written,
+    so each is invalid usage at the entry. A key names the document whose
     references it redirects, which a section alone does not. Identities
     are read from the declaring document, the reference that opened it
     being `found`.
     """
     for preset in conversion.presets:
-        groups: dict[str, int] = {}
-        for at, one in enumerate(preset.memberships):
-            entry = f"prosiform.{preset.name}.{DEPTH}[{at}]"
-            if one.group in groups:
-                earlier = f"prosiform.{preset.name}.{DEPTH}[{groups[one.group]}]"
-                raise preset_refusal(
-                    f"{entry} names group {one.group!r}, which {earlier} already "
-                    f"names, so the preset pairs the group twice",
-                    "name each group once in a preset",
-                    found,
-                    one.group_location,
-                    (
-                        preset.memberships[groups[one.group]].group_location,
-                        f"{earlier} names group {one.group!r}",
-                    ),
-                )
-            groups[one.group] = at
         keys: dict[tuple[str, str | None], int] = {}
         for at, pair in enumerate(preset.substs):
             entry = f"prosiform.{preset.name}.{SUBST}[{at}]"
@@ -632,34 +614,38 @@ def agreed(
 ) -> None:
     """Hold the presets one title selects to agreeing about every setting they share.
 
-    Selected presets union, so two pairing one group with one depth, or
-    mapping one `subst` key to one alternative, state one setting. Two
-    pairing one group with two depths, or mapping one key to two
-    alternatives, leave nothing saying which would take effect, so the
-    reference selecting them is invalid usage naming both presets and the
-    setting. `default` lies beneath every selection rather than beside
-    it, so it disagrees with none. The declaring document is `document`.
+    Selected presets union, so two stating one `group` pair, or mapping
+    one `subst` key to one alternative, state one setting. Two stating
+    different `group` pairs, or mapping one key to two alternatives,
+    leave nothing saying which would take effect, so the reference
+    selecting them is invalid usage naming both presets and the setting.
+    `default` lies beneath every selection rather than beside it, so it
+    disagrees with none. The declaring document is `document`.
     """
-    depths: dict[str, Membership] = {}
+    stated: Membership | None = None
     alternatives: dict[tuple[str, str | None], tuple[str, Subst]] = {}
     selected = f"selected by the title {title!r}"
     for preset in keywords(conversion, title):
-        for one in preset.memberships:
-            first = depths.setdefault(one.group, one)
-            if first.depth != one.depth:
-                raise preset_refusal(
-                    f"prosiform.{first.preset}.{DEPTH} and "
-                    f"prosiform.{one.preset}.{DEPTH}, both {selected}, pair group "
-                    f"{one.group!r} with depths {first.depth} and {one.depth}",
-                    "pair the group with one depth in the presets one title selects",
-                    reference,
-                    first.depth_location,
-                    (
-                        one.depth_location,
-                        f"prosiform.{one.preset}.{DEPTH} for group {one.group!r} "
-                        f"is {one.depth}",
-                    ),
-                )
+        one = preset.membership
+        stated = stated or one
+        if (
+            one is not None
+            and stated is not None
+            and ((stated.group, stated.depth) != (one.group, one.depth))
+        ):
+            raise preset_refusal(
+                f"prosiform.{stated.preset}.{GROUP} and "
+                f"prosiform.{one.preset}.{GROUP}, both {selected}, state "
+                f"{{{stated.group}: {stated.depth}}} and "
+                f"{{{one.group}: {one.depth}}}",
+                "state one group pair in the presets one title selects",
+                reference,
+                stated.group_location,
+                (
+                    one.group_location,
+                    f"prosiform.{one.preset}.{GROUP} is {{{one.group}: {one.depth}}}",
+                ),
+            )
         for pair in preset.substs:
             key = subst_identity(pair.original, document)
             named_first, first_pair = alternatives.setdefault(key, (preset.name, pair))
@@ -2041,19 +2027,21 @@ def keywords(conversion: Conversion, title: str | None) -> tuple[Preset, ...]:
     )
 
 
-def pairs(conversion: Conversion, title: str | None) -> tuple[Membership, ...]:
-    """The `group-depth` pairs in force for content one section title selects.
+def pair(conversion: Conversion, title: str | None) -> Membership | None:
+    """The `group` pair in force for content one section title selects.
 
-    `default`'s pairs come first, each but those for a group a selected
-    preset also pairs, since a selected preset's setting for a group
-    holds over the one `default` states; the selected presets' pairs
-    follow, in the order they are declared.
+    A selected preset's pair holds over the one `default` states, and the
+    selected presets are held to agreeing before it is read; `default`'s
+    pair is in force where no selected preset states one. None means no
+    pair is in force, and the content keeps its individual file group.
     """
-    chosen = keywords(conversion, title)
-    stated = {one.group for preset in chosen for one in preset.memberships}
-    return (
-        *(one for one in conversion.default.memberships if one.group not in stated),
-        *(one for preset in chosen for one in preset.memberships),
+    return next(
+        (
+            preset.membership
+            for preset in keywords(conversion, title)
+            if preset.membership is not None
+        ),
+        conversion.default.membership,
     )
 
 
@@ -2130,15 +2118,16 @@ def joined(
     selected: Mapping[str, Sequence[Reference]],
     entries: Collection[Reference],
 ) -> dict[str, tuple[Membership, ...]]:
-    """The `group-depth` pairs in force for each document the bundle carries.
+    """The `group` pairs in force for each document the bundle carries.
 
     Each reference reaching a document selects that document's presets
     by its own title, the title of the section it is written in or, for
     an entry, the title `entry_title` reads, so a document's presets
     govern its content and no other document's. The presets one
-    reference selects are held to agreeing before their pairs are read.
-    A document carries the pairs every reference reaching it put in
-    force, each once.
+    reference selects are held to agreeing before their pair is read,
+    so one reference places the document under one pair at most. A
+    document carries the pair each reference reaching it put in force,
+    each once.
     """
     joins: dict[str, tuple[Membership, ...]] = {}
     for path, references in selected.items():
@@ -2147,7 +2136,9 @@ def joined(
         for reference in references:
             title = selecting_title(parsed[path], reference, entries)
             agreed(conversion, title, reference, path)
-            held.update(dict.fromkeys(pairs(conversion, title)))
+            one = pair(conversion, title)
+            if one is not None:
+                held[one] = None
         joins[path] = tuple(held)
     return joins
 
@@ -2155,9 +2146,10 @@ def joined(
 def group_depths(joins: Mapping[str, Sequence[Membership]]) -> dict[str, int]:
     """Consistent depths for named groups, ordered by source path.
 
-    A document is a member of each group the pairs in force for it
-    name, so one document may hold one depth in one group and another
-    in a second; within one group every membership must agree.
+    A document is a member of each group the pairs its references put in
+    force name, so one document two references place differently may
+    hold one depth in one group and another in a second; within one
+    group every membership must agree.
     """
     members: dict[str, list[tuple[str, Membership]]] = {}
     for path in sorted(joins):
@@ -2174,17 +2166,17 @@ def group_depths(joins: Mapping[str, Sequence[Membership]]) -> dict[str, int]:
                     INPUT_FAILURE,
                     Diagnostic(
                         ERROR,
-                        f"prosiform.{first.preset}.group-depth for group "
+                        f"prosiform.{first.preset}.{GROUP} for group "
                         f"{name!r} is {first.depth}; "
                         f"another member declares {current.depth}",
-                        code=GROUP_DEPTH_CONFLICT,
+                        code=GROUP_CONFLICT,
                         location=first.depth_location,
                         related=(
                             RelatedLocation(
                                 location.file,
                                 location.line,
                                 location.column,
-                                f"prosiform.{current.preset}.group-depth for group "
+                                f"prosiform.{current.preset}.{GROUP} for group "
                                 f"{name!r} is {current.depth}",
                             ),
                         ),

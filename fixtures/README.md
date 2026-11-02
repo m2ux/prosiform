@@ -228,7 +228,7 @@ An error decides a failing run.
 | --- | --- |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
-| `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
+| `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow, and Link classification and resource handling, Dispatch sub-sections — an emitted heading beyond H6, a dispatch sub-section among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping, the refused `root` among them. |
