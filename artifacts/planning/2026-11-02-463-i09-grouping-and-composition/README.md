@@ -167,6 +167,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **A nested group past H6 fails.** (User, 2026-11-02.) A shared group nests under the division of the document that placed its first member, and a heading pushed past H6 is refused with `E_HEADING_DEPTH_OVERFLOW`; the build does not lift shared groups to the top level. The refusal makes the author choose a shallower grouping. The guide (W03) and the hierarchy page (W04) state the nesting cost and that remedy.
 - **Earlier decisions stand.** (User, 2026-11-02.) E00 and E03 are closed; an earlier E02 row was dropped as delivered by I08; a composed target declaring no `prosiform` is refused.
 - **The review's findings bring the design to the build.** (Delivery, 2026-11-02.) The [review](e05/review.md) found three departures, and in each the build carries a deliberate decision: the output folder is made, `subst` pairs combine across every reference reaching a document, and `-C` lists the codes. W30–W32 amend the design to it and join, moving the README pin once.
+- **`subst` pairs combine per document.** (User, 2026-11-02.) The design follows the build: a document's links resolve through the `subst` pairs of its `default` and of every preset a reference reaching it selects, and two references whose selections map one key to different alternatives are invalid usage, exit 2. *Presets — One document under several selections* states the rule; E05 W31 delivers it.
 
 ## MVP Proof
 
