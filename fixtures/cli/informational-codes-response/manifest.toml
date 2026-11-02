@@ -1,0 +1,16 @@
+description = "The code listing prints every error and warning code the build can report, one per line, on standard output, and succeeds, so a check comparing the codes the contract declares against a build's own has a list to read."
+
+clauses = [
+  "CLI contract — -C, --codes, print every error and warning code the build can report",
+  "Metadata failures",
+  "Exit status and JSON diagnostics — 0, successful compilation, validation, or informational CLI response",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-C"]
+
+[expected]
+exit_status = 0
+stdout_contains = ["E_INVALID_USAGE\n", "E_PUBLICATION_FAILED\n", "W_SUBST_USED\n"]
+diagnostics = []
