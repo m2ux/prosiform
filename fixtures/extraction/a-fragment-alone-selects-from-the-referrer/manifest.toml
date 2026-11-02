@@ -1,7 +1,6 @@
 description = "A fragment-only entry reference selects the section it names from the document -f names, and the group the bundle carries is that document."
 
 clauses = [
-  "CLI contract — -f DOC, a referring document supplies context for a bare fragment",
   "Reference normalization and path identity, a fragment-only command-line reference requires -f",
   "Section extraction and output hierarchy",
 ]
