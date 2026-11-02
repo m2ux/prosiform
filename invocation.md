@@ -52,7 +52,7 @@ pf -c modes/plan-mode.md
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled, and its `group-depth` lists each group the document joins, mapped to its depth. `prosiform: {}` declares with no preset. A file whose `default` names no group keeps a group of its own. A `group` or `root` key is refused.
+A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. Each preset in force lists, in `group-depth`, the groups the document joins mapped to their depths, and a selected preset's pair holds over `default`'s for the same group. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `group` or `root` key is refused.
 
 ```yaml
 ---
