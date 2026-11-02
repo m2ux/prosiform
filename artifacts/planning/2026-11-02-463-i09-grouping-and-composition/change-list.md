@@ -12,9 +12,11 @@ The plan changes the I09 planning run applied and held.
 - **Task creation** — #460 W10: the composition page, taking AC16 from W08; W08 keeps AC17 and depends on W02.
 - **Folded work** — #460: preset `include` and `exclude` dropped from the Proposal, AC20 deleted, W09 covers AC18 and AC19 and depends on I08:E01 W04 and I08:E06 W06.
 
+- **Re-prioritisation** — #455 `priority: 3`, #458 `priority: 2`, #460 `priority: 1`.
+- **Migration** — #458 W04 and its AC6 and AC7 leave as delivered by I08:E01 W02; W05 becomes W04 and AC8, AC9 become AC6, AC7.
+- **Folded work** — #463: AC1–AC3 state one outcome per goal clause, replacing the four generic criteria; E01 covers AC1, E02 AC2, E04 AC3.
+- **Folded work** — #463: the drafted Non-Goals confirmed.
+
 ## Held
 
-- **Re-prioritisation** — #455, #458, #460: priority labels E01 3, E02 2, E04 1, from the dependency check.
-- **Folded work** — #458 W04: drop the row as delivered by I08:E01 W02, its criteria holding on the I08:E01 base.
-- **Folded work** — #463: replace AC1–AC4 with one outcome criterion per goal clause, and drop AC3 and AC4.
-- **Folded work** — #463: confirm the drafted Non-Goals.
+None.
