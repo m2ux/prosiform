@@ -1,0 +1,27 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/559",
+    "head": "8221ce2a18334a4f4763928ad949d32ddf480370",
+    "base": "14555060eff454f333c7bc41529cb3d976a899b7",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders/agent-review-559.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-02T18:00:00Z",
+    "scope": "Complete integration diff main...i08/e08/main, base 14555060 (origin/main, carrying I08:E06 #561) to head 8221ce2a: 142 files, carried by task merges #557 (W00), #571 (W01) and #573 (W02, W03), and Update Epic Base's merge of origin/main (8221ce2a), which merged cleanly and changed no file of the epic base aaeb4abf, since the base already carried E06's commits to f3b902c1. Source read in the diff: checks/corpus.py (DECLARATION, SETTINGS, REFUSED, FRONTMATTER, Outcome.undeclared and verdict, refuses_metadata, declaration, undeclared, outcome); checks/independence.py (example_headings and EXAMPLE removed, stated, check, scan docstring); evals/diagram-following/test_workflow.py (declaration_faults and its two tests); the removed checks/steps.py, authoring.py, boundary.py and their tests, test_check_order.py, src/tests/test_handoff_round_trip.py, example/, fixtures/usage-example and the compilation and agent-rules drawings; Makefile targets and header; README.md, invocation.md, checks.md, checks/README.md, fixtures/README.md, docs/diagram-renderer.md, scripts/render-example.py; checks/tests/test_corpus_run.py, test_authoring.py, test_independence.py, test_links.py, test_manifest_schema.py. Callers checked over the repository graph (gitnexus analyze and detect-changes --base-ref origin/main at the head; context of outcome, undeclared, stated, check, declaration_faults): main -> outcome -> run_fixture, awaiting, undeclared -> refuses_metadata, declaration; main -> check -> stated -> prose, registered, declared_names. Behaviour checked against the design: a source whose prosiform is absent or not a mapping declares nothing (docs/sources.md) and is not reported, and a fixture expecting E_INVALID_CONVERSION_METADATA is exempt as the subject of the refusal. Coverage lost with the handoff round-trip suite checked against the deferral/ and dispatch/ fixture families, which hold deferred destinations and dispatched bundles. The README's three worked commands checked against their fixture source trees (guide.md, rules.md, notes/rules.md, section Run) and the run case of scripts/examples.json. checks/mock_scenarios.py is absent at the head. Tree searched at the head for example/, examples.json references to the tree, my-skill, usage-example, the removed drawings and the removed checks: none remains. Design pin: README names cf382468, which retires the Usage examples clause and also carries I09:E04's recognition amendment ee8df501; conformance passes there.",
+    "criteria": "AC1-AC6 of #465, all ticked. Re-verified at the reviewed head: AC1 by the repository search above; AC2 by make corpus, 425/425 with the preset guard reading every fixture source and no expected bundle changed outside the removed usage-example family (the one other fixture change is the description of inclusion/a-dependencys-preset-comes-from-itself); AC3 by make harness, test_every_workflow_document_declares_presets passing; AC4 by make check; AC5 by make check and a search of checks/ and evals/ finding group, subst and root only in the guard that refuses them outside a preset; AC6 by git rev-parse of archive/example-work-planner (annotated tag object 673f8da3, commit 00f16692), the parent of 0ea71227, the commit removing example/work-planner, and git show of its SKILL.md. Epic readiness: sync.py over #465 with config/branches from the workspace reports only the expected unmerged base i08/e08/main (#559 draft); every row Done, every criterion ticked, no open question.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, test 1563 passed, harness 1086 passed, corpus 425/425, smoke, layout, tables, links, vocabulary, invocation, conformance 354 clauses with 0 declarations naming no clause, independence) passed locally on the reviewed head 8221ce2a with PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf', run with full host permissions because the smoke wheel build resolves hatchling from PyPI. CI workflow Checks passed on the reviewed head 8221ce2a (https://github.com/m2ux/prosiform/actions/runs/41467722285/job/125352899970).",
+    "findings": [
+      {
+        "description": "#573 delivers W02 and W03 together, while the epic's Work Breakdown named neither in the other's Joins, so the epic sync reported a conflict. Each row now names the other in Joins.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/issues/465"
+      },
+      {
+        "description": "The design pin cf382468 carries I09:E04's unmerged recognition amendment ee8df501 alongside the clauses main already holds, so main pins a design revision ahead of that epic's behaviour. Conformance passes there. I09:E04 brings the build to it.",
+        "severity": "nonblocking",
+        "disposition": "deferred",
+        "ticket": "https://github.com/m2ux/prosiform/issues/460"
+      }
+    ]
+  }
+]
