@@ -1,7 +1,7 @@
 ---
 prosiform:
   Target:
-    path-sub: ["checks.md=stub.md"]
+    subst: [{checks.md: stub.md}]
 ---
 # Rules
 

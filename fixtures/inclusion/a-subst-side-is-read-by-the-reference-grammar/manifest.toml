@@ -1,7 +1,7 @@
-description = "A path-sub side carrying a query is a reference the reference grammar refuses, so the entry fails with E_INVALID_CONVERSION_METADATA at the entry, naming the side, and the run publishes nothing."
+description = "Each subst side is a reference the reference grammar reads: a side quoted for its colon and space is admitted, and a side carrying a query is refused, so the second entry fails with E_INVALID_CONVERSION_METADATA at the entry, naming the side, and the run publishes nothing."
 
 clauses = [
-  "Conversion metadata — path-sub holds pairs written as strings",
+  "Conversion metadata — subst holds colon pairs",
   "Metadata failures — E_INVALID_CONVERSION_METADATA",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
@@ -16,11 +16,11 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_CONVERSION_METADATA"
-message_contains = ["prosiform.default.path-sub[0] side 'stub.md?draft' carries the query 'draft'"]
+message_contains = ["prosiform.default.subst[1] side 'stub.md?draft' carries the query 'draft'"]
 reference = "guide.md"
 chain = ["guide.md"]
 
 [expected.diagnostics.location]
 file = "guide.md"
-line = 4
-column = 16
+line = 6
+column = 9

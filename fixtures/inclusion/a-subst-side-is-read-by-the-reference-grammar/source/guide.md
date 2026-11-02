@@ -1,7 +1,9 @@
 ---
 prosiform:
   default:
-    path-sub: ["rules.md=stub.md?draft"]
+    subst:
+      - {"rules.md#Step 1: Setup": stub.md}
+      - {rules.md: "stub.md?draft"}
 ---
 # Guide
 

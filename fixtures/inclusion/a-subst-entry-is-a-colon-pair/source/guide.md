@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    path-sub: [{rules.md: stub.md}]
+    subst: ["rules.md=stub.md"]
 ---
 # Guide
 
