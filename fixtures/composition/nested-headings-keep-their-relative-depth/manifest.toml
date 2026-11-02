@@ -1,0 +1,19 @@
+description = "A target's subsections are carried with it, each keeping its depth relative to the target heading: the target's H3 subsection and its H4 below it stand one and two levels below the contribution heading, which itself stands one level below the destination section. The guide also links each target document whole, so each keeps its own file group beside its contributions."
+
+clauses = [
+  "Section composition — Destination sections",
+  "Section composition — Contributions",
+  "Section composition — The directive's link",
+  "Section composition — Inline-only targets",
+  "Adversarial acceptance fixtures — Composition",
+  "Section composition — Heading depth",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

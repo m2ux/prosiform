@@ -1,0 +1,23 @@
+description = "The deferral mark written against a glyph, with no blank between them, is set aside before recognition, so the link is a deferred directive, and in the preamble it is refused for want of a scope as an immediate one is; no bundle is published."
+
+clauses = [
+  "Section composition — Recognition",
+  "Section composition — Operator marks",
+  "Section composition — The destination scope",
+  "Link classification and resource handling — The deferral mark",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "step.md#output"
+source = "guide.md:4"
+chain = ["guide.md", "step.md#output"]

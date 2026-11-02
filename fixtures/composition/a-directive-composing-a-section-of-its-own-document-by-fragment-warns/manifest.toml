@@ -1,0 +1,21 @@
+description = "A directive naming a section of the document that writes it by fragment alone places material that document already carries; the section holds no directive and does not hold the step, so no cycle closes, the bundle publishes with the section composed beneath the step and the run warns, naming the link and the section."
+
+clauses = [
+  "Section composition — Composing its own document",
+  "Exit status and JSON diagnostics",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_COMPOSE_SELF"
+reference = "#rules"
+resolved = "guide.md#rules"

@@ -81,19 +81,24 @@ from prosiform.closure import (
     dispatched,
     parallel,
     rebased,
+    resolve,
     unmarked,
     withholding_target,
 )
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
+    CONTRIBUTION_HEADING,
     DISPATCH_SECTION,
     FILENAME_WRAPPER,
     GROUP_HEADING,
     PROSIFORM_SECTION,
     Ancestor,
+    Carried,
+    Contributing,
     Emitted,
     Generated,
     Instruction,
+    Located,
     Part,
     Range,
     Record,
@@ -330,6 +335,29 @@ def carried(
         elif token.type == FENCE:
             for click in clicks(token):
                 yield (), 0, Use(CLICK, "", "", click.destination)
+
+
+def positions(
+    path: str, tokens: Sequence[Token], span: Token
+) -> Iterator[Located | None]:
+    """Where each use one region carries is written, in the order `carried` reads them.
+
+    A link is located by its inline block's first line and its position
+    among the links that block writes, which is how a composing link's
+    contribution is held. An image and a diagram link compose nothing.
+    """
+    for token in within(tokens, [span]):
+        if token.type == INLINE:
+            position = 0
+            for _children, _at, use in uses(token):
+                if use.kind != LINK or token.map is None:
+                    yield None
+                    continue
+                yield (path, token.map[0], position)
+                position += 1
+        elif token.type == FENCE:
+            for _click in clicks(token):
+                yield None
 
 
 def intended(
@@ -755,6 +783,9 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
     A file group emits its parts in its source's own order, so the
     chain there is held to what stands above the part as well.
 
+    A composed range stands in the outline its contribution gives it
+    rather than its source's, so it is placed by no source chain.
+
     The converse is held here as well. A structural ancestor is the
     only unselected source-derived content a group emits, so each of
     them places a part that follows it; one placing nothing is content
@@ -772,7 +803,7 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
         if record.merged is not None:
             emitted_at |= answered.get(path, set())
         for one in record.parts:
-            if sourced(one) != path:
+            if sourced(one) != path or (isinstance(one, Range) and one.composed):
                 continue
             at = (
                 one.lines[0] + 1
@@ -834,11 +865,15 @@ def coverage(groups: Sequence[Group]) -> None:
     group arranges one document's regions among another's and two
     regions of one source overlap wherever the group emits them. A
     document two links place in different groups is carried once in
-    each, since each group is a separate division of the bundle.
+    each, since each group is a separate division of the bundle. A
+    composed range is a copy every directive naming its section carries,
+    so it stands outside the count.
     """
     carried: dict[tuple[int, str], list[tuple[int, int]]] = {}
     for at, one in enumerate(groups):
         for each in one.record.ranges:
+            if each.composed:
+                continue
             carried.setdefault((at, each.path), []).append(each.lines)
     for (_, path), held in carried.items():
         last = 0
@@ -913,7 +948,8 @@ def levels(record: Record) -> None:
     A file group emits its headings in its source's order, so that
     order is held here too. A merged group's order is the grouping
     rules', which place one document's name beside another's, and the
-    outline each part keeps is held by `placement` instead.
+    outline each part keeps is held by `placement` instead. A composed
+    heading stands in its contribution's order rather than its source's.
 
     The record is held to the levels and the order its sources wrote
     before the candidate is read, because a level beyond the sixth is
@@ -956,7 +992,7 @@ def levels(record: Record) -> None:
                 f"the heading {one.text!r} of {record.path!r} is emitted at the "
                 f"level its group's own heading holds",
             )
-        if record.merged is not None:
+        if record.merged is not None or (isinstance(one, Carried) and one.composed):
             continue
         line = one.origins[0].line
         if line is not None and line < at:
@@ -1066,6 +1102,7 @@ def references(
     declarations: Declarations = DECLARING,
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Mapping[Located, str] | None = None,
 ) -> None:
     """Hold one region's uses, diagram links among them, to those its source wrote.
 
@@ -1075,13 +1112,38 @@ def references(
     in where it points is a reference the bundle did not preserve. A
     diagram's link destinations are the characters of a code example
     preservation sets aside, so this is where each is held.
+
+    A composing link shows the text its author wrote, its deferral mark
+    taken off, and points at the
+    contribution heading the composition map holds for its position.
     """
-    expected = [
-        intended(
-            path, one, at, children, targets, declarations, dispatched_to, substitution
+    contributing = {} if composing is None else composing
+    expected: list[Use] = []
+    for (children, at, one), written in zip(
+        carried(source.tokens, source.span),
+        positions(path, source.tokens, source.span),
+        strict=True,
+    ):
+        anchor = None if written is None else contributing.get(written)
+        expected.append(
+            intended(
+                path,
+                one,
+                at,
+                children,
+                targets,
+                declarations,
+                dispatched_to,
+                substitution,
+            )
+            if anchor is None
+            else Use(
+                one.kind,
+                unmarked(one.text),
+                one.title,
+                normalizeLink(f"{ANCHOR}{anchor}"),
+            )
         )
-        for children, at, one in carried(source.tokens, source.span)
-    ]
     found = [one for _, _at, one in carried(published.tokens, published.span)]
     if len(found) != len(expected):
         raise Invalid(
@@ -1173,6 +1235,30 @@ def dispatches(
                 )
 
 
+def contributions(
+    reached: Mapping[str, tuple[Record, Emitted]],
+    composing: Contributing,
+) -> None:
+    """Hold each composing link's destination to a contribution heading.
+
+    A contribution heading answers to no source target, so what a
+    composing link's destination is held to is the kind of heading it
+    reaches.
+    """
+    for (path, line, _at), destination in (
+        each for links in composing.values() for each in links.items()
+    ):
+        found = reached.get(destination)
+        if found is None or not (
+            isinstance(found[1], Generated) and found[1].kind == CONTRIBUTION_HEADING
+        ):
+            raise Invalid(
+                TARGET_INTEGRITY,
+                f"the destination {destination!r} a directive at line {line + 1} "
+                f"of {path!r} was given reaches no contribution heading",
+            )
+
+
 def protocols(
     reached: Mapping[str, tuple[Record, Emitted]],
     part: Instruction,
@@ -1199,6 +1285,23 @@ def protocols(
                 )
 
 
+def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
+    """Hold a deferred directive's line to the one target a later run composes.
+
+    The line is the bundle's own text and writes one link, whose
+    destination is the target's path from the invocation working
+    directory and the fragment naming its section.
+    """
+    found = [use for inline in inlines(tokens, [span]) for _c, _a, use in uses(inline)]
+    resolved = [resolve(use.destination) for use in found]
+    if [(one.path, one.fragment) for one in resolved] != [part.activates]:
+        raise Invalid(
+            TARGET_INTEGRITY,
+            f"the line {part.text!r} a deferred directive's contribution carries "
+            f"names no one target {part.activates!r}",
+        )
+
+
 def validate(
     bundled: str,
     groups: Sequence[Group],
@@ -1210,6 +1313,7 @@ def validate(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Contributing | None = None,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
@@ -1238,12 +1342,17 @@ def validate(
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
     dispatches(reached, served)
+    contributing = {} if composing is None else composing
+    contributions(reached, contributing)
     for record, part, span in paired:
         if isinstance(part, Ancestor):
             structural(record, part, span, tokens)
             continue
         if isinstance(part, Instruction):
-            protocols(reached, part, span, tokens)
+            if part.activates is None:
+                protocols(reached, part, span, tokens)
+            else:
+                activation(part, span, tokens)
             continue
         if isinstance(part, Generated):
             continue
@@ -1263,6 +1372,7 @@ def validate(
             declarations,
             served.get((carried.path, carried.lines[0]), {}),
             substitution,
+            contributing.get(carried.placing, {}),
         )
         preserved(
             carried.path,

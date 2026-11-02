@@ -1,0 +1,15 @@
+description = "A dispatched bundle carrying a deferred dispatch and dispatching a target itself opens with one Prosiform section: the line referring to Run pf first above it, the Run pf first sub-section first, then the Dispatch protocol."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/steps.bundle.md", "expected/checks.bundle.md"]
+diagnostics = []

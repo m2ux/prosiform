@@ -224,8 +224,8 @@ An error decides a failing run.
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
 | `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
-| `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle. |
-| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow, and Link classification and resource handling, Dispatch sub-sections — an emitted heading beyond H6, a dispatch sub-section among them. |
+| `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions, and Section composition, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle, a destination section among them. |
+| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow; Link classification and resource handling, Dispatch sub-sections; and Section composition, Heading depth — an emitted heading beyond H6, a dispatch sub-section or a composed heading among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping, the refused `root` among them. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML or duplicate keys. |
@@ -238,10 +238,10 @@ An error decides a failing run.
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the working directory cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the working directory. |
-| `E_TARGET_NOT_FOUND` | Link classification — an operator's reference naming no document, or a reference naming no heading in the document it resolves to. |
+| `E_TARGET_NOT_FOUND` | Link classification, and Section composition, The eligible target — an operator's reference or a composition directive naming no document, or a reference naming no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, or an operator naming no Markdown document or section; Dispatch sub-sections — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, a blank between two symbols, a dispatch mark written against a composition directive's label, or an operator naming no Markdown document or section; Dispatch sub-sections — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection; Section composition — a directive naming no eligible target, standing in no scope, naming a target with no parent heading or closing a cycle, a section one scope both composes and defers, or a deferred directive whose scope selects other presets of its target than the target's own heading. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
@@ -250,6 +250,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | Code | Declared by |
 | --- | --- |
 | `W_COINCIDENT_HEADING` | File-scoped hierarchy and Grouping, Residual ambiguity — two file headings, or two member headings of one merged group, reading alike. |
+| `W_COMPOSE_SELF` | Section composition, Composing its own document — a composition directive naming a section of the document that writes it, by fragment or by path, closing no cycle. |
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
 | `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |

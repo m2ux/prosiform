@@ -1,0 +1,16 @@
+description = "A directive a contribution carries composes beneath the heading holding it there: the one in the read document's Inputs body takes a destination section beneath the contribution heading, ahead of the carried Encoding subsection, and the one in that subsection takes a destination section beneath it. Each nested directive links its own contribution heading."
+
+clauses = [
+  "Section composition — Nested directives",
+  "Section composition — Order",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

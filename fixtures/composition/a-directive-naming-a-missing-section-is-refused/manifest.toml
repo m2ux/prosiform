@@ -1,0 +1,21 @@
+description = "A directive names a heading its target document does not carry, so its composition has no section to place; the run fails with a diagnostic naming the link, where it is written and the document it resolved to, and publishes no bundle."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "read.md#outputs"
+resolved = "read.md"
+source = "guide.md:8"
+chain = ["guide.md", "read.md#outputs"]

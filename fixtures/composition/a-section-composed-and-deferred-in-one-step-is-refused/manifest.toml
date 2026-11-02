@@ -1,0 +1,21 @@
+description = "One step composes fetch.md's Implementation and also defers it, two placements of one section that contradict, so the run refuses the deferred directive, naming both directives, and publishes no bundle."
+
+clauses = [
+  "Section composition — Deferred composition",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["'→' at guide.md:8", "'¬→' at guide.md:8", "fetch.md#implementation"]
+reference = "fetch.md#implementation"
+source = "guide.md:8"
+chain = ["guide.md", "fetch.md#implementation"]

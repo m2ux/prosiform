@@ -1,0 +1,21 @@
+description = "A label of one arrow outside the basic multilingual plane is one arrow, so it is a composition directive, and in the preamble it is refused for want of a scope; no bundle is published."
+
+clauses = [
+  "Section composition — Recognition",
+  "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "step.md#output"
+source = "guide.md:4"
+chain = ["guide.md", "step.md#output"]

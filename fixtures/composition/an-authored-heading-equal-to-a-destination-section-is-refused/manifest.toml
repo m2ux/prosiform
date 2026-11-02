@@ -1,0 +1,21 @@
+description = "A step composes a section titled Inputs and carries an authored child heading Inputs of its own, which would give the step two sections of one name; the run fails with a diagnostic naming the directive, where it is written and the authored heading's location, and publishes no bundle."
+
+clauses = [
+  "Section composition — Generated heading collisions",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+message_contains = ["guide.md:10"]
+reference = "read.md#inputs"
+source = "guide.md:8"
+chain = ["guide.md", "read.md#inputs"]

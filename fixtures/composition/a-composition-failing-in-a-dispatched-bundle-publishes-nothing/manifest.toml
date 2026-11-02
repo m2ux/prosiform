@@ -1,0 +1,21 @@
+description = "The entry composes its own directive cleanly and dispatches the log, whose step composes a section titled Inputs beside an authored Inputs heading of its own; the dispatched bundle's composition fails with the heading collision, so the run publishes neither bundle, writes no folder and leaves standard output empty."
+
+clauses = [
+  "Section composition — Failure",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+message_contains = ["log.md:10"]
+reference = "read.md#inputs"
+source = "log.md:8"
+chain = ["log.md", "read.md#inputs"]

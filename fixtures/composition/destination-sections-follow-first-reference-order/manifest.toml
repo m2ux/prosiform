@@ -1,0 +1,16 @@
+description = "Two steps write directives naming the same sections in different orders. In each step, each title takes its destination section in the order its first directive is written, after the step's own content and before the step's child section, and each contribution follows the order its directive is written: the first step carries Outputs, Write before Read, then Inputs, Read before Write; the second carries Inputs, Read before Write, then Outputs. The guide also links each target document whole, so each keeps its own file group beside its contributions."
+
+clauses = [
+  "Section composition — Order",
+  "Section composition — Destination sections",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

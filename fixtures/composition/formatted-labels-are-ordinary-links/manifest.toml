@@ -1,0 +1,17 @@
+description = "A label carrying emphasis, strong emphasis, a code span or a strikethrough is not plain text, so none is a composition directive and each is an ordinary link in the preamble."
+
+clauses = [
+  "Section composition — Recognition",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

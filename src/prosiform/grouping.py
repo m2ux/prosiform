@@ -105,11 +105,11 @@ from prosiform.bundle import (
     absorbed,
     ancestry,
     carried_headings,
-    dispatched_in,
     document_title,
     emitted_text,
     escaped,
     line_of,
+    placing_in,
     region,
     required,
     rewrite,
@@ -133,6 +133,7 @@ from prosiform.provenance import (
     Carried,
     Emitted,
     Generated,
+    Located,
     Origin,
     Part,
     Range,
@@ -275,6 +276,7 @@ def prepared(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Mapping[Located, str] | None = None,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -326,6 +328,7 @@ def prepared(
             dispatching,
             first_line,
             substitution,
+            composing,
         )
     )
     member = Member(
@@ -409,7 +412,7 @@ def carried_part(
 
 def ancestor_part(member: Member, token: Token, by: int) -> tuple[str, Ancestor]:
     """One eligible ancestor the run did not select, emitted as a heading alone."""
-    held = dispatched_in(member.tokens, token)
+    held = placing_in(member.tokens, token)
     if held is not None:
         raise Unplaced(member.path, line_of(token, member.first_line), *held)
     depth = level(token) + by

@@ -549,7 +549,7 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
         found.append((*one.target, published(one.definition, destination)))
     elif destination is not None:
         found.append((*one.target, destination))
-    if destination is not None and (kept := unmarked(label)) != label:
+    if destination is not None and (kept := unmarked(label, raw=True)) != label:
         found.append((one.label[0], one.label[0] + len(label) - len(kept), ""))
     return found
 

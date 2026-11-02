@@ -1,0 +1,18 @@
+description = "Each operator mark alone — the deferral, dispatch and parallel dispatch marks and the inline mark — and a dispatch mark written against text open no operator and request no placement, so each is an ordinary link in the preamble, carried with its text as written."
+
+clauses = [
+  "Section composition — Operator marks",
+  "Link classification and resource handling — The deferral mark",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

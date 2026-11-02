@@ -14,6 +14,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [References](references.md) | Which links are dependencies, which are text, and what an operator states |
 | [Selection](selection.md) | How the closure is reached, consolidated and ordered |
 | [Hierarchy](hierarchy.md) | File headings, groups, member names and the level shift |
+| [Composition](composition.md) | How a directive places a section beneath the section that writes it, and the grammar it is written in |
 | [Destinations](destinations.md) | How a heading is named and how each link is rewritten |
 | [Dispatch](dispatch.md) | How dispatched material becomes a bundle of its own |
 | [Bundles](bundles.md) | Derived names, publication and delivery |

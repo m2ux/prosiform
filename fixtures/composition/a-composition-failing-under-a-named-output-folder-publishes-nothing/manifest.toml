@@ -1,0 +1,21 @@
+description = "A run told to publish into an output folder the fixture does not hold composes its entry cleanly and dispatches the fetch, whose directive under an H6 heading composes past the sixth level; the run fails with the depth overflow before anything is written, so the named folder is never made, no bundle is written under it and standard output stays empty."
+
+clauses = [
+  "Section composition — Failure",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-o", "out", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+message_contains = ["level 7"]
+reference = "read.md#inputs"
+source = "fetch.md:16"
+chain = ["fetch.md", "read.md#inputs"]

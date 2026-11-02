@@ -1,0 +1,20 @@
+description = "A directive names a section no heading of its document stands above, so its contribution has no parent to name; the run refuses the directive with a diagnostic naming the link and where it is written, and publishes no bundle."
+
+clauses = [
+  "Section composition — Contributions",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "read.md#inputs"
+source = "guide.md:8"
+chain = ["guide.md", "read.md#inputs"]

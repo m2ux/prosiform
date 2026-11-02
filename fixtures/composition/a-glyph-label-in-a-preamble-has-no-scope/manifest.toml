@@ -1,0 +1,21 @@
+description = "A link whose label is one arrow is a composition directive, and one written in the preamble lies in no section, so it has no scope to place its target beneath and is refused with a diagnostic naming the link and where it is written; no bundle is published."
+
+clauses = [
+  "Section composition — Recognition",
+  "Section composition — The destination scope",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "step.md#output"
+source = "guide.md:4"
+chain = ["guide.md", "step.md#output"]

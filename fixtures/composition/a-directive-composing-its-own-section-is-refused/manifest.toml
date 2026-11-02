@@ -1,0 +1,25 @@
+description = "A directive naming the section that holds it would compose that section within itself without end, so the run publishes nothing and fails, naming the directive and the chain of sections."
+
+clauses = [
+  "Section composition — Composition cycles",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "#prepare"
+source = "guide.md:8"
+chain = ["guide.md", "guide.md#prepare"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 8
+column = 1

@@ -54,6 +54,7 @@ from prosiform.candidate import (
 from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
+    COMPOSE_SELF,
     EARLIER_SET_RETAINED,
     FAULT_VARIABLE,
     FAULTS,
@@ -100,6 +101,8 @@ from prosiform.dispatch import (
     DISPATCH_DEPTH,
     DISPATCH_PROTOCOL,
     DISPATCH_SELF,
+    FIRST_RUN_LINE,
+    FIRST_RUN_PROTOCOL,
     HEADING_COLLISION,
     PARALLEL_PROTOCOL,
     TOGETHER,
@@ -298,6 +301,7 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         SUBST_USED,
         SUBST_UNUSED,
         PRESET_UNUSED,
+        COMPOSE_SELF,
     }
     for published in (
         BUNDLE_CODES,
@@ -2671,7 +2675,7 @@ def test_an_authored_heading_equal_to_one_pf_emits_is_refused(
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_COLLISION
     assert heading in diagnostic["message"]
-    assert diagnostic["location"] == {"file": "guide.md", "line": 5, "column": 1}
+    assert diagnostic["location"] == {"file": "guide.md", "line": 8, "column": 1}
 
 
 @pytest.mark.parametrize(
@@ -3658,6 +3662,63 @@ def test_a_fragment_only_dispatch_names_its_own_document(root: Path) -> None:
     assert [one["code"] for one in run.diagnostics()] == [DISPATCH_SELF]
 
 
+def test_a_directive_composing_a_section_of_its_own_document_warns(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [→](#rules)\n\n"
+        "## Reference\n\n### Rules\n\nEvery rule.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    [warning] = run.diagnostics()
+    assert warning["code"] == COMPOSE_SELF
+    assert warning["reference"] == "#rules"
+    assert warning["resolved"] == "guide.md#rules"
+    assert warning["location"] == {"file": "guide.md", "line": 10, "column": 1}
+
+
+def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [¬→](#rules)\n\n"
+        "## Reference\n\n### Rules\n\nEvery rule.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+
+
+def test_a_dispatched_bundle_carrying_a_deferred_dispatch_runs_pf_first(
+    root: Path,
+) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\n1. Run [⇉ a](a.md).\n")
+    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬⇉ b](b.md).\n")
+    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.bundles["a.bundle.md"].startswith(
+        f"{FIRST_RUN_LINE}\n\n# Prosiform\n\n## Run pf first\n\n"
+        f"{FIRST_RUN_PROTOCOL}\n\n# A\n"
+    )
+    assert "Run pf first" not in run.bundles["guide.bundle.md"]
+
+
+def test_an_entry_carrying_a_deferred_dispatch_needs_no_first_run(
+    root: Path,
+) -> None:
+    written(root, "guide.md", DECLARED + "# Guide\n\n1. Defer [¬⇉ b](b.md).\n")
+    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.bundles["guide.bundle.md"].startswith("# Guide\n")
+
+
 def test_a_dispatched_target_whose_compilation_fails_publishes_nothing(
     root: Path,
 ) -> None:
@@ -4156,3 +4217,56 @@ def test_every_click_on_one_line_is_followed(root: Path) -> None:
     assert '    click A "#one"; click B href "#two" "Two"\n' in run.bundle
     assert "\n# One\n" in run.bundle
     assert "\n# Two\n" in run.bundle
+
+
+def test_a_cycle_of_directives_names_each_earlier_directive_as_related(
+    root: Path,
+) -> None:
+    """The closing directive is the location; each earlier one is related."""
+    written(
+        root, "guide.md", DECLARED + "# Guide\n\n## Prepare\n\nDo [→](plan.md#steps).\n"
+    )
+    written(
+        root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nDo [→](review.md#checks).\n"
+    )
+    written(
+        root,
+        "review.md",
+        DECLARED + "# Review\n\n## Checks\n\nDo [→](plan.md#steps).\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["location"] == {"file": "review.md", "line": 8, "column": 1}
+    assert [(one["file"], one["line"]) for one in reported["related"]] == [
+        ("guide.md", 8),
+        ("plan.md", 8),
+    ]
+
+
+def test_a_multiplying_composition_fails_before_it_is_whole(root: Path) -> None:
+    """The output budget is held as each contribution is composed.
+
+    The figure the crossing reports stands below the bytes the whole
+    bundle carries, so the run stopped at the first emission crossing it.
+    """
+    many = ", ".join(["[→](call.md#steps)"] * 4)
+    calls = ", ".join(["[→](read.md#inputs)"] * 4)
+    written(root, "guide.md", DECLARED + f"# Guide\n\nRun {many}.\n")
+    written(root, "call.md", DECLARED + f"# Call\n\n## Steps\n\nRead {calls}.\n")
+    written(
+        root, "read.md", DECLARED + "# Read\n\n## Inputs\n\n" + "A path. " * 40 + "\n"
+    )
+    whole = invoke("guide.md", cwd=root)
+    assert whole.status == SUCCESS, whole.stderr
+    size = len(whole.bundle.encode())
+    run = invoke(
+        "-d", "json", "--budget", f"output-bytes={size // 2}", "guide.md", cwd=root
+    )
+    assert run.status == INPUT_FAILURE
+    [reported] = run.diagnostics()
+    assert reported["code"] == RESOURCE_LIMIT
+    counted = int(reported["message"].split("reached ")[1].split(" ")[0])
+    assert size // 2 < counted < size

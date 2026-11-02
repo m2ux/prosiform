@@ -1,0 +1,18 @@
+description = "A deferred directive is held to the presets its step selects for the target: the step Fetch the page and the target's heading Implementation each select none of fetch.md's presets, so the run activating the target compiles it as the step would, and the deferral is kept with its generated line."
+
+clauses = [
+  "Section composition — Deferred composition",
+  "Section composition — Presets and subst",
+  "Presets — Selection by keyword",
+  "Presets — A command-line entry reads the file it names",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

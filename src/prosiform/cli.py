@@ -73,16 +73,29 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
+    Unresolvable,
     components,
     conflicting,
+    contradicting,
+    deferred,
+    directive,
+    gapped,
     identity,
     inside,
     named,
     operators,
     resolve,
-    spaced,
     withholding,
     withholding_target,
+)
+from prosiform.composition import (
+    Colliding,
+    Composed,
+    Cycling,
+    Overflowing,
+    Parentless,
+    compositions,
+    contributions,
 )
 from prosiform.diagnostics import (
     ERROR,
@@ -96,6 +109,7 @@ from prosiform.diagnostics import (
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
+    HEADING_COLLISION,
     Anchors,
     Hop,
     Refused,
@@ -153,7 +167,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Target
+from prosiform.provenance import Contributing, Target
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -167,6 +181,7 @@ from prosiform.source import (
     Selection,
     Source,
     Unterminated,
+    Use,
     closes_head,
     content,
     declaration,
@@ -219,6 +234,7 @@ EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 SUBST_USED = "W_SUBST_USED"
 SUBST_UNUSED = "W_SUBST_UNUSED"
 PRESET_UNUSED = "W_PRESET_UNUSED"
+COMPOSE_SELF = "W_COMPOSE_SELF"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -246,6 +262,7 @@ CODES = tuple(
             SUBST_USED,
             SUBST_UNUSED,
             PRESET_UNUSED,
+            COMPOSE_SELF,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -1362,6 +1379,18 @@ def reaching(selected: dict[str, list[Reference]]) -> dict[str, tuple[str, ...]]
     }
 
 
+def included(found: Sequence[Reference]) -> list[Reference]:
+    """Every reference that includes what it names: each one composing nothing.
+
+    A document only composition directives reach contributes its content
+    to their contributions alone: it stands in no file group, joins no
+    merged group and is carried nowhere else. A document an inclusion
+    also reaches keeps that inclusion, carrying what the inclusions
+    select, beside its contributions.
+    """
+    return [one for one in found if not one.composes]
+
+
 def selection(
     path: str,
     tokens: Sequence[Token],
@@ -1481,6 +1510,11 @@ def required(
     so a reference pointing back adds nothing to it and expands nothing
     twice.
 
+    A composition directive naming a section is a dependency like any
+    other, since the run reads what it composes, and it states that it
+    composes, so the bundle places its section beneath the directive's
+    scope rather than in a group of its own.
+
     The chain passed in is the one that reached this source, and every
     reference the source carries stands one hop beyond it. A reference
     refused here therefore reports the route the run followed to the
@@ -1513,7 +1547,11 @@ def required(
         if withholding(use.opening):
             continue
         occurrence = replace(
-            found, origin=at, chain=(*chain, identity(found)), title=use.title
+            found,
+            origin=at,
+            chain=(*chain, identity(found)),
+            title=use.title,
+            composes=found.fragment is not None and directive(use.label),
         )
         if not declarations.declares(occurrence):
             continue
@@ -1532,7 +1570,12 @@ def refusals_of_operators(
     """Refuse a link whose operators state no one compilation the run can carry out.
 
     A deferral says when the material is compiled and a dispatch says who
-    compiles it, so the two are carried out together. Two dispatch marks
+    compiles it, so the two are carried out together, their marks written
+    together: a blank between two symbols — two marks, or a mark and a
+    composition directive's label — states no one operation. A dispatch
+    sends material to a sub-agent and a directive places it inline, so a
+    dispatch mark written against a directive's label states two
+    contradicting operations. Two dispatch marks
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
@@ -1552,19 +1595,35 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if spaced(use.opening) and DEFERRAL_MARK in operators(use.opening):
-            first = operators(use.opening)
-            second = operators(use.opening[len(first) :].lstrip())
+        if gapped(use.opening, use.label):
             raise input_failure(
-                f"the link {use.opening!r} opens with "
+                f"the link {use.opening!r} writes a blank between "
                 + " and ".join(
-                    f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in first + second
+                    f"{OPERATOR_NAMES[mark]} {mark!r}"
+                    for mark in operators(use.opening)
                 )
-                + ", which state one compilation only when the marks are written "
-                "together",
+                + " and the symbol after it, which state one operation only "
+                "when written together",
                 code=UNSUPPORTED_CONSTRUCT,
-                remedy="write the marks of the combined operator with no space "
-                "between them",
+                remedy="write the symbols with no space between them, and one "
+                "space between the last of them and the link's text",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if use.label is not None and contradicting(use.label):
+            raise input_failure(
+                f"the link {use.opening!r} writes "
+                + " and ".join(
+                    OPERATOR_NAMES[mark]
+                    for mark in dict.fromkeys(use.label[:-1])
+                    if mark != DEFERRAL_MARK
+                )
+                + " against a composition directive's label, so it sends its "
+                "material to a sub-agent and places it inline at once",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="write the directive's label alone to compose the section, "
+                "or the dispatch mark, a space and text to dispatch it",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),
@@ -1631,6 +1690,196 @@ def refusals_of_operators(
         )
 
 
+def refusals_of_directives(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+    declarations: Declarations = DECLARING,
+    substitution: Substitution = UNSUBSTITUTED,
+) -> None:
+    """Refuse a composition directive no section holds or no section answers.
+
+    A directive places its target beneath the section containing it, so
+    one written in the preamble has no scope to place it in. One naming a
+    Markdown path that holds no document names a target that cannot be
+    read, and fails as a reference naming nothing does. A directive names
+    a section of a document that declares `prosiform`, so one naming a
+    remote address, a resource, a document that declares nothing or a
+    whole document asks for a composition no such target can answer.
+    Each label asks for a placement the run cannot make, which is a
+    source fault: the run reports the link rather than reading it as an
+    ordinary one.
+
+    A section is composed in a scope or deferred from it, so a scope
+    holding an immediate and a deferred directive naming one section
+    states two placements for it, and the run refuses the later one,
+    naming both.
+
+    A reference whose form the grammar does not admit is left to the
+    refusal every dependency meets.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    placed: dict[tuple[int | None, str, str | None, bool], tuple[str, str]] = {}
+    for use in uses(tokens, selected):
+        if not directive(use.label):
+            continue
+        at = location(path, source.line(use.line))
+        if use.title is not None:
+            target = named(path, use.destination, substitution, at, chain)
+            if target is None:
+                try:
+                    inside(path, use.destination, substitution)
+                except Unresolvable:
+                    continue
+                ineligible = "a remote address or a resource, which holds no section"
+            elif (answer := declarations.answer(target)) is Probed.ABSENT:
+                raise input_failure(
+                    f"the directive {use.label!r} names {use.destination!r}, "
+                    f"which names no document, so its composition has no "
+                    f"section to place",
+                    code=TARGET_NOT_FOUND,
+                    remedy="name a section of a Markdown document that exists",
+                    reference=use.destination,
+                    source=at,
+                    chain=(*chain, use.destination),
+                )
+            elif answer is Probed.SILENT:
+                ineligible = "a document whose frontmatter declares no prosiform"
+            elif target.fragment is None:
+                ineligible = "a whole document rather than a section of it"
+            else:
+                later = deferred(use.opening)
+                section = (use.heading, target.path, target.fragment)
+                other = placed.get((*section, not later))
+                if other is not None:
+                    raise placed_twice(use, at, other, later, chain)
+                placed.setdefault((*section, later), (use.label or "", at))
+                continue
+            raise input_failure(
+                f"the directive {use.label!r} names {use.destination!r}, "
+                f"{ineligible}, so no section answers its composition",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="name a section of a Markdown document that declares "
+                "prosiform, or give the link a label that requests no placement",
+                reference=use.destination,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        raise input_failure(
+            f"the link {use.label!r} is a composition directive in the preamble, "
+            f"which no section holds, so the run has no scope to place "
+            f"{use.destination!r} beneath",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy="write the directive inside the section its target belongs "
+            "beneath, or give the link a label that requests no placement",
+            reference=use.destination,
+            source=at,
+            chain=(*chain, use.destination),
+        )
+
+
+def placed_twice(
+    use: Use,
+    at: str,
+    other: tuple[str, str],
+    later: bool,
+    chain: Sequence[str],
+) -> Failure:
+    """One scope composing a section and deferring it, naming both directives."""
+    this = (use.label or "", at)
+    immediate, deferring = (other, this) if later else (this, other)
+    return input_failure(
+        f"the directive {immediate[0]!r} at {immediate[1]} composes "
+        f"{use.destination!r} in its scope and the deferred directive "
+        f"{deferring[0]!r} at {deferring[1]} defers it from the same scope, so "
+        f"the section would be placed now and left to a later run at once",
+        code=UNSUPPORTED_CONSTRUCT,
+        remedy="keep one of the two directives: compose the section, or defer it",
+        reference=use.destination,
+        source=at,
+        chain=(*chain, use.destination),
+    )
+
+
+def composing_itself(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+    substitution: Substitution = UNSUBSTITUTED,
+) -> Iterator[Diagnostic]:
+    """One warning for each directive composing a section of the document writing it.
+
+    The section is material that document already carries, so its author
+    moves it to a document of its own or links it without a directive's
+    label. A directive composing the section holding it is a cycle, which
+    composition refuses, and a deferred directive composes nothing in the
+    run, so it warns of nothing.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.title is None or not directive(use.label) or deferred(use.opening):
+            continue
+        at = location(path, source.line(use.line))
+        target = named(path, use.destination, substitution, at, chain)
+        if target is None or target.fragment is None or target.path != path:
+            continue
+        yield Diagnostic(
+            WARNING,
+            f"the directive {use.label!r} composes {identity(target)!r} in the "
+            f"document that writes it, so it places material that document "
+            f"already carries",
+            code=COMPOSE_SELF,
+            reference=use.destination,
+            resolved=identity(target),
+            chain=target.chain,
+            remedy="move the section to a document of its own, or link it "
+            "without a directive's label",
+            location=Location(path, source.line(use.line) or 1, 1),
+        )
+
+
+def refusals_of_deferrals(
+    tokens: Sequence[Token], conversion: Conversion, one: Reference
+) -> None:
+    """Refuse a deferred directive whose scope selects other presets than its target.
+
+    A directive's scope title selects its target's presets, and the run
+    activating a deferred directive compiles the target section as an
+    entry, which selects them by that section's own heading: no option
+    names the referrer. Where the two titles select different presets the
+    deferred content would compile otherwise than composed, so the run
+    refuses the directive, naming the link and both selections.
+    """
+    heading = entry_title(tokens, one)
+    scoped = tuple(preset.name for preset in keywords(conversion, one.title))
+    activated = tuple(preset.name for preset in keywords(conversion, heading))
+    if scoped == activated:
+        return
+
+    def named_presets(names: tuple[str, ...]) -> str:
+        return ", ".join(repr(name) for name in names) if names else "no preset"
+
+    raise input_failure(
+        f"the deferred directive naming {one.original!r} sits in the section "
+        f"{one.title!r}, which selects {named_presets(scoped)} of {one.path!r}, "
+        f"and the run activating it selects by the target's heading "
+        f"{heading!r}, which selects {named_presets(activated)}, so the "
+        f"deferred section would compile under other presets than its scope "
+        f"selects",
+        code=UNSUPPORTED_CONSTRUCT,
+        remedy="title the scope and the target's heading so they select the "
+        "same presets, or compose the section rather than defer it",
+        reference=one.original,
+        resolved=identity(one),
+        source=one.origin,
+        chain=one.chain,
+    )
+
+
 def withheld(
     path: str,
     source: Source,
@@ -1656,7 +1905,10 @@ def withheld(
 
     The chain is the one a compiled reference in the same place would
     carry, because a refusal reports the route the run followed to the
-    link whichever half of the rule the link falls under.
+    link whichever half of the rule the link falls under. Each target
+    holds the title of the section the link is written in, and a
+    deferred directive's states that it composes, so the run activating
+    it is held to the presets that title selects.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -1668,7 +1920,13 @@ def withheld(
         )
         if found is None:
             continue
-        yield replace(found, origin=at, chain=(*chain, identity(found)))
+        yield replace(
+            found,
+            origin=at,
+            chain=(*chain, identity(found)),
+            title=use.title,
+            composes=directive(use.label),
+        )
 
 
 def dispatches(
@@ -1750,6 +2008,7 @@ def traverse(
     dict[str, Capture],
     list[Reference],
     list[Hop],
+    list[Diagnostic],
 ]:
     """Every source the run reads and every reference it carries, at the fixed point.
 
@@ -1765,7 +2024,10 @@ def traverse(
     A dependency reaching a carried document and section from a section
     title no earlier dependency reached it from is carried all the same,
     because the title selects that document's presets and each reference
-    bundles the document under the selection it made. It joins the
+    bundles the document under the selection it made. So is one reaching
+    it by the other kind, a directive where an inclusion reached it or
+    an inclusion where a directive did, because the bundle places a
+    document's content by the references of each kind. It joins the
     references the run carries and not the frontier, since the content
     it selects is content the run already reads.
 
@@ -1812,7 +2074,8 @@ def traverse(
 
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
-    for the bundles the run compiles from them.
+    for the bundles the run compiles from them, and so is one warning
+    for each directive composing a section of the document writing it.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -1820,11 +2083,12 @@ def traverse(
     captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
-    titled: set[tuple[str, str | None, str | None]] = set()
+    titled: set[tuple[str, str | None, str | None, bool]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
-    deferred: dict[tuple[str, str | None], Reference] = {}
+    postponed: dict[tuple[str, str | None, str | None, bool], Reference] = {}
     dispatching: dict[str, Hop] = {}
+    composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
     hop = 0
     frontier = list(requested)
@@ -1878,6 +2142,21 @@ def traverse(
                 declarations,
                 mapping,
             )
+            refusals_of_directives(
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
+            )
+            for warning in composing_itself(
+                path, read[path], parsed[path], chosen, reached, mapping
+            ):
+                composed_itself.setdefault(
+                    (warning.location, warning.reference), warning
+                )
             for one in withheld(
                 path,
                 read[path],
@@ -1888,7 +2167,9 @@ def traverse(
                 mapping,
             ):
                 verify_cached(root, one, captured)
-                deferred.setdefault((one.path, one.fragment), one)
+                postponed.setdefault(
+                    (one.path, one.fragment, one.title, one.composes), one
+                )
             for link in dispatches(
                 path,
                 read[path],
@@ -1909,9 +2190,9 @@ def traverse(
                 mapping,
             ):
                 verify_cached(root, one, captured)
-                if (one.path, one.fragment, one.title) in titled:
+                if (one.path, one.fragment, one.title, one.composes) in titled:
                     continue
-                titled.add((one.path, one.fragment, one.title))
+                titled.add((one.path, one.fragment, one.title, one.composes))
                 if (one.path, one.fragment) in seen:
                     reselecting.append(one)
                     continue
@@ -1922,7 +2203,7 @@ def traverse(
         found.extend(discovered)
         found.extend(reselecting)
         frontier = discovered
-    for one in deferred.values():
+    for one in postponed.values():
         if one.path not in read:
             limits.hold(FILES, len(read) + 1)
             opened = read_document(root, one, limits, total)
@@ -1940,6 +2221,8 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
+        if one.composes:
+            refusals_of_deferrals(parsed[one.path], read[one.path].conversion, one)
     return (
         read,
         parsed,
@@ -1947,6 +2230,7 @@ def traverse(
         captured,
         found,
         list(dispatching.values()),
+        list(composed_itself.values()),
     )
 
 
@@ -2347,12 +2631,12 @@ def parent_document(entries: Collection[Reference]) -> str | None:
 def placement(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
-    selected: Mapping[str, list[Reference]],
+    found: Sequence[Reference],
     entries: Collection[Reference],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[dict[str, list[Reference]], dict[str, str]]:
-    """Each document the bundle carries, in the order a reference first names it.
+    """Each document the bundle includes, in the order a reference first names it.
 
     The entry references are read first, in the order the invocation
     gives them, and then the selected content of each placed document,
@@ -2363,23 +2647,42 @@ def placement(
     from an entry reference by a chain of the links read here, so the
     order covers them all.
 
-    The second mapping names, for each document a link placed, the
-    document that link is written in. An entry is placed by the
-    invocation rather than by a document, so it is absent there.
+    A composition directive places nothing: the section it names is
+    content of the document whose group carries the directive, so that
+    section is read where the directive is written, once, and a link
+    it carries places a document as one its scope's document writes,
+    a directive it carries reading its own section the same way.
+
+    The first mapping holds the references including each document,
+    as `included` keeps them. The second names, for each document a
+    link placed, the document whose group carries that link. An entry
+    is placed by the invocation rather than by a document, so it is
+    absent there.
     """
+    selected = contributing(included(found))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
     placers: dict[str, str] = {}
+    composed: set[tuple[str, str | None]] = set()
+
+    def place(path: str, chosen: Selection | None, holder: str) -> None:
+        for one in required(
+            path, read[path], parsed[path], chosen, (), declarations, substitution
+        ):
+            if one.composes:
+                if (one.path, one.fragment) not in composed:
+                    composed.add((one.path, one.fragment))
+                    section_of = selection(one.path, parsed[one.path], [one], entries)
+                    place(one.path, section_of, holder)
+                continue
+            if one.path in selected and one.path not in order:
+                order.append(one.path)
+                placers[one.path] = holder
+
     at = 0
     while at < len(order):
         path = order[at]
         at += 1
-        chosen = selection(path, parsed[path], selected[path], entries)
-        for one in required(
-            path, read[path], parsed[path], chosen, (), declarations, substitution
-        ):
-            if one.path in selected and one.path not in order:
-                order.append(one.path)
-                placers[one.path] = path
+        place(path, selection(path, parsed[path], selected[path], entries), path)
     return {path: selected[path] for path in order}, placers
 
 
@@ -2473,10 +2776,13 @@ def assembled(
     assigned: dict[tuple[str, str | None], str] | None,
     joins: Mapping[str, Sequence[Membership]],
     placers: Mapping[str, str],
+    chains: Mapping[str, Sequence[str]],
+    limits: Limits,
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-) -> list[Group]:
+    composing: Contributing | None = None,
+) -> tuple[list[Group], Composed]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
     The documents arrive in placement order, which `placement` decides,
@@ -2496,6 +2802,14 @@ def assembled(
     the top level where its first document is placed, so the group
     carrying the parent leads and one selection always bundles to the
     same bytes.
+
+    The sections the bundle's directives compose are placed once every
+    group stands where it is emitted, and the contribution heading each
+    composing link points at is returned beside the groups. The
+    composing map holds each composing link's destination by the placing
+    of the region writing it: the authored links' under none, which the
+    groups are rewritten through, and every contribution's own beside
+    them.
     """
     parent = parent_document(entries)
     inforce = group_depths(joins)
@@ -2515,7 +2829,8 @@ def assembled(
         if holder is not None:
             nested.setdefault(holder, []).append(division)
     built: dict[Division, Group] = {}
-    with assembling(reaching(selected)):
+    authored = None if composing is None else composing.get((), {})
+    with assembling(chains):
         for division in order:
             path, grouped = division
             if grouped:
@@ -2533,6 +2848,7 @@ def assembled(
                 dispatching,
                 read[path].first_line,
                 substitution,
+                authored,
             )
         for named, paths in merging.items():
             depth = inforce[named]
@@ -2553,18 +2869,30 @@ def assembled(
                         dispatching,
                         read[path].first_line,
                         substitution,
+                        authored,
                     )
                     for path in paths
                 ],
                 parent,
                 levels[(named, True)],
             )
-    return [
-        one
-        for division in order
-        if division not in held
-        for one in composed(division, built, nested)
-    ]
+        return compositions(
+            [
+                one
+                for division in order
+                if division not in held
+                for one in composed(division, built, nested)
+            ],
+            parsed,
+            read,
+            defined,
+            limits,
+            assigned,
+            dispatching,
+            declarations,
+            substitution,
+            composing,
+        )
 
 
 @contextmanager
@@ -2572,12 +2900,19 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     """One assembly, a source fault it meets reported as the input it is.
 
     A heading beyond the sixth level is a hierarchy the bundle cannot
-    emit, and a dispatched link the bundle places no sub-section for is a
-    handoff it cannot state. Both are properties of the sources the run
-    was asked to bundle rather than faults in the tool, so each is
-    reported with the code the contract declares for it, and with the
-    chain that reached the document the fault was found in, whichever
-    member of a merged group that is.
+    emit, a dispatched link the bundle places no sub-section for is a
+    handoff it cannot state, and a directive whose composition has no
+    section, parent or level to take, or a name its scope already
+    holds, is a placement it cannot make, and a composition reaching a
+    section that holds a directive on its own chain is one that would
+    not end. Each is a property of the sources the run was asked to
+    bundle rather than a fault in the tool, so each is reported with
+    the code the contract declares for it, and with the chain that
+    reached the document the fault was found in,
+    whichever member of a merged group that is. A composition fault
+    names the directive, where it is written, and the chain extended by
+    it; a cycle names each earlier directive on its chain as related. A
+    contribution crossing the output budget is the crossing it is.
     """
     try:
         yield
@@ -2591,14 +2926,84 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             source=beyond.path,
             chain=chains.get(beyond.path, ()),
         ) from beyond
-    except Unplaced as unplaced:
+    except Parentless as parentless:
         raise input_failure(
-            f"the dispatch {unplaced.opening!r} in {unplaced.path!r} names "
-            f"{unplaced.destination!r}, and the heading that carries it is no "
-            f"section a dispatch sub-section can stand beneath",
+            f"the directive {parentless.destination!r} in {parentless.path!r} "
+            f"names a section no heading stands above, so its contribution "
+            f"has no parent to name",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy="write the dispatch in the body beneath the heading, where a "
-            "sub-section has a section to follow",
+            remedy="name a section that stands beneath a heading of its document, "
+            "or give the link a label that requests no placement",
+            reference=parentless.destination,
+            source=location(parentless.path, parentless.line),
+            chain=(*chains.get(parentless.path, ()), parentless.destination),
+        ) from parentless
+    except Overflowing as beyond:
+        raise input_failure(
+            f"the directive {beyond.destination!r} in {beyond.path!r} composes "
+            f"the heading {beyond.heading!r} at level {beyond.level}, which is "
+            f"beyond H{MAX_LEVEL}",
+            code=HEADING_DEPTH_OVERFLOW,
+            remedy="write the directive in a shallower section, or name a "
+            "shallower section of its target",
+            reference=beyond.destination,
+            source=location(beyond.path, beyond.line),
+            chain=(*chains.get(beyond.path, ()), beyond.destination),
+        ) from beyond
+    except Cycling as cycling:
+        first, closing = cycling.chain[0], cycling.chain[-1]
+        sections = tuple(identity(each.target) for each in cycling.chain)
+        raise Failure(
+            INPUT_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"the directive {closing.written!r} in {closing.at[0]!r} composes "
+                f"{sections[-1]!r}, which holds a directive on the chain of "
+                f"compositions that placed it, so the composition would not end",
+                code=UNSUPPORTED_CONSTRUCT,
+                reference=closing.written,
+                source=location(closing.at[0], closing.line),
+                chain=(*chains.get(first.at[0], ()), *sections),
+                remedy="remove a directive from the chain, or give one a label "
+                "that requests no placement",
+                location=Location(closing.at[0], closing.line or 1, 1),
+                related=tuple(
+                    RelatedLocation(
+                        each.at[0],
+                        each.line or 1,
+                        1,
+                        f"composes {identity(each.target)!r}",
+                    )
+                    for each in cycling.chain[:-1]
+                )
+                or None,
+            ),
+        ) from cycling
+    except Crossed as crossed:
+        raise crossing(crossed) from crossed
+    except Colliding as colliding:
+        raise input_failure(
+            f"the directive {colliding.destination!r} in {colliding.path!r} "
+            f"places the section {colliding.title!r} beneath its scope, whose "
+            f"authored heading {colliding.title!r} at {colliding.authored} names it "
+            f"already",
+            code=HEADING_COLLISION,
+            remedy="retitle the authored heading, or write the directive in "
+            "another section",
+            reference=colliding.destination,
+            source=location(colliding.path, colliding.line),
+            chain=(*chains.get(colliding.path, ()), colliding.destination),
+        ) from colliding
+    except Unplaced as unplaced:
+        kind = "directive" if unplaced.composing else "dispatch"
+        placed = "destination section" if unplaced.composing else "dispatch sub-section"
+        raise input_failure(
+            f"the {kind} {unplaced.opening!r} in {unplaced.path!r} names "
+            f"{unplaced.destination!r}, and the heading that carries it is no "
+            f"section a {placed} can stand beneath",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy=f"write the {kind} in the body beneath the heading, where a "
+            f"{placed} has a section to follow",
             reference=unplaced.destination,
             source=location(unplaced.path, unplaced.line),
             chain=chains.get(unplaced.path, ()),
@@ -2639,12 +3044,17 @@ def compose(
     bundle_file: Callable[[Target], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_bundle: bool = False,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
-    The candidate is one group per source, and it opens on the first
-    group's first part. The warnings name the generated headings that
-    coincide, which accompany the bundle rather than refuse it.
+    The candidate holds the groups each included source takes, and it
+    opens on the first group's first part. A source only composition
+    directives reach takes none: its content stands in their
+    contributions. A diagnostic names the route the run followed to a
+    source, whichever kind of reference reached it. The warnings name
+    the generated headings that coincide, which accompany the bundle
+    rather than refuse it.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -2667,57 +3077,67 @@ def compose(
     an authored heading equal to one pf emits, are refused as input
     failures too.
     """
-    selected = contributing(found)
-    joins = joined(read, parsed, selected, entries)
+    chains = reaching(contributing(found))
     selected, placers = placement(
-        read, parsed, selected, entries, declarations, substitution
+        read, parsed, found, entries, declarations, substitution
     )
+    joins = joined(read, parsed, selected, entries)
     try:
-        headed, placed = subsections(
-            assembled(
-                read,
-                parsed,
-                defined,
-                selected,
-                entries,
-                None,
-                joins,
-                placers,
-                None,
-                declarations,
-                substitution,
-            ),
-            parsed,
-            read,
-            bundle_file,
-            declarations,
-            substitution,
-        )
-        collisions(headed)
-    except Refused as refusal:
-        raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
-    assigned = fragments([heading for one in headed for heading in one.headings])
-    targets = destination_map(headed, assigned)
-    dispatching = anchors(placed, assigned)
-    groups, _ = subsections(
-        assembled(
+        built, contributed = assembled(
             read,
             parsed,
             defined,
             selected,
             entries,
-            targets,
+            None,
             joins,
             placers,
-            dispatching,
+            chains,
+            limits,
+            None,
             declarations,
             substitution,
-        ),
+        )
+        headed, placed = subsections(
+            built,
+            parsed,
+            read,
+            bundle_file,
+            declarations,
+            substitution,
+            dispatched_bundle,
+        )
+        collisions(headed, read)
+    except Refused as refusal:
+        raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
+    assigned = fragments([heading for one in headed for heading in one.headings])
+    targets = destination_map(headed, assigned)
+    dispatching = anchors(placed, assigned)
+    composing = contributions(contributed, headed, assigned)
+    built, _ = assembled(
+        read,
+        parsed,
+        defined,
+        selected,
+        entries,
+        targets,
+        joins,
+        placers,
+        chains,
+        limits,
+        dispatching,
+        declarations,
+        substitution,
+        composing,
+    )
+    groups, _ = subsections(
+        built,
         parsed,
         read,
         bundle_file,
         declarations,
         substitution,
+        dispatched_bundle,
     )
     bundled = assemble(groups)
     try:
@@ -2732,9 +3152,10 @@ def compose(
             dispatching,
             declarations,
             substitution,
+            composing,
         )
     except Unsafe as boundary:
-        reached = reaching(selected).get(boundary.path or "", ())
+        reached = chains.get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
     return bundled, coincident(
         groups, selected, joins, read, parsed, declarations, substitution
@@ -3151,12 +3572,15 @@ def compiled(
     options: argparse.Namespace,
     folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_bundle: bool = False,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
     Each bundle is read by one agent, so each starts from a fresh count
     of what it opens, reaches and publishes, and its expansion depth is
-    counted from its own entry.
+    counted from its own entry. A dispatched bundle is followed by a
+    sub-agent that has run no `pf`, which its Prosiform section answers
+    where the bundle carries a link a later run compiles.
 
     Each document's links resolve under the `subst` pairs its own presets
     put in force for the references this bundle carries, and every bundle
@@ -3166,7 +3590,7 @@ def compiled(
     declarations = Declarations(lambda found: probe(root, found, limits))
     declared_entries(requested, declarations)
     try:
-        read, parsed, defined, captured, found, hops = traverse(
+        read, parsed, defined, captured, found, hops, itself = traverse(
             root, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
@@ -3188,6 +3612,7 @@ def compiled(
         bundle_file,
         declarations,
         governed(substitution, pairs),
+        dispatched_bundle,
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -3204,7 +3629,7 @@ def compiled(
         bundled,
         derived_name(requested),
         hops,
-        [*coinciding, *(selfward(hop) for hop in hops if hop.own)],
+        [*coinciding, *(selfward(hop) for hop in hops if hop.own), *itself],
         trailing,
         captured,
         unselected(read, parsed, contributing(found), requested),
@@ -3297,7 +3722,9 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, folder, substitution)
+        one = compiled(
+            root, [target], options, folder, substitution, dispatched_bundle=True
+        )
         built[hop.name] = one
         pending.extend(one.hops)
     return built

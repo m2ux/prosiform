@@ -1,0 +1,20 @@
+description = "Three directives each compose a section carrying three directives of its own, so nine copies of the read document's Inputs are materialised from sources under 400 bytes. Each contribution counts toward the output budget as it is composed, so the run fails rather than truncating, and publishes nothing."
+
+clauses = [
+  "Section composition — Budgets",
+  "Section composition — Nested directives",
+  "Resource limits — output-bytes",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "output-bytes=1000", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"
+message_contains = ["output-bytes"]

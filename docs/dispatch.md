@@ -19,7 +19,7 @@ That `#dispatch` needs a target, and the protocol it names is the bundle's first
 | The Prosiform section, opening `modes_review.bundle.md` | |
 | --- | --- |
 | `# Prosiform` | |
-| `## Dispatch` | `Hand the named bundle to one sub-agent, with the inputs the invoking step names, to follow from its start, and continue with the result it returns. A dispatched run puts no question to the user: it returns each question, with its context paragraph and options, unanswered. The dispatching session puts each returned question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.` |
+| `## Dispatch` | `Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.` |
 
 *The anchor resolves to the first heading to take that slug, and this section is the bundle's first heading. A later heading producing `dispatch` — an author's lowercase `## dispatch`, say — takes `dispatch-1` instead, so the protocol link keeps pointing at the protocol.*
 
@@ -71,11 +71,14 @@ A dispatch in a heading the bundle emits as text alone has no section to stand b
 
 A bundle carrying a dispatch sub-section or a parallel dispatch sub-section opens with a **Prosiform section**: `# Prosiform`, then `## Dispatch` whenever the bundle dispatches, and `## Parallel dispatch` when it carries a set.
 
+A dispatched bundle carrying a deferred dispatch, or a deferred directive's generated `↳` line, opens with one too, because the sub-agent following it has run no `pf`. Its first sub-section is `## Run pf first`, ahead of any protocol, and the line `Before following this bundle, [run pf first](#run-pf-first).` stands directly above `# Prosiform`. A plain deferred link asks for no run of `pf`, and the entry's bundle is followed by the agent that ran it, so neither takes the sub-section.
+
 These headings are what the generated links point at, so their slugs matter as much as their wording:
 
 | Heading | Destination | Reached by |
 | --- | --- | --- |
 | `# Prosiform` | `#prosiform` | nothing; it names the section |
+| `## Run pf first` | `#run-pf-first` | the line above the section |
 | `## Dispatch` | `#dispatch` | each dispatch sub-section's one line |
 | `## Parallel dispatch` | `#parallel-dispatch` | each parallel dispatch sub-section's one line |
 
@@ -83,7 +86,7 @@ A parallel dispatch sub-section's own heading gives `#dispatch-in-parallel`, whi
 
 The section is the bundle's first heading, ahead of any file heading, and that position is what keeps the destinations unambiguous: a slug goes to the first heading to take it, so a later heading producing `dispatch` takes `dispatch-1`. A parallel dispatch is dispatch done together, so a bundle carrying only sets carries both protocols, the parallel protocol linking the Dispatch one.
 
-Each protocol is one paragraph in wording the profile fixes, so the sub-section is byte-identical in every bundle that carries it. A bundle dispatching nothing carries no Prosiform section.
+Each protocol is one paragraph in wording the profile fixes, so the sub-section is byte-identical in every bundle that carries it. A bundle that dispatches nothing and needs no first run carries no Prosiform section.
 
 ## Depth and cycles
 

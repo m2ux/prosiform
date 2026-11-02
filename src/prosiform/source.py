@@ -222,6 +222,8 @@ DIAGRAM_READ = "diagram links"
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
+LINK_CLOSE = "link_close"
+AUTOLINK = "autolink"
 IMAGE = "image"
 REFERENCE_USES = (LINK_OPEN, IMAGE)
 CONTAINER_OPEN = ("blockquote_open", "list_item_open")
@@ -628,7 +630,15 @@ class Use:
     and no picture is a document the bundle can carry.
 
     The title is the text of the heading whose section holds the use,
-    and is absent for a use in the preamble, which lies in no section.
+    and the heading is the line that heading opens on; both are absent
+    for a use in the preamble, which lies in no section.
+
+    The label is a link's whole text where that text is plain: text
+    events alone, entities and escapes already decoded. It is absent
+    where the text carries any other event — a code span, an emphasis,
+    a strikethrough, an image, a line break or raw HTML — and for an
+    autolink, an image and a diagram link, whose text no author wrote
+    as a label.
     """
 
     destination: str
@@ -636,6 +646,8 @@ class Use:
     line: int | None
     resource: bool
     title: str | None = None
+    label: str | None = None
+    heading: int | None = None
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
@@ -644,6 +656,21 @@ def opening_text(children: Sequence[Token], at: int) -> str:
     if following is None or following.type != TEXT:
         return ""
     return following.content
+
+
+def plain_label(children: Sequence[Token], at: int) -> str | None:
+    """The text of the link opened at one position, where that text is plain."""
+    opening = children[at]
+    if opening.markup == AUTOLINK:
+        return None
+    held: list[str] = []
+    for child in children[at + 1 :]:
+        if child.type == LINK_CLOSE:
+            return "".join(held)
+        if child.type != TEXT:
+            return None
+        held.append(child.content)
+    return None
 
 
 def alternative_text(image: Token) -> str:
@@ -1163,18 +1190,22 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     held = sections(tokens)
     starts = [line for line, _ in held]
 
-    def title(line: int | None) -> str | None:
+    def holding(line: int | None) -> tuple[int, str] | tuple[None, None]:
         at = 0 if line is None else bisect_right(starts, line)
-        return held[at - 1][1] if at else None
+        return held[at - 1] if at else (None, None)
 
     for token in within(tokens, selected):
         if token.type == FENCE:
             for click in clicks(token):
-                yield Use(click.destination, "", click.line, False, title(click.line))
+                heading, title = holding(click.line)
+                yield Use(
+                    click.destination, "", click.line, False, title, heading=heading
+                )
             continue
         if token.type != INLINE:
             continue
         line = None if token.map is None else token.map[0] + 1
+        heading, title = holding(line)
         for children, at, child in events(token.children or []):
             if child.type == LINK_OPEN:
                 destination = child.attrGet(HREF)
@@ -1183,7 +1214,9 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     opening_text(children, at),
                     line,
                     False,
-                    title(line),
+                    title,
+                    plain_label(children, at),
+                    heading,
                 )
             else:
                 destination = child.attrGet(SRC)
@@ -1192,7 +1225,8 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     alternative_text(child),
                     line,
                     True,
-                    title(line),
+                    title,
+                    heading=heading,
                 )
 
 

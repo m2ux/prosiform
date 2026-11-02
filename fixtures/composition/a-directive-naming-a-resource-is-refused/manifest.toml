@@ -1,0 +1,21 @@
+description = "A resource is no Markdown document and holds no section, so a directive naming one asks for a composition nothing answers: the run refuses it with the link and where it is written, and no bundle is published."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["resource"]
+reference = "step.txt"
+source = "guide.md:8"
+chain = ["guide.md", "step.txt"]
