@@ -1,0 +1,18 @@
+description = "A budget a run sets by its name bounds the run at the figure it names, and a run opening more distinct source documents than that fails naming the budget and the figure counted, with no bundle published."
+
+clauses = [
+  "CLI contract — --budget NAME=VALUE",
+  "Resource limits — files",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "files=1", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RESOURCE_LIMIT"
+message_contains = ["files budget of 1", "reached 2"]

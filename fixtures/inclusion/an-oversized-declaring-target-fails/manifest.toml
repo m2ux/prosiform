@@ -1,13 +1,13 @@
-description = "A cited target larger than -B that declares prosiform is captured, so the run fails on the byte budget."
+description = "A cited target larger than the file-bytes budget that declares prosiform is captured, so the run fails on the byte budget."
 
 clauses = [
-  "Resource limits — -B",
+  "Resource limits — file-bytes",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-B", "64", "guide.md"]
+arguments = ["--budget", "file-bytes=64", "guide.md"]
 
 [expected]
 exit_status = 1

@@ -27,7 +27,7 @@ from ruamel.yaml.scanner import Scanner, ScannerError
 
 from prosiform.diagnostics import ERROR, Diagnostic, Location, RelatedLocation
 from prosiform.heading import worded
-from prosiform.limits import SCALAR_DIGITS
+from prosiform.limits import FILE_BYTES, NESTING, SCALAR_DIGITS
 
 INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
@@ -300,8 +300,8 @@ def decode(
     if len(raw) > max_bytes:
         raise _fail(
             RESOURCE_LIMIT,
-            f"-B raw source bytes {len(raw)} exceed limit {max_bytes}; "
-            "reduce source bytes or raise -B",
+            f"{FILE_BYTES.name} raw source bytes {len(raw)} exceed limit "
+            f"{max_bytes}; reduce source bytes or raise --budget {FILE_BYTES.name}",
             Location(file, 1, 1),
         )
     if span is None:
@@ -359,8 +359,9 @@ def decode(
                 if len(stack) >= max_depth:
                     raise _fail(
                         RESOURCE_LIMIT,
-                        f"-N YAML collection depth {len(stack) + 1} exceeds "
-                        f"limit {max_depth}; reduce nesting or raise -N",
+                        f"{NESTING.name} YAML collection depth {len(stack) + 1} "
+                        f"exceeds limit {max_depth}; reduce nesting or raise "
+                        f"--budget {NESTING.name}",
                         location,
                     )
                 stack.append(_Node(kind, location))

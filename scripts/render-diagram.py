@@ -300,7 +300,7 @@ def main():
         entry += "#" + options.section
     arguments = []
     if options.max_output_bytes is not None:
-        arguments.extend(["-O", str(options.max_output_bytes)])
+        arguments.extend(["--budget", f"output-bytes={options.max_output_bytes}"])
     arguments.append(entry)
     captured = {}
     read_source = cli.read_source

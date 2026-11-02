@@ -1,14 +1,14 @@
-description = "A cited target larger than -B that declares nothing is probed rather than captured, so the link is emitted as authored and the run publishes."
+description = "A cited target larger than the file-bytes budget that declares nothing is probed rather than captured, so the link is emitted as authored and the run publishes."
 
 clauses = [
   "Link classification and resource handling — A link naming a document that declares nothing",
-  "Resource limits — -B",
+  "Resource limits — file-bytes",
   "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-B", "64", "guide.md"]
+arguments = ["--budget", "file-bytes=64", "guide.md"]
 
 [expected]
 exit_status = 0

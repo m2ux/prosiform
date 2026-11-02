@@ -1,0 +1,18 @@
+description = "A budget entry naming a budget outside the eight declared is refused as invalid usage, and the message names the name and the eight admitted."
+
+clauses = [
+  "Resource limits — Unknown name",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "key=1", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["'key'", "files", "file-bytes", "input-bytes", "output-bytes", "targets", "links", "nesting", "depth"]
