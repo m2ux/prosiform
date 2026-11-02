@@ -117,6 +117,8 @@ Every clause has a criterion, every criterion is covered by an epic row, and eve
 - **Retired forms are not documented.** (Planning.) Preset `include` and `exclude` (closed not planned in #445), `-m` and `root` reach no page.
 - **Epic priority.** (User, 2026-11-02.) E00 `priority: 2`; E01, E02, E03 and E04 `priority: 1`. The four family index rows write disjoint sections of the index, so the families share a set; every family page still waits on E00 W05 through its row's edge.
 - **Required criteria.** (Validation, 2026-11-02.) `config/required-criteria.json` on `workspace` declares no criterion, so the epic validator reports the project's required criteria unevaluable; no epic body changes for it.
+- **On the theme board.** (User, 2026-11-02.) I12 and its five epics sit on board 18, Markdown Bundling, in Backlog, placed by a sync.
+- **The initiative carries no priority yet.** (User, 2026-11-02.) I12 stays unlabelled until I08 and I09 close; its order against I10 and I11 is set then. I10's check-coverage work and E00 both extend `Makefile` and `checks.md`, so the two do not share a number.
 - **Paradigm sources.** (Planning.) Web research on 2026-11-02 grounds each page's citation: Schärli et al. on traits and flattening, Martin's 2020 module form of SOLID, Cardelli and Wegner on polymorphism, the GoF catalogue, Reenskaug and Coplien on DCI, MacQueen on ML modules, Meyer on contracts, Lieberman on prototypes, Woolf on null objects, Meszaros on test doubles, Hoare on CSP, Hewitt on actors, Morrison on flow-based programming, Harel on statecharts, Taha on staging, and DITA 1.3 as the closest prior art in documentation reuse.
 
 ## Links
