@@ -22,7 +22,14 @@ The linked form's entry draws the diagram's flowchart with no branch label, and 
 
 Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
-Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find. Each scenario in a workflow's `scenarios.toml` names the inputs a session finds under `inputs/` and the path a correct session walks.
+Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
+
+| Field | Meaning |
+| --- | --- |
+| `name` | The scenario's name, which the run's records and report carry. |
+| `inputs` | Each input file a session finds under `inputs/`, by file name and value. A run writes the value followed by a newline, and a condition reads it with surrounding whitespace removed. |
+| `path` | The states a correct session enters, in order, held to the edges the diagram draws. |
+| `trace` | Optional. The sub-agent starts a correct run makes, as [Dispatch scenarios](#dispatch-scenarios) states. A scenario declaring none dispatches nothing. |
 
 A diagram form's `click` lines carry destinations relative to the document that writes them, so a node opens its section for a reader of the source tree and for a session in its workspace. GitHub draws a Mermaid fence in a frame of its own and resolves such a destination against that frame, so a diagram form's clicks open nothing in the blob view; the state documents sit beside the entry document all the same.
 
@@ -101,7 +108,7 @@ then `/login`.
 
 ## Isolation
 
-A session receives one form of one workflow and the instruction, so a pass measures the agent reading that form. Each mechanism below holds one part of that boundary; the first two are refused before a session starts, and the last is read back from each session's own transcript.
+A session receives one form of one workflow and the instruction, so a pass measures the agent reading that form. Each mechanism below holds one part of that boundary for the Claude harness; the first two are refused before a session starts, and the last is read back from each session's own transcript.
 
 | Mechanism | What it keeps out |
 | --- | --- |
@@ -159,7 +166,7 @@ The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; th
 
 A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 280 sessions at the 60 000-token session cap need 16 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
 
-The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor CLI accepts neither a spend cap nor a token cap, so a Cursor run is bounded by its timeout and by the run's guard alone.
+The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 
 The run's guard reads each session's reported tokens when it settles: a session starts only when the recorded tokens, plus the cap reserved for each session in flight, plus its own cap, fit the budget, and a run that cannot fit another lists the rest as not started. A session can record more than its cap, since its own CLI checks between calls, and the guard holds the budget against that by reserving caps in flight.
 

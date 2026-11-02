@@ -296,7 +296,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--harness",
         default="claude",
-        help="the agent CLI the run drives: claude or cursor",
+        help="the agent CLI the run drives: claude, cursor or opencode",
     )
     parser.add_argument(
         "--agent-command", help="the agent's command line, overriding the harness"
