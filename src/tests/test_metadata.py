@@ -10,7 +10,6 @@ from prosiform.diagnostics import Location
 from prosiform.limits import FILE_BYTES, SCALAR_DIGITS
 from prosiform.metadata import (
     Conversion,
-    Exclusion,
     InvalidMetadata,
     Membership,
     Preset,
@@ -87,16 +86,12 @@ def test_every_key_names_a_preset_holding_a_mapping() -> None:
     result = parse(
         "prosiform:\n"
         "  default: {group-depth: [{rules: 2}]}\n"
-        "  Target: {subst: [{checks.md: stub.md}]}\n"
-        "  checks: {exclude: [Draft]}"
+        "  Target: {subst: [{checks.md: stub.md}]}"
     )
-    assert [one.name for one in result.presets] == ["default", "Target", "checks"]
+    assert [one.name for one in result.presets] == ["default", "Target"]
     assert joined(result) == [("rules", 2)]
     assert result.presets[1].substs == (
         Subst("checks.md", "stub.md", Location("rules/a.md", 4, 20)),
-    )
-    assert result.presets[2].exclusions == (
-        Exclusion("Draft", None, Location("rules/a.md", 5, 22)),
     )
 
 
@@ -110,7 +105,7 @@ def test_a_preset_key_holding_anything_but_a_mapping_is_refused(value: str) -> N
     assert diagnostic.location == Location("rules/a.md", 3, 11)
 
 
-@pytest.mark.parametrize("field", ["group-depth", "exclude", "subst"])
+@pytest.mark.parametrize("field", ["group-depth", "subst"])
 def test_a_field_outside_its_preset_names_the_preset_it_belongs_in(
     field: str,
 ) -> None:
@@ -133,7 +128,7 @@ def test_an_empty_preset_states_nothing() -> None:
     )
 
 
-@pytest.mark.parametrize("field", ["group-depth", "exclude", "subst"])
+@pytest.mark.parametrize("field", ["group-depth", "subst"])
 def test_a_list_field_holds_a_list(field: str) -> None:
     assert parse(preset(f"{field}: []")).default == Preset("default")
     with pytest.raises(InvalidMetadata) as caught:
@@ -214,60 +209,6 @@ def test_a_malformed_group_entry_is_refused_at_the_entry(
     assert f"prosiform.default.group-depth[{at}] must" in diagnostic.message
     column = text.rindex(entry) + 1
     assert diagnostic.location == Location("rules/a.md", 2, column)
-
-
-def excluded(entries: str) -> list[tuple[str, int | None]]:
-    """Each section the `default` preset's `exclude` names, with its level."""
-    conversion = parse(preset("exclude: [" + entries + "]"))
-    return [(one.name, one.level) for one in conversion.default.exclusions]
-
-
-def test_an_exclude_list_holds_names_and_levels_together() -> None:
-    assert excluded('Draft, {Tests: 3}, "#Notes", {"Draft: old": 6}') == [
-        ("Draft", None),
-        ("Tests", 3),
-        ("#Notes", None),
-        ("Draft: old", 6),
-    ]
-    text = preset("exclude: [Draft, {Tests: 3}]")
-    assert parse(text).default.exclusions == (
-        Exclusion("Draft", None, Location("rules/a.md", 2, text.index("Draft") + 1)),
-        Exclusion("Tests", 3, Location("rules/a.md", 2, text.index("{Tests") + 1)),
-    )
-
-
-@pytest.mark.parametrize(
-    "entries,at,entry,said",
-    [
-        ("{Tests: 3, Draft: 3}", 0, "{Tests: 3, Draft: 3}", "must be a section name"),
-        ("Draft, {}", 1, "{}", "must be a section name"),
-        ("{3: 1}", 0, "{3: 1}", "must name its section with a string key"),
-        ("{null: 1}", 0, "{null: 1}", "must name its section with a string key"),
-        ("3", 0, "3", "must be a section name"),
-        ("true", 0, "true", "must be a section name"),
-        ("null", 0, "null", "must be a section name"),
-        ("[Draft]", 0, "[Draft]", "must be a section name"),
-        ('""', 0, '""', "must name a section printable, single-line and nonblank"),
-        ('" "', 0, '" "', "must name a section printable, single-line and nonblank"),
-        ('"a\\nb"', 0, '"a\\nb"', "must name a section printable"),
-        ('{"": 2}', 0, '""', "must name a section printable"),
-        ("{Tests: 0}", 0, "0", "for section 'Tests' must be a heading level"),
-        ("{Tests: 7}", 0, "7", "for section 'Tests' must be a heading level"),
-        ("{Tests: 2.0}", 0, "2.0", "for section 'Tests' must be a heading level"),
-        ('{Tests: "3"}', 0, '"3"', "for section 'Tests' must be a heading level"),
-        ("{Tests: true}", 0, "true", "for section 'Tests' must be a heading level"),
-    ],
-)
-def test_a_malformed_exclude_entry_is_refused_naming_it(
-    entries: str, at: int, entry: str, said: str
-) -> None:
-    text = preset("exclude: [" + entries + "]")
-    with pytest.raises(InvalidMetadata) as caught:
-        parse(text)
-    diagnostic = caught.value.diagnostic
-    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
-    assert f"prosiform.default.exclude[{at}] {said}" in diagnostic.message
-    assert diagnostic.location == Location("rules/a.md", 2, text.rindex(entry) + 1)
 
 
 def test_a_subst_entry_is_a_colon_pair() -> None:
@@ -485,7 +426,7 @@ def test_duplicate_diagnostic_formats() -> None:
 
 
 def test_error_marks_and_no_related() -> None:
-    text = preset('exclude: ["x"], prosiform-bad: "x"')
+    text = preset('subst: [{x: y}], prosiform-bad: "x"')
     with pytest.raises(InvalidMetadata) as caught:
         parse(text)
     column = text.index("prosiform-bad") + 1
@@ -513,7 +454,7 @@ def test_extreme_canonical_duplicates(first: str, second: str) -> None:
 
 
 def test_tab_and_unicode_column() -> None:
-    text = preset('exclude: ["\t"], prosiform-bad: x')
+    text = preset('subst: [{"\t": y}], prosiform-bad: x')
     with pytest.raises(InvalidMetadata) as caught:
         parse(text)
     column = text.index("prosiform-bad") + 1
