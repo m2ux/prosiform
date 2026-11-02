@@ -2,7 +2,8 @@
 
 It runs in a session's workspace and takes the agent's options, which it
 records and otherwise ignores. It recognises the workflow by the state
-headings its workspace's documents hold, walks that workflow's diagram for
+headings its workspace's documents hold, at whatever level a group placed
+them, walks that workflow's diagram for
 the inputs under `inputs/`, and writes the walk to `trace.log` with every
 state's action, as a correct agent would. It then prints a stream-json
 transcript ending in a `result` message carrying usage and a cost.
@@ -62,7 +63,7 @@ STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
 HANDED_TRACE = re.compile(re.escape(SUB_AGENT_TRACE).replace(r"\{section\}", r"(\S+?)"))
 """The sub-agent trace a `Task` prompt names, the section's name its group."""
 
-HEADING = re.compile(r"^# (\w+)$", re.MULTILINE)
+HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 
 
 def held(workspace: Path) -> list[str]:
