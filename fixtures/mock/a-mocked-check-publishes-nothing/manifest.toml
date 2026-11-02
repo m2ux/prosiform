@@ -1,4 +1,4 @@
-description = "A mapping applies under -c, which publishes nothing and reports the substitution exactly as a publishing run does, because a mocked check is how the substitution is exercised in continuous integration and a mapping that quietly stopped applying there would quieten every mocked run without failing one."
+description = "A subst pair applies under -c, which publishes nothing and reports the substitution exactly as a publishing run does, because a check is how a substitution is exercised in continuous integration and a pair that quietly stopped applying there would quieten every substituted run without failing one."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-c", "-m", "rules.md=stand-in.md", "guide.md"]
+arguments = ["-c", "guide.md"]
 
 [expected]
 exit_status = 0

@@ -1,5 +1,5 @@
 ---
-prosiform: {}
+prosiform: {default: {subst: [{rules.md: stub.md}]}}
 ---
 # Guide
 

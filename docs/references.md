@@ -28,9 +28,9 @@ A bundle carrying any of these is still a successful run, and warns once that a 
 
 ## The substitution mapping
 
-`-m ORIGINAL=ALTERNATIVE` redirects a reference, so a bundle can be built against stand-in material without the tree under test being edited. It is given once per pairing. A `subst` pair of a document's presets in force, as [Sources](sources.md) states, redirects the links that document writes by the same lookup, and holds over a command-line key naming the same identity for those links. A pair is used only by a link in content the run selected, so a pair whose only link sits in a heading outside the selection warns with `W_SUBST_UNUSED`, as a pair no link names does, naming its document. An entry reference is written by no document, so no pair redirects it: the run compiles the document it names and is named for the path the caller wrote.
+A `subst` pair of a document's presets in force, as [Sources](sources.md) states, redirects a link that document writes, so a bundle can be built against stand-in material without the tree under test being edited. An entry reference is written by no document, so no pair redirects it: the run compiles the document it names and is named for the path the caller wrote. A pair is used only by a link in content the run selected. A pair a link used warns with `W_SUBST_USED`, naming the link, the identity it would have resolved to and the substitute, and a pair no link used, a pair whose only link sits in a heading outside the selection included, warns with `W_SUBST_UNUSED`, naming its document.
 
-A key is the identity a reference normalized to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document, which covers the document and every fragment of it. Both sides resolve from the working directory, as a positional entry does, so a substitute kept beside the invocation is reachable wherever the writing source sits — which is the case the parameter exists for.
+A key is the identity a reference normalized to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document, which covers the document and every fragment of it. Both sides resolve from the declaring document's directory, as every other path it writes does, so one declaration reads the same wherever the run starts, and a side carrying `..` reaches a substitute above the working directory.
 
 The substitute is the target outright: its title, its group and depth, its own declaration and its own links are the ones the run uses, and the bundle reads as if the author had written its path in the link.
 
@@ -40,15 +40,15 @@ The mapping is consulted on the identity a reference normalized to, before the t
 flowchart TD
   Ref["a reference in selected content"] --> Scheme{"carries a scheme<br/>or an authority?"}
   Scheme -- yes --> Text["text: carried as authored, never opened"]
-  Scheme -- no --> Mapped{"a mapping key names<br/>its identity?"}
-  Mapped -- yes --> Sub["substitute: read from the invocation<br/>working directory"]
+  Scheme -- no --> Mapped{"a subst key of the writing<br/>document names its identity?"}
+  Mapped -- yes --> Sub["substitute: resolved from<br/>the declaring document"]
   Mapped -- no --> Declares{"names a Markdown document<br/>that declares prosiform?"}
   Declares -- no --> Text
   Declares -- yes --> Dep["dependency: followed,<br/>bundled, rewritten"]
   Sub --> Dep
 ```
 
-*Figure 1. A Mapping Key Is Asked First, Then the Target's Declaration Decides What a Reference Becomes.*
+*Figure 1. A Subst Key Is Asked First, Then the Target's Declaration Decides What a Reference Becomes.*
 
 ## Selection by reference
 

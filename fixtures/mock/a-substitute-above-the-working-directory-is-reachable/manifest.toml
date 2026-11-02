@@ -1,14 +1,14 @@
-description = "A mock value carrying a parent segment reaches a substitute beside the source tree, above the working directory the run reads from, which is what the parameter exists for, and the run states the substitution it performed."
+description = "A subst alternative carrying a parent segment, resolved from the declaring document, reaches a substitute beside the source tree and above the working directory the run reads from, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
-  "Link classification and resource handling — The substitution mapping, both sides read from the working directory",
+  "Link classification and resource handling — The substitution mapping, each side resolved from the directory of the declaring document",
   "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "rules.md=../stand-in.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
