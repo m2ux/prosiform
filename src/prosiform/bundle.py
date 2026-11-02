@@ -277,14 +277,15 @@ class Group:
     answers to that heading's fragment as well, which is held apart
     because the heading itself is not emitted.
 
-    The order is the path of the first document the group carries in
-    placement order, which is where the bundle places the group.
+    The level is the one its opening heading takes: H1 for a group at
+    the top level of the bundle, and one level deeper for each division
+    enclosing a nested group.
     """
 
     parts: tuple[str, ...]
     record: Record
-    order: str
     wrapped: bool = True
+    level: int = 1
 
     @property
     def filed(self) -> bool:
@@ -1040,7 +1041,6 @@ def group(
     return Group(
         tuple(emitted),
         Record(path, None, tuple(emitting_headings), tuple(recorded)),
-        path,
         wrapped=not situate,
     )
 

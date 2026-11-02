@@ -122,6 +122,7 @@ def built(
         requested,
         None,
         {path: () for path in selected},
+        {},
     )
     assigned = fragments([one for each in headed for one in each.headings])
     targets = destination_map(headed, assigned)
@@ -133,6 +134,7 @@ def built(
         requested,
         targets,
         {path: () for path in selected},
+        {},
     )
     bundled = assemble(groups)
     return Built(bundled, groups, assigned, targets, read, parsed)
@@ -416,7 +418,7 @@ def test_a_recorded_level_beyond_the_sixth_fails() -> None:
 
 def test_a_source_heading_recorded_at_the_group_level_fails() -> None:
     one = built({"guide.md": GUIDE, "note.md": HEADED}, ["guide.md"])
-    wrapped = next(each for each in one.groups if each.order != "guide.md")
+    wrapped = next(each for each in one.groups if each.record.path != "guide.md")
     one.groups = [promoted(wrapped) if each is wrapped else each for each in one.groups]
     assert refused(one).invariant == GROUP_ISOLATION
 
@@ -480,7 +482,7 @@ def doubled(one: Group) -> Group:
 
 def test_a_generated_record_carries_no_source_range() -> None:
     one = built({"guide.md": GUIDE, "note.md": NOTE}, ["guide.md"])
-    wrapped = next(each for each in one.groups if each.order != "guide.md")
+    wrapped = next(each for each in one.groups if each.record.path != "guide.md")
     wrapper = wrapped.record.headings[0]
     assert isinstance(wrapper, Generated)
     assert not hasattr(wrapper, "origin")
