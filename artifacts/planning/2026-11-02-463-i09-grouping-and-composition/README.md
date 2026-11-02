@@ -32,6 +32,7 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E04 W09 work item](e04/w09.md) | Composition under presets and `subst` |
 | [E04 W10 work item](e04/w10.md) | The composition page |
 | [E04 W11 work item](e04/w11.md) | Contradicting composition plans refused |
+| [E04 W12 work item](e04/w12.md) | Arrow directives, self-composition and the sub-agent's first run |
 | [E05 W01 work item](e05/w01.md) | The whole-product review against the pinned design |
 | [E05 W02 work item](e05/w02.md) | The repository README brought to the build |
 | [E05 W03 work item](e05/w03.md) | The invocation guide brought to the build |

@@ -12,6 +12,7 @@ This record holds its delivery of `AC22,AC23,AC24`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W12 work item](w12.md) | Arrow directives, self-composition warning, and the first run a dispatched bundle states |
 
 ## Links
 
