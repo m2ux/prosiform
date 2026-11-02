@@ -21,5 +21,6 @@ This record holds its delivery of `AC13`: the work item, the validation evidence
 | Resource | Link |
 | --- | --- |
 | Epic | [I08:E06 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/461) |
+| Pull request | [#558](https://github.com/m2ux/prosiform/pull/558) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
