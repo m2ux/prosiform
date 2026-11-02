@@ -126,7 +126,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | I01 Field Refinement | https://github.com/m2ux/prosiform/issues/20 |
 | I03 Production Cut-Over | https://github.com/m2ux/prosiform/issues/10 |
 | I13 Production Build | https://github.com/m2ux/prosiform/issues/532 |
-| Composition theme board | https://github.com/users/m2ux/projects/18 |
+| Python theme board | https://github.com/users/m2ux/projects/18 |
 | Production theme board | https://github.com/users/m2ux/projects/19 |
 | Proposals board | https://github.com/users/m2ux/projects/16 |
 | pulldown-cmark issue #423 | https://github.com/pulldown-cmark/pulldown-cmark/issues/423 |
