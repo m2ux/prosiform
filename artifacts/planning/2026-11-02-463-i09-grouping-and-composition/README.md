@@ -62,6 +62,7 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E05 W29 work item](e05/w29.md) | The eval page stating the feature workflows and the proof |
 | [Joins](joins.md) | The candidate unit that ships as separate pull requests, and why |
 | [Change list](change-list.md) | The plan changes this run applied and held |
+| [A: agent review of #541](agent-review-541.json) | The agent review record of the I09:E02 integration pull request, by reviewed head and target |
 
 ## Goal
 
