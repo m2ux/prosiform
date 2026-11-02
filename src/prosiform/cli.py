@@ -640,9 +640,11 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
     mapping a key to an alternative of its own identity, or writing a key
     naming a section alone states a rule the run cannot apply as written,
     so each is invalid usage at the entry. A key names the document whose
-    references it redirects, which a section alone does not. Identities
-    are read from the declaring document, the reference that opened it
-    being `found`.
+    references it redirects, which a section alone does not. An
+    alternative naming no Markdown document is refused the same way,
+    because the reference it redirects could only be published as text.
+    Identities are read from the declaring document, the reference that
+    opened it being `found`.
     """
     for preset in conversion.presets:
         keys: dict[tuple[str, str | None], int] = {}
@@ -657,6 +659,15 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
                     pair.location,
                 )
             key = subst_identity(pair.original, found.path)
+            if not is_markdown(subst_identity(pair.alternative, found.path)[0]):
+                raise preset_refusal(
+                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
+                    f"names no Markdown document, so the reference it redirects "
+                    f"could only be published as text",
+                    "name a Markdown document or section as the alternative",
+                    found,
+                    pair.location,
+                )
             if key == subst_identity(pair.alternative, found.path):
                 raise preset_refusal(
                     f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
@@ -739,6 +750,113 @@ def agreed(
                         f"to {pair.alternative!r}",
                     ),
                 )
+
+
+@dataclass(frozen=True)
+class Governed:
+    """One `subst` pair in force for the links a document writes.
+
+    `preset` names the preset stating it, `pair` the entry as written and
+    `substitute` the reference its alternative resolves to from the
+    declaring document.
+    """
+
+    preset: str
+    pair: Subst
+    substitute: Reference
+
+
+def subst_reference(text: str, document: str) -> Reference:
+    """One `subst` alternative as the reference the run reads, from its document.
+
+    It resolves as a link the document writes resolves: from the
+    document's directory, a section alone naming a section of the
+    document itself, and opened through the walk from that directory.
+    """
+    base = posixpath.dirname(document)
+    found = resolve(text, base)
+    if not components(text).path:
+        return replace(found, path=document, walk=document)
+    return replace(found, walk=posixpath.join(base, found.walk or found.path))
+
+
+def governing(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> dict[str, dict[tuple[str, str | None], Governed]]:
+    """The `subst` pairs in force for the links each carried document writes.
+
+    A document's `default` pairs are in force wherever it is compiled,
+    and every preset a reference reaching it selects layers above them,
+    so a selected preset's pair holds over `default`'s for one key. The
+    presets one reference selects are held to agreeing first, and two
+    presets selected by different references reaching the document,
+    mapping one key to two alternatives, are refused the same way: the
+    document's links are written once, so the union would leave nothing
+    saying which alternative they resolve to.
+
+    A key is the identity its original names from the declaring document,
+    and only documents stating a pair in force appear.
+    """
+    table: dict[str, dict[tuple[str, str | None], Governed]] = {}
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        in_force = {
+            subst_identity(pair.original, path): Governed(
+                DEFAULT, pair, subst_reference(pair.alternative, path)
+            )
+            for pair in conversion.default.substs
+        }
+        above: dict[tuple[str, str | None], Governed] = {}
+        for reference in references:
+            title = selecting_title(parsed[path], reference, entries)
+            agreed(conversion, title, reference, path)
+            for preset in keywords(conversion, title):
+                for pair in preset.substs:
+                    one = Governed(
+                        preset.name, pair, subst_reference(pair.alternative, path)
+                    )
+                    first = above.setdefault(subst_identity(pair.original, path), one)
+                    if identity(first.substitute) != identity(one.substitute):
+                        raise disagreeing(first, one, path, reference)
+        in_force.update(above)
+        if in_force:
+            table[path] = in_force
+    return table
+
+
+def disagreeing(
+    first: Governed, later: Governed, document: str, reference: Reference
+) -> Failure:
+    """Two presets selected for one document mapping one key to two alternatives."""
+    return preset_refusal(
+        f"prosiform.{first.preset}.{SUBST} and prosiform.{later.preset}.{SUBST}, "
+        f"both selected for {document!r}, map {later.pair.original!r} to "
+        f"{first.pair.alternative!r} and {later.pair.alternative!r}",
+        "map the reference to one alternative in the presets selected for one document",
+        reference,
+        first.pair.location,
+        (
+            later.pair.location,
+            f"prosiform.{later.preset}.{SUBST} maps {later.pair.original!r} to "
+            f"{later.pair.alternative!r}",
+        ),
+    )
+
+
+def governed(
+    mapping: Substitution,
+    table: Mapping[str, Mapping[tuple[str, str | None], Governed]],
+) -> Substitution:
+    """The run's mapping with each document's pairs in force for its own links."""
+    return mapping.governed(
+        {
+            path: {key: one.substitute for key, one in pairs.items()}
+            for path, pairs in table.items()
+        }
+    )
 
 
 def marked(text: str) -> bool:
@@ -1883,6 +2001,10 @@ def traverse(
     as each figure is reached, so a run crosses a boundary at the point
     it crosses it rather than after building what it could not keep.
 
+    Each round reads every carried document's links under the `subst`
+    pairs its presets put in force, as the references found so far
+    select them, so a link is resolved under its own document's pairs.
+
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
     for the bundles the run compiles from them.
@@ -1927,7 +2049,9 @@ def traverse(
             )
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
-        for path, selecting in contributing(found).items():
+        carried = contributing(found)
+        mapping = governed(substitution, governing(read, parsed, carried, requested))
+        for path, selecting in carried.items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
                 tuple(regions(parsed[path])) if chosen is None else chosen.regions
@@ -1945,7 +2069,7 @@ def traverse(
                 chosen,
                 reached,
                 declarations,
-                substitution,
+                mapping,
             )
             for one in withheld(
                 path,
@@ -1954,7 +2078,7 @@ def traverse(
                 chosen,
                 reached,
                 declarations,
-                substitution,
+                mapping,
             ):
                 verify_cached(root, one, captured)
                 deferred.setdefault((one.path, one.fragment), one)
@@ -1965,7 +2089,7 @@ def traverse(
                 chosen,
                 reached,
                 declarations,
-                substitution,
+                mapping,
             ):
                 dispatching.setdefault(link.name, link)
             for one in required(
@@ -1975,7 +2099,7 @@ def traverse(
                 chosen,
                 reached,
                 declarations,
-                substitution,
+                mapping,
             ):
                 verify_cached(root, one, captured)
                 if (one.path, one.fragment, one.title) in titled:
@@ -3226,7 +3350,9 @@ class Compiled:
     warning, which only the run's entry raises and only once every
     bundle is compiled, takes its place between them. The unselected
     presets are those `unselected` returns for the documents the bundle
-    carries, which the run weighs against its other bundles'.
+    carries, which the run weighs against its other bundles'. The pairs
+    are those `governing` puts in force for the documents the bundle
+    carries, which the run weighs against every reference it resolved.
     """
 
     text: str
@@ -3236,6 +3362,7 @@ class Compiled:
     trailing: Sequence[Diagnostic]
     captured: Mapping[str, Capture]
     unselected: Mapping[str, tuple[str, ...]]
+    pairs: Mapping[str, Mapping[tuple[str, str | None], Governed]]
 
 
 def compiled(
@@ -3254,7 +3381,9 @@ def compiled(
     The mapping is the command line's and not the bundle's: a dispatched
     target's own bundle is compiled under every rule an entry's is, and
     the mapping is one of them, so a link inside a dispatched document
-    resolves the substitute the caller named.
+    resolves the substitute the caller named. Above it, each document's
+    links resolve under the `subst` pairs its own presets put in force
+    for the references this bundle carries.
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
@@ -3271,6 +3400,7 @@ def compiled(
                 f"the output folder {str(folder)!r} holds the input source "
                 f"{str(held)!r}"
             )
+    pairs = governing(read, parsed, contributing(found), requested)
     bundled, coinciding = compose(
         read,
         parsed,
@@ -3280,7 +3410,7 @@ def compiled(
         limits,
         bundle_file,
         declarations,
-        substitution,
+        governed(substitution, pairs),
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -3301,6 +3431,7 @@ def compiled(
         trailing,
         captured,
         unselected(read, parsed, contributing(found), requested),
+        pairs,
     )
 
 
@@ -3333,6 +3464,38 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
         )
         for path in sorted(left)
         for name in left[path]
+    ]
+
+
+def unused_pairs(
+    bundles: Iterable[Compiled], mapping: Substitution
+) -> list[Diagnostic]:
+    """One warning for each `subst` pair in force that no reference used.
+
+    A pair is in force for the links its declaring document writes, so
+    one no reference of the run named substitutes nothing. The warning
+    carries the key as its author wrote it as `source`, names the
+    declaring document and preset in its message, and carries no
+    location, in the order the bundles carry the documents and then the
+    order each preset is read in.
+    """
+    held: dict[tuple[str, tuple[str, str | None]], Governed] = {}
+    for one in bundles:
+        for path in sorted(one.pairs):
+            for key, pair in one.pairs[path].items():
+                held.setdefault((path, key), pair)
+    return [
+        Diagnostic(
+            WARNING,
+            f"the subst key {one.pair.original!r} of prosiform.{one.preset} in "
+            f"{path!r} names no reference the run resolved, so it substitutes "
+            f"nothing",
+            code=SUBST_UNUSED,
+            source=one.pair.original,
+            remedy="name an identity the declaring document links, or drop the pair",
+        )
+        for (path, key), one in held.items()
+        if not mapping.redirects.served(key)
     ]
 
 
@@ -3475,6 +3638,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         [
             *substituted(mapping),
             *unused(mapping),
+            *unused_pairs((first, *built.values()), mapping),
             *unused_presets((first, *built.values())),
         ],
     )

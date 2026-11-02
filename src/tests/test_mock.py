@@ -1280,3 +1280,115 @@ def test_the_candidate_comparison_reads_the_same_substitute() -> None:
         for children, at, one in carried(tokens, span)
     ]
     assert [one.destination for one in unmapped] == ["rules.md#escalation"]
+
+
+GOVERNED = Substitution({}).governed({"guide.md": {("rules.md", None): SUBSTITUTE}})
+
+
+def test_a_documents_pair_redirects_the_links_that_document_writes() -> None:
+    assert identity(inside("guide.md", "rules.md", GOVERNED)) == "stand-in.md"
+
+
+def test_a_documents_pair_leaves_another_documents_links_alone() -> None:
+    assert identity(inside("notes.md", "rules.md", GOVERNED)) == "rules.md"
+
+
+def test_a_documents_pair_holds_over_a_run_key_for_its_own_links() -> None:
+    other = Reference("other.md", "other.md", walk="other.md")
+    mapped = Substitution({("rules.md", None): other}).governed(
+        {"guide.md": {("rules.md", None): SUBSTITUTE}}
+    )
+    assert identity(inside("guide.md", "rules.md", mapped)) == "stand-in.md"
+    assert identity(inside("notes.md", "rules.md", mapped)) == "other.md"
+
+
+def test_a_documents_pair_records_to_the_runs_record() -> None:
+    mapped = Substitution({})
+    governed = mapped.governed({"guide.md": {("rules.md", None): SUBSTITUTE}})
+    inside("guide.md", "rules.md", governed, "guide.md:6")
+    assert [one.resolved for one in mapped.redirects.targets()] == ["stand-in.md"]
+    assert mapped.redirects.served(("rules.md", None))
+
+
+def presetted(tree: Path, presets: str) -> None:
+    """The tree's guide, declaring the presets given as its prosiform mapping."""
+    (tree / "guide.md").write_text(
+        f"---\nprosiform:\n{presets}---\n"
+        "# Guide\n\n## Keep\n\nSee [the rules](rules.md).\n"
+    )
+
+
+def test_a_default_pair_publishes_the_substitute_and_states_it(tree: Path) -> None:
+    presetted(tree, "  default:\n    subst: [{rules.md: stand-in.md}]\n")
+    status, published = invoke(tree, "guide.md")
+    assert status == 0
+    assert "# Stand-in" in published
+    assert "# Rules" not in published
+    _status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert [(one["code"], one["source"], one["resolved"]) for one in said] == [
+        ("W_SUBST_USED", "rules.md", "stand-in.md")
+    ]
+
+
+def test_a_selected_presets_pair_holds_over_defaults(tree: Path) -> None:
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    (tree / "entry.md").write_text(
+        DECLARED + "# Entry\n\n## Keep\n\n[guide](guide.md)\n"
+    )
+    presetted(
+        tree,
+        "  default:\n    subst: [{rules.md: other.md}]\n"
+        "  Keep:\n    subst: [{rules.md: stand-in.md}]\n",
+    )
+    status, published = invoke(tree, "entry.md")
+    assert status == 0
+    assert "# Stand-in" in published
+    assert "# Other" not in published
+
+
+def test_a_document_under_no_subst_compiles_its_links_as_authored(
+    tree: Path,
+) -> None:
+    presetted(tree, "  default:\n    group: {guides: 1}\n")
+    status, published = invoke(tree, "guide.md")
+    assert status == 0
+    assert "# Rules" in published
+    assert "# Stand-in" not in published
+
+
+def test_a_pair_no_link_names_warns_unused_naming_its_document(tree: Path) -> None:
+    presetted(tree, "  default:\n    subst: [{unrelated.md: stand-in.md}]\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 0
+    assert [(one["code"], one["source"]) for one in said] == [
+        ("W_SUBST_UNUSED", "unrelated.md")
+    ]
+    assert "prosiform.default in 'guide.md'" in said[0]["message"]
+    assert "location" not in said[0]
+
+
+def test_two_titles_selecting_disagreeing_pairs_are_refused(tree: Path) -> None:
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    (tree / "entry.md").write_text(
+        DECLARED + "# Entry\n\n## Plan\n\n[guide](guide.md)\n\n"
+        "## Review\n\n[guide](guide.md)\n"
+    )
+    presetted(
+        tree,
+        "  Plan:\n    subst: [{rules.md: other.md}]\n"
+        "  Review:\n    subst: [{rules.md: stand-in.md}]\n",
+    )
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "entry.md")
+    assert status == 2
+    assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
+    assert "prosiform.Plan.subst and prosiform.Review.subst" in said[0]["message"]
+
+
+def test_a_pair_whose_alternative_names_no_markdown_document_is_refused(
+    tree: Path,
+) -> None:
+    presetted(tree, "  default:\n    subst: [{rules.md: notes.txt}]\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 2
+    assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
+    assert "names no Markdown document" in said[0]["message"]

@@ -2827,7 +2827,10 @@ def test_a_subst_side_is_read_by_the_reference_grammar(
 
 
 def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> None:
-    """A side above the working directory, and one quoted for its colon, are read."""
+    """A side above the working directory, and one quoted for its colon, are read.
+
+    No link of the guide names a key, so each pair is admitted and warns unused.
+    """
     written(
         root,
         "guide.md",
@@ -2839,7 +2842,11 @@ def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> Non
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert run.diagnostics() == []
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        ("W_SUBST_UNUSED", "rules.md#Checks"),
+        ("W_SUBST_UNUSED", "a%20b.md"),
+        ("W_SUBST_UNUSED", "rules.md#Step 1: Setup"),
+    ]
 
 
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:
