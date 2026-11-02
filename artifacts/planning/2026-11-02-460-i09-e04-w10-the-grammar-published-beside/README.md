@@ -12,6 +12,9 @@ This record holds its delivery of `AC16`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W10 work item](w10.md) | The composition page and the stale descriptions it retires |
+| [Validation](validation.md) | T1 and T2 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
