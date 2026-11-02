@@ -1,5 +1,5 @@
 ---
-prosiform: {}
+prosiform: {default: {subst: [{rules.md: stand-in.md}]}}
 ---
 # Guide
 

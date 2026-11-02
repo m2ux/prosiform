@@ -1,0 +1,16 @@
+description = "A link written by a document whose governing presets state no subst is compiled as authored: guide.md links rules.md under a default preset stating none, so the bundle carries rules.md although stand-in.md sits beside it, and the run states no substitution."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Presets — default always applies",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

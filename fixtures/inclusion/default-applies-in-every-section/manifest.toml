@@ -1,4 +1,4 @@
-description = "A linked document's default stays in force beneath the preset a section title selects: the section Checks puts the Checks preset of rules.md in force above its default, and Checks states no group, so rules.md joins Modes, the group default pairs it with."
+description = "A linked document's default stays in force beneath the preset a section title selects: the section Checks puts the Checks preset of rules.md in force above its default, and Checks states no group, so rules.md joins Modes, the group default pairs it with. The Checks pair is in force for the links rules.md writes, none of which names notes.md, so it warns unused."
 
 clauses = [
   "Presets — default always applies",
@@ -14,4 +14,9 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "notes.md"
+message_contains = ["prosiform.Checks in 'rules.md'"]

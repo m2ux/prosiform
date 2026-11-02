@@ -1,0 +1,27 @@
+description = "A preset's subst pair declared in modes/plan.md as {../rules.md: ../stub.md} resolves both sides from the declaring file's directory, so a run started from the directory above, naming modes/plan.md, compiles stub.md in place of rules.md, as the declaration reads wherever the run starts."
+
+clauses = [
+  "Conversion metadata — subst holds colon pairs",
+  "Link classification and resource handling — The substitution mapping",
+  "Reference normalization and path identity",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/plan.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_plan.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "../rules.md"
+resolved = "stub.md"
+
+[expected.diagnostics.location]
+file = "modes/plan.md"
+line = 10
+column = 1
