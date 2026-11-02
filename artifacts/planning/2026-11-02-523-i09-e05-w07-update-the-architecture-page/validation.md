@@ -87,3 +87,9 @@ The glossary read term by term against the design at 4958ad38 and the build.
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'` at the branch head 0f1df83c exits 0: 1663 check tests, 1161 build tests, 498 of 498 fixtures, smoke, layout, tables, links (143 documents), vocabulary (49 terms), invocation (28 statements), conformance and independence.
 
 After merging `origin/i09/e05/main` into the branch, `make check` exits 0 with the same counts at 2dd66374 (base a7eae14c) and at f6135dec (base c59894e0); CI passes at both heads.
+
+## Task Merge
+
+- **Merged.** [#586](https://github.com/m2ux/prosiform/pull/586) merged into `i09/e05/main` at de59bf14 on 2026-11-02, CI green at its head f6135dec.
+- **Recorded.** #523 rows W07–W12 link #586 and carry Done; AC8–AC13 are ticked. Review pull request [#585](https://github.com/m2ux/prosiform/pull/585) cites #586 under References and carries its changes.
+- **Left open.** #588 stays unplaced for the user to decide.
