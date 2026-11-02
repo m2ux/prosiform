@@ -25,5 +25,6 @@ This record holds its delivery of `AC1, AC4, AC5, AC6, AC7, AC12`: the work item
 | Resource | Link |
 | --- | --- |
 | Epic | [I08:E06 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/461) |
+| Pull request | [#568](https://github.com/m2ux/prosiform/pull/568), merged into `i08/e06/main` at `6143af507` |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
