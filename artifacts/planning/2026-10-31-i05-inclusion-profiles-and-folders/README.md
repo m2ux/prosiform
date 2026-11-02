@@ -170,6 +170,10 @@ Each criterion is one epic's outcome at initiative grain, as [I08](https://githu
 
 ## Decisions
 
+- **I09:E03 Inherited Boundary is closed as superseded.** A document's boundary is derived from the links it writes, so a reaching parent's boundary governs nothing, and its settings criterion is I08:E01 AC5. (User, 2026-11-02.)
+- **I09:E00 Nested Grouping is closed.** A hierarchy comes from linked index documents under I09:E02's leaf-up placement; folder-derived headings had no tree needing them, and would return as a preset entry, never an option. (User, 2026-11-02.)
+- **I09:E02 keeps its example row and drops its preset-selection row.** W05 was delivered by I08:E01 W04 and W12; W04 stays after W01, because leaf-declared pairs keep the example outline only once a file's own pairs place its sections, and I08:E08 stays a byte-identical migration. (User, 2026-11-02.)
+- **A composed reference obeys the rules every link obeys.** Its containing heading selects the target's presets, the writer's `subst` redirects it, `include` and `exclude` never carve it because it names a section, and a target declaring no `prosiform` is refused. I09:E04 states its design clause first, as W00. (User, 2026-11-02.)
 - **Inclusion is target-side, on the frontmatter declaration.** A local Markdown link is a dependency when its target declares `prosiform`. (User, 2026-10-31.)
 - **No path boundary decides a link.** `prosiform.root` retires and a link outside every previous root is compiled when its target declares. (User, 2026-10-31.)
 - **A document's boundary is derived from its own links: the deepest directory holding each relative path it names.** (User, 2026-10-31.)
