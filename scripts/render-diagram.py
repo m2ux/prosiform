@@ -80,7 +80,8 @@ def card(x, y, width, title, body, output=False):
         if value:
             if label:
                 result.append(txt(x + 12, at, "H" + str(level), 11, MUTED))
-            color = AMBER if "¬" in value else LINK if islink else TEXT
+            operator = "¬" in value or "⇉" in value or "⫽" in value
+            color = AMBER if operator else LINK if islink else TEXT
             result.append(
                 txt(x + 38 + indent * 12, at, value, size, color, 500 if level else 400)
             )
