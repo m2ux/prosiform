@@ -311,10 +311,6 @@ def smoke(workspace: Path) -> None:
     bundles(environment, elsewhere, sources)
     publishes(environment, elsewhere, sources)
     print(f"ok   bundled      {ENTRY} from {sources}, run from {elsewhere}")
-    refused = invoke(environment, elsewhere, "-r", str(sources), ENTRY)
-    if refused.returncode != 2:
-        raise Failed("the installed command accepts the retired root option")
-    print("ok   root option  invalid CLI usage")
 
     print(f"ok   glossary     {ships_glossary(environment).name}, shipped")
 

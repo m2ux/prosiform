@@ -260,6 +260,7 @@ SOURCE_CHANGED_FAULT = "source-changed"
 INTERNAL_FAULT = "internal"
 CLEANUP_FAULT = "cleanup-refused"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
+FAULT_VARIABLE = "PROSIFORM_FAULT"
 
 DECIMAL = re.compile(r"^[0-9]+$")
 
@@ -847,12 +848,6 @@ def parser() -> Parser:
         default=TEXT,
         help=f"stderr diagnostics; default {TEXT}",
     )
-    grammar.add_argument(
-        "-x",
-        dest="fault",
-        choices=FAULTS,
-        help="inject a conformance run fault no source tree expresses; default none",
-    )
     for budget in BUDGETS:
         grammar.add_argument(
             budget.option,
@@ -911,7 +906,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
         for at, option in enumerate(token[1:], start=1):
             if option in "cCvh":
                 continue
-            if option in "odxFBIOTLNEm":
+            if option in "odFBIOTLNEm":
                 value = token[at + 1 :].removeprefix("=") or next(tokens, "")
                 if option == "d" and value in FORMATS:
                     selected = value
@@ -1310,6 +1305,25 @@ def recheck(root: Path, captured: dict[str, Capture]) -> None:
 
 class Faulted(Exception):
     """A fault the run was asked to perform on itself, and performed."""
+
+
+def conformance_fault(environment: Mapping[str, str]) -> str | None:
+    """The fault the run's environment asks it to perform on itself, if any.
+
+    Some outcomes the contract declares are facts about the run rather than
+    about any document it reads, so a conformance run names one in
+    `PROSIFORM_FAULT` and the run performs it. An environment carrying no
+    such variable asks for no fault. A value outside the three is refused
+    as invalid usage, so a mistyped setting fails rather than passing as a
+    run meeting no fault.
+    """
+    fault = environment.get(FAULT_VARIABLE)
+    if fault is None or fault in FAULTS:
+        return fault
+    raise usage_failure(
+        f"{FAULT_VARIABLE} holds {fault!r}, which names no fault; it admits "
+        f"{', '.join(FAULTS)}"
+    )
 
 
 def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
@@ -3324,6 +3338,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         publish("".join(f"{code}\n" for code in CODES), stdout)
         return SUCCESS
 
+    fault = conformance_fault(os.environ)
     if not options.references:
         raise usage_failure("at least one entry reference is required")
     if options.output == STANDARD_OUTPUT:
@@ -3360,10 +3375,10 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     except Refused as refused:
         raise Failure(INPUT_FAILURE, refused.diagnostic) from refused
     captured = captured_once(one.captured for one in (first, *built.values()))
-    if options.fault == SOURCE_CHANGED_FAULT:
+    if fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
-    if options.fault == INTERNAL_FAULT:
+    if fault == INTERNAL_FAULT:
         raise Faulted("the run was asked to fail in itself")
     deep = analysed(first.hops, single, onward)
     bundles = [
@@ -3384,7 +3399,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         budgets(options),
         reporter,
         options.check,
-        options.fault == CLEANUP_FAULT,
+        fault == CLEANUP_FAULT,
         [
             *substituted(mapping),
             *unused(mapping),

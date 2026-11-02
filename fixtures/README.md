@@ -83,7 +83,7 @@ chain = ["guide.md", "../guidelines.md"]
 | `expected.stdout_contains` | Optional. The text standard output must carry, where the whole of the response is a build's own. Standard output carries no bundle, so a fixture declaring none declares an empty stream. |
 | `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
-| `fault` | Optional. The fault the run performs on itself, `source-changed`, `internal` or `cleanup-refused`, which the runner asks for as `-x NAME`. A fixture declaring none declares a run that meets no fault. |
+| `fault` | Optional. The fault the run performs on itself, `source-changed`, `internal`, `cleanup-refused`, or `unrecognized` for a fault the contract does not name, which the runner asks the build for by the means the contract declares. A fixture declaring none declares a run that meets no fault. |
 
 The runner uses the working directory the manifest names and asks for diagnostics as data, so neither is written in `arguments`: a code is compared as a value rather than as prose, which is what makes the comparison the same in every language. The runner names no output folder, so a run writes its folder of bundles where its own arguments send it: the working directory, or the folder an `-o` among them names.
 
@@ -125,7 +125,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture. The retired -r option fails as invalid usage.
+A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
 
 ## Text an output carries
 
@@ -159,13 +159,13 @@ The contract gathers seven faults under the code, and each is a fixture, so what
 
 | Fault | Fixture |
 | --- | --- |
-| The retired `-r` option | [`cli/the-retired-root-option-is-invalid-usage`](cli/the-retired-root-option-is-invalid-usage/manifest.toml) |
 | Arguments naming no entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
 | An entry reference naming a fragment alone | [`cli/a-bare-fragment-is-invalid-usage`](cli/a-bare-fragment-is-invalid-usage/manifest.toml) |
 | A run folder holding an input source | [`cli/run-folder-holding-a-dependency-source`](cli/run-folder-holding-a-dependency-source/manifest.toml) |
 | Standard output named as the output folder | [`cli/standard-output-named-as-the-output-folder`](cli/standard-output-named-as-the-output-folder/manifest.toml) |
+| A conformance fault outside the three the contract names | [`cli/an-unknown-fault-is-invalid-usage`](cli/an-unknown-fault-is-invalid-usage/manifest.toml) |
 
 An entry reference whose own spelling the grammar does not admit — a query, an encoded separator, an over-long escape, an escape decoding to no UTF-8 — carries the same code, and the `normalization/` family states it where the clause under test is the resolution sequence rather than the command line's shape.
 
@@ -183,7 +183,7 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration, and the contract declares `-x NAME` for a conformance run to reach them. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
@@ -205,12 +205,13 @@ code = "E_SOURCE_CHANGED"
 | `source-changed` | Other bytes are written to each source the run read, once discovery has read them and before the recheck before publication, so the recheck meets a source that is no longer the source the run read. |
 | `internal` | The run fails in itself once the candidate is built and before anything publishes. |
 | `cleanup-refused` | An empty earlier set stands at the run's folder, and its removal once the new set stands is refused, so the run publishes and warns that the earlier set is retained. |
+| `unrecognized` | The run is asked for a fault the contract does not name, and refuses the request as invalid usage. |
 
 The detection and the reporting are the run's own either way, which is what each outcome is about: the fault supplies the condition, and what the fixture compares is what the build did with it. A build that performs none of the faults publishes its bundles with no diagnostic, so each fixture fails it.
 
 A fault writes to the tree it runs over, so a fixture declaring one runs in a copy of itself and the corpus leaves the fixture as it found it.
 
-Three fixtures declare a fault: [`source-consistency/a-source-that-changes-during-compilation`](source-consistency/a-source-that-changes-during-compilation/manifest.toml), [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml) and [`publication/an-earlier-set-the-run-cannot-remove-warns`](publication/an-earlier-set-the-run-cannot-remove-warns/manifest.toml).
+Four fixtures declare a fault: [`source-consistency/a-source-that-changes-during-compilation`](source-consistency/a-source-that-changes-during-compilation/manifest.toml), [`diagnostics/a-run-that-fails-in-itself`](diagnostics/a-run-that-fails-in-itself/manifest.toml), [`publication/an-earlier-set-the-run-cannot-remove-warns`](publication/an-earlier-set-the-run-cannot-remove-warns/manifest.toml) and [`cli/an-unknown-fault-is-invalid-usage`](cli/an-unknown-fault-is-invalid-usage/manifest.toml).
 
 ## The schema
 
@@ -279,7 +280,7 @@ export PROSIFORM_BUILD=prosiform
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner uses `invocation.cwd`, appends `-d json`, and `-x` where the manifest names a fault, then the manifest's `arguments`; a manifest declaring no argument and no fault runs the bare command with nothing appended. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

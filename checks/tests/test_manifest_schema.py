@@ -402,6 +402,13 @@ def test_a_manifest_naming_a_fault_validates() -> None:
         assert errors(manifest) == [], f"{named!r} refused as a fault a run performs"
 
 
+def test_a_manifest_naming_an_unrecognized_fault_validates() -> None:
+    """A fixture states the refusal of a fault the contract does not name."""
+    manifest = complete()
+    manifest["fault"] = "unrecognized"
+    assert errors(manifest) == []
+
+
 def test_a_manifest_naming_no_fault_validates() -> None:
     assert "fault" not in complete()
     assert errors(complete()) == []
