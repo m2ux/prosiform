@@ -140,7 +140,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **The example tree is not evidence.** (User, 2026-11-02.) It is removed by I08:E08 W00, so no row reads, maintains or proves on it.
 - **The documentation row is one row per page.** (Planning.) A row extends one component, so the user's single documentation row is twenty, each with one criterion naming its page and how agreement is shown.
 - **MVP order.** (User, 2026-11-02.) Initiative priority labels are I08 `priority: 4`, I09 `priority: 3`, I11 `priority: 2` and I10 `priority: 1`, so the MVP's I08 and I09 are delivered, then its release, then the evaluation work. I07 keeps its label. This supersedes the I09 `priority: 2` and I10 `priority: 1` decision above.
-- **E05 priority.** (User, 2026-11-02.) `priority: 1`. E02 and E04 keep `priority: 2` and `priority: 1` until the user confirms the derived 3 and 2.
+- **Epic priority by order.** (User, 2026-11-02.) E02 `priority: 3`, E04 `priority: 2`, E05 `priority: 1`, the order E05's edges set.
 - **Earlier decisions stand.** (User, 2026-11-02.) E00 and E03 are closed; an earlier E02 row was dropped as delivered by I08; a composed target declaring no `prosiform` is refused.
 
 ## MVP Proof
