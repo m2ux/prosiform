@@ -12,6 +12,9 @@ This record holds its delivery of `AC1, AC2, AC3, AC4`: the work item, the valid
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | Each file composed under its own pairs before its parent merges it |
+| [W02 work item](w02.md) | An intermediate group nested in its parent's result, and the one-group-per-contribution clause |
+| [Validation](validation.md) | Each test at the revisions it ran, and the re-recorded fixtures |
 
 ## Links
 
