@@ -8,7 +8,7 @@ The plan changes the I09 planning run applied and held.
 - **Folded work** — #455: restated to the invariant check; W00 design clause (AC1), W01 the check (AC2), W02 the validation page (AC3); the delivered reference rule and its criteria leave the epic.
 - **Task creation** — #458 W00: design clause covering new AC9.
 - **Task creation** — #458 W05: the hierarchy page, taking AC8 from W03.
-- **Folded work** — #458: W01 and W02 joined; W04 depends on W02; "`group-depth` pairs" replaces "group rules" in the title, Problem, Proposal and References.
+- **Folded work** — #458: W01 and W02 joined; W04 depends on W02; "`group` pairs" replaces "group rules" in the title, Problem, Proposal and References.
 - **Task creation** — #460 W10: the composition page, taking AC16 from W08; W08 keeps AC17 and depends on W02.
 - **Folded work** — #460: preset `include` and `exclude` dropped from the Proposal, AC20 deleted, W09 covers AC18 and AC19 and depends on I08:E01 W04 and I08:E06 W06.
 

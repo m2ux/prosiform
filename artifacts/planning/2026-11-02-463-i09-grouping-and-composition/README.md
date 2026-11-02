@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-I09 decides where each document arrives in a bundle's outline: a file's `group-depth` pairs place its own sections in the result its parent merges, a destination answers the one document a reference named, and a section a reference composes sits beneath the heading naming it.
+I09 decides where each document arrives in a bundle's outline: a file's `group` pairs place its own sections in the result its parent merges, a destination answers the one document a reference named, and a section a reference composes sits beneath the heading naming it.
 
 The initiative was split out of I05 with its epics raised as standalone issues and no work items. This record gives every row a work item and a declared component, adds the design-clause rows, checks the dependency graph, accounts for every candidate unit, traces each initiative criterion to the goal, and records what earlier work already delivered of the grouping-targets epic.
 
@@ -39,7 +39,7 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 The goal is the initiative's Overview: every document arrives under a heading a reader can find. Its clauses:
 
 - **G1.** A reference reaches the document it named.
-- **G2.** A file's `group-depth` pairs place its own sections, composed from the leaves up.
+- **G2.** A file's `group` pairs place its own sections, composed from the leaves up.
 - **G3.** A referenced section sits where it is named.
 
 ## Goal Trace
@@ -96,7 +96,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 - **E01 restated to enforcement.** (Planning, from the brief.) The delivered reference rule leaves the epic with its criteria; the invariant check and its page stay.
 - **Preset `include` and `exclude` removed.** (User, 2026-11-02.) E04 drops AC20 and its Proposal clause; W09 covers presets and `subst`.
-- **Vocabulary.** (User.) "`group-depth` pairs" replaces "group rules" in the initiative and E02, E02's title included.
+- **Vocabulary.** (User.) "`group` pairs" replaces "group rules" in the initiative and E02, E02's title included.
 - **Epic priority.** (User, 2026-11-02.) E01 `priority: 3`, E02 `priority: 2`, E04 `priority: 1`, as the dependency check proposes.
 - **E02's example row dropped as delivered.** (User, 2026-11-02.) I08:E01 W02 (commit `ea80ce79`) moved every pair onto its leaf. At the I08:E01 base [bb404015](https://github.com/m2ux/prosiform/tree/bb404015/example/work-planner), all 44 documents under `artifacts`, `protocols` and `references` declare one pair naming their own directory's group at depth 1, and none of the 15 others (`SKILL.md`, `configuration.md`, `conventions.md`, `guidelines.md`, `rules.md` and the ten modes) declares any pair. E02 drops the row and its two criteria; the hierarchy row becomes W04 and the criteria renumber to AC1–AC7.
 - **Initiative criteria are the clauses' outcomes.** (User, 2026-11-02.) One criterion per goal clause replaces the fixture, page, per-revision check and closure criteria; each epic row covers its clause's criterion.
