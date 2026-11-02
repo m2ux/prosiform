@@ -78,7 +78,7 @@ flowchart LR
 
 ## Hierarchy
 
-A bundle is one Markdown document, so everything in it shares one heading tree. Every contributing source becomes one top-level division, headed by its title, following the [**hierarchy**](hierarchy.md) rules for grouping and depth. Documents that declare one **group** in their metadata are merged under a single heading instead, and source headings move down a level beneath whichever heading they land under.
+A bundle is one Markdown document, so everything in it shares one heading tree. Every contributing source becomes one division, headed by its title, following the [**hierarchy**](hierarchy.md) rules for grouping and depth. Documents that declare one **group** in their metadata are merged under a single heading instead, which nests inside the division of the document whose link placed its first member, and source headings move down a level beneath whichever heading they land under.
 
 ```mermaid
 flowchart TB
