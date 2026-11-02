@@ -28,7 +28,7 @@ A bundle carrying any of these is still a successful run, and warns once that a 
 
 ## The substitution mapping
 
-A `subst` pair of a document's presets in force, as [Sources](sources.md) states, redirects a link that document writes, so a bundle can be built against stand-in material without the tree under test being edited. A preset is the only channel: a link written by a document whose presets in force state no `subst` is compiled as authored, and an entry reference is written by no document, so no pair redirects it. A pair a link used warns with `W_SUBST_USED`, naming the link, the identity it would have resolved to and the substitute, and a pair no link used warns with `W_SUBST_UNUSED`, naming its document.
+A `subst` pair of a document's presets in force, as [Sources](sources.md) states, redirects a link that document writes, so a bundle can be built against stand-in material without the tree under test being edited. An entry reference is written by no document, so no pair redirects it. A pair a link used warns with `W_SUBST_USED`, naming the link, the identity it would have resolved to and the substitute, and a pair no link used warns with `W_SUBST_UNUSED`, naming its document.
 
 A key is the identity a reference normalized to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document, which covers the document and every fragment of it. Both sides resolve from the declaring document's directory, as every other path it writes does, so one declaration reads the same wherever the run starts, and a side carrying `..` reaches a substitute above the working directory.
 
