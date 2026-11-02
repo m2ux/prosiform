@@ -18,6 +18,7 @@ This record holds its delivery of `AC3,AC4,AC5,AC6,AC7`: the work item, the vali
 | [W05](w05.md) | The work item for the checks README |
 | [W06](w06.md) | The work item for the docs index |
 | [Validation](validation.md) | Each page's read against the build, the claims corrected and added, and the `make check` run |
+| [Change list](changes.md) | The plan changes this session applied and held, and the debt it fixed |
 
 ## Links
 
