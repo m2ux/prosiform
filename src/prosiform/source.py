@@ -106,6 +106,7 @@ regions carries, each counted once where the source wrote it.
 import hashlib
 import json
 import re
+from bisect import bisect_right
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from itertools import pairwise
@@ -625,12 +626,16 @@ class Use:
     wrote rather than opening it, which an image is whatever file it
     points at: the alternative content of an image describes a picture,
     and no picture is a document the bundle can carry.
+
+    The title is the text of the heading whose section holds the use,
+    and is absent for a use in the preamble, which lies in no section.
     """
 
     destination: str
     opening: str
     line: int | None
     resource: bool
+    title: str | None = None
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
@@ -1150,11 +1155,22 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
 
     A diagram's link destination is written on its own line of the
     fence, so it is located at that line and opens with nothing.
+
+    Each use carries the title of the section holding it, read against
+    the whole document, since the heading rooting a selected region's
+    section need not be selected with it.
     """
+    held = sections(tokens)
+    starts = [line for line, _ in held]
+
+    def title(line: int | None) -> str | None:
+        at = 0 if line is None else bisect_right(starts, line)
+        return held[at - 1][1] if at else None
+
     for token in within(tokens, selected):
         if token.type == FENCE:
             for click in clicks(token):
-                yield Use(click.destination, "", click.line, resource=False)
+                yield Use(click.destination, "", click.line, False, title(click.line))
             continue
         if token.type != INLINE:
             continue
@@ -1166,7 +1182,8 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     "" if destination is None else str(destination),
                     opening_text(children, at),
                     line,
-                    resource=False,
+                    False,
+                    title(line),
                 )
             else:
                 destination = child.attrGet(SRC)
@@ -1174,8 +1191,23 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     "" if destination is None else str(destination),
                     alternative_text(child),
                     line,
-                    resource=True,
+                    True,
+                    title(line),
                 )
+
+
+def sections(tokens: Sequence[Token]) -> list[tuple[int, str]]:
+    """The line and text of each heading rooting a section, in source order.
+
+    A section is rooted by a document-level heading, so a heading a
+    container carries roots none and titles nothing beneath it.
+    """
+    rooting = {id(token) for token in regions(tokens)}
+    return [
+        (opening.map[0] + 1, visible(inline))
+        for opening, inline in headings(tokens)
+        if id(opening) in rooting and opening.map is not None
+    ]
 
 
 def events(

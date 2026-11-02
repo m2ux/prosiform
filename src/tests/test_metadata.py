@@ -148,6 +148,7 @@ def test_group_and_marks() -> None:
     ).default
     assert result.memberships == (
         Membership(
+            "default",
             " règles ",
             2,
             Location("rules/a.md", 5, 9),
