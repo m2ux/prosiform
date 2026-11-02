@@ -138,6 +138,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **The proof is the full default matrix.** (User, 2026-11-02.) One live run over every model, harness and form the default matrix runs.
 - **The proof is its own file.** (User, 2026-11-02.) The run is committed as `evals/diagram-following/mvp-proof.json` beside the baseline; `baseline.json` is I10:E00 W02's and stays untouched.
 - **The example tree is not evidence.** (User, 2026-11-02.) It is removed by I08:E08 W00, so no row reads, maintains or proves on it.
+- **Undelivered rows test on surviving checks.** (User, 2026-11-02.) With the example tree and its checks removed, a row's test cites a check that survives: E02 W01 re-records the corpus fixtures its order changes, and E02 W03 and AC5 rest on `make invocation`, `make links` and a read of the guide against the pinned design.
 - **The documentation row is one row per page.** (Planning.) A row extends one component, so the user's single documentation row is twenty, each with one criterion naming its page and how agreement is shown.
 - **MVP order.** (User, 2026-11-02.) Initiative priority labels are I08 `priority: 4`, I09 `priority: 3`, I11 `priority: 2` and I10 `priority: 1`, so the MVP's I08 and I09 are delivered, then its release, then the evaluation work. I07 keeps its label. This supersedes the I09 `priority: 2` and I10 `priority: 1` decision above.
 - **Epic priority by order.** (User, 2026-11-02.) E02 `priority: 3`, E04 `priority: 2`, E05 `priority: 1`, the order E05's edges set.
