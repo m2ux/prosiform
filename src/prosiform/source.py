@@ -222,6 +222,8 @@ DIAGRAM_READ = "diagram links"
 TEXT = "text"
 CODE_INLINE = "code_inline"
 LINK_OPEN = "link_open"
+LINK_CLOSE = "link_close"
+AUTOLINK = "autolink"
 IMAGE = "image"
 REFERENCE_USES = (LINK_OPEN, IMAGE)
 CONTAINER_OPEN = ("blockquote_open", "list_item_open")
@@ -629,6 +631,13 @@ class Use:
 
     The title is the text of the heading whose section holds the use,
     and is absent for a use in the preamble, which lies in no section.
+
+    The label is a link's whole text where that text is plain: text
+    events alone, entities and escapes already decoded. It is absent
+    where the text carries any other event — a code span, an emphasis,
+    a strikethrough, an image, a line break or raw HTML — and for an
+    autolink, an image and a diagram link, whose text no author wrote
+    as a label.
     """
 
     destination: str
@@ -636,6 +645,7 @@ class Use:
     line: int | None
     resource: bool
     title: str | None = None
+    label: str | None = None
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
@@ -644,6 +654,21 @@ def opening_text(children: Sequence[Token], at: int) -> str:
     if following is None or following.type != TEXT:
         return ""
     return following.content
+
+
+def plain_label(children: Sequence[Token], at: int) -> str | None:
+    """The text of the link opened at one position, where that text is plain."""
+    opening = children[at]
+    if opening.markup == AUTOLINK:
+        return None
+    held: list[str] = []
+    for child in children[at + 1 :]:
+        if child.type == LINK_CLOSE:
+            return "".join(held)
+        if child.type != TEXT:
+            return None
+        held.append(child.content)
+    return None
 
 
 def alternative_text(image: Token) -> str:
@@ -1184,6 +1209,7 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                     line,
                     False,
                     title(line),
+                    plain_label(children, at),
                 )
             else:
                 destination = child.attrGet(SRC)
