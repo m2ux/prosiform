@@ -31,10 +31,10 @@ The pairs below are the ones the dependency checker reports as eligible to share
 | Pair | Two pull requests because |
 | --- | --- |
 | E01:W01 and E01:W02 | prosiform holds presets alone, and group-depth is a list of pairs and group is refused. The two share no file and neither reads the other's work. |
-| E01:W01 and E01:W03 | prosiform holds presets alone, and the exclude and path-sub entry shapes. The two share no file and neither reads the other's work. |
-| E01:W02 and E01:W03 | group-depth is a list of pairs and group is refused, and the exclude and path-sub entry shapes. The two share no file and neither reads the other's work. |
+| E01:W01 and E01:W03 | prosiform holds presets alone, and the exclude and subst entry shapes. The two share no file and neither reads the other's work. |
+| E01:W02 and E01:W03 | group-depth is a list of pairs and group is refused, and the exclude and subst entry shapes. The two share no file and neither reads the other's work. |
 | E01:W02 and E01:W04 | group-depth is a list of pairs and group is refused, and selecting a preset by keyword and default. The two share no file and neither reads the other's work. |
-| E01:W03 and E01:W04 | the exclude and path-sub entry shapes, and selecting a preset by keyword and default. The two share no file and neither reads the other's work. |
+| E01:W03 and E01:W04 | the exclude and subst entry shapes, and selecting a preset by keyword and default. The two share no file and neither reads the other's work. |
 | E01:W04 and E01:W05 | selecting a preset by keyword and default, and the union of matched presets. The two share no file and neither reads the other's work. |
 | E01:W04 and E01:W06 | selecting a preset by keyword and default, and the unused-preset warning. The two share no file and neither reads the other's work. |
 | E01:W04 and E01:W07 | selecting a preset by keyword and default, and a deferred target keeping its preset. The two share no file and neither reads the other's work. |

@@ -6,18 +6,27 @@ The example tree and every corpus source declare their settings in presets. This
 
 A forty-four-file edit was a row of the epic that defined the fields it writes.
 
-- **It gated the epic it sat in.** The row depended on that epic's third row and on Declared Inclusion's sixth, which pulled it to level 4 and put a bulk edit inside the chain that defines the preset model.
-- **Its content depends on every epic here.** The tree's frontmatter must satisfy the inclusion rule, the preset shape, the `group-depth` and `path-sub` entries and the exclusion entry — so a row inside one epic will be edited by each later one until the last lands.
-- **It is one mechanical change, done once.** No field rule changes during it; the whole epic is a rewrite of declarations and a proof that the published bundles are unchanged.
-- **A failure here is unambiguous.** If an expected bundle changes, a field moved rather than a spelling, and that is a finding against whichever epic owns the field.
+- **It gated the epic it sat in.**
+  The row depended on that epic's third row and on Declared Inclusion's sixth, which pulled it to level 4 and put a bulk edit inside the chain that defines the preset model.
+- **Its content depends on every epic here.**
+  The tree's frontmatter must satisfy the inclusion rule, the preset shape, the `group-depth` and `subst` entries and the exclusion entry — so a row inside one epic will be edited by each later one until the last lands.
+- **It is one mechanical change, done once.**
+  No field rule changes during it; the whole epic is a rewrite of declarations and a proof that the published bundles are unchanged.
+- **A failure here is unambiguous.**
+  If an expected bundle changes, a field moved rather than a spelling, and that is a finding against whichever epic owns the field.
 
 ## Proposal
 
-- **The epic is the migration and nothing else.** Every document in `example/` and every corpus source states its settings in a preset, declares no `group` and no `root`, and the published bundles are byte-identical.
-- **It depends on the rows that settle the fields.** The tree is rewritten once its last field rule has landed: the rootless example tree, the preset that carries an exclusion, and the corpus moved to `path-sub`.
-- **The proof is the diff.** A changed expected bundle fails the run, so the epic is complete exactly when `make corpus` and `make examples` pass with unmodified expectations.
-- **The check that reads the declarations is rewritten here.** `checks/authoring.py`'s root reader went with Declared Inclusion; its division reader follows the same field and lands with the tree.
-- **The eval tree follows the same rule.** The diagram-following workflow documents declare to be included, and their forms must still bundle.
+- **The epic is the migration and nothing else.**
+  Every document in `example/` and every corpus source states its settings in a preset, declares no `group` and no `root`, and the published bundles are byte-identical.
+- **It depends on the rows that settle the fields.**
+  The tree is rewritten once its last field rule has landed: the rootless example tree, the preset that carries an exclusion, and the corpus stating its pairs as `subst`.
+- **The proof is the diff.**
+  A changed expected bundle fails the run, so the epic is complete exactly when `make corpus` and `make examples` pass with unmodified expectations.
+- **The check that reads the declarations is rewritten here.**
+  `checks/authoring.py`'s root reader went with Declared Inclusion; its division reader follows the same field and lands with the tree.
+- **The eval tree follows the same rule.**
+  The diagram-following workflow documents declare to be included, and their forms must still bundle.
 
 ## Work Breakdown
 
@@ -39,5 +48,4 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 
 ## References
 
-- **R0.** Epic — [I08:E08 Declared Tree](https://github.com/m2ux/prosiform/issues/465).
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the decisions and the epics whose fields this migrates to.
