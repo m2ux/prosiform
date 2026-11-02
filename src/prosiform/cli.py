@@ -128,8 +128,7 @@ from prosiform.limits import (
 from prosiform.metadata import (
     DEFAULT,
     INVALID_CONVERSION_METADATA,
-    PATH_SUB,
-    SUBSTITUTION,
+    SUBST,
     Conversion,
     InvalidMetadata,
     Membership,
@@ -196,6 +195,8 @@ STANDARD_OUTPUT = "-"
 BUNDLE_SUFFIX = ".bundle.md"
 RUN_FOLDER_SUFFIX = ".bundles"
 CURRENT_FOLDER = "."
+SUBSTITUTION = "="
+"""What separates an `-m` pair's original from its alternative."""
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
@@ -478,8 +479,8 @@ def mock(value: str) -> Pairing:
     return Pairing(entry(original), entry(alternative), marked(original))
 
 
-def path_subs(conversion: Conversion) -> None:
-    """Hold each `path-sub` side a document's presets state to the reference grammar.
+def substs(conversion: Conversion) -> None:
+    """Hold each `subst` side a document's presets state to the reference grammar.
 
     A side is read as every other reference is, so a side the grammar
     refuses, or one carrying a scheme or an authority and naming no
@@ -488,7 +489,7 @@ def path_subs(conversion: Conversion) -> None:
     from, so no base is needed to decide them.
     """
     for preset in conversion.presets:
-        for at, pair in enumerate(preset.path_subs):
+        for at, pair in enumerate(preset.substs):
             for side in (pair.original, pair.alternative):
                 try:
                     refusal = (
@@ -503,7 +504,7 @@ def path_subs(conversion: Conversion) -> None:
                     raise InvalidMetadata(
                         Diagnostic(
                             ERROR,
-                            f"prosiform.{preset.name}.{PATH_SUB}[{at}] side "
+                            f"prosiform.{preset.name}.{SUBST}[{at}] side "
                             f"{side!r} {refusal}",
                             INVALID_CONVERSION_METADATA,
                             location=pair.location,
@@ -980,7 +981,7 @@ def read_document(
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
-        path_subs(source.conversion)
+        substs(source.conversion)
     return Opened(source, len(data), captured)
 
 

@@ -36,10 +36,8 @@ GROUP = "group"
 """Refused: `group-depth` pairs each group with its depth in one entry."""
 DEPTH = "group-depth"
 EXCLUDE = "exclude"
-PATH_SUB = "path-sub"
-SUBSTITUTION = "="
-"""What separates a `path-sub` entry's original from its alternative."""
-FIELDS = (DEPTH, EXCLUDE, PATH_SUB)
+SUBST = "subst"
+FIELDS = (DEPTH, EXCLUDE, SUBST)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -115,11 +113,11 @@ class Exclusion:
 
 
 @dataclass(frozen=True)
-class PathSub:
-    """One `path-sub` entry: an `ORIGINAL=ALTERNATIVE` pair, each side as written.
+class Subst:
+    """One `subst` entry: an original reference mapped to its alternative.
 
-    The pair is split at its first `=`, and each side is a reference the
-    reference grammar reads. The location is the entry's.
+    Each side is held as written, a reference the reference grammar
+    reads. The location is the entry's.
     """
 
     original: str
@@ -134,13 +132,13 @@ class Preset:
     `memberships` holds each `group-depth` entry in written order, so the
     declaring document joins every group it names; a preset stating none
     leaves the document its individual file group. `exclusions` and
-    `path_subs` hold each `exclude` and `path-sub` entry in written order.
+    `substs` hold each `exclude` and `subst` entry in written order.
     """
 
     name: str
     memberships: tuple[Membership, ...] = ()
     exclusions: tuple[Exclusion, ...] = ()
-    path_subs: tuple[PathSub, ...] = ()
+    substs: tuple[Subst, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -537,7 +535,7 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         preset,
         tuple(_membership(preset, name, entry) for name, entry in entries(DEPTH)),
         tuple(_exclusion(name, entry) for name, entry in entries(EXCLUDE)),
-        tuple(_path_sub(name, entry) for name, entry in entries(PATH_SUB)),
+        tuple(_subst(name, entry) for name, entry in entries(SUBST)),
     )
 
 
@@ -651,16 +649,23 @@ def _exclusion(name: str, entry: _Node) -> Exclusion:
     return Exclusion(section.value, level, entry.location)
 
 
-def _path_sub(name: str, entry: _Node) -> PathSub:
-    """One `path-sub` entry, a string pairing two references at its first `=`."""
-    original, given, alternative = (
-        entry.value.partition(SUBSTITUTION) if entry.kind == "str" else ("", "", "")
+def _subst(name: str, entry: _Node) -> Subst:
+    """One `subst` entry, a single string key mapped to a string.
+
+    YAML splits a plain key at a colon followed by a space, so a side
+    holding one is quoted; the reference grammar reads each side as
+    YAML delivers it.
+    """
+    shape = (
+        "a mapping holding one original reference and its alternative, "
+        "as {rules.md: stub.md}"
     )
-    if not given or not original or not alternative:
+    original, alternative = _pair(name, entry, shape, "original reference")
+    if alternative.kind != "str" or not original.value or not alternative.value:
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            f"{name} must be one ORIGINAL=ALTERNATIVE string, each side a "
-            'reference, as "rules.md=stub.md"',
+            f"{name} must map a nonempty original reference to a nonempty "
+            "alternative written as a string",
             entry.location,
         )
-    return PathSub(original, alternative, entry.location)
+    return Subst(original.value, alternative.value, entry.location)
