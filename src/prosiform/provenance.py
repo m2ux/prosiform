@@ -79,6 +79,17 @@ Located = tuple[str, int, int]
 """One link, as its document, the line of content its inline block opens on and
 its position among the links that block writes."""
 
+Placing = tuple[Located, ...]
+"""The composing links whose compositions placed a region, outermost first.
+
+An authored region was placed by none. A composing link written inside a
+contribution places its own contribution beneath it, so one source link
+stands for as many contributions as there are chains reaching it.
+"""
+
+Contributing = dict[Placing, dict[Located, str]]
+"""Each composing link's destination, by the placing of the region it is in."""
+
 
 @dataclass(frozen=True)
 class Origin:
@@ -180,7 +191,8 @@ class Range:
     the group drops, so the content the range stands for is the rest.
 
     A composed range is a region of a section a directive placed beneath
-    the section writing it. Every directive contributes its own copy, so
+    the section writing it, and its placing names the directives whose
+    compositions placed it. Every directive contributes its own copy, so
     a composed range stands outside the group's own coverage and its own
     source order, and is held to its source's bytes alone.
     """
@@ -188,7 +200,12 @@ class Range:
     path: str
     lines: tuple[int, int]
     removed: tuple[int, ...]
-    composed: bool = False
+    placing: Placing = ()
+
+    @property
+    def composed(self) -> bool:
+        """Whether a directive's composition placed this range."""
+        return bool(self.placing)
 
     def kept(self) -> list[int]:
         """Each line of the source the bundle carries, in source order."""
