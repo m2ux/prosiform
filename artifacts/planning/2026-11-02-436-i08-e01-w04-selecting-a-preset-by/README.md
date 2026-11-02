@@ -12,6 +12,9 @@ This record holds its delivery of `AC2, AC3, AC4`: the work item, the validation
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | Keyword selection of a document's presets, `default` beneath it, and the title a command-line entry selects by |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
