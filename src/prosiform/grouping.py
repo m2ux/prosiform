@@ -133,6 +133,7 @@ from prosiform.provenance import (
     Carried,
     Emitted,
     Generated,
+    Located,
     Origin,
     Part,
     Range,
@@ -275,6 +276,7 @@ def prepared(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
+    composing: Mapping[Located, str] | None = None,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -326,6 +328,7 @@ def prepared(
             dispatching,
             first_line,
             substitution,
+            composing,
         )
     )
     member = Member(

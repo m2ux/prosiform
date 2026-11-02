@@ -41,6 +41,7 @@ from prosiform.cli import (
     destination_map,
 )
 from prosiform.closure import Reference
+from prosiform.composition import contributions
 from prosiform.limits import NESTING
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
@@ -50,6 +51,7 @@ from prosiform.provenance import (
     Carried,
     Generated,
     Instruction,
+    Located,
     Origin,
     Range,
     Record,
@@ -70,6 +72,7 @@ class Built:
     targets: dict[tuple[str, str | None], str]
     read: dict[str, Source]
     parsed: dict[str, list[Token]]
+    composing: dict[Located, str]
 
     def validate(self) -> None:
         """Run the validation pass over this candidate as a compilation does."""
@@ -81,6 +84,7 @@ class Built:
             self.read,
             self.parsed,
             BUDGET,
+            composing=self.composing,
         )
 
 
@@ -114,7 +118,7 @@ def built(
         for path in documents:
             selected.setdefault(path, []).append(Reference(path, path))
     selected = dict(sorted(selected.items()))
-    headed = assembled(
+    headed, placed = assembled(
         read,
         parsed,
         defined,
@@ -126,7 +130,8 @@ def built(
     )
     assigned = fragments([one for each in headed for one in each.headings])
     targets = destination_map(headed, assigned)
-    groups = assembled(
+    composing = contributions(placed, headed, assigned)
+    groups, _ = assembled(
         read,
         parsed,
         defined,
@@ -135,9 +140,10 @@ def built(
         targets,
         {path: () for path in selected},
         {},
+        composing=composing,
     )
     bundled = assemble(groups)
-    return Built(bundled, groups, assigned, targets, read, parsed)
+    return Built(bundled, groups, assigned, targets, read, parsed, composing)
 
 
 def named(reference: str) -> Reference:
@@ -213,6 +219,39 @@ A worked example:
 and a blank line inside the fence
 ```
 """
+
+
+COMPOSING = """# Guide
+
+## First step
+
+Read the detail [→](note.md#detail).
+
+## Second step
+
+Read it again [→](note.md#detail).
+"""
+
+
+def test_a_candidate_carrying_composed_sections_validates() -> None:
+    one = built({"guide.md": COMPOSING, "note.md": HEADED}, ["guide.md"])
+    one.validate()
+    assert one.bundled.count("The detail the note holds.") == 3
+    assert len(one.composing) == 2
+
+
+def test_a_directive_pointing_at_another_heading_fails() -> None:
+    one = built({"guide.md": COMPOSING, "note.md": HEADED}, ["guide.md"])
+    one.composing = {link: one.assigned[0] for link in one.composing}
+    assert refused(one).invariant == TARGET_INTEGRITY
+
+
+def test_a_contribution_whose_body_changed_fails() -> None:
+    one = built({"guide.md": COMPOSING, "note.md": HEADED}, ["guide.md"])
+    one.bundled = one.bundled.replace(
+        "The detail the note holds.", "The detail the note lost.", 1
+    )
+    assert refused(one).invariant == PRESERVATION
 
 
 def test_a_candidate_agreeing_with_its_provenance_validates() -> None:

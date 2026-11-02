@@ -100,6 +100,7 @@ from prosiform.diagnostics import (
     RelatedLocation,
 )
 from prosiform.provenance import (
+    COMPOSED_HEADINGS,
     DISPATCH_SECTION,
     FILENAME_WRAPPER,
     PROSIFORM_SECTION,
@@ -612,7 +613,17 @@ class Placing:
             self.level = wrapper.level
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
-            if isinstance(part, Ancestor | Generated):
+            if isinstance(part, Generated) and part.kind in COMPOSED_HEADINGS:
+                # A section a directive composes is content of the scope
+                # holding the directive, so it closes no section here.
+                self.headings.append(one.record.headings[at])
+                at += 1
+            elif isinstance(part, Range) and part.composed:
+                tokens = self.parsed[part.path]
+                held = len(carried_headings(tokens, region_of(tokens, part)))
+                self.headings.extend(one.record.headings[at : at + held])
+                at += held
+            elif isinstance(part, Ancestor | Generated):
                 self.flush(part.level)
                 self.level = part.level
                 self.headings.append(one.record.headings[at])
@@ -668,11 +679,17 @@ def subsections(
     level of the heading that follows it. The operators the bundle's
     links carry are read first, because the Prosiform section stating
     their protocols precedes every one of them.
+
+    A destination section and the contributions beneath it are content
+    of the scope that composes them, so they close no section, and a
+    dispatch a contribution carries points at the sub-section its
+    source's own region is given.
     """
     operators = {
         link.parallel
         for one in groups
         for part in one.record.ranges
+        if not part.composed
         for link in written_in(
             part.path,
             read[part.path],
