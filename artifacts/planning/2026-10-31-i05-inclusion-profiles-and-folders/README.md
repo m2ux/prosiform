@@ -32,6 +32,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [A: agent review of #521](agent-review-521.json) | The agent review record of the I08:E03 integration pull request, by reviewed head and target |
 | [A: agent review of #540](agent-review-540.json) | The agent review record of the I08:E04 integration pull request, by reviewed head and target |
 | [A: agent review of #550](agent-review-550.json) | The agent review record of the I08:E05 integration pull request, by reviewed head and target |
+| [A: agent review of #561](agent-review-561.json) | The agent review record of the I08:E06 integration pull request, by reviewed head and target |
 | [B: design clause](b-w00.md) | The clause, the term and the pin |
 | [B: presets only](b-w01.md) | `prosiform` holding presets and nothing else |
 | [B: divisions](b-w02.md) | `group-depth` as pairs, applied per reference |

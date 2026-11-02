@@ -1,0 +1,33 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/561",
+    "head": "f3b902c1f53d957bc2f3db193101d80a45049b9f",
+    "base": "00f166920ec242f3565376e06a8838de72f8dc34",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders/agent-review-561.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-02T15:30:00Z",
+    "scope": "Complete integration diff main...i08/e06/main, base 00f16692 (origin/main, carrying I08:E05 #550; Update Epic Base found the epic base already level, so nothing merged) to head f3b902c1: 147 files, carried by task merges #558 (W00, design pin and code rename), #563 (W01), #565 (W02, W06, W08), #566 (W07, W10), #568 (W03, W04, W05, W09, W11) and one review fix #570 (W12, merged as f3b902c1). Source read in the diff: closure.py Reference (folder removed), Redirect, Redirects keyed by (declaring document, key), Substitution (documents, writer, governed, unrecorded, writing, redirect: exact section then whole document), UNSUBSTITUTED, inside (writing(document)); cli.py substs (folder side, scheme refusals), subst_identity, stated_once (alternative naming no Markdown document), Governed, subst_reference, governing (default then selected presets, disagreement across references), disagreeing, governed, entry (no substitution), reading (folder diagnostics removed), diagnostic_format (o, d), traverse, compiled, substituted, unused_pairs, execute, the removed -m argument and Pairing/mock/missing/unused; bundle.py emitted_visible (unrecorded). Callers checked over the repository graph (gitnexus analyze and detect-changes --base-ref origin/main at the head; context of governing, traverse, Substitution.redirect): compiled and traverse -> governing; compiled -> traverse; inside -> redirect. Pages and checks read: invocation.md, docs/sources.md, docs/references.md, docs/glossary.md, checks.md, checks/README.md, Makefile, checks/tests/test_authoring.py; the removed checks/mock_scenarios.py and its tests; every new fixtures/inclusion substitution fixture and the rewritten fixtures/mock manifests; src/tests/test_cli.py and src/tests/test_subst.py. Behaviour probed beyond the corpus: a document reached first with no keyword and a round later from a section selecting a preset that overrides its default pair. Design pin: README names 187478e4, which carries E06's clauses (e7c0180b, 187478e4) and, before them, I09:E04's unmerged 601cba55 and 99bec9f7; no design commit carries E06's clauses without them, so the earliest carrying all of E06's is pinned, conformance passing there. Tree searched at the head for -m, --mock, mock_scenarios and W_MOCK_: only python3 -m and unittest.mock uses remain.",
+    "criteria": "AC1-AC15 of #461, all ticked. Re-verified at the reviewed tree by make check: AC1, AC5 and AC6 by make invocation and the tree search; AC2, AC3, AC7, AC8, AC9, AC10, AC11 and AC14 by their named fixtures under fixtures/inclusion passing in make corpus; AC4 by make corpus with every fixtures/mock fixture stating its pair in a default preset; AC12 by the Makefile and checks naming no mock scenario; AC13 by make conformance at pin 187478e4 with 0 declarations naming no clause; AC15 (added for #570) by fixtures/inclusion/a-pair-a-selected-preset-overrides-records-no-substitution, which passes at the head and, run against 6143af50, reports a second W_SUBST_USED naming draft-steps.md.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, steps, authoring, boundary, test 1569 passed, harness 1130 passed, corpus 432/432, smoke, layout, tables, links, vocabulary, invocation, conformance 355 clauses with 0 declarations naming no clause, independence) passed locally on the epic base 6143af50 before the fix (corpus 431/431, harness 1129), on the fix commit 4bf96f7c (corpus 432/432) and on the reviewed head f3b902c1, with PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf', run with full host permissions because the smoke wheel build resolves hatchling from PyPI. CI workflow Checks passed on 6143af50 (https://github.com/m2ux/prosiform/actions/runs/41462079948/job/125333438982), on the fix head 18afb143 (https://github.com/m2ux/prosiform/actions/runs/41464424697/job/125341449942) and on the reviewed head f3b902c1 (https://github.com/m2ux/prosiform/actions/runs/41464908423/job/125343127008).",
+    "findings": [
+      {
+        "description": "A traversal round recorded each substitution under the pairs the references found so far select. A reference found a round later selecting a preset whose pair holds over the default pair for the same key left the earlier record standing, so the run warned W_SUBST_USED for a substitute the bundle does not carry. Traversal now resolves through an unrecorded mapping and composition writes the record under the fixed point's pairs; the fixture a-pair-a-selected-preset-overrides-records-no-substitution covers it.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/570"
+      },
+      {
+        "description": "unused_pairs' docstring stated the warnings follow the order the bundles carry the documents, while the code orders each bundle's documents by path; and the substitution tests were still named test_mock.py. The docstring states the emitted order and the module is test_subst.py.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/570"
+      },
+      {
+        "description": "The design pin 187478e4 follows I09:E04's unmerged section-composition clauses 601cba55 and 99bec9f7, so main carries those clauses and the glossary's composition directive, which E06 W00 copied for make vocabulary, before I09:E04 delivers the behaviour. No design commit carries E06's clauses without them; conformance passes. I09:E04 brings the build to them.",
+        "severity": "nonblocking",
+        "disposition": "deferred",
+        "ticket": "https://github.com/m2ux/prosiform/issues/460"
+      }
+    ]
+  }
+]
