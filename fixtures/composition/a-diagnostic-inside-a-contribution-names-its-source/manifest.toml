@@ -1,0 +1,20 @@
+description = "A guide composes a section of a document in a subdirectory, and that section links notes.md#root-only. The notes beside the guide carry that heading; the notes beside the section's own document do not. The link resolves from its source's directory, so the run fails with a diagnostic naming the composed section's source and line, and publishes no bundle."
+
+clauses = [
+  "Section composition — The source of composed content",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_TARGET_NOT_FOUND"
+reference = "notes.md#root-only"
+source = "steps/read.md:8"
+chain = ["guide.md", "steps/read.md#inputs", "steps/notes.md#root-only"]

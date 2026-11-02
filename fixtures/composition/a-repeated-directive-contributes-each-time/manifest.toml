@@ -1,0 +1,20 @@
+description = "One step writes the same directive twice, once inline and once by reference, and a later step writes it again. Each occurrence contributes: the first step's Inputs destination section carries two Read contributions, the later step's carries its own, and each directive's link points at the contribution it placed. The guide also links each target document whole, so each keeps its own file group beside its contributions."
+
+clauses = [
+  "Section composition — Every occurrence composes",
+  "Section composition — Destination sections",
+  "Section composition — Contributions",
+  "Section composition — The directive's link",
+  "Section composition — Order",
+  "Section composition — Inline-only targets",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
