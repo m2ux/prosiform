@@ -1104,15 +1104,12 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     return selected
 
 
-def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
+def entry(text: str) -> Reference:
     """Normalize a positional reference, keeping the leading parents of a path above.
 
-    The mapping names what the reference resolves to instead, and is
-    read after the normalization: an entry reference is written in no
-    source, so the mapping applies to the identity the reference
-    normalized to rather than to anything a source decides.
-    An entry reference stands in no source, so a redirect of one is
-    recorded with no source position.
+    An entry reference is written by no document, so no `subst` pair
+    redirects it: the run compiles the document it names and is named
+    for the path the caller wrote.
     """
     try:
         found = resolve(text)
@@ -1135,7 +1132,7 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
             remedy="name a document under the invocation working directory",
             reference=text,
         )
-    return substitution.redirect(found)
+    return found
 
 
 def entered(requested: Sequence[Reference]) -> list[Reference]:
@@ -3582,7 +3579,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             "folder the run's bundles are written under"
         )
     mapping = substitution(options)
-    requested = [entry(reference, mapping) for reference in options.references]
+    requested = [entry(reference) for reference in options.references]
     for one in requested:
         if not one.path:
             raise usage_failure(
