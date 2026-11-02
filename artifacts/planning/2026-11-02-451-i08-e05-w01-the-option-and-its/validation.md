@@ -36,3 +36,7 @@ Evidence for each check the work items name, run in the task worktree with `PROS
 ## Repository check
 
 `make check` exits 0 at `cac9aaaa`: lock, lint, format, typecheck, steps, authoring, boundary, test, harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock scenarios.
+
+## Merge
+
+Continuous integration passed on `cac9aaaa`, and [#552](https://github.com/m2ux/prosiform/pull/552) merged into `i08/e05/main` as `6d9652b4`.
