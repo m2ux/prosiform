@@ -1,6 +1,6 @@
 ## Overview
 
-A Rust build of prosiform is the tool agents invoke, and it passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive bundling exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails. The build targets one tagged revision of the design and corpus, so later refinement does not move the contract under it.
+A Rust build of prosiform passes the fixture corpus without a fixture changing. It retains original source bytes and applies edits to identified spans, so untouched content and code examples survive bundling exactly. Before any of that work starts, the two parser viability gates the design names are answered by executed reproducers against a pinned parser version, with a recorded verdict and a recorded route for any gate the parser fails. The build targets one tagged revision of the design and corpus, so later refinement does not move the contract under it.
 
 ## Problem
 
@@ -17,9 +17,6 @@ A bundling the production build publishes must be trusted byte for byte, and the
 
 - **The event range is not the destination range.**
   An enclosing event carries a span for the construct, not for the destination inside it, so an edit placed from that span alone can fall outside the text it means to replace.
-
-- **An unpinned dependency changes the contract.**
-  Parser behaviour on duplicate definitions, offsets and option-controlled extensions is what the profile rests on, so an unpinned upgrade can change how existing source is interpreted.
 
 - **A contract read from a branch tip moves under the build.**
   Fixtures and design clauses that change while the build is written leave it satisfying no revision in particular.
@@ -41,23 +38,16 @@ A bundling the production build publishes must be trusted byte for byte, and the
 - **One tagged revision is the target.**
   The work names the tagged revision of the design and corpus it implements, and adopting a later one is a recorded decision.
 
-- **Both builds stay on one corpus.**
-  A differential run bundles each corpus input with both builds and compares the results, so a divergence is a defect in one of them rather than a silent difference.
-
-- **Versions are pinned after the fixtures pass.**
-  The parser, the slugging component and every other dependency take exact versions, chosen once the fixtures hold against them.
-
 ## Work Breakdown
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/11) | Parser Verdict | AC1 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/12) | Source-Range Adapter | AC2, AC3, AC10 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
+| [E01](https://github.com/m2ux/prosiform/issues/12) | Source-Range Adapter | AC2, AC3, AC8 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
 | [E02](https://github.com/m2ux/prosiform/issues/13) | Profile and Outline | AC4 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
 | [E03](https://github.com/m2ux/prosiform/issues/14) | Closure and Budgets | AC5 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
 | [E04](https://github.com/m2ux/prosiform/issues/15) | Destination Identity | AC6 | [E00](https://github.com/m2ux/prosiform/issues/11) | |
 | [E05](https://github.com/m2ux/prosiform/issues/16) | Validation and Delivery | AC7 | [E04](https://github.com/m2ux/prosiform/issues/15) | |
-| [E06](https://github.com/m2ux/prosiform/issues/17) | Differential Conformance | AC8, AC9 | [E05](https://github.com/m2ux/prosiform/issues/16) | |
 
 ## Acceptance Criteria
 
@@ -68,16 +58,14 @@ A bundling the production build publishes must be trusted byte for byte, and the
 - [ ] **AC5.** A bundling resolves its dependency closure and holds every limit the profile names, as the corpus's closure and limit fixtures show.
 - [ ] **AC6.** A published bundle carries one destination per rewritten reference and no original reference definition, as the corpus's destination and reference fixtures show.
 - [ ] **AC7.** A bundling that fails validation publishes nothing, exits nonzero and writes its diagnostic, as the corpus's failure fixtures show.
-- [ ] **AC8.** Both builds produce identical output for each corpus input, as the differential run shows.
-- [ ] **AC9.** Every dependency is pinned to an exact version against which the corpus passes, as the lockfile and that run show.
-- [ ] **AC10.** The build implements one tagged revision of the design and corpus, as the recorded target revision and the corpus run against it show.
+- [ ] **AC8.** The build implements one tagged revision of the design and corpus, as the recorded target revision and the corpus run against it show.
 
 ## Non-Goals
 
 - It does not open an issue or a pull request on another project.
 - It does not disable a parser resource protection to satisfy a gate.
 - It does not rewrite a corpus fixture to accommodate the production build without a recorded decision.
-- It does not replace the prototype, which stays in use as the differential oracle.
+- It does not move any caller from the prototype to the production build.
 - It does not fetch remote documents, resources or URLs.
 - It does not accept its own output as a source document.
 

@@ -727,3 +727,19 @@ Two commits merged straight to `main` changed what a bundle emits. `c4a281a` (PR
 **The build is left as it stands.** It produces the emission the two commits intended, and `invocation.md` already documents it. The row states the emission in the design and re-pins the corpus to it; it does not revert the build. Reverting would put back the behaviour the parent-merge work was written to replace.
 
 **I01 E08, Inherited Roots (issue 233), is cancelled.** Its three rows are not re-homed. The polymorphic root rule stays in the planning record at `2026-10-23-polymorphic-root-variants/`, where the implementation was deferred and the epic issue carried no delivered work. Root inheritance returns to the design when the refinement reaches it, not as a standing epic that holds an initiative open.
+
+## D62 — The Rust Work Has Its Own Theme Board
+
+The Rust initiatives and their epics carry `theme:production` and sit on [[P00] Production: The Contract Delivered in Rust](https://github.com/users/m2ux/projects/19), linked to `m2ux/prosiform`. The Markdown Bundling board holds the prototype's work. This supersedes D4.
+
+The two stages now carry enough initiatives that one queue mixes refinement of the prototype with the production build, and the Advance and Deliver runs for one board schedule both. The dependency D4 kept visible is held by the cross-initiative edges instead: the production build targets the tagged revision the refinement freezes, and cut-over depends on the build's last epic.
+
+## D63 — The Production Build and the Cut-Over Are Two Initiatives
+
+I03 holds the cut-over: differential conformance, corpus migration, release distribution, caller cut-over and the prototype's retirement to oracle-only. I13 holds the Rust build itself: the parser verdict through validation and delivery. The build epics keep their issue numbers under the I13 prefix; Differential Conformance becomes I03 E00, and its released-build task moves into Release Distribution so one epic owns the release.
+
+With its own board, a single initiative named for the whole production compiler restates the board's title and hides two different completion conditions: a build that passes the corpus, and callers that run it. Splitting them lets the build close on its criteria while the cut-over is still under way. The prototype stays as the differential oracle, as D1 and D3 require; retirement removes only its delivery path as `pf`.
+
+**Caller Cut-Over starts with the build's first epics.** Its caller inventory needs nothing else, so it carries no whole-epic prerequisite and takes the highest priority with Differential Conformance. Its later rows wait on Corpus Migration and Release Distribution through their task edges.
+
+**Distribution's platforms and channel are open.** The recommendation is release assets for the platforms the workspace's agents run on, installed by one documented command, with a package registry left for a later decision.

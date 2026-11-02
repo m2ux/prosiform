@@ -24,7 +24,8 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [Worked Example grouped](worked-example-grouped.md) | The same closure merged under `artifacts`, `modes` and `references`: three top-level groups, 13 names carrying variants and 41 ordinals |
 | [I00 initiative body](i00-initiative.md) | The local source for issue #2, the prototype initiative |
 | [I01 initiative body](i01-initiative.md) | The local source for issue #20, the refinement initiative |
-| [I02 initiative body](i02-initiative.md) | The local source for issue #10, the production initiative |
+| [I03 initiative body](i03-initiative.md) | The local source for issue #10, the production cut-over initiative |
+| [I13 initiative body](i13-initiative.md) | The local source for issue #532, the production build initiative |
 | [I00:E00 body](i00-e00.md) | The local source for issue #26, Project Foundation |
 | [I00:E01 body](i00-e01.md) | The local source for issue #3, Corpus Harness |
 | [I00:E02 body](i00-e02.md) | The local source for issue #4, Walking Skeleton |
@@ -41,13 +42,17 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E01 body](i01-e01.md) | The local source for issue #22, Specification Revision |
 | [I01:E02 body](i01-e02.md) | The local source for issue #195, Merged Groups |
 | [I01:E13 body](i01-e04.md) | The local source for issue #23, Specification Freeze |
-| [I02:E00 body](i02-e00.md) | The local source for issue #11, Parser Verdict |
-| [I02:E01 body](i02-e01.md) | The local source for issue #12, Source-Range Adapter |
-| [I02:E02 body](i02-e02.md) | The local source for issue #13, Profile and Outline |
-| [I02:E03 body](i02-e03.md) | The local source for issue #14, Closure and Budgets |
-| [I02:E04 body](i02-e04.md) | The local source for issue #15, Destination Identity |
-| [I02:E05 body](i02-e05.md) | The local source for issue #16, Validation and Delivery |
-| [I02:E06 body](i02-e06.md) | The local source for issue #17, Differential Conformance |
+| [I13:E00 body](i13-e00.md) | The local source for issue #11, Parser Verdict |
+| [I13:E01 body](i13-e01.md) | The local source for issue #12, Source-Range Adapter |
+| [I13:E02 body](i13-e02.md) | The local source for issue #13, Profile and Outline |
+| [I13:E03 body](i13-e03.md) | The local source for issue #14, Closure and Budgets |
+| [I13:E04 body](i13-e04.md) | The local source for issue #15, Destination Identity |
+| [I13:E05 body](i13-e05.md) | The local source for issue #16, Validation and Delivery |
+| [I03:E00 body](i03-e00.md) | The local source for issue #17, Differential Conformance |
+| [I03:E01 body](i03-e01.md) | The local source for issue #533, Corpus Migration |
+| [I03:E02 body](i03-e02.md) | The local source for issue #534, Release Distribution |
+| [I03:E03 body](i03-e03.md) | The local source for issue #535, Caller Cut-Over |
+| [I03:E04 body](i03-e04.md) | The local source for issue #536, Python Retirement |
 | [I00:E00:W01](i00-e00/w01.md) | The implementation plan for repository layout and readme |
 | [I00:E00:W02](i00-e00/w02.md) | The implementation plan for python environment and pinned dependencies |
 | [I00:E00:W03](i00-e00/w03.md) | The implementation plan for test runner and static checks |
@@ -107,10 +112,10 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E02 permutations](i01-e02/permutations) | The member shapes the arrangement is read against |
 | [I01:E13:W01](i01-e04/w01.md) | The implementation plan for deferral decisions for the remaining entries |
 | [I01:E13:W02](i01-e04/w02.md) | The implementation plan for freeze check and the tagged revision |
-| [I02:E00:W01](i02-e00/w01.md) | The implementation plan for definition-occurrence reproducer |
-| [I02:E00:W02](i02-e00/w02.md) | The implementation plan for reference-suppression reproducer |
-| [I02:E00:W03](i02-e00/w03.md) | The implementation plan for offset-iterator reproducer and version check |
-| [I02:E00:W04](i02-e00/w04.md) | The implementation plan for gate report and the recorded route |
+| [I13:E00:W01](i13-e00/w01.md) | The implementation plan for definition-occurrence reproducer |
+| [I13:E00:W02](i13-e00/w02.md) | The implementation plan for reference-suppression reproducer |
+| [I13:E00:W03](i13-e00/w03.md) | The implementation plan for offset-iterator reproducer and version check |
+| [I13:E00:W04](i13-e00/w04.md) | The implementation plan for gate report and the recorded route |
 
 ## Links
 
@@ -119,8 +124,10 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | Proposal | https://github.com/m2ux/prosiform/issues/1 |
 | I00 Prototype Compiler | https://github.com/m2ux/prosiform/issues/2 |
 | I01 Field Refinement | https://github.com/m2ux/prosiform/issues/20 |
-| I02 Production Compiler | https://github.com/m2ux/prosiform/issues/10 |
+| I03 Production Cut-Over | https://github.com/m2ux/prosiform/issues/10 |
+| I13 Production Build | https://github.com/m2ux/prosiform/issues/532 |
 | Composition theme board | https://github.com/users/m2ux/projects/18 |
+| Production theme board | https://github.com/users/m2ux/projects/19 |
 | Proposals board | https://github.com/users/m2ux/projects/16 |
 | pulldown-cmark issue #423 | https://github.com/pulldown-cmark/pulldown-cmark/issues/423 |
 | pulldown-cmark PR #845 | https://github.com/pulldown-cmark/pulldown-cmark/pull/845 |

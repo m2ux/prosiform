@@ -122,7 +122,7 @@ def clauses(path):
 
 def criteria():
     found = []
-    for path in sorted(HERE.glob("i0*.md")):
+    for path in sorted(HERE.glob("i[0-9][0-9]-*.md")):
         name = path.stem.replace("-initiative", "").upper().replace("-", ":")
         for line in path.read_text(encoding="utf-8").split("\n"):
             m = CRITERION.match(line)

@@ -6,16 +6,34 @@ Every normative clause of [the design](design.md) against the acceptance criteri
 
 | Measure | Value |
 | --- | --- |
-| Design clauses | 175 |
-| Acceptance criteria | 190 |
-| Clauses no criterion matches | 1 |
-| Clauses claimed as a set | 30 |
+| Design clauses | 227 |
+| Acceptance criteria | 250 |
+| Clauses no criterion matches | 19 |
+| Clauses claimed as a set | 22 |
 
 ## Clauses no criterion matches
 
 | Design section | Clause | Line |
 | --- | --- | --- |
 | Parser and source-preserving edits | Source model | [37](design.md#L37) |
+| CLI contract | -c | [100](design.md#L100) |
+| CLI contract | -d text\|json | [101](design.md#L101) |
+| Automatic output names | Entry, from the working directory | [146](design.md#L146) |
+| Automatic output names | work-planner/artifacts/epic.markdown | [151](design.md#L151) |
+| Automatic output names | ../library/guide.md | [152](design.md#L152) |
+| Bundle destinations | One document | [260](design.md#L260) |
+| Conversion metadata | Field | [370](design.md#L370) |
+| Presets | `profile` and `preset` are two terms | [404](design.md#L404) |
+| Metadata failures | E_INVALID_FRONTMATTER | [413](design.md#L413) |
+| Metadata failures | E_GROUP_CONFLICT | [415](design.md#L415) |
+| Metadata failures | E_SOURCE_SYMLINK | [416](design.md#L416) |
+| Metadata failures | E_TARGET_NOT_FOUND | [418](design.md#L418) |
+| Resource limits | -F | [527](design.md#L527) |
+| Resource limits | -B | [528](design.md#L528) |
+| Resource limits | -I | [529](design.md#L529) |
+| Resource limits | -T | [531](design.md#L531) |
+| Agent delivery contract | Clean Markdown | [560](design.md#L560) |
+| Post-compilation invariants | Destination stability | [609](design.md#L609) |
 
 ## Clauses claimed as a set
 
@@ -24,11 +42,6 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Design section | Clause | Claimed by |
 | --- | --- | --- |
 | Markdown and source-heading profile | Typography | I00:E02:AC5 |
-| CLI contract | --check | I00:E02:AC10 |
-| CLI contract | --diagnostics text\|json | I00:E08:AC5 |
-| Section extraction and output hierarchy | Subsections | I00:E03:AC1 |
-| Section extraction and output hierarchy | Containers | I00:E03:AC1 |
-| Compile before publishing | step 3 | the order the stages run in; each stage's obligation is stated in its own section |
 | Compile before publishing | step 6 | the order the stages run in; each stage's obligation is stated in its own section |
 | Compile before publishing | step 9 | the order the stages run in; each stage's obligation is stated in its own section |
 | Self-reference and ancestor-reference behavior | Shared dependency | I00:E04:AC2 |
@@ -38,18 +51,15 @@ A criterion binds these together rather than by name, or the clause states no ob
 | Frontmatter policy | step 4 | I00:E02:AC2 |
 | Frontmatter policy | step 5 | I00:E02:AC2 |
 | Frontmatter policy | step 6 | I00:E02:AC2 |
+| Resolution sequence | step 1 | I00:E04:AC6 |
 | Resolution sequence | step 2 | I00:E04:AC6 |
+| Resolution sequence | step 8 | I00:E04:AC6 |
 | Resolution sequence | guide.md | I00:E04:AC6 |
 | Resolution sequence | guide.md# | I00:E04:AC6 |
 | Resolution sequence | notes%23draft.md#run | I00:E04:AC6 |
 | Resolution sequence | notes%2523draft.md#run | I00:E04:AC6 |
 | Resolution sequence | sub/../guide.md#run | I00:E04:AC6 |
-| Resource limits | --max-files | I00:E04:AC7 |
-| Resource limits | --max-file-bytes | I00:E04:AC7 |
-| Resource limits | --max-input-bytes | I00:E04:AC7 |
-| Resource limits | --max-targets | I00:E04:AC7 |
-| Resource limits | --max-links | I00:E04:AC7 |
-| Validation and failure contract | Completeness | I00:E04:AC7 |
+| Resolution sequence | A source link whose target declares nothing | I00:E04:AC6 |
 | Exit status and JSON diagnostics | 0 | I00:E02:AC4 |
 | Exit status and JSON diagnostics | 1 | I00:E02:AC4 |
 | Exit status and JSON diagnostics | 2 | I00:E02:AC4 |
@@ -58,147 +68,189 @@ A criterion binds these together rather than by name, or the clause states no ob
 
 | Design section | Clause | Criteria |
 | --- | --- | --- |
-| Input and output contract | Entry references | I02:E03:AC2, I00:E11:AC5, I00:E07:AC1 |
-| Input and output contract | Whole documents | I02:E02:AC3, I00:E09:AC4, I00:E03:AC1 |
-| Input and output contract | Sections | I02:E02:AC3, I00:E03:AC1, I02:E02:AC7 |
-| Input and output contract | Recursive bundling | I00:E05:AC3, I00:AC1, I00:E04:AC1 |
-| Input and output contract | Continuous Markdown | I02:E03:AC1, I02:E01:AC5, I00:E09:AC3 |
-| Input and output contract | Groups | I02:E02:AC7, I00:E09:AC3, I02:E02:AC8 |
-| Input and output contract | Dependency order | I00:E04:AC9, I02:E02:AC8, I02:E02:AC7 |
-| Input and output contract | Entry line | I02:E04:AC6, I01:E04:AC1, I01:AC5 |
-| Input and output contract | Entry identity | I02:E03:AC4, I00:E04:AC3, I00:E04:AC13 |
-| Parser and source-preserving edits | Parsing authority | I02:E02:AC9, I02:E01:AC5, I02:E01:AC3 |
-| Parser and source-preserving edits | Source positions | I02:E04:AC3, I01:AC1, I00:E05:AC4 |
-| Parser and source-preserving edits | Coordinate mapping | I02:E01:AC2, I02:E01:AC1, I02:E05:AC4 |
-| Parser and source-preserving edits | Edits | I02:E01:AC4 |
-| Parser and source-preserving edits | Untouched content | I02:E01:AC3, I00:E06:AC2, I02:AC2 |
-| Parser and source-preserving edits | Validation | I00:AC4, I02:E06:AC4, I02:E05:AC1 |
-| Mandatory parser viability gates | Complete definition occurrences | I02:E04:AC3, I02:E00:AC1, I02:E01:AC1 |
-| Mandatory parser viability gates | Observable reference-resolution suppression | I02:AC3, I02:E01:AC5, I02:E00:AC3 |
-| Markdown and source-heading profile | Core syntax | I00:E03:AC4 |
-| Markdown and source-heading profile | Task lists | I02:E02:AC1 |
-| Markdown and source-heading profile | HTML | I00:E02:AC9, I02:E03:AC1, I02:E00:AC6 |
+| Input and output contract | Entry references | I00:E08:AC2, I13:E05:AC8, I13:E05:AC7 |
+| Input and output contract | Whole documents | I13:E02:AC3, I00:E09:AC4, I00:E03:AC1 |
+| Input and output contract | Sections | I13:E02:AC3, I00:E03:AC1, I00:E09:AC2 |
+| Input and output contract | Recursive bundling | I00:AC1, I13:E04:AC3, I01:E04:AC4 |
+| Input and output contract | Continuous Markdown | I00:E11:AC21, I13:E01:AC5, I00:E11:AC10 |
+| Input and output contract | Generated headings | I13:E02:AC8, I00:E09:AC4, I13:E02:AC7 |
+| Input and output contract | Groups | I13:E02:AC9, I13:E02:AC7, I00:E09:AC5 |
+| Input and output contract | Dependency order | I00:E09:AC4, I00:E09:AC3, I13:E02:AC8 |
+| Input and output contract | Entry identity | I13:E03:AC4, I00:E04:AC3, I00:E04:AC13 |
+| Parser and source-preserving edits | Parsing authority | I13:E02:AC9, I13:E01:AC5, I13:E01:AC3 |
+| Parser and source-preserving edits | Source positions | I13:E04:AC3, I01:AC1, I00:E11:AC21 |
+| Parser and source-preserving edits | Coordinate mapping | I13:E01:AC2, I13:E01:AC1, I13:E05:AC4 |
+| Parser and source-preserving edits | Edits | I13:E01:AC4, I00:E11:AC21, I00:E11:AC10 |
+| Parser and source-preserving edits | Untouched content | I13:E01:AC3, I00:E06:AC2, I13:AC2 |
+| Parser and source-preserving edits | Validation | I00:AC4, I13:E05:AC1, I13:E02:AC1 |
+| Mandatory parser viability gates | Complete definition occurrences | I13:E04:AC3, I13:E00:AC1, I13:E01:AC1 |
+| Mandatory parser viability gates | Observable reference-resolution suppression | I13:AC3, I13:E01:AC5, I13:E00:AC3 |
+| Markdown and source-heading profile | Core syntax | I00:E03:AC4, I13:E02:AC4, I00:E03:AC1 |
+| Markdown and source-heading profile | Task lists | I13:E02:AC1 |
+| Markdown and source-heading profile | HTML | I00:E02:AC9 |
 | Markdown and source-heading profile | Bare text | I00:E04:AC14 |
-| Markdown and source-heading profile | Unsupported extensions | I00:E02:AC7, I00:E04:AC14, I02:AC5 |
-| Markdown and source-heading profile | File suffixes | I00:E04:AC8, I02:E05:AC8, I02:E02:AC7 |
+| Markdown and source-heading profile | Unsupported extensions | I00:E02:AC7, I00:E04:AC14, I13:AC5 |
+| Markdown and source-heading profile | File suffixes | I00:E04:AC8, I13:E02:AC7, I01:E02:AC5 |
 | Markdown and source-heading profile | Encoding | I00:E02:AC8 |
-| CLI contract | --root DIR | I00:E11:AC5, I02:E03:AC2, I02:E02:AC9 |
-| CLI contract | --from DOC | I02:E05:AC8, I00:E05:AC8, I00:E04:AC9 |
-| CLI contract | -o, --output FILE | I00:E11:AC7, I02:E06:AC1, I02:E05:AC8 |
-| CLI contract | --group SLUG:DEPTH | I02:E02:AC7, I00:E09:AC3, I02:E02:AC9 |
-| CLI contract | --version | I02:E06:AC4, I02:AC1, I00:E07:AC4 |
-| CLI contract | --help | I02:E06:AC4, I02:E05:AC5, I00:E09:AC8 |
-| Explicitly linked source structure | Generic bundling | I02:E02:AC5, I01:E01:AC5, I01:AC8 |
-| Explicitly linked source structure | Explicit dependencies | I00:E04:AC16, I02:E02:AC9, I00:E11:AC5 |
-| Explicitly linked source structure | Reading versus execution | I02:E04:AC6, I00:E05:AC6 |
-| Section extraction and output hierarchy | Boundary | I02:E02:AC3, I00:E03:AC1 |
-| Section extraction and output hierarchy | Nested target | I00:E03:AC2, I00:E04:AC11, I00:E03:AC1 |
-| Section extraction and output hierarchy | Enclosing inclusion | I02:E02:AC4, I02:E02:AC5, I00:E09:AC1 |
-| Section extraction and output hierarchy | Source heading index | I00:E03:AC1, I02:E04:AC3, I02:E04:AC1 |
-| File-scoped hierarchy | Absorbed title | I02:E02:AC7, I00:E09:AC3, I00:E11:AC7 |
-| File-scoped hierarchy | Group shift | I02:E02:AC4, I00:E03:AC3, I00:E03:AC7 |
-| File-scoped hierarchy | Heading syntax | I00:E03:AC4, I02:E02:AC4, I02:E04:AC4 |
-| File-scoped hierarchy | Containers | I02:E05:AC2, I00:E08:AC1, I02:E02:AC6 |
+| CLI contract | -m ORIGINAL=ALTERNATIVE | I13:E02:AC9, I00:E11:AC22, I00:E11:AC10 |
+| CLI contract | -o DIR | I00:E01:AC1, I13:E02:AC9, I03:E02:AC3 |
+| CLI contract | -v | I13:AC1, I03:E02:AC3, I03:AC5 |
+| CLI contract | -h | I13:E05:AC5, I00:E09:AC8, I00:E02:AC4 |
+| Explicitly linked source structure | Generic bundling | I13:E02:AC5, I01:E01:AC5, I01:AC8 |
+| Explicitly linked source structure | Explicit dependencies | I00:E11:AC27, I00:E11:AC16, I00:E08:AC2 |
+| Explicitly linked source structure | Reading versus execution | I13:E04:AC6, I01:AC15, I00:E11:AC29 |
+| Section extraction and output hierarchy | Boundary | I13:E02:AC3, I00:E03:AC1 |
+| Section extraction and output hierarchy | Subsections | I13:E02:AC4, I00:E03:AC1 |
+| Section extraction and output hierarchy | Containers | I00:E03:AC1 |
+| Section extraction and output hierarchy | Nested target | I00:E03:AC2, I00:E03:AC1 |
+| Section extraction and output hierarchy | Enclosing inclusion | I13:E02:AC4, I13:E02:AC5, I00:E09:AC1 |
+| Section extraction and output hierarchy | Source heading index | I00:E03:AC1, I13:E04:AC3, I13:E04:AC1 |
+| File-scoped hierarchy | Absorbed title | I00:E09:AC4, I13:E02:AC8, I13:E02:AC7 |
+| File-scoped hierarchy | Group shift | I13:E02:AC4, I00:E03:AC3, I13:E02:AC8 |
+| File-scoped hierarchy | Heading syntax | I00:E03:AC4, I13:E02:AC4, I13:E04:AC4 |
+| File-scoped hierarchy | Containers | I13:E05:AC2, I13:E02:AC4, I00:E08:AC1 |
 | File-scoped hierarchy | Preamble | I00:E03:AC6 |
-| File-scoped hierarchy | Source order | I00:E03:AC6, I02:E02:AC5, I02:E02:AC4 |
-| File-scoped hierarchy | Depth overflow | I02:E02:AC5, I00:E09:AC1, I00:E03:AC3 |
-| Grouping | Group membership | I02:E02:AC7, I00:E09:AC3, I00:E03:AC7 |
-| Grouping | Group structure | I02:E02:AC8, I02:E02:AC7, I00:E09:AC3 |
-| Grouping | Verbatim names | I02:E02:AC7, I00:E09:AC3, I02:E04:AC5 |
-| Grouping | Document-keyed sections | I02:E02:AC8, I00:E09:AC4, I02:E04:AC5 |
-| Grouping | Variants by document | I02:E02:AC8, I00:E09:AC4, I02:E02:AC7 |
-| Grouping | Residual ambiguity | I02:E04:AC1, I00:E05:AC1 |
-| Grouping | Group naming | I02:E02:AC8, I02:E02:AC7, I00:E09:AC4 |
-| Grouping | Document content above the grouping depth | I00:E09:AC4, I02:E02:AC8, I02:E02:AC7 |
-| Grouping | Merged section references | I02:E04:AC5, I00:E09:AC6, I02:E02:AC8 |
-| Heading-only structural ancestors | Heading text | I02:E02:AC5, I00:E09:AC1, I00:E05:AC4 |
-| Heading-only structural ancestors | Provenance | I02:E05:AC1, I02:E03:AC5, I02:E02:AC5 |
-| Heading-only structural ancestors | Deduplication | I02:E02:AC5, I00:E09:AC1, I02:E02:AC8 |
-| Heading-only structural ancestors | Targets | I00:E04:AC10, I02:E02:AC5, I00:E09:AC1 |
-| Heading-only structural ancestors | Depth | I02:E02:AC4, I00:E03:AC3, I02:E02:AC9 |
-| Bundle destinations | One document | I02:E02:AC7, I02:E02:AC4, I00:E09:AC3 |
-| Bundle destinations | Ordinal assignment | I02:E04:AC1, I02:E02:AC7, I02:E02:AC5 |
-| Bundle destinations | Document destinations | I02:E02:AC4, I00:E09:AC4, I00:E05:AC8 |
-| Bundle destinations | Internal links | I02:E04:AC2, I00:E05:AC3 |
-| Bundle destinations | Visible headings | I02:E02:AC4, I00:E09:AC5, I00:E03:AC3 |
-| Bundle destinations | Uniqueness | I02:E04:AC5, I00:E09:AC6, I00:E05:AC3 |
-| Entry line | Link text | I02:E02:AC8, I00:E09:AC4, I02:E04:AC6 |
-| Entry line | No execution verb | I02:E04:AC6, I00:E05:AC6, I02:E00:AC5 |
-| Entry line | Generated structure | I02:E04:AC6, I00:E05:AC6, I02:E05:AC8 |
-| Entry line | Reading scope at the point of use | I00:AC11, I02:E04:AC6, I02:E01:AC1 |
-| Source-local reference interpretation | step 1 | I02:E04:AC4, I00:E05:AC4, I02:E01:AC1 |
-| Source-local reference interpretation | step 2 | I00:E05:AC4 |
-| Source-local reference interpretation | step 3 | I00:E04:AC15, I02:E03:AC1, I00:E05:AC3 |
-| Source-local reference interpretation | step 4 | I02:E04:AC3, I02:E00:AC1, I02:AC6 |
-| Source-local reference interpretation | step 5 | I00:E05:AC5, I02:E04:AC4, I02:AC3 |
-| Source-local reference interpretation | step 6 | I02:E05:AC2, I02:E01:AC3, I00:E08:AC1 |
-| Compile before publishing | step 1 | I02:E05:AC8, I00:E04:AC9, I00:E04:AC16 |
-| Compile before publishing | step 2 | I00:E08:AC3, I00:E02:AC2, I02:E02:AC7 |
-| Compile before publishing | step 4 | I02:E03:AC3, I00:E04:AC2 |
-| Compile before publishing | step 5 | I02:E02:AC5, I02:E02:AC4, I00:E09:AC1 |
-| Compile before publishing | step 7 | I02:E05:AC1, I00:E06:AC1 |
-| Compile before publishing | step 8 | I02:E05:AC4, I02:E05:AC3, I02:E04:AC2 |
-| Self-reference and ancestor-reference behavior | Direct self-reference | I02:E03:AC5, I00:E04:AC4 |
+| File-scoped hierarchy | Source order | I00:E03:AC6, I13:E02:AC5, I00:E09:AC1 |
+| File-scoped hierarchy | Depth overflow | I00:E09:AC2, I13:E02:AC5, I00:E09:AC1 |
+| Grouping | Group membership | I13:E04:AC1, I01:E02:AC7, I00:E09:AC5 |
+| Grouping | Consistent depth | I13:E02:AC7, I01:E02:AC8, I01:E02:AC3 |
+| Grouping | Group structure | I00:E09:AC3, I13:E02:AC8, I13:E02:AC7 |
+| Grouping | Verbatim names | I13:E04:AC5, I00:E09:AC6, I13:E02:AC8 |
+| Grouping | Document-keyed sections | I13:E02:AC8, I00:E09:AC4, I13:E04:AC5 |
+| Grouping | Variants by document | I13:E02:AC8, I00:E09:AC4, I13:E02:AC7 |
+| Grouping | Residual ambiguity | I00:E05:AC2, I13:E04:AC1, I01:E02:AC7 |
+| Grouping | Group naming | I13:E02:AC8, I00:E09:AC4, I13:E02:AC7 |
+| Grouping | Document content above the grouping depth | I00:E09:AC4, I13:E02:AC8, I13:E04:AC5 |
+| Grouping | A heading for every member | I13:E02:AC8, I00:E09:AC4, I13:E04:AC5 |
+| Grouping | The overview section | I13:E02:AC8, I01:E02:AC1, I00:E11:AC30 |
+| Grouping | The parent arrangement | I00:E09:AC4, I13:E02:AC8, I01:E02:AC1 |
+| Grouping | Merged section references | I13:E04:AC5, I00:E09:AC6, I13:E02:AC8 |
+| Heading-only structural ancestors | Heading text | I13:E02:AC5, I00:E09:AC1, I00:E05:AC4 |
+| Heading-only structural ancestors | Provenance | I13:E02:AC5, I00:E09:AC1, I13:E05:AC1 |
+| Heading-only structural ancestors | Deduplication | I13:E02:AC5, I00:E09:AC1, I13:E02:AC8 |
+| Heading-only structural ancestors | Named titles | I00:E09:AC2, I13:E02:AC5, I00:E09:AC1 |
+| Heading-only structural ancestors | Targets | I00:E09:AC9, I13:E02:AC5, I00:E09:AC1 |
+| Heading-only structural ancestors | Depth | I13:E02:AC5, I13:E02:AC4, I00:E09:AC1 |
+| Bundle destinations | Ordinal assignment | I13:E04:AC1, I13:E02:AC5, I00:E09:AC1 |
+| Bundle destinations | Document destinations | I01:E02:AC3, I00:E09:AC4 |
+| Bundle destinations | Internal links | I01:E04:AC2, I01:E02:AC2, I01:AC5 |
+| Bundle destinations | Visible headings | I13:E02:AC4, I00:E03:AC7, I00:E03:AC3 |
+| Bundle destinations | Uniqueness | I13:E04:AC5, I00:E09:AC6, I00:E05:AC3 |
+| Source-local reference interpretation | step 1 | I13:E04:AC4, I00:E05:AC4, I13:E01:AC1 |
+| Source-local reference interpretation | step 2 | I00:E11:AC10, I00:E05:AC4 |
+| Source-local reference interpretation | step 3 | I00:E04:AC15 |
+| Source-local reference interpretation | step 4 | I13:E04:AC3, I13:E00:AC1, I13:AC6 |
+| Source-local reference interpretation | step 5 | I00:E05:AC5, I13:E04:AC4, I13:AC3 |
+| Source-local reference interpretation | step 6 | I13:E05:AC2, I13:E01:AC3, I00:E11:AC26 |
+| Compile before publishing | step 1 | I01:E00:AC3, I13:E05:AC8, I01:E00:AC1 |
+| Compile before publishing | step 2 | I00:E08:AC2, I00:E02:AC2, I13:E05:AC3 |
+| Compile before publishing | step 3 | I13:E02:AC5, I00:E09:AC1, I00:E03:AC1 |
+| Compile before publishing | step 4 | I13:E03:AC3, I00:E04:AC2, I00:E11:AC16 |
+| Compile before publishing | step 5 | I13:E02:AC5, I00:E09:AC1, I01:AC12 |
+| Compile before publishing | step 7 | I13:E05:AC1 |
+| Compile before publishing | step 8 | I00:E08:AC2, I13:E05:AC4, I13:E05:AC3 |
+| Self-reference and ancestor-reference behavior | Direct self-reference | I13:E03:AC5, I00:E04:AC4 |
 | Self-reference and ancestor-reference behavior | Ancestor reference | I00:E04:AC4 |
-| Self-reference and ancestor-reference behavior | Different section in the same file | I02:E03:AC5, I00:E04:AC4 |
-| Self-reference and ancestor-reference behavior | Equivalent references | I02:E05:AC3, I00:E08:AC2, I00:E04:AC9 |
-| Self-reference and ancestor-reference behavior | Link position | I02:E03:AC5, I02:E02:AC5, I02:E01:AC4 |
-| Self-reference and ancestor-reference behavior | Preamble content | I02:E03:AC5, I00:E04:AC4, I02:E02:AC5 |
-| Frontmatter policy | step 3 | I02:E02:AC3, I00:E03:AC1 |
-| Link classification and resource handling | The mark | I02:E03:AC6, I02:AC6, I02:AC5 |
-| Link classification and resource handling | Marked local Markdown document links | I00:E04:AC1, I02:E03:AC1, I00:E05:AC3 |
-| Link classification and resource handling | Unmarked local Markdown links | I00:E04:AC15, I00:E05:AC3, I00:E04:AC1 |
-| Link classification and resource handling | Fragment-only links | I00:E04:AC15, I00:E05:AC3, I02:AC5 |
-| Link classification and resource handling | Everything else | I00:E09:AC5, I00:E04:AC6, I02:E03:AC1 |
-| Link classification and resource handling | Unsupported local-document syntax | I02:E03:AC1, I00:E04:AC15, I00:AC1 |
-| Link classification and resource handling | Examples | I02:E05:AC2, I02:E01:AC5, I02:E01:AC3 |
-| Resolution sequence | step 1 | I00:E08:AC3, I00:E04:AC15 |
-| Resolution sequence | step 3 | I00:E04:AC6, I02:E03:AC1 |
-| Resolution sequence | step 4 | I02:E03:AC1, I00:E05:AC3, I00:E04:AC15 |
+| Self-reference and ancestor-reference behavior | Different section in the same file | I13:E03:AC5, I00:E04:AC4 |
+| Self-reference and ancestor-reference behavior | Equivalent references | I00:E08:AC2, I13:E05:AC3, I00:E04:AC9 |
+| Self-reference and ancestor-reference behavior | Link position | I13:E02:AC8, I01:E02:AC3, I00:E09:AC4 |
+| Self-reference and ancestor-reference behavior | Preamble content | I01:E02:AC3, I00:E09:AC4, I00:E03:AC6 |
+| Frontmatter policy | step 3 | I13:E02:AC3, I00:E03:AC1 |
+| Conversion metadata | group | I13:E04:AC5, I13:E02:AC8, I13:E02:AC7 |
+| Conversion metadata | subst | I00:E11:AC10 |
+| Conversion metadata | The admitted keys | I00:E09:AC2, I00:E04:AC16, I13:E05:AC4 |
+| Conversion metadata | `group` holds one pair | I13:E02:AC7, I00:E09:AC3, I13:E02:AC8 |
+| Conversion metadata | `root` is refused | I00:E11:AC7, I00:AC6, I13:E05:AC2 |
+| Conversion metadata | An entry is one string key with an integer value | I01:AC16, I01:E04:AC2, I00:E11:AC28 |
+| Conversion metadata | `subst` holds colon pairs | I00:E11:AC7, I00:E08:AC4, I00:E08:AC2 |
+| Conversion metadata | A preset holds what shapes the bundle | I03:E02:AC3, I03:AC5, I00:E07:AC4 |
+| Conversion metadata | An empty block declares | I00:E02:AC2 |
+| Conversion metadata | Unrelated fields have no conversion meaning | I00:E00:AC6, I01:E00:AC9, I00:E11:AC7 |
+| Conversion metadata | YAML grammar | I13:E03:AC5, I00:E08:AC2, I00:E04:AC4 |
+| Conversion metadata | Bounded parsing | I13:E03:AC7, I13:E01:AC5, I13:E00:AC6 |
+| Conversion metadata | Source ownership | I00:E08:AC2, I00:E04:AC4, I13:E03:AC5 |
+| Conversion metadata | Selection boundary | I13:E05:AC1, I13:E03:AC7, I13:E03:AC4 |
+| Conversion metadata | Operational interface | I03:E02:AC3, I03:AC5, I00:E07:AC4 |
+| Presets | Selection by keyword | I13:E04:AC5, I13:E02:AC8, I00:E09:AC6 |
+| Presets | `default` always applies | I13:E02:AC8, I13:E03:AC4, I01:E00:AC8 |
+| Presets | `default` is not selectable by keyword | I13:E02:AC8, I00:E09:AC4 |
+| Presets | A command-line entry reads the file it names | I13:E02:AC7, I00:E09:AC3, I01:AC8 |
+| Presets | Selected presets union | I13:E05:AC8, I13:E04:AC6, I13:E02:AC9 |
+| Presets | What a selection governs | I13:E04:AC5, I00:E09:AC6, I00:E04:AC11 |
+| Presets | One document under several selections | I13:E05:AC8, I13:E03:AC4, I00:E04:AC9 |
+| Presets | A document in several groups | I13:E02:AC8, I00:E09:AC4, I13:E02:AC7 |
+| Presets | A preset nothing selected warns | I01:E02:AC5, I00:E11:AC14, I00:E10:AC5 |
+| Metadata failures | Diagnostic | I00:E08:AC4, I00:AC6 |
+| Metadata failures | E_INVALID_CONVERSION_METADATA | I13:E02:AC9, I00:E09:AC5, I13:E02:AC7 |
+| Metadata failures | E_SOURCE_OUTSIDE_ROOT | I00:E04:AC6, I13:E03:AC2, I13:E03:AC1 |
+| Metadata failures | E_SOURCE_ACCESS | I00:E04:AC6, I13:E03:AC2, I00:E11:AC21 |
+| Metadata failures | E_SOURCE_CHANGED | I00:E08:AC2 |
+| Link classification and resource handling | The substitution mapping | I13:E02:AC8, I00:E08:AC2, I00:E09:AC4 |
+| Link classification and resource handling | Local Markdown document links | I00:E09:AC2, I00:E08:AC2, I13:E05:AC3 |
+| Link classification and resource handling | The deferral mark | I13:E04:AC6, I01:AC15, I00:E11:AC7 |
+| Link classification and resource handling | The dispatch operator | I01:AC15, I03:E03:AC4, I03:AC6 |
+| Link classification and resource handling | The parallel dispatch mark | I01:AC15, I03:E03:AC4, I03:AC6 |
+| Link classification and resource handling | Operators that combine | I01:AC15, I00:E11:AC7, I00:E08:AC2 |
+| Link classification and resource handling | An operator's target | I00:E11:AC13, I00:E11:AC11, I00:E11:AC8 |
+| Link classification and resource handling | Dispatched bundles | I13:E04:AC5, I13:E05:AC8, I00:E09:AC6 |
+| Link classification and resource handling | Dispatch sub-sections | I13:E02:AC8, I00:E09:AC4, I00:E09:AC2 |
+| Link classification and resource handling | Parallel dispatch sub-sections | I13:E02:AC8, I00:E09:AC4, I00:E09:AC2 |
+| Link classification and resource handling | The Prosiform section | I13:E02:AC8, I13:E04:AC6, I13:E02:AC7 |
+| Link classification and resource handling | Generated heading collisions | I01:E02:AC5, I00:E11:AC28, I00:E10:AC8 |
+| Link classification and resource handling | Dispatching its own document | I01:AC15, I13:AC7, I00:E08:AC2 |
+| Link classification and resource handling | Dispatch depth | I01:AC15, I00:AC6, I13:E05:AC8 |
+| Link classification and resource handling | Dispatch cycles | I13:E05:AC8, I13:E03:AC3, I00:E09:AC2 |
+| Link classification and resource handling | A deferred link's destination | I00:E08:AC2, I13:E04:AC2, I01:E02:AC5 |
+| Link classification and resource handling | A withheld link's target | I01:AC15, I00:E08:AC7 |
+| Link classification and resource handling | A link naming a document that declares nothing | I00:E08:AC2, I00:E11:AC7, I13:E03:AC2 |
+| Link classification and resource handling | Fragment-only links | I13:E05:AC4, I00:E08:AC4, I00:E08:AC2 |
+| Link classification and resource handling | A target that resolves to nothing | I13:E03:AC7, I13:E03:AC5, I13:E00:AC5 |
+| Link classification and resource handling | Everything else | I00:E04:AC6, I13:E03:AC1, I13:E02:AC9 |
+| Link classification and resource handling | Resources | I13:E04:AC5, I00:E11:AC22, I00:E09:AC6 |
+| Link classification and resource handling | Unsupported local-document syntax | I13:E05:AC3, I13:E03:AC1, I13:E00:AC1 |
+| Link classification and resource handling | Examples | I00:E11:AC21, I00:E11:AC10, I00:E08:AC3 |
+| Resolution sequence | step 3 | I00:E04:AC6, I13:E03:AC1, I13:E05:AC8 |
+| Resolution sequence | step 4 | I13:E03:AC1 |
 | Resolution sequence | step 5 | I00:E02:AC8 |
-| Resolution sequence | step 6 | I02:E03:AC1 |
-| Resolution sequence | step 7 | I02:E03:AC2, I00:E04:AC5, I00:E04:AC16 |
-| Resolution sequence | step 8 | I00:E08:AC3 |
-| Resolution sequence | step 9 | I02:E05:AC3, I00:E08:AC2, I00:E00:AC5 |
-| Resolution sequence | guide.md?view=raw#run | I02:E03:AC1, I00:E05:AC3, I00:E05:AC2 |
-| Resolution sequence | A normalized path outside the root | I02:E03:AC2, I00:E04:AC5, I02:E02:AC9 |
-| Resource limits | --max-output-bytes | I02:E02:AC5, I00:E09:AC1 |
-| Resource limits | --max-nesting | I02:E03:AC7, I02:E05:AC2, I02:E04:AC3 |
-| Resource limits | --max-expansion-depth | I00:E11:AC7, I00:E04:AC9, I00:E04:AC11 |
-| Agent delivery contract | Exit status | I00:E07:AC3, I02:E05:AC6, I02:E06:AC4 |
-| Agent delivery contract | Response limit | I00:AC12, I00:E07:AC2, I02:E05:AC6 |
-| Agent delivery contract | Entry destinations | I02:E05:AC7, I00:E09:AC3, I00:E08:AC5 |
-| Agent delivery contract | Clean Markdown | I01:E00:AC1, I02:E04:AC6, I01:E04:AC1 |
-| Agent delivery contract | Broken pipes | I02:E05:AC6, I02:AC7, I00:E10:AC7 |
-| Agent delivery contract | No silent fallback | I02:E05:AC6, I02:E05:AC8, I00:E07:AC2 |
-| Source and candidate validation modes | Source mode | I00:E05:AC1, I02:E04:AC1, I00:E08:AC3 |
-| Source and candidate validation modes | Candidate mode | I02:E05:AC1, I02:E02:AC5, I00:E09:AC1 |
-| Source and candidate validation modes | Ownership | I00:AC5, I02:E05:AC8, I02:E02:AC5 |
-| Source and candidate validation modes | Preprocessing | I02:E01:AC2 |
-| Source and candidate validation modes | Reuse | I02:E05:AC1, I00:E06:AC1, I00:E01:AC1 |
-| Validation and failure contract | Resolution | I00:E05:AC3, I00:E04:AC15, I02:E03:AC1 |
-| Validation and failure contract | Target integrity | I02:E04:AC2, I00:E05:AC3 |
-| Validation and failure contract | Uniqueness | I02:E04:AC5, I00:E09:AC6, I00:E09:AC4 |
-| Validation and failure contract | Boundaries | I02:E05:AC2, I00:E08:AC1, I02:E04:AC3 |
-| Validation and failure contract | Preservation | I00:AC4, I00:E06:AC2, I02:E02:AC8 |
-| Validation and failure contract | Safety | I00:E04:AC15, I00:AC1, I02:E03:AC2 |
-| Validation and failure contract | Publication | I02:E05:AC6, I00:E01:AC1, I02:AC7 |
-| Post-compilation invariants | One intended destination | I02:E04:AC1, I00:E05:AC1, I02:E02:AC2 |
-| Post-compilation invariants | Reference preservation | I02:E04:AC4, I00:E05:AC4, I02:E02:AC4 |
-| Post-compilation invariants | No new links | I02:E04:AC4, I02:AC3, I00:E05:AC5 |
-| Post-compilation invariants | No definition leakage | I02:E04:AC3, I02:AC6, I00:E05:AC4 |
-| Post-compilation invariants | Exactly-once coverage | I00:AC3, I02:E03:AC4, I02:E03:AC3 |
-| Post-compilation invariants | No accidental omissions | I02:E03:AC4, I02:AC5, I00:E04:AC3 |
-| Post-compilation invariants | No accidental expansion | I02:E02:AC5, I00:E09:AC1, I00:E04:AC10 |
-| Post-compilation invariants | Destination stability | I00:E04:AC13 |
-| Post-compilation invariants | Block-syntax preservation | I02:E05:AC2, I00:E08:AC1, I00:E06:AC2 |
-| Post-compilation invariants | Entry line integrity | I02:E04:AC6, I00:E05:AC6, I02:E02:AC7 |
-| Post-compilation invariants | Group isolation | I02:E02:AC8, I02:E02:AC4, I00:E09:AC4 |
-| Post-compilation invariants | Outline preservation | I02:E02:AC8, I00:E03:AC3, I00:AC5 |
-| Post-compilation invariants | Depth safety | I02:E05:AC6, I02:E02:AC8, I00:E03:AC3 |
-| Exit status and JSON diagnostics | 3 | I02:E05:AC6, I00:E07:AC3, I00:E07:AC2 |
-| Exit status and JSON diagnostics | 4 | I02:E01:AC5, I00:E10:AC4 |
-| Implementation verification and residual policy detail | Source-range adapter | I02:E00:AC2, I02:E00:AC6, I02:AC3 |
-| Implementation verification and residual policy detail | Dependency pins | I02:AC5, I02:E06:AC2, I02:E04:AC3 |
+| Resolution sequence | step 6 | I13:E03:AC1 |
+| Resolution sequence | step 7 | I00:E08:AC2, I01:E00:AC3, I00:E00:AC6 |
+| Resolution sequence | step 9 | I13:E05:AC3, I00:E08:AC2, I00:E00:AC5 |
+| Resolution sequence | guide.md?view=raw#run | I13:E03:AC1 |
+| Resource limits | -O | I13:E02:AC5, I00:E09:AC1 |
+| Resource limits | -L | I00:E11:AC22 |
+| Resource limits | -N | I13:E05:AC2, I13:E03:AC7, I13:E02:AC9 |
+| Resource limits | -E | I00:E11:AC7, I00:E04:AC9 |
+| Agent delivery contract | Exit status | I00:E07:AC3, I13:E05:AC6, I00:E11:AC17 |
+| Agent delivery contract | Response limit | I00:AC12, I00:E07:AC2, I13:E05:AC6 |
+| Agent delivery contract | Broken pipes | I13:E05:AC6, I13:AC7, I00:E10:AC7 |
+| Agent delivery contract | No silent fallback | I13:E05:AC6, I13:E05:AC8, I00:E07:AC2 |
+| Source and candidate validation modes | Source mode | I13:E04:AC1, I01:E00:AC6, I00:E05:AC1 |
+| Source and candidate validation modes | Candidate mode | I13:E02:AC5, I00:E09:AC1, I13:E05:AC1 |
+| Source and candidate validation modes | Ownership | I13:E02:AC5, I00:E09:AC1, I13:E02:AC4 |
+| Source and candidate validation modes | Preprocessing | I13:E01:AC2 |
+| Validation and failure contract | Resolution | I00:E05:AC3, I00:E04:AC15 |
+| Validation and failure contract | Target integrity | I13:E04:AC2 |
+| Validation and failure contract | Uniqueness | I13:E04:AC5, I00:E09:AC6, I00:E09:AC4 |
+| Validation and failure contract | Boundaries | I13:E05:AC2, I00:E08:AC1, I13:E04:AC3 |
+| Validation and failure contract | Preservation | I00:AC4, I00:E06:AC2, I13:E01:AC3 |
+| Validation and failure contract | Completeness | I00:E11:AC14 |
+| Validation and failure contract | Safety | I00:E00:AC5, I13:E00:AC2, I01:E00:AC3 |
+| Validation and failure contract | Publication | I13:E05:AC6, I13:E05:AC8, I13:AC7 |
+| Post-compilation invariants | One intended destination | I13:E04:AC1, I00:E05:AC1, I13:E02:AC2 |
+| Post-compilation invariants | Reference preservation | I13:E04:AC4, I00:E05:AC4, I13:E02:AC4 |
+| Post-compilation invariants | No new links | I13:E04:AC4, I13:AC3, I00:E05:AC5 |
+| Post-compilation invariants | No definition leakage | I13:E04:AC3, I13:AC6, I00:E08:AC9 |
+| Post-compilation invariants | Exactly-once coverage | I13:E03:AC4, I13:E03:AC3, I00:E04:AC3 |
+| Post-compilation invariants | No accidental omissions | I13:E03:AC4, I13:AC5, I00:E09:AC7 |
+| Post-compilation invariants | No accidental expansion | I13:E02:AC5, I00:E09:AC9, I00:E09:AC1 |
+| Post-compilation invariants | Block-syntax preservation | I13:E05:AC2, I00:E08:AC1, I00:E06:AC2 |
+| Post-compilation invariants | Group isolation | I13:E02:AC4, I00:E02:AC1, I13:E02:AC8 |
+| Post-compilation invariants | Outline preservation | I00:AC5, I13:E02:AC8, I13:E02:AC5 |
+| Post-compilation invariants | Depth safety | I13:E05:AC6, I13:E02:AC8, I00:E03:AC3 |
+| Exit status and JSON diagnostics | 3 | I13:E05:AC6, I00:E07:AC3, I00:E07:AC2 |
+| Exit status and JSON diagnostics | 4 | I13:E01:AC5, I00:E11:AC21, I00:E11:AC19 |
+| Implementation verification and residual policy detail | Source-language handoff | I13:AC8, I01:AC6, I00:E11:AC4 |
+| Implementation verification and residual policy detail | Source-range adapter | I13:E00:AC2, I13:E00:AC6, I13:AC3 |
+| Implementation verification and residual policy detail | Dependency pins | I13:AC5, I13:E04:AC3, I13:E03:AC6 |
 | Implementation verification and residual policy detail | Calibration | I00:E09:AC7 |
-| Implementation verification and residual policy detail | Upstream route | I02:E00:AC6, I02:E00:AC4, I02:E00:AC2 |
+| Implementation verification and residual policy detail | Upstream route | I13:E00:AC6, I13:E00:AC4, I13:E00:AC2 |
