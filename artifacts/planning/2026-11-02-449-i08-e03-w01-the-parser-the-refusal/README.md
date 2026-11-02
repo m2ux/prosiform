@@ -17,6 +17,7 @@ This record holds its delivery of `AC1, AC2, AC3, AC4, AC6`: the work item, the 
 | [w03.md](w03.md) | W03 work item: the corpus without the referrer fixtures |
 | [w04.md](w04.md) | W04 work item: invocation.md and the guide without the row |
 | [validation.md](validation.md) | Evidence for every check the work items name, at the tested revision |
+| [changes.md](changes.md) | The plan changes this session applied and held, and its scope decisions |
 
 ## Links
 
