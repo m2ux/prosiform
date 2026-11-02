@@ -12,6 +12,12 @@ This record holds its delivery of `AC3,AC4,AC5,AC6,AC7`: the work item, the vali
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02](w02.md) | The work item for the README |
+| [W03](w03.md) | The work item for the invocation guide |
+| [W04](w04.md) | The work item for the checks page |
+| [W05](w05.md) | The work item for the checks README |
+| [W06](w06.md) | The work item for the docs index |
+| [Validation](validation.md) | Each page's read against the build, the claims corrected and added, and the `make check` run |
 
 ## Links
 
