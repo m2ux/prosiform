@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-I09 decides where each document arrives in a bundle's outline: a file's `group` pairs place its own sections in the result its parent merges, a destination answers the one document a reference named, and a section a reference composes sits beneath the heading naming it.
+I09 decides where each document arrives in a bundle's outline: a file's `group` pair places its own sections in the result its parent merges, a destination answers the one document a reference named, and a section a reference composes sits beneath the heading naming it.
 
 The initiative was split out of I05 with its epics raised as standalone issues and no work items. This record gives every row a work item and a declared component, adds the design-clause rows, checks the dependency graph, accounts for every candidate unit, traces each initiative criterion to the goal, and records what earlier work already delivered of the grouping-targets epic.
 
@@ -39,7 +39,7 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 The goal is the initiative's Overview: every document arrives under a heading a reader can find. Its clauses:
 
 - **G1.** A reference reaches the document it named.
-- **G2.** A file's `group` pairs place its own sections, composed from the leaves up.
+- **G2.** A file's `group` pair places its own sections, composed from the leaves up.
 - **G3.** A referenced section sits where it is named.
 
 ## Goal Trace
