@@ -17,6 +17,7 @@ This record holds its delivery of AC26, AC27, AC28 and AC37: the work item, the 
 | [W27 work item](w27.md) | The declared-inclusion workflow and its scenarios |
 | [W33 work item](w33.md) | The harness compiling each workflow from the entry its scenarios name |
 | [Validation](validation.md) | Each check's result, and what each scenario proves in each default cell |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
@@ -24,4 +25,5 @@ This record holds its delivery of AC26, AC27, AC28 and AC37: the work item, the 
 | --- | --- |
 | Epic | [I09:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/523) |
 | Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
+| Pull request | [#590](https://github.com/m2ux/prosiform/pull/590) |
 | Epic record | [Grouping and Composition](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) |
