@@ -478,6 +478,15 @@ class Placing:
     The operators are those the bundle's dispatched links carry, `False`
     for `⇉` and `True` for `⫽`, which decide the protocols the
     Prosiform section states.
+
+    The grouped regions are those a group carries as its own, by the
+    document and first line naming each. A dispatch a contribution
+    carries points at the sub-section its source's own region is given
+    where a group carries that region. Where none does, the region's
+    first contribution gives the dispatch a sub-section of its own,
+    beneath the composed section holding the link and ahead of the
+    next composed heading, so a scope's own sub-sections still follow
+    its destination sections.
     """
 
     def __init__(
@@ -486,10 +495,12 @@ class Placing:
         read: Mapping[str, Source],
         bundle_file: Callable[[Target], str],
         operators: Collection[bool],
+        grouped: Collection[tuple[str, int]],
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
     ) -> None:
         self.parsed = parsed
+        self.grouped = grouped
         self.read = read
         self.bundle_file = bundle_file
         self.operators = operators
@@ -504,6 +515,9 @@ class Placing:
         self.pending: dict[Served, Link] = {}
         self.serving: list[tuple[tuple[str, int], Served]] = []
         self.level: int | None = None
+        self.inner: dict[Served, Link] = {}
+        self.inner_serving: list[tuple[tuple[str, int], Served]] = []
+        self.inner_level = 0
 
     def heading(
         self,
@@ -550,13 +564,32 @@ class Placing:
         them. Ahead of the bundle's first heading, and ahead of content
         above it that dispatches, the Prosiform section comes first.
         """
+        self.close()
         if self.level is None and (following is not None or self.pending):
             self.open()
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
+        self.place(self.pending, self.serving, depth)
+        self.pending = {}
+        self.serving = []
+
+    def close(self) -> None:
+        """Emit the sub-sections the composed section just closed carries."""
+        if self.inner:
+            self.place(self.inner, self.inner_serving, self.inner_level + 1)
+        self.inner = {}
+        self.inner_serving = []
+
+    def place(
+        self,
+        pending: Mapping[Served, Link],
+        links: Sequence[tuple[tuple[str, int], Served]],
+        depth: int,
+    ) -> None:
+        """Emit the sub-sections one section's dispatched links take, at one depth."""
         if depth > MAX_LEVEL:
-            first = next(iter(self.pending.values()))
+            first = next(iter(pending.values()))
             raise Refused(
                 Diagnostic(
                     ERROR,
@@ -571,7 +604,7 @@ class Placing:
             )
         serving: dict[Served, int] = {}
         together: list[Link] = []
-        for served, link in self.pending.items():
+        for served, link in pending.items():
             if link.parallel:
                 together.append(link)
                 continue
@@ -585,10 +618,8 @@ class Placing:
                 PARALLEL, depth, [Instruction(TOGETHER), Instruction(listed, True)]
             )
             serving.update((link.served, at) for link in together)
-        for key, served in self.serving:
+        for key, served in links:
             self.placed.setdefault(key, {})[served] = serving[served]
-        self.pending = {}
-        self.serving = []
 
     def group(self, one: Group) -> Group:
         """One group with its sub-sections, the headings before it counted.
@@ -616,13 +647,32 @@ class Placing:
             if isinstance(part, Generated) and part.kind in COMPOSED_HEADINGS:
                 # A section a directive composes is content of the scope
                 # holding the directive, so it closes no section here.
+                self.close()
+                self.inner_level = part.level
                 self.headings.append(one.record.headings[at])
                 at += 1
             elif isinstance(part, Range) and part.composed:
                 tokens = self.parsed[part.path]
-                held = len(carried_headings(tokens, region_of(tokens, part)))
+                region = region_of(tokens, part)
+                held = len(carried_headings(tokens, region))
+                if region.type == HEADING_OPEN:
+                    self.close()
+                    self.inner_level = one.record.headings[at].level
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
+                key = (part.path, part.lines[0])
+                if key not in self.grouped and key not in self.placed:
+                    for link in written_in(
+                        part.path,
+                        self.read[part.path],
+                        tokens,
+                        region,
+                        self.declarations,
+                        self.substitution,
+                    ):
+                        self.inner.setdefault(link.served, link)
+                        if (key, link.served) not in self.inner_serving:
+                            self.inner_serving.append((key, link.served))
             elif isinstance(part, Ancestor | Generated):
                 self.flush(part.level)
                 self.level = part.level
@@ -681,15 +731,21 @@ def subsections(
     their protocols precedes every one of them.
 
     A destination section and the contributions beneath it are content
-    of the scope that composes them, so they close no section, and a
-    dispatch a contribution carries points at the sub-section its
-    source's own region is given.
+    of the scope that composes them, so they close none of its sections,
+    and a dispatch a contribution carries takes its sub-section as
+    `Placing` states.
     """
+    grouped = {
+        (part.path, part.lines[0])
+        for one in groups
+        for part in one.record.ranges
+        if not part.composed
+    }
     operators = {
         link.parallel
         for one in groups
         for part in one.record.ranges
-        if not part.composed
+        if not part.composed or (part.path, part.lines[0]) not in grouped
         for link in written_in(
             part.path,
             read[part.path],
@@ -699,7 +755,9 @@ def subsections(
             substitution,
         )
     }
-    placing = Placing(parsed, read, bundle_file, operators, declarations, substitution)
+    placing = Placing(
+        parsed, read, bundle_file, operators, grouped, declarations, substitution
+    )
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.placed
 

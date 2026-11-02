@@ -1,0 +1,16 @@
+description = "A section an ordinary link also reaches keeps its inclusion beside its contribution: the guide composes the read document's Inputs and also links that section, and composes the write document's Inputs and also links the write document whole, so each document keeps a file group carrying what its link selects, the read group Inputs alone and the write group the whole document, while each directive's link points at its contribution."
+
+clauses = [
+  "Section composition — Inline-only targets",
+  "Section composition — The directive's link",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
