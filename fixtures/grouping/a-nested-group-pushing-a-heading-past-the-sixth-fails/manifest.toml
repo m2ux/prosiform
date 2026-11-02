@@ -1,0 +1,20 @@
+description = "A nested group's headings sit one level deeper for each division enclosing it, so a fifth-level heading a depth-one member carries, which a top-level group would emit at the sixth level, is pushed to the seventh inside the guide's division and the run fails before publication."
+
+clauses = [
+  "Grouping — Nested groups",
+  "File-scoped hierarchy — Depth overflow",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "deep.md"
+source = "deep.md"
+chain = ["guide.md", "deep.md"]

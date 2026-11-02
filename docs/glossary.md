@@ -56,7 +56,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **selection** | The set of regions chosen for inclusion. |
 | **consolidation** | Replacing overlapping selections with their union, so each region appears exactly once however many references reach it. |
 | **structural ancestor** | A heading emitted with no body, to preserve the outline of a partial selection. Not a dependency, and not a substitute for selecting the section it names. |
-| **group** | A top-level division of the bundle: one source document, or contributing documents declaring the same group identity and depth in their metadata. |
+| **group** | A division of the bundle: one source document, or contributing documents declaring the same group identity and depth in their metadata. |
 | **placement order** | The order the bundle arranges its sources in: each is placed at the first reference that names it, reading the entry references in invocation order and then each placed source's selected content in turn. Groups and the members within a group follow it, so the order an author writes links in sets the arrangement. |
 | **grouping rule** | The `group` pair of a source document's preset, pairing a group identity with its grouping depth. |
 | **member** | A contributing source document whose metadata declares a named group. |

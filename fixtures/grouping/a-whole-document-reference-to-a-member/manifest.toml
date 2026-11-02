@@ -4,6 +4,7 @@ clauses = [
   "Presets — default always applies",
   "Grouping — Document content above the grouping depth",
   "Bundle destinations — Document destinations",
+  "Grouping — Nested groups",
 ]
 
 [invocation]

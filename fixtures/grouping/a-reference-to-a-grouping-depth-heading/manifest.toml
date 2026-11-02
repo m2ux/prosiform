@@ -5,6 +5,7 @@ clauses = [
   "Grouping — Merged section references",
   "Grouping — Document-keyed sections",
   "Grouping — Verbatim names",
+  "Grouping — Nested groups",
 ]
 
 [invocation]

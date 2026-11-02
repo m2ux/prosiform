@@ -2420,7 +2420,7 @@ def placement(
     entries: Collection[Reference],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-) -> dict[str, list[Reference]]:
+) -> tuple[dict[str, list[Reference]], dict[str, str]]:
     """Each document the bundle carries, in the order a reference first names it.
 
     The entry references are read first, in the order the invocation
@@ -2431,8 +2431,13 @@ def placement(
     links are written in. Every document the bundle carries is reached
     from an entry reference by a chain of the links read here, so the
     order covers them all.
+
+    The second mapping names, for each document a link placed, the
+    document that link is written in. An entry is placed by the
+    invocation rather than by a document, so it is absent there.
     """
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
+    placers: dict[str, str] = {}
     at = 0
     while at < len(order):
         path = order[at]
@@ -2443,7 +2448,89 @@ def placement(
         ):
             if one.path in selected and one.path not in order:
                 order.append(one.path)
-    return {path: selected[path] for path in order}
+                placers[one.path] = path
+    return {path: selected[path] for path in order}, placers
+
+
+Division = tuple[str, bool]
+
+
+def divisions(
+    selected: Mapping[str, Sequence[Reference]],
+    joins: Mapping[str, Sequence[Membership]],
+) -> list[Division]:
+    """Each division of the bundle, in the order its first document is placed.
+
+    A division is a file group, named by its document's path, or a
+    merged group, named by the group it is; the flag says which. A
+    document the pairs in force for it pair with no group is its own
+    file group, and every other document joins each merged group a
+    membership names. Merged groups sharing their first document stand
+    in the order its memberships name them.
+    """
+    found: dict[Division, None] = {}
+    for path in selected:
+        if not joins[path]:
+            found[(path, False)] = None
+        for one in joins[path]:
+            found.setdefault((one.group, True), None)
+    return list(found)
+
+
+def holders(
+    order: Sequence[Division],
+    merging: Mapping[str, Sequence[str]],
+    placers: Mapping[str, str],
+    joins: Mapping[str, Sequence[Membership]],
+) -> dict[Division, Division]:
+    """The division each nested group stands inside.
+
+    A merged group stands inside the division holding the document whose
+    link placed its first member: that document's file group, or the
+    merged group it joins, the first of them the bundle places where it
+    joins several. A group whose first member is an entry is held by no
+    division and stands at the top level, as every file group does.
+
+    The holding division carries a document placed before the group's
+    first member, so it precedes the group in placement order and no
+    group holds itself, directly or through another.
+    """
+    rank = {one: at for at, one in enumerate(order)}
+    held: dict[Division, Division] = {}
+    for division in order:
+        name, grouped = division
+        if not grouped:
+            continue
+        placer = placers.get(merging[name][0])
+        if placer is None:
+            continue
+        held[division] = (
+            (placer, False)
+            if not joins[placer]
+            else min(((one.group, True) for one in joins[placer]), key=rank.__getitem__)
+        )
+    return held
+
+
+def composed(
+    division: Division,
+    built: Mapping[Division, Group],
+    nested: Mapping[Division, Sequence[Division]],
+) -> list[Group]:
+    """One division's result: its own group, then each group nested in it, composed.
+
+    Each nested group is composed with everything it holds before the
+    division holding it merges that result, so a group arrives in its
+    holder's result with what it placed already inside it.
+    """
+    return [
+        built[division],
+        *(
+            one
+            for inner in nested.get(division, ())
+            for one in composed(inner, built, nested)
+        ),
+    ]
 
 
 def assembled(
@@ -2454,77 +2541,99 @@ def assembled(
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
     joins: Mapping[str, Sequence[Membership]],
+    placers: Mapping[str, str],
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Group]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
-    The documents arrive in placement order, which `placement` decides.
-    A document the pairs in force for it pair with no group is its own
-    file group. Every other document joins each merged group a membership
-    names, once however often it is named, and each group carries its
-    members in placement order. A group stands where its first document
-    is placed, groups sharing that document standing in the order its
-    memberships name them, so the group carrying the parent leads and one
-    selection always bundles to the same bytes.
+    The documents arrive in placement order, which `placement` decides,
+    with the document whose link placed each. A document the pairs in
+    force for it pair with no group is its own file group. Every other
+    document joins each merged group a membership names, once however
+    often it is named, and each group carries its members in placement
+    order, so the pairs in force for a document place its own sections
+    and no other document's.
+
+    Composition runs from the leaves up. A merged group whose first
+    member a document's link placed nests inside that document's
+    division, after everything the division carries of its own, its
+    headings one level deeper for each division enclosing it; `composed`
+    finishes each nested group before its holder merges it. A file
+    group, and a merged group whose first member is an entry, stands at
+    the top level where its first document is placed, so the group
+    carrying the parent leads and one selection always bundles to the
+    same bytes.
     """
     parent = parent_document(entries)
     inforce = group_depths(joins)
-    groups: list[Group] = []
     merging: dict[str, list[str]] = {}
+    for path in selected:
+        for one in joins[path]:
+            members = merging.setdefault(one.group, [])
+            if path not in members:
+                members.append(path)
+    order = divisions(selected, joins)
+    held = holders(order, merging, placers, joins)
+    levels: dict[Division, int] = {}
+    nested: dict[Division, list[Division]] = {}
+    for division in order:
+        holder = held.get(division)
+        levels[division] = 1 if holder is None else levels[holder] + 1
+        if holder is not None:
+            nested.setdefault(holder, []).append(division)
+    built: dict[Division, Group] = {}
     with assembling(reaching(selected)):
-        for path in selected:
-            for one in joins[path]:
-                members = merging.setdefault(one.group, [])
-                if path not in members:
-                    members.append(path)
-            if joins[path]:
+        for division in order:
+            path, grouped = division
+            if grouped:
                 continue
             tokens = parsed[path]
-            groups.append(
-                group(
-                    path,
-                    tokens,
-                    lines(read[path].text),
-                    defined[path],
-                    selection(path, tokens, selected[path], entries),
-                    assigned,
-                    declarations,
-                    path == parent,
-                    dispatching,
-                    read[path].first_line,
-                    substitution,
-                )
+            built[division] = group(
+                path,
+                tokens,
+                lines(read[path].text),
+                defined[path],
+                selection(path, tokens, selected[path], entries),
+                assigned,
+                declarations,
+                path == parent,
+                dispatching,
+                read[path].first_line,
+                substitution,
             )
         for named, paths in merging.items():
             depth = inforce[named]
-            groups.append(
-                merged(
-                    named,
-                    depth,
-                    [
-                        prepared(
-                            path,
-                            parsed[path],
-                            lines(read[path].text),
-                            defined[path],
-                            selection(path, parsed[path], selected[path], entries),
-                            assigned,
-                            depth,
-                            declarations,
-                            path == parent,
-                            dispatching,
-                            read[path].first_line,
-                            substitution,
-                        )
-                        for path in paths
-                    ],
-                    parent,
-                )
+            built[(named, True)] = merged(
+                named,
+                depth,
+                [
+                    prepared(
+                        path,
+                        parsed[path],
+                        lines(read[path].text),
+                        defined[path],
+                        selection(path, parsed[path], selected[path], entries),
+                        assigned,
+                        depth,
+                        declarations,
+                        path == parent,
+                        dispatching,
+                        read[path].first_line,
+                        substitution,
+                    )
+                    for path in paths
+                ],
+                parent,
+                levels[(named, True)],
             )
-    rank = {path: at for at, path in enumerate(selected)}
-    return sorted(groups, key=lambda one: rank[one.order])
+    return [
+        one
+        for division in order
+        if division not in held
+        for one in composed(division, built, nested)
+    ]
 
 
 @contextmanager
@@ -2629,7 +2738,9 @@ def compose(
     """
     selected = contributing(found)
     joins = joined(read, parsed, selected, entries)
-    selected = placement(read, parsed, selected, entries, declarations, substitution)
+    selected, placers = placement(
+        read, parsed, selected, entries, declarations, substitution
+    )
     try:
         headed, placed = subsections(
             assembled(
@@ -2640,6 +2751,7 @@ def compose(
                 entries,
                 None,
                 joins,
+                placers,
                 None,
                 declarations,
                 substitution,
@@ -2665,6 +2777,7 @@ def compose(
             entries,
             targets,
             joins,
+            placers,
             dispatching,
             declarations,
             substitution,

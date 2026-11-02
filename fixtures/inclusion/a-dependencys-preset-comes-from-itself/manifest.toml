@@ -4,6 +4,7 @@ clauses = [
   "Presets — What a selection governs",
   "Presets — default always applies",
   "Grouping — Group membership",
+  "Grouping — Nested groups",
 ]
 
 [invocation]
