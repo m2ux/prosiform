@@ -134,9 +134,10 @@ E00 W02 and E02 W03 both edit `evals/diagram-following/README.md`, in different 
 
 ## Decisions
 
+Each decision below is the user's (2026-11-01) unless marked as planning's.
+
 - **E04 runs after E00–E03.** (User, 2026-11-02.) E00–E03 take `priority: 2` and E04 [#579](https://github.com/m2ux/prosiform/issues/579) `priority: 1`, as the dependency check proposes, so E04 follows E02 on `harness.py` and the eval README.
 - **The first-run carrier comparison stays.** (User, 2026-11-02.) E04 W13 measures the frontmatter and blockquote carriers against the Prosiform section.
-Each decision below is the user's (2026-11-01) unless marked as planning's.
 
 - **The baseline runs after the eval tree declares presets, and proves the harness fixes.** E00 W02 depends on I08:E08 W02, each new scenario's documents declare `prosiform`, and the one default-matrix run is the evidence for AC11 and AC12, the harness criteria taken from I07, which E00 W03 verifies. (2026-11-02.)
 - **One baseline.** I07:E00 W11 committed the same file as E00 W02 from a run over the present corpus. W11 leaves I07; E00 W02 produces the one baseline and its AC3 carries W11's criterion.
