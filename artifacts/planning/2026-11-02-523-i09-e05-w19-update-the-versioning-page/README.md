@@ -12,6 +12,10 @@ This record holds its delivery of `AC20,AC21,AC22`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W19](w19.md) | The work item for the versioning page |
+| [W20](w20.md) | The work item for the fixtures README |
+| [W21](w21.md) | The work item for the eval page |
+| [Validation](validation.md) | Each claim corrected or added on the three pages, what showed it, and the `make check` result |
 
 ## Links
 

@@ -49,4 +49,4 @@ Held without change: the seven forms match `run.FORMS`; the eight path classes, 
 
 **Observes:** AC20, AC21, AC22, as the page's links, command tables and vocabulary hold. **Command:** `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` in the task worktree.
 
-RESULT_PLACEHOLDER
+**Result:** passed, exit status 0, at e00470f9: lock, lint, format, typecheck, 1161 harness tests, the corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence. `make links tables vocabulary` passed again at cf215036, which adds the `composition/` link: every reference in 143 documents resolved.
