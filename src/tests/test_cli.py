@@ -1656,6 +1656,87 @@ def test_a_document_both_deferred_and_compiled_is_weighed(root: Path) -> None:
     assert [source for source, _ in unused_presets_of(run)] == ["noted.md"]
 
 
+TWO_SECTIONS = (
+    DECLARED + "# Guide\n\n## Checks\n\nReview [the rules](rules.md).\n\n"
+    "## Draft\n\nDraft [the rules](rules.md).\n"
+)
+
+
+def test_two_sections_reaching_one_document_each_select_its_presets(
+    root: Path,
+) -> None:
+    written(root, "guide.md", TWO_SECTIONS)
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", [("reviews", 1)]), ("Draft", [("drafts", 1)]))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules\n\nAll." in run.bundle
+    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+    assert run.bundle.count("All.") == 2
+
+
+def test_a_document_a_later_round_reaches_again_takes_that_selection(
+    root: Path,
+) -> None:
+    """A link in a document the traversal discovers later still selects."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nReview [the rules](rules.md).\n\n"
+        "## Other\n\nRead [the notes](notes.md).\n",
+    )
+    written(
+        root,
+        "notes.md",
+        DECLARED + "# Notes\n\n## Draft\n\nDraft [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", [("reviews", 1)]), ("Draft", [("drafts", 1)]))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules\n\nAll." in run.bundle
+    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+
+
+def test_two_sections_selecting_two_depths_for_one_group_conflict(
+    root: Path,
+) -> None:
+    """Each reference's selection is in force, so two depths for one group meet."""
+    written(root, "guide.md", TWO_SECTIONS)
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", [("reviews", 1)]), ("Draft", [("reviews", 2)]))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == GROUP_DEPTH_CONFLICT
+
+
+def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
+    """The second section reaches a target the run carries, so `-T 2` holds."""
+    written(root, "guide.md", TWO_SECTIONS)
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", [("reviews", 1)]), ("Draft", [("drafts", 1)]))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-T", "2", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+
+
 def presets(*declared: tuple[str, Sequence[tuple[str, int]]]) -> str:
     """One source's conversion metadata declaring each preset with its pairs."""
     lines = ["---", "prosiform:"]
