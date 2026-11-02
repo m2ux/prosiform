@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-I10 makes the repository's own measurements able to fail. The diagram-following eval's baseline is saturated at 5 of 5 in every cell, so it cannot tell its forms apart; the checks workflow runs by branch name, so a build change on an unmatched branch merges unchecked and an unchecked merge reads like a checked one; the link check reads other branches at whatever they hold when it runs; and an eval session can inherit a hook from its own tree or an ancestor before any read catches it.
+I10 makes the repository's own measurements able to fail. The diagram-following eval's baseline is saturated at 5 of 5 in every cell, so it cannot tell its forms apart; the checks workflow runs by branch name, so a build change on an unmatched branch merges unchecked and an unchecked merge reads like a checked one; the link check reads other branches at whatever they hold when it runs; an eval session can inherit a hook from its own tree or an ancestor before any read catches it; and no eval workflow shows how an agent follows a bundle that defers, composes or dispatches past two hops.
 
 The initiative was split out of I05 with three epics raised as standalone issues and no work items. This record gives every task a work item and a declared component, checks the dependency graph, accounts for every independent pair, and traces each initiative criterion to the goal and to the epic criteria that make it true.
 
@@ -21,7 +21,24 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E02 W01 work item](e02/w01.md) | The preflight refusing every project-scope settings file declaring a hook |
 | [E02 W02 work item](e02/w02.md) | The preflight refusing a managed settings file declaring a hook |
 | [E02 W03 work item](e02/w03.md) | The eval README stating each refused settings file, its scope and the remedy |
-| [Joins](joins.md) | Each independent pair of tasks and why it ships as two pull requests |
+| [E04 W01 work item](e04/w01.md) | Scenarios stating the `pf` runs a session and its sub-agents make |
+| [E04 W02 work item](e04/w02.md) | The `staged` form, given only to a harness with a shell |
+| [E04 W03 work item](e04/w03.md) | The scorer holding a session to its stated `pf` runs |
+| [E04 W04 work item](e04/w04.md) | Each sub-agent's starts and commands, at every dispatch depth |
+| [E04 W05 work item](e04/w05.md) | A skill entry's hand-written `↳` link, bootstrapped and compiled |
+| [E04 W06 work item](e04/w06.md) | Conditional and nested deferral, activated only where the path needs it |
+| [E04 W07 work item](e04/w07.md) | A deferral under matched presets, followed through its `subst` stand-in |
+| [E04 W08 work item](e04/w08.md) | Immediate composition under a conditional step |
+| [E04 W09 work item](e04/w09.md) | Arrow-only directives beside a footnote link, and self-composition |
+| [E04 W10 work item](e04/w10.md) | A deferred dispatch in the entry bundle, compiled then dispatched |
+| [E04 W11 work item](e04/w11.md) | Dispatch three hops deep: a chain, a set, and a question from the deepest level |
+| [E04 W12 work item](e04/w12.md) | A sub-agent's first `pf` run at the first, second and third hop |
+| [E04 W13 work item](e04/w13.md) | The frontmatter and blockquote first-run carriers |
+| [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as `composition-edges.json` |
+| [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
+| [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
+| [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
+| [Joins](joins.md) | Each independent pair, and each same-component pair, that ships as two pull requests |
 
 ## Goal
 
@@ -30,15 +47,18 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 - **G1.** The eval's baseline tells the forms it runs apart.
 - **G2.** A check runs where a change can break the build, states whether it ran, and states the revision it read.
 - **G3.** An eval session reads only what the run gave it.
+- **G4.** Validation refuses a bundle whose reference lands on a destination two documents share.
+- **G5.** The eval measures how an agent follows a bundle that defers, composes or dispatches.
 
 ## Goal Trace
 
 | Goal clause | Initiative criteria | Epics | Epic criteria | Source requirement |
 | --- | --- | --- | --- | --- |
-| G1 | AC1, AC2, AC9 | E00 | E00 AC1–AC4 | No marked source |
+| G1 | AC1, AC2, AC9, AC11, AC12 | E00 | E00 AC1–AC7 | No marked source |
 | G2 | AC3, AC4, AC5, AC7 | E01 | E01 AC1–AC4 | No marked source |
 | G3 | AC6, AC8 | E02 | E02 AC1–AC6 | No marked source |
 | G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
+| G5 | AC13 | E04 | E04 AC1–AC22 | No marked source |
 
 | Initiative criterion | Epic criteria that make it true |
 | --- | --- |
@@ -52,8 +72,11 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | AC8 | E02 AC5, AC6 |
 | AC9 | E00 AC1 |
 | AC10 | E03 AC2 |
+| AC11 | E00 AC6 |
+| AC12 | E00 AC7 |
+| AC13 | E04 AC20, resting on AC1–AC19 and AC22 |
 
-Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
+Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. E04 AC20 makes AC13 true only through the scenarios AC6–AC19 state and the form, scoring and harness AC1–AC5 and AC22 build; AC21 states the result on the eval page. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
 
 ## Design
 
@@ -68,19 +91,32 @@ Every initiative criterion traces to a clause, every clause has a criterion, eve
 - **The managed settings are read after the project scopes.**
   E02 W02 reads the host's managed settings file in the preflight W01 widens, at a path the harness holds so a test can plant it. It extends W01's preflight in the same file, so it follows W01 rather than contending with it, and E02 W03 documents both.
 
+## Composition Following
+
+The agent-behaviour evals of composition, deferral and dispatch are their own epic, E04 ([#579](https://github.com/m2ux/prosiform/issues/579)), rather than rows of E00.
+
+- **Placement.** E00 is the default matrix's separability and its one baseline. The edge evals run only on harnesses with a shell, outside the default matrix, wait on I09:E04 W11 and W12, and end in a live run of their own; as E00 rows they would gate E00's baseline on I09 and on a second paid run. A new epic keeps E00's closure as planned and gives the work its own goal clause, G5.
+- **A shell form outside the default matrix.** Every edge needs `pf` at run time or a bundle set only `pf` builds, so the edges are written in one `staged` form: the compiled bundle set with the build under test on the session's path. It is outside the default `--forms`, and the Claude harness carries no shell, so the default matrix, `baseline.json` and the Non-Goal against adding a form to it are unchanged. The bootstrap edge uses the existing `bootstrap` form.
+- **A scenario states the `pf` runs.** A pass is the agent's path matching the one its bundle states. Where an edge is whether `pf` runs (condition false, nested deferral not needed, a sub-agent's first run), the path alone cannot fail, so a scenario also states each `pf` run and the scorer fails a session whose runs differ.
+- **Refusals are not agent evals.** A gap between symbols, `[⇉→]`, a preset mismatch on deferral and an immediate-plus-deferred pair are build refusals I09:E04's corpus fixtures hold.
+- **The MVP proof boundary.** I09:E05 W26 writes one section-composition workflow activating an unconditional deferral; E04 measures the conditional, nested, preset-matched and dispatched edges, in workflows of their own, so no component is shared.
+- **Its own record.** The live run is committed as `composition-edges.json` with its report; `baseline.json` (E00 W02) and `mvp-proof.json` (I09:E05 W28) are untouched. Failing sessions are recorded by class; no pass bar gates the run.
+- **Units by area.** The form, scenario field, scorer and harness rows are one unit (W01–W04); the deferral scenarios another (W05–W07); immediate composition and directive labels a third (W08–W09); deferred and nested dispatch and the sub-agent's first run a fourth (W10–W12). W13 depends on W12, and W14 and W15 follow the scenarios.
+
 ## Measurement of the Name-Based Trigger
 
 Over the eleven most recent merged pull requests at the time E01 was raised, the `i[0-9][0-9]/**` pattern excluded three that changed 29, 9 and 27 files under `src/`, `fixtures/` or `checks/`, and admitted four that changed no build file. This is the evidence for E01, and it lives here rather than on the checks page, which states the rule as it is.
 
 ## Dependency Check
 
-`deps.py` over the initiative, the three epics, the nine work items and [joins.md](joins.md):
+`deps.py` over the initiative, the five epics, every work item (E03's from the [I09 record](../2026-11-02-463-i09-grouping-and-composition/e01/)) and [joins.md](joins.md), on 2026-11-02:
 
-- **Problems.** None. No unaccounted join.
-- **Longest chain.** Two chains of three steps: E01:W01 → E01:W03 → E01:W04, and E02:W01 → E02:W02 → E02:W03.
-- **Contention within the initiative.** None by declared component.
-- **Proposed epic priority.** E00 1, E01 1, E02 1: no epic depends on another and no rows contend, so the three start together.
-- **Numbering.** E01's link-check row is W02 so the rows follow start order, and E02's managed-settings row is W02 ahead of the README row it feeds; each epic's criteria follow its rows.
+- **Problems.** None. No unaccounted join; E01 W01 and W03, and E02 W01 and W02, extend one component each and stay split with the reason [joins.md](joins.md) records.
+- **Longest chain.** Three chains of five steps, each ending E04:W12 → E04:W13 → E04:W14 → E04:W15, from E04 W01, W02 or W04.
+- **Contention within the initiative.** E04 W04 with E02 W01 and W02 on `evals/diagram-following/harness.py`, and E04 W15 with E02 W03 on `evals/diagram-following/README.md`.
+- **Proposed epic priority.** E00 2, E01 2, E02 2, E03 2, E04 1: the contention puts E04 after E02, and no epic depends on another.
+- **Not checked.** E00 W03 has no work item, so its component is unread.
+- **Numbering.** Rows follow start order; E04's criteria follow its rows, with AC22 split from AC3 at the end.
 
 ## Contention Outside the Initiative
 
@@ -91,6 +127,8 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 | E00:W02 | evals/diagram-following/baseline.json | I07:E00:W11 | evals/diagram-following/baseline.json | Duplicate work; W11 leaves I07 |
 | E02:W01 | evals/diagram-following/harness.py | I07:E00:W08 | evals/diagram-following/harness | Same file, spelled differently |
 | E02:W02 | evals/diagram-following/harness.py | I07:E00:W08 | evals/diagram-following/harness | Same file, spelled differently |
+
+| E04:W15 | evals/diagram-following/README.md | I09:E05:W21, I09:E05:W29 | evals/diagram-following/README.md | I09 delivers first by initiative priority |
 
 E00 W02 and E02 W03 both edit `evals/diagram-following/README.md`, in different sections, from epics that start together.
 
@@ -125,6 +163,13 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **AC1 and AC2.** They stand as written, although E00 AC3 and AC4 differ from them only by naming the dispatch forms and one model.
 - **MVP order.** (User, 2026-11-02.) Initiative priority labels are I08 `priority: 4`, I09 `priority: 3`, I11 MVP Release ([#524](https://github.com/m2ux/prosiform/issues/524)) `priority: 2` and I10 `priority: 1`, so I10 follows the MVP and its release; I07 keeps its label. This supersedes I09's `2` above. `baseline.json` stays E00 W02's: I09:E05's proof run writes `mvp-proof.json` beside it.
 - **I10 precedes I11.** (User, 2026-11-02.) I10 takes `priority: 2` and I11 MVP Release ([#524](https://github.com/m2ux/prosiform/issues/524)) `priority: 1`, so the measurement work is delivered before the release is cut.
+- **Nested dispatch to depth three.** (User, 2026-11-02.) The evals confirm nested dispatch to at least three hops, within the depth the run publishes without `W_DISPATCH_DEPTH`: a chain entry `⇉` A `⇉` B `⇉` C, the same depth with a `⫽` set at one level returning before the chain continues, inner levels carrying a deferred dispatch or a `↳` line whose sub-agent runs `pf` first, and a question from the deepest level relayed up to the user. E04 W11 (AC14–AC16) and W12 (AC18).
+- **Composition-following evals.** (User, 2026-11-02.) Agent-behaviour evals cover a skill's hand-written `↳` link, conditional and nested deferral, preset-matched deferral, a sub-agent's first `pf` run, conditional immediate composition, arrow-only directives, self-composition and a deferred dispatch in the entry bundle. Build refusals are left to I09:E04's fixtures.
+- **E04 placement.** (Planning.) A new epic rather than E00 rows, as [Composition Following](#composition-following) states.
+- **The carrier comparison is planned.** (Planning.) The user chose the Prosiform section for a sub-agent's first run; E04 W13 measures it against a frontmatter entry and a top blockquote line. It is one row and can be dropped alone.
+- **No pass bar on the edge run.** (Planning.) The run measures; failing sessions are recorded by class, and a refused run is not committed.
+- **E04 priority; sibling move held.** (Planning.) E04 carries `priority: 1`, the number the map proposes for it. Moving E00–E03 from `1` to `2`, which separates E04 from E02 on `harness.py` and the eval README, is a re-prioritisation held for the user.
+- **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
 
@@ -134,6 +179,10 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 | Epic | [I10:E00 Corpus Separability](https://github.com/m2ux/prosiform/issues/403) |
 | Epic | [I10:E01 Check Coverage](https://github.com/m2ux/prosiform/issues/454) |
 | Epic | [I10:E02 Session Isolation](https://github.com/m2ux/prosiform/issues/456) |
+| Epic | [I10:E03 Grouping Targets](https://github.com/m2ux/prosiform/issues/455) |
+| Epic | [I10:E04 Composition Following](https://github.com/m2ux/prosiform/issues/579) |
+| Prerequisite | [I09:E04 Section Composition](https://github.com/m2ux/prosiform/issues/460) — W11 and W12 |
+| Overlap | [I09:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/523) |
 | Folded issue | [Contract Reading](https://github.com/m2ux/prosiform/issues/204) — closed as a duplicate of E01's revision row |
 | Overlap | [I07:E00 Review Remediation](https://github.com/m2ux/prosiform/issues/443) |
 | Overlap | [I08:E08 Declared Tree](https://github.com/m2ux/prosiform/issues/465) |
