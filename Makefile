@@ -45,8 +45,8 @@
 # the default matrix within EVAL_BUDGET_TOKENS, which covers every session of
 # that matrix at its default session cap; ARGS passes the runner's options
 # through, a later `--budget-tokens` among them overriding the default. The
-# harness is HARNESS, `claude` or `cursor`, and the CLI it names is what the
-# run drives.
+# harness is HARNESS, `claude`, `cursor` or `opencode`, and the CLI it names
+# is what the run drives.
 #
 # `make render` draws the diagrams of the corpus's diagram-link fixtures with
 # mermaid-cli, which `MERMAID_CLI` names, and fails without one. A Gantt
