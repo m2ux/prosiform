@@ -1,4 +1,4 @@
-description = "A cited target larger than -B that declares prosiform is captured, so the run fails on the byte budget."
+description = "A cited target larger than the file-bytes budget that declares prosiform is captured, so the run fails on the byte budget."
 
 clauses = [
   "Resource limits — file-bytes",
