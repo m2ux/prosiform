@@ -1,4 +1,0 @@
----
-prosiform: {}
----
-API-specific guidance.
