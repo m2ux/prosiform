@@ -12,6 +12,9 @@ This record holds its delivery of `AC5`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W05 work item](w05.md) | The supersession of I08:E07's redirected-referrer criterion |
+| [Validation](validation.md) | The evidence for each check the work item names |
+| [Plan changes](changes.md) | The plan changes this session applied and held |
 
 ## Links
 
