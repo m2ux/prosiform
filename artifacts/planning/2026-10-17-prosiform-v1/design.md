@@ -86,7 +86,7 @@ The pinned adapter and compatibility fixtures define the supported profile. Do n
 
 ## CLI contract
 
-Expose `pf` as the sole executable, with case-sensitive short operational flags and diagnostics on stderr. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: the guide and the help, version and code-listing responses use it. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
+Expose `pf` as the sole executable, with case-sensitive operational flags and diagnostics on stderr. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o` names, the invocation working directory by default. Standard output carries no bundle: the guide and the help, version and code-listing responses use it. The package and product are named Prosiform. Do not add subcommands, remote fetching, watch mode, or persistent caching to the initial interface.
 
 ```text
 pf [OPTIONS] REF [REF ...]
@@ -99,14 +99,13 @@ pf
 | `-o DIR` | The folder the run's own folder is written into, under its automatic name with the `.bundles` suffix, relative to the invocation working directory; the invocation working directory when absent. The folder must exist. `-` names standard output, which carries no bundle, and is refused. A run folder holding any captured source is refused. |
 | `-c` | Discover, bundle, and validate without emitting or publishing the bundle. |
 | `-d text\|json` | Default human-readable diagnostics, or JSON Lines on stderr. |
+| `--budget NAME=VALUE` | Set the resource budget `NAME` to `VALUE`, given once per budget; repeatable. The eight names, their defaults and their counting rules are stated at Resource limits. |
 | `-v` | Report tool version and profile identifier. |
 | `-h` | Show usage, defaults, and exit-status meanings. |
 
-Each resource budget adds one option of its own, declared with its default and its counting rule at Resource limits.
-
 `-c` accepts `-o DIR`, validating every bundle of the run without writing into that folder. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
-A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option, an invalid option value, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
+A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option, an invalid option value, a budget entry Resource limits refuses, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
 ### Usage examples
 
@@ -395,7 +394,7 @@ A document whose governing presets supply no `group` pair keeps its individual f
 - **Unrelated fields have no conversion meaning:** A top-level field the conversion contract does not name, `metadata` among them, states nothing about a run and is neither read nor published, whatever it holds.
 
 - **YAML grammar:** Accept one YAML 1.2 document using the Core schema. An empty or comments-only block is absent metadata; an explicit null document root fails. A nonempty document root must be a mapping. Reject duplicate keys in every mapping, custom tags, aliases and merge keys (`<<`), including in unrelated fields. Document-root and `prosiform` mapping keys must be strings. Elsewhere, safe Core keys and nested collections remain valid; duplicate keys use YAML node equality (tag and canonical value), so boolean and integer keys remain distinct. Printable group characters follow YAML printable characters except line breaks and control characters; spaces within and around a nonblank name are significant. Malformed YAML fails even without conversion keys.
-- **Bounded parsing:** Use a pinned established safe YAML parser, with documented scalar typing, duplicate detection, source marks and resource behavior verified by fixtures. Enforce raw source-byte limits before decoding and YAML collection nesting before constructing nested values. For `-N`, a root mapping or sequence has depth 1, each contained mapping or sequence adds 1, and scalars add 0. YAML depth and Markdown container depth are measured independently against the same limit; exceeding either fails with `E_RESOURCE_LIMIT`. Do not expand aliases or construct custom tagged objects.
+- **Bounded parsing:** Use a pinned established safe YAML parser, with documented scalar typing, duplicate detection, source marks and resource behavior verified by fixtures. Enforce raw source-byte limits before decoding and YAML collection nesting before constructing nested values. For the `nesting` budget, a root mapping or sequence has depth 1, each contained mapping or sequence adds 1, and scalars add 0. YAML depth and Markdown container depth are measured independently against the same limit; exceeding either fails with `E_RESOURCE_LIMIT`. Do not expand aliases or construct custom tagged objects.
 - **Source ownership:** Decode one immutable conversion value, including the declaration its boundary is derived from and every preset it declares, per captured canonical source. Direct entries, ordinary links, fragment-only links and transitive links all use that source's own presets for its content and outgoing references, and the reference reaching it decides which of them are in force. A fragment retains that value even when its frontmatter lies outside the selected region. A shared source reached through different parents has the same declaration and the same derived boundary. Repeated reachability, overlapping fragments and ordinary cycles retain one capture and the existing selection union.
 - **Selection boundary:** Validate syntax and local fields whenever the normal reader opens a source. Aggregate group declarations only after closure selection. Deferred-only targets contribute no content or membership; later activation uses their own settings. External and non-Markdown references retain their classification, and a local Markdown document that declares nothing retains its own, its frontmatter read and no further byte of it. Candidate validation uses the same per-source grouping decisions as rendering.
 - **Operational interface:** Entries, output destination, diagnostics, check mode and resource budgets are invocation parameters. Structural settings come only from source metadata.
@@ -533,26 +532,33 @@ Rebasing a resource path means deciding where the bundle will be read from, whic
 
 Use deterministic configurable limits and fail rather than truncate. These are approved initial engineering defaults, not benchmark-derived limits or guarantees about an agent's context capacity.
 
-| Option | Default | Counting rule |
+| Budget | Default | Counting rule |
 | --- | --- | --- |
-| `-F` | `256` | Distinct normalized source-document identities opened. |
-| `-B` | `1,048,576` | Raw bytes in one source, including frontmatter and any BOM. |
-| `-I` | `16,777,216` | Sum of raw source bytes, once per source identity. |
-| `-O` | `262,144` | Complete UTF-8 bundle, including file headings, structural ancestors, and separators. |
-| `-T` | `4,096` | Distinct canonical document/section targets discovered, even if later subsumed. |
-| `-L` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
-| `-N` | `64` | Markdown syntactic container depth and, independently, YAML collection depth as defined in Conversion metadata; exceeding either limit is an error. |
-| `-E` | `8` | Link hops from the nearest entry reference to a reached target, counted along its shortest path. |
+| `files` | `256` | Distinct normalized source-document identities opened. |
+| `file-bytes` | `1,048,576` | Raw bytes in one source, including frontmatter and any BOM. |
+| `input-bytes` | `16,777,216` | Sum of raw source bytes, once per source identity. |
+| `output-bytes` | `262,144` | Complete UTF-8 bundle, including file headings, structural ancestors, and separators. |
+| `targets` | `4,096` | Distinct canonical document/section targets discovered, even if later subsumed. |
+| `links` | `32,768` | Authored link/image occurrences examined in selected content, once per source occurrence. |
+| `nesting` | `64` | Markdown syntactic container depth and, independently, YAML collection depth as defined in Conversion metadata; exceeding either limit is an error. |
+| `depth` | `8` | Link hops from the nearest entry reference to a reached target, counted along its shortest path. |
 
-Every budget holds per bundle. Each bundle a run publishes is read by one agent and compiled from its own entry, so `-E` counts hops from that entry and every other budget counts what that bundle alone opens, reaches and publishes; a dispatched target crossing one fails the run while the entry's own closure stays within it.
+Every budget holds per bundle. Each bundle a run publishes is read by one agent and compiled from its own entry, so `depth` counts hops from that entry and every other budget counts what that bundle alone opens, reaches and publishes; a dispatched target crossing one fails the run while the entry's own closure stays within it.
 
 Crossing any of these fails the compilation with `E_RESOURCE_LIMIT`, and the diagnostic names the budget crossed and the figure that crossed it. One code covers all eight because one remedy does: the sources are restructured or the number is raised, and the figure the run reports is what says which.
 
-Accept positive decimal integer overrides; zero must not mean unlimited. Traverse iteratively; the expansion-depth budget is a declared constraint on how far a chain of references may reach, not a recursive-call-depth cap, and a cyclic graph within the budget bundles normally.
+A run sets a budget with `--budget NAME=VALUE`, naming it from the table above, and a budget no entry names stands at its default. A value is a positive decimal integer, so zero never means unlimited. Each of these entries is refused with `E_INVALID_USAGE`, exit status 2, before any source is read:
+
+- **Unknown name:** a name outside the eight; the diagnostic names it and the eight admitted.
+- **Malformed entry:** an entry carrying no `=`, an empty name, or a value that is no positive decimal integer.
+- **Name given twice:** a second entry naming a budget an earlier entry named, because only one of the two orders would make a run reproducible.
+- **Nesting floor:** `nesting` below 2. A `prosiform` declaration is a mapping inside the frontmatter mapping, two YAML collection levels deep, so a lower ceiling refuses every declaring document; the diagnostic names 2 as the least value.
+
+Traverse iteratively; the `depth` budget is a declared constraint on how far a chain of references may reach, not a recursive-call-depth cap, and a cyclic graph within the budget bundles normally.
 
 *Expansion depth* constrains the shape of a reference graph rather than its size, which the file, byte and target budgets bound. It exists so a document reaches what governs it directly, and a chain that outgrows the budget is a prompt to restructure the sources rather than to raise the number.
 
-Enforce `-N` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
+Enforce `nesting` as an explicit failure, not merely a parser option that could silently reinterpret over-deep syntax. Apply necessary parsing-safety limits to the complete opened source being indexed, even when the requested section is narrower, and include that enforcement in the parser fixture gate.
 
 The wrapper must enforce any smaller transport limit; 256 KiB is not universally safe for agent delivery. Do not estimate tokens by dividing bytes by a constant; future token budgets must name and pin the tokenizer.
 
@@ -582,7 +588,7 @@ An unrelated broken link in an unselected sibling must not fail bundling. If clo
 
 An opened file can nevertheless fail because an unselected construct exceeds a declared file-wide parsing-safety limit. Diagnose this as inability to safely index the containing source, not as an inferred dependency on that sibling.
 
-Keep `-L` scoped to authored occurrences in the selected closure. If full-file indexing needs another work budget or instrumentation, specify it separately rather than silently changing that option's meaning.
+Keep `links` scoped to authored occurrences in the selected closure. If full-file indexing needs another work budget or instrumentation, specify it separately rather than silently changing that budget's meaning.
 
 ### Source and candidate validation modes
 
@@ -682,7 +688,7 @@ Before broad implementation, create small fixtures with exact expected bundles o
 - **Destinations:** A unique bundled heading taking a bare slug, repeated bundled headings taking ordinals in bundle order, a source fragment ambiguous within one document refused, two documents whose file headings coincide taking ordinals and a warning, same-basename paths in different directories, and a file group whose file heading does not imply whole-document inclusion.
 - **References:** Definitions outside a selected section, conflicting labels, unused definition removal, unresolved bracketed text remaining literal, reference-style images and titles, fragment-only links, and unsupported raw HTML document links.
 - **Deferral:** A marked reference contributing nothing to the bundle, the mark and the blanks following it removed from the published link because its destination states the deferral, a mark with no space after it compiled as an ordinary link, a fragment-only reference deferred the same way, a deferred link standing unrewritten where another reference carried its target, a deferred reference naming no document and one naming no heading each refused, a deferred link naming a remote address, a resource or a document that declares nothing and a deferred image each refused, and a deferred link published with its target's URI-escaped path from the invocation working directory.
-- **Dispatch:** A dispatched reference contributing nothing to the bundle carrying it and compiled to a bundle of its own, its link published without its mark and pointing at a dispatch sub-section naming that bundle, a dispatched target named by its working-directory path and fragment, a sub-section placed after its section's own content and before its child sections, a link opening with the deferral mark and the dispatch operator refused with the link named, a mark with no space after it compiled as an ordinary link with no warning, a dispatched link naming a remote address, a resource or a document that declares nothing and a dispatched image each refused, a chain of exactly three dispatches publishing four bundles with no warning, a fourth hop warning, a cycle of dispatches refused, a dispatch of its own whole document from a section refused as a cycle, a dispatched section of the entry's own document counted as a hop, a dispatched section carrying numbered steps, a dispatched section of headings and bullets and a dispatched document whose only numbered list is code each publishing with no diagnostic, a dispatch naming a section of its own document by fragment or by path warning once, a dispatched target crossing `-F` while the entry stays within it failing, a dispatch in a level-6 section refused, a link wrapped across lines, broken by a hard line break or ending in a space naming a one-line sub-section heading, a link with no text after its mark refused, an authored heading equal to a dispatch sub-section's or to `Prosiform` refused, and an authored `Prosiform` or `Dispatch in parallel` heading publishing where the bundle emits none.
+- **Dispatch:** A dispatched reference contributing nothing to the bundle carrying it and compiled to a bundle of its own, its link published without its mark and pointing at a dispatch sub-section naming that bundle, a dispatched target named by its working-directory path and fragment, a sub-section placed after its section's own content and before its child sections, a link opening with the deferral mark and the dispatch operator refused with the link named, a mark with no space after it compiled as an ordinary link with no warning, a dispatched link naming a remote address, a resource or a document that declares nothing and a dispatched image each refused, a chain of exactly three dispatches publishing four bundles with no warning, a fourth hop warning, a cycle of dispatches refused, a dispatch of its own whole document from a section refused as a cycle, a dispatched section of the entry's own document counted as a hop, a dispatched section carrying numbered steps, a dispatched section of headings and bullets and a dispatched document whose only numbered list is code each publishing with no diagnostic, a dispatch naming a section of its own document by fragment or by path warning once, a dispatched target crossing `files` while the entry stays within it failing, a dispatch in a level-6 section refused, a link wrapped across lines, broken by a hard line break or ending in a space naming a one-line sub-section heading, a link with no text after its mark refused, an authored heading equal to a dispatch sub-section's or to `Prosiform` refused, and an authored `Prosiform` or `Dispatch in parallel` heading publishing where the bundle emits none.
 - **Parallel dispatch:** The `⫽` links of one section pointing, without their marks, at one `Dispatch in parallel` sub-section listing each target's bundle; a target named twice in one set listed once; a section carrying `⇉` and `⫽` links with a sub-section for each `⇉` target and one for its set; a `⫽` target holding a paragraph, a numbered list or an item linking no document publishing with no diagnostic; a link opening with the parallel dispatch mark and the dispatch operator refused; a `⫽` link naming a remote address refused; and a mark with no space after it compiled as an ordinary link.
 - **Prosiform section:** A bundle using the dispatch operator opening with the Dispatch protocol alone; a bundle using the parallel dispatch mark opening with the Dispatch and Parallel dispatch protocols; a bundle using both stating each once; a bundle using neither carrying no Prosiform section; the section following an entry's preamble and preceding a file heading; each sub-section's instruction linking its protocol; and an authored heading equal to a protocol heading pf emits refused.
 - **Extraction:** ATX and Setext roots, rejection of nested-heading targets, nested headings not terminating outer selections, and original duplicate numbering including ineligible headings.
