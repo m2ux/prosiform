@@ -21,5 +21,7 @@ This record holds its delivery of `AC14`: the work item, the validation evidence
 | Resource | Link |
 | --- | --- |
 | Epic | [I09:E04 Section Composition](https://github.com/m2ux/prosiform/issues/460) |
+| Pull request | [#577](https://github.com/m2ux/prosiform/pull/577) |
+| Review pull request | [#556](https://github.com/m2ux/prosiform/pull/556) |
 | Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
 | Epic record | [Grouping and Composition](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) |

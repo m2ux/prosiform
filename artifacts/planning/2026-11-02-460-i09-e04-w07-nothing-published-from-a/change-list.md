@@ -9,7 +9,7 @@ The plan changes the W07 delivery session applied and held.
   - The I09 record's Decisions carry it.
   - The docs reference page and the glossary state it.
   - The README pin moves to `aa97db93`.
-- **Delivery recorded.** W07's row links its pull request, `AC14` is ticked on [#460](https://github.com/m2ux/prosiform/issues/460) on merge, and review pull request [#556](https://github.com/m2ux/prosiform/pull/556) carries the change. These record the delivery and do not change the plan.
+- **Delivery recorded.** [#577](https://github.com/m2ux/prosiform/pull/577) merged into `i09/e04/main` at `55bcad6e`. W07's row links it and is marked Done, `AC14` is ticked on [#460](https://github.com/m2ux/prosiform/issues/460), and review pull request [#556](https://github.com/m2ux/prosiform/pull/556) carries the change and gains the missing W06 reference. These record the delivery and do not change the plan.
 
 ## Held
 
