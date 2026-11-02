@@ -17,7 +17,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [Composition](composition.md) | How a directive places a section beneath the section that writes it, and the grammar it is written in |
 | [Destinations](destinations.md) | How a heading is named and how each link is rewritten |
 | [Dispatch](dispatch.md) | How dispatched material becomes a bundle of its own |
-| [Bundles](bundles.md) | Derived names, publication and delivery |
+| [Bundles](bundles.md) | The bundle set, derived names, publication, the output folder and delivery |
 | [Validation](validation.md) | The invariants a bundle is held to, the diagnostics and the budgets |
 
 ## Reference
@@ -28,9 +28,9 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [Fixture corpus](../fixtures/README.md) | The behavioural contract, stated as cases |
 | [Glossary](glossary.md) | Every term the contract uses, defined once |
 | [Versioning](versioning.md) | What the contract's and each build's version numbers assert |
-| [Diagram Renderer](diagram-renderer.md) | Render one entry and its dependencies as a diagram |
+| [Diagram Renderer](diagram-renderer.md) | Draw the files one entry reads beside the bundles it writes, and re-render the architecture pages' examples |
 | [Output budget](output-budget.md) | The bundled size of a measured closure, and how to re-take it |
 
 ## Commands
 
-[Checks](../checks.md) states each target the  declares and what it asserts. `make check` runs the set, stopping at the first failure.
+[Checks](../checks.md) states each target the [`Makefile`](../Makefile) declares and what it asserts. `make check` runs the set, stopping at the first failure.
