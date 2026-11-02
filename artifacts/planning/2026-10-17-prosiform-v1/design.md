@@ -106,31 +106,6 @@ pf
 
 A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option, an invalid option value, a budget entry Resource limits refuses, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
-### Usage examples
-
-```bash
-# Each source declares `prosiform`, which is what admits it to a bundle.
-pf work-planner/modes/align-mode.md
-pf 'work-planner/modes/align-mode.md#prerequisites'
-
-# Distinct selections share one bundle, in a folder of their joined name under -o.
-pf -o build work-planner/SKILL.md \
-  'work-planner/modes/align-mode.md#prerequisites'
-
-# Full compilation and validation, without publication.
-pf -c 'work-planner/modes/align-mode.md#prerequisites'
-```
-
-For these examples, `work-planner/modes/align-mode.md` declares the following frontmatter and contains an eligible `prerequisites` heading. `work-planner/SKILL.md` declares `prosiform` alone. The examples specify the file-owned invocation contract; runtime conformance must execute them against an identified candidate and specimen tree.
-
-```yaml
----
-prosiform:
-  default:
-    group: {modes: 2}
----
-```
-
 ### Guide
 
 `pf` with no arguments prints the *guide* to standard output and exits `0`: what an agent needs before it compiles anything. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. The guide is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. No option prints it, and `-h` states that a bare `pf` does.
