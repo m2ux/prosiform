@@ -1,4 +1,4 @@
-description = "A key that matched no reference states that it substituted nothing and the run publishes its bundle unchanged at exit status 0, because a fixture whose mapping named nothing mocks nothing and whatever it asserts would otherwise pass for the wrong reason."
+description = "A key that matched no reference states that it substituted nothing and the run publishes its bundle unchanged at exit status 0, because a fixture whose pair named nothing substitutes nothing and whatever it asserts would otherwise pass for the wrong reason."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "unrelated.md=stand-in.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0

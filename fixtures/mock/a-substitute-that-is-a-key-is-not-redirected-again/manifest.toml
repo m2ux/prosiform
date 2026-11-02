@@ -1,4 +1,4 @@
-description = "A substitute whose own path is another mapping key is read from disk rather than redirected a second time, so the bundle carries it and the key naming it is reported unused, which is what makes a mapping a lookup table rather than a chain."
+description = "A substitute whose own path is another subst key is read from disk rather than redirected a second time, so the bundle carries it and the key naming it is reported unused, which is what makes the pairs a lookup table rather than a chain."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "a.md=b.md", "-m", "b.md=c.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0

@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "rules.md=stand-in.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
