@@ -126,6 +126,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 ## Decisions
 
+- **A hand-written ↳ link sits outside compiled sources.** (User, 2026-11-02.) `↳` tells the agent to run `pf` on the link, bootstrapping `pf` where needed; it is hand-written only in files the run does not compile, such as a skill entry declaring no `prosiform`, and a compiled source asks for it with `[¬→]`. No rule governs a `↳` link inside a declared source.
 - **A deferral keeps its step's presets or is refused.** (User, 2026-11-02.) A deferred directive whose containing heading selects other presets than its target's own heading selects is refused, naming the link and both selections: activation selects by the target's heading, and no option names a referrer, so deferred content would compile otherwise than composed. Row W11, AC20.
 - **A section is composed or deferred, not both.** (User, 2026-11-02.) A scope that composes a section immediately and also defers it is refused, naming both directives. Row W11, AC21.
 - **No authoring guidance on conditional composition.** (User, 2026-11-02.) The grammar page states no rule about deferring conditionally needed content.
