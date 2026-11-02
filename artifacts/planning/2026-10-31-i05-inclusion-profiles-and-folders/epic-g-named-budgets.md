@@ -53,7 +53,7 @@ Eight options of one shape are one decision printed eight times.
 
 - [ ] **AC1.** `--budget files=512` bounds the count of distinct source documents at 512, and a run crossing it fails with `E_RESOURCE_LIMIT` naming the ceiling, as the corpus fixture `fixtures/limits/a-named-budget-bounds-the-run` shows.
 - [ ] **AC2.** An entry naming a ceiling outside the eight, and an entry carrying no `=`, an empty name or a value that is no positive decimal integer, each fail with `E_INVALID_USAGE` and exit status `2`, as the corpus fixtures `fixtures/cli/an-unknown-budget-name-is-invalid-usage` and `fixtures/cli/a-malformed-budget-entry-is-invalid-usage` show.
-- [ ] **AC3.** Every ceiling a run does not name stands at its declared default, and `LIMITS` holds one entry per `Budget`, as `src/tests/test_limits.py` shows.
+- [ ] **AC3.** Every ceiling a run does not name stands at its declared default, and the `Limits` a run holds carries one entry per `Budget`, as `src/tests/test_limits.py` shows.
 - [ ] **AC4.** Every corpus fixture that passed a budget passes its name instead, and its expected result is unchanged, as `make corpus` shows.
 - [ ] **AC5.** Two entries naming one ceiling are refused with `E_INVALID_USAGE`, as the corpus fixture `fixtures/cli/a-budget-named-twice-is-refused` shows.
 - [ ] **AC6.** The design states the option, the eight names and their counting rules, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.

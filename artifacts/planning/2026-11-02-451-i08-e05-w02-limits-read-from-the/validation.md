@@ -20,3 +20,7 @@ Evidence for each check the work item names, run in the task worktree with `PROS
 ## Repository check
 
 `make check` exits 0 at `79c29079`: lock, lint, format, typecheck, steps, authoring, boundary, test (1584 passed), harness (1157 passed), corpus (427 fixtures, 427 pass), smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock scenarios.
+
+## Merge
+
+Continuous integration passed on `79c29079`, and [#554](https://github.com/m2ux/prosiform/pull/554) merged into `i08/e05/main` as `92d2f50f`.
