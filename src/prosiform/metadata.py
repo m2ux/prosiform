@@ -35,9 +35,8 @@ RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 """Refused: `group-depth` pairs each group with its depth in one entry."""
 DEPTH = "group-depth"
-EXCLUDE = "exclude"
 SUBST = "subst"
-FIELDS = (DEPTH, EXCLUDE, SUBST)
+FIELDS = (DEPTH, SUBST)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -99,20 +98,6 @@ class Membership:
 
 
 @dataclass(frozen=True)
-class Exclusion:
-    """One `exclude` entry: a section of the declaring document, named by its text.
-
-    `level` is the heading level a mapping entry names, which tells two
-    headings of one name apart; a bare name leaves it absent and names
-    the section at whatever level it stands. The location is the entry's.
-    """
-
-    name: str
-    level: int | None
-    location: Location
-
-
-@dataclass(frozen=True)
 class Subst:
     """One `subst` entry: an original reference mapped to its alternative.
 
@@ -131,13 +116,12 @@ class Preset:
 
     `memberships` holds each `group-depth` entry in written order, so the
     declaring document joins every group it names; a preset stating none
-    leaves the document its individual file group. `exclusions` and
-    `substs` hold each `exclude` and `subst` entry in written order.
+    leaves the document its individual file group. `substs` holds each
+    `subst` entry in written order.
     """
 
     name: str
     memberships: tuple[Membership, ...] = ()
-    exclusions: tuple[Exclusion, ...] = ()
     substs: tuple[Subst, ...] = ()
 
 
@@ -534,7 +518,6 @@ def _preset(preset: str, mapping: _Node) -> Preset:
     return Preset(
         preset,
         tuple(_membership(preset, name, entry) for name, entry in entries(DEPTH)),
-        tuple(_exclusion(name, entry) for name, entry in entries(EXCLUDE)),
         tuple(_subst(name, entry) for name, entry in entries(SUBST)),
     )
 
@@ -614,39 +597,6 @@ def _membership(preset: str, name: str, entry: _Node) -> Membership:
             depth.location,
         )
     return Membership(preset, group.value, level, group.location, depth.location)
-
-
-def _exclusion(name: str, entry: _Node) -> Exclusion:
-    """One `exclude` entry, a section name or one name mapped to its level.
-
-    The name is the heading's text rather than a reference, so no `#` is
-    written and nothing in it is decoded.
-    """
-    if entry.kind == "str":
-        section, level = entry, None
-    else:
-        section, written = _pair(
-            name,
-            entry,
-            "a section name, or a mapping holding one section and its heading "
-            "level, as {<section>: <level>}",
-            "section",
-        )
-        level = _level(written)
-        if level is None:
-            raise _fail(
-                INVALID_CONVERSION_METADATA,
-                f"{name} for section {section.value!r} must be a heading level, "
-                "an integer from 1 through 6",
-                written.location,
-            )
-    if not _single_line(section.value):
-        raise _fail(
-            INVALID_CONVERSION_METADATA,
-            f"{name} must name a section printable, single-line and nonblank",
-            section.location,
-        )
-    return Exclusion(section.value, level, entry.location)
 
 
 def _subst(name: str, entry: _Node) -> Subst:
