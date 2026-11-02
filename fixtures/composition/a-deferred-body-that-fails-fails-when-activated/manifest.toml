@@ -1,0 +1,18 @@
+description = "The run a deferred directive's line names validates the body the deferring run withheld, so an implementation carrying raw HTML fails there, naming the line, and publishes nothing. The sources are those of the fixture whose deferring run succeeds."
+
+clauses = [
+  "Section composition — Activation",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["fetch.md#implementation"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RAW_HTML"
+source = "fetch.md:12"

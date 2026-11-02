@@ -1,0 +1,16 @@
+description = "The run a deferred directive's line names compiles its target as an entry: the implementation's body is validated and published, its immediate directive composes beneath it, and its own deferred directive is deferred again, keeping its place with a line of its own. The sources are those of the fixture whose step defers this implementation."
+
+clauses = [
+  "Section composition — Activation",
+  "Section composition — Deferred composition",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["fetch.md#implementation"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/fetch__implementation.bundle.md"]
+diagnostics = []
