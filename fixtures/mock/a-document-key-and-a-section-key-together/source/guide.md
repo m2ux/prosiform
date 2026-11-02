@@ -1,5 +1,5 @@
 ---
-prosiform: {}
+prosiform: {default: {subst: [{rules.md: rules-copy.md}, {rules.md#escalation: escalation-copy.md}]}}
 ---
 # Guide
 

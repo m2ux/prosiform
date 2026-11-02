@@ -1,5 +1,5 @@
 ---
-prosiform: {}
+prosiform: {default: {subst: [{unrelated.md: stand-in.md}]}}
 ---
 # Guide
 
