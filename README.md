@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/187478e44853a76269c36bc03dbdbb7b3e658048/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/cf38246875a950d6d46c540de6267a0ce5324b92/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
@@ -28,16 +28,9 @@ Leaving retrieval to the agent costs:
 
 ### How It Works
 
-Diagram example from `example/`, using [my-skill](example/my-skill/SKILL.md).
+`SKILL.md` links a procedure, and the procedure links the rules it is held to. One run over `SKILL.md` reads all three files and writes one bundle, in which each link that named another file names a heading inside it. [Bundles](docs/bundles.md) walks through the run.
 
-```bash
-cd example/my-skill
-pf procedure.md rules/common.md
-```
-
-The Common and Agents files each declare group `rules` and depth `1`.
-
-![SKILL.md selects procedure.md and rules/common.md. Procedure includes tips.md; Rules includes rules/agents.md. In the bundle, procedure+rules_common.bundle.md, arrows connect the Tips and Agents links to their bundled sections. The bundle groups Common and Agents beneath Rules; Agents directs each harness to its deferred Codex or Claude rules. SKILL.md and the harness-specific rules are excluded.](docs/images/compilation.png)
+![SKILL.md, modes/review.md and rules.md on the left. On the right, one bundle: Work Planner, Review Mode with its Procedure, and Rules with Tests. Every link now points inside the bundle.](docs/images/run.svg)
 
 ## Installation
 
@@ -49,7 +42,7 @@ pf -v
 ```
 ## Usage
 
-Run these from the repository root. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the folder `-o` names, made if absent: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
+Each example below runs over a [corpus fixture](fixtures/README.md)'s source tree from the repository root, and the fixture records the bundles the run writes. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the folder `-o` names, made if absent: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
 
 ### Print the Guide
 
@@ -62,17 +55,19 @@ With no arguments, `pf` prints the guide an agent follows a skill by: the compil
 ### Bundle a Source and its Dependencies
 
 ```bash
-pf example/work-planner/modes/align-mode.md
+cd fixtures/dispatch/a-dispatched-target-is-a-bundle-of-its-own/source
+pf guide.md
 ```
 
 ### Compile a Selected Section
 
 ```bash
-pf 'example/work-planner/artifacts/epic.md#delivery-findings'
+cd fixtures/extraction/section-to-the-next-sibling/source
+pf 'guide.md#run'
 ```
 
 ### Dispatch to Sub-agents
 
-A link whose text opens with `⇉` dispatches its target, as Align Mode's link to Delivery Recording does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
+A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
 
 A bundle that dispatches opens with a `# Prosiform` section stating how: `## Dispatch` whenever it dispatches, and `## Parallel dispatch` when it carries a set. Each sub-section links the protocol it follows, and the protocols are the same bytes in every bundle.

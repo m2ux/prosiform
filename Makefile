@@ -9,9 +9,9 @@
 # nothing. The corpus, invocation, conformance and independence checks reach
 # the build under test through the corpus runner, and the last two read the
 # corpus through the manifest reader beside it, which reads `jsonschema` from
-# that same group, so the four run through it. The smoke, layout, table, link,
-# vocabulary, step and authoring checks depend on the standard library alone and
-# run under `python3` directly.
+# that same group, so the four run through it. The smoke, layout, table, link
+# and vocabulary checks depend on the standard library alone and run under
+# `python3` directly.
 #
 # `make smoke` is the one check that does not run the build from this
 # checkout: it builds the wheel, installs it into a throwaway environment and
@@ -54,25 +54,6 @@
 # mermaid-cli ships. mermaid-cli and the headless browser it drives are no
 # dependency of the build, so `make check` leaves it out.
 #
-# `make steps` and `make authoring` read the work-planner example alone and
-# need no build. `make steps` holds every procedure's steps to the heading
-# convention its guidelines state; `make authoring` reports where the example
-# departs from the authoring rules, by file and area, and fails while any
-# departure remains, so the rules the example meets are held by the checks
-# rather than by review.
-#
-# `make boundary` prints the boundary each work-planner example document
-# derives from its own links and fails on a link naming a path outside it. The
-# boundary is the build's own answer, so the check imports the build from the
-# locked environment and runs through it.
-#
-# `make check` names all three ahead of `make test` and `make corpus`, the two
-# targets that bundle the example. `make test` copies the example and compiles
-# each of its modes, and `make corpus` does so through the usage-example
-# fixtures, so a rule break in a document a guard reads alters the bundle those
-# targets compare: run first, the guard names the file and the rule where those
-# targets report only the bytes that moved.
-#
 # Every target below is named by a command table in one of the repository's
 # documents, which `make tables` holds true in both directions.
 
@@ -82,9 +63,9 @@ HARNESS := claude
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence steps authoring boundary render examples eval-diagrams
+.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render examples eval-diagrams
 
-check: lock-check lint format-check typecheck steps authoring boundary test harness corpus smoke layout tables links vocabulary invocation conformance independence
+check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
 test:
 	cd src && uv run --frozen pytest
@@ -130,15 +111,6 @@ conformance:
 
 independence:
 	$(UV_RUN) python checks/independence.py
-
-steps:
-	python3 checks/steps.py
-
-authoring:
-	python3 checks/authoring.py
-
-boundary:
-	$(UV_RUN) python checks/boundary.py
 
 render:
 	python3 checks/render.py

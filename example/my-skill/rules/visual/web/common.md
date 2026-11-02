@@ -1,4 +1,0 @@
----
-prosiform: {}
----
-Web-specific guidance.
