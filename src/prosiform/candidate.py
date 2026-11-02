@@ -15,7 +15,7 @@ against the other, so an agreement means the candidate says what its
 construction recorded rather than that it is internally consistent.
 
 The invariants checked here are block boundary safety, target
-integrity, exactly-once coverage,
+integrity, exactly-once coverage within each group,
 absence of new links, absence of surviving definitions, reference
 preservation, outline preservation, depth safety, group isolation, one
 intended destination per rewritten link, and the two
@@ -819,22 +819,25 @@ def structural(
 
 
 def coverage(groups: Sequence[Group]) -> None:
-    """Hold each selected source region to being carried once and only once.
+    """Hold each selected source region to being carried once within each group.
 
     A region is named by the lines of its source's content it occupies,
     which two regions carrying the same prose do not share, so repeated
     identical prose in different source regions is not duplication and
     counting occurrences of a string decides nothing here.
 
-    The ranges are read by source rather than by group, because a
-    declared group arranges one document's regions among another's and
-    two regions of one source overlap wherever they are emitted.
+    The ranges are read by source within each group, because a declared
+    group arranges one document's regions among another's and two
+    regions of one source overlap wherever the group emits them. A
+    document two links place in different groups is carried once in
+    each, since each group is a separate top-level division of the
+    bundle.
     """
-    carried: dict[str, list[tuple[int, int]]] = {}
-    for one in groups:
+    carried: dict[tuple[int, str], list[tuple[int, int]]] = {}
+    for at, one in enumerate(groups):
         for each in one.record.ranges:
-            carried.setdefault(each.path, []).append(each.lines)
-    for path, held in carried.items():
+            carried.setdefault((at, each.path), []).append(each.lines)
+    for (_, path), held in carried.items():
         last = 0
         for span in sorted(held):
             if held.count(span) > 1:

@@ -60,8 +60,8 @@ SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 ARTIFACT = (
     "---\n"
     "prosiform:\n"
-    '  group: "artifacts"\n'
-    "  group-depth: 2\n"
+    "  default:\n"
+    "    group: {{artifacts: 2}}\n"
     "---\n"
     "# {title}\n"
     "\n"
@@ -79,8 +79,8 @@ ARTIFACT = (
 MODE = (
     "---\n"
     "prosiform:\n"
-    '  group: "modes"\n'
-    "  group-depth: 2\n"
+    "  default:\n"
+    "    group: {{modes: 2}}\n"
     "---\n"
     "# Plan Mode\n"
     "\n"

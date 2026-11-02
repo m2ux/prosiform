@@ -1,6 +1,7 @@
 description = "A member whose filename stem is a hyphen alone carries no word, so the run of its path that tells it apart from the other members names nothing; the member is named by its path text in title case, whose Markdown suffix always carries a word, and a whole-document reference to it resolves to that subsection."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping — Document content above the grouping depth",
   "Grouping — Variants by document",
   "Bundle destinations — Document destinations",

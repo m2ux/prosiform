@@ -1,0 +1,26 @@
+description = "Each subst side is a reference the reference grammar reads: a side quoted for its colon and space is admitted, and a side carrying a query is refused, so the second entry fails with E_INVALID_CONVERSION_METADATA at the entry, naming the side, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — subst holds colon pairs",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.subst[1] side 'stub.md?draft' carries the query 'draft'"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 6
+column = 9

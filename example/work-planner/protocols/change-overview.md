@@ -1,7 +1,7 @@
 ---
 prosiform:
-  group: "protocols"
-  group-depth: 1
+  default:
+    group: {protocols: 1}
 ---
 # Change Overview
 

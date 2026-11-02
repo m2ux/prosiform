@@ -1,6 +1,7 @@
 description = "Two documents merged at one heading level split pooled sections into a variant per document, with each document's text and subheadings beneath its variant. Body text and subheading contributions take the same arrangement; a section contributed by only one document is left bare."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping — Group structure",
   "Grouping — Verbatim names",
   "Grouping — Document-keyed sections",

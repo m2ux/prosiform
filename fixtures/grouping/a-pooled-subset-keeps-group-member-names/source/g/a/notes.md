@@ -1,7 +1,7 @@
 ---
 prosiform:
-  group: "g"
-  group-depth: 2
+  default:
+    group: {g: 2}
 ---
 First preamble.
 

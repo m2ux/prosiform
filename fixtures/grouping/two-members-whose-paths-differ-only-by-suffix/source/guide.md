@@ -1,7 +1,7 @@
 ---
 prosiform:
-  group: "guides"
-  group-depth: 2
+  default:
+    group: {guides: 2}
 ---
 # Guide
 

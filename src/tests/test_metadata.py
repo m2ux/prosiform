@@ -11,6 +11,9 @@ from prosiform.limits import FILE_BYTES, SCALAR_DIGITS
 from prosiform.metadata import (
     Conversion,
     InvalidMetadata,
+    Membership,
+    Preset,
+    Subst,
     decode,
 )
 
@@ -32,6 +35,22 @@ def parse(
         max_bytes=len(raw) if max_bytes is None else max_bytes,
         max_depth=depth,
     )
+
+
+def preset(fields: str) -> str:
+    """A `prosiform` mapping whose `default` preset holds the given flow fields."""
+    return "prosiform: {default: {" + fields + "}}"
+
+
+def paired(value: str) -> str:
+    """A `prosiform` mapping whose `default` preset holds this `group` value."""
+    return preset("group: " + value)
+
+
+def joined(conversion: Conversion) -> tuple[str, int] | None:
+    """The group the `default` preset joins, with its depth, where it states one."""
+    one = conversion.default.membership
+    return None if one is None else (one.group, one.depth)
 
 
 @pytest.mark.parametrize(
@@ -61,20 +80,163 @@ def test_an_empty_block_declares(text: str) -> None:
 
 
 def test_a_grouped_block_declares() -> None:
-    assert parse("prosiform: {group: rules, group-depth: 2}").declared
+    assert parse(paired("{rules: 2}")).declared
+
+
+def test_every_key_names_a_preset_holding_a_mapping() -> None:
+    result = parse(
+        "prosiform:\n"
+        "  default: {group: {rules: 2}}\n"
+        "  Target: {subst: [{checks.md: stub.md}]}"
+    )
+    assert [one.name for one in result.presets] == ["default", "Target"]
+    assert joined(result) == ("rules", 2)
+    assert result.presets[1].substs == (
+        Subst("checks.md", "stub.md", Location("rules/a.md", 4, 20)),
+    )
+
+
+@pytest.mark.parametrize("value", ['"x"', "1", "null", "true", "[]", "[a]"])
+def test_a_preset_key_holding_anything_but_a_mapping_is_refused(value: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform:\n  Target: " + value)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.Target must be a mapping" in diagnostic.message
+    assert diagnostic.location == Location("rules/a.md", 3, 11)
+
+
+@pytest.mark.parametrize("field", ["group", "subst"])
+def test_a_field_outside_its_preset_names_the_preset_it_belongs_in(
+    field: str,
+) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(f"prosiform: {{{field}: x}}")
+    message = caught.value.diagnostic.message
+    assert f"prosiform.{field} must be a mapping" in message
+    assert f"prosiform.default.{field}" in message
+
+
+def test_a_document_declaring_no_default_is_compiled_under_an_empty_one() -> None:
+    result = parse("prosiform: {Target: {group: {rules: 2}}}")
+    assert result.default == Preset("default")
+    assert parse("prosiform: {}").default == Preset("default")
+
+
+def test_an_empty_preset_states_nothing() -> None:
+    assert parse("prosiform: {default: {}}") == Conversion(
+        declared=True, presets=(Preset("default"),)
+    )
+
+
+def test_subst_holds_a_list() -> None:
+    assert parse(preset("subst: []")).default == Preset("default")
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(preset("subst: x"))
+    assert "prosiform.default.subst must be a list" in str(caught.value)
 
 
 def test_group_and_marks() -> None:
     result = parse(
-        'prosiform:\r\n  group: " règles "\r\n  group-depth: 2\r\n',
+        'prosiform:\r\n  default:\r\n    group:\r\n      " règles ": 2\r\n',
         prefix="\ufeff---\r\n",
+    ).default
+    assert result.membership == Membership(
+        "default",
+        " règles ",
+        2,
+        Location("rules/a.md", 5, 7),
+        Location("rules/a.md", 5, 19),
     )
-    assert result.group == " règles "
-    assert result.depth == 2
-    assert result.group_location == Location("rules/a.md", 3, 10)
-    assert result.depth_location == Location("rules/a.md", 4, 16)
     with pytest.raises(FrozenInstanceError):
-        result.group = "changed"  # type: ignore[misc]
+        result.membership.group = "changed"  # type: ignore[misc]
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "{modes: 1, targets: 2}",
+        "{3: 1}",
+        "{null: 1}",
+        "{true: 1}",
+        "{2.0: 1}",
+        "{}",
+        "modes",
+        "[modes, 1]",
+    ],
+)
+def test_a_malformed_group_pair_is_refused_at_its_value(value: str) -> None:
+    text = paired(value)
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(text)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.default.group must" in diagnostic.message
+    column = text.rindex(value) + 1
+    assert diagnostic.location == Location("rules/a.md", 2, column)
+
+
+def test_a_subst_entry_is_a_colon_pair() -> None:
+    text = preset(
+        "subst: [{rules.md: stub.md}, {a.md#Checks: b/c%20d.md}, "
+        '{"rules.md#Step 1: Setup": stub.md}]'
+    )
+    assert parse(text).default.substs == (
+        Subst(
+            "rules.md",
+            "stub.md",
+            Location("rules/a.md", 2, text.index("{rules") + 1),
+        ),
+        Subst(
+            "a.md#Checks",
+            "b/c%20d.md",
+            Location("rules/a.md", 2, text.index("{a.md") + 1),
+        ),
+        Subst(
+            "rules.md#Step 1: Setup",
+            "stub.md",
+            Location("rules/a.md", 2, text.index('{"rules') + 1),
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "entries,at,entry,said",
+    [
+        ('"rules.md=stub.md"', 0, '"rules.md=stub.md"', "must be a mapping"),
+        (
+            "{rules.md: stub.md}, {a.md: b.md, c.md: d.md}",
+            1,
+            "{a.md: b.md, c.md: d.md}",
+            "must be a mapping",
+        ),
+        ("{}", 0, "{}", "must be a mapping"),
+        ("[rules.md, stub.md]", 0, "[rules.md, stub.md]", "must be a mapping"),
+        ("3", 0, "3", "must be a mapping"),
+        ("null", 0, "null", "must be a mapping"),
+        (
+            "{3: stub.md}",
+            0,
+            "{3: stub.md}",
+            "must name its original reference with a string key",
+        ),
+        ("{rules.md: 3}", 0, "{rules.md: 3}", "must map a nonempty original"),
+        ("{rules.md: null}", 0, "{rules.md: null}", "must map a nonempty original"),
+        ("{rules.md: [a.md]}", 0, "{rules.md: [a.md]}", "must map a nonempty"),
+        ('{rules.md: ""}', 0, '{rules.md: ""}', "must map a nonempty original"),
+        ('{"": stub.md}', 0, '{"": stub.md}', "must map a nonempty original"),
+    ],
+)
+def test_a_subst_entry_that_is_no_colon_pair_is_refused_naming_it(
+    entries: str, at: int, entry: str, said: str
+) -> None:
+    text = preset("subst: [" + entries + "]")
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(text)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert f"prosiform.default.subst[{at}] {said}" in diagnostic.message
+    assert diagnostic.location == Location("rules/a.md", 2, text.rindex(entry) + 1)
 
 
 @pytest.mark.parametrize(
@@ -121,8 +283,11 @@ def test_frontmatter_failures(text: str) -> None:
         "prosiform: {owner: true}",
         "prosiform: {prosiform-unknown: x}",
         "prosiform: {group: rules}",
-        "prosiform: {group-depth: 2}",
-        'prosiform: {group: rules, group-depth: "2"}',
+        "prosiform: {default: {1: x}}",
+        preset("group: rules"),
+        preset("group: 2"),
+        paired('{rules: "2"}'),
+        preset("unknown: x"),
     ],
 )
 def test_schema_failures(text: str) -> None:
@@ -148,34 +313,32 @@ def test_schema_failures(text: str) -> None:
 )
 def test_group_grammar(group: str) -> None:
     with pytest.raises(InvalidMetadata):
-        parse("prosiform: {group: " + json.dumps(group) + ", group-depth: 2}")
+        parse(paired("{" + json.dumps(group) + ": 2}"))
 
 
 @pytest.mark.parametrize("group", ["-", "_", "--", "- _", "_-_"])
 def test_a_group_name_whose_title_case_is_empty_is_refused(group: str) -> None:
     with pytest.raises(InvalidMetadata) as caught:
-        parse("prosiform: {group: " + json.dumps(group) + ", group-depth: 2}")
+        parse(paired("{" + json.dumps(group) + ": 2}"))
     assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
-    assert "prosiform.group must carry a word" in caught.value.diagnostic.message
+    message = caught.value.diagnostic.message
+    assert "prosiform.default.group must name a group carrying a word" in message
 
 
 @pytest.mark.parametrize("group", ["a", "-a-", "x_1", "!"])
 def test_a_group_name_carrying_a_word_is_admitted(group: str) -> None:
-    assert (
-        parse("prosiform: {group: " + json.dumps(group) + ", group-depth: 2}").group
-        == group
-    )
+    assert joined(parse(paired("{" + json.dumps(group) + ": 2}"))) == (group, 2)
 
 
 @pytest.mark.parametrize("depth", ["0", "7", "22", "٢", "2.0", " 2"])
 def test_depth_grammar(depth: str) -> None:
     with pytest.raises(InvalidMetadata):
-        parse("prosiform: {group: rules, group-depth: " + json.dumps(depth) + "}")
+        parse(paired("{rules: " + json.dumps(depth) + "}"))
 
 
 @pytest.mark.parametrize("depth", range(1, 7))
 def test_depth_values(depth: int) -> None:
-    assert parse(f"prosiform: {{group: rules, group-depth: {depth}}}").depth == depth
+    assert joined(parse(paired(f"{{rules: {depth}}}"))) == ("rules", depth)
 
 
 def test_core_key_types_are_distinct() -> None:
@@ -223,9 +386,11 @@ def test_duplicate_diagnostic_formats() -> None:
 
 
 def test_error_marks_and_no_related() -> None:
+    text = preset('subst: [{x: y}], prosiform-bad: "x"')
     with pytest.raises(InvalidMetadata) as caught:
-        parse('prosiform: {group: "x", prosiform-bad: "x"}')
-    assert caught.value.diagnostic.location == Location("rules/a.md", 2, 25)
+        parse(text)
+    column = text.index("prosiform-bad") + 1
+    assert caught.value.diagnostic.location == Location("rules/a.md", 2, column)
     assert "related" not in caught.value.diagnostic.fields()
 
 
@@ -249,9 +414,11 @@ def test_extreme_canonical_duplicates(first: str, second: str) -> None:
 
 
 def test_tab_and_unicode_column() -> None:
+    text = preset('subst: [{"\t": y}], prosiform-bad: x')
     with pytest.raises(InvalidMetadata) as caught:
-        parse('prosiform: {group: "\t", prosiform-bad: x}')
-    assert caught.value.diagnostic.location == Location("rules/a.md", 2, 25)
+        parse(text)
+    column = text.index("prosiform-bad") + 1
+    assert caught.value.diagnostic.location == Location("rules/a.md", 2, column)
 
 
 def test_yaml_marked_syntax_error() -> None:
@@ -261,10 +428,10 @@ def test_yaml_marked_syntax_error() -> None:
 
 
 def test_single_line_bom_coordinate() -> None:
-    raw = "\ufeffprosiform: {prosiform-bad: x}".encode()
+    raw = "\ufeffprosiform: {default: {prosiform-bad: x}}".encode()
     with pytest.raises(InvalidMetadata) as caught:
-        decode(raw, file="a", span=(3, len(raw)), max_bytes=len(raw), max_depth=2)
-    assert caught.value.diagnostic.location == Location("a", 1, 14)
+        decode(raw, file="a", span=(3, len(raw)), max_bytes=len(raw), max_depth=3)
+    assert caught.value.diagnostic.location == Location("a", 1, 24)
 
 
 def test_reader_error_coordinate() -> None:
@@ -298,7 +465,7 @@ def test_out_of_range_escape_mark_survives_parser_cleanup() -> None:
         'prosiform:\r\n  root: "."',
         'prosiform:\r\n  root: ""',
         "prosiform:\r\n  root: null",
-        'prosiform:\r\n  root: "/tmp"\r\n  group: rules\r\n  group-depth: 2',
+        'prosiform:\r\n  root: "/tmp"\r\n  default: {group: {rules: 2}}',
     ],
 )
 def test_a_declared_root_is_refused_at_its_key(text: str) -> None:
@@ -311,11 +478,13 @@ def test_a_declared_root_is_refused_at_its_key(text: str) -> None:
     assert "remove the field" in diagnostic.message
 
 
-@pytest.mark.parametrize("value", ["null", "true", "2", "2.0", "[]", "{}"])
-def test_string_fields_reject_other_core_types(value: str) -> None:
+def test_a_root_within_a_preset_is_refused_at_its_key() -> None:
     with pytest.raises(InvalidMetadata) as caught:
-        parse(f"prosiform: {{group: {value}, group-depth: 2}}")
-    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+        parse('prosiform:\n  default:\n    root: "."')
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert diagnostic.location == Location("rules/a.md", 4, 5)
+    assert "prosiform.default.root is refused" in diagnostic.message
 
 
 @pytest.mark.parametrize(
@@ -323,19 +492,14 @@ def test_string_fields_reject_other_core_types(value: str) -> None:
 )
 def test_integer_depth_schema(depth: str) -> None:
     with pytest.raises(InvalidMetadata) as caught:
-        parse(f"prosiform: {{group: rules, group-depth: {depth}}}")
+        parse(paired(f"{{rules: {depth}}}"))
     assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.default.group for group 'rules' must be" in str(caught.value)
 
 
 @pytest.mark.parametrize("depth", ["+2", "02", "0x2", "0o2", "!!int 2"])
 def test_core_integer_depth(depth: str) -> None:
-    assert parse(f"prosiform: {{group: rules, group-depth: {depth}}}").depth == 2
-
-
-def test_a_group_field_requires_its_pair() -> None:
-    for declaration in ("group: rules", "group-depth: 2"):
-        with pytest.raises(InvalidMetadata):
-            parse(f"prosiform: {{{declaration}}}")
+    assert joined(parse(paired(f"{{rules: {depth}}}"))) == ("rules", 2)
 
 
 @pytest.mark.parametrize(
@@ -343,9 +507,9 @@ def test_a_group_field_requires_its_pair() -> None:
     [
         "metadata: null",
         "metadata: [true, {1: [2]}]",
-        'metadata: {prosiform-group: rules, prosiform-group-depth: "2"}',
-        "metadata: {root: .., group: rules, group-depth: 2}",
-        "root: ..\ngroup: rules\ngroup-depth: 2",
+        'metadata: {prosiform-group: rules, depth: "2"}',
+        "metadata: {root: .., group: {rules: 2}}",
+        "root: ..\ngroup: {rules: 2}",
     ],
 )
 def test_unreserved_fields_have_no_conversion_meaning(text: str) -> None:
@@ -356,7 +520,6 @@ def test_unreserved_fields_have_no_conversion_meaning(text: str) -> None:
     "key",
     [
         "prosiform-group",
-        "prosiform-group-depth",
         "version",
         "r",
         "depth",
@@ -367,8 +530,9 @@ def test_unreserved_fields_have_no_conversion_meaning(text: str) -> None:
 )
 def test_reserved_mapping_has_exact_keys(key: str) -> None:
     with pytest.raises(InvalidMetadata) as caught:
-        parse(f"prosiform: {{{key}: x}}")
+        parse(preset(f"{key}: x"))
     assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert f"unknown field prosiform.default.{key}" in str(caught.value)
 
 
 def test_root_mapping_nesting_budget() -> None:

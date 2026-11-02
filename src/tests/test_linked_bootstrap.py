@@ -66,11 +66,13 @@ def run_bundle(folder: Path, name: str) -> Path:
 
 
 def document(body: str, *, group: str | None = None, depth: Any = None) -> str:
-    """A document with the declared top-level settings and its original body."""
+    """A document with the declared default preset and its original body."""
     fields = []
     if group is not None:
-        fields.append("  group: " + json.dumps(group))
-        fields.append("  group-depth: " + json.dumps(depth))
+        fields.append("  default:")
+        fields.append(
+            "    group: {" + json.dumps(group) + ": " + json.dumps(depth) + "}"
+        )
     if not fields:
         return body
     return "---\nprosiform:\n" + "\n".join(fields) + "\n---\n" + body
@@ -464,7 +466,7 @@ class Stack:
         assert "WRONG_ROOT_MARKER" not in output
         assert "Linked Instruction Bootstrap" not in output
         assert "prosiform:" not in output
-        assert "group-depth:" not in output
+        assert "group: {" not in output
         return output
 
     def assert_content(
@@ -506,9 +508,9 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
     assemble = stack.tree / "skills/pf-bootstrap-specimen/modes/assemble.md"
     review = stack.tree / "skills/pf-bootstrap-specimen/modes/review.md"
     defaults = stack.tree / "skills/pf-bootstrap-specimen/modes/defaults.md"
-    assert 'group: "procedures"' in assemble.read_text(encoding="utf-8")
-    assert 'group: "reviews"' in review.read_text(encoding="utf-8")
-    assert 'group: "defaults"' in defaults.read_text(encoding="utf-8")
+    assert 'group: {"procedures": ' in assemble.read_text(encoding="utf-8")
+    assert 'group: {"reviews": ' in review.read_text(encoding="utf-8")
+    assert 'group: {"defaults": ' in defaults.read_text(encoding="utf-8")
     cases = {
         "Assemble": (
             [
@@ -705,9 +707,7 @@ def test_depth_conflict_preserves_existing_output(stack: Stack) -> None:
     assert result.stdout == ""
     assert destination.read_text(encoding="utf-8") == "PRESERVE_ME\n"
     diagnostics = [json.loads(line) for line in result.stderr.splitlines() if line]
-    conflicts = [
-        item for item in diagnostics if item["code"] == "E_GROUP_DEPTH_CONFLICT"
-    ]
+    conflicts = [item for item in diagnostics if item["code"] == "E_GROUP_CONFLICT"]
     assert len(conflicts) == 1, diagnostics
     locations = [conflicts[0]["location"], *conflicts[0]["related"]]
     assert {Path(loc["file"]).name for loc in locations} == {"leaf.md", "tail.md"}

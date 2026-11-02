@@ -1,0 +1,27 @@
+description = "Two subst entries of one preset whose keys normalise to one identity map one reference twice: rules.md and ./rules.md name one document, so the run fails with E_INVALID_USAGE at the second entry, naming both, and publishes nothing."
+
+clauses = [
+  "Presets — Selected presets union",
+  "Conversion metadata — subst holds colon pairs",
+  "Metadata failures",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["prosiform.default.subst[1] key './rules.md' names the identity the key of prosiform.default.subst[0] names"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 34

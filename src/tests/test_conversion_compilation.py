@@ -82,7 +82,7 @@ def test_deferred_only_metadata_does_not_join_or_conflict(
     run = invoke("-d", "json", "a.md", cwd=tmp_path)
     assert run.status == (1 if active else 0), run.stderr
     if active:
-        assert run.diagnostics()[0]["code"] == "E_GROUP_DEPTH_CONFLICT"
+        assert run.diagnostics()[0]["code"] == "E_GROUP_CONFLICT"
     else:
         assert "Later content." not in run.bundle
         assert "[Later](b.md)" in run.bundle
@@ -108,16 +108,16 @@ def test_conflicting_depths_are_stable_and_atomic(
     assert output.read_text() == "preserved\n"
     if form == "json":
         diagnostic = forward.diagnostics()[0]
-        assert diagnostic["code"] == "E_GROUP_DEPTH_CONFLICT"
-        assert diagnostic["location"] == {"file": "a.md", "line": 4, "column": 16}
+        assert diagnostic["code"] == "E_GROUP_CONFLICT"
+        assert diagnostic["location"] == {"file": "a.md", "line": 4, "column": 23}
         assert diagnostic["related"][0] == {
             "file": "b.md",
             "line": 4,
-            "column": 16,
-            "message": "prosiform.group-depth for group 'shared' is 3",
+            "column": 23,
+            "message": "prosiform.default.group for group 'shared' is 3",
         }
     else:
-        assert "a.md:4:16" in forward.stderr and "b.md:4:16" in forward.stderr
+        assert "a.md:4:23" in forward.stderr and "b.md:4:23" in forward.stderr
 
 
 @pytest.mark.parametrize(

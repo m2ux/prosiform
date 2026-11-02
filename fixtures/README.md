@@ -228,7 +228,7 @@ An error decides a failing run.
 | --- | --- |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
-| `E_GROUP_DEPTH_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
+| `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle. |
 | `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow, and Link classification and resource handling, Dispatch sub-sections — an emitted heading beyond H6, a dispatch sub-section among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping, the refused `root` among them. |
@@ -260,6 +260,7 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |
 | `W_MOCK_SUBSTITUTED` | Exit status and JSON diagnostics — a reference a substitution mapping redirected, named once per substitute at the first reference that redirects it. |
 | `W_MOCK_UNUSED` | Exit status and JSON diagnostics — a mapping key no reference named, which substitutes nothing. |
+| `W_PRESET_UNUSED` | Presets, A preset nothing selected warns — a preset of a document the run carries that no reference reaching it selected. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.

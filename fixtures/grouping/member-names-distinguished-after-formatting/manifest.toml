@@ -1,6 +1,7 @@
 description = "Member names remain distinct after title case and removal of the group word, in both member subsections and variants."
 
 clauses = [
+  "Presets — default always applies",
   "Grouping — Variants by document",
   "Grouping — Document content above the grouping depth",
   "Grouping — A heading for every member",

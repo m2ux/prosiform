@@ -1,0 +1,26 @@
+description = "A subst entry written as a string is no single-entry mapping, so it fails with E_INVALID_CONVERSION_METADATA at the entry, naming it and the colon-pair form, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — subst holds colon pairs",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.subst[0] must be a mapping holding one original reference and its alternative, as {rules.md: stub.md}"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 13

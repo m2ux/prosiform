@@ -116,6 +116,10 @@ class Reference:
     A reference the substitution mapping redirected states that it is
     one: the caller named the substitute, so a substitute naming no
     document is refused rather than read as a link to nothing.
+
+    A reference a source carries holds the title of the section it is
+    written in, which selects the presets of the document it reaches.
+    One in a preamble, and one written on the command line, holds none.
     """
 
     original: str
@@ -127,6 +131,7 @@ class Reference:
     walk: str | None = None
     folder: str | None = None
     redirected: bool = False
+    title: str | None = None
 
 
 @dataclass(frozen=True)

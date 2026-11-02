@@ -11,11 +11,12 @@ validation read one record of declarations."""
 import argparse
 import errno
 import os
+import posixpath
 import re
 import shutil
 import sys
 import uuid
-from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from importlib.metadata import version
@@ -125,7 +126,17 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import InvalidMetadata
+from prosiform.metadata import (
+    DEFAULT,
+    GROUP,
+    INVALID_CONVERSION_METADATA,
+    SUBST,
+    Conversion,
+    InvalidMetadata,
+    Membership,
+    Preset,
+    Subst,
+)
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -167,6 +178,7 @@ from prosiform.source import (
     occurrences,
     regions,
     section,
+    sections,
     uses,
     within,
 )
@@ -186,9 +198,11 @@ STANDARD_OUTPUT = "-"
 BUNDLE_SUFFIX = ".bundle.md"
 RUN_FOLDER_SUFFIX = ".bundles"
 CURRENT_FOLDER = "."
+SUBSTITUTION = "="
+"""What separates an `-m` pair's original from its alternative."""
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
-GROUP_DEPTH_CONFLICT = "E_GROUP_DEPTH_CONFLICT"
+GROUP_CONFLICT = "E_GROUP_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
@@ -204,6 +218,7 @@ COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
 EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 MOCK_SUBSTITUTED = "W_MOCK_SUBSTITUTED"
 MOCK_UNUSED = "W_MOCK_UNUSED"
+PRESET_UNUSED = "W_PRESET_UNUSED"
 
 OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
@@ -215,7 +230,7 @@ CODES = tuple(
     sorted(
         {
             INVALID_ENCODING,
-            GROUP_DEPTH_CONFLICT,
+            GROUP_CONFLICT,
             INVALID_USAGE,
             PUBLICATION_FAILED,
             SOURCE_CHANGED,
@@ -230,6 +245,7 @@ CODES = tuple(
             EARLIER_SET_RETAINED,
             MOCK_SUBSTITUTED,
             MOCK_UNUSED,
+            PRESET_UNUSED,
             *BUNDLE_CODES,
             *CANDIDATE_CODES,
             *DISPATCH_CODES,
@@ -246,8 +262,6 @@ CLEANUP_FAULT = "cleanup-refused"
 FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 
 DECIMAL = re.compile(r"^[0-9]+$")
-
-SUBSTITUTION_PAIR = "="
 
 EXIT_STATUSES = """exit statuses:
   0  successful compilation, validation, or informational response
@@ -453,7 +467,7 @@ def mock(value: str) -> Pairing:
     both. A folder side carries no section, because a folder names no
     heading for one to select.
     """
-    original, given, alternative = value.partition(SUBSTITUTION_PAIR)
+    original, given, alternative = value.partition(SUBSTITUTION)
     if not given or not original or not alternative:
         raise argparse.ArgumentTypeError(f"{value!r} is no ORIGINAL=ALTERNATIVE pair")
     if marked(original) != marked(alternative):
@@ -468,6 +482,191 @@ def mock(value: str) -> Pairing:
             f"{value!r} gives a folder side a section, and a folder names no heading"
         )
     return Pairing(entry(original), entry(alternative), marked(original))
+
+
+def substs(conversion: Conversion) -> None:
+    """Hold each `subst` side a document's presets state to the reference grammar.
+
+    A side is read as every other reference is, so a side the grammar
+    refuses, or one carrying a scheme or an authority and naming no
+    local document, fails as invalid conversion metadata at its entry.
+    The grammar's refusals hold whatever directory a side resolves
+    from, so no base is needed to decide them.
+    """
+    for preset in conversion.presets:
+        for at, pair in enumerate(preset.substs):
+            for side in (pair.original, pair.alternative):
+                try:
+                    refusal = (
+                        "carries a scheme or an authority, so it names no local "
+                        "document"
+                        if resolve(side).external
+                        else None
+                    )
+                except (Malformed, OutsideRoot) as unresolvable:
+                    refusal = str(unresolvable)
+                if refusal is not None:
+                    raise InvalidMetadata(
+                        Diagnostic(
+                            ERROR,
+                            f"prosiform.{preset.name}.{SUBST}[{at}] side "
+                            f"{side!r} {refusal}",
+                            INVALID_CONVERSION_METADATA,
+                            location=pair.location,
+                        )
+                    )
+
+
+def subst_identity(text: str, document: str) -> tuple[str, str | None]:
+    """The document and section one `subst` side names, read from its document.
+
+    A side resolves from the declaring document's directory, as every
+    reference the document writes does, and a side naming a section
+    alone names a section of the declaring document.
+    """
+    found = resolve(text, posixpath.dirname(document))
+    return (found.path or document, found.fragment)
+
+
+def preset_refusal(
+    message: str,
+    remedy: str,
+    reference: Reference,
+    location: Location,
+    related: tuple[Location, str] | None = None,
+) -> Failure:
+    """One preset rule stated twice or against itself, as the invalid usage it is.
+
+    The location is the entry the refusal names, and a rule stated twice
+    carries its other statement as the related location.
+    """
+    return Failure(
+        USAGE_FAILURE,
+        Diagnostic(
+            ERROR,
+            message,
+            code=INVALID_USAGE,
+            reference=reference.original,
+            chain=reference.chain or None,
+            remedy=remedy,
+            location=location,
+            related=None
+            if related is None
+            else (
+                RelatedLocation(
+                    related[0].file, related[0].line, related[0].column, related[1]
+                ),
+            ),
+        ),
+    )
+
+
+def stated_once(conversion: Conversion, found: Reference) -> None:
+    """Hold each preset a document declares to stating each of its rules once.
+
+    A preset mapping two `subst` keys that normalise to one identity,
+    mapping a key to an alternative of its own identity, or writing a key
+    naming a section alone states a rule the run cannot apply as written,
+    so each is invalid usage at the entry. A key names the document whose
+    references it redirects, which a section alone does not. Identities
+    are read from the declaring document, the reference that opened it
+    being `found`.
+    """
+    for preset in conversion.presets:
+        keys: dict[tuple[str, str | None], int] = {}
+        for at, pair in enumerate(preset.substs):
+            entry = f"prosiform.{preset.name}.{SUBST}[{at}]"
+            if not components(pair.original).path:
+                raise preset_refusal(
+                    f"{entry} key {pair.original!r} names a section alone, and a "
+                    f"key names the document whose references it redirects",
+                    "name the document the section belongs to, as rules.md#Checks",
+                    found,
+                    pair.location,
+                )
+            key = subst_identity(pair.original, found.path)
+            if key == subst_identity(pair.alternative, found.path):
+                raise preset_refusal(
+                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
+                    f"name one identity, so the alternative stands in for itself",
+                    "name an alternative other than the reference it replaces",
+                    found,
+                    pair.location,
+                )
+            if key in keys:
+                earlier = f"prosiform.{preset.name}.{SUBST}[{keys[key]}]"
+                raise preset_refusal(
+                    f"{entry} key {pair.original!r} names the identity the key of "
+                    f"{earlier} names, so the preset maps one reference twice",
+                    "map each reference once in a preset",
+                    found,
+                    pair.location,
+                    (
+                        preset.substs[keys[key]].location,
+                        f"{earlier} maps {preset.substs[keys[key]].original!r}",
+                    ),
+                )
+            keys[key] = at
+
+
+def agreed(
+    conversion: Conversion, title: str | None, reference: Reference, document: str
+) -> None:
+    """Hold the presets one title selects to agreeing about every setting they share.
+
+    Selected presets union, so two stating one `group` pair, or mapping
+    one `subst` key to one alternative, state one setting. Two stating
+    different `group` pairs, or mapping one key to two alternatives,
+    leave nothing saying which would take effect, so the reference
+    selecting them is invalid usage naming both presets and the setting.
+    `default` lies beneath every selection rather than beside it, so it
+    disagrees with none. The declaring document is `document`.
+    """
+    stated: Membership | None = None
+    alternatives: dict[tuple[str, str | None], tuple[str, Subst]] = {}
+    selected = f"selected by the title {title!r}"
+    for preset in keywords(conversion, title):
+        one = preset.membership
+        stated = stated or one
+        if (
+            one is not None
+            and stated is not None
+            and ((stated.group, stated.depth) != (one.group, one.depth))
+        ):
+            raise preset_refusal(
+                f"prosiform.{stated.preset}.{GROUP} and "
+                f"prosiform.{one.preset}.{GROUP}, both {selected}, state "
+                f"{{{stated.group}: {stated.depth}}} and "
+                f"{{{one.group}: {one.depth}}}",
+                "state one group pair in the presets one title selects",
+                reference,
+                stated.group_location,
+                (
+                    one.group_location,
+                    f"prosiform.{one.preset}.{GROUP} is {{{one.group}: {one.depth}}}",
+                ),
+            )
+        for pair in preset.substs:
+            key = subst_identity(pair.original, document)
+            named_first, first_pair = alternatives.setdefault(key, (preset.name, pair))
+            if subst_identity(first_pair.alternative, document) != subst_identity(
+                pair.alternative, document
+            ):
+                raise preset_refusal(
+                    f"prosiform.{named_first}.{SUBST} and "
+                    f"prosiform.{preset.name}.{SUBST}, both {selected}, map "
+                    f"{pair.original!r} to {first_pair.alternative!r} and "
+                    f"{pair.alternative!r}",
+                    "map the reference to one alternative in the presets one title "
+                    "selects",
+                    reference,
+                    first_pair.location,
+                    (
+                        pair.location,
+                        f"prosiform.{preset.name}.{SUBST} maps {pair.original!r} "
+                        f"to {pair.alternative!r}",
+                    ),
+                )
 
 
 def marked(text: str) -> bool:
@@ -939,6 +1138,8 @@ def read_document(
             max_bytes=limits.of(FILE_BYTES),
             max_depth=limits.of(NESTING),
         )
+        substs(source.conversion)
+    stated_once(source.conversion, found)
     return Opened(source, len(data), captured)
 
 
@@ -1325,7 +1526,9 @@ def required(
             continue
         if withholding(use.opening):
             continue
-        occurrence = replace(found, origin=at, chain=(*chain, identity(found)))
+        occurrence = replace(
+            found, origin=at, chain=(*chain, identity(found)), title=use.title
+        )
         if not declarations.declares(occurrence):
             continue
         yield occurrence
@@ -1568,11 +1771,18 @@ def traverse(
     The entry references are the first frontier. Each round reads the
     sources its frontier names, then reads every group's selected
     content for the dependencies it marks; a dependency naming a
-    document and section the run already carries adds nothing, and the
+    document and section the run already carries adds no target, and the
     round that discovers no new one is the fixed point. A reference
     graph with a cycle therefore terminates on the identity each
     reference normalized to rather than on a depth the traversal
     refuses at.
+
+    A dependency reaching a carried document and section from a section
+    title no earlier dependency reached it from is carried all the same,
+    because the title selects that document's presets and each reference
+    bundles the document under the selection it made. It joins the
+    references the run carries and not the frontier, since the content
+    it selects is content the run already reads.
 
     The selection of a group grows as later content marks more of its
     document, so every group is read again each round. What the
@@ -1617,6 +1827,7 @@ def traverse(
     captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
+    titled: set[tuple[str, str | None, str | None]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
     deferred: dict[tuple[str, str | None], Reference] = {}
@@ -1649,6 +1860,7 @@ def traverse(
                 environment.get(REFERENCES, {}), lines(source.text)
             )
         discovered: list[Reference] = []
+        reselecting: list[Reference] = []
         for path, selecting in contributing(referrer, found).items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
@@ -1700,13 +1912,18 @@ def traverse(
                 substitution,
             ):
                 verify_cached(root, one, captured)
+                if (one.path, one.fragment, one.title) in titled:
+                    continue
+                titled.add((one.path, one.fragment, one.title))
                 if (one.path, one.fragment) in seen:
+                    reselecting.append(one)
                     continue
                 limits.hold(EXPANSION_DEPTH, hop)
                 seen.add((one.path, one.fragment))
                 limits.hold(TARGETS, len(seen))
                 discovered.append(one)
         found.extend(discovered)
+        found.extend(reselecting)
         frontier = discovered
     for one in deferred.values():
         if one.path not in read:
@@ -1774,40 +1991,192 @@ def confirm(
     )
 
 
-def group_depths(
-    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
-) -> dict[str, int]:
-    """Consistent depths for named groups, ordered by source path."""
-    members: dict[str, list[str]] = {}
-    for path in sorted(selected):
-        name = read[path].conversion.group
-        if name is not None:
-            members.setdefault(name, []).append(path)
+def keyworded(name: str, title: str) -> bool:
+    """Whether a preset name appears as words in one section title.
+
+    The comparison ignores case, and each end of the name meets the
+    start or end of the title or a character that is neither a letter
+    nor a digit, so `checks` appears in `Checks and Draft` and not in
+    `Checklist`. A name carrying no character appears nowhere.
+    """
+    word = name.casefold()
+    folded = title.casefold()
+    start = folded.find(word) if word else -1
+    while start >= 0:
+        end = start + len(word)
+        before = folded[start - 1] if start else ""
+        after = folded[end] if end < len(folded) else ""
+        if not before.isalnum() and not after.isalnum():
+            return True
+        start = folded.find(word, start + 1)
+    return False
+
+
+def keywords(conversion: Conversion, title: str | None) -> tuple[Preset, ...]:
+    """The presets one section title selects, in the order they are declared.
+
+    `default` is in force beneath every selection, so it is selected by
+    no spelling; a title absent, as a preamble's is, selects nothing.
+    """
+    if title is None:
+        return ()
+    return tuple(
+        preset
+        for preset in conversion.presets
+        if preset.name != DEFAULT and keyworded(preset.name, title)
+    )
+
+
+def pair(conversion: Conversion, title: str | None) -> Membership | None:
+    """The `group` pair in force for content one section title selects.
+
+    A selected preset's pair holds over the one `default` states, and the
+    selected presets are held to agreeing before it is read; `default`'s
+    pair is in force where no selected preset states one. None means no
+    pair is in force, and the content keeps its individual file group.
+    """
+    return next(
+        (
+            preset.membership
+            for preset in keywords(conversion, title)
+            if preset.membership is not None
+        ),
+        conversion.default.membership,
+    )
+
+
+def entry_title(tokens: Sequence[Token], one: Reference) -> str | None:
+    """The title an entry reference selects its document's presets by.
+
+    An entry is written in no section, so the document it names supplies
+    the title: the heading of the section a section entry names, or the
+    document's own title for a whole-document entry, absent where the
+    document carries none.
+    """
+    if one.fragment is not None:
+        return next(
+            (
+                heading.text
+                for heading in index(tokens)
+                if heading.fragment == one.fragment
+            ),
+            None,
+        )
+    title = document_title(tokens)
+    if title is None or title.map is None:
+        return None
+    line = title.map[0] + 1
+    return next((text for at, text in sections(tokens) if at == line), None)
+
+
+def selecting_title(
+    tokens: Sequence[Token], reference: Reference, entries: Collection[Reference]
+) -> str | None:
+    """The title one reference selects its document's presets by.
+
+    An entry is written in no section, so `entry_title` reads the title
+    its own document supplies; any other reference selects by the title
+    of the section holding it.
+    """
+    return entry_title(tokens, reference) if reference in entries else reference.title
+
+
+def unselected(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> dict[str, tuple[str, ...]]:
+    """The presets of each carried document that no reference reaching it selected.
+
+    `default` is in force wherever its document is compiled, so it is
+    never among them. The names keep the order the document declares
+    them in. A document reached only through a deferral is carried by
+    no bundle, so its presets are weighed by none.
+    """
+    left: dict[str, tuple[str, ...]] = {}
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        chosen = {
+            preset.name
+            for reference in references
+            for preset in keywords(
+                conversion, selecting_title(parsed[path], reference, entries)
+            )
+        }
+        left[path] = tuple(
+            preset.name
+            for preset in conversion.presets
+            if preset.name != DEFAULT and preset.name not in chosen
+        )
+    return left
+
+
+def joined(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> dict[str, tuple[Membership, ...]]:
+    """The `group` pairs in force for each document the bundle carries.
+
+    Each reference reaching a document selects that document's presets
+    by its own title, the title of the section it is written in or, for
+    an entry, the title `entry_title` reads, so a document's presets
+    govern its content and no other document's. The presets one
+    reference selects are held to agreeing before their pair is read,
+    so one reference places the document under one pair at most. A
+    document carries the pair each reference reaching it put in force,
+    each once.
+    """
+    joins: dict[str, tuple[Membership, ...]] = {}
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        held: dict[Membership, None] = {}
+        for reference in references:
+            title = selecting_title(parsed[path], reference, entries)
+            agreed(conversion, title, reference, path)
+            one = pair(conversion, title)
+            if one is not None:
+                held[one] = None
+        joins[path] = tuple(held)
+    return joins
+
+
+def group_depths(joins: Mapping[str, Sequence[Membership]]) -> dict[str, int]:
+    """Consistent depths for named groups, ordered by source path.
+
+    A document is a member of each group the pairs its references put in
+    force name, so one document two references place differently may
+    hold one depth in one group and another in a second; within one
+    group every membership must agree.
+    """
+    members: dict[str, list[tuple[str, Membership]]] = {}
+    for path in sorted(joins):
+        for one in joins[path]:
+            members.setdefault(one.group, []).append((path, one))
     depths: dict[str, int] = {}
     for name in sorted(members):
-        first = read[members[name][0]].conversion
-        assert first.depth is not None and first.depth_location is not None
+        _, first = members[name][0]
         depths[name] = first.depth
-        for path in members[name][1:]:
-            current = read[path].conversion
+        for _, current in members[name][1:]:
             if current.depth != first.depth:
                 location = current.depth_location
-                assert location is not None
                 raise Failure(
                     INPUT_FAILURE,
                     Diagnostic(
                         ERROR,
-                        f"prosiform.group-depth for group {name!r} "
-                        f"is {first.depth}; "
+                        f"prosiform.{first.preset}.{GROUP} for group "
+                        f"{name!r} is {first.depth}; "
                         f"another member declares {current.depth}",
-                        code=GROUP_DEPTH_CONFLICT,
+                        code=GROUP_CONFLICT,
                         location=first.depth_location,
                         related=(
                             RelatedLocation(
                                 location.file,
                                 location.line,
                                 location.column,
-                                "prosiform.group-depth for group "
+                                f"prosiform.{current.preset}.{GROUP} for group "
                                 f"{name!r} is {current.depth}",
                             ),
                         ),
@@ -1815,6 +2184,11 @@ def group_depths(
                     ),
                 )
     return depths
+
+
+def membership(joins: Sequence[Membership], named: str) -> Membership | None:
+    """The membership joining one document to the named group, where it joins it."""
+    return next((one for one in joins if one.group == named), None)
 
 
 @dataclass(frozen=True)
@@ -1892,6 +2266,7 @@ def coincidence(
 def coincident(
     groups: Sequence[Group],
     selected: Mapping[str, Sequence[Reference]],
+    joins: Mapping[str, Sequence[Membership]],
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     declarations: Declarations = DECLARING,
@@ -1926,14 +2301,16 @@ def coincident(
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
             continue
-        paths = [path for path in selected if read[path].conversion.group == named]
-        names = member_headings(paths, named)
+        joining = {
+            path: pair
+            for path in selected
+            if (pair := membership(joins[path], named)) is not None
+        }
+        names = member_headings(list(joining), named)
         members: dict[str, list[Named]] = {}
-        for path in paths:
-            declared = read[path].conversion.group_location
-            assert declared is not None
+        for path, pair in joining.items():
             members.setdefault(names[path].casefold(), []).append(
-                Named(names[path], declared)
+                Named(names[path], pair.group_location)
             )
         found.extend(
             (
@@ -2013,7 +2390,7 @@ def assembled(
     selected: dict[str, list[Reference]],
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
-    inforce: Mapping[str, int],
+    joins: Mapping[str, Sequence[Membership]],
     dispatching: Anchors | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
@@ -2021,20 +2398,25 @@ def assembled(
     """Each group the bundle carries, its links rewritten where a map says so.
 
     The documents arrive in placement order, which `placement` decides.
-    A document without conversion settings is its own file group. Every
-    other document joins the merged group its slug names, which carries
-    its members in placement order. A group stands where its first
-    document is placed, so the group carrying the parent leads and one
+    A document the pairs in force for it pair with no group is its own
+    file group. Every other document joins each merged group a membership
+    names, once however often it is named, and each group carries its
+    members in placement order. A group stands where its first document
+    is placed, groups sharing that document standing in the order its
+    memberships name them, so the group carrying the parent leads and one
     selection always bundles to the same bytes.
     """
     parent = parent_document(entries)
+    inforce = group_depths(joins)
     groups: list[Group] = []
     merging: dict[str, list[str]] = {}
     with assembling(reaching(selected)):
         for path in selected:
-            named = read[path].conversion.group
-            if named is not None:
-                merging.setdefault(named, []).append(path)
+            for one in joins[path]:
+                members = merging.setdefault(one.group, [])
+                if path not in members:
+                    members.append(path)
+            if joins[path]:
                 continue
             tokens = parsed[path]
             groups.append(
@@ -2184,7 +2566,7 @@ def compose(
     failures too.
     """
     selected = contributing(referrer, found)
-    inforce = group_depths(read, selected)
+    joins = joined(read, parsed, selected, entries)
     selected = placement(
         read, parsed, selected, referrer, entries, declarations, substitution
     )
@@ -2197,7 +2579,7 @@ def compose(
                 selected,
                 entries,
                 None,
-                inforce,
+                joins,
                 None,
                 declarations,
                 substitution,
@@ -2222,7 +2604,7 @@ def compose(
             selected,
             entries,
             targets,
-            inforce,
+            joins,
             dispatching,
             declarations,
             substitution,
@@ -2251,7 +2633,7 @@ def compose(
         reached = reaching(selected).get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
     return bundled, coincident(
-        groups, selected, read, parsed, declarations, substitution
+        groups, selected, joins, read, parsed, declarations, substitution
     )
 
 
@@ -2676,7 +3058,9 @@ class Compiled:
     The dispatches are each distinct target the bundle dispatches, at the
     first link naming it. The warnings are held in two runs so a depth
     warning, which only the run's entry raises and only once every
-    bundle is compiled, takes its place between them.
+    bundle is compiled, takes its place between them. The unselected
+    presets are those `unselected` returns for the documents the bundle
+    carries, which the run weighs against its other bundles'.
     """
 
     text: str
@@ -2685,6 +3069,7 @@ class Compiled:
     leading: Sequence[Diagnostic]
     trailing: Sequence[Diagnostic]
     captured: Mapping[str, Capture]
+    unselected: Mapping[str, tuple[str, ...]]
 
 
 def compiled(
@@ -2751,7 +3136,40 @@ def compiled(
         [*coinciding, *(selfward(hop) for hop in hops if hop.own)],
         trailing,
         captured,
+        unselected(read, parsed, contributing(referrer, found), requested),
     )
+
+
+def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
+    """One warning for each preset no reference of the run selected.
+
+    A preset one bundle leaves unselected and another selects governed
+    content the run published, so a preset is unused only where every
+    bundle carrying its document left it unselected. The warning states
+    a fact about the document rather than about one reference, so it
+    carries the document as `source` and no location, in path order and
+    then in the order the document declares its presets.
+    """
+    left: dict[str, tuple[str, ...]] = {}
+    for one in bundles:
+        for path, names in one.unselected.items():
+            earlier = left.get(path, names)
+            left[path] = tuple(name for name in earlier if name in names)
+    return [
+        Diagnostic(
+            WARNING,
+            f"the preset {name!r} of {path!r} is selected by no reference the run "
+            f"compiled, so it governs nothing",
+            code=PRESET_UNUSED,
+            source=path,
+            remedy=(
+                "name the preset as a word in the title of a section reaching the "
+                "document, or drop the preset"
+            ),
+        )
+        for path in sorted(left)
+        for name in left[path]
+    ]
 
 
 def dispatched_set(
@@ -2891,7 +3309,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         reporter,
         options.check,
         options.fault == CLEANUP_FAULT,
-        [*substituted(mapping), *unused(mapping)],
+        [
+            *substituted(mapping),
+            *unused(mapping),
+            *unused_presets((first, *built.values())),
+        ],
     )
     return SUCCESS
 

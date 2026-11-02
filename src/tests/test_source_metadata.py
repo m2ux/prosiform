@@ -13,14 +13,19 @@ from prosiform.closure import resolve
 from prosiform.diagnostics import Location
 from prosiform.limits import BUDGETS, Limits
 from prosiform.metadata import InvalidMetadata
-from prosiform.source import closes_head, content, hashed
+from prosiform.source import Source, closes_head, content, hashed
 
 DECLARED = "---\nprosiform: {}\n---\n"
 """The frontmatter block that makes a document a run's entry or compiled target."""
 
 
 def settings(group: str) -> str:
-    return f"prosiform:\n  group: {group}\n  group-depth: 2\n"
+    return f"prosiform:\n  default:\n    group:\n      {group}: 2\n"
+
+
+def groups(source: Source) -> list[str]:
+    one = source.conversion.default.membership
+    return [] if one is None else [one.group]
 
 
 @pytest.mark.parametrize("ending", ["\n", "\r\n"])
@@ -34,18 +39,21 @@ def test_settings_and_body_share_physical_coordinates(
     )
     source = content(text, file="rules/a.md")
     assert source.text == "# Body" + ending
-    assert source.line(1) == 6
-    assert source.conversion.group == "règles"
-    assert source.conversion.depth == 2
-    assert source.conversion.group_location == Location("rules/a.md", 3, 10)
+    assert source.line(1) == 7
+    pairing = source.conversion.default.membership
+    assert pairing is not None
+    assert (pairing.group, pairing.depth) == ("règles", 2)
+    assert pairing.group_location == Location("rules/a.md", 5, 7)
     with pytest.raises(FrozenInstanceError):
-        source.conversion.group = "other"  # type: ignore[misc]
+        pairing.group = "other"  # type: ignore[misc]
 
 
 def test_settings_are_per_source_and_not_inherited() -> None:
-    assert content("---\n" + settings("one") + "---\n").conversion.group == "one"
-    assert content("---\n" + settings("two") + "---\n").conversion.group == "two"
-    assert content("# Plain\n").conversion.group is None
+    declared = content("---\n" + settings("one") + "---\n")
+    assert groups(declared) == ["one"]
+    declared = content("---\n" + settings("two") + "---\n")
+    assert groups(declared) == ["two"]
+    assert groups(content("# Plain\n")) == []
 
 
 def test_a_declaration_belongs_to_captured_bytes(tmp_path: Path) -> None:
@@ -83,7 +91,7 @@ def test_capture_hash_covers_frontmatter_and_body(tmp_path: Path) -> None:
     path.write_text("---\n" + settings("two") + "---\n# A\n")
     assert opened.size == len(raw)
     assert opened.capture.digest == hashed(raw)
-    assert opened.source.conversion.group == "one"
+    assert groups(opened.source) == ["one"]
     with pytest.raises(cli.Failure) as error:
         cli.recheck(tmp_path, {"a.md": opened.capture})
     assert error.value.diagnostic.code == cli.SOURCE_CHANGED

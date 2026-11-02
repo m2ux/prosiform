@@ -1,7 +1,7 @@
 ---
 prosiform:
-  group: "references"
-  group-depth: 1
+  default:
+    group: {references: 1}
 ---
 # Requirement Characteristics
 

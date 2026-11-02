@@ -55,7 +55,7 @@ from prosiform.cli import (
     CODES,
     COINCIDENT_HEADING,
     EARLIER_SET_RETAINED,
-    GROUP_DEPTH_CONFLICT,
+    GROUP_CONFLICT,
     GUIDE,
     INPUT_FAILURE,
     INTERNAL_ERROR,
@@ -63,6 +63,7 @@ from prosiform.cli import (
     INVALID_USAGE,
     MOCK_SUBSTITUTED,
     MOCK_UNUSED,
+    PRESET_UNUSED,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
     RESOURCE_PORTABILITY,
@@ -78,7 +79,10 @@ from prosiform.cli import (
     Bundle,
     Failure,
     entry,
+    keyworded,
+    keywords,
     main,
+    pair,
     parser,
     probe,
     publication,
@@ -86,7 +90,7 @@ from prosiform.cli import (
     recheck,
 )
 from prosiform.closure import Probed, resolve
-from prosiform.diagnostics import WARNING, Diagnostic, Reporter
+from prosiform.diagnostics import WARNING, Diagnostic, Location, Reporter
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
     DISPATCH_CYCLE,
@@ -109,7 +113,12 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.metadata import INVALID_CONVERSION_METADATA
+from prosiform.metadata import (
+    INVALID_CONVERSION_METADATA,
+    Conversion,
+    Membership,
+    Preset,
+)
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -265,7 +274,7 @@ def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
 
 def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
     declared = {
-        GROUP_DEPTH_CONFLICT,
+        GROUP_CONFLICT,
         INVALID_ENCODING,
         INVALID_USAGE,
         PUBLICATION_FAILED,
@@ -282,6 +291,7 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         EARLIER_SET_RETAINED,
         MOCK_SUBSTITUTED,
         MOCK_UNUSED,
+        PRESET_UNUSED,
     }
     for published in (
         BUNDLE_CODES,
@@ -651,11 +661,11 @@ def test_a_failing_run_writes_its_diagnostics_as_text(root: Path) -> None:
 def conversion(group: str, depth: int) -> str:
     """One source's complete conversion metadata."""
     return (
-        "---\nprosiform:\n  group: "
+        "---\nprosiform:\n  default:\n    group: {"
         + json.dumps(group)
-        + "\n  group-depth: "
+        + ": "
         + str(depth)
-        + "\n---\n"
+        + "}\n---\n"
     )
 
 
@@ -1075,7 +1085,7 @@ def test_groups_are_ordered_by_first_link(root: Path) -> None:
 
 
 def test_members_are_ordered_by_first_link(root: Path) -> None:
-    member = "---\nprosiform: {group: notes, group-depth: 2}\n---\n"
+    member = "---\nprosiform: {default: {group: {notes: 2}}}\n---\n"
     written(
         root,
         "guide.md",
@@ -1204,6 +1214,588 @@ def test_headings_an_author_repeats_warn_of_nothing(root: Path) -> None:
     assert run.diagnostics() == []
 
 
+def substituting(*entries: str) -> str:
+    """One source's conversion metadata whose `default` holds each `subst` entry."""
+    return "---\nprosiform:\n  default:\n    subst: [" + ", ".join(entries) + "]\n---\n"
+
+
+@pytest.mark.parametrize(
+    ("entries", "message"),
+    [
+        (
+            ("{rules.md: a.md}", "{./rules.md: b.md}"),
+            "prosiform.default.subst[1] key './rules.md' names the identity the key "
+            "of prosiform.default.subst[0] names",
+        ),
+        (
+            ('{"rules.md#Checks": a.md}', '{"rules.md#Checks": b.md}'),
+            "prosiform.default.subst[1] key 'rules.md#Checks' names the identity",
+        ),
+        (
+            ("{rules.md: a.md}", "{notes/../rules.md: b.md}"),
+            "prosiform.default.subst[1] key 'notes/../rules.md' names the identity",
+        ),
+        (
+            ("{rules.md: ./rules.md}",),
+            "prosiform.default.subst[0] maps 'rules.md' to './rules.md', which name "
+            "one identity",
+        ),
+        (
+            ('{"guide.md#Checks": "#Checks"}',),
+            "prosiform.default.subst[0] maps 'guide.md#Checks' to '#Checks', which "
+            "name one identity",
+        ),
+        (
+            ('{"#Checks": stub.md}',),
+            "prosiform.default.subst[0] key '#Checks' names a section alone",
+        ),
+    ],
+)
+def test_a_subst_rule_stated_twice_or_against_itself_is_refused(
+    root: Path, entries: tuple[str, ...], message: str
+) -> None:
+    written(
+        root,
+        "guide.md",
+        substituting(*entries) + "# Guide\n\n## Checks\n\nEvery check.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert message in diagnostic["message"]
+    assert diagnostic["location"]["file"] == "guide.md"
+
+
+@pytest.mark.parametrize(
+    "entries",
+    [
+        ("{rules.md: a.md}", '{"rules.md#Checks": b.md}'),
+        ("{rules.md: a.md}", "{notes/rules.md: b.md}"),
+        ('{"rules.md#Checks": "#Checks"}',),
+    ],
+)
+def test_subst_keys_naming_distinct_identities_are_admitted(
+    root: Path, entries: tuple[str, ...]
+) -> None:
+    written(root, "guide.md", substituting(*entries) + "# Guide\n\nAll.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+
+
+@pytest.mark.parametrize(
+    ("drafted", "stated"),
+    [(("reviews", 2), "{reviews: 2}"), (("drafts", 1), "{drafts: 1}")],
+)
+def test_two_selected_presets_stating_different_group_pairs_are_refused(
+    root: Path, drafted: tuple[str, int], stated: str
+) -> None:
+    """One reference places its document under one pair, so two pairs disagree."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks and Draft\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", ("reviews", 1)), ("Draft", drafted)) + "# Rules\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert diagnostic["message"] == (
+        "prosiform.Checks.group and prosiform.Draft.group, both selected by the "
+        f"title 'Checks and Draft', state {{reviews: 1}} and {stated}"
+    )
+    assert diagnostic["reference"] == "rules.md"
+    assert diagnostic["location"] == {"file": "rules.md", "line": 4, "column": 13}
+    assert diagnostic["related"][0] == {
+        "file": "rules.md",
+        "line": 6,
+        "column": 13,
+        "message": f"prosiform.Draft.group is {stated}",
+    }
+
+
+def test_two_selected_presets_mapping_one_key_two_ways_are_refused(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks and Draft\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  Checks:\n    subst: [{steps.md: a.md}]\n"
+        "  Draft:\n    subst: [{./steps.md: b.md}]\n---\n# Rules\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert diagnostic["message"] == (
+        "prosiform.Checks.subst and prosiform.Draft.subst, both selected by the "
+        "title 'Checks and Draft', map './steps.md' to 'a.md' and 'b.md'"
+    )
+    assert diagnostic["related"][0]["message"] == (
+        "prosiform.Draft.subst maps './steps.md' to 'b.md'"
+    )
+
+
+def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
+    """One group pair, and one key to one alternative, state one setting."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks and Draft\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n"
+        "  Checks:\n    group: {reviews: 1}\n    subst: [{steps.md: a.md}]\n"
+        "  Draft:\n    group: {reviews: 1}\n"
+        "    subst: [{./steps.md: ./a.md}]\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundle.count("All.") == 1
+    assert "# Reviews\n\n## Rules" in run.bundle
+
+
+def test_a_selected_preset_disagreeing_with_default_holds_over_it(
+    root: Path,
+) -> None:
+    """`default` lies beneath a selection, so it disagrees with no selected preset."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n"
+        "  default:\n    group: {reviews: 2}\n    subst: [{steps.md: a.md}]\n"
+        "  Checks:\n    group: {reviews: 1}\n    subst: [{steps.md: b.md}]\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules" in run.bundle
+
+
+def test_presets_one_title_leaves_unselected_disagree_with_nothing(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", ("reviews", 1)), ("Draft", ("reviews", 2)))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules" in run.bundle
+
+
+def test_a_linking_documents_presets_never_reach_the_document_it_links(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        presets(("default", ("guides", 1)), ("Checks", ("reviews", 1)))
+        + "# Release Checks\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(root, "rules.md", presets(("default", ("rules", 1))) + "# Rules\n\nAll.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Release Checks" in run.bundle
+    assert "# Guides" not in run.bundle
+    assert "# Rules\n\n## Rules\n\nAll." in run.bundle
+    assert run.bundle.count("All.") == 1
+
+
+def unused_presets_of(run: Run) -> list[tuple[str, str]]:
+    """Each unused-preset warning a JSON run carries, as its document and message."""
+    return [
+        (one["source"], one["message"])
+        for one in run.diagnostics()
+        if one["code"] == PRESET_UNUSED
+    ]
+
+
+def test_a_preset_no_title_selects_warns_and_the_run_publishes(root: Path) -> None:
+    """The warning names the document and the preset, and accompanies exit `0`."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  default:\n    group: {modes: 1}\n"
+        "  Draft:\n    group: {drafts: 1}\n"
+        "  Checks:\n    group: {reviews: 1}\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Modes" in run.bundle
+    assert unused_presets_of(run) == [
+        (
+            "rules.md",
+            "the preset 'Draft' of 'rules.md' is selected by no reference the run "
+            "compiled, so it governs nothing",
+        ),
+        (
+            "rules.md",
+            "the preset 'Checks' of 'rules.md' is selected by no reference the run "
+            "compiled, so it governs nothing",
+        ),
+    ]
+    [warning] = run.diagnostics()[:1]
+    assert warning["severity"] == WARNING
+    assert "location" not in warning
+    assert warning["remedy"].startswith("name the preset as a word")
+
+
+def test_selected_presets_and_default_warn_nothing(root: Path) -> None:
+    """A preset a title selects governed content, and `default` always does."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  default:\n    group: {modes: 1}\n"
+        "  Checks:\n    group: {reviews: 1}\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS
+    assert run.stderr == ""
+
+
+def test_a_preset_one_reference_selects_is_used_though_another_leaves_it(
+    root: Path,
+) -> None:
+    """Selection is per reference, so one selecting reference is enough."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nFollow [the steps](rules.md#alpha).\n\n"
+        "## Draft\n\nDraft [the rest](rules.md#beta).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
+        "---\n# Rules\n\n## Alpha\n\nOne.\n\n## Beta\n\nTwo.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert unused_presets_of(run) == []
+
+
+def test_a_preset_a_dispatched_bundle_selects_is_used(root: Path) -> None:
+    """The run weighs every bundle it compiles, a dispatched target's among them."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nHand [⇉ the review](review.md) off.\n",
+    )
+    written(
+        root,
+        "review.md",
+        DECLARED + "# Review\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  Checks:\n    group: {reviews: 1}\n---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert len(run.bundles) == 2
+    assert unused_presets_of(run) == []
+
+
+def test_a_preset_on_a_deferred_only_document_warns_nothing(root: Path) -> None:
+    """A deferral contributes no content, so the run weighs none of its presets."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nDefer [¬ the notes](noted.md#draft).\n",
+    )
+    written(
+        root,
+        "noted.md",
+        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
+        "---\n# Noted\n\n## Draft\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "(noted.md#draft)" in run.bundle
+    assert run.diagnostics() == []
+
+
+def test_a_document_both_deferred_and_compiled_is_weighed(root: Path) -> None:
+    """A document a bundle carries is weighed whatever else reaches it."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Steps\n\nDefer [¬ the notes](noted.md#draft).\n\n"
+        "Read [the notes](noted.md).\n",
+    )
+    written(
+        root,
+        "noted.md",
+        "---\nprosiform:\n  Draft:\n    group: {drafts: 1}\n"
+        "---\n# Noted\n\n## Draft\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [source for source, _ in unused_presets_of(run)] == ["noted.md"]
+
+
+TWO_SECTIONS = (
+    DECLARED + "# Guide\n\n## Checks\n\nReview [the rules](rules.md).\n\n"
+    "## Draft\n\nDraft [the rules](rules.md).\n"
+)
+
+
+def test_two_sections_reaching_one_document_each_select_its_presets(
+    root: Path,
+) -> None:
+    written(root, "guide.md", TWO_SECTIONS)
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules\n\nAll." in run.bundle
+    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+    assert run.bundle.count("All.") == 2
+
+
+def test_a_document_a_later_round_reaches_again_takes_that_selection(
+    root: Path,
+) -> None:
+    """A link in a document the traversal discovers later still selects."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nReview [the rules](rules.md).\n\n"
+        "## Other\n\nRead [the notes](notes.md).\n",
+    )
+    written(
+        root,
+        "notes.md",
+        DECLARED + "# Notes\n\n## Draft\n\nDraft [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules\n\nAll." in run.bundle
+    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+
+
+def test_two_sections_selecting_two_depths_for_one_group_conflict(
+    root: Path,
+) -> None:
+    """Each reference's selection is in force, so two depths for one group meet."""
+    written(root, "guide.md", TWO_SECTIONS)
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", ("reviews", 1)), ("Draft", ("reviews", 2)))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == GROUP_CONFLICT
+
+
+def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
+    """The second section reaches a target the run carries, so `-T 2` holds."""
+    written(root, "guide.md", TWO_SECTIONS)
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-T", "2", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+
+
+def presets(*declared: tuple[str, tuple[str, int]]) -> str:
+    """One source's conversion metadata declaring each preset with its pair."""
+    lines = ["---", "prosiform:"]
+    for name, (group, depth) in declared:
+        lines += [
+            f"  {json.dumps(name)}:",
+            f"    group: {{{json.dumps(group)}: {depth}}}",
+        ]
+    return "\n".join([*lines, "---", ""])
+
+
+@pytest.mark.parametrize(
+    ("name", "title", "selected"),
+    [
+        ("checks", "Checks and Draft", True),
+        ("Draft", "Checks and Draft", True),
+        ("CHECKS", "checks", True),
+        ("checks", "Self-checks", True),
+        ("checks", "checks_v2", True),
+        ("checks", "Checklist and checks", True),
+        ("release checks", "Release Checks", True),
+        ("checks", "Checklist", False),
+        ("check", "Checks", False),
+        ("checks", "Prechecks", False),
+        ("checks", "checks2", False),
+        ("checks", "Rückchecks", False),
+        ("", "Checks", False),
+    ],
+)
+def test_a_preset_name_appears_as_whole_words_in_a_title(
+    name: str, title: str, selected: bool
+) -> None:
+    assert keyworded(name, title) is selected
+
+
+def membership(preset: str, group: str, depth: int) -> Membership:
+    """One `group` pair a named preset states."""
+    at = Location("rules.md", 1, 1)
+    return Membership(preset, group, depth, at, at)
+
+
+def test_default_is_selected_by_no_title() -> None:
+    declared = Conversion(True, (Preset("default"), Preset("checks")))
+    assert [one.name for one in keywords(declared, "Default checks")] == ["checks"]
+    assert keywords(declared, "Default") == ()
+    assert keywords(declared, None) == ()
+
+
+def test_a_selected_preset_pair_holds_over_default() -> None:
+    declared = Conversion(
+        True,
+        (
+            Preset("default", membership("default", "modes", 1)),
+            Preset("Checks", membership("Checks", "reviews", 2)),
+            Preset("Draft"),
+        ),
+    )
+    assert pair(declared, "Checks") == membership("Checks", "reviews", 2)
+    assert pair(declared, "Draft") == membership("default", "modes", 1)
+    assert pair(declared, "Other") == membership("default", "modes", 1)
+    assert pair(Conversion(True, (Preset("Draft"),)), "Draft") is None
+
+
+def test_a_whole_document_entry_selects_by_its_title(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        presets(("Checks", ("reviews", 1))) + "# Release Checks\n\nEvery check.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundle == "# Reviews\n\n## Release Checks\n\nEvery check.\n"
+
+
+def test_an_untitled_whole_document_entry_selects_no_preset(root: Path) -> None:
+    written(
+        root, "guide.md", presets(("Checks", ("reviews", 1))) + "## Checks\n\nAll.\n"
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert not run.bundle.startswith("# Reviews")
+
+
+def test_a_reference_in_a_preamble_selects_no_preset(root: Path) -> None:
+    written(root, "guide.md", DECLARED + "Follow [the rules](rules.md).\n")
+    written(root, "rules.md", presets(("Checks", ("reviews", 1))) + "# Rules\n\nAll.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews" not in run.bundle
+    assert "# Rules\n\nAll.\n" in run.bundle
+
+
+@pytest.mark.parametrize(
+    ("between", "selected"),
+    [
+        ("### Detail\n\n", False),
+        ("> ### Quoted\n\n", True),
+    ],
+)
+def test_a_reference_selects_by_the_nearest_heading_rooting_a_section(
+    root: Path, between: str, selected: bool
+) -> None:
+    """A deeper heading titles what follows it, and a contained one titles nothing."""
+    written(
+        root,
+        "guide.md",
+        DECLARED
+        + "# Guide\n\n## Checks\n\n"
+        + between
+        + "Follow [the rules](rules.md).\n",
+    )
+    written(root, "rules.md", presets(("Checks", ("reviews", 1))) + "# Rules\n\nAll.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert ("# Reviews\n\n## Rules" in run.bundle) is selected
+
+
+def test_a_depth_disagreement_names_the_selected_preset(root: Path) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nRead [a](a.md) and [rules](rules.md).\n",
+    )
+    written(root, "a.md", conversion("reviews", 2) + "# A\n")
+    written(
+        root,
+        "rules.md",
+        presets(("default", ("modes", 1)), ("Checks", ("reviews", 1))) + "# Rules\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == GROUP_CONFLICT
+    assert "prosiform.default.group for group 'reviews' is 2" in (diagnostic["message"])
+    assert diagnostic["related"][0]["message"] == (
+        "prosiform.Checks.group for group 'reviews' is 1"
+    )
+    assert diagnostic["related"][0]["file"] == "rules.md"
+
+
 def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
     written(
         root,
@@ -1226,12 +1818,12 @@ def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
             "reader tells apart only by where each stands",
             "code": COINCIDENT_HEADING,
             "remedy": "rename a member so its path distinguishes it in the group",
-            "location": {"file": "notes/note.md", "line": 3, "column": 10},
+            "location": {"file": "notes/note.md", "line": 4, "column": 13},
             "related": [
                 {
                     "file": "notes/note.markdown",
-                    "line": 3,
-                    "column": 10,
+                    "line": 4,
+                    "column": 13,
                     "message": "member heading 'Note'",
                 }
             ],
@@ -2111,7 +2703,7 @@ def test_a_dispatch_in_an_absorbed_title_is_refused(root: Path, mark: str) -> No
 
 def test_a_dispatch_in_an_absorbed_member_title_is_refused(root: Path) -> None:
     """A member's title the subsection absorbs places no sub-section either."""
-    front = "---\nprosiform:\n  group: Merge\n  group-depth: 2\n---\n\n"
+    front = "---\nprosiform:\n  default:\n    group: {Merge: 2}\n---\n\n"
     member = "note-\u21c9-plan.md"
     written(
         root,
@@ -2180,6 +2772,57 @@ def test_an_unknown_prosiform_key_fails(root: Path, key: str) -> None:
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.diagnostics()[0]["code"] == INVALID_CONVERSION_METADATA
+
+
+@pytest.mark.parametrize(
+    "entry,side,clause",
+    [
+        ('{"rules.md?x": stub.md}', "rules.md?x", "carries the query 'x'"),
+        ('{rules.md: "stub%zz.md"}', "stub%zz.md", "carries the escape '%zz'"),
+        ('{rules.md: "stub%2Fx.md"}', "stub%2Fx.md", "decodes to a path separator"),
+        ('{"/rules.md": stub.md}', "/rules.md", "names the root-relative path"),
+        ('{"C:/rules.md": stub.md}', "C:/rules.md", "names the drive path"),
+        ('{"rules\\\\x.md": stub.md}', "rules\\x.md", "with a backslash"),
+        (
+            '{rules.md: "https://example.com/stub.md"}',
+            "https://example.com/stub.md",
+            "carries a scheme or an authority, so it names no local document",
+        ),
+    ],
+)
+def test_a_subst_side_is_read_by_the_reference_grammar(
+    root: Path, entry: str, side: str, clause: str
+) -> None:
+    written(
+        root,
+        "guide.md",
+        "---\nprosiform:\n  default:\n    subst:\n"
+        f"      - {{a.md: b.md}}\n      - {entry}\n---\n# Guide\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE, run.stderr
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_CONVERSION_METADATA
+    message = diagnostic["message"]
+    assert message.startswith(f"prosiform.default.subst[1] side {side!r} ")
+    assert clause in message
+    assert diagnostic["location"] == {"file": "guide.md", "line": 6, "column": 9}
+
+
+def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> None:
+    """A side above the working directory, and one quoted for its colon, are read."""
+    written(
+        root,
+        "guide.md",
+        "---\nprosiform:\n  default:\n    subst:\n"
+        "      - {rules.md#Checks: ../stub.md}\n"
+        "      - {a%20b.md: ./c.md}\n"
+        '      - {"rules.md#Step 1: Setup": stub.md}\n'
+        "---\n# Guide\n\nEvery step.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.diagnostics() == []
 
 
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:

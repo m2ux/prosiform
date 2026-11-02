@@ -1,0 +1,16 @@
+description = "The run following a published deferral reads the presets of the document it names: the entry noted.md#draft names the section Draft, whose title selects the Draft preset of noted.md, so the section joins Drafts and no preset goes unused."
+
+clauses = [
+  "Presets — A preset nothing selected warns",
+  "Presets — A command-line entry reads the file it names",
+  "Conversion metadata — Selection boundary",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["noted.md#draft"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/noted__draft.bundle.md"]
+diagnostics = []

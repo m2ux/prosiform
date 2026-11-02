@@ -1,0 +1,27 @@
+description = "A subst key naming a section alone, as #Checks does, names no document whose references it redirects, so the run fails with E_INVALID_USAGE at the entry and publishes nothing."
+
+clauses = [
+  "Presets — Selected presets union",
+  "Conversion metadata — subst holds colon pairs",
+  "Metadata failures",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["prosiform.default.subst[0] key '#Checks' names a section alone"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 13

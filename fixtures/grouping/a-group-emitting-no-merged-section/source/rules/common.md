@@ -1,6 +1,6 @@
 ---
 prosiform:
-  group: "rules"
-  group-depth: 1
+  default:
+    group: {rules: 1}
 ---
 Keep paragraphs short.

@@ -114,10 +114,26 @@ def built(
         for path in documents:
             selected.setdefault(path, []).append(Reference(path, path))
     selected = dict(sorted(selected.items()))
-    headed = assembled(read, parsed, defined, selected, requested, None, {})
+    headed = assembled(
+        read,
+        parsed,
+        defined,
+        selected,
+        requested,
+        None,
+        {path: () for path in selected},
+    )
     assigned = fragments([one for each in headed for one in each.headings])
     targets = destination_map(headed, assigned)
-    groups = assembled(read, parsed, defined, selected, requested, targets, {})
+    groups = assembled(
+        read,
+        parsed,
+        defined,
+        selected,
+        requested,
+        targets,
+        {path: () for path in selected},
+    )
     bundled = assemble(groups)
     return Built(bundled, groups, assigned, targets, read, parsed)
 

@@ -33,7 +33,11 @@ INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
-DEPTH = "group-depth"
+SUBST = "subst"
+FIELDS = (GROUP, SUBST)
+"""The fields a preset may hold; none is written directly under `prosiform`."""
+DEFAULT = "default"
+"""The preset in force wherever its document is compiled."""
 ROOT = "root"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
@@ -75,24 +79,75 @@ class _MarkedScanner(Scanner):
 
 
 @dataclass(frozen=True)
+class Membership:
+    """A preset's `group` pair: a merged group and the depth its document joins at.
+
+    The depth is held to the one every contributing member of the group
+    declares. Each location is where its half of the entry is written,
+    and the preset is the one stating the entry, which a diagnostic
+    about it names.
+    """
+
+    preset: str
+    group: str
+    depth: int
+    group_location: Location
+    depth_location: Location
+
+
+@dataclass(frozen=True)
+class Subst:
+    """One `subst` entry: an original reference mapped to its alternative.
+
+    Each side is held as written, a reference the reference grammar
+    reads. The location is the entry's.
+    """
+
+    original: str
+    alternative: str
+    location: Location
+
+
+@dataclass(frozen=True)
+class Preset:
+    """One named preset's settings.
+
+    `membership` holds the `group` pair, the one group the declaring
+    document joins; a preset stating none leaves the document its
+    individual file group. `substs` holds each `subst` entry in written
+    order.
+    """
+
+    name: str
+    membership: Membership | None = None
+    substs: tuple[Subst, ...] = ()
+
+
+@dataclass(frozen=True)
 class Conversion:
-    """Immutable source settings and their original value locations.
+    """Immutable source settings: every preset one document declares.
 
     The settings belong to the bytes they were decoded from. `declared`
     holds where the frontmatter carries a `prosiform` mapping, an empty
-    one included, and is false for a document carrying none. `group` and
-    `depth` decide which merged group that source joins, held to the
-    depth every contributing member declares. A source the substitution
-    mapping redirected is read as the substitute, so the settings decoded
-    here are the substitute's: none travels from the document its key
-    named.
+    one included, and is false for a document carrying none. `presets`
+    holds each preset in written order. A source the substitution mapping
+    redirected is read as the substitute, so the settings decoded here are
+    the substitute's: none travels from the document its key named.
     """
 
     declared: bool = False
-    group: str | None = None
-    depth: int | None = None
-    group_location: Location | None = None
-    depth_location: Location | None = None
+    presets: tuple[Preset, ...] = ()
+
+    @property
+    def default(self) -> Preset:
+        """The `default` preset, in force wherever the document is compiled.
+
+        A document declaring no `default` is compiled under an empty one.
+        """
+        return next(
+            (preset for preset in self.presets if preset.name == DEFAULT),
+            Preset(DEFAULT),
+        )
 
 
 class InvalidMetadata(Exception):
@@ -380,7 +435,7 @@ def decode(
             "prosiform must be a mapping",
             metadata.location,
         )
-    fields: dict[str, _Node] = {}
+    presets: list[Preset] = []
     for key, value in zip(metadata.children[::2], metadata.children[1::2], strict=True):
         if key.kind != "str":
             raise _fail(
@@ -390,68 +445,158 @@ def decode(
             )
         name = "prosiform." + key.value
         if key.value == ROOT:
+            raise _refused_root(name, key.location)
+        if value.kind != "map":
+            remedy = (
+                f"; write the field within a preset, as prosiform.{DEFAULT}.{key.value}"
+                if key.value in FIELDS
+                else ""
+            )
             raise _fail(
                 INVALID_CONVERSION_METADATA,
-                f"{name} is refused: a document declares its inclusion and "
-                "states no boundary; remove the field",
+                f"{name} must be a mapping, since every prosiform key names a "
+                f"preset holding its settings{remedy}",
+                value.location,
+            )
+        presets.append(_preset(key.value, value))
+    return Conversion(declared=True, presets=tuple(presets))
+
+
+def _refused_root(name: str, location: Location) -> InvalidMetadata:
+    return _fail(
+        INVALID_CONVERSION_METADATA,
+        f"{name} is refused: a document declares its inclusion and "
+        "states no boundary; remove the field",
+        location,
+    )
+
+
+def _preset(preset: str, mapping: _Node) -> Preset:
+    """One preset's settings, each field checked where it is written."""
+    fields: dict[str, _Node] = {}
+    for key, value in zip(mapping.children[::2], mapping.children[1::2], strict=True):
+        if key.kind != "str":
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"prosiform.{preset} keys must be strings",
                 key.location,
             )
-        if key.value not in (GROUP, DEPTH):
+        name = f"prosiform.{preset}.{key.value}"
+        if key.value == ROOT:
+            raise _refused_root(name, key.location)
+        if key.value not in FIELDS:
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"unknown field {name}", key.location
             )
-        if key.value != DEPTH and value.kind != "str":
+        if key.value == SUBST and value.kind != "seq":
             raise _fail(
-                INVALID_CONVERSION_METADATA, f"{name} must be a string", value.location
+                INVALID_CONVERSION_METADATA, f"{name} must be a list", value.location
             )
         fields[key.value] = value
-    if GROUP not in fields and DEPTH not in fields:
-        return Conversion(declared=True)
-    if GROUP not in fields or DEPTH not in fields:
-        present = GROUP if GROUP in fields else DEPTH
-        raise _fail(
-            INVALID_CONVERSION_METADATA,
-            f"prosiform.{present} requires its paired field",
-            fields[present].location,
-        )
-    group, depth = fields[GROUP], fields[DEPTH]
-    if not group.value.strip() or any(
-        char in ":/\u0085\u2028\u2029"
+    named = f"prosiform.{preset}."
+
+    held = fields[SUBST].children if SUBST in fields else []
+    return Preset(
+        preset,
+        _membership(preset, named + GROUP, fields[GROUP]) if GROUP in fields else None,
+        tuple(_subst(f"{named}{SUBST}[{at}]", entry) for at, entry in enumerate(held)),
+    )
+
+
+def _single_line(text: str) -> bool:
+    """Whether one name is nonblank, printable and written on one line."""
+    return bool(text.strip()) and not any(
+        char in "\u0085\u2028\u2029"
         or ord(char) < 32
         or 127 <= ord(char) <= 159
         or 0xD800 <= ord(char) <= 0xDFFF
         or ord(char) in (0xFFFE, 0xFFFF)
-        for char in group.value
-    ):
+        for char in text
+    )
+
+
+def _level(node: _Node) -> int | None:
+    """A heading level from 1 through 6 one integer scalar states, or None."""
+    level = (
+        _scalar(node.value, PREFIX + "int", True, node.location)[1]
+        if node.kind == "int"
+        else None
+    )
+    if not isinstance(level, Decimal) or not 1 <= level <= 6:
+        return None
+    return int(level)
+
+
+def _pair(name: str, entry: _Node, shape: str, noun: str) -> tuple[_Node, _Node]:
+    """One single-entry mapping's string key and its value, or the entry's refusal.
+
+    `shape` completes the sentence stating what the entry must be, and
+    `noun` names what its key names.
+    """
+    if entry.kind != "map" or len(entry.children) != 2:
+        raise _fail(
+            INVALID_CONVERSION_METADATA, f"{name} must be {shape}", entry.location
+        )
+    key, value = entry.children
+    if key.kind != "str":
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "prosiform.group must be printable, single-line and nonblank, "
+            f"{name} must name its {noun} with a string key",
+            entry.location,
+        )
+    return key, value
+
+
+def _membership(preset: str, name: str, entry: _Node) -> Membership:
+    """A preset's `group` pair, a single string key mapped to a depth."""
+    group, depth = _pair(
+        name,
+        entry,
+        "a mapping holding one group and its depth, as {<group>: <depth>}",
+        "group",
+    )
+    if not _single_line(group.value) or any(char in ":/" for char in group.value):
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            f"{name} must name a group printable, single-line and nonblank, "
             "without ':' or '/'",
             group.location,
         )
     if not worded(group.value):
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "prosiform.group must carry a word, since its title case is the "
-            "group's heading; name the group with a character other than a "
-            "hyphen, an underscore or whitespace",
+            f"{name} must name a group carrying a word, since its title case "
+            "is the group's heading; name the group with a character other "
+            "than a hyphen, an underscore or whitespace",
             group.location,
         )
-    numeric_depth = (
-        _scalar(depth.value, PREFIX + "int", True, depth.location)[1]
-        if depth.kind == "int"
-        else None
-    )
-    if not isinstance(numeric_depth, Decimal) or not 1 <= numeric_depth <= 6:
+    level = _level(depth)
+    if level is None:
         raise _fail(
             INVALID_CONVERSION_METADATA,
-            "prosiform.group-depth must be an integer from 1 through 6",
+            f"{name} for group {group.value!r} must be an integer from 1 through 6",
             depth.location,
         )
-    return Conversion(
-        declared=True,
-        group=group.value,
-        depth=int(numeric_depth),
-        group_location=group.location,
-        depth_location=depth.location,
+    return Membership(preset, group.value, level, group.location, depth.location)
+
+
+def _subst(name: str, entry: _Node) -> Subst:
+    """One `subst` entry, a single string key mapped to a string.
+
+    YAML splits a plain key at a colon followed by a space, so a side
+    holding one is quoted; the reference grammar reads each side as
+    YAML delivers it.
+    """
+    shape = (
+        "a mapping holding one original reference and its alternative, "
+        "as {rules.md: stub.md}"
     )
+    original, alternative = _pair(name, entry, shape, "original reference")
+    if alternative.kind != "str" or not original.value or not alternative.value:
+        raise _fail(
+            INVALID_CONVERSION_METADATA,
+            f"{name} must map a nonempty original reference to a nonempty "
+            "alternative written as a string",
+            entry.location,
+        )
+    return Subst(original.value, alternative.value, entry.location)

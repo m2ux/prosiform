@@ -174,7 +174,7 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   - `name` is kebab-case and matches the skill's folder.
 - **Declaration.**
   - Every Markdown file of the skill opens with frontmatter declaring `prosiform`, so a link to it is compiled; a file declaring nothing is cited as written.
-  - A file declaring nothing else writes `prosiform: {}`. A group member adds `group` and `group-depth`.
+  - A file declaring nothing else writes `prosiform: {}`. A group member adds `group`, mapping its group to its depth.
   - The declaration names no root. Each link resolves from the file that writes it.
 - **Hooks.**
   - A skill declares a hook when a check it owns must run at every tool call that could break it, not only at a step its procedure names.

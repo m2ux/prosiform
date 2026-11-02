@@ -1,0 +1,16 @@
+description = "A linked document's default stays in force beneath the preset a section title selects: the section Checks puts the Checks preset of rules.md in force above its default, and Checks states no group, so rules.md joins Modes, the group default pairs it with."
+
+clauses = [
+  "Presets — default always applies",
+  "Presets — Selection by keyword",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

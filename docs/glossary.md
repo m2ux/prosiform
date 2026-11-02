@@ -24,6 +24,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **region** | A contiguous span of a source document selected for inclusion: a whole document, or a section. |
 | **preamble** | Content above a source document's first heading. It belongs to no section, so only a whole-document selection carries it. |
 | **frontmatter** | A leading delimited YAML block, validated and retained as source metadata, excluded from Markdown content and dependency discovery. |
+| **preset** | A named mapping of conversion settings a document declares in `prosiform` to govern its own content: `default` is always in force, and each other preset is in force where its name is a word of the title of the section holding the link that reaches the document. Distinct from the profile, the grammar a run implements. |
 
 ## References
 
@@ -57,7 +58,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **structural ancestor** | A heading emitted with no body, to preserve the outline of a partial selection. Not a dependency, and not a substitute for selecting the section it names. |
 | **group** | A top-level division of the bundle: one source document, or contributing documents declaring the same group identity and depth in their metadata. |
 | **placement order** | The order the bundle arranges its sources in: each is placed at the first reference that names it, reading the entry references in invocation order and then each placed source's selected content in turn. Groups and the members within a group follow it, so the order an author writes links in sets the arrangement. |
-| **grouping rule** | A source document's paired metadata fields declaring its group identity and grouping depth. |
+| **grouping rule** | The `group` pair of a source document's preset, pairing a group identity with its grouping depth. |
 | **member** | A contributing source document whose metadata declares a named group. |
 | **variant** | One of several same-named sections a merged group draws from different documents. Emitted once as a shared heading, with one subheading per source document. |
 | **overview** | The section a merged group gathers its member subheadings beneath, where it also emits merged sections. A titled entry member opens its group with its own title and preamble, its sections lead, and the other members' subheadings follow in the overview. |

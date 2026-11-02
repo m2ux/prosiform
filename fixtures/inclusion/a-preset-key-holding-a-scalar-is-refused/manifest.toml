@@ -1,0 +1,26 @@
+description = "A prosiform key whose value is a scalar rather than a preset's mapping fails with E_INVALID_CONVERSION_METADATA at the value, naming the key, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — The admitted keys",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.Target must be a mapping"]
+reference = "rules.md"
+chain = ["guide.md", "rules.md"]
+
+[expected.diagnostics.location]
+file = "rules.md"
+line = 3
+column = 11

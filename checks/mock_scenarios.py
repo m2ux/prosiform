@@ -71,8 +71,8 @@ SUBSTITUTED = "W_MOCK_SUBSTITUTED"
 ARTIFACT_STUB = """\
 ---
 prosiform:
-  group: "artifacts"
-  group-depth: 1
+  default:
+    group: {artifacts: 1}
 ---
 # Epic
 

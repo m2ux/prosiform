@@ -1,0 +1,16 @@
+description = "A document's presets govern its own content alone: the default of guide.md places guide.md under Guides, and rules.md, which it links and which declares no preset, keeps its individual file group."
+
+clauses = [
+  "Presets — What a selection governs",
+  "Presets — default always applies",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

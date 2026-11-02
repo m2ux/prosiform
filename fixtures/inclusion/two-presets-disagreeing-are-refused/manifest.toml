@@ -1,0 +1,27 @@
+description = "Two presets one title selects pairing one group with two depths disagree: the section Checks and Draft selects the Checks and Draft presets of rules.md, which pair reviews with depths 1 and 2, so the run fails with E_INVALID_USAGE naming both presets and the group, and publishes nothing."
+
+clauses = [
+  "Presets — Selected presets union",
+  "Grouping — Group membership",
+  "Metadata failures",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["prosiform.Checks.group and prosiform.Draft.group", "state {reviews: 1} and {reviews: 2}"]
+reference = "rules.md"
+chain = ["guide.md", "rules.md"]
+
+[expected.diagnostics.location]
+file = "rules.md"
+line = 4
+column = 13

@@ -1,0 +1,22 @@
+description = "A target whose prosiform key names a preset holding a mapping declares, so the link naming it is compiled into the bundle and the run publishes. No section title names Target, so the run warns that the preset governs nothing."
+
+clauses = [
+  "Presets — A preset nothing selected warns",
+  "Conversion metadata — The admitted keys",
+  "Link classification and resource handling — Local Markdown document links",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "rules.md"
+message_contains = ["the preset 'Target'"]

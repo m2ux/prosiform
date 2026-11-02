@@ -1,8 +1,8 @@
 ---
 prosiform:
-  group: "modes"
-  group-depth: 2
-  group-heading: false
+  default:
+    group: {modes: 2}
+    group-heading: false
 ---
 # Plan Mode
 

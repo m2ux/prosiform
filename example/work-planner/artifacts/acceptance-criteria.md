@@ -1,7 +1,7 @@
 ---
 prosiform:
-  group: "artifacts"
-  group-depth: 1
+  default:
+    group: {artifacts: 1}
 ---
 # Acceptance Criteria
 
