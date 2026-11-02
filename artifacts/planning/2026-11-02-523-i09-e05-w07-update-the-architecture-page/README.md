@@ -12,6 +12,12 @@ This record holds its delivery of `AC8,AC9,AC10,AC11,AC12,AC13`: the work item, 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W07 work item](w07.md) | The architecture page's plan and its test |
+| [W08 work item](w08.md) | The bundles page's plan and its test |
+| [W09 work item](w09.md) | The destinations page's plan and its test |
+| [W10 work item](w10.md) | The diagram-renderer page's plan and its test |
+| [W11 work item](w11.md) | The dispatch page's plan and its test |
+| [W12 work item](w12.md) | The glossary's plan and its test |
 
 ## Links
 
