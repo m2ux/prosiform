@@ -2,7 +2,7 @@ description = "Each bundle holds every budget for its own closure: the entry ope
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
-  "Resource limits — -F",
+  "Resource limits — files",
   "Resource limits, every budget holds per bundle",
   "Adversarial acceptance fixtures — Dispatch",
 ]

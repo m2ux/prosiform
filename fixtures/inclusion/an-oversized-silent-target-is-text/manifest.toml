@@ -2,7 +2,7 @@ description = "A cited target larger than -B that declares nothing is probed rat
 
 clauses = [
   "Link classification and resource handling — A link naming a document that declares nothing",
-  "Resource limits — -B",
+  "Resource limits — file-bytes",
   "Exit status and JSON diagnostics — 0",
 ]
 

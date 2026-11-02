@@ -1,7 +1,7 @@
 description = "A run opening more distinct source documents than the file budget names fails at the document that crosses it, with no bundle published."
 
 clauses = [
-  "Resource limits — -F",
+  "Resource limits — files",
 ]
 
 [invocation]

@@ -1,7 +1,7 @@
 description = "A cited target larger than -B that declares prosiform is captured, so the run fails on the byte budget."
 
 clauses = [
-  "Resource limits — -B",
+  "Resource limits — file-bytes",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
 

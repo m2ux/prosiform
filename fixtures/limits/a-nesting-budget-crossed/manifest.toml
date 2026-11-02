@@ -1,7 +1,7 @@
 description = "A source nesting container blocks deeper than the nesting budget names fails as the explicit refusal the contract declares, rather than being reinterpreted as the shallower syntax a parser ceiling would leave."
 
 clauses = [
-  "Resource limits — -N",
+  "Resource limits — nesting",
 ]
 
 [invocation]

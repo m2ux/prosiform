@@ -1,7 +1,7 @@
 description = "A run discovering more distinct document and section targets than the target budget names fails at the target that crosses it."
 
 clauses = [
-  "Resource limits — -T",
+  "Resource limits — targets",
   "Adversarial acceptance fixtures — Limits",
 ]
 
