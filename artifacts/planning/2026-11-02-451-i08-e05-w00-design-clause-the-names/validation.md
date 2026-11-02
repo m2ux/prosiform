@@ -20,3 +20,7 @@ Evidence for each check `w00.md` names, run in the task worktree with `PROSIFORM
 ## Repository check
 
 `make check` exits 0: unit and harness suites (1564 and 1149 passed), corpus 421 of 421 fixtures pass, smoke, layout, tables, links, vocabulary, invocation, conformance, independence and mock scenarios all hold. `make invocation` still compares the lettered options: the documented table and the help output change together in W01 and W04.
+
+## Merge
+
+Continuous integration passed on `999be768`, and [#549](https://github.com/m2ux/prosiform/pull/549) merged into `i08/e05/main` as `220a19cf`.

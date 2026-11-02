@@ -14,11 +14,13 @@ This record holds its delivery of `AC6`: the work item, the validation evidence 
 | --- | --- |
 | [W00](w00.md) | The work item: the budget clause, the names, the refusals and the pin. |
 | [Validation](validation.md) | The conformance and repository-check evidence for AC6, at the tested revisions. |
+| [Change list](changes.md) | The plan changes the session applied and held. |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I08:E05 Named Budgets](https://github.com/m2ux/prosiform/issues/451) |
+| Pull request | [#549](https://github.com/m2ux/prosiform/pull/549) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
