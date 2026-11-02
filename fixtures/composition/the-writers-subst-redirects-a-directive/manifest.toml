@@ -1,0 +1,28 @@
+description = "A directive resolves by the rules every reference resolves by, the writing document's subst included: the guide's default preset maps read.md to stub.md, so its directive naming read.md's Inputs composes the stub's Inputs, the contribution heading names the stub, the directive's link points at it, and the run states the substitution at the directive."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Section composition — Presets and subst",
+  "Link classification and resource handling — The substitution mapping",
+  "Presets — default always applies",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "read.md#inputs"
+resolved = "stub.md#inputs"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 10
+column = 1

@@ -63,8 +63,6 @@ from prosiform.cli import (
     INTERNAL_ERROR,
     INVALID_ENCODING,
     INVALID_USAGE,
-    MOCK_SUBSTITUTED,
-    MOCK_UNUSED,
     PRESET_UNUSED,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
@@ -73,6 +71,8 @@ from prosiform.cli import (
     SOURCE_CHANGED,
     SOURCE_OUTSIDE_ROOT,
     SOURCE_SYMLINK,
+    SUBST_UNUSED,
+    SUBST_USED,
     SUCCESS,
     TARGET_NOT_FOUND,
     UNEXPECTED_INTERNAL_ERROR,
@@ -295,8 +295,8 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         RESOURCE_PORTABILITY,
         COINCIDENT_HEADING,
         EARLIER_SET_RETAINED,
-        MOCK_SUBSTITUTED,
-        MOCK_UNUSED,
+        SUBST_USED,
+        SUBST_UNUSED,
         PRESET_UNUSED,
     }
     for published in (
@@ -709,6 +709,29 @@ def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> N
     run = invoke("-d", "json", "guide.md#nowhere", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.diagnostics()[0]["chain"] == ["guide.md#nowhere"]
+
+
+def test_an_entry_is_compiled_as_named_whatever_its_presets_state(root: Path) -> None:
+    """No document writes an entry reference, so no `subst` pair redirects it."""
+    written(
+        root,
+        "entry.md",
+        "---\nprosiform:\n  default:\n    subst: [{entry.md: stand-in.md}]\n---\n"
+        "# Entry\n\nEvery step the entry names.\n",
+    )
+    written(root, "stand-in.md", DECLARED + "# Stand-in\n\nA stand-in.\n")
+    run = invoke("-d", "json", "entry.md", cwd=root)
+    assert run.status == 0
+    assert list(run.bundles) == ["entry.bundle.md"]
+    assert run.bundle.startswith("# Entry\n")
+    assert "Stand-in" not in run.bundle
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        ("W_SUBST_UNUSED", "entry.md")
+    ]
+
+
+def test_an_entry_reference_resolves_to_the_path_the_caller_wrote() -> None:
+    assert entry("./docs/../entry.md#steps") == resolve("./docs/../entry.md#steps")
 
 
 def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
@@ -2827,7 +2850,10 @@ def test_a_subst_side_is_read_by_the_reference_grammar(
 
 
 def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> None:
-    """A side above the working directory, and one quoted for its colon, are read."""
+    """A side above the working directory, and one quoted for its colon, are read.
+
+    No link of the guide names a key, so each pair is admitted and warns unused.
+    """
     written(
         root,
         "guide.md",
@@ -2839,7 +2865,11 @@ def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> Non
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert run.diagnostics() == []
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        ("W_SUBST_UNUSED", "rules.md#Checks"),
+        ("W_SUBST_UNUSED", "a%20b.md"),
+        ("W_SUBST_UNUSED", "rules.md#Step 1: Setup"),
+    ]
 
 
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:

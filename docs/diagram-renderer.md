@@ -33,7 +33,7 @@ A case that exits nonzero still draws, and the run reports the status, so a case
 Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync --frozen --no-dev` to install the compiler. From the repository root, use that environment's Python:
 
 ```bash
-/path/to/prosiform/src/.venv/bin/python scripts/render-diagram.py /path/to/my-skill/SKILL.md --output /tmp/skill-diagram
+/path/to/prosiform/src/.venv/bin/python scripts/render-diagram.py /path/to/skill/SKILL.md --output /tmp/skill-diagram
 ```
 
 | Argument | Purpose |

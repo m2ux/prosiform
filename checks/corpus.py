@@ -23,6 +23,14 @@ A failing fixture is named by its identity — its path under `fixtures/` —
 and its differences are printed under it, so a red run names which
 fixture and where it differed.
 
+Every setting a fixture's sources declare sits in a preset: each key of a
+source's `prosiform` names a preset and maps it to that preset's settings.
+A key naming a setting (`group`, `subst`, or the refused `root`) or holding
+anything but a mapping is a setting declared outside a preset, and it fails
+its fixture whatever the build answers. A fixture expecting
+`E_INVALID_CONVERSION_METADATA` declares the refusal of such a key, so its
+sources are its subject rather than a declaration left behind.
+
 `--awaiting WORK` reports the fixtures declaring that work instead of
 running the corpus, so a session starting a piece of work reads which
 fixtures it unblocks before it changes anything. The name is matched as
@@ -37,6 +45,7 @@ is never reported as holding against a build that never ran.
 """
 
 import argparse
+import re
 import sys
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -45,9 +54,16 @@ from pathlib import Path
 from typing import Any
 
 from manifests import CORPUS, MANIFEST_NAME, fixtures, identity, read
+from ruamel.yaml import YAML
+from ruamel.yaml.error import YAMLError
 from runner import BuildNotConfigured, Result, build_under_test, run_fixture
 
 AWAITING = "awaiting"
+DECLARATION = "prosiform"
+SETTINGS = frozenset({"group", "subst", "root"})
+REFUSED = "E_INVALID_CONVERSION_METADATA"
+EXPECTED = "expected"
+FRONTMATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n", re.DOTALL)
 
 
 class Verdict(Enum):
@@ -70,10 +86,13 @@ class Outcome:
 
     result: Result
     awaiting: str | None
+    undeclared: tuple[str, ...] = ()
 
     @property
     def verdict(self) -> Verdict:
-        """The verdict the run and the marker give together."""
+        """The verdict the run, the marker and the sources give together."""
+        if self.undeclared:
+            return Verdict.FAILED
         if self.awaiting is None:
             return Verdict.PASSED if self.result.passed else Verdict.FAILED
         return Verdict.UNEXPECTED_PASS if self.result.passed else Verdict.AWAITED
@@ -96,6 +115,11 @@ class Outcome:
                 f"  remove awaiting = {self.awaiting!r} from "
                 f"{self.result.fixture}/{MANIFEST_NAME}",
             ]
+        if self.undeclared:
+            return [
+                f"{self.result.fixture}: declares a setting outside a preset",
+                *(f"  {one}" for one in self.undeclared),
+            ]
         return self.result.report().splitlines()
 
 
@@ -105,9 +129,53 @@ def awaiting(manifest: dict[str, Any]) -> str | None:
     return declared if isinstance(declared, str) else None
 
 
+def refuses_metadata(manifest: dict[str, Any]) -> bool:
+    """Whether a manifest expects the run to refuse a conversion declaration."""
+    diagnostics = manifest.get(EXPECTED, {}).get("diagnostics", [])
+    return any(one.get("code") == REFUSED for one in diagnostics)
+
+
+def declaration(source: Path) -> dict[Any, Any] | None:
+    """A source's `prosiform` mapping, or nothing when it declares none."""
+    try:
+        text = source.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    found = FRONTMATTER.match(text)
+    if found is None:
+        return None
+    try:
+        front = YAML(typ="safe", pure=True).load(found.group(1))
+    except YAMLError:
+        return None
+    if not isinstance(front, dict):
+        return None
+    declared = front.get(DECLARATION)
+    return declared if isinstance(declared, dict) else None
+
+
+def undeclared(fixture: Path) -> tuple[str, ...]:
+    """Each source key of a fixture declaring a setting outside a preset."""
+    if refuses_metadata(read(fixture / MANIFEST_NAME)):
+        return ()
+    found = []
+    for source in sorted(fixture.rglob("*.md")):
+        relative = source.relative_to(fixture)
+        if relative.parts[0] == EXPECTED or source.is_symlink():
+            continue
+        for key, value in (declaration(source) or {}).items():
+            if key in SETTINGS or not isinstance(value, dict):
+                found.append(f"{relative}: {DECLARATION}.{key}")
+    return tuple(found)
+
+
 def outcome(fixture: Path) -> Outcome:
-    """One fixture run against the build and read against its marker."""
-    return Outcome(run_fixture(fixture), awaiting(read(fixture / MANIFEST_NAME)))
+    """One fixture run against the build, read against its marker and sources."""
+    return Outcome(
+        run_fixture(fixture),
+        awaiting(read(fixture / MANIFEST_NAME)),
+        undeclared(fixture),
+    )
 
 
 def tally(outcomes: Iterable[Outcome]) -> dict[Verdict, int]:

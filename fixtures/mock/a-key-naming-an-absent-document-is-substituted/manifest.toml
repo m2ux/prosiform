@@ -1,14 +1,14 @@
-description = "A key naming a document the tree does not hold compiles its substitute and publishes, because the reference is redirected before any source is read, which is what makes an artifact under authoring testable, and the run states the substitution it performed."
+description = "A key naming a document the tree does not hold compiles its substitute and publishes, because the reference is redirected before its target is read, which is what makes an artifact under authoring testable, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE, given once per pairing and repeatable",
+  "Link classification and resource handling — The substitution mapping, a key naming a document that does not exist is not refused",
   "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "rules.md=stub.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
@@ -16,7 +16,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "stub.md"
 

@@ -1,0 +1,21 @@
+description = "A positional entry whose own default preset states subst: [{entry.md: stand-in.md}] compiles entry.md and the run is named for it, because an entry reference is written by no document and no pair redirects it; the pair names no reference the run resolved, so it warns as unused."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Automatic output names, the run is named for the path the caller wrote",
+  "Presets — A command-line entry reads the file it names",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["entry.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "entry.md"

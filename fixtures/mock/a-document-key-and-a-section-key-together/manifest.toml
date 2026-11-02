@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "rules.md=rules-copy.md", "-m", "rules.md#escalation=escalation-copy.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
@@ -15,7 +15,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md"
 resolved = "rules-copy.md"
 
@@ -26,7 +26,7 @@ column = 1
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "rules.md#escalation"
 resolved = "escalation-copy.md#escalation"
 
