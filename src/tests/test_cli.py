@@ -80,6 +80,7 @@ from prosiform.cli import (
     USAGE_FAILURE,
     Bundle,
     Failure,
+    budgets,
     entry,
     keyworded,
     keywords,
@@ -107,9 +108,11 @@ from prosiform.limits import (
     BUDGETS,
     FILE_BYTES,
     FILES,
+    LINKS,
     NESTING,
     OUTPUT_BYTES,
     RESOURCE_LIMIT,
+    Budget,
     Limits,
 )
 from prosiform.limits import (
@@ -349,22 +352,54 @@ def test_long_options_are_invalid_usage(option: str) -> None:
     assert run.bundle == ""
 
 
+@pytest.mark.parametrize("budget", BUDGETS, ids=lambda budget: budget.name)
+def test_a_budget_entry_sets_the_budget_it_names(budget: Budget) -> None:
+    options = parser().parse_args(["--budget", f"{budget.name}=123"])
+    assert budgets(options).of(budget) == 123
+    assert all(
+        budgets(options).of(other) == other.default
+        for other in BUDGETS
+        if other is not budget
+    )
+
+
+def test_budget_entries_naming_several_budgets_set_each() -> None:
+    options = parser().parse_args(
+        ["--budget", "files=7", "--budget=links=9", "--budget", "nesting=2"]
+    )
+    limits = budgets(options)
+    assert (limits.of(FILES), limits.of(LINKS), limits.of(NESTING)) == (7, 9, 2)
+
+
 @pytest.mark.parametrize(
-    ("flag", "destination"),
+    ("entries", "named"),
     [
-        ("-F", "max_files"),
-        ("-B", "max_file_bytes"),
-        ("-I", "max_input_bytes"),
-        ("-O", "max_output_bytes"),
-        ("-T", "max_targets"),
-        ("-L", "max_links"),
-        ("-N", "max_nesting"),
-        ("-E", "max_expansion_depth"),
+        (("--budget", "key=1"), "'key'"),
+        (("--budget", "files"), "carries no '='"),
+        (("--budget", "=1"), "names no budget"),
+        (("--budget", "files="), "no positive decimal integer"),
+        (("--budget", "files=0"), "no positive decimal integer"),
+        (("--budget", "files=1", "--budget", "files=2"), "files budget is named twice"),
+        (("--budget", "nesting=1"), "below 2"),
     ],
 )
-def test_budget_flags_select_the_planned_limit(flag: str, destination: str) -> None:
-    options = parser().parse_args([flag, "123"])
-    assert getattr(options, destination) == 123
+def test_a_budget_entry_the_grammar_does_not_admit_is_invalid_usage(
+    root: Path, entries: tuple[str, ...], named: str
+) -> None:
+    run = invoke("-d", "json", *entries, "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert named in diagnostic["message"]
+    assert run.bundle == ""
+
+
+def test_an_unknown_budget_name_is_reported_with_every_name_admitted(
+    root: Path,
+) -> None:
+    run = invoke("-d", "json", "--budget", "key=1", "guide.md", cwd=root)
+    message = run.diagnostics()[0]["message"]
+    assert all(budget.name in message for budget in BUDGETS)
 
 
 @pytest.mark.parametrize(
@@ -961,7 +996,7 @@ def test_a_crlf_source_is_read_without_newline_translation(root: Path) -> None:
 
 
 def bounded(file_bytes: int) -> Limits:
-    """The default budgets with `-B` at the figure given."""
+    """The default budgets with `file-bytes` at the figure given."""
     return Limits({b: file_bytes if b is FILE_BYTES else b.default for b in BUDGETS})
 
 
@@ -1635,7 +1670,7 @@ def test_two_sections_selecting_two_depths_for_one_group_conflict(
 
 
 def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
-    """The second section reaches a target the run carries, so `-T 2` holds."""
+    """The second section reaches a target the run carries, so `targets=2` holds."""
     written(root, "guide.md", TWO_SECTIONS)
     written(
         root,
@@ -1643,7 +1678,7 @@ def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
         presets(("Checks", ("reviews", 1)), ("Draft", ("drafts", 1)))
         + "# Rules\n\nAll.\n",
     )
-    run = invoke("-T", "2", "guide.md", cwd=root)
+    run = invoke("--budget", "targets=2", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
 
@@ -2997,26 +3032,27 @@ def chained(root: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    ("option", "value"),
+    ("name", "value"),
     [
-        ("-F", "2"),
-        ("-B", "16"),
-        ("-I", "60"),
-        ("-O", "64"),
-        ("-T", "2"),
-        ("-L", "1"),
-        ("-E", "1"),
+        ("files", "2"),
+        ("file-bytes", "16"),
+        ("input-bytes", "60"),
+        ("output-bytes", "64"),
+        ("targets", "2"),
+        ("links", "1"),
+        ("depth", "1"),
     ],
 )
-def test_a_crossed_budget_fails_the_run_and_names_the_option(
-    root: Path, option: str, value: str
+def test_a_crossed_budget_fails_the_run_and_names_the_budget(
+    root: Path, name: str, value: str
 ) -> None:
     chained(root)
-    run = invoke("-d", "json", option, value, "alpha.md", cwd=root)
+    run = invoke("-d", "json", "--budget", f"{name}={value}", "alpha.md", cwd=root)
     assert run.status == INPUT_FAILURE
     reported = run.diagnostics()[0]
     assert reported["code"] == RESOURCE_LIMIT
-    assert option in reported["message"]
+    assert name in reported["message"]
+    assert f"--budget {name}" in reported["remedy"]
     assert run.bundle == ""
 
 
@@ -3024,7 +3060,7 @@ def test_a_crossed_nesting_budget_fails_rather_than_reinterpreting_the_source(
     root: Path,
 ) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\n" + "> " * 12 + "The bottom.\n")
-    run = invoke("-d", "json", "-N", "3", "guide.md", cwd=root)
+    run = invoke("-d", "json", "--budget", "nesting=3", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.diagnostics()[0]["code"] == RESOURCE_LIMIT
 
@@ -3040,7 +3076,7 @@ def test_a_parsing_safety_budget_an_unselected_construct_crosses_names_the_sourc
         + "> " * 12
         + "Deep.\n",
     )
-    run = invoke("-d", "json", "-N", "3", "guide.md#alpha", cwd=root)
+    run = invoke("-d", "json", "--budget", "nesting=3", "guide.md#alpha", cwd=root)
     assert run.status == INPUT_FAILURE
     reported = run.diagnostics()[0]
     assert reported["code"] == RESOURCE_LIMIT
@@ -3052,7 +3088,7 @@ def test_a_parsing_safety_budget_an_unselected_construct_crosses_names_the_sourc
 
 def test_a_source_byte_budget_is_an_indexing_failure_too(root: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\n## Alpha\n\nSelected.\n")
-    run = invoke("-d", "json", "-B", "8", "guide.md#alpha", cwd=root)
+    run = invoke("-d", "json", "--budget", "file-bytes=8", "guide.md#alpha", cwd=root)
     assert run.status == INPUT_FAILURE
     reported = run.diagnostics()[0]
     assert reported["code"] == RESOURCE_LIMIT
@@ -3062,7 +3098,7 @@ def test_a_source_byte_budget_is_an_indexing_failure_too(root: Path) -> None:
 
 def test_a_run_wide_budget_names_no_single_source(root: Path) -> None:
     chained(root)
-    run = invoke("-d", "json", "-F", "2", "alpha.md", cwd=root)
+    run = invoke("-d", "json", "--budget", "files=2", "alpha.md", cwd=root)
     assert run.status == INPUT_FAILURE
     reported = run.diagnostics()[0]
     assert reported["code"] == RESOURCE_LIMIT
@@ -3159,14 +3195,14 @@ def test_a_refusal_in_a_reached_document_the_closure_selected_fails(
 
 def test_a_target_at_the_expansion_depth_is_bundled(root: Path) -> None:
     chained(root)
-    run = invoke("-E", "2", "alpha.md", cwd=root)
+    run = invoke("--budget", "depth=2", "alpha.md", cwd=root)
     assert run.status == SUCCESS
     assert "# Gamma" in run.bundle
 
 
 def test_a_crossed_budget_publishes_no_output_file(root: Path) -> None:
     chained(root)
-    run = invoke("-O", "64", "alpha.md", cwd=root)
+    run = invoke("--budget", "output-bytes=64", "alpha.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundle == ""
 
@@ -3175,7 +3211,7 @@ def test_a_crossed_budget_publishes_no_output_file(root: Path) -> None:
 def test_a_budget_override_that_is_no_positive_decimal_integer_is_refused(
     root: Path, value: str
 ) -> None:
-    run = invoke(f"-F={value}", "guide.md", cwd=root)
+    run = invoke(f"--budget=files={value}", "guide.md", cwd=root)
     assert run.status == USAGE_FAILURE
 
 
@@ -3363,7 +3399,7 @@ def surrounded(brackets: int) -> str:
 def test_a_lookup_the_parser_declines_fails_the_run(root: Path) -> None:
     written(root, "guide.md", DECLARED + surrounded(2 + HEADROOM + 1))
     written(root, "plan.md", "# Plan\n\nThe plan.\n")
-    run = invoke("-d", "json", "-N", "2", "guide.md", cwd=root)
+    run = invoke("-d", "json", "--budget", "nesting=2", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundle == ""
     reported = run.diagnostics()[0]
@@ -3375,7 +3411,7 @@ def test_a_lookup_the_parser_declines_fails_the_run(root: Path) -> None:
 def test_a_ceiling_reached_by_the_last_valid_reference_bundles_it(root: Path) -> None:
     written(root, "guide.md", DECLARED + surrounded(2 + HEADROOM))
     written(root, "plan.md", DECLARED + "# Plan\n\nThe plan.\n")
-    run = invoke("-d", "json", "-N", "2", "guide.md", cwd=root)
+    run = invoke("-d", "json", "--budget", "nesting=2", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "The plan." in run.bundle
     assert run.diagnostics() == []
@@ -3617,9 +3653,9 @@ def test_each_bundle_holds_the_file_budget_for_its_own_closure(root: Path) -> No
     )
     for name in ("a", "b", "c"):
         written(root, f"{name}.md", f"{DECLARED}# {name.upper()}\n")
-    within = invoke("-d", "json", "-F", "4", "guide.md", cwd=root)
+    within = invoke("-d", "json", "--budget", "files=4", "guide.md", cwd=root)
     assert within.status == SUCCESS
-    crossed = invoke("-d", "json", "-F", "3", "guide.md", cwd=root)
+    crossed = invoke("-d", "json", "--budget", "files=3", "guide.md", cwd=root)
     assert crossed.status == INPUT_FAILURE
     assert crossed.bundles == {}
     [fault] = crossed.diagnostics()
@@ -3631,7 +3667,7 @@ def test_each_bundle_counts_expansion_depth_from_its_own_entry(root: Path) -> No
     written(root, "a.md", DECLARED + "# A\n\nRun [⇉ b](b.md).\n")
     written(root, "b.md", DECLARED + "# B\n\nSee [c](c.md).\n")
     written(root, "c.md", DECLARED + "# C\n")
-    run = invoke("-d", "json", "-E", "1", "guide.md", cwd=root)
+    run = invoke("-d", "json", "--budget", "depth=1", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert sorted(run.bundles) == ["b.bundle.md", "guide.bundle.md"]
 
