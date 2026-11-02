@@ -165,6 +165,7 @@ Each criterion is one epic's outcome at initiative grain, as [I08](https://githu
 
 ## Decisions
 
+- **Closed I08:E07 criteria carry superseded notes.** (User, 2026-11-02.) AC2, AC9, AC10, AC15, AC21, AC22 and AC23 of [#414](https://github.com/m2ux/prosiform/issues/414) name fixtures, a check or `-m` that [#568](https://github.com/m2ux/prosiform/pull/568) removes; each keeps its text and tick and gains one note linking #568.
 - **The Usage examples clause retires.** (User, 2026-11-02.) With the example tree removed, the corpus fixtures and the end-to-end evals are the examples. E08 drops the specimen row W04 and its AC7 (raised from #560), and the design's Usage examples clause is retired by E08's next row that amends the design, so no clause promises a specimen nothing runs.
 - **`-m` retires without a refusal.** (User rule, 2026-11-02.) Retired options are removed, not refused, so E06 AC1 states that the build declares no `-m` and nothing names it; there is no `the-mock-option-is-gone` fixture, and the design states no dedicated `-m` refusal.
 - **E06 W09 removes the mock scenarios.** (User, 2026-11-02.) The scenarios pass `-m` and bundle a copy of the unmaintained example tree, so the unit retiring `-m` removes them, `checks/mock_scenarios.py` and `make mock-scenarios` rather than converting them to presets; E08 W00's removal list no longer carries them.
