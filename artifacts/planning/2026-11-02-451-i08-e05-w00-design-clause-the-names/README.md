@@ -12,6 +12,8 @@ This record holds its delivery of `AC6`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W00](w00.md) | The work item: the budget clause, the names, the refusals and the pin. |
+| [Validation](validation.md) | The conformance and repository-check evidence for AC6, at the tested revisions. |
 
 ## Links
 
