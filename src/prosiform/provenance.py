@@ -224,10 +224,15 @@ class Instruction:
     range, so it can never stand in for selected body content a group
     failed to emit. A listed instruction is a bulleted list, and every
     other one a paragraph.
+
+    A deferred directive's contribution heading carries one as well: the
+    line naming the target a later run composes, which `activates`
+    holds.
     """
 
     text: str
     listed: bool = False
+    activates: Target | None = None
 
     @property
     def kind(self) -> str:

@@ -1,0 +1,18 @@
+description = "One step composes a call's contract and defers its implementation. The contract's body is composed beneath its destination section; the implementation keeps its place, its destination section and contribution heading, and carries only the generated line naming the run that composes it, so its body and everything it composes are absent. Each directive's link points at its own contribution heading, the deferred one published without its mark."
+
+clauses = [
+  "Section composition — Deferred composition",
+  "Section composition — The directive's link",
+  "Link classification and resource handling — A deferred link's destination",
+  "Link classification and resource handling — A withheld link's target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

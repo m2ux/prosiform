@@ -1,7 +1,7 @@
 ---
 prosiform: {}
 ---
-Read [¬ →](step.md#output) in a later run.
+Read [¬→](step.md#output) in a later run.
 
 # Guide
 

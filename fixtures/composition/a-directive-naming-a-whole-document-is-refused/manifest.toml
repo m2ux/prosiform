@@ -1,0 +1,21 @@
+description = "A directive places a section beneath its scope, so one naming a whole document names no section to place: the run refuses it with the link and where it is written, rather than bundling the document as an ordinary link would, and no bundle is published."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["whole document"]
+reference = "step.md"
+source = "guide.md:8"
+chain = ["guide.md", "step.md"]

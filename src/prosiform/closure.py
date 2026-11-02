@@ -7,9 +7,10 @@ it declares nothing. Canonical source identities are relative to the
 invocation working directory, independent of the discovering parent, and
 one above it keeps its leading parent segments.
 
-Three operators open a link's text, each a mark followed by a space, and
-one link states one of them. Each withholds the same compilation from the
-bundle carrying the link: a deferral states when the material is
+Three operators open a link's text, their marks written together and
+followed by a space, and a deferral combines with one dispatch. Each
+withholds the same compilation from the bundle carrying the link: a
+deferral states when the material is
 compiled, a dispatch that a sub-agent follows it, and a parallel dispatch
 that a sub-agent follows it together with the section's other parallel
 dispatches. A deferred link's destination is the target's path, which no
@@ -25,12 +26,13 @@ so a reader could not see the placement it would request. The label
 requests placement and nothing else, so every qualifying scalar means
 the same and the meaning an author gives one stays with the author.
 
-Deferral is read before recognition and apart from it: the deferral
-mark and the blanks after it are set aside, so a deferred link is a
-deferred directive where what remains qualifies and an ordinary
-deferral where it does not. Every other operator opens a link that is
-no directive, and the marks that open an operator or a convention are
-no directive's label. Nothing is trimmed or normalised to make a label
+Symbols are written together, and the one blank stands between the
+last of them and the link's text. The deferral mark written against a
+qualifying label, as `¬→`, is a deferred directive; a blank between two
+symbols — two marks, or a mark and a qualifying label — states no one
+operation and is refused. Every other operator opens a link that is no
+directive, and the marks that open an operator or a convention are no
+directive's label. Nothing is trimmed or normalised to make a label
 qualify."""
 
 import posixpath
@@ -42,6 +44,7 @@ from types import MappingProxyType
 from unicodedata import category
 from urllib.parse import quote
 
+from markdown_it.common.utils import unescapeAll
 from markdown_it.token import Token
 
 from prosiform.profile import is_markdown
@@ -466,45 +469,103 @@ def normalized(base: str, segments: Sequence[str]) -> str:
     return SEPARATOR.join(walked)
 
 
+@dataclass(frozen=True)
+class Opened:
+    """The operator marks one link's text opens with, and where its text begins.
+
+    The text after the marks begins at `after`. The marks are followed
+    by a blank, or they are the deferral mark written against a
+    directive's label, whose text begins at the label.
+    """
+
+    marks: str
+    after: int
+    blank: bool
+
+
+def placing(requested: str) -> bool:
+    """Whether a label is one scalar above U+007F that shows something.
+
+    A whitespace, control or format scalar shows nothing, and a mark
+    opening an operator or a convention states something else, so
+    neither requests placement.
+    """
+    return (
+        len(requested) == 1
+        and ord(requested) > ASCII_CEILING
+        and requested not in MARKS
+        and not requested.isspace()
+        and category(requested) not in UNSHOWN
+    )
+
+
+def against(text: str, raw: bool = False) -> bool:
+    """Whether text is the deferral mark written against a directive's label.
+
+    Raw text is the label as its source spelled it, so its entities and
+    escapes are decoded before the label is read.
+    """
+    label = text[len(DEFERRAL_MARK) :]
+    return text.startswith(DEFERRAL_MARK) and placing(
+        unescapeAll(label) if raw else label
+    )
+
+
+def opened(text: str, raw: bool = False) -> Opened | None:
+    """The operator marks one link's text opens with, where it states any.
+
+    Symbols are written together and one blank separates the last of
+    them from the link's text, so an operator is a run of marks followed
+    by a blank, the blanks before the run being its spacing. The
+    deferral mark written against a directive's label is the one run
+    with no blank after it, because the label is a symbol and the link
+    has no text beyond it. Any other mark followed directly by text is
+    the author's text, and opens nothing.
+    """
+    at = 0
+    while at < len(text) and text[at] in BLANKS:
+        at += 1
+    end = at
+    while end < len(text) and text[end] in OPERATORS:
+        end += 1
+    if end == at:
+        return None
+    if text[end : end + 1] == SPACE:
+        after = end
+        while after < len(text) and text[after] in BLANKS:
+            after += 1
+        return Opened(text[at:end], after, blank=True)
+    if at == 0 and against(text, raw):
+        return Opened(DEFERRAL_MARK, len(DEFERRAL_MARK), blank=False)
+    return None
+
+
 def operators(opening: str) -> tuple[str, ...]:
     """Each operator one link's text opens with, in the order it is written.
 
-    An operator is a run of operator marks followed by a space, and it
-    opens the text, so text a mark sits inside, or opens with no space
-    after it, names a document the way any prose does. One link states
-    both a deferral and a dispatch by writing the two marks adjacent, as
-    `¬⇉ target`, and the blanks before the run are its spacing.
+    One link states both a deferral and a dispatch by writing the two
+    marks together, as `¬⇉ target`.
     """
-    at = 0
-    while at < len(opening) and opening[at] in BLANKS:
-        at += 1
-    end = at
-    while end < len(opening) and opening[end] in OPERATORS:
-        end += 1
-    if end == at or opening[end : end + 1] != SPACE:
-        return ()
-    return tuple(opening[at:end])
+    found = opened(opening)
+    return () if found is None else tuple(found.marks)
 
 
-def spaced(opening: str) -> bool:
-    """Whether a link's text states two operator groups separated by a blank.
+def gapped(opening: str, label: str | None) -> bool:
+    """Whether a link's text writes a blank between two of its symbols.
 
-    The marks of a compound operator are written together, so a blank
-    between two of them states two operators rather than one, and the
-    author who meant `¬⇉ target` wrote something else.
+    A symbol is an operator mark or a composition directive's label.
+    The marks of a compound operator are written together, and so are
+    the deferral mark and the label it defers, so a blank between two
+    symbols states no one operation: `¬ ⇉ target`, `¬ →` and `⇉ →` are
+    each refused. The label is the link's whole plain text, absent
+    where the text is not plain, which no directive's is.
     """
-    at = 0
-    while at < len(opening) and opening[at] in BLANKS:
-        at += 1
-    end = at
-    while end < len(opening) and opening[end] in OPERATORS:
-        end += 1
-    if end == at or opening[end : end + 1] != SPACE:
+    found = opened(opening)
+    if found is None or not found.blank:
         return False
-    after = end
-    while after < len(opening) and opening[after] in BLANKS:
-        after += 1
-    return opening[after : after + 1] in OPERATORS
+    if opening[found.after : found.after + 1] in OPERATORS:
+        return True
+    return label is not None and placing(unmarked(label))
 
 
 def conflicting(opening: str) -> bool:
@@ -561,56 +622,36 @@ def withholding(opening: str) -> bool:
     return deferred(opening) or dispatched(opening)
 
 
-def unmarked(text: str) -> str:
+def unmarked(text: str, raw: bool = False) -> str:
     """One link's text as the bundle publishes it, with its operator's marks taken off.
 
     A deferral states when the material is compiled, and its destination
     states that already; a dispatch states who compiles it, and the
     sub-section its link points at states that. Every mark is authoring
     syntax rather than content, so they go with the blanks that are their
-    spacing. The marks of a compound operator go together, because a mark
-    with no space after it is the author's text and ends the run.
+    spacing, and a deferred directive keeps its label alone.
 
     Text opening with no operator is the author's prose and is returned
-    as written.
+    as written. Raw text is the label as its source spelled it.
 
     The caller applies it where the bundle gave the link a destination
     of its own, which is where that destination states the withholding.
     """
-    at = 0
-    while at < len(text) and text[at] in BLANKS:
-        at += 1
-    end = at
-    while end < len(text) and text[end] in OPERATORS:
-        end += 1
-    if end == at or text[end : end + 1] != SPACE:
-        return text
-    while end < len(text) and text[end] in BLANKS:
-        end += 1
-    return text[end:]
+    found = opened(text, raw)
+    return text if found is None else text[found.after :]
 
 
 def directive(label: str | None) -> bool:
     """Whether a link with this plain-text label is a composition directive.
 
     The label is absent where the link's text is not plain text, which
-    no directive's is. A label opening with the deferral mark alone is
-    read without it; one opening with any other operator states how its
-    material is compiled and requests no placement.
+    no directive's is. A label is one scalar requesting placement, alone
+    or with the deferral mark written against it; every other operator
+    states how its material is compiled and requests no placement.
     """
     if label is None:
         return False
-    found = operators(label)
-    if found and found != (DEFERRAL_MARK,):
-        return False
-    requested = unmarked(label) if found else label
-    return (
-        len(requested) == 1
-        and ord(requested) > ASCII_CEILING
-        and requested not in MARKS
-        and not requested.isspace()
-        and category(requested) not in UNSHOWN
-    )
+    return placing(label) or against(label)
 
 
 def resolve(text: str, base: str = "") -> Reference:

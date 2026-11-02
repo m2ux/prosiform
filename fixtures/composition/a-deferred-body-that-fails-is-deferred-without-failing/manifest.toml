@@ -1,0 +1,17 @@
+description = "A run deferring a target asserts no more than that it exists, so an implementation whose body the profile refuses is deferred by a run composing its contract, which publishes with no diagnostic."
+
+clauses = [
+  "Section composition — Deferred composition",
+  "Link classification and resource handling — A withheld link's target",
+  "Section composition — Activation",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -73,15 +73,16 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
+    Unresolvable,
     components,
     conflicting,
     directive,
+    gapped,
     identity,
     inside,
     named,
     operators,
     resolve,
-    spaced,
     withholding,
     withholding_target,
 )
@@ -1564,7 +1565,9 @@ def refusals_of_operators(
     """Refuse a link whose operators state no one compilation the run can carry out.
 
     A deferral says when the material is compiled and a dispatch says who
-    compiles it, so the two are carried out together. Two dispatch marks
+    compiles it, so the two are carried out together, their marks written
+    together: a blank between two symbols — two marks, or a mark and a
+    composition directive's label — states no one operation. Two dispatch marks
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
@@ -1584,19 +1587,18 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if spaced(use.opening) and DEFERRAL_MARK in operators(use.opening):
-            first = operators(use.opening)
-            second = operators(use.opening[len(first) :].lstrip())
+        if gapped(use.opening, use.label):
             raise input_failure(
-                f"the link {use.opening!r} opens with "
+                f"the link {use.opening!r} writes a blank between "
                 + " and ".join(
-                    f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in first + second
+                    f"{OPERATOR_NAMES[mark]} {mark!r}"
+                    for mark in operators(use.opening)
                 )
-                + ", which state one compilation only when the marks are written "
-                "together",
+                + " and the symbol after it, which state one operation only "
+                "when written together",
                 code=UNSUPPORTED_CONSTRUCT,
-                remedy="write the marks of the combined operator with no space "
-                "between them",
+                remedy="write the symbols with no space between them, and one "
+                "space between the last of them and the link's text",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),
@@ -1672,14 +1674,21 @@ def refusals_of_directives(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
-    """Refuse a composition directive no section holds or no document answers.
+    """Refuse a composition directive no section holds or no section answers.
 
     A directive places its target beneath the section containing it, so
     one written in the preamble has no scope to place it in. One naming a
     Markdown path that holds no document names a target that cannot be
-    read, and fails as a reference naming nothing does. Either label asks
-    for a placement the run cannot make, which is a source fault: the run
-    reports the link rather than reading it as an ordinary one.
+    read, and fails as a reference naming nothing does. A directive names
+    a section of a document that declares `prosiform`, so one naming a
+    remote address, a resource, a document that declares nothing or a
+    whole document asks for a composition no such target can answer.
+    Each label asks for a placement the run cannot make, which is a
+    source fault: the run reports the link rather than reading it as an
+    ordinary one.
+
+    A reference whose form the grammar does not admit is left to the
+    refusal every dependency meets.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -1687,18 +1696,36 @@ def refusals_of_directives(
             continue
         at = location(path, source.line(use.line))
         if use.title is not None:
-            target = (
-                None
-                if use.resource
-                else named(path, use.destination, substitution, at, chain)
-            )
-            if target is None or declarations.answer(target) is not Probed.ABSENT:
+            target = named(path, use.destination, substitution, at, chain)
+            if target is None:
+                try:
+                    inside(path, use.destination, substitution)
+                except Unresolvable:
+                    continue
+                ineligible = "a remote address or a resource, which holds no section"
+            elif (answer := declarations.answer(target)) is Probed.ABSENT:
+                raise input_failure(
+                    f"the directive {use.label!r} names {use.destination!r}, "
+                    f"which names no document, so its composition has no "
+                    f"section to place",
+                    code=TARGET_NOT_FOUND,
+                    remedy="name a section of a Markdown document that exists",
+                    reference=use.destination,
+                    source=at,
+                    chain=(*chain, use.destination),
+                )
+            elif answer is Probed.SILENT:
+                ineligible = "a document whose frontmatter declares no prosiform"
+            elif target.fragment is None:
+                ineligible = "a whole document rather than a section of it"
+            else:
                 continue
             raise input_failure(
-                f"the directive {use.label!r} names {use.destination!r}, which "
-                f"names no document, so its composition has no section to place",
-                code=TARGET_NOT_FOUND,
-                remedy="name a section of a Markdown document that exists",
+                f"the directive {use.label!r} names {use.destination!r}, "
+                f"{ineligible}, so no section answers its composition",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="name a section of a Markdown document that declares "
+                "prosiform, or give the link a label that requests no placement",
                 reference=use.destination,
                 source=at,
                 chain=(*chain, use.destination),

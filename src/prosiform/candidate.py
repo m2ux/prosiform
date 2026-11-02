@@ -81,6 +81,7 @@ from prosiform.closure import (
     dispatched,
     parallel,
     rebased,
+    resolve,
     unmarked,
     withholding_target,
 )
@@ -1112,7 +1113,8 @@ def references(
     diagram's link destinations are the characters of a code example
     preservation sets aside, so this is where each is held.
 
-    A composing link shows the text its author wrote and points at the
+    A composing link shows the text its author wrote, its deferral mark
+    taken off, and points at the
     contribution heading the composition map holds for its position.
     """
     contributing = {} if composing is None else composing
@@ -1135,7 +1137,12 @@ def references(
                 substitution,
             )
             if anchor is None
-            else Use(one.kind, one.text, one.title, normalizeLink(f"{ANCHOR}{anchor}"))
+            else Use(
+                one.kind,
+                unmarked(one.text),
+                one.title,
+                normalizeLink(f"{ANCHOR}{anchor}"),
+            )
         )
     found = [one for _, _at, one in carried(published.tokens, published.span)]
     if len(found) != len(expected):
@@ -1278,6 +1285,23 @@ def protocols(
                 )
 
 
+def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
+    """Hold a deferred directive's line to the one target a later run composes.
+
+    The line is the bundle's own text and writes one link, whose
+    destination is the target's path from the invocation working
+    directory and the fragment naming its section.
+    """
+    found = [use for inline in inlines(tokens, [span]) for _c, _a, use in uses(inline)]
+    resolved = [resolve(use.destination) for use in found]
+    if [(one.path, one.fragment) for one in resolved] != [part.activates]:
+        raise Invalid(
+            TARGET_INTEGRITY,
+            f"the line {part.text!r} a deferred directive's contribution carries "
+            f"names no one target {part.activates!r}",
+        )
+
+
 def validate(
     bundled: str,
     groups: Sequence[Group],
@@ -1325,7 +1349,10 @@ def validate(
             structural(record, part, span, tokens)
             continue
         if isinstance(part, Instruction):
-            protocols(reached, part, span, tokens)
+            if part.activates is None:
+                protocols(reached, part, span, tokens)
+            else:
+                activation(part, span, tokens)
             continue
         if isinstance(part, Generated):
             continue

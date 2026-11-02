@@ -1,0 +1,21 @@
+description = "A remote address holds no section of a document the run reads, so a directive naming one asks for a composition nothing answers: the run refuses it with the link and where it is written, rather than carrying it as an ordinary link, and no bundle is published."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["remote address"]
+reference = "https://example.com/step.md#output"
+source = "guide.md:8"
+chain = ["guide.md", "https://example.com/step.md#output"]

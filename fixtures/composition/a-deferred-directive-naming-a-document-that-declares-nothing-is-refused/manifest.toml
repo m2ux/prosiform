@@ -1,0 +1,22 @@
+description = "A deferred directive's target is read as a withheld link's is, so one naming a section of a document that declares nothing is refused as the deferral operator naming it is, with the link and where it is written; no bundle is published."
+
+clauses = [
+  "Section composition — The eligible target",
+  "Link classification and resource handling — An operator's target",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["declares no prosiform"]
+reference = "notes.md#output"
+source = "guide.md:8"
+chain = ["guide.md", "notes.md#output"]

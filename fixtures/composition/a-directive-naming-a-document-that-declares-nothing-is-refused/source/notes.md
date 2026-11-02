@@ -1,0 +1,5 @@
+# Notes
+
+## Output
+
+A note.

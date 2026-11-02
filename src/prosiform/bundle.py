@@ -127,6 +127,7 @@ from prosiform.closure import (
     dispatched,
     parallel,
     rebased,
+    resolvable,
     unmarked,
     withholding_target,
 )
@@ -547,10 +548,10 @@ def unplaced(
     first_line: int,
     substitution: Substitution,
 ) -> None:
-    """Refuse a heading's immediate directive that composes nowhere.
+    """Refuse a heading's directive that composes nowhere.
 
-    The composition pass composes each immediate directive naming a
-    bundled section in every heading the bundle emits as a section, so
+    The composition pass composes each directive, deferred or not, naming
+    a declaring section in every heading the bundle emits as a section, so
     one it placed no contribution for sits in a heading emitted as text
     alone.
     """
@@ -561,12 +562,12 @@ def unplaced(
         here = position
         position += 1
         opening = opening_text(children, at)
-        if (path, start, here) in contributing or deferred(opening):
+        if (path, start, here) in contributing:
             continue
         if not directive(plain_label(children, at)):
             continue
         destination = str(child.attrGet(HREF) or "")
-        found = bundled(path, destination, opening, declarations, substitution)
+        found = resolvable(path, destination, declarations, substitution)
         if found is None or found.fragment is None:
             continue
         raise Unplaced(path, start + first_line, destination, opening, composing=True)
