@@ -13,8 +13,8 @@ from prosiform.metadata import (
     Exclusion,
     InvalidMetadata,
     Membership,
-    PathSub,
     Preset,
+    Subst,
     decode,
 )
 
@@ -87,13 +87,13 @@ def test_every_key_names_a_preset_holding_a_mapping() -> None:
     result = parse(
         "prosiform:\n"
         "  default: {group-depth: [{rules: 2}]}\n"
-        '  Target: {path-sub: ["checks.md=stub.md"]}\n'
+        "  Target: {subst: [{checks.md: stub.md}]}\n"
         "  checks: {exclude: [Draft]}"
     )
     assert [one.name for one in result.presets] == ["default", "Target", "checks"]
     assert joined(result) == [("rules", 2)]
-    assert result.presets[1].path_subs == (
-        PathSub("checks.md", "stub.md", Location("rules/a.md", 4, 23)),
+    assert result.presets[1].substs == (
+        Subst("checks.md", "stub.md", Location("rules/a.md", 4, 20)),
     )
     assert result.presets[2].exclusions == (
         Exclusion("Draft", None, Location("rules/a.md", 5, 22)),
@@ -110,7 +110,7 @@ def test_a_preset_key_holding_anything_but_a_mapping_is_refused(value: str) -> N
     assert diagnostic.location == Location("rules/a.md", 3, 11)
 
 
-@pytest.mark.parametrize("field", ["group-depth", "exclude", "path-sub"])
+@pytest.mark.parametrize("field", ["group-depth", "exclude", "subst"])
 def test_a_field_outside_its_preset_names_the_preset_it_belongs_in(
     field: str,
 ) -> None:
@@ -133,7 +133,7 @@ def test_an_empty_preset_states_nothing() -> None:
     )
 
 
-@pytest.mark.parametrize("field", ["group-depth", "exclude", "path-sub"])
+@pytest.mark.parametrize("field", ["group-depth", "exclude", "subst"])
 def test_a_list_field_holds_a_list(field: str) -> None:
     assert parse(preset(f"{field}: []")).default == Preset("default")
     with pytest.raises(InvalidMetadata) as caught:
@@ -270,47 +270,66 @@ def test_a_malformed_exclude_entry_is_refused_naming_it(
     assert diagnostic.location == Location("rules/a.md", 2, text.rindex(entry) + 1)
 
 
-def test_a_path_sub_entry_is_a_pair_string() -> None:
-    text = preset('path-sub: ["rules.md=stub.md", "a.md#Checks=b/c%20d.md=e"]')
-    assert parse(text).default.path_subs == (
-        PathSub(
+def test_a_subst_entry_is_a_colon_pair() -> None:
+    text = preset(
+        "subst: [{rules.md: stub.md}, {a.md#Checks: b/c%20d.md}, "
+        '{"rules.md#Step 1: Setup": stub.md}]'
+    )
+    assert parse(text).default.substs == (
+        Subst(
             "rules.md",
             "stub.md",
-            Location("rules/a.md", 2, text.index('"rules') + 1),
+            Location("rules/a.md", 2, text.index("{rules") + 1),
         ),
-        PathSub(
+        Subst(
             "a.md#Checks",
-            "b/c%20d.md=e",
-            Location("rules/a.md", 2, text.index('"a.md') + 1),
+            "b/c%20d.md",
+            Location("rules/a.md", 2, text.index("{a.md") + 1),
+        ),
+        Subst(
+            "rules.md#Step 1: Setup",
+            "stub.md",
+            Location("rules/a.md", 2, text.index('{"rules') + 1),
         ),
     )
 
 
 @pytest.mark.parametrize(
-    "entries,at,entry",
+    "entries,at,entry,said",
     [
-        ("{rules.md: stub.md}", 0, "{rules.md: stub.md}"),
-        ('"rules.md=stub.md", "rules.md"', 1, '"rules.md"'),
-        ('"=stub.md"', 0, '"=stub.md"'),
-        ('"rules.md="', 0, '"rules.md="'),
-        ('"="', 0, '"="'),
-        ("[rules.md, stub.md]", 0, "[rules.md, stub.md]"),
-        ("3", 0, "3"),
-        ("null", 0, "null"),
+        ('"rules.md=stub.md"', 0, '"rules.md=stub.md"', "must be a mapping"),
+        (
+            "{rules.md: stub.md}, {a.md: b.md, c.md: d.md}",
+            1,
+            "{a.md: b.md, c.md: d.md}",
+            "must be a mapping",
+        ),
+        ("{}", 0, "{}", "must be a mapping"),
+        ("[rules.md, stub.md]", 0, "[rules.md, stub.md]", "must be a mapping"),
+        ("3", 0, "3", "must be a mapping"),
+        ("null", 0, "null", "must be a mapping"),
+        (
+            "{3: stub.md}",
+            0,
+            "{3: stub.md}",
+            "must name its original reference with a string key",
+        ),
+        ("{rules.md: 3}", 0, "{rules.md: 3}", "must map a nonempty original"),
+        ("{rules.md: null}", 0, "{rules.md: null}", "must map a nonempty original"),
+        ("{rules.md: [a.md]}", 0, "{rules.md: [a.md]}", "must map a nonempty"),
+        ('{rules.md: ""}', 0, '{rules.md: ""}', "must map a nonempty original"),
+        ('{"": stub.md}', 0, '{"": stub.md}', "must map a nonempty original"),
     ],
 )
-def test_a_path_sub_entry_that_is_no_pair_string_is_refused_naming_it(
-    entries: str, at: int, entry: str
+def test_a_subst_entry_that_is_no_colon_pair_is_refused_naming_it(
+    entries: str, at: int, entry: str, said: str
 ) -> None:
-    text = preset("path-sub: [" + entries + "]")
+    text = preset("subst: [" + entries + "]")
     with pytest.raises(InvalidMetadata) as caught:
         parse(text)
     diagnostic = caught.value.diagnostic
     assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
-    assert (
-        f"prosiform.default.path-sub[{at}] must be one ORIGINAL=ALTERNATIVE string"
-        in diagnostic.message
-    )
+    assert f"prosiform.default.subst[{at}] {said}" in diagnostic.message
     assert diagnostic.location == Location("rules/a.md", 2, text.rindex(entry) + 1)
 
 

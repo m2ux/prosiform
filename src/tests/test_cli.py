@@ -2405,47 +2405,49 @@ def test_an_unknown_prosiform_key_fails(root: Path, key: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "pair,side,clause",
+    "entry,side,clause",
     [
-        ("rules.md?x=stub.md", "rules.md?x", "carries the query 'x'"),
-        ("rules.md=stub%zz.md", "stub%zz.md", "carries the escape '%zz'"),
-        ("rules.md=stub%2Fx.md", "stub%2Fx.md", "decodes to a path separator"),
-        ("/rules.md=stub.md", "/rules.md", "names the root-relative path"),
-        ("C:/rules.md=stub.md", "C:/rules.md", "names the drive path"),
-        ("rules\\\\x.md=stub.md", "rules\\x.md", "with a backslash"),
+        ('{"rules.md?x": stub.md}', "rules.md?x", "carries the query 'x'"),
+        ('{rules.md: "stub%zz.md"}', "stub%zz.md", "carries the escape '%zz'"),
+        ('{rules.md: "stub%2Fx.md"}', "stub%2Fx.md", "decodes to a path separator"),
+        ('{"/rules.md": stub.md}', "/rules.md", "names the root-relative path"),
+        ('{"C:/rules.md": stub.md}', "C:/rules.md", "names the drive path"),
+        ('{"rules\\\\x.md": stub.md}', "rules\\x.md", "with a backslash"),
         (
-            "rules.md=https://example.com/stub.md",
+            '{rules.md: "https://example.com/stub.md"}',
             "https://example.com/stub.md",
             "carries a scheme or an authority, so it names no local document",
         ),
     ],
 )
-def test_a_path_sub_side_is_read_by_the_reference_grammar(
-    root: Path, pair: str, side: str, clause: str
+def test_a_subst_side_is_read_by_the_reference_grammar(
+    root: Path, entry: str, side: str, clause: str
 ) -> None:
     written(
         root,
         "guide.md",
-        "---\nprosiform:\n  default:\n    path-sub:\n"
-        f'      - "a.md=b.md"\n      - "{pair}"\n---\n# Guide\n',
+        "---\nprosiform:\n  default:\n    subst:\n"
+        f"      - {{a.md: b.md}}\n      - {entry}\n---\n# Guide\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE, run.stderr
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == INVALID_CONVERSION_METADATA
     message = diagnostic["message"]
-    assert message.startswith(f"prosiform.default.path-sub[1] side {side!r} ")
+    assert message.startswith(f"prosiform.default.subst[1] side {side!r} ")
     assert clause in message
     assert diagnostic["location"] == {"file": "guide.md", "line": 6, "column": 9}
 
 
-def test_a_path_sub_pair_the_reference_grammar_reads_is_admitted(root: Path) -> None:
-    """A side above the working directory is a reference the grammar admits."""
+def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> None:
+    """A side above the working directory, and one quoted for its colon, are read."""
     written(
         root,
         "guide.md",
-        "---\nprosiform:\n  default:\n"
-        '    path-sub: ["rules.md#Checks=../stub.md", "a%20b.md=./c.md"]\n'
+        "---\nprosiform:\n  default:\n    subst:\n"
+        "      - {rules.md#Checks: ../stub.md}\n"
+        "      - {a%20b.md: ./c.md}\n"
+        '      - {"rules.md#Step 1: Setup": stub.md}\n'
         "---\n# Guide\n\nEvery step.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
