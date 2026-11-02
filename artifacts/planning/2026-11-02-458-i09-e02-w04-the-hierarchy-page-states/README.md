@@ -14,11 +14,14 @@ This record holds its delivery of `AC6`: the work item, the validation evidence 
 | --- | --- |
 | [W04 work item](w04.md) | The titled member's heading, where a group stands and the nesting cost, stated on the hierarchy page |
 | [Validation](validation.md) | Each check at the revision it ran, and the page read against the grouping fixtures |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I09:E02 Section Placement](https://github.com/m2ux/prosiform/issues/458) |
+| Pull request | [#546](https://github.com/m2ux/prosiform/pull/546) |
+| Review pull request | [#541](https://github.com/m2ux/prosiform/pull/541) |
 | Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
 | Epic record | [Grouping and Composition](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) |

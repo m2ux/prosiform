@@ -7,7 +7,7 @@ The checks [W04](w04.md) names, at the revisions they ran.
 | Item | Revision |
 | --- | --- |
 | Design (engineering) | [`b7e5a449`](https://github.com/m2ux/prosiform/blob/b7e5a449996cf5c8b4ee24839508339ef55ded95/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) |
-| Branch head | `4d22b028` on `i09/e02/w04-the-hierarchy-page-states` |
+| Branch head | `1306144d` on `i09/e02/w04-the-hierarchy-page-states`, holding #545 merged from the epic base |
 
 ## T1 The Page Against the Grouping Fixtures
 
@@ -33,5 +33,9 @@ Result: pass.
 ## T2 Make Check
 
 `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` at `4d22b028`, exit 0. `make links` resolved every reference in 237 documents, the page's design link to `design.md#grouping` on engineering among them; `make vocabulary` and `make tables` passed; `make test` 1579 passed; `make harness` 1154 passed; the corpus reported 427 fixtures, 427 pass.
+
+Result: pass.
+
+Rerun at `1306144d`, after merging `origin/i09/e02/main` (#545) and linking the invocation guide's nesting statement to the page's *Where a group stands*: exit 0, `make test` 1579 passed, `make harness` 1154 passed, the corpus 427 of 427, `make links` resolving `docs/hierarchy.md#where-a-group-stands` from `invocation.md`.
 
 Result: pass.
