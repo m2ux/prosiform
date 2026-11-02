@@ -4,7 +4,7 @@
 [![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/4958ad38bc2bb6a0786f93aa6de30a7b6a2e27c9/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
-A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
+A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches as one validated bundle, and each target it dispatches as a bundle of its own.
 
 ---
 **[Invocation](invocation.md)** • **[Architecture](docs/architecture.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Docs](docs/README.md)** • **[Examples](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner-compact.review.md)**
@@ -42,7 +42,7 @@ pf -v
 ```
 ## Usage
 
-Each example below runs over a [corpus fixture](fixtures/README.md)'s source tree from the repository root, and the fixture records the bundles the run writes. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the folder `-o` names, made if absent: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores.
+Each example below runs over a [corpus fixture](fixtures/README.md)'s source tree from the repository root, and the fixture records the bundles the run writes. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the folder `-o` names, made if absent: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores. [Invocation](invocation.md) states every option, budget and exit status.
 
 ### Print the Guide
 
@@ -51,6 +51,18 @@ pf
 ```
 
 With no arguments, `pf` prints the guide an agent follows a skill by: the compile step, the rule that a link whose text opens with `↳` names an inline target to compile, read whole and follow, and that a bundle opening with a Prosiform section is followed from there. A skill's bootstrap is one instruction: run `pf` and follow it.
+
+### Declare a Source
+
+A document is compiled when its leading YAML frontmatter declares `prosiform`; a link to a document that declares nothing is left as written. Each key under `prosiform` is a preset: `default` is in force wherever the document is compiled, and another is in force where the title of the section linking the document names it. A preset's `group` pair places the document's sections in a shared group at a depth, and its `subst` pairs redirect the links the document writes. [Sources](docs/sources.md#frontmatter) states the declaration and its presets, and [Selection](docs/selection.md#presets-in-force) which presets a link puts in force.
+
+```yaml
+---
+prosiform:
+  default:
+    group: {rules: 2}
+---
+```
 
 ### Bundle a Source and its Dependencies
 
@@ -65,6 +77,15 @@ pf guide.md
 cd fixtures/extraction/section-to-the-next-sibling/source
 pf 'guide.md#run'
 ```
+
+### Defer a Link
+
+```bash
+cd fixtures/deferral/a-marked-reference-is-not-compiled/source
+pf guide.md
+```
+
+A link whose text opens with `¬` is left for a run of its own: the document it names is not opened, and the bundle carries the link with the mark removed. [References](docs/references.md#operators) states the operators.
 
 ### Dispatch to Sub-agents
 

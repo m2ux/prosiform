@@ -4,7 +4,54 @@ The language-neutral corpus and the contract it encodes.
 
 A fixture declares a source tree, an invocation and an expected result, so it binds any implementation of prosiform rather than describing one. Nothing here is written in the language of a build: a fixture names no language, no package and no module, so the corpus binds the build that runs it rather than describing how it is written.
 
-The families the corpus runs are listed in the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md).
+## The families
+
+A family is a directory of fixtures sharing a subject. The design clauses each fixture encodes are its own `clauses`, so a family groups fixtures for a reader and states no clause.
+
+| Family | Its fixtures exercise |
+| --- | --- |
+| `absorbed-title/` | A reference naming a title a file heading absorbs. |
+| `ancestor-promotion/` | A heading-only ancestor promoted to a selection, and the dependencies it reaches. |
+| `boundary/` | Block boundaries between bundled content: lists, code and YAML examples, file groups. |
+| `candidate-validation/` | Candidate validation of the compiled bundle against the post-compilation invariants. |
+| `citation/` | A link above the working directory cited as text. |
+| `cli/` | The command-line grammar, its options, budgets, exit statuses and JSON diagnostics. |
+| `composition/` | [Section composition](../docs/composition.md): directive labels, scopes, contributions, deferral, cycles and refusals. |
+| `confinement/` | Path forms, symbolic links and unreadable paths a reference inside a source names. |
+| `consolidation/` | Two selections of one document consolidated into one. |
+| `deferral/` | The deferral mark: what a deferred link contributes and how it is published. |
+| `depth-overflow/` | A heading the hierarchy places at or past H6. |
+| `destinations/` | The destination each bundled heading takes. |
+| `determinism/` | Bundle order independent of entry and discovery order. |
+| `diagnostics/` | Diagnostic chains, JSON lines and a run that fails in itself. |
+| `dispatch/` | The dispatch operator: dispatched bundles, sub-sections, chains, depth and cycles. |
+| `extraction/` | Section extraction: the headings a fragment names and where its section ends. |
+| `file-wide-safety/` | A safety limit crossed in content no selection reaches. |
+| `frontmatter/` | Frontmatter delimiters, YAML and the `prosiform` mapping. |
+| `grouping/` | Groups, merged sections, member subsections and the presets that place them. |
+| `headings/` | Source-heading slugs and generated headings beside authored ones. |
+| `hierarchy/` | The file-scoped hierarchy: titles, preambles and Setext conversion. |
+| `identity/` | The heading a document's path or title gives its file group. |
+| `inclusion/` | Declared targets, presets and `subst` pairs as a reference reaches them. |
+| `limits/` | Each resource budget at the boundary it fails on. |
+| `literal-bracket/` | Bracketed text no definition resolves, kept as written. |
+| `mock/` | A `subst` pair redirecting a reference, and its warnings. |
+| `normalization/` | The resolution sequence for a reference's spelling. |
+| `ownership/` | Self and ancestor references after consolidation. |
+| `parallel-dispatch/` | The parallel dispatch mark and its `Dispatch in parallel` sub-section. |
+| `parser-limit/` | Parser viability gates: a reference lookup the parser suppresses or declines. |
+| `profile/` | The Markdown profile: suffixes, encoding, HTML and unsupported constructs. |
+| `prosiform/` | The Prosiform section a dispatching bundle opens with. |
+| `publication/` | Publication of a run's folder, and what a failing or check run leaves. |
+| `real-source/` | Documents copied from this workspace's skills, described under [Copied sources](#copied-sources). |
+| `reference/` | Links, definitions and diagram clicks a source writes. |
+| `resource/` | A link naming a resource rather than a document. |
+| `rewriting/` | Destinations rewritten to the bundle's own anchors, diagram links among them. |
+| `self-reference/` | A link to its own section, file or an including ancestor. |
+| `source-consistency/` | A source that changes during compilation. |
+| `structural-ancestors/` | Heading-only structural ancestors above a selection. |
+| `traversal/` | Which references are followed as dependencies, cycles among them. |
+| `validation-scope/` | A defect outside the selection, and the run that later includes it. |
 
 ## A fixture
 
@@ -75,7 +122,7 @@ chain = ["guide.md", "../guidelines.md"]
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes into its folder, each named as the run names the bundle. A run writing no bundle declares none. |
 | `expected.stdout_contains` | Optional. The text standard output must carry, where the whole of the response is a build's own. Standard output carries no bundle, so a fixture declaring none declares an empty stream. |
-| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source` and `chain` a diagnostic carries. A run emitting none declares an empty list. |
+| `expected.diagnostics` | The diagnostics standard error must carry, in order, each with a severity and a code drawn from the catalogue that severity selects, and optionally the `message_contains`, `reference`, `resolved`, `source`, `chain` and `location` a diagnostic carries. `location` is the source coordinate a diagnostic standing at a link names: a fixture-relative `file`, and a one-based `line` and `column`. A run emitting none declares an empty list. |
 | `awaiting` | Optional. The work that delivers the behaviour the fixture declares, written as an initiative and an epic and optionally the task within it, such as `I00:E03`. A fixture carrying it declares behaviour the build does not yet meet. |
 | `fault` | Optional. The fault the run performs on itself, `source-changed`, `internal`, `cleanup-refused`, or `unrecognized` for a fault the contract does not name, which the runner asks the build for by the means the contract declares. A fixture declaring none declares a run that meets no fault. |
 
@@ -101,7 +148,7 @@ The declaration sits in the manifest beside the expectation it qualifies, for th
 
 The design lists the families of hard cases a build meets, and a family is a clause like any other, so a fixture encoding one names it among its `clauses` and one reading of the corpus answers which families are represented and by what.
 
-Two families are named by no fixture, each because the condition it turns on is one a source tree and one invocation cannot declare. Consistency is a source changing, disappearing or resolving elsewhere while the run reads it, and its fixture arrives with [I00:E11:W24](https://github.com/m2ux/prosiform/issues/150). Parser exhaustion is a parser resource limit suppressing a reference lookup, which `E_PARSER_REFERENCE_LIMIT` reports and no build here emits, and its fixture arrives with [I00:E11:W30](https://github.com/m2ux/prosiform/issues/164).
+Every family the design lists is named by at least one fixture. Consistency, a source changing while the run reads it, is reached through the `source-changed` [fault](#a-fault-the-run-performs-on-itself); parser exhaustion, a parser resource limit suppressing a reference lookup, through the `parser-limit/` family.
 
 A published bundle is expected as a file rather than as text inside the manifest because the preservation invariant turns on bytes — newline spelling and the trailing newline among them — and because a bundle is read and reviewed as the Markdown it is.
 
@@ -235,6 +282,7 @@ An error decides a failing run.
 | `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write, an output folder that cannot be made, a path at the run folder's own that is neither a folder nor a link, or two bundles of one run deriving one name. |
 | `E_RAW_HTML` | Markdown and source-heading profile, HTML — raw HTML in selected content. |
 | `E_RESOURCE_LIMIT` | Resource limits — a declared budget the run crossed, named with the figure that crossed it, or a numeric scalar longer than the 65,536 characters a byte budget admits. |
+| `E_SOURCE_ACCESS` | Metadata failures — a source that cannot be opened or read for an access or filesystem error other than a missing, symlinked or unconfined one. |
 | `E_SOURCE_CHANGED` | Source consistency — a source that changed, disappeared or resolved elsewhere during compilation. |
 | `E_SOURCE_OUTSIDE_ROOT` | Reference normalization — an entry reference naming a path the working directory cannot contain. |
 | `E_SOURCE_SYMLINK` | No-symlink source policy — a source path containing a symlink below the working directory. |
@@ -308,4 +356,4 @@ The fixtures declaring they await the named work are printed by identity, with a
 make harness
 ```
 
-Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them.
+Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them. The same target holds the [diagram-following eval](../evals/diagram-following/README.md)'s corpus, scorer, runner and report.

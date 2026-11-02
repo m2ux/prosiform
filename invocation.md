@@ -9,7 +9,7 @@ pf
 
 ## Guide
 
-`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. A skill's bootstrap is therefore one instruction: run `pf` and follow it. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
+`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. A skill's bootstrap is therefore one instruction: run `pf` and follow it. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
 
 ## Options
 
@@ -26,6 +26,8 @@ Flags are case-sensitive.
 | `-C, --codes` | list this build's error and warning codes |
 | `-v, --version` | tool version and profile identifier |
 | `-h, --help` | usage, defaults and exit statuses |
+
+A command line these tables do not admit, an undeclared option or an invalid option value among them, is invalid usage and exits `2`.
 
 ### Budgets
 
@@ -57,7 +59,7 @@ pf -c notes/rules.md
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the one group the document joins and its depth (`group`), a selected preset's pair holding over `default`'s; [Sources](docs/sources.md) states what a `subst` entry holds. They govern the document's own content alone: a file's `group` pair places its own sections wherever a parent bundles it, and the parent's pair places the parent's sections where a further link bundles the parent in turn. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
+A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the one group the document joins and its depth (`group`), a selected preset's pair holding over `default`'s; [Sources](docs/sources.md) states what a `subst` entry holds. Selected presets union their settings: two that one title selects stating different `group` pairs, and two selected for one document, by one title or by several references reaching it, mapping one `subst` reference to different alternatives, are invalid usage naming both presets, as [Selection](docs/selection.md#presets-in-force) states. They govern the document's own content alone: a file's `group` pair places its own sections wherever a parent bundles it, and the parent's pair places the parent's sections where a further link bundles the parent in turn. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
 
 ```yaml
 ---
@@ -80,9 +82,9 @@ A named group nests inside the division of the document whose link placed its fi
 
 ## Bundling
 
-Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section. A link labelled with one arrow, as in `[→](read.md#inputs)`, is a composition directive: it places the section it names beneath the section that writes it.
+Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section. A link labelled with one arrow, as in `[→](read.md#inputs)`, is a composition directive: it places the section it names beneath the section that writes it, and `[¬→](read.md#inputs)` defers that placement to a run of its own.
 
-A substitution is stated in a document, never on the command line: a preset's `subst` entry pairs a reference with the document or section the run reads in its place, as [Sources](docs/sources.md) states. A pair belongs to the document that declares it and redirects only the links that document writes, the section linking that document selects which of its presets apply, and each side resolves from the declaring file. The [substitution mapping](docs/selection.md#the-substitution-mapping) states the lookup and the warnings a run reports.
+A substitution is stated in a document, never on the command line: a preset's `subst` entry pairs a reference with the document or section the run reads in its place, as [Sources](docs/sources.md) states. A pair belongs to the document that declares it and redirects only the links that document writes, under the presets every reference reaching that document selects, and each side resolves from the declaring file. The [substitution mapping](docs/selection.md#the-substitution-mapping) states the lookup and the warnings a run reports.
 
 The bundle is arranged in file headings and groups, composed sections stand beneath the sections that place them, its headings take destinations, and its dispatched targets become bundles of their own. Nothing is published until every bundle has been validated.
 
@@ -96,7 +98,7 @@ The bundle is arranged in file headings and groups, composed sections stand bene
 
 ## Output
 
-A run publishes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o DIR` names, made if absent, or under the working directory when `-o` is absent. The folder is swapped in whole, so a reader sees one run's set or the one before it.
+A run publishes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, under the folder `-o DIR` names, made if absent, or under the working directory when `-o` is absent. The folder is swapped in whole, so a reader sees one run's set or the one before it. Standard output carries no bundle: the guide and the help, version and code-listing responses use it. `-o -`, which names standard output, and a run folder holding a source the run read are each invalid usage.
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in the derived name, so a hyphen keeps a directory boundary visible in the filename.
 
