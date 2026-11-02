@@ -80,15 +80,16 @@ A named group nests inside the division of the document whose link placed its fi
 
 ## Bundling
 
-Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section.
+Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section. A link labelled with one arrow, as in `[→](read.md#inputs)`, is a composition directive: it places the section it names beneath the section that writes it.
 
 A substitution is stated in a document, never on the command line: a preset's `subst` entry pairs a reference with the document or section the run reads in its place, as [Sources](docs/sources.md) states. A pair belongs to the document that declares it and redirects only the links that document writes, the section linking that document selects which of its presets apply, and each side resolves from the declaring file. The [substitution mapping](docs/references.md#the-substitution-mapping) states the lookup and the warnings a run reports.
 
-The bundle is arranged in file headings and groups, its headings take destinations, and its dispatched targets become bundles of their own. Nothing is published until every bundle has been validated.
+The bundle is arranged in file headings and groups, composed sections stand beneath the sections that place them, its headings take destinations, and its dispatched targets become bundles of their own. Nothing is published until every bundle has been validated.
 
 - [References](docs/references.md) — classification, operators and diagram links
 - [Selection](docs/selection.md) — closure, consolidation and order
 - [Hierarchy](docs/hierarchy.md) — file headings, groups and depth
+- [Composition](docs/composition.md) — directives, destination sections, contributions and deferral
 - [Destinations](docs/destinations.md) — slugs, ordinals and rewriting
 - [Dispatch](docs/dispatch.md) — sub-sections, the Prosiform section and cycles
 - [Validation](docs/validation.md) — invariants, codes and budgets
