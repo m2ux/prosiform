@@ -4126,3 +4126,55 @@ def test_every_click_on_one_line_is_followed(root: Path) -> None:
     assert '    click A "#one"; click B href "#two" "Two"\n' in run.bundle
     assert "\n# One\n" in run.bundle
     assert "\n# Two\n" in run.bundle
+
+
+def test_a_directive_inside_a_contribution_includes_its_target(root: Path) -> None:
+    """A directive a contribution carries composes nothing, so its target is included.
+
+    The contribution carries the link as an ordinary one, so the section
+    it names stands in its document's file group for the link to reach,
+    while the section only the outer directive reaches takes none.
+    """
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Prepare\n\nRead [→](read.md#inputs).\n",
+    )
+    written(
+        root, "read.md", DECLARED + "# Read\n\n## Inputs\n\nNote [→](extra.md#notes).\n"
+    )
+    written(root, "extra.md", DECLARED + "# Extra\n\n## Notes\n\nA note.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundle == (
+        "# Guide\n\n## Prepare\n\nRead [→](#read).\n\n### Inputs\n\n#### Read\n\n"
+        "Note [→](#notes).\n\n# Extra\n\n### Notes\n\nA note.\n"
+    )
+
+
+def test_a_directive_inside_a_contribution_widens_a_placed_document(
+    root: Path,
+) -> None:
+    """A section a placed document gains this way is read for the links it carries."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Before\n\nSee [other](extra.md#other) "
+        "and [the step](step.md).\n",
+    )
+    written(
+        root, "step.md", DECLARED + "# Step\n\n## Do\n\nRead [→](read.md#inputs).\n"
+    )
+    written(
+        root, "read.md", DECLARED + "# Read\n\n## Inputs\n\nNote [→](extra.md#notes).\n"
+    )
+    written(
+        root,
+        "extra.md",
+        DECLARED + "# Extra\n\n## Other\n\nElse.\n\n## Notes\n\nSee [far](far.md).\n",
+    )
+    written(root, "far.md", DECLARED + "# Far\n\nAway.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "\n### Notes\n\nSee [far](#far).\n" in run.bundle
+    assert run.bundle.endswith("\n# Far\n\nAway.\n")

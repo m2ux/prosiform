@@ -120,6 +120,10 @@ class Reference:
     A reference a source carries holds the title of the section it is
     written in, which selects the presets of the document it reaches.
     One in a preamble, and one written on the command line, holds none.
+
+    A reference a composition directive writes, naming a section, states
+    that it composes: it places that section beneath the directive's
+    scope, and is no inclusion of the document it names.
     """
 
     original: str
@@ -132,6 +136,7 @@ class Reference:
     folder: str | None = None
     redirected: bool = False
     title: str | None = None
+    composes: bool = False
 
 
 @dataclass(frozen=True)
