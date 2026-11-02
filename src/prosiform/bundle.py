@@ -375,7 +375,13 @@ def emitted_visible(
     A link the bundle took no destination for shows the text its author
     wrote. That covers a markup or resource reference and a reference
     naming a document that declares nothing.
+
+    Reading what a heading shows compiles nothing, and a heading is read
+    whether or not the run selected it, so the lookup records no
+    substitution: a pair is used by a reference the bundle composes from
+    selected content, where the link's position is known.
     """
+    substitution = substitution.unrecorded()
     children = inline.children or []
     carried: list[str] = []
     for at, child in enumerate(children):

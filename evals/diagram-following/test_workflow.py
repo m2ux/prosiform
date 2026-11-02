@@ -1,6 +1,7 @@
 """Hold the diagram-following corpus to what the eval relies on.
 
-Every form a workflow is written in bundles cleanly and carries every
+Every workflow document declares `prosiform` as a mapping of presets;
+every form a workflow is written in bundles cleanly and carries every
 state's section, and its entry carries only what its form allows; the forms'
 sections differ only in their transition paragraphs, and a dispatch form's
 in the step handing a section to a sub-agent too; and each scenario's path
@@ -16,6 +17,7 @@ import shutil
 from pathlib import Path
 
 import pytest
+from ruamel.yaml import YAML
 from score import SUB_AGENT_TRACE
 from workflow import (
     AUTHORED_FORM,
@@ -29,6 +31,7 @@ from workflow import (
     ENTRY_BUNDLE,
     FENCE,
     FORMS,
+    FRONTMATTER,
     LINKED_FORM,
     MARKED_FORMS,
     PROSE,
@@ -61,6 +64,32 @@ DISPATCHING = [workflow for workflow in CORPUS if COMPILED_FORM in workflow.form
 def document(state: str) -> str:
     """The path of a state's document within a form."""
     return f"{STATES}/{state.lower()}.md"
+
+
+def declaration_faults(root: Path) -> list[str]:
+    """How the workflow documents under `root` fall short of declaring.
+
+    Every document opens with a declaration block whose `prosiform` is a
+    mapping, and each key of that mapping names a preset holding a mapping
+    of its settings, so `pf` carries the document and reads its settings as
+    the build reads a preset.
+    """
+    faults = []
+    for path in sorted(root.rglob("*.md")):
+        where = path.relative_to(root)
+        block = FRONTMATTER.match(path.read_text())
+        front = YAML(typ="safe", pure=True).load(block.group()[4:-4]) if block else None
+        if not isinstance(front, dict) or "prosiform" not in front:
+            faults.append(f"{where} declares no prosiform")
+            continue
+        declared = front["prosiform"]
+        if not isinstance(declared, dict):
+            faults.append(f"{where} declares prosiform as {declared!r}, not presets")
+            continue
+        for preset, settings in declared.items():
+            if not isinstance(settings, dict):
+                faults.append(f"{where} declares prosiform.{preset} outside a preset")
+    return faults
 
 
 def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
@@ -398,6 +427,29 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
 
 def test_every_form_is_written_by_some_workflow() -> None:
     assert {form for workflow in CORPUS for form in workflow.forms} == set(FORMS)
+
+
+def test_every_workflow_document_declares_presets() -> None:
+    assert declaration_faults(WORKFLOWS) == []
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "fault"),
+    [
+        ("---\nprosiform: {}\n---\n", "", "declares no prosiform"),
+        ("prosiform: {}", "prosiform: true", "declares prosiform as True, not presets"),
+        (
+            "prosiform: {}",
+            "prosiform: {group: [modes]}",
+            "declares prosiform.group outside a preset",
+        ),
+    ],
+)
+def test_a_document_declaring_outside_presets_is_a_fault(
+    tmp_path: Path, old: str, new: str, fault: str
+) -> None:
+    broken(tmp_path, "linear", f"{DIAGRAM}/{document('Plan')}", old, new)
+    assert declaration_faults(tmp_path) == [f"linear/{DIAGRAM}/states/plan.md {fault}"]
 
 
 @pytest.mark.parametrize(

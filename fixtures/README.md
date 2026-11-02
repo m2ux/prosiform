@@ -28,7 +28,7 @@ fixtures/
 
 A source tree carries a symbolic link where the clause under test is about one. Git records a link as its own object — mode `120000`, the target as its content — so a fixture declaring the no-symlink source policy declares it as a link rather than as a file holding a path, and a runner materialises the tree the manifest describes.
 
-A link inside a source tree targets a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the working directory is declared without naming anything of the host. The one link that leaves a fixture is the `source` of a `usage-example/` fixture, which is the tree itself rather than a file within it.
+A link inside a source tree targets a path inside the fixture, written relative to the link, so the fixture is self-contained wherever the repository is checked out. A target outside the source tree sits beside it under the fixture's own directory, which is how a link that resolves out of the working directory is declared without naming anything of the host. No link leaves its fixture.
 
 A checkout whose filesystem or configuration cannot create a link writes the target path into a regular file instead. Such a tree no longer states what the fixture declares, and the fixture fails rather than passing against a file that looks like a document.
 
@@ -39,12 +39,6 @@ Most families write their sources for the clause they exercise. The `real-source
 A copied source is not edited beyond its declaration. A document is compiled when its leading frontmatter declares `prosiform`, and an upstream document declares nothing, so each copy's leading frontmatter opens with `prosiform: {}`, in a frontmatter block of its own where the original carries none. That declaration is what a run reads, and the one thing the copy adds. Any other edit a document needs to bundle is a defect in the build or a gap in the design, and the record of that is a finding rather than a changed document. The documents live upstream and a copy carries no authority to change them; each is held to its original, its declaration removed, with `cmp` and `sha256sum`, outside the corpus, because the original is in another repository.
 
 A document joins the family when its closure is itself: no local Markdown document reference, and fragment-only references only where the destination the bundle generates is the fragment the source already spells. Such a document bundles to the same bytes under a build that traverses references and one that has nothing to traverse, so its expected bundle states the contract rather than a stage of the work.
-
-## The example tree
-
-The `usage-example/` family runs the invocations the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) publishes as its usage examples, so an example that stops being a valid invocation fails a run rather than going quietly stale.
-
-Each of its fixtures reaches [`example/work-planner/`](../example/work-planner/SKILL.md) through a `source` symbolic link, because the design and the corpus must name one tree: a copy per fixture would let the published invocation and the invocation under test drift apart. The tree is the repository's own example material, maintained with the contract, rather than a source written for one clause.
 
 ## The manifest
 
@@ -259,10 +253,10 @@ A warning accompanies a successful run, so a fixture declaring one states what a
 | `W_DISPATCH_DEPTH` | Link classification and resource handling, Dispatch depth — a chain of dispatches reaching a fourth hop. |
 | `W_DISPATCH_SELF` | Link classification and resource handling, Dispatching its own document — a dispatched link naming the document that writes it, by fragment or by path, closing no cycle. |
 | `W_EARLIER_SET_RETAINED` | Validation and failure contract, Publication — a published run whose earlier set, moved aside, could not be removed. |
-| `W_MOCK_SUBSTITUTED` | Exit status and JSON diagnostics — a reference a substitution mapping redirected, named once per substitute at the first reference that redirects it. |
-| `W_MOCK_UNUSED` | Exit status and JSON diagnostics — a mapping key no reference named, which substitutes nothing. |
 | `W_PRESET_UNUSED` | Presets, A preset nothing selected warns — a preset of a document the run carries that no reference reaching it selected. |
 | `W_RESOURCE_PORTABILITY` | Resources are text — a bundle read elsewhere may not find the resources its text mentions. |
+| `W_SUBST_UNUSED` | Exit status and JSON diagnostics — a `subst` pair no reference used, which substitutes nothing. |
+| `W_SUBST_USED` | Exit status and JSON diagnostics — a reference a `subst` pair redirected, named once per pair at the first reference that used it. |
 
 The two catalogues stay distinct: an error diagnostic naming a warning code, and a warning diagnostic naming an error code, each fail validation. A fixture that confuses them has declared a different run.
 

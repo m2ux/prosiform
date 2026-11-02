@@ -1,0 +1,26 @@
+description = "A subst side ending in a path separator names a folder, and a pair names one document or one section, so {rules/: stubs/} fails with E_INVALID_CONVERSION_METADATA at the entry, naming the side, and the run publishes nothing."
+
+clauses = [
+  "Conversion metadata — subst holds colon pairs",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.subst[0] side 'rules/' ends in a path separator"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 13

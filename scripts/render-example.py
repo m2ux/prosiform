@@ -6,8 +6,8 @@ build runs for real over a copy of that tree, and the drawing shows the
 files it opened beside the bundles it published, so a picture cannot state
 a result the build does not produce.
 
-The style is the one `docs/images/compilation.svg` sets: a dark panel per
-file, heading levels marked at the left margin, and links in blue.
+Each drawing sets a dark panel per file, marks heading levels at the left
+margin, and draws links in blue.
 """
 
 from __future__ import annotations

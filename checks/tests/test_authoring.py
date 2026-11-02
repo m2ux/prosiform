@@ -2,13 +2,13 @@
 
 The invocation guide is the contract an author copies: the prosiform
 declaration, file-relative links, the working-directory bound, short flags,
-fragment names and combined destinations. The same guide, the repository
-readme and the worked examples recommend hyphens in source paths, because
-a derived filename writes each directory separator as an underscore.
+fragment names and combined destinations. The same guide and the repository
+readme recommend hyphens in source paths, because a derived filename writes
+each directory separator as an underscore.
 
 Worked commands are copied as written. Each names a file this repository
 holds, passes only options the contract declares, and leaves an output
-path as an output. Every example source declares `prosiform` and names no root.
+path as an output.
 """
 
 import re
@@ -18,10 +18,9 @@ from documents import ROOT
 
 GUIDE = ROOT / "invocation.md"
 README = ROOT / "README.md"
-EXAMPLES = ROOT / "example" / "README.md"
 BUNDLES = ROOT / "docs" / "bundles.md"
 SOURCES = ROOT / "docs" / "sources.md"
-SURFACES = (GUIDE, README, EXAMPLES)
+SURFACES = (GUIDE, README)
 
 # Each authoring statement, beside the document that states it. The guide
 # keeps the command line; the architecture pages state the rules it links to.
@@ -39,9 +38,7 @@ INSTRUCTIONS = (
 
 HYPHENS = "hyphens rather than underscores"
 FENCE = re.compile(r"```bash\n(.*?)```", re.DOTALL)
-FRONT = re.compile(r"\A---\n(.*?)\n---", re.DOTALL)
-ROOT_KEY = re.compile(r"\broot:")
-TAKES_VALUE = frozenset({"-o", "-m", "-d", "--budget"})
+TAKES_VALUE = frozenset({"-o", "-d", "--budget"})
 SWITCH = frozenset({"-c", "-C", "-v", "-h"})
 
 
@@ -119,18 +116,3 @@ def test_worked_commands_name_files_this_repository_holds() -> None:
                 assert (cwd / name).is_file(), f"{document.relative_to(ROOT)}: {name}"
                 checked += 1
     assert checked > 0
-
-
-def test_example_paths_use_hyphens_and_every_document_declares() -> None:
-    declared = 0
-    for path in sorted((ROOT / "example").rglob("*.md")):
-        if path.name == "README.md":
-            continue
-        relative = path.relative_to(ROOT).as_posix()
-        assert "_" not in relative, relative
-        block = FRONT.match(path.read_text(encoding="utf-8"))
-        assert block is not None, relative
-        assert "prosiform:" in block.group(1), relative
-        assert ROOT_KEY.search(block.group(1)) is None, relative
-        declared += 1
-    assert declared > 0

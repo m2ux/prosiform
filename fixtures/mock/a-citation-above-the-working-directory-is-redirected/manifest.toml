@@ -1,14 +1,14 @@
-description = "A citation above the working directory is redirected by a mapping key, so a reference the run would otherwise carry as text compiles the substitute and is rewritten to its destination, and the run states the substitution it performed."
+description = "A citation above the working directory is redirected by a subst key, so a reference the run would otherwise carry as text compiles the substitute and is rewritten to its destination, and the run states the substitution it performed."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
-  "CLI contract — -m ORIGINAL=ALTERNATIVE, both sides read from the working directory",
+  "Link classification and resource handling — The substitution mapping, each side resolved from the directory of the declaring document",
   "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-m", "../notes.md=../stand-in.md", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0
@@ -16,7 +16,7 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_MOCK_SUBSTITUTED"
+code = "W_SUBST_USED"
 source = "../notes.md"
 resolved = "../stand-in.md"
 

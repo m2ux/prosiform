@@ -1,0 +1,20 @@
+description = "A subst pair whose key rules.md is named only by the withheld link in the heading ## [¬ Rules](rules.md), while the run selects guide.md#keep, warns as unused and states no substitution, because a pair is used only by a reference in content the run selected and compiles."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Conversion metadata — subst holds colon pairs",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md#keep"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide__keep.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "rules.md"

@@ -13,9 +13,9 @@ free text is where such a term arrives.
 A term names an implementation by its shape, not by its spelling. A struct
 field, a function, a package, a constant and a language name all carry a
 capital, an underscore or a dot: `KeyError`, `E_TARGET_NOT_FOUND`,
-`prosiform.group`, `Python`. The prose a claim is written in carries none of
-these, so the shape alone separates the two, and no list of admitted words
-is needed to tell them apart.
+`prosiform.default.group`, `Python`. The prose a claim is written in carries
+none of these, so the shape alone separates the two, and no list of admitted
+words is needed to tell them apart.
 
 A shaped term is admissible where the contract states it: the design's
 prose, the names the design gives its own clauses, the terms
@@ -47,7 +47,7 @@ they are formed from. Case is folded on both sides, so a claim writing
 
 import re
 import sys
-from collections.abc import Collection, Sequence
+from collections.abc import Collection
 from dataclasses import dataclass
 from functools import cache
 from pathlib import Path
@@ -69,7 +69,6 @@ from runner import BuildNotConfigured
 from vocabulary import SHIPPED_GLOSSARY, design_reference, git_ref, git_show
 
 INVOCATION = ROOT / "invocation.md"
-EXAMPLE = ROOT / "example"
 OPTION = "Option"
 REPORT = "the conformance report"
 
@@ -77,7 +76,6 @@ WORD = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
 DOTTED = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+")
 DOUBLED = re.compile(r"([bdfglmnprt])\1$")
 PATH_NAME = re.compile(r"\.(?:md|toml|json|ya?ml|txt)$", re.IGNORECASE)
-HEADING = re.compile(r"^#{1,6}\s+(.*)$", re.MULTILINE)
 CODE_SPAN = re.compile(r"`[^`\n]*`")
 LINK_DESTINATION = re.compile(r"\]\([^)\n]*\)")
 TABLE_TERM = re.compile(r"^\|\s*\*\*([^*]+)\*\*", re.MULTILINE)
@@ -172,30 +170,12 @@ def declared_names(text: str) -> list[str]:
     )
 
 
-def example_headings() -> list[str]:
-    """Every heading the example tree carries, which the corpus bundles by name.
-
-    A usage-example fixture names the documents it bundles by the headings
-    those documents carry, so a title there names the corpus's own source
-    rather than a build. The tree is read rather than listed, so a heading
-    added to it needs no second registration.
-    """
-    return [
-        title.strip()
-        for path in sorted(EXAMPLE.rglob("*.md"))
-        for title in HEADING.findall(path.read_text(encoding="utf-8"))
-    ]
-
-
-def stated(
-    design: str, glossary: str, documentation: str, examples: Sequence[str] = ()
-) -> set[str]:
+def stated(design: str, glossary: str, documentation: str) -> set[str]:
     """Every term the contract names.
 
     The design's prose states the contract's own words, the design's clause
     names state what it calls things, the glossary's terms define them, the
-    documented invocation and the schema declare its interface, and the
-    example tree's headings name the documents the corpus bundles.
+    documented invocation and the schema declare its interface.
     """
     names: set[str] = set()
     for term in re.findall(r"[A-Za-z_][A-Za-z0-9_.]*", prose(design)):
@@ -206,7 +186,6 @@ def stated(
     for source in (
         registered(glossary),
         declared_names(documentation),
-        examples,
     ):
         for term in source:
             for word in WORD.findall(term):
@@ -258,9 +237,10 @@ def scan(text: str, where: str, names: set[str]) -> list[Reference]:
 
     A term a claim repeats is one reference: the claim is a single
     statement, and naming the term once locates the claim to fix. A dotted
-    term is read whole, because `prosiform.group` names a key where its
-    parts name a document and a grouping; a term carrying a path's
-    extension names the tree the claim is about and is read as that tree.
+    term is read whole, because `prosiform.default.group` names a key where
+    its parts name a declaration, a preset and a grouping; a term carrying a
+    path's extension names the tree the claim is about and is read as that
+    tree.
     """
     body = prose(text)
     found: dict[str, Reference] = {}
@@ -323,9 +303,7 @@ def check() -> tuple[list[str], list[Reference]]:
     """The corpus's declarations and the report, each read against the contract."""
     design, path = sources()
     documentation = INVOCATION.read_text()
-    names = stated(
-        design, SHIPPED_GLOSSARY.read_text(), documentation, example_headings()
-    )
+    names = stated(design, SHIPPED_GLOSSARY.read_text(), documentation)
 
     corpus = corpus_references(CORPUS, names)
     emitted = report_references(design, CORPUS, names, reported_codes())

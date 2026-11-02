@@ -22,6 +22,14 @@ whatever the writing document defines. Every directive contributes, a
 repeated one and one naming a section another directive or an
 ordinary link names included, each in the scope that writes it.
 
+A directive is a reference. It resolves through the substitution in
+force for the document writing it, so that document's `subst` decides
+the section composed, and the title of its scope selects the target's
+presets as any reference's containing section does. Their `subst`
+pairs redirect the links the contribution writes, since those are the
+target document's own. A `group` pair places a document where an
+ordinary reference bundles it, so it places no contribution.
+
 A directive a contribution carries composes as one its source writes
 anywhere: beneath the heading holding it there, which is the
 contribution heading for one in the target's own body and a carried

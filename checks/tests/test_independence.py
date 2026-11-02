@@ -230,8 +230,10 @@ def test_a_constant_shaped_term_is_reported(names: set[str]) -> None:
 def test_a_dotted_term_is_reported(names: set[str]) -> None:
     assert [
         reference.found
-        for reference in scan("The prosiform.group key is read.", "where", names)
-    ] == ["prosiform.group"]
+        for reference in scan(
+            "The prosiform.default.group key is read.", "where", names
+        )
+    ] == ["prosiform.default.group"]
 
 
 def test_a_dotted_path_a_claim_names_is_not_read_as_a_term(
@@ -270,7 +272,7 @@ def test_an_inflection_of_a_named_term_is_admitted(names: set[str]) -> None:
 def test_a_shape_is_what_a_capital_an_underscore_or_a_dot_is() -> None:
     assert shaped("KeyError")
     assert shaped("E_TARGET_NOT_FOUND")
-    assert shaped("prosiform.group")
+    assert shaped("prosiform.default.group")
     assert not shaped("region")
     assert not shaped("Regions", opening=True)
     assert shaped("Regions")
