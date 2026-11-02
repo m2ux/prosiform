@@ -12,6 +12,8 @@ This record holds its delivery of `AC1, AC2`: the work item, the validation evid
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The recognition predicate, the plain label and the preamble refusal |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
