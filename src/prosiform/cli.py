@@ -11,6 +11,7 @@ validation read one record of declarations."""
 import argparse
 import errno
 import os
+import posixpath
 import re
 import shutil
 import sys
@@ -127,12 +128,14 @@ from prosiform.limits import (
 )
 from prosiform.metadata import (
     DEFAULT,
+    DEPTH,
     INVALID_CONVERSION_METADATA,
     SUBST,
     Conversion,
     InvalidMetadata,
     Membership,
     Preset,
+    Subst,
 )
 from prosiform.profile import (
     CODES as PROFILE_CODES,
@@ -510,6 +513,172 @@ def substs(conversion: Conversion) -> None:
                             location=pair.location,
                         )
                     )
+
+
+def subst_identity(text: str, document: str) -> tuple[str, str | None]:
+    """The document and section one `subst` side names, read from its document.
+
+    A side resolves from the declaring document's directory, as every
+    reference the document writes does, and a side naming a section
+    alone names a section of the declaring document.
+    """
+    found = resolve(text, posixpath.dirname(document))
+    return (found.path or document, found.fragment)
+
+
+def preset_refusal(
+    message: str,
+    remedy: str,
+    reference: Reference,
+    location: Location,
+    related: tuple[Location, str] | None = None,
+) -> Failure:
+    """One preset rule stated twice or against itself, as the invalid usage it is.
+
+    The location is the entry the refusal names, and a rule stated twice
+    carries its other statement as the related location.
+    """
+    return Failure(
+        USAGE_FAILURE,
+        Diagnostic(
+            ERROR,
+            message,
+            code=INVALID_USAGE,
+            reference=reference.original,
+            chain=reference.chain or None,
+            remedy=remedy,
+            location=location,
+            related=None
+            if related is None
+            else (
+                RelatedLocation(
+                    related[0].file, related[0].line, related[0].column, related[1]
+                ),
+            ),
+        ),
+    )
+
+
+def stated_once(conversion: Conversion, found: Reference) -> None:
+    """Hold each preset a document declares to stating each of its rules once.
+
+    A preset naming one group in two `group-depth` entries, mapping two
+    `subst` keys that normalise to one identity, mapping a key to an
+    alternative of its own identity, or writing a key naming a section
+    alone states a rule the run cannot apply as written, so each is
+    invalid usage at the entry. A key names the document whose
+    references it redirects, which a section alone does not. Identities
+    are read from the declaring document, the reference that opened it
+    being `found`.
+    """
+    for preset in conversion.presets:
+        groups: dict[str, int] = {}
+        for at, one in enumerate(preset.memberships):
+            entry = f"prosiform.{preset.name}.{DEPTH}[{at}]"
+            if one.group in groups:
+                earlier = f"prosiform.{preset.name}.{DEPTH}[{groups[one.group]}]"
+                raise preset_refusal(
+                    f"{entry} names group {one.group!r}, which {earlier} already "
+                    f"names, so the preset pairs the group twice",
+                    "name each group once in a preset",
+                    found,
+                    one.group_location,
+                    (
+                        preset.memberships[groups[one.group]].group_location,
+                        f"{earlier} names group {one.group!r}",
+                    ),
+                )
+            groups[one.group] = at
+        keys: dict[tuple[str, str | None], int] = {}
+        for at, pair in enumerate(preset.substs):
+            entry = f"prosiform.{preset.name}.{SUBST}[{at}]"
+            if not components(pair.original).path:
+                raise preset_refusal(
+                    f"{entry} key {pair.original!r} names a section alone, and a "
+                    f"key names the document whose references it redirects",
+                    "name the document the section belongs to, as rules.md#Checks",
+                    found,
+                    pair.location,
+                )
+            key = subst_identity(pair.original, found.path)
+            if key == subst_identity(pair.alternative, found.path):
+                raise preset_refusal(
+                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
+                    f"name one identity, so the alternative stands in for itself",
+                    "name an alternative other than the reference it replaces",
+                    found,
+                    pair.location,
+                )
+            if key in keys:
+                earlier = f"prosiform.{preset.name}.{SUBST}[{keys[key]}]"
+                raise preset_refusal(
+                    f"{entry} key {pair.original!r} names the identity the key of "
+                    f"{earlier} names, so the preset maps one reference twice",
+                    "map each reference once in a preset",
+                    found,
+                    pair.location,
+                    (
+                        preset.substs[keys[key]].location,
+                        f"{earlier} maps {preset.substs[keys[key]].original!r}",
+                    ),
+                )
+            keys[key] = at
+
+
+def agreed(
+    conversion: Conversion, title: str | None, reference: Reference, document: str
+) -> None:
+    """Hold the presets one title selects to agreeing about every setting they share.
+
+    Selected presets union, so two pairing one group with one depth, or
+    mapping one `subst` key to one alternative, state one setting. Two
+    pairing one group with two depths, or mapping one key to two
+    alternatives, leave nothing saying which would take effect, so the
+    reference selecting them is invalid usage naming both presets and the
+    setting. `default` lies beneath every selection rather than beside
+    it, so it disagrees with none. The declaring document is `document`.
+    """
+    depths: dict[str, Membership] = {}
+    alternatives: dict[tuple[str, str | None], tuple[str, Subst]] = {}
+    selected = f"selected by the title {title!r}"
+    for preset in keywords(conversion, title):
+        for one in preset.memberships:
+            first = depths.setdefault(one.group, one)
+            if first.depth != one.depth:
+                raise preset_refusal(
+                    f"prosiform.{first.preset}.{DEPTH} and "
+                    f"prosiform.{one.preset}.{DEPTH}, both {selected}, pair group "
+                    f"{one.group!r} with depths {first.depth} and {one.depth}",
+                    "pair the group with one depth in the presets one title selects",
+                    reference,
+                    first.depth_location,
+                    (
+                        one.depth_location,
+                        f"prosiform.{one.preset}.{DEPTH} for group {one.group!r} "
+                        f"is {one.depth}",
+                    ),
+                )
+        for pair in preset.substs:
+            key = subst_identity(pair.original, document)
+            named_first, first_pair = alternatives.setdefault(key, (preset.name, pair))
+            if subst_identity(first_pair.alternative, document) != subst_identity(
+                pair.alternative, document
+            ):
+                raise preset_refusal(
+                    f"prosiform.{named_first}.{SUBST} and "
+                    f"prosiform.{preset.name}.{SUBST}, both {selected}, map "
+                    f"{pair.original!r} to {first_pair.alternative!r} and "
+                    f"{pair.alternative!r}",
+                    "map the reference to one alternative in the presets one title "
+                    "selects",
+                    reference,
+                    first_pair.location,
+                    (
+                        pair.location,
+                        f"prosiform.{preset.name}.{SUBST} maps {pair.original!r} "
+                        f"to {pair.alternative!r}",
+                    ),
+                )
 
 
 def marked(text: str) -> bool:
@@ -982,6 +1151,7 @@ def read_document(
             max_depth=limits.of(NESTING),
         )
         substs(source.conversion)
+    stated_once(source.conversion, found)
     return Opened(source, len(data), captured)
 
 
@@ -1906,24 +2076,25 @@ def joined(
     Each reference reaching a document selects that document's presets
     by its own title, the title of the section it is written in or, for
     an entry, the title `entry_title` reads, so a document's presets
-    govern its content and no other document's. A document carries the
-    pairs every reference reaching it put in force, each once.
+    govern its content and no other document's. The presets one
+    reference selects are held to agreeing before their pairs are read.
+    A document carries the pairs every reference reaching it put in
+    force, each once.
     """
-    return {
-        path: tuple(
-            dict.fromkeys(
-                one
-                for reference in references
-                for one in pairs(
-                    read[path].conversion,
-                    entry_title(parsed[path], reference)
-                    if reference in entries
-                    else reference.title,
-                )
+    joins: dict[str, tuple[Membership, ...]] = {}
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        held: dict[Membership, None] = {}
+        for reference in references:
+            title = (
+                entry_title(parsed[path], reference)
+                if reference in entries
+                else reference.title
             )
-        )
-        for path, references in selected.items()
-    }
+            agreed(conversion, title, reference, path)
+            held.update(dict.fromkeys(pairs(conversion, title)))
+        joins[path] = tuple(held)
+    return joins
 
 
 def group_depths(joins: Mapping[str, Sequence[Membership]]) -> dict[str, int]:
