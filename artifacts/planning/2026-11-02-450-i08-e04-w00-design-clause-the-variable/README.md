@@ -14,6 +14,7 @@ This record holds its delivery of `AC7`: the work item, the validation evidence 
 | --- | --- |
 | [w00.md](w00.md) | The work item: the *Conformance faults* section, its clauses and the design pin. |
 | [validation.md](validation.md) | The evidence for each check the work item names, at the tested revision. |
+| [changes.md](changes.md) | The plan changes this session applied and held. |
 
 ## Links
 
@@ -21,4 +22,5 @@ This record holds its delivery of `AC7`: the work item, the validation evidence 
 | --- | --- |
 | Epic | [I08:E04 Conformance Faults](https://github.com/m2ux/prosiform/issues/450) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
+| Pull request | [#538](https://github.com/m2ux/prosiform/pull/538) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
