@@ -13,6 +13,7 @@ This record holds its delivery of `AC7`: the work item, the validation evidence 
 | Artifact | What it holds |
 | --- | --- |
 | [W00 work item](w00.md) | The spelling clause, the retired option and the pin move |
+| [Validation](validation.md) | T1 and T2 at the revisions they ran |
 
 ## Links
 
