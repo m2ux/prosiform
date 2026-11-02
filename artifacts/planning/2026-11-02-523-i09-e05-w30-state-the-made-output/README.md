@@ -16,6 +16,7 @@ This record holds its delivery of `AC34,AC35,AC36`: the work item, the validatio
 | [W31](../2026-11-02-463-i09-grouping-and-composition/e05/w31.md) | The work item for `subst` pairs combining per document |
 | [W32](../2026-11-02-463-i09-grouping-and-composition/e05/w32.md) | The work item for the code listing and long spellings in the option table |
 | [Validation](validation.md) | Each criterion read of the design at its pin against the build, the help, the guide and the fixtures, and the `make check` result |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
