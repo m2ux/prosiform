@@ -142,6 +142,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **The documentation row is one row per page.** (Planning.) A row extends one component, so the user's single documentation row is twenty, each with one criterion naming its page and how agreement is shown.
 - **MVP order.** (User, 2026-11-02.) Initiative priority labels are I08 `priority: 4`, I09 `priority: 3`, I11 `priority: 2` and I10 `priority: 1`, so the MVP's I08 and I09 are delivered, then its release, then the evaluation work. I07 keeps its label. This supersedes the I09 `priority: 2` and I10 `priority: 1` decision above.
 - **Epic priority by order.** (User, 2026-11-02.) E02 `priority: 3`, E04 `priority: 2`, E05 `priority: 1`, the order E05's edges set.
+- **The live run's pass bar.** (User, 2026-11-02.) E05 AC30 requires every feature scenario to pass every run in at least one model, harness and form cell, and no cell to pass no run; failing runs are recorded with the class the scorer names. Agents are not deterministic, so a bar of every run in every cell would block on noise rather than on the bundle.
 - **Earlier decisions stand.** (User, 2026-11-02.) E00 and E03 are closed; an earlier E02 row was dropped as delivered by I08; a composed target declaring no `prosiform` is refused.
 
 ## MVP Proof

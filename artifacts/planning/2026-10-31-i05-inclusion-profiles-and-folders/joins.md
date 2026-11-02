@@ -26,7 +26,7 @@ The dependency checker's remaining candidate units stay split:
 | E01:W04 → E00:W03 | Selection reads the classification that asks the target rather than a root. |
 | E03:W01, E04:W01, E05:W01 → E00:W00 | Each option change amends the design after E00's clause and pin. |
 | E06:W01 → E00:W00, E01:W09 | The preset read follows E00's clause, and reads `subst` in the colon-pair shape W09 lands. |
-| E08:W00 → E00:W06, E06:W03 | The example tree is rewritten once the rootless tree and the corpus stating `subst` have landed. |
+| E08:W01 → E06:W03 | The corpus sources declare presets once the corpus stating `subst` has landed; the example tree's removal (W00) waits on nothing. |
 
 ## Order and bases
 
