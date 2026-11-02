@@ -76,6 +76,7 @@ from prosiform.closure import (
     Substitution,
     components,
     conflicting,
+    directive,
     identity,
     inside,
     named,
@@ -86,11 +87,12 @@ from prosiform.closure import (
     withholding_target,
 )
 from prosiform.composition import (
+    Colliding,
     Composed,
+    Overflowing,
     Parentless,
     compositions,
     contributions,
-    directive,
 )
 from prosiform.diagnostics import (
     ERROR,
@@ -104,6 +106,7 @@ from prosiform.diagnostics import (
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
+    HEADING_COLLISION,
     Anchors,
     Hop,
     Refused,
@@ -1725,18 +1728,40 @@ def refusals_of_directives(
     tokens: Sequence[Token],
     chosen: Selection | None,
     chain: Sequence[str],
+    declarations: Declarations = DECLARING,
+    substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
-    """Refuse a composition directive that no section holds.
+    """Refuse a composition directive no section holds or no document answers.
 
     A directive places its target beneath the section containing it, so
-    one written in the preamble has no scope to place it in. The label
-    asks for a placement the run cannot make, which is a source fault:
-    the run reports the link rather than reading it as an ordinary one.
+    one written in the preamble has no scope to place it in. One naming a
+    Markdown path that holds no document names a target that cannot be
+    read, and fails as a reference naming nothing does. Either label asks
+    for a placement the run cannot make, which is a source fault: the run
+    reports the link rather than reading it as an ordinary one.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if use.title is not None or not directive(use.label):
+        if not directive(use.label):
             continue
+        at = location(path, source.line(use.line))
+        if use.title is not None:
+            target = (
+                None
+                if use.resource
+                else named(path, use.destination, substitution, at, chain)
+            )
+            if target is None or declarations.answer(target) is not Probed.ABSENT:
+                continue
+            raise input_failure(
+                f"the directive {use.label!r} names {use.destination!r}, which "
+                f"names no document, so its composition has no section to place",
+                code=TARGET_NOT_FOUND,
+                remedy="name a section of a Markdown document that exists",
+                reference=use.destination,
+                source=at,
+                chain=(*chain, use.destination),
+            )
         raise input_failure(
             f"the link {use.label!r} is a composition directive in the preamble, "
             f"which no section holds, so the run has no scope to place "
@@ -1745,7 +1770,7 @@ def refusals_of_directives(
             remedy="write the directive inside the section its target belongs "
             "beneath, or give the link a label that requests no placement",
             reference=use.destination,
-            source=location(path, source.line(use.line)),
+            source=at,
             chain=(*chain, use.destination),
         )
 
@@ -1985,7 +2010,15 @@ def traverse(
                 declarations,
                 substitution,
             )
-            refusals_of_directives(path, read[path], parsed[path], chosen, reached)
+            refusals_of_directives(
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                substitution,
+            )
             for one in withheld(
                 path,
                 read[path],
@@ -2696,12 +2729,16 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     """One assembly, a source fault it meets reported as the input it is.
 
     A heading beyond the sixth level is a hierarchy the bundle cannot
-    emit, and a dispatched link the bundle places no sub-section for is a
-    handoff it cannot state. Both are properties of the sources the run
-    was asked to bundle rather than faults in the tool, so each is
-    reported with the code the contract declares for it, and with the
-    chain that reached the document the fault was found in, whichever
-    member of a merged group that is.
+    emit, a dispatched link the bundle places no sub-section for is a
+    handoff it cannot state, and a directive whose composition has no
+    section, parent or level to take, or a name its scope already
+    holds, is a placement it cannot make. Each is a property of the
+    sources the run was asked to bundle rather than a fault in the tool,
+    so each is reported with the code the contract declares for it, and
+    with the chain that reached the document the fault was found in,
+    whichever member of a merged group that is. A composition fault
+    names the directive, where it is written, and the chain extended by
+    it.
     """
     try:
         yield
@@ -2727,14 +2764,41 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             source=location(parentless.path, parentless.line),
             chain=(*chains.get(parentless.path, ()), parentless.destination),
         ) from parentless
-    except Unplaced as unplaced:
+    except Overflowing as beyond:
         raise input_failure(
-            f"the dispatch {unplaced.opening!r} in {unplaced.path!r} names "
+            f"the directive {beyond.destination!r} in {beyond.path!r} composes "
+            f"the heading {beyond.heading!r} at level {beyond.level}, which is "
+            f"beyond H{MAX_LEVEL}",
+            code=HEADING_DEPTH_OVERFLOW,
+            remedy="write the directive in a shallower section, or name a "
+            "shallower section of its target",
+            reference=beyond.destination,
+            source=location(beyond.path, beyond.line),
+            chain=(*chains.get(beyond.path, ()), beyond.destination),
+        ) from beyond
+    except Colliding as colliding:
+        raise input_failure(
+            f"the directive {colliding.destination!r} in {colliding.path!r} "
+            f"places the section {colliding.title!r} beneath its scope, whose "
+            f"authored heading {colliding.title!r} at {colliding.authored} names it "
+            f"already",
+            code=HEADING_COLLISION,
+            remedy="retitle the authored heading, or write the directive in "
+            "another section",
+            reference=colliding.destination,
+            source=location(colliding.path, colliding.line),
+            chain=(*chains.get(colliding.path, ()), colliding.destination),
+        ) from colliding
+    except Unplaced as unplaced:
+        kind = "directive" if unplaced.composing else "dispatch"
+        placed = "destination section" if unplaced.composing else "dispatch sub-section"
+        raise input_failure(
+            f"the {kind} {unplaced.opening!r} in {unplaced.path!r} names "
             f"{unplaced.destination!r}, and the heading that carries it is no "
-            f"section a dispatch sub-section can stand beneath",
+            f"section a {placed} can stand beneath",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy="write the dispatch in the body beneath the heading, where a "
-            "sub-section has a section to follow",
+            remedy=f"write the {kind} in the body beneath the heading, where a "
+            f"{placed} has a section to follow",
             reference=unplaced.destination,
             source=location(unplaced.path, unplaced.line),
             chain=chains.get(unplaced.path, ()),
@@ -2830,7 +2894,7 @@ def compose(
             declarations,
             substitution,
         )
-        collisions(headed)
+        collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
     assigned = fragments([heading for one in headed for heading in one.headings])

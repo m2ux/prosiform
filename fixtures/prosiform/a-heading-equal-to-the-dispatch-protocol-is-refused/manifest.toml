@@ -17,3 +17,8 @@ severity = "error"
 code = "E_HEADING_COLLISION"
 source = "guide.md"
 message_contains = ["Dispatch"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 10
+column = 1

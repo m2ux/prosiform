@@ -14,8 +14,7 @@ paired with what the deferral alone states.
 
 import pytest
 
-from prosiform.closure import deferred, dispatched
-from prosiform.composition import directive
+from prosiform.closure import deferred, directive, dispatched
 from prosiform.profile import parse
 from prosiform.source import Use, regions, uses
 

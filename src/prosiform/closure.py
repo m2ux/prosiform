@@ -16,7 +16,22 @@ dispatches. A deferred link's destination is the target's path, which no
 compiled link carries, so the deferral is stated there; a dispatched link
 points at a sub-section naming the bundle the run compiles for its
 target, which states the dispatch. Every mark is therefore authoring
-syntax, and the bundle drops it."""
+syntax, and the bundle drops it.
+
+A composition directive is a link whose label, read as plain text with
+its entities decoded, is exactly one Unicode scalar above U+007F that
+shows something: a whitespace, control or format scalar shows nothing,
+so a reader could not see the placement it would request. The label
+requests placement and nothing else, so every qualifying scalar means
+the same and the meaning an author gives one stays with the author.
+
+Deferral is read before recognition and apart from it: the deferral
+mark and the blanks after it are set aside, so a deferred link is a
+deferred directive where what remains qualifies and an ordinary
+deferral where it does not. Every other operator opens a link that is
+no directive, and the marks that open an operator or a convention are
+no directive's label. Nothing is trimmed or normalised to make a label
+qualify."""
 
 import posixpath
 import re
@@ -24,6 +39,7 @@ from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from enum import Enum
 from types import MappingProxyType
+from unicodedata import category
 from urllib.parse import quote
 
 from markdown_it.token import Token
@@ -34,6 +50,17 @@ from prosiform.source import ENCODING, external, regions, uses
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
 PARALLEL_MARK = "⫽"
+INLINE_MARK = "↳"
+
+# The marks that open an operator or a convention, which no label
+# requests placement with.
+MARKS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK, INLINE_MARK)
+
+ASCII_CEILING = 0x7F
+
+# The general categories of a scalar that shows nothing: a control and a
+# format character. Whitespace is read from the scalar's own property.
+UNSHOWN = ("Cc", "Cf")
 
 SPACE = " "
 BLANKS = " \t"
@@ -672,6 +699,29 @@ def unmarked(text: str) -> str:
     while end < len(text) and text[end] in BLANKS:
         end += 1
     return text[end:]
+
+
+def directive(label: str | None) -> bool:
+    """Whether a link with this plain-text label is a composition directive.
+
+    The label is absent where the link's text is not plain text, which
+    no directive's is. A label opening with the deferral mark alone is
+    read without it; one opening with any other operator states how its
+    material is compiled and requests no placement.
+    """
+    if label is None:
+        return False
+    found = operators(label)
+    if found and found != (DEFERRAL_MARK,):
+        return False
+    requested = unmarked(label) if found else label
+    return (
+        len(requested) == 1
+        and ord(requested) > ASCII_CEILING
+        and requested not in MARKS
+        and not requested.isspace()
+        and category(requested) not in UNSHOWN
+    )
 
 
 def resolve(text: str, base: str = "") -> Reference:

@@ -1,21 +1,7 @@
-"""Composition: the links that request it, and the sections they place.
+"""Composition: the sections composition directives place.
 
-A composition directive is a link whose label, read as plain text with
-its entities decoded, is exactly one Unicode scalar above U+007F that
-shows something: a whitespace, control or format scalar shows nothing,
-so a reader could not see the placement it would request. The label
-requests placement and nothing else, so every qualifying scalar means
-the same and the meaning an author gives one stays with the author.
-
-Deferral is read before recognition and apart from it: the deferral
-mark and the blanks after it are set aside, so a deferred link is a
-deferred directive where what remains qualifies and an ordinary
-deferral where it does not. Every other operator opens a link that is
-no directive, and the marks that open an operator or a convention are
-no directive's label. Nothing is trimmed or normalised to make a label
-qualify.
-
-An immediate directive naming a section of a document the bundle
+A composition directive is recognised as the closure module states. An
+immediate directive naming a section of a document the bundle
 compiles *composes* it. The section containing the directive is its
 *scope*, at the heading the bundle emits for it. When the scope's own
 content ends, each title its directives' targets carry takes a
@@ -41,13 +27,27 @@ reads what a destination section carries as the scope's own content:
 a scope's dispatch sub-sections follow its destination sections, and
 its child sections follow both.
 
-A target with no heading above it names no parent and is refused, and
-a composed heading past the sixth level is the overflow it is.
+Titles are matched exactly as their headings show them: no case
+folding, Unicode normalisation or trimming joins two titles, so one
+destination section holds only targets whose visible text is the same
+string. Destination sections take the order their first directive is
+written and contributions the order theirs are, so the source alone
+decides the order and two runs over it compose alike. Parents carrying
+one title keep a contribution each, told apart by the renderer's
+ordinal as any repeated heading is.
+
+Each composition failure names the directive that requested it, where
+it is written. A target with no heading above it names no parent, an
+authored child heading of the scope whose text equals a destination
+section's would give the scope two sections of one name, and a
+composed heading past the sixth level is beyond what Markdown emits,
+so each is refused. A directive in a heading emitted as text alone has
+no section to compose beneath, which the bundle refuses as it refuses
+a dispatch there.
 """
 
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
-from unicodedata import category
 
 from markdown_it.token import Token
 
@@ -56,7 +56,6 @@ from prosiform.bundle import (
     HEADING_OPEN,
     MAX_LEVEL,
     Group,
-    Overflow,
     ancestry,
     carried_headings,
     emitted_text,
@@ -69,16 +68,12 @@ from prosiform.bundle import (
 )
 from prosiform.closure import (
     DECLARING,
-    DEFERRAL_MARK,
-    DISPATCH_MARK,
-    PARALLEL_MARK,
     UNSUBSTITUTED,
     Declarations,
     Reference,
     Substitution,
     bundled,
-    operators,
-    unmarked,
+    directive,
 )
 from prosiform.dispatch import region_of
 from prosiform.provenance import (
@@ -108,42 +103,6 @@ from prosiform.source import (
     section,
 )
 
-INLINE_MARK = "↳"
-
-# The marks that open an operator or a convention, which no label
-# requests placement with.
-MARKS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK, INLINE_MARK)
-
-ASCII_CEILING = 0x7F
-
-# The general categories of a scalar that shows nothing: a control and a
-# format character. Whitespace is read from the scalar's own property.
-UNSHOWN = ("Cc", "Cf")
-
-
-def directive(label: str | None) -> bool:
-    """Whether a link with this plain-text label is a composition directive.
-
-    The label is absent where the link's text is not plain text, which
-    no directive's is. A label opening with the deferral mark alone is
-    read without it; one opening with any other operator states how its
-    material is compiled and requests no placement.
-    """
-    if label is None:
-        return False
-    found = operators(label)
-    if found and found != (DEFERRAL_MARK,):
-        return False
-    requested = unmarked(label) if found else label
-    return (
-        len(requested) == 1
-        and ord(requested) > ASCII_CEILING
-        and requested not in MARKS
-        and not requested.isspace()
-        and category(requested) not in UNSHOWN
-    )
-
-
 Composed = dict[Located, Generated]
 """Each composing link's contribution heading, by the link's position."""
 
@@ -161,6 +120,49 @@ class Parentless(Exception):
         self.destination = destination
 
 
+class Overflowing(Exception):
+    """A directive whose composed heading would stand beyond the sixth level."""
+
+    def __init__(
+        self, path: str, line: int | None, destination: str, heading: str, depth: int
+    ) -> None:
+        super().__init__(
+            f"the directive {destination!r} in {path!r} composes the heading "
+            f"{heading!r} at level {depth}"
+        )
+        self.path = path
+        self.line = line
+        self.destination = destination
+        self.heading = heading
+        self.level = depth
+
+
+class Colliding(Exception):
+    """A directive whose destination section an authored child of its scope names.
+
+    The authored heading is named by its source and the line of the file
+    it stands on.
+    """
+
+    def __init__(
+        self,
+        path: str,
+        line: int | None,
+        destination: str,
+        title: str,
+        authored: str,
+    ) -> None:
+        super().__init__(
+            f"the directive {destination!r} in {path!r} places the section "
+            f"{title!r}, which an authored heading of its scope names"
+        )
+        self.path = path
+        self.line = line
+        self.destination = destination
+        self.title = title
+        self.authored = authored
+
+
 @dataclass(frozen=True)
 class Directive:
     """One composing link: the section it names and where it is written.
@@ -174,6 +176,10 @@ class Directive:
     line: int | None
     at: Located
     title: str
+
+    def overflowing(self, heading: str, depth: int) -> Overflowing:
+        """The refusal of a heading this directive would compose past H6."""
+        return Overflowing(self.at[0], self.line, self.written, heading, depth)
 
 
 class Composing:
@@ -207,6 +213,7 @@ class Composing:
         self.parts: list[Part] = []
         self.headings: list[Emitted] = []
         self.pending: dict[str, list[Directive]] = {}
+        self.opened: dict[int, Directive] = {}
         self.level: int | None = None
 
     def directives(self, path: str, token: Token) -> Iterator[Directive]:
@@ -269,7 +276,7 @@ class Composing:
             single_line(shows[id(chain[-1])]), depth, CONTRIBUTION_HEADING
         )
         if depth > MAX_LEVEL:
-            raise Overflow(contribution.text, depth, path)
+            raise one.overflowing(contribution.text, depth)
         self.placed.setdefault(one.at, contribution)
         self.heading(contribution)
         body = list(chosen[1:])
@@ -299,7 +306,7 @@ class Composing:
             carried = carried_headings(tokens, token)
             for held in carried:
                 if level(held) + by > MAX_LEVEL:
-                    raise Overflow(shows[id(held)], level(held) + by, path)
+                    raise one.overflowing(shows[id(held)], level(held) + by)
             self.headings.extend(
                 Carried(
                     emitted_text(held, shows[id(held)], by),
@@ -336,16 +343,48 @@ class Composing:
         depth = self.level + 1
         for title, found in self.pending.items():
             if depth > MAX_LEVEL:
-                raise Overflow(title, depth, found[0].target.path)
-            self.heading(Generated(title, depth, DESTINATION_SECTION))
+                raise found[0].overflowing(title, depth)
+            destination = Generated(title, depth, DESTINATION_SECTION)
+            self.opened[id(destination)] = found[0]
+            self.heading(destination)
             for one in found:
                 self.contribute(one, depth + 1)
         self.pending = {}
+
+    def collide(self) -> None:
+        """Refuse a destination section an authored child of its scope names.
+
+        A destination section and the scope's child sections are siblings,
+        and the children follow it until a heading above their level
+        closes the scope.
+        """
+        for at, one in enumerate(self.headings):
+            first = self.opened.get(id(one))
+            if first is None:
+                continue
+            for later in self.headings[at + 1 :]:
+                if later.level < one.level:
+                    break
+                if (
+                    later.level == one.level
+                    and isinstance(later, Carried | Ancestor)
+                    and later.text == one.text
+                ):
+                    origin = later.origins[0]
+                    authored = (
+                        origin.path
+                        if origin.line is None
+                        else f"{origin.path}:{self.read[origin.path].line(origin.line)}"
+                    )
+                    raise Colliding(
+                        first.at[0], first.line, first.written, one.text, authored
+                    )
 
     def group(self, one: Group) -> Group:
         """One group with the sections its directives compose."""
         offset = 1 if one.wrapped else 0
         self.emitted = list(one.parts[:offset])
+        self.opened = {}
         self.parts = []
         self.headings = list(one.record.headings[:offset])
         self.level = one.record.headings[0].level if one.wrapped else None
@@ -371,6 +410,7 @@ class Composing:
             self.emitted.append(text)
             self.parts.append(part)
         self.flush()
+        self.collide()
         return Group(
             tuple(self.emitted),
             replace(one.record, headings=tuple(self.headings), parts=tuple(self.parts)),
