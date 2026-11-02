@@ -46,7 +46,7 @@ flowchart LR
 
 ## Reference
 
-The links inside a source are what the run follows. Each is a [**reference**](references.md). Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together.
+The links inside a source are what the run follows. Each is a [**reference**](references.md). Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together. A link labelled with one arrow is a **composition directive**, which places the section it names beneath the section that writes it.
 
 ```mermaid
 flowchart LR
@@ -92,6 +92,19 @@ flowchart TB
 
 *Figure 5. Every Source Becomes One Division, Unless It Declares a Group.*
 
+## Composition
+
+A step can need a section stated in another document, such as the contract of a call it makes, beneath the step itself rather than in a division of its own. A [**composition directive**](composition.md), a link labelled with one arrow, places it there: the target's section becomes a **destination section** one level below the step, and each directive adds a **contribution** beneath it. The label requests placement and carries no other meaning.
+
+```mermaid
+flowchart LR
+  Link["[→](read.md#inputs)<br/><i>in ## Prepare</i>"] -- "places" --> Dest["### Inputs<br/><i>a destination section</i>"]
+  Dest --> Contrib["#### Read<br/><i>a contribution:<br/>the target's content</i>"]
+  Deferred["[¬→](read.md#inputs)"] -. "deferred" .-> Line["[↳ Inputs](read.md#inputs)<br/><i>compiled by a later run</i>"]
+```
+
+*Figure 6. A Directive Places Its Target Beneath the Section That Writes It.*
+
 ## Destination
 
 A reader finds their way around a Markdown document by its headings. When a section is copied into a bundle, a link that pointed at it in its own file must point at it in the bundle instead. Every emitted heading therefore takes a [**destination**](destinations.md) — the fragment a Markdown renderer generates for it — and each compiled link is rewritten to the destination of what it named. Nothing else is rewritten.
@@ -111,7 +124,7 @@ flowchart LR
   H2 -- "named, then followed by" --> L2
 ```
 
-*Figure 6. The Heading Is Renamed Where It Lands, and the Link Follows It.*
+*Figure 7. The Heading Is Renamed Where It Lands, and the Link Follows It.*
 
 ## Dispatch
 
@@ -124,7 +137,7 @@ flowchart LR
   Target -- "a sub-agent follows it" --> Agent["<b>the other agent</b><br/><i>its own context</i>"]
 ```
 
-*Figure 7. Withheld Here, Compiled There, Followed by Another Agent.*
+*Figure 8. Withheld Here, Compiled There, Followed by Another Agent.*
 
 ## Bundle
 
@@ -138,7 +151,7 @@ flowchart LR
   Swap -. "earlier set<br/>could not be removed" .-> Warn["<i>published, with a warning</i>"]
 ```
 
-*Figure 8. The Whole Set Is Written, Then Swapped In.*
+*Figure 9. The Whole Set Is Written, Then Swapped In.*
 
 ## Validation
 
@@ -151,4 +164,4 @@ flowchart TB
   Checks -- "no" --> Nothing["<b>nothing written</b><br/><i>diagnostics on stderr, exit 1–4</i>"]
 ```
 
-*Figure 9. Checked Before Written, and a Failure Writes Nothing.*
+*Figure 10. Checked Before Written, and a Failure Writes Nothing.*

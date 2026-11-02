@@ -70,4 +70,13 @@ pf 'guide.md#run'
 
 A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
 
-A bundle that dispatches opens with a `# Prosiform` section stating how: `## Dispatch` whenever it dispatches, and `## Parallel dispatch` when it carries a set. Each sub-section links the protocol it follows, and the protocols are the same bytes in every bundle.
+A bundle that dispatches opens with a `# Prosiform` section stating how: `## Dispatch` whenever it dispatches, and `## Parallel dispatch` when it carries a set. Each sub-section links the protocol it follows, and the protocols are the same bytes in every bundle. A dispatched bundle that carries a deferred dispatch or a `↳` line opens with `## Run pf first` too, as [Dispatch](docs/dispatch.md#the-prosiform-section) states.
+
+### Compose a Section
+
+```bash
+cd fixtures/composition/titles-from-several-sources-share-one-destination-section/source
+pf guide.md
+```
+
+A link labelled with one arrow, as in `[→](read.md#inputs)`, is a composition directive. It places the section it names beneath the section that writes it, and `[¬→](read.md#inputs)` defers that placement to a later run. [Composition](docs/composition.md) states the grammar.
