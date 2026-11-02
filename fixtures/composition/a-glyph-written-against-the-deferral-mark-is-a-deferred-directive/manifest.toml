@@ -1,4 +1,4 @@
-description = "The deferral mark and the blank after it are set aside before recognition, so a deferred arrow is a deferred directive, and in the preamble it is refused for want of a scope as an immediate one is; no bundle is published."
+description = "The deferral mark written against a glyph, with no blank between them, is set aside before recognition, so the link is a deferred directive, and in the preamble it is refused for want of a scope as an immediate one is; no bundle is published."
 
 clauses = [
   "Section composition — Recognition",

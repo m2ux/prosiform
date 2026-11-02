@@ -14,7 +14,7 @@ paired with what the deferral alone states.
 
 import pytest
 
-from prosiform.closure import deferred, directive, dispatched
+from prosiform.closure import deferred, directive, dispatched, gapped
 from prosiform.profile import parse
 from prosiform.source import Use, regions, uses
 
@@ -156,19 +156,23 @@ def test_a_lone_operator_or_convention_mark_is_no_directive(written: str) -> Non
 
 @pytest.mark.parametrize(
     "written",
-    ["[¬ →](a.md#out)", "[¬  →](a.md#out)", "[¬ &rarr;](a.md#out)", "[¬ 𝔸](a.md#out)"],
-    ids=["one blank", "two blanks", "an entity", "a supplementary scalar"],
+    ["[¬→](a.md#out)", "[¬&rarr;](a.md#out)", "[¬𝔸](a.md#out)"],
+    ids=["an arrow", "an entity", "a supplementary scalar"],
 )
-def test_a_deferred_glyph_is_a_deferred_directive(written: str) -> None:
+def test_a_glyph_the_deferral_mark_is_written_against_is_a_deferred_directive(
+    written: str,
+) -> None:
     use = first(written)
     assert directive(use.label)
     assert deferred(use.opening)
+    assert not gapped(use.opening, use.label)
 
 
 def test_an_ordinary_deferred_label_is_a_deferral_and_no_directive() -> None:
     use = first("[¬ the rules](a.md#out)")
     assert deferred(use.opening)
     assert not directive(use.label)
+    assert not gapped(use.opening, use.label)
 
 
 def test_an_immediate_glyph_is_a_directive_and_no_deferral() -> None:
@@ -179,24 +183,60 @@ def test_an_immediate_glyph_is_a_directive_and_no_deferral() -> None:
 
 @pytest.mark.parametrize(
     "written",
-    ["[¬→](a.md#out)", "[¬ ¬](a.md#out)", "[¬ ↳](a.md#out)", "[¬ → ](a.md#out)"],
+    [
+        "[¬ →](a.md#out)",
+        "[¬  →](a.md#out)",
+        "[¬ &rarr;](a.md#out)",
+        "[⇉ →](a.md#out)",
+        "[⫽ →](a.md#out)",
+        "[¬⇉ →](a.md#out)",
+    ],
     ids=[
-        "a mark with no blank after it",
-        "a deferred deferral mark",
-        "a deferred inline mark",
-        "a deferred glyph and a trailing space",
+        "a deferral and one blank",
+        "a deferral and two blanks",
+        "a deferral and an entity",
+        "a dispatch",
+        "a parallel dispatch",
+        "a deferred dispatch",
     ],
 )
-def test_a_deferral_set_aside_leaves_no_qualifying_label(written: str) -> None:
-    assert not directive(first(written).label)
+def test_a_blank_between_a_mark_and_a_glyph_is_refused_and_no_directive(
+    written: str,
+) -> None:
+    use = first(written)
+    assert gapped(use.opening, use.label)
+    assert not directive(use.label)
 
 
 @pytest.mark.parametrize(
     "written",
-    ["[⇉ →](a.md#out)", "[⫽ →](a.md#out)", "[¬⇉ →](a.md#out)"],
-    ids=["a dispatch", "a parallel dispatch", "a deferred dispatch"],
+    ["[¬¬](a.md#out)", "[¬↳](a.md#out)", "[¬ ↳](a.md#out)", "[¬→ ](a.md#out)"],
+    ids=[
+        "a doubled deferral mark",
+        "an inline mark written against the deferral mark",
+        "a deferred inline mark",
+        "a deferred glyph and a trailing space",
+    ],
 )
-def test_a_dispatch_of_a_glyph_is_no_directive(written: str) -> None:
+def test_a_deferral_mark_beside_no_qualifying_label_is_no_directive(
+    written: str,
+) -> None:
     use = first(written)
-    assert dispatched(use.opening)
     assert not directive(use.label)
+    assert not gapped(use.opening, use.label)
+
+
+@pytest.mark.parametrize(
+    "written",
+    ["[⇉→](a.md#out)", "[⫽→](a.md#out)", "[ ¬→](a.md#out)"],
+    ids=[
+        "a dispatch mark written against a glyph",
+        "a parallel mark written against a glyph",
+        "a deferred glyph after a blank",
+    ],
+)
+def test_a_mark_written_against_a_glyph_it_cannot_defer_is_text(written: str) -> None:
+    use = first(written)
+    assert not directive(use.label)
+    assert not deferred(use.opening)
+    assert not dispatched(use.opening)

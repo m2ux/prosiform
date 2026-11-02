@@ -1,4 +1,4 @@
-description = "Each operator mark alone — the deferral, dispatch and parallel dispatch marks and the inline mark — and a deferral mark with no blank after it open no operator and request no placement, so each is an ordinary link in the preamble, carried with its text as written."
+description = "Each operator mark alone — the deferral, dispatch and parallel dispatch marks and the inline mark — and a dispatch mark written against a glyph open no operator and request no placement, so each is an ordinary link in the preamble, carried with its text as written."
 
 clauses = [
   "Section composition — Operator marks",

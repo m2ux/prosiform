@@ -77,12 +77,12 @@ from prosiform.closure import (
     components,
     conflicting,
     directive,
+    gapped,
     identity,
     inside,
     named,
     operators,
     resolve,
-    spaced,
     withholding,
     withholding_target,
 )
@@ -1645,7 +1645,9 @@ def refusals_of_operators(
     """Refuse a link whose operators state no one compilation the run can carry out.
 
     A deferral says when the material is compiled and a dispatch says who
-    compiles it, so the two are carried out together. Two dispatch marks
+    compiles it, so the two are carried out together, their marks written
+    together: a blank between two symbols — two marks, or a mark and a
+    composition directive's label — states no one operation. Two dispatch marks
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
@@ -1665,19 +1667,18 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if spaced(use.opening) and DEFERRAL_MARK in operators(use.opening):
-            first = operators(use.opening)
-            second = operators(use.opening[len(first) :].lstrip())
+        if gapped(use.opening, use.label):
             raise input_failure(
-                f"the link {use.opening!r} opens with "
+                f"the link {use.opening!r} writes a blank between "
                 + " and ".join(
-                    f"{OPERATOR_NAMES[mark]} {mark!r}" for mark in first + second
+                    f"{OPERATOR_NAMES[mark]} {mark!r}"
+                    for mark in operators(use.opening)
                 )
-                + ", which state one compilation only when the marks are written "
-                "together",
+                + " and the symbol after it, which state one operation only "
+                "when written together",
                 code=UNSUPPORTED_CONSTRUCT,
-                remedy="write the marks of the combined operator with no space "
-                "between them",
+                remedy="write the symbols with no space between them, and one "
+                "space between the last of them and the link's text",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),

@@ -26,6 +26,7 @@ from prosiform.closure import (
     conflicting,
     deferred,
     dispatched,
+    gapped,
     identity,
     inside,
     operators,
@@ -33,7 +34,6 @@ from prosiform.closure import (
     rebased,
     resolvable,
     resolve,
-    spaced,
     unmarked,
     withholding,
     withholding_target,
@@ -440,11 +440,13 @@ def test_the_parallel_mark_beside_a_deferral_states_one_compilation() -> None:
     assert not conflicting("¬⫽ the reviews")
 
 
-@pytest.mark.parametrize("opening", ["¬ ⇉ the rules", "¬ ⫽ the reviews"])
+@pytest.mark.parametrize(
+    "opening", ["¬ ⇉ the rules", "¬ ⫽ the reviews", "⇉ ⫽ the reviews", "⇉ ¬ the rules"]
+)
 def test_a_blank_between_the_marks_of_a_compound_operator_is_refused(
     opening: str,
 ) -> None:
-    assert spaced(opening)
+    assert gapped(opening, None)
 
 
 def probing(answers: dict[str, Probed]) -> tuple[Declarations, list[Reference]]:
@@ -569,3 +571,17 @@ def test_the_boundary_holds_paths_climbing_different_distances(
     links: str, expected: str
 ) -> None:
     assert bounded("skill/guide.md", links + "\n") == expected
+
+
+def test_the_deferral_mark_written_against_a_glyph_defers_it() -> None:
+    assert operators("¬→") == ("¬",)
+    assert deferred("¬→")
+    assert unmarked("¬→") == "→"
+    assert unmarked("¬&rarr;", raw=True) == "&rarr;"
+    assert unmarked("¬&rarr;") == "¬&rarr;"
+
+
+def test_a_mark_written_against_other_text_opens_no_operator() -> None:
+    assert operators("¬→ the rules") == ()
+    assert operators("⇉→") == ()
+    assert operators("¬A") == ()
