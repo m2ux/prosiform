@@ -1805,6 +1805,10 @@ def traverse(
     Each round reads every carried document's links under the `subst`
     pairs its presets put in force, as the references found so far
     select them, so a link is resolved under its own document's pairs.
+    A round records no substitution: a reference a later round finds can
+    select a preset whose pair holds over the one an earlier round
+    resolved a link by, so the run's record is written as the bundle is
+    composed, under the pairs the fixed point puts in force.
 
     The dispatched links the selected content carries are returned as
     well, each target once at the first link the rounds read naming it,
@@ -1851,7 +1855,9 @@ def traverse(
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
         carried = contributing(found)
-        mapping = governed(substitution, governing(read, parsed, carried, requested))
+        mapping = governed(
+            substitution, governing(read, parsed, carried, requested)
+        ).unrecorded()
         for path, selecting in carried.items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
@@ -3247,8 +3253,8 @@ def unused_pairs(
     one no reference of the run named substitutes nothing. The warning
     carries the key as its author wrote it as `source`, names the
     declaring document and preset in its message, and carries no
-    location, in the order the bundles carry the documents and then the
-    order each preset is read in.
+    location: bundle by bundle, each bundle's documents by path, and each
+    document's pairs in the order its presets are read.
     """
     held: dict[tuple[str, tuple[str, str | None]], Governed] = {}
     for one in bundles:

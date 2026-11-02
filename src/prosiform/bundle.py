@@ -366,7 +366,7 @@ def emitted_visible(
 
     Reading what a heading shows compiles nothing, and a heading is read
     whether or not the run selected it, so the lookup records no
-    substitution: a pair is used by the reference discovery reaches in
+    substitution: a pair is used by a reference the bundle composes from
     selected content, where the link's position is known.
     """
     substitution = substitution.unrecorded()
