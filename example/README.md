@@ -127,12 +127,12 @@ The quote is the operation's opening: its contract links and both step headings,
 
 ```bash
 cd example/work-planner
-pf -f artifacts/epic-issue-body.md '#record-epic-delivery'
+pf 'artifacts/epic-issue-body.md#record-epic-delivery'
 ```
 
 ### Output
 
-The [expected bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
+The [expected bundle](../fixtures/usage-example/a-section-entry-and-its-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) begins with the artifacts' group heading, the epic issue body's block beneath it, and that block's `Operations` heading:
 
 ```markdown
 # Artifacts
@@ -160,7 +160,7 @@ From `<workspace>`, update the supplied epic JSON, mapping pull requests to `--p
 
 The selection retains its structural ancestors and rewrites the links the operation carries to bundle fragments. The rest of the bundle contains the sections those links reach.
 
-[Fixture and expected diagnostics](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml).
+[Fixture and expected diagnostics](../fixtures/usage-example/a-section-entry-and-its-document/manifest.toml).
 
 ## Defer a document to a run of its own
 
@@ -339,7 +339,7 @@ Every case below uses the same [source tree](work-planner/SKILL.md). Each manife
 | Example | Invocation fixture | Expected output |
 | --- | --- | --- |
 | Bundle a procedure | [Manifest](../fixtures/usage-example/a-procedure-and-everything-it-reaches/manifest.toml) | [Bundle](../fixtures/usage-example/a-procedure-and-everything-it-reaches/expected/modes_plan-mode.bundle.md) |
-| Select a fragment with `-f` | [Manifest](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-bare-fragment-and-its-referring-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) |
+| Select a section | [Manifest](../fixtures/usage-example/a-section-entry-and-its-document/manifest.toml) | [Bundle](../fixtures/usage-example/a-section-entry-and-its-document/expected/artifacts_epic-issue-body__record-epic-delivery.bundle.md) |
 | Select two sections | [Manifest](../fixtures/usage-example/two-selected-sections/manifest.toml) | [Bundle](../fixtures/usage-example/two-selected-sections/expected/artifacts_epic-issue-body__record-epic-delivery+artifacts_epic__delivery-findings.bundle.md) |
 | Defer a document with `¬` | [Manifest](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-guidelines-it-defers/expected/modes_revise-mode.bundle.md) |
 | Read in steps | [Manifest](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/manifest.toml) | [Bundle](../fixtures/usage-example/a-mode-and-the-board-reads-it-steps-through/expected/modes_advance-mode.bundle.md) |

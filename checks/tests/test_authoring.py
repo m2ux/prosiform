@@ -30,8 +30,8 @@ INSTRUCTIONS = (
     (SOURCES, "Every key in `prosiform` is a **preset** name"),
     (SOURCES, "the target's own declaration then decides whether it is compiled"),
     (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
-    (GUIDE, "`-f DOC`"),
     (GUIDE, "`-o DIR`"),
+    (GUIDE, "a section written as `document#fragment`"),
     (BUNDLES, "A section adds `__` and the fragment."),
     (BUNDLES, "A run of several selections joins their names with `+`"),
     (BUNDLES, "File and directory names use hyphens rather than underscores."),
@@ -42,7 +42,7 @@ FENCE = re.compile(r"```bash\n(.*?)```", re.DOTALL)
 FRONT = re.compile(r"\A---\n(.*?)\n---", re.DOTALL)
 ROOT_KEY = re.compile(r"\broot:")
 TAKES_VALUE = frozenset(
-    {"-o", "-f", "-d", "-x", "-F", "-B", "-I", "-O", "-T", "-L", "-N", "-E"}
+    {"-o", "-m", "-d", "-x", "-F", "-B", "-I", "-O", "-T", "-L", "-N", "-E"}
 )
 SWITCH = frozenset({"-c", "-C", "-v", "-h"})
 
@@ -81,21 +81,18 @@ def commands(path: Path) -> list[tuple[Path, list[str]]]:
 
 
 def source_paths(argv: list[str]) -> list[str]:
-    """Positional entries and `-f` documents, without output destinations."""
+    """Positional entries, without output destinations."""
     found: list[str] = []
     index = 0
     while index < len(argv):
         token = argv[index]
         assert token != "-r" and not token.startswith("--")
         if token in TAKES_VALUE:
-            value = argv[index + 1]
-            if token == "-f":
-                found.append(value)
             index += 2
             continue
         assert token in SWITCH or not token.startswith("-"), token
         bare = token.strip("'\"")
-        if token not in SWITCH and not bare.startswith("#"):
+        if token not in SWITCH:
             found.append(bare.split("#", maxsplit=1)[0])
         index += 1
     return found

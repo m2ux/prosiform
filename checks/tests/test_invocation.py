@@ -45,9 +45,8 @@ Bundle the local Markdown closure of one or more entry references into one
 validated document.
 
 positional arguments:
-  REF                   an entry reference: a root-relative document, a
-                        document and a fragment, or a fragment alone with
-                        -f
+  REF                   an entry reference: a root-relative document, or a
+                        document and a fragment
 
 options:
   -r DIR            the allowed source root; required, and resolved from

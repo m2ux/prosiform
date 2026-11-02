@@ -51,7 +51,6 @@ def test_file_and_section_names_follow_the_working_directory_path(
     [
         ("dir/a.md", "dir/./a.md#"),
         ("dir/a.md#part", "dir/a.md#p%61rt"),
-        ("-f", "dir/a.md", "#part", "dir/a.md#part"),
     ],
 )
 def test_equivalent_selections_share_one_derived_destination(
@@ -70,7 +69,7 @@ def test_equivalent_selections_share_one_derived_destination(
         (("b.md", "a.md"), "b+a.bundle.md"),
         (("a.md#one", "a.md#two"), "a__one+a__two.bundle.md"),
         (("a.md", "a.md#one", "./a.md"), "a+a__one.bundle.md"),
-        (("-f", "a.md", "#two", "b.md"), "a__two+b.bundle.md"),
+        (("a.md#two", "b.md"), "a__two+b.bundle.md"),
     ],
 )
 @pytest.mark.parametrize("check", [False, True])
@@ -96,11 +95,11 @@ def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None
     assert bundle(tmp_path / "work", ".._entries_a").is_file()
 
 
-def test_fragment_referrer_and_check_mode(tmp_path: Path) -> None:
+def test_a_section_entry_s_name_and_check_mode(tmp_path: Path) -> None:
     written(tmp_path, "dir/a.md", declared("# A\n\n## Part\n\nContent.\n"))
-    assert invoke(tmp_path, "-c", "-f", "dir/a.md", "#part").status == 0
+    assert invoke(tmp_path, "-c", "dir/a.md#part").status == 0
     assert not (tmp_path / "dir_a__part.bundles").exists()
-    assert invoke(tmp_path, "-f", "dir/a.md", "#part").status == 0
+    assert invoke(tmp_path, "dir/a.md#part").status == 0
     assert "Content." in bundle(tmp_path, "dir_a__part").read_text()
 
 

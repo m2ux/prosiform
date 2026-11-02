@@ -1,7 +1,7 @@
-description = "A fragment-only reference with no referring document is refused as invalid usage, since nothing says which document its fragment resolves against."
+description = "An entry reference naming a fragment alone is refused as invalid usage, and the message names document#fragment as the spelling a section takes on the command line."
 
 clauses = [
-  "Reference normalization and path identity, a fragment-only command-line reference requires -f",
+  "Reference normalization and path identity, a fragment alone names no document on the command line",
   "CLI contract, a command line the grammar does not admit",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
   "CLI contract, one code for the form of the command line, and the message says which fault it was",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["#a-section"]
+arguments = ["#stop"]
 
 [expected]
 exit_status = 2
@@ -17,4 +17,4 @@ exit_status = 2
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["#a-section", "-f"]
+message_contains = ["#stop", "document#fragment"]

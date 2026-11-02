@@ -18,8 +18,7 @@ Flags are case-sensitive. Budgets are positive decimal integers; zero is invalid
 
 | Option | Effect |
 | --- | --- |
-| `REF` | document, document#fragment, or #fragment with -f; paths from cwd |
-| `-f DOC` | working-directory-relative document for fragment-only references |
+| `REF` | document or document#fragment; paths from cwd |
 | `-m, --mock ORIGINAL=ALTERNATIVE` | redirect one reference to the document or section the run reads instead, given once per pairing; both sides read from the working directory; repeatable; default none |
 | `-o DIR` | folder the run's own folder of bundles is written into, made if absent, swapped in whole; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
@@ -73,9 +72,9 @@ A link places a document under one group. Two links selecting different pairs pl
 
 ## Bundling
 
-Entry references select whole documents or named sections, and each names a document that declares `prosiform`. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section.
+Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section.
 
-A mapping entry redirects what a reference names. `-m ORIGINAL=ALTERNATIVE`, given once per pairing, matches a key against the identity a reference normalizes to and names the document or section the run reads in its place; a key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document. Both sides resolve from the working directory, wherever the source whose link names it sits. The substitute is the target outright: its title, its group and its own links are the ones the bundle carries, as if the author had written its path in the link. Every reference is redirected — an entry reference, a referring document, and a compiled, deferred, dispatched or parallel-dispatched target alike, a reference naming a declaring document and one carried as a citation — and a run states each redirected target and each key no reference named, publishing either way.
+A mapping entry redirects what a reference names. `-m ORIGINAL=ALTERNATIVE`, given once per pairing, matches a key against the identity a reference normalizes to and names the document or section the run reads in its place; a key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document. Both sides resolve from the working directory, wherever the source whose link names it sits. The substitute is the target outright: its title, its group and its own links are the ones the bundle carries, as if the author had written its path in the link. Every reference is redirected — an entry reference and a compiled, deferred, dispatched or parallel-dispatched target alike, a reference naming a declaring document and one carried as a citation — and a run states each redirected target and each key no reference named, publishing either way.
 
 The bundle is arranged in file headings and groups, its headings take destinations, and its dispatched targets become bundles of their own. Nothing is published until every bundle has been validated.
 
