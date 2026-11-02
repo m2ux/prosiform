@@ -48,6 +48,7 @@ Eight options of one shape are one decision printed eight times.
 | W03 | The corpus rewritten to the names | AC4 | W00 | W01, W04, W05 | |
 | W04 | The option table and the help output | AC7 | W00 | W01, W03, W05 | |
 | W05 | The budget entries it refuses | AC2, AC5, AC8 | W00 | W01, W03, W04 | |
+| W06 | Fixture descriptions naming the budget | AC9 | W03 | | |
 
 ## Acceptance Criteria
 
@@ -59,6 +60,7 @@ Eight options of one shape are one decision printed eight times.
 - [ ] **AC6.** The design states the option, the eight names and their counting rules, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
 - [ ] **AC7.** The documented option table names one budget row and agrees with the help output in both directions, as `make invocation` shows.
 - [ ] **AC8.** `--budget nesting=1` fails with `E_INVALID_USAGE`, exit status `2`, naming 2 as the least nesting a declaring document needs, as a corpus fixture shows.
+- [ ] **AC9.** No fixture, document or source names a budget by its retired letter, and the oversized-target fixtures describe the `file-bytes` budget, as a search of the epic base and `make check` show.
 
 ## References
 
