@@ -1,0 +1,16 @@
+description = "A preset on a document reached only through a deferral is not unused: guide.md defers noted.md#draft, which declares a Draft preset, so the deferral contributes no content, the bundle publishes the link as authored, and the run warns nothing, because the run following the deferral reads the preset."
+
+clauses = [
+  "Presets — A preset nothing selected warns",
+  "Conversion metadata — Selection boundary",
+  "Link classification and resource handling — The deferral mark",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

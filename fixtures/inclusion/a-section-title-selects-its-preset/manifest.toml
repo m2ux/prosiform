@@ -1,6 +1,7 @@
-description = "A linked document is governed by its own preset whose name appears as a word in the title of the section linking it, compared case-insensitively: the section Checks selects the preset checks of rules.md, which joins it to Reviews. The section beside it carries the name only inside a longer word, so it selects no preset of notes.md, which keeps a file group of its own."
+description = "A linked document is governed by its own preset whose name appears as a word in the title of the section linking it, compared case-insensitively: the section Checks selects the preset checks of rules.md, which joins it to Reviews. The section beside it carries the name only inside a longer word, so it selects no preset of notes.md, which keeps a file group of its own. No reference selects the checks preset of notes.md, so the run warns that it governs nothing."
 
 clauses = [
+  "Presets — A preset nothing selected warns",
   "Presets — Selection by keyword",
   "Grouping — Group membership",
 ]
@@ -12,4 +13,9 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "notes.md"
+message_contains = ["the preset 'checks'"]
