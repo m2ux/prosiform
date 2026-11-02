@@ -12,6 +12,7 @@ This record holds its delivery of `AC6`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | The titled member's heading, where a group stands and the nesting cost, stated on the hierarchy page |
 
 ## Links
 
