@@ -6,7 +6,8 @@ The plan changes the W13–W18 delivery session applied and held.
 
 - **W13–W18 work items written.** Each carries its epic row's work item with tests T1 and T2 covering its criterion.
 - **Presets and `subst` given one home.** (One home per rule.) Which presets a reference puts in force and how a `subst` pair redirects a link moved from the sources and references pages to the selection page, which AC17 names as their home. Inbound links in `composition.md`, `invocation.md`, `README.md` and the docs index follow, as do the docs index rows for Sources, Selection and Output budget. These are link and summary fixes on pages other rows own, made here because the move would otherwise leave them stale.
-- **Delivery recorded.** [#587](https://github.com/m2ux/prosiform/pull/587) is linked from rows W13–W18 of [#523](https://github.com/m2ux/prosiform/issues/523). This records delivery rather than changing the plan.
+- **Delivery recorded.** [#587](https://github.com/m2ux/prosiform/pull/587) merged into `i09/e05/main` at `abc0addd`, after a second merge of the epic base (#586) and a passing `make check` and CI at `bf0ce4da`. Rows W13–W18 of [#523](https://github.com/m2ux/prosiform/issues/523) link it and are marked done, `AC14`–`AC19` are ticked, and review pull request [#585](https://github.com/m2ux/prosiform/pull/585) carries the change and reference R5. These record the delivery and do not change the plan.
+
 
 ## Held
 
