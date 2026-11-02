@@ -1,0 +1,21 @@
+description = "Directives in one step naming sections of two documents that carry one title, Inputs, share one destination section one level below the step, and each contributes beneath it a heading naming its target's parent, Read and Write, in the order the directives are written; a second title, Outputs, takes a destination section of its own after the first, and each directive's link points at its contribution heading. The guide also links each target document whole, so each keeps its own file group beside its contributions."
+
+clauses = [
+  "Section composition — The destination scope",
+  "Section composition — Destination sections",
+  "Section composition — Contributions",
+  "Section composition — The directive's link",
+  "Section composition — Inline-only targets",
+  "Adversarial acceptance fixtures — Composition",
+  "Section composition — Order",
+  "Section composition — Matching",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
