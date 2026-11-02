@@ -934,7 +934,8 @@ def entry(text: str) -> Reference:
     """Normalize a positional reference, keeping the leading parents of a path above.
 
     An entry reference is written by no document, so no `subst` pair
-    redirects it: the run compiles the document it names.
+    redirects it: the run compiles the document it names and is named
+    for the path the caller wrote.
     """
     try:
         found = resolve(text)

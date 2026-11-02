@@ -21,6 +21,7 @@ from typing import Any
 
 import pytest
 
+from prosiform.bundle import shown_text
 from prosiform.candidate import carried, intended
 from prosiform.cli import SUBST_UNUSED, main
 from prosiform.closure import (
@@ -836,6 +837,26 @@ def test_a_documents_pair_records_to_the_runs_record() -> None:
     assert mapped.redirects.served(("guide.md", ("rules.md", None)))
 
 
+def test_reading_what_a_heading_shows_records_no_substitution() -> None:
+    """The heading-text path decides what a heading shows and serves no key."""
+    mapped = writing({("rules.md", None): SUBSTITUTE})
+    tokens = parse("# Guide\n\n## [\u00ac Rules](rules.md)\n", BUDGET)
+    shown = shown_text("guide.md", tokens, DECLARING, mapped)
+    assert list(shown.values()) == ["Guide", "Rules"]
+    assert mapped.redirects.targets() == ()
+    assert not mapped.redirects.served(("guide.md", ("rules.md", None)))
+
+
+def test_an_unrecorded_mapping_answers_as_the_mapping_does() -> None:
+    mapped = writing({("rules.md", None): SUBSTITUTE})
+    quiet = mapped.unrecorded().writing("guide.md")
+    assert quiet.redirect(Reference("rules.md", "rules.md"), "guide.md:3").path == (
+        "stand-in.md"
+    )
+    assert mapped.redirects.targets() == ()
+    assert not mapped.redirects.served(("guide.md", ("rules.md", None)))
+
+
 def presetted(tree: Path, presets: str) -> None:
     """The tree's guide, declaring the presets given as its prosiform mapping."""
     (tree / "guide.md").write_text(
@@ -891,6 +912,22 @@ def test_a_pair_no_link_names_warns_unused_naming_its_document(tree: Path) -> No
     ]
     assert "prosiform.default in 'guide.md'" in said[0]["message"]
     assert "location" not in said[0]
+
+
+def test_a_pair_reached_only_by_a_heading_outside_the_selection_is_unused(
+    tree: Path,
+) -> None:
+    """A heading the run did not select compiles nothing, so its link uses no pair."""
+    (tree / "guide.md").write_text(
+        "---\nprosiform:\n  default:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Guide\n\n## Keep\n\nFollow the guide.\n\n## [\u00ac Rules](rules.md)\n\n"
+        "Read the rules.\n"
+    )
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md#keep")
+    assert status == 0
+    assert [(one["code"], one["source"]) for one in said] == [
+        ("W_SUBST_UNUSED", "rules.md")
+    ]
 
 
 def test_two_titles_selecting_disagreeing_pairs_are_refused(tree: Path) -> None:

@@ -711,6 +711,29 @@ def test_an_entry_reference_stands_at_the_head_of_its_own_chain(root: Path) -> N
     assert run.diagnostics()[0]["chain"] == ["guide.md#nowhere"]
 
 
+def test_an_entry_is_compiled_as_named_whatever_its_presets_state(root: Path) -> None:
+    """No document writes an entry reference, so no `subst` pair redirects it."""
+    written(
+        root,
+        "entry.md",
+        "---\nprosiform:\n  default:\n    subst: [{entry.md: stand-in.md}]\n---\n"
+        "# Entry\n\nEvery step the entry names.\n",
+    )
+    written(root, "stand-in.md", DECLARED + "# Stand-in\n\nA stand-in.\n")
+    run = invoke("-d", "json", "entry.md", cwd=root)
+    assert run.status == 0
+    assert list(run.bundles) == ["entry.bundle.md"]
+    assert run.bundle.startswith("# Entry\n")
+    assert "Stand-in" not in run.bundle
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        ("W_SUBST_UNUSED", "entry.md")
+    ]
+
+
+def test_an_entry_reference_resolves_to_the_path_the_caller_wrote() -> None:
+    assert entry("./docs/../entry.md#steps") == resolve("./docs/../entry.md#steps")
+
+
 def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
     written(
         root, "entry.md", f"{DECLARED}# Entry\n\nSee [notes](docs/notes.md#detail).\n"
