@@ -112,7 +112,6 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 | `make authoring` | Every document meets the authoring rules in its [guidelines](example/work-planner/guidelines.md). Each departure is reported by file and line, grouped by area. |
 | `make boundary` | Every document's boundary, the deepest directory holding every local Markdown path its own links name, is printed, and no link names a path outside it. |
 | `make steps` | Every procedure writes its steps as `N. Action` headings one level below it, each unique in its document, and has no numbered list outside a code block. |
-| `make mock-scenarios` | The example bundles correctly over stand-in material. See [Mock scenarios](#mock-scenarios). |
 
 #### Authoring Rules
 
@@ -123,15 +122,6 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 - No file has a heading titled `Commands`.
 - A cross-file link is written from the file that holds it.
 - Every document declares `prosiform` in its frontmatter, and the declaration names no root.
-
-#### Mock Scenarios
-
-`make mock-scenarios` runs two scenarios:
-
-- **Stubbed artifact.** The align mode bundles over a stubbed artifact. The stub stands where that artifact's member heading stood inside the merged artifacts group.
-- **Fake tracker.** The conventions document is redirected to one naming a fake tracker command. The bundle tells the agent to run the fake, while every other instruction stays the one that ships.
-
-Each scenario runs from a temporary copy made at run time and publishes outside it. Its result is compared with the bundle the same tree produces with no substitution.
 
 ## Outside `make check`
 
@@ -159,7 +149,7 @@ Each scenario runs from a temporary copy made at run time and publishes outside 
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus`, `make boundary` and `make mock-scenarios`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus` and `make boundary`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
 - **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary`, `make steps` and `make authoring` are standard-library scripts in [`checks/`](checks/README.md).
 
@@ -170,7 +160,7 @@ Each scenario runs from a temporary copy made at run time and publishes outside 
 
 ### Choosing the Build Under Test
 
-`make corpus`, `make invocation`, `make conformance`, `make independence` and `make mock-scenarios` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation, one declared surface and one set of example scenarios bind every implementation of the contract.
+`make corpus`, `make invocation`, `make conformance` and `make independence` run whichever build configuration names. They never pick one themselves. So one corpus, one documented invocation and one declared surface bind every implementation of the contract.
 
 `PROSIFORM_BUILD` holds that build's command line, split the way a shell splits one. A corpus run resolves it from the fixture's own directory.
 
