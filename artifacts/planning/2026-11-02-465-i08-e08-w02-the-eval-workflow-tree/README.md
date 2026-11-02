@@ -12,6 +12,10 @@ This record holds its delivery of `AC3,AC5`: the work item, the validation evide
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The workflow tree's declaration property, its design and the checks that observe it. |
+| [W03 work item](w03.md) | The check sources stating the preset shape, and the search that observes it. |
+| [Validation](validation.md) | The tested revision and the result of each check the work items name. |
+| [Change list](changes.md) | The plan changes this delivery applied and held. |
 
 ## Links
 
