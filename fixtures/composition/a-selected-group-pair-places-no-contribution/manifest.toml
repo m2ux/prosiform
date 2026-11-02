@@ -1,0 +1,17 @@
+description = "A group pair places a document's sections where an ordinary reference bundles it, and places no contribution: the guide's Calls section composes read.md's Inputs and also links read.md whole, selecting read.md's calls preset, whose pair joins it to Reading. The contribution stays beneath Calls, and the ordinary reference alone places read.md in Reading."
+
+clauses = [
+  "Section composition — Presets and subst",
+  "Section composition — Inline-only targets",
+  "Presets — Selection by keyword",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

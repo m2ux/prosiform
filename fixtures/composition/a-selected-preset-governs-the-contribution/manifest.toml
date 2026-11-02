@@ -1,0 +1,28 @@
+description = "A directive is a reference, so the title of its scope selects the target's presets: the guide's Checks section composes read.md's Inputs, which selects read.md's checks preset, and that preset's pair format.md: stub.md redirects the link the contribution writes, so the bundle carries the stub's Paths and not the format's, and the run states the substitution at the contribution's source line."
+
+clauses = [
+  "Section composition — Presets and subst",
+  "Presets — Selection by keyword",
+  "Presets — What a selection governs",
+  "Section composition — The source of composed content",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "format.md#paths"
+resolved = "stub.md#paths"
+
+[expected.diagnostics.location]
+file = "read.md"
+line = 10
+column = 1
