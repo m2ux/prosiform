@@ -61,7 +61,7 @@ The option is a second channel for one thing.
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** `-m` is not an option the build accepts, and a command line carrying it is invalid usage with exit status `2`, as the corpus fixture `fixtures/cli/the-mock-option-is-gone` shows.
+- [ ] **AC1.** `-m` is not an option the build declares, and no fixture, page or help line names it, as the help output, `make invocation` and a search of the tree show.
 - [ ] **AC2.** A link written by a document whose governing preset states `subst` is substituted by that pair, compiling the substitute the option's pair compiled, as the corpus fixture `fixtures/inclusion/a-preset-states-the-pair` shows.
 - [ ] **AC3.** A preset's sides resolve from the file that declares it, so the same declaration reads the same from any working directory, as the corpus fixture `fixtures/inclusion/a-preset-pair-resolves-from-its-file` shows.
 - [ ] **AC4.** Every corpus fixture that passed `-m` and whose behaviour survives states its pair in a preset with its expected result unchanged, and each fixture for a retired capability — `root`, the referrer, the entry redirect, the folder form — is withdrawn by the row that retires it, as `make corpus` shows.
