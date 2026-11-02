@@ -53,6 +53,7 @@ None. Every clause has a criterion, each criterion is delivered by the one epic,
 
 ## Decisions
 
+- **I10 precedes I11.** (User, 2026-11-02.) I11 takes `priority: 1` and I10 [#464](https://github.com/m2ux/prosiform/issues/464) `priority: 2`, so the measurement work is delivered before the release is cut.
 - **The release is its own initiative.** (User, 2026-11-02.) I11 MVP Release follows I08 and I09 and precedes I10.
 - **Cut and tag only.** (User, 2026-11-02.) No 1.0 declaration and no install or quickstart work.
 - **The merge is the user's.** (User, 2026-11-02.) A criterion holds the pull request open with passing checks, never its merge.
