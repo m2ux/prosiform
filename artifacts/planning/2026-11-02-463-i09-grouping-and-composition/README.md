@@ -31,6 +31,7 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E04 W08 work item](e04/w08.md) | Inline-only targets bundled once |
 | [E04 W09 work item](e04/w09.md) | Composition under presets and `subst` |
 | [E04 W10 work item](e04/w10.md) | The composition page |
+| [E04 W11 work item](e04/w11.md) | Contradicting composition plans refused |
 | [E05 W01 work item](e05/w01.md) | The whole-product review against the pinned design |
 | [E05 W02 work item](e05/w02.md) | The repository README brought to the build |
 | [E05 W03 work item](e05/w03.md) | The invocation guide brought to the build |
@@ -125,6 +126,9 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **Epic priority.** E01 3, E02 2, E04 1. No epic depends on another; contention separates them.
 
 ## Decisions
+- **Only arrows are directives.** (User, 2026-11-02.) A link whose label is one Unicode arrow is a composition directive; a single footnote mark, superscript, letter or other symbol is an ordinary link. Row W12, AC22.
+- **Self-composition warns.** (User, 2026-11-02.) A directive composing a section of the document that writes it publishes with a warning naming the link, as a self-dispatch does. Row W12, AC23.
+- **A sub-agent's bundle says to run pf first.** (User, 2026-11-02.) A plain deferred link is no `pf` instruction and stays a plain link. A dispatched bundle's sub-agent has not run `pf` with no arguments, so a dispatched bundle carrying a deferred dispatch or a `↳` line opens with a minimal Prosiform section stating that `pf` is run first, referred to from its preamble; bare `pf` prints the rest. Row W12, AC24.
 
 - **A hand-written ↳ link sits outside compiled sources.** (User, 2026-11-02.) `↳` tells the agent to run `pf` on the link, bootstrapping `pf` where needed; it is hand-written only in files the run does not compile, such as a skill entry declaring no `prosiform`, and a compiled source asks for it with `[¬→]`. No rule governs a `↳` link inside a declared source.
 - **A deferral keeps its step's presets or is refused.** (User, 2026-11-02.) A deferred directive whose containing heading selects other presets than its target's own heading selects is refused, naming the link and both selections: activation selects by the target's heading, and no option names a referrer, so deferred content would compile otherwise than composed. Row W11, AC20.
