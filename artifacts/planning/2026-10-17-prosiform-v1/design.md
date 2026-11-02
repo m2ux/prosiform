@@ -106,8 +106,6 @@ pf
 
 A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: arguments naming no entry reference, an undeclared option, an invalid option value, a budget entry Resource limits refuses, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
-- **`-m` is retired:** The command line states no substitution. A reference is redirected only by a `subst` entry of a preset governing the document that writes it, as the substitution mapping at Link classification and resource handling states, so a command line carrying `-m` names an undeclared option and is refused with `E_INVALID_USAGE`, exit status 2.
-
 ### Usage examples
 
 ```bash
