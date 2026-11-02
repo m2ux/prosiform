@@ -12,6 +12,12 @@ This record holds its delivery of `AC1, AC2, AC3, AC4, AC5, AC6`: the work item,
 
 | Artifact | What it holds |
 | --- | --- |
+| [w01](w01.md) | The parser and the run reading the variable |
+| [w02](w02.md) | The runner setting it from a manifest |
+| [w03](w03.md) | The option table and the help output |
+| [w04](w04.md) | The declaration the corpus carries |
+| [w05](w05.md) | The three fixtures unchanged |
+| [Validation](validation.md) | The result of every check the work items name |
 
 ## Links
 
