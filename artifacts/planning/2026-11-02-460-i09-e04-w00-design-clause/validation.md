@@ -7,7 +7,7 @@ The checks [W00](w00.md) names, at the revisions they ran.
 | Item | Revision |
 | --- | --- |
 | Design (engineering) | [`99bec9f7`](https://github.com/m2ux/prosiform/blob/99bec9f7548b9910047b7bde663a2eb76efd2e3e/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition), the clause landing in `601cba55` with the cycle code settled in `99bec9f7` |
-| Branch head | `960613c8` on `i09/e04/w00-design-clause` |
+| Branch head | `c11048ca` on `i09/e04/w00-design-clause`, after `i09/e04/main` took `main` at `00f16692` (#550) |
 
 ## T1 Inspection of the Pinned Clauses
 
@@ -31,10 +31,8 @@ Result: pass.
 
 ## T2 Make Check
 
-`PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` at the README pin `99bec9f7`, exit 2.
+`PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` at the README pin `99bec9f7`, branch head `c11048ca`, exit 0. The corpus reported 433 fixtures, 433 pass, 0 fail, 0 awaited. `make conformance` read 356 clauses at the pin, the new *Section composition* clauses among them as covered by no fixture yet, with 0 declarations naming no clause.
 
-- Every target before `conformance` passes, `vocabulary` among them with the *composition directive* row added to `docs/glossary.md`; `independence` and `mock-scenarios`, run on their own, pass.
-- `make conformance` fails with eight declarations naming no clause: `Resource limits — -B`, `-E`, `-F`, `-I`, `-L`, `-N`, `-O` and `-T`. The 22 new *Section composition* clauses are listed as covered by no fixture, which the report counts rather than fails.
-- The eight failures belong to I08:E05: engineering commit `a7069f30` restates the budgets as `--budget NAME=VALUE`, and its fixtures and build sit on `i08/e05/main`, whose review pull request [#550](https://github.com/m2ux/prosiform/pull/550) has not merged into `main`. Pinning `a7069f30` alone reproduces the same eight failures, so this clause adds none.
+Its first run, at head `960613c8`, failed at `conformance` on eight `Resource limits` declarations that I08:E05's commit `a7069f30` retires; those fixtures reached `main` with [#550](https://github.com/m2ux/prosiform/pull/550), and `i09/e04/main` took `main` before this run.
 
-Result: fail, blocked on I08:E05 reaching `main`. The check passes once `main` carries #550 and `i09/e04/main` takes `main`.
+Result: pass.
