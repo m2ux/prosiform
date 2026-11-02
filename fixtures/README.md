@@ -150,7 +150,7 @@ A diagnostic declares the same thing about its message, which is how two faults 
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_USAGE"
-message_contains = ["#a-section", "-f"]
+message_contains = ["#stop", "document#fragment"]
 ```
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the run folder that held an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
@@ -163,7 +163,7 @@ The contract gathers seven faults under the code, and each is a fixture, so what
 | Arguments naming no entry reference | [`cli/a-command-line-naming-no-entry-reference`](cli/a-command-line-naming-no-entry-reference/manifest.toml) |
 | An option the contract does not declare | [`cli/an-option-the-contract-does-not-declare`](cli/an-option-the-contract-does-not-declare/manifest.toml) |
 | An option value outside the set its row names | [`cli/diagnostics-format-unknown`](cli/diagnostics-format-unknown/manifest.toml) |
-| A fragment-only reference with no `-f` | [`cli/fragment-only-reference-without-from`](cli/fragment-only-reference-without-from/manifest.toml) |
+| An entry reference naming a fragment alone | [`cli/a-bare-fragment-is-invalid-usage`](cli/a-bare-fragment-is-invalid-usage/manifest.toml) |
 | A run folder holding an input source | [`cli/run-folder-holding-a-dependency-source`](cli/run-folder-holding-a-dependency-source/manifest.toml) |
 | Standard output named as the output folder | [`cli/standard-output-named-as-the-output-folder`](cli/standard-output-named-as-the-output-folder/manifest.toml) |
 

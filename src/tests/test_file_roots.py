@@ -42,10 +42,10 @@ def test_links_resolve_from_their_own_file_and_a_fragment_names_its_document(
     assert "[Self](#a)" in run.bundle
 
 
-def test_parent_entry_bootstrap_and_referrer(tmp_path: Path) -> None:
+def test_a_parent_section_entry_bootstraps(tmp_path: Path) -> None:
     written(tmp_path, "a.md", declared("# A\n\n## Part\n\nParent content.\n"))
     (tmp_path / "caller").mkdir()
-    run = invoke("-f", "../a.md", "#part", cwd=tmp_path / "caller")
+    run = invoke("../a.md#part", cwd=tmp_path / "caller")
     assert run.status == 0
     assert "Parent content." in run.bundle
 
