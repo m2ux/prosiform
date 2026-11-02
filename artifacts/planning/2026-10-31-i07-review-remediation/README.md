@@ -37,6 +37,7 @@ Each decision was taken with the user before the initiative was raised, or on re
 | D19 | **Move the check-and-design findings.** A finding whose fix no run of the tool shows belongs to the epic that holds that material by its own boundary. | 10, 12, 13, 14, 15, 16, 33, 34, 52, 55, 56, 65, 71, 76, 77 |
 | D20 | **Defer the minors.** A minor is recorded and addressed later, so no epic is raised for one before the blockers and majors it would sit beside are delivered. | 41–51, 53, 54, 57–60, 62–64, 66–70, 72–75, 78, 79 |
 | D21 | **Amend the initiative to its epic.** A criterion no epic serves is dropped, and one served in part is narrowed to what the epic delivers. | initiative AC2, AC7 |
+| D22 | **Prove the harness fixes where the run lives.** The two harness criteria the committed default-matrix run proves move to I10 as its AC11 and AC12, delivered by I10:E00 W03, and the initiative closes on the criteria its own epics prove. (2026-11-02.) | initiative AC4, AC5 |
 
 ## Artifacts
 

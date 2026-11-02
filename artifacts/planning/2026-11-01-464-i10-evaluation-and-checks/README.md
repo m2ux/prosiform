@@ -98,7 +98,7 @@ E00 W02 and E02 W03 both edit `evals/diagram-following/README.md`, in different 
 
 Each decision below is the user's (2026-11-01) unless marked as planning's.
 
-- **The baseline runs after the eval tree declares presets, and serves I07.** E00 W02 depends on I08:E08 W02, each new scenario's documents declare `prosiform`, and the one default-matrix run is the evidence for I07's harness criteria AC4 and AC5. (2026-11-02.)
+- **The baseline runs after the eval tree declares presets, and proves the harness fixes.** E00 W02 depends on I08:E08 W02, each new scenario's documents declare `prosiform`, and the one default-matrix run is the evidence for AC11 and AC12, the harness criteria taken from I07, which E00 W03 verifies. (2026-11-02.)
 - **One baseline.** I07:E00 W11 committed the same file as E00 W02 from a run over the present corpus. W11 leaves I07; E00 W02 produces the one baseline and its AC3 carries W11's criterion.
 - **The baseline's edges on I07.** E00 W01 depends on I07:E00 W10, and E00 W02 on I07:E00 W08, W09 and W16.
 - **What separation means.** A cell below 1.0 is met by a corpus failing every form alike, so E00 AC4 requires two forms of one scenario to carry different pass rates.
