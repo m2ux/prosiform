@@ -9,7 +9,7 @@ A tree the build compiles holds settings stated outside presets, and one tree co
 - **The example tree is stale and unmaintained.**
   `example/work-planner` copies a skill that has moved on, so every field rule needs a rewrite of a tree nobody reads, and a check or fixture holding to it proves nothing current.
 - **Checks and fixtures are built on it.**
-  `make steps`, `make authoring`, `make boundary`, `make examples`, `make mock-scenarios` and the `usage-example` fixtures read that tree alone, and `scripts/examples.json` renders diagrams from it.
+  `make steps`, `make authoring`, `make boundary`, `make examples` and the `usage-example` fixtures read that tree alone, and `scripts/examples.json` renders diagrams from it.
 - **The corpus and eval trees must declare.**
   Their frontmatter must satisfy the inclusion rule, the preset shape, and the `group` and `subst` entries, so an edit inside one epic is redone by each later one until the last lands.
 - **A failure here is unambiguous.**

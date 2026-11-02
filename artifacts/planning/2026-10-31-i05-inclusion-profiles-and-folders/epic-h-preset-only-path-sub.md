@@ -39,8 +39,8 @@ The option is a second channel for one thing.
   A key is served only by a reference in content the run selected, so a key whose only reference is a withheld link in a heading outside the selection warns as unused.
 - **The corpus moves to presets.**
   Each surviving `-m` pair becomes a preset entry in the source tree with its expected result unchanged, which is the evidence the mechanism moved rather than the behaviour. A fixture for a retired capability — `root`, the referrer, the entry redirect, the folder form — is withdrawn by the row that retires it.
-- **The example scenarios state their stand-ins in presets.**
-  Each scenario writes its `subst` entry into the copied document that writes the link, because a pair reaches only that document's links.
+- **The example mock scenarios retire with `-m`.**
+  Every scenario `make mock-scenarios` runs passes `-m` and bundles a copy of the example tree, which is not maintained and is being removed, so the scenarios, `checks/mock_scenarios.py` and the `make mock-scenarios` target are removed with the option.
 
 ## Work Breakdown
 
@@ -55,7 +55,7 @@ The option is a second channel for one thing.
 | W06 | A pair reaches only its own document's links | AC8, AC9 | W01 | W02, W08 | |
 | W07 | An entry reference is compiled as named | AC10 | W01 | W10 | |
 | W08 | The folder pair retires | AC11 | W01 | W02, W06 | |
-| W09 | The example scenarios state their stand-ins in presets | AC12 | W02 | W03, W04, W05, W11 | |
+| W09 | The example mock scenarios removed | AC12 | W02 | W03, W04, W05, W11 | |
 | W10 | A heading outside the selection records no substitution | AC14 | W01 | W07 | |
 | W11 | `-m` retires with the corpus it carried | AC1 | W02 | W03, W04, W05, W09 | |
 
@@ -72,7 +72,7 @@ The option is a second channel for one thing.
 - [ ] **AC9.** A dispatched target's bundle resolves its links under its own document's presets alone, as the corpus fixture `fixtures/inclusion/a-dispatched-bundle-reads-its-own-subst` shows.
 - [ ] **AC10.** A positional entry compiles the document it names and derives its run name from that path, whatever its document's presets state, as the corpus fixture `fixtures/inclusion/an-entry-is-not-substituted` shows.
 - [ ] **AC11.** A `subst` side ending in a separator fails with `E_INVALID_CONVERSION_METADATA` naming the entry, as the corpus fixture `fixtures/inclusion/a-folder-subst-is-refused` shows.
-- [ ] **AC12.** Each scenario `make mock-scenarios` runs states its stand-in as a `subst` entry in the copied document that writes the link, and passes no command-line pair, as `make mock-scenarios` shows.
+- [ ] **AC12.** No mock scenario, `checks/mock_scenarios.py` or `make mock-scenarios` target remains, and `make check` names none, as a search of the repository and `make check` show.
 - [ ] **AC13.** The design states `subst` as the only substitution channel, resolved from the declaring file and reaching only the links that file writes, names the retired option and the renamed codes, and every fixture in this epic names a clause the pinned design carries, as `make conformance` shows.
 - [ ] **AC14.** A `subst` key whose only reference is a withheld link in a heading outside the selected content raises `W_SUBST_UNUSED` and no `W_SUBST_USED`, as the corpus fixture `fixtures/inclusion/a-pair-reached-only-outside-the-selection-is-unused` shows.
 
