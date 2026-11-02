@@ -78,8 +78,8 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | [H: folder pair](h-w08.md) | The folder pair refused and its code removed |
 | [H: scenarios](h-w09.md) | The example scenarios stating their stand-ins in presets |
 | [H: selection](h-w10.md) | A heading outside the selection recording no substitution |
-| [Declared Tree](epic-i-declared-tree.md) | The bulk migration: the example and corpus trees declare presets, once every field rule has landed |
-| [I: example tree](i-w00.md) | The example tree declaring presets in one edit |
+| [Declared Tree](epic-i-declared-tree.md) | The example tree removed, and the corpus and eval trees declaring presets once every field rule has landed |
+| [I: example tree](i-w00.md) | The example tree and everything built on it removed, after the archive tag |
 | [I: corpus](i-w01.md) | The corpus sources declaring presets |
 | [I: eval tree](i-w02.md) | The workflow documents declaring |
 | [I: checks](i-w03.md) | The checks that read a declaration |
@@ -156,12 +156,13 @@ The criteria are replanned at the initiative's own grain: each states the outcom
 | AC5 | Every ceiling is set as `--budget NAME=VALUE` and none is lettered | E05 |
 | AC6 | A stand-in reaches a compilation only through the writing document's `subst` | E06 |
 | AC7 | A substitute compiles in place of its key, each redirect and unused key is reported, and an unhonourable shape is refused | E07 |
-| AC8 | The example tree and every corpus source state their settings in presets alone | E08 |
+| AC8 | Every source tree the repository compiles states its settings in presets alone | E08 |
 
 Each criterion is one epic's outcome at initiative grain, as [I08](https://github.com/m2ux/prosiform/issues/462) states it; the epic's own criteria make it true.
 
 ## Decisions
 
+- **The example tree is removed, not migrated.** (User, 2026-11-02.) `example/work-planner` is stale and unmaintained, so nothing maintains, declares or proves on it. I08:E08 W00 places the annotated tag `archive/example-work-planner` on the last commit holding it, then removes `example/`, its `scripts/examples.json` entries and rendered diagrams, the `make` targets and checks that build or read it, the `usage-example` fixtures and every doc naming it; the tree stays readable at the tag. W00 depends on nothing, W01 takes the field-rule edge W00 carried, and AC1, AC4 and AC6 state the removal. A retired tree is removed rather than refused, so no criterion asserts its absence by a refusal, and the former AC4 refusal is gone. AC5 reads `make check`, since `make authoring` and `make steps` go with the tree. I08 AC8 names the trees the repository compiles.
 - **I09:E03 Inherited Boundary is closed as superseded.** A document's boundary is derived from the links it writes, so a reaching parent's boundary governs nothing, and its settings criterion is I08:E01 AC5. (User, 2026-11-02.)
 - **I09:E00 Nested Grouping is closed.** A hierarchy comes from linked index documents under I09:E02's leaf-up placement; folder-derived headings had no tree needing them, and would return as a preset entry, never an option. (User, 2026-11-02.)
 - **I09:E02 keeps its example row and drops its preset-selection row.** W05 was delivered by I08:E01 W04 and W12; W04 stays after W01, because leaf-declared pairs keep the example outline only once a file's own pairs place its sections, and I08:E08 stays a byte-identical migration. (User, 2026-11-02.)
@@ -268,7 +269,6 @@ Findings from the plan review against the source, all resolved.
 ## Debt this record defers
 
 - **[I08:E07](https://github.com/m2ux/prosiform/issues/414)'s root criteria are superseded.** AC6 and AC11 state a substitute's relation to a root, and E00 supersedes them; AC20 reads a substitute from the working directory, and E06's declared-file basis supersedes it. Their fixtures are withdrawn or rewritten by E06 W03.
-- **`checks/authoring.py` holds a rule about link spelling written in terms of `root`.** Its `DECLARED_ROOT` pattern and `link_form` test exist because a root prefixed a link's spelling. The 2026-10-24 note already found the spy role gone; A retires the declaration the check reads, so the check is rewritten to the derived boundary rather than deleted outright, because it still catches a link written from the wrong directory.
 
 ## Open Questions
 

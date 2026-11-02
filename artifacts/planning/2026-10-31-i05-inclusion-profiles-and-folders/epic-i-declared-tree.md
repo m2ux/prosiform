@@ -1,50 +1,50 @@
 ## Overview
 
-The example tree and every corpus source declare their settings in presets. This epic lands last, once every field rule it migrates to is settled, so the largest single edit in the initiative does not sit on the critical path of the epics that decide what it migrates to.
+The example tree is removed, and every corpus source and eval workflow document declares its settings in presets. This epic lands last, once every field rule it migrates to is settled, so the bulk edits in the initiative do not sit on the critical path of the epics that decide what they migrate to.
 
 ## Problem
 
-A forty-four-file edit was a row of the epic that defined the fields it writes.
+A tree the build compiles holds settings stated outside presets, and one tree costs upkeep that nothing reads.
 
-- **It gated the epic it sat in.**
-  The row depended on that epic's third row and on Declared Inclusion's sixth, which pulled it to level 4 and put a bulk edit inside the chain that defines the preset model.
-- **Its content depends on every epic here.**
-  The tree's frontmatter must satisfy the inclusion rule, the preset shape, and the `group` and `subst` entries — so a row inside one epic will be edited by each later one until the last lands.
-- **It is one mechanical change, done once.**
-  No field rule changes during it; the whole epic is a rewrite of declarations and a proof that the published bundles are unchanged.
+- **The example tree is stale and unmaintained.**
+  `example/work-planner` copies a skill that has moved on, so every field rule needs a rewrite of a tree nobody reads, and a check or fixture holding to it proves nothing current.
+- **Checks and fixtures are built on it.**
+  `make steps`, `make authoring`, `make boundary`, `make examples`, `make mock-scenarios` and the `usage-example` fixtures read that tree alone, and `scripts/examples.json` renders diagrams from it.
+- **The corpus and eval trees must declare.**
+  Their frontmatter must satisfy the inclusion rule, the preset shape, and the `group` and `subst` entries, so an edit inside one epic is redone by each later one until the last lands.
 - **A failure here is unambiguous.**
   If an expected bundle changes, a field moved rather than a spelling, and that is a finding against whichever epic owns the field.
 
 ## Proposal
 
-- **The epic is the migration and nothing else.**
-  Every document in `example/` and every corpus source states its settings in a preset, declares no top-level setting and no `root`, and the published bundles are byte-identical.
-- **It depends on the rows that settle the fields.**
-  The tree is rewritten once its last field rule has landed: the rootless example tree and the corpus stating its pairs as `subst`.
+- **The example tree is removed, and stays reachable from history.**
+  An annotated tag `archive/example-work-planner` names the last commit holding `example/work-planner`, so `git show archive/example-work-planner:example/work-planner/...` and the tree link at that tag still read it.
+- **Everything built on the tree goes with it.**
+  `example/`, its `scripts/examples.json` entries, the regenerated diagrams, the `make` targets and checks that build or read it, the `usage-example` fixtures and every doc naming it.
+- **The corpus and eval trees migrate once.**
+  Every corpus source and every diagram-following workflow document states its settings in a preset, once its last field rule has landed.
 - **The proof is the diff.**
-  A changed expected bundle fails the run, so the epic is complete exactly when `make corpus` and `make examples` pass with unmodified expectations.
-- **The check that reads the declarations is rewritten here.**
-  `checks/authoring.py`'s root reader went with Declared Inclusion; its division reader follows the same field and lands with the tree.
-- **The eval tree follows the same rule.**
-  The diagram-following workflow documents declare to be included, and their forms must still bundle.
+  A changed expected bundle fails the run, so the migration is complete exactly when `make corpus` and `make harness` pass with unmodified expectations.
+- **The checks read the preset shape.**
+  A check reading a declaration reads a preset's entries, and none reads a retired field.
 
 ## Work Breakdown
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | The example tree declares presets, in one edit | AC1, AC4, AC6 | [I08:E00:W06](https://github.com/m2ux/prosiform/issues/434), [I08:E06:W03](https://github.com/m2ux/prosiform/issues/461) | | |
-| W01 | The corpus sources declare presets | AC2 | W00 | | |
+| W00 | The example tree and its checks removed | AC1, AC4, AC6 | | | |
+| W01 | The corpus sources declare presets | AC2 | W00, [I08:E06:W03](https://github.com/m2ux/prosiform/issues/461) | | |
 | W02 | The eval workflow tree declares | AC3 | W01 | | |
 | W03 | The checks that read a declaration | AC5 | W02 | | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** Every document in the example tree declares its settings in a preset, declares no top-level setting and no `root`, and the published example bundles are unchanged, as `make corpus` and `make examples` show.
+- [ ] **AC1.** No file in the repository holds or names the example tree: no `example/` directory, `scripts/examples.json` entry, rendered example diagram, fixture, check, `make` target or document, as a search of the repository at the merged revision shows.
 - [ ] **AC2.** Every corpus source declares its settings in a preset, and every fixture's expected bundle is unchanged, as `make corpus` shows.
 - [ ] **AC3.** Every document in the diagram-following eval's workflow tree declares `prosiform`, and every form still bundles, as `make harness` shows.
-- [ ] **AC4.** A document declaring a top-level setting or `root` fails the run, so the migration is complete rather than partial, as the corpus fixtures over those refusals show.
-- [ ] **AC5.** The checks reading a declaration read the preset shape, and no check reads a retired field, as `make authoring` and `make steps` show.
-- [ ] **AC6.** Every document in the example tree declares `prosiform` and none declares a root, as `make authoring` shows.
+- [ ] **AC4.** Every check the repository runs passes with the example tree removed, as `make check` shows.
+- [ ] **AC5.** The checks reading a declaration read the preset shape, and no check reads a retired field, as `make check` and a search of `checks/` for the retired fields show.
+- [ ] **AC6.** The annotated tag `archive/example-work-planner` names the parent of the commit that removes `example/work-planner`, so the tree reads from the tag, as `git show archive/example-work-planner:example/work-planner/SKILL.md` and `git rev-parse` of the tag and that parent show.
 
 ## References
 
