@@ -1,6 +1,6 @@
 # Validation — I09:E05 W25–W27, W33
 
-Every check the work items name, run in the unit worktree on branch `i09/e05/w25-write-the-section-entry` at `1fe57960`.
+Every check the work items name, run in the unit worktree on branch `i09/e05/w25-write-the-section-entry` at `bb4d7bb2`, after merging `origin/i09/e05/main` at `8eb1fc2d`.
 
 ## Section entry
 
@@ -24,7 +24,7 @@ The runner tests pass over the whole corpus with the stub agent, each bundled fo
 
 ## Full check
 
-`make harness`: 1193 passed. `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check`: exit 0.
+`make harness`: 1251 passed, the bundle walk #591 added holding each of these scenarios too. `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check`: exit 0.
 
 ## Default cells
 
