@@ -52,7 +52,7 @@ pf -c modes/plan-mode.md
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the one group the document joins and its depth (`group`) and where each reference the document writes resolves (`subst`); a selected preset's `group` pair, or its setting for a `subst` key, holds over `default`'s. They govern the document's own content alone. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
+A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the one group the document joins and its depth (`group`), a selected preset's pair holding over `default`'s; [Sources](docs/sources.md) states what a `subst` entry holds. They govern the document's own content alone. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
 
 ```yaml
 ---
@@ -65,7 +65,7 @@ prosiform:
 ---
 ```
 
-A link under a section titled `Release checks` puts `default` and `checks` in force: the `checks` pair holds over `default`'s, so the document joins `checks` at depth 1, and its own links to `steps.md` resolve to `strict-steps.md`. Any other link puts `default` alone in force, joining the document to `rules` at depth 2.
+A link under a section titled `Release checks` puts `default` and `checks` in force: the `checks` pair holds over `default`'s, so the document joins `checks` at depth 1. Any other link puts `default` alone in force, joining the document to `rules` at depth 2.
 
 A link places a document under one group. Two links selecting different pairs place it in each of their groups, and it is emitted under each. Contributing files declaring the same group must agree on depth.
 
