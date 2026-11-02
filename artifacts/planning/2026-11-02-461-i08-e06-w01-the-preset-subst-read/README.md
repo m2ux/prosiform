@@ -12,6 +12,8 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01](w01.md) | The work item: a document's preset `subst` pairs read for the links it writes. |
+| [Validation](validation.md) | The evidence for each check the work item names. |
 
 ## Links
 
