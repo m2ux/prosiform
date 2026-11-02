@@ -28,6 +28,14 @@ target's body and subsections as the regions its source wrote, each
 heading moved so the target's own level becomes the contribution
 heading's. The directive's link points at its contribution heading.
 
+A contribution is its source's content: its regions are rewritten
+against the document that wrote them, so its links resolve from that
+document's directory, its fragments against that document's headings
+and its reference-style uses against that document's definitions,
+whatever the writing document defines. Every directive contributes, a
+repeated one and one naming a section another directive or an
+ordinary link names included, each in the scope that writes it.
+
 Composition runs on the built groups ahead of the dispatch pass, which
 reads what a destination section carries as the scope's own content:
 a scope's dispatch sub-sections follow its destination sections, and
