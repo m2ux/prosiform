@@ -9,7 +9,7 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 - **It gated the epic it sat in.**
   The row depended on that epic's third row and on Declared Inclusion's sixth, which pulled it to level 4 and put a bulk edit inside the chain that defines the preset model.
 - **Its content depends on every epic here.**
-  The tree's frontmatter must satisfy the inclusion rule, the preset shape, the `group-depth` and `subst` entries and the exclusion entry — so a row inside one epic will be edited by each later one until the last lands.
+  The tree's frontmatter must satisfy the inclusion rule, the preset shape, and the `group-depth` and `subst` entries — so a row inside one epic will be edited by each later one until the last lands.
 - **It is one mechanical change, done once.**
   No field rule changes during it; the whole epic is a rewrite of declarations and a proof that the published bundles are unchanged.
 - **A failure here is unambiguous.**
@@ -20,7 +20,7 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 - **The epic is the migration and nothing else.**
   Every document in `example/` and every corpus source states its settings in a preset, declares no `group` and no `root`, and the published bundles are byte-identical.
 - **It depends on the rows that settle the fields.**
-  The tree is rewritten once its last field rule has landed: the rootless example tree, the preset that carries an exclusion, and the corpus stating its pairs as `subst`.
+  The tree is rewritten once its last field rule has landed: the rootless example tree and the corpus stating its pairs as `subst`.
 - **The proof is the diff.**
   A changed expected bundle fails the run, so the epic is complete exactly when `make corpus` and `make examples` pass with unmodified expectations.
 - **The check that reads the declarations is rewritten here.**
@@ -32,7 +32,7 @@ A forty-four-file edit was a row of the epic that defined the fields it writes.
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| W00 | The example tree declares presets, in one edit | AC1, AC4, AC6 | [I08:E00:W06](https://github.com/m2ux/prosiform/issues/434), [I08:E02:W06](https://github.com/m2ux/prosiform/issues/445), [I08:E06:W03](https://github.com/m2ux/prosiform/issues/461) | | |
+| W00 | The example tree declares presets, in one edit | AC1, AC4, AC6 | [I08:E00:W06](https://github.com/m2ux/prosiform/issues/434), [I08:E06:W03](https://github.com/m2ux/prosiform/issues/461) | | |
 | W01 | The corpus sources declare presets | AC2 | W00 | | |
 | W02 | The eval workflow tree declares | AC3 | W01 | | |
 | W03 | The checks that read a declaration | AC5 | W02 | | |

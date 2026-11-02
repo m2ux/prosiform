@@ -16,7 +16,7 @@ The set is three epics. **Declared Inclusion** is the load-bearing one: it moves
 | --- | --- |
 | [Declared Inclusion](epic-a-declared-inclusion.md) | [I08:E00](https://github.com/m2ux/prosiform/issues/434): the epic retiring `root`, with the declaration, the probe, classification and the derived boundary |
 | [Section Presets](epic-b-section-presets.md) | [I08:E01](https://github.com/m2ux/prosiform/issues/436): the epic admitting named presets, the keyword that selects one, and `default` |
-| [Section Filters](epic-d-exclusion.md) | [I08:E02](https://github.com/m2ux/prosiform/issues/445): the epic keeping only the included sections, and removing the excluded ones, from what a whole-file link carries |
+| [Section Filters](epic-d-exclusion.md) | [I08:E02](https://github.com/m2ux/prosiform/issues/445): closed as not planned; the filters it planned are removed |
 | [A: design clause](a-w00.md) | The clause, the retired codes and the pin |
 | [A: metadata](a-w01.md) | Declaration presence, the empty block and the `root` refusal |
 | [A: probe](a-w02.md) | Reading a declaration without capturing a source |
@@ -114,7 +114,7 @@ A preset is a named block of settings. A document is governed by its own presets
 
 `default` is always in force and its name is reserved. A document's `default` applies wherever that document is compiled or writes a reference, and a keyword match layers above it rather than replacing it; a heading titled `default` selects nothing by that spelling. A document reached as a dependency applies its own `default` and its own presets the linking section selects. It takes no preset from the document that linked it and gives none to the documents it links.
 
-A preset holds four entries. `group-depth` is a list of single-entry mappings, each a division name mapped to its depth, so one document may join several divisions, and a document's selected preset supplies the pairs that place its own sections. [I09:E02 Section Placement](https://github.com/m2ux/prosiform/issues/458) composes each result into its parent from the leaves up. `exclude` is a list of the declaring document's own section names, or of single-entry mappings from a name to a heading level, applied where the link that selected the preset names that document whole. `include` takes the same entries and keeps only the sections it names, applied before `exclude`. `subst` is a list of `ORIGINAL=ALTERNATIVE` strings whose sides resolve from the file that declares the preset, substituting only the links that file writes. Budgets are refused there: a budget bounds a bundle rather than a document, so `--budget` on the command line is the only place one is set.
+A preset holds two entries. `group-depth` is a list of single-entry mappings, each a division name mapped to its depth, so one document may join several divisions, and a document's selected preset supplies the pairs that place its own sections. [I09:E02 Section Placement](https://github.com/m2ux/prosiform/issues/458) composes each result into its parent from the leaves up. `subst` is a list of single-entry colon pairs from an original reference to its alternative, whose sides resolve from the file that declares the preset, substituting only the links that file writes. Budgets are refused there: a budget bounds a bundle rather than a document, so `--budget` on the command line is the only place one is set.
 
 ### Substitution
 
@@ -122,15 +122,7 @@ A preset holds four entries. `group-depth` is a list of single-entry mappings, e
 
 ### Section filters
 
-Selection only adds, so a preset can withhold part of a target. A preset holds an `exclude` of sections, and each is removed from the content a **whole-file reference** carries: `[Rules](rules.md)` is carved, and `[Rules](rules.md#Tests)` is not, because an explicit section is the more specific statement. The names are the **declaring document's own** headings, removed where a link names that document whole and selects the preset, and no entry names a document because a preset governs only the document that declares it. No top-level form exists: a list is a preset's shape.
-
-The grammar is a bare section with an optional level: `exclude: ["Draft"]`, and `{"Tests": 3}` to name the level-3 heading of a repeated name. An exclusion removes what a fragment of the same name would select — the heading, its content and every subsection beneath it — so inclusion and exclusion describe one shape.
-
-Two properties make it a carve-up rather than a trim. A link written inside an excluded section is no dependency, so the document it names is never read, and a document another link also reaches arrives by that surviving link. And a section one reference excludes arrives whole by a second reference under a preset excluding nothing, so a conflicting second statement is not refused — it is a second statement, and both are stated.
-
-An exclusion naming a heading the declaring document does not carry is silent, because a preset governs many references and many documents that vary. A reference whose target is emptied by that preset's exclusions is refused with `E_EMPTIED_ENTRY`, because a reference that names a document whole and receives none of it states a contradiction. A deferral is not carried across: what a later run withholds is that run's business.
-
-A preset's `include` is the other filter: it takes the same entries and keeps only the sections it names, each with its subsections, so a consumer that needs two sections of a long document names those two and a section added later stays out. It applies first and `exclude` then removes sections within what it kept. A section the include leaves out is no dependency, exactly as an excluded one. A reference left empty by either filter is refused with `E_EMPTIED_ENTRY`, which names the inclusions and exclusions responsible; an include matching no heading of the target empties it that way, while one unmatched entry among others is silent.
+Presets carry no section filter. A link naming a section already carries just that section, so a filter acting only where a link names a whole file would be a second way to choose content; the Decisions record the removal.
 
 ## The split
 
@@ -158,13 +150,12 @@ The criteria are replanned at the initiative's own grain: each states the outcom
 | --- | --- | --- |
 | AC1 | Whether a reference is compiled follows from its target's declaration | E00 |
 | AC2 | A conversion setting reaches a compilation only through a preset of the document it governs, selected by the linking section | E01 |
-| AC3 | A preset keeps only the sections its `include` names and withholds those its `exclude` names, and a section left out adds no dependency | E02 |
-| AC4 | A section is named only as `document#fragment`, and no option names a referrer | E03 |
-| AC5 | Every fault a run performs on itself is driven by environment alone | E04 |
-| AC6 | Every ceiling is set as `--budget NAME=VALUE` and none is lettered | E05 |
-| AC7 | A stand-in reaches a compilation only through the writing document's `subst` | E06 |
-| AC8 | A substitute compiles in place of its key, each redirect and unused key is reported, and an unhonourable shape is refused | E07 |
-| AC9 | The example tree and every corpus source state their settings in presets alone | E08 |
+| AC3 | A section is named only as `document#fragment`, and no option names a referrer | E03 |
+| AC4 | Every fault a run performs on itself is driven by environment alone | E04 |
+| AC5 | Every ceiling is set as `--budget NAME=VALUE` and none is lettered | E05 |
+| AC6 | A stand-in reaches a compilation only through the writing document's `subst` | E06 |
+| AC7 | A substitute compiles in place of its key, each redirect and unused key is reported, and an unhonourable shape is refused | E07 |
+| AC8 | The example tree and every corpus source state their settings in presets alone | E08 |
 
 Each criterion is one epic's outcome at initiative grain, as [I08](https://github.com/m2ux/prosiform/issues/462) states it; the epic's own criteria make it true.
 
@@ -227,6 +218,7 @@ Each criterion is one epic's outcome at initiative grain, as [I08](https://githu
 - **One code refuses a reference either filter empties.** `E_EMPTIED_ENTRY` names the inclusions and exclusions responsible, so an include matching nothing and an exclusion of everything are one contradiction. (User, 2026-11-02.)
 - **An include narrows a reference only when every governing preset states one.** A reference is governed by its target's `default` and the presets its section title selects; if any states no `include`, the whole document is carried before exclusion, and otherwise the union of their includes. (User, 2026-11-02.)
 - **E02's fixtures share one folder, `fixtures/filter/`.** `fixtures/inclusion/` keeps its declared-inclusion meaning, and the two filters of one feature sit together. (User, 2026-11-02.)
+- **Presets carry no `include` or `exclude`.** They acted only where a link names a whole file, while a link naming a section already carries just that section, so they were a second way to choose content. E02 closes as not planned, and E01 W14 removes the delivered `exclude` entry; an `exclude` key is then refused as any unknown preset key is. This supersedes the decisions above on inclusion, exclusion, their fixtures and `E_EMPTIED_ENTRY`. (User, 2026-11-02.)
 - **A row retiring an option joins the rows its removal breaks.** Each task pull request passes `make check` alone, so E03, E04 and E05 each land their option's removal with the corpus and table rewrites in one unit. (User, 2026-11-02.)
 - **E06 reads the preset `subst` beside `-m` before retiring it.** W01 adds the preset read, and W11 retires `-m` with the corpus, scenarios and table in one unit, so each pull request lands green. (User, 2026-11-02.)
 - **Design-clause rows stay their own pull requests.** The clause lands and is pinned before code cites it, as in E00 and E01. (User, 2026-11-02.)
