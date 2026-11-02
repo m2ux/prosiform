@@ -116,10 +116,12 @@ from prosiform.limits import (
     FILES,
     INPUT_BYTES,
     LINKS,
+    NAMED,
     NESTING,
     OUTPUT_BYTES,
     RESOURCE_LIMIT,
     TARGETS,
+    Budget,
     Crossed,
     Limits,
 )
@@ -263,6 +265,17 @@ FAULTS = (SOURCE_CHANGED_FAULT, INTERNAL_FAULT, CLEANUP_FAULT)
 FAULT_VARIABLE = "PROSIFORM_FAULT"
 
 DECIMAL = re.compile(r"^[0-9]+$")
+
+
+def budget_line(budget: Budget) -> str:
+    """One budget's line of the help: its default, what it counts, and its floor."""
+    floor = f"; at least {budget.least}" if budget.least > 1 else ""
+    return f"default {budget.default}; {budget.counted}{floor}"
+
+
+BUDGET_TABLE = "budgets:\n" + "".join(
+    f"  {budget.name:<14}{budget_line(budget)}\n" for budget in BUDGETS
+)
 
 EXIT_STATUSES = """exit statuses:
   0  successful compilation, validation, or informational response
@@ -444,9 +457,68 @@ def override(value: str) -> int:
     return int(value)
 
 
+def budget_entry(value: str) -> tuple[Budget, int]:
+    """One `NAME=VALUE` budget entry: the budget it names and the figure it sets.
+
+    The entry splits at its first `=`. An entry carrying none, a name
+    outside the declared budgets and a figure below the budget's floor
+    are each a command line the grammar does not admit, refused before
+    any source is read.
+    """
+    name, separator, figure = value.partition("=")
+    if not separator:
+        raise argparse.ArgumentTypeError(
+            f"the budget entry {value!r} carries no '='; write NAME=VALUE"
+        )
+    if not name:
+        raise argparse.ArgumentTypeError(
+            f"the budget entry {value!r} names no budget; write NAME=VALUE"
+        )
+    if name not in NAMED:
+        raise argparse.ArgumentTypeError(
+            f"the budget name {name!r} is none of the budgets declared: "
+            f"{', '.join(NAMED)}"
+        )
+    budget = NAMED[name]
+    limit = override(figure)
+    if limit < budget.least:
+        raise argparse.ArgumentTypeError(
+            f"the {name} budget of {limit} is below {budget.least}, the least "
+            f"under which a declaring document can be read"
+        )
+    return budget, limit
+
+
+class BudgetEntries(argparse.Action):
+    """Each budget entry of the command line, one entry per budget.
+
+    A second entry naming a budget an earlier entry named is refused:
+    the two state one budget twice, and only one of the two orders
+    would make a run reproducible.
+    """
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: Any,
+        option_string: str | None = None,
+    ) -> None:
+        budget, limit = values
+        entries = dict(getattr(namespace, self.dest))
+        if budget in entries:
+            raise argparse.ArgumentError(
+                self, f"the {budget.name} budget is named twice; name it once"
+            )
+        entries[budget] = limit
+        setattr(namespace, self.dest, entries)
+
+
 def budgets(options: argparse.Namespace) -> Limits:
-    """Every budget in force, as the command line left it."""
-    return Limits({budget: getattr(options, budget.dest) for budget in BUDGETS})
+    """Every budget in force: each the command line names, the rest at default."""
+    return Limits(
+        {budget: options.budgets.get(budget, budget.default) for budget in BUDGETS}
+    )
 
 
 def mock(value: str) -> Pairing:
@@ -813,7 +885,7 @@ def parser() -> Parser:
             "and of each target they dispatch, into validated bundles. Run with "
             "no arguments, pf prints the guide to compiling and following them."
         ),
-        epilog=EXIT_STATUSES,
+        epilog=f"{BUDGET_TABLE}\n{EXIT_STATUSES}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     grammar.add_argument(
@@ -848,16 +920,17 @@ def parser() -> Parser:
         default=TEXT,
         help=f"stderr diagnostics; default {TEXT}",
     )
-    for budget in BUDGETS:
-        grammar.add_argument(
-            budget.option,
-            dest=budget.dest,
-            metavar="N",
-            type=override,
-            default=budget.default,
-            help=f"{budget.counted}; positive decimal integer, "
-            f"default {budget.default}",
-        )
+    grammar.add_argument(
+        "--budget",
+        dest="budgets",
+        metavar="NAME=VALUE",
+        action=BudgetEntries,
+        type=budget_entry,
+        default={},
+        help="set the budget NAME to VALUE, a positive decimal integer, given once "
+        "per budget; repeatable; the budgets, their defaults and what each "
+        "counts are listed below",
+    )
     grammar.add_argument(
         "-C",
         "--codes",
@@ -906,7 +979,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
         for at, option in enumerate(token[1:], start=1):
             if option in "cCvh":
                 continue
-            if option in "odFBIOTLNEm":
+            if option in "odm":
                 value = token[at + 1 :].removeprefix("=") or next(tokens, "")
                 if option == "d" and value in FORMATS:
                     selected = value
@@ -1131,17 +1204,17 @@ def probe(root: Path, found: Reference, limits: Limits) -> Probed:
     """Whether the document a reference names exists and declares, its body unread.
 
     The probe reads the document's head through the walk a capture
-    takes, within `-B`, and decodes it as a capture would, so an invalid
+    takes, within `file-bytes`, and decodes it as a capture would, so an invalid
     declaration fails the probe with the diagnostic it fails a capture
-    with. Nothing it reads is counted against `-I` or kept: answering
+    with. Nothing it reads is counted against `input-bytes` or kept: answering
     whether a document declares carries nothing into the bundle.
 
     A head holding no opener declares nothing whatever the file's size,
-    so a document larger than `-B` that declares nothing is answered
-    without crossing it. A head crossing `-B` before its block closes
+    so a document larger than `file-bytes` that declares nothing is answered
+    without crossing it. A head crossing `file-bytes` before its block closes
     fails the run, since its declaration cannot be read within the
     budget; a declaring document is captured afterwards, and the capture
-    holds `-B` over the whole file.
+    holds `file-bytes` over the whole file.
 
     A path naming no document is answered as absent, and the caller
     reading the link decides what that is. A substitute naming no

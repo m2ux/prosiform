@@ -7,11 +7,12 @@ nothing is dropped to fit, no bundle is published, and the figure the run
 reports is what tells an author whether to restructure the sources or to
 raise the number.
 
-Each budget names the option that overrides it, the default it stands at,
-and the rule by which its figure is counted. The counting rule is the whole
-of a budget's meaning — a byte budget summed once per source identity and
-one summed per reference are different budgets — so it is written beside
-the number rather than left to whichever stage happens to count.
+Each budget carries the name a command line sets it by, the default it
+stands at, and the rule by which its figure is counted. The counting rule
+is the whole of a budget's meaning — a byte budget summed once per source
+identity and one summed per reference are different budgets — so it is
+written beside the number rather than left to whichever stage happens to
+count.
 
 One code names every crossing. Whichever budget it was, the remedy is the
 same shape, and the message says which boundary the run crossed and what
@@ -22,7 +23,10 @@ is a defect in indexing rather than a budget an author chose.
 
 Overrides are positive decimal integers. Zero is refused and does not mean
 unlimited, because a budget of nothing is a run that cannot open its first
-source, and a caller who wants a larger number says so.
+source, and a caller who wants a larger number says so. A budget may hold a
+higher floor: the nesting budget stands at 2 or more, because a `prosiform`
+declaration is a mapping inside the frontmatter mapping, two collection
+levels deep, and a lower ceiling refuses every document that declares.
 
 A byte budget bounds the work a run performs only where the work one byte
 can ask for is itself bounded. Canonicalising a numeric scalar costs time
@@ -56,39 +60,36 @@ stays well inside the second, whatever size the source holding it is.
 
 @dataclass(frozen=True)
 class Budget:
-    """One declared budget: the option that sets it, its default, and its rule."""
+    """One declared budget: the name that sets it, its default, and its rule.
 
-    option: str
-    dest: str
+    `least` is the smallest figure the budget admits, which is 1 unless
+    a lower figure would refuse every document a run could bundle.
+    """
+
+    name: str
     default: int
     counted: str
+    least: int = 1
 
 
-FILES = Budget("-F", "max_files", 256, "distinct source documents opened")
-FILE_BYTES = Budget("-B", "max_file_bytes", 1_048_576, "raw bytes in one source")
+FILES = Budget("files", 256, "distinct source documents opened")
+FILE_BYTES = Budget("file-bytes", 1_048_576, "raw bytes in one source")
 INPUT_BYTES = Budget(
-    "-I", "max_input_bytes", 16_777_216, "raw source bytes, counted once per source"
+    "input-bytes", 16_777_216, "raw source bytes, counted once per source"
 )
-OUTPUT_BYTES = Budget("-O", "max_output_bytes", 262_144, "bytes of the complete bundle")
-TARGETS = Budget(
-    "-T", "max_targets", 4_096, "distinct document and section targets discovered"
-)
+OUTPUT_BYTES = Budget("output-bytes", 262_144, "bytes of the complete bundle")
+TARGETS = Budget("targets", 4_096, "distinct document and section targets discovered")
 LINKS = Budget(
-    "-L",
-    "max_links",
-    32_768,
-    "authored link and image occurrences in selected content",
+    "links", 32_768, "authored link and image occurrences in selected content"
 )
 NESTING = Budget(
-    "-N",
-    "max_nesting",
+    "nesting",
     64,
     "levels of container nesting and, independently, "
     "YAML collection nesting in one source",
+    least=2,
 )
-EXPANSION_DEPTH = Budget(
-    "-E", "max_expansion_depth", 8, "link hops from the nearest entry reference"
-)
+EXPANSION_DEPTH = Budget("depth", 8, "link hops from the nearest entry reference")
 
 BUDGETS = (
     FILES,
@@ -100,6 +101,9 @@ BUDGETS = (
     NESTING,
     EXPANSION_DEPTH,
 )
+
+NAMED = {budget.name: budget for budget in BUDGETS}
+"""Each budget under the name a command line sets it by."""
 
 
 class Crossed(Exception):
@@ -113,7 +117,7 @@ class Crossed(Exception):
     def __init__(self, budget: Budget, limit: int, counted: int) -> None:
         super().__init__(
             f"the run reached {counted} {budget.counted}, which crosses the "
-            f"{budget.option} budget of {limit}"
+            f"{budget.name} budget of {limit}"
         )
         self.budget = budget
         self.limit = limit
@@ -121,8 +125,8 @@ class Crossed(Exception):
 
     @property
     def remedy(self) -> str:
-        """The one remedy every crossing leads to, naming the option."""
-        return f"restructure the sources, or raise {self.budget.option}"
+        """The one remedy every crossing leads to, naming the entry that raises it."""
+        return f"restructure the sources, or raise --budget {self.budget.name}"
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,18 @@
+description = "A nesting budget below 2 is refused as invalid usage, because a declaration sits two collection levels deep and a lower ceiling refuses every declaring document; the message names 2 as the least value."
+
+clauses = [
+  "Resource limits — Nesting floor",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "nesting=1", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["nesting budget of 1 is below 2"]

@@ -1,12 +1,12 @@
 description = "A budget override of zero is refused as a command line the grammar does not admit, because zero does not mean unlimited."
 
 clauses = [
-  "Resource limits, positive decimal integer overrides",
+  "Resource limits — Malformed entry, a value that is no positive decimal integer",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["-F", "0", "alpha.md"]
+arguments = ["--budget", "files=0", "alpha.md"]
 
 [expected]
 exit_status = 2
