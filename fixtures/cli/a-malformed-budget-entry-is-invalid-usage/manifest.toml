@@ -1,0 +1,18 @@
+description = "A budget entry carrying no '=' is refused as invalid usage, and the message names the entry."
+
+clauses = [
+  "Resource limits — Malformed entry, an entry carrying no =",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--budget", "files", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["'files'", "carries no '='"]
