@@ -1,0 +1,16 @@
+description = "A group an intermediate file declares stands inside the division of the document whose link placed it, after that division's own content and one level deeper: the notes the guide links join Notes, which nests inside the Guides group the guide opens on its own title. A document declaring no pair keeps its own file group at the top level of the bundle wherever it is placed, so the plain document the guide links and the extra one the notes link follow as file groups of their own."
+
+clauses = [
+  "Grouping — Nested groups",
+  "Grouping — Composition from the leaves up",
+  "Post-compilation invariants — Group isolation",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

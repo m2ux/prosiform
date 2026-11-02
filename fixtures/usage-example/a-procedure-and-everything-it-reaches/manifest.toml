@@ -1,11 +1,10 @@
-description = "The usage example that names a procedure bundles that procedure and every document its compiled links reach: the one mode it reaches as a whole document, Propose Mode, under a heading of its own, the two protocols it follows under the Protocols heading, the Rules and Conventions documents the modes link, and the artifact, configuration and reference material those documents link. The dispatched link to Sync Mode is published without its mark, pointing at a sub-section naming the Sync Mode bundle, which the run publishes beside it with every bundle its own dispatches reach; Sync Mode contributes no content to the Plan mode bundle. The bundle carries no deferred link."
+description = "The usage example that compiles the Plan mode dispatches Sync Mode, whose bundle reaches the Delivery Evidence artifact. Sync Mode declares no pair, so the Artifacts group its links place nests inside its division one level deeper, and that artifact's fifth-level headings would be emitted beyond H6: the run fails before publication and publishes no bundle, the Plan mode's own among them."
 
 clauses = [
   "Usage examples",
-  "Input and output contract — Whole documents",
-  "Link classification and resource handling — Local Markdown document links",
-  "Compile before publishing — step 4",
-  "Input and output contract — Entry references",
+  "Grouping — Nested groups",
+  "File-scoped hierarchy — Depth overflow",
+  "Compile before publishing — step 5",
 ]
 
 [invocation]
@@ -13,6 +12,11 @@ cwd = "source"
 arguments = ["modes/plan-mode.md"]
 
 [expected]
-exit_status = 0
-bundles = ["expected/modes_plan-mode.bundle.md", "expected/modes_sync-mode.bundle.md", "expected/modes_understand-mode.bundle.md", "expected/protocols_delivery-recording.bundle.md", "expected/protocols_epic-closure.bundle.md"]
-diagnostics = []
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_DEPTH_OVERFLOW"
+reference = "artifacts/delivery-evidence.md"
+source = "artifacts/delivery-evidence.md"
+chain = ["modes/sync-mode.md", "artifacts/delivery-evidence.md#unnamed-deliveries"]

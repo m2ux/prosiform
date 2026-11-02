@@ -8,10 +8,12 @@ settings keeps its individual file group.
 A merged group emits its slug in title case as an H1, a subsection
 naming each member and holding what that member carries above the
 grouping depth, and then one H2 for each distinct source heading text at
-that depth. A member's heading at the grouping depth is replaced by the
-merged one and its content moves to sit beneath it, so the level a
-heading is emitted at is the level its author wrote under a shift the
-arrangement supplies rather than a single shift for the whole group.
+that depth. A group nested inside another division moves every one of
+those headings down one level for each division enclosing it. A
+member's heading at the grouping depth is replaced by the merged one
+and its content moves to sit beneath it, so the level a heading is
+emitted at is the level its author wrote under a shift the arrangement
+supplies rather than a single shift for the whole group.
 
 A name the group generates — its heading, a member's subsection and a
 variant heading — keeps every separator its source carries, as every
@@ -419,17 +421,31 @@ def ancestor_part(member: Member, token: Token, by: int) -> tuple[str, Ancestor]
 
 
 def generated_part(
-    text: str, depth: int, kind: str, answers: Sequence[Target]
+    text: str, depth: int, kind: str, answers: Sequence[Target], path: str
 ) -> tuple[str, Generated]:
-    """One heading the arrangement writes itself, as the part it is emitted as."""
+    """One heading the arrangement writes itself, as the part it is emitted as.
+
+    A nested group's headings sit one level deeper for each division
+    enclosing it, so a generated heading can be pushed beyond the sixth
+    level; the path is the member the overflow is reported against.
+    """
+    if depth > MAX_LEVEL:
+        raise Overflow(text, depth, path)
     recorded = Generated(text, depth, kind, tuple(answers))
     return f"{ATX * depth} {escaped(text)}", recorded
 
 
 class Assembly:
-    """The parts, headings and targets one merged group accumulates as it is built."""
+    """The parts, headings and targets one merged group accumulates as it is built.
 
-    def __init__(self) -> None:
+    The offset is the levels every heading of the group moves down by
+    where it nests inside another division: nothing at the top level of
+    the bundle, and one for each division enclosing it.
+    """
+
+    def __init__(self, offset: int = 0) -> None:
+        self.section_level = SECTION_LEVEL + offset
+        self.member_level = MEMBER_LEVEL + offset
         self.emitted: list[str] = []
         self.parts: list[Part] = []
         self.headings: list[Emitted] = []
@@ -539,6 +555,7 @@ def merged(
     depth: int,
     members: Sequence[Member],
     parent: str | None = None,
+    at: int = GROUP_LEVEL,
 ) -> Group:
     """One merged group: its slug, the overview, and one section for each name.
 
@@ -548,8 +565,12 @@ def merged(
     The group stands where its first member is placed. The parent opens
     the group on its own title where it carries one, and its sections
     precede every section the merge adds.
+
+    The group's heading takes the level supplied: H1 at the top level of
+    the bundle, and the level below its holding division's heading where
+    it nests, every heading beneath it moving down with it.
     """
-    into = Assembly()
+    into = Assembly(at - GROUP_LEVEL)
     parent_member = next((one for one in members if one.path == parent), None)
     kept = False
     if parent_member is not None and situated(parent_member, depth):
@@ -557,8 +578,9 @@ def merged(
         kept = True
     else:
         title = title_cased(named).strip(MARKDOWN_SPACE)
-        into.emitted.append(f"{ATX * GROUP_LEVEL} {escaped(title)}")
-        into.heading(Generated(title, GROUP_LEVEL, GROUP_HEADING))
+        text, recorded = generated_part(title, at, GROUP_HEADING, (), members[0].path)
+        into.emitted.append(text)
+        into.heading(recorded)
     pooled = contributions(depth, members)
     headings = member_headings([m.path for m in members], named)
     order = arranged(depth, parent_member, pooled)
@@ -575,8 +597,8 @@ def merged(
     return Group(
         tuple(into.emitted),
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
-        members[0].path,
         wrapped=not kept,
+        level=at,
     )
 
 
@@ -690,9 +712,11 @@ def overview(
     wrapped = pooled and any(
         above[member.path] for member in members if named_here[member.path]
     )
-    at = MEMBER_LEVEL if wrapped else SECTION_LEVEL
+    at = into.member_level if wrapped else into.section_level
     if wrapped:
-        text, recorded = generated_part(OVERVIEW, SECTION_LEVEL, OVERVIEW_SECTION, ())
+        text, recorded = generated_part(
+            OVERVIEW, into.section_level, OVERVIEW_SECTION, (), members[0].path
+        )
         into.part(text, recorded, [recorded])
     for member in members:
         if not named_here[member.path]:
@@ -703,7 +727,7 @@ def overview(
         if member.absorbing is not None:
             answers.append((member.path, member.named[id(member.absorbing)]))
         text, recorded = generated_part(
-            headings[member.path], at, MEMBER_OVERVIEW, answers
+            headings[member.path], at, MEMBER_OVERVIEW, answers, member.path
         )
         into.part(text, recorded, [recorded])
         for one in above[member.path]:
@@ -740,7 +764,7 @@ def sections(
     headings: Mapping[str, str],
     parent: str | None = None,
 ) -> None:
-    """One H2 for each distinct source heading text at the grouping depth."""
+    """One merged heading for each distinct heading text at the grouping depth."""
     for text, contributing in pooled:
         section(into, depth, text, contributing, headings, parent)
 
@@ -764,7 +788,7 @@ def section(
         contributing = tuple(
             sorted(contributing, key=lambda pair: pair[0].path != parent)
         )
-    by = SECTION_LEVEL - depth
+    by = into.section_level - depth
     variants = len(contributing) > 1
     answers = tuple(
         (member.path, member.named[id(anchor)])
@@ -772,17 +796,18 @@ def section(
         if id(anchor) in member.emitting
     )
     merged_heading(
-        into, text, SECTION_LEVEL, contributing, by, () if variants else answers
+        into, text, into.section_level, contributing, by, () if variants else answers
     )
     if variants:
         for member, anchor in contributing:
             heading, recorded = generated_part(
                 headings[member.path],
-                MEMBER_LEVEL,
+                into.member_level,
                 VARIANT_HEADING,
                 [(member.path, member.named[id(anchor)])]
                 if id(anchor) in member.emitting
                 else [],
+                member.path,
             )
             into.part(heading, recorded, [recorded])
             for one in under(member, anchor, depth):

@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/febd4a6da4a57064942810d2e1cb381e7bccc8eb/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/b7e5a449996cf5c8b4ee24839508339ef55ded95/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches, as one validated bundle.
@@ -62,7 +62,7 @@ With no arguments, `pf` prints the guide an agent follows a skill by: the compil
 ### Bundle a Source and its Dependencies
 
 ```bash
-pf example/work-planner/modes/plan-mode.md
+pf example/work-planner/modes/align-mode.md
 ```
 
 ### Compile a Selected Section
@@ -73,6 +73,6 @@ pf 'example/work-planner/artifacts/epic.md#delivery-findings'
 
 ### Dispatch to Sub-agents
 
-A link whose text opens with `⇉` dispatches its target, as Plan Mode's link to Sync Mode does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
+A link whose text opens with `⇉` dispatches its target, as Align Mode's link to Delivery Recording does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link points at a `Dispatch <link text>` sub-section one level below its section, whose one line names the bundle to hand to a sub-agent. The `⫽` links in one section's own content form a parallel set, pointing at one `Dispatch in parallel` sub-section that lists the bundles to dispatch together.
 
 A bundle that dispatches opens with a `# Prosiform` section stating how: `## Dispatch` whenever it dispatches, and `## Parallel dispatch` when it carries a set. Each sub-section links the protocol it follows, and the protocols are the same bytes in every bundle.

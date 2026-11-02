@@ -1,0 +1,16 @@
+description = "Composition runs from the leaves up: the checks the steps link are composed under their own pair into the Checks group, which arrives inside the Steps group the steps' pair places, and that composed result is what the guide's division merges, so the grandchild's group sits two levels below the guide's heading rather than beside it."
+
+clauses = [
+  "Grouping — Composition from the leaves up",
+  "Grouping — A file places its own sections",
+  "Grouping — Nested groups",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

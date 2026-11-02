@@ -609,7 +609,7 @@ class Placing:
                 self.parts.append(wrapper)
             self.emitted.append(one.parts[0])
             self.headings.append(wrapper)
-            self.level = 1
+            self.level = wrapper.level
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
             if isinstance(part, Ancestor | Generated):
@@ -645,8 +645,8 @@ class Placing:
         return Group(
             tuple(self.emitted),
             replace(one.record, headings=tuple(self.headings), parts=tuple(self.parts)),
-            one.order,
             wrapped=wrapped,
+            level=one.level,
         )
 
 

@@ -2,18 +2,18 @@
 
 Both members are reached as whole documents: [With Preamble](#with-preamble) carries content above the grouping depth and [Bare](#outcomes) carries none.
 
-# Notes
+## Notes
 
-## Overview
+### Overview
 
-### With-Preamble
+#### With-Preamble
 
 What this document states before its first section.
 
-## Findings
+### Findings
 
 The first run held throughout.
 
-## Outcomes
+### Outcomes
 
 The second run was recorded as it ran.

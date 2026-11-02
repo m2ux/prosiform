@@ -1361,7 +1361,7 @@ def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert run.bundle.count("All.") == 1
-    assert "# Reviews\n\n## Rules" in run.bundle
+    assert "## Reviews\n\n### Rules" in run.bundle
 
 
 def test_a_selected_preset_disagreeing_with_default_holds_over_it(
@@ -1383,7 +1383,7 @@ def test_a_selected_preset_disagreeing_with_default_holds_over_it(
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "# Reviews\n\n## Rules" in run.bundle
+    assert "## Reviews\n\n### Rules" in run.bundle
 
 
 def test_presets_one_title_leaves_unselected_disagree_with_nothing(
@@ -1402,7 +1402,7 @@ def test_presets_one_title_leaves_unselected_disagree_with_nothing(
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "# Reviews\n\n## Rules" in run.bundle
+    assert "## Reviews\n\n### Rules" in run.bundle
 
 
 def test_a_linking_documents_presets_never_reach_the_document_it_links(
@@ -1419,7 +1419,7 @@ def test_a_linking_documents_presets_never_reach_the_document_it_links(
     assert run.status == SUCCESS, run.stderr
     assert "# Reviews\n\n## Release Checks" in run.bundle
     assert "# Guides" not in run.bundle
-    assert "# Rules\n\n## Rules\n\nAll." in run.bundle
+    assert "## Rules\n\n### Rules\n\nAll." in run.bundle
     assert run.bundle.count("All.") == 1
 
 
@@ -1587,8 +1587,8 @@ def test_two_sections_reaching_one_document_each_select_its_presets(
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "# Reviews\n\n## Rules\n\nAll." in run.bundle
-    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+    assert "## Reviews\n\n### Rules\n\nAll." in run.bundle
+    assert "## Drafts\n\n### Rules\n\nAll." in run.bundle
     assert run.bundle.count("All.") == 2
 
 
@@ -1615,8 +1615,8 @@ def test_a_document_a_later_round_reaches_again_takes_that_selection(
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "# Reviews\n\n## Rules\n\nAll." in run.bundle
-    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+    assert "## Reviews\n\n### Rules\n\nAll." in run.bundle
+    assert "## Drafts\n\n### Rules\n\nAll." in run.bundle
 
 
 def test_two_sections_selecting_two_depths_for_one_group_conflict(
@@ -1647,7 +1647,7 @@ def test_a_reference_selecting_again_counts_no_target(root: Path) -> None:
     )
     run = invoke("-T", "2", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "# Drafts\n\n## Rules\n\nAll." in run.bundle
+    assert "## Drafts\n\n### Rules\n\nAll." in run.bundle
 
 
 def presets(*declared: tuple[str, tuple[str, int]]) -> str:
@@ -1764,7 +1764,7 @@ def test_a_reference_selects_by_the_nearest_heading_rooting_a_section(
     written(root, "rules.md", presets(("Checks", ("reviews", 1))) + "# Rules\n\nAll.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert ("# Reviews\n\n## Rules" in run.bundle) is selected
+    assert ("## Reviews\n\n### Rules" in run.bundle) is selected
 
 
 def test_a_depth_disagreement_names_the_selected_preset(root: Path) -> None:
@@ -1803,7 +1803,7 @@ def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.bundle == (
         "# Guide\n\nRead [one](#note) and [two](#note-1).\n\n"
-        "# Notes\n\n## Note\n\nOne.\n\n## Note\n\nTwo.\n"
+        "## Notes\n\n### Note\n\nOne.\n\n### Note\n\nTwo.\n"
     )
     assert run.diagnostics() == [
         {

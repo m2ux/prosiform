@@ -4,20 +4,20 @@ A name two documents carry is reached as [the planning procedure](#plan) and as 
 
 A name one document carries is reached as [the planning operations](#operations).
 
-# Modes
+## Modes
 
-## Procedure
+### Procedure
 
-### Plan
+#### Plan
 
 Walk the plan from the goal down.
 
-### Review
+#### Review
 
 Walk the plan from the goal up.
 
-## Operations
+### Operations
 
-### Draft
+#### Draft
 
 Write the first pass.

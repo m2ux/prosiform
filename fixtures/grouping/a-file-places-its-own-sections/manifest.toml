@@ -1,0 +1,16 @@
+description = "A file's group pair places that file's own sections and no other document's: the guide joins Modes, which it opens on its own title, and links the rules, whose own pair joins Rules, so the rules' Procedure stays in the Rules group nested inside the guide's division rather than merging into the guide's Procedure, and the guide's pair places only the guide's sections."
+
+clauses = [
+  "Grouping — A file places its own sections",
+  "Grouping — Nested groups",
+  "Grouping — The parent arrangement",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

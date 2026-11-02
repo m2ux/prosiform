@@ -112,6 +112,16 @@ Modes, protocols, artifacts. A mode aggregates protocol calls, as an application
 
 A call passes its named inputs. A protocol is one change that lands in several artifacts together, and is followed whole. Follow another mode, a protocol or a named procedure subsection, and apply an artifact operation, only where the procedure calls for it; finish that call and return its result before continuing. Calls run in order. A step's `⇉` call runs in a sub-agent, from any session, dispatched or not; its `⫽` calls run in sub-agents together, as the bundle's Prosiform section states, and those together never write to the same object.
 
+## Artifacts
+
+### Plan Change
+
+#### Fields
+
+##### Allowance
+
+The caller names the change kinds its run applies without asking. A run the user drives directly is supplied none.
+
 # Conventions
 
 The prerequisites every mode's run shares: the session it starts in, where a command runs, how a result is read, and the values its examples use. Each is stated once here, and every step applying one links it.
@@ -329,13 +339,3 @@ How a skill's own files are written: SKILL.md, the references, the templates, an
   After a behaviour change, search the skill for any description of the old behaviour and restate it.
 - **Verified.**
   The skill's tests and affected shared-checker or integration suites pass, the shared skill check reports no finding for every skill the change touches, and [disclosure verification](#disclosure-verification) is recorded before the change is committed. State which checks ran and distinguish local evidence from external workflow execution.
-
-# Artifacts
-
-## Plan Change
-
-### Fields
-
-#### Allowance
-
-The caller names the change kinds its run applies without asking. A run the user drives directly is supplied none.

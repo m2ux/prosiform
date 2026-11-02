@@ -279,7 +279,7 @@ def test_a_section_naming_no_stand_in_is_a_difference() -> None:
 def test_the_shipped_scenarios_name_the_documents_they_stand_in_for() -> None:
     assert [
         (scenario.stub.key, scenario.heading) for scenario in mock_scenarios.SCENARIOS
-    ] == [("artifacts/epic.md", "## Epic"), ("conventions.md", "# Conventions")]
+    ] == [("artifacts/epic.md", "### Epic"), ("conventions.md", "# Conventions")]
 
 
 def test_the_shipped_scenarios_are_named_and_distinct() -> None:

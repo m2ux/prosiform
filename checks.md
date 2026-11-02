@@ -128,7 +128,7 @@ These checks cover the [work-planner example](example/work-planner/SKILL.md).
 
 `make mock-scenarios` runs two scenarios:
 
-- **Stubbed artifact.** A plan mode bundles over a stubbed artifact. The stub stands where that artifact's member heading stood inside the merged artifacts group.
+- **Stubbed artifact.** The align mode bundles over a stubbed artifact. The stub stands where that artifact's member heading stood inside the merged artifacts group.
 - **Fake tracker.** The conventions document is redirected to one naming a fake tracker command. The bundle tells the agent to run the fake, while every other instruction stays the one that ships.
 
 Each scenario runs from a temporary copy made at run time and publishes outside it. Its result is compared with the bundle the same tree produces with no substitution.

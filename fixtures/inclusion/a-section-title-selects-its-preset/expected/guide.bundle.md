@@ -8,9 +8,9 @@ Follow [the rules](#rules).
 
 Read [the notes](#notes).
 
-# Reviews
+## Reviews
 
-## Rules
+### Rules
 
 Every rule the guide follows.
 

@@ -5,6 +5,7 @@ clauses = [
   "Presets — Selected presets union",
   "Presets — A preset nothing selected warns",
   "Grouping — Group membership",
+  "Grouping — Nested groups",
 ]
 
 [invocation]

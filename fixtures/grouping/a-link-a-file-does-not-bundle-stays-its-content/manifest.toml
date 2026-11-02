@@ -1,0 +1,15 @@
+description = "A link a grouped file writes and does not bundle places nothing and stays that file's content where it was written: the notes link a document that declares nothing and a web page, and both links keep their authored destinations inside the Notes group nested in the guide's division, which carries no document for either."
+
+clauses = [
+  "Grouping — Composition from the leaves up",
+  "Grouping — Nested groups",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

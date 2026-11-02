@@ -8,14 +8,14 @@ Review against [the rules](#rules).
 
 Draft against [the rules](#rules).
 
-# Reviews
+## Reviews
 
-## Rules
+### Rules
 
 Every rule the guide follows.
 
-# Drafts
+## Drafts
 
-## Rules
+### Rules
 
 Every rule the guide follows.

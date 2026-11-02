@@ -36,15 +36,31 @@ EXAMPLE = REPO / "example" / "work-planner"
 COMMAND = "pf"
 ENCODING = "utf-8"
 
-# The seconds one invocation is given. The example's costliest entry,
-# modes/deliver-mode.md, compiles nine bundles in about five seconds on a
-# developer machine, so the limit holds a runner several times slower.
+# The seconds one invocation is given. The example's costliest entry
+# compiles in a few seconds on a developer machine, so the limit holds a
+# runner several times slower.
 LIMIT = 60
 
 DISPATCH = "\u21c9"
 DEFERRAL = "\u00ac"
 
 ERROR = "error"
+OVERFLOW = "E_HEADING_DEPTH_OVERFLOW"
+
+# The modes whose closure reaches the Delivery Evidence artifact. Each mode
+# keeps its own file group, so the artifacts group its links place nests
+# inside it one level deeper, and that artifact's fifth-level headings would
+# be emitted beyond H6: the run refuses each of these modes as a depth
+# overflow.
+OVERFLOWING = frozenset(
+    {
+        "modes/advance-mode.md",
+        "modes/deliver-mode.md",
+        "modes/plan-mode.md",
+        "modes/standup-mode.md",
+        "modes/sync-mode.md",
+    }
+)
 PROTOCOL = "\n## Dispatch\n"
 
 INSTRUCTION = re.compile(
@@ -341,11 +357,17 @@ def test_each_handoff_the_example_publishes_is_followed(tree: Tree) -> None:
     Each mode is bundled as its own entry. Each bundle a dispatch sub-section
     names is in that run's folder, and each distinct deferred destination the
     bundles published is compiled once in a second run. The example dispatches
-    and defers, so both handoffs are among them.
+    and defers, so both handoffs are among them. A mode whose headings nest
+    beyond H6 publishes nothing, and is refused for that overflow alone.
     """
     published: dict[str, str] = {}
     named = 0
     for entry in tree.modes():
+        if entry in OVERFLOWING:
+            refused = tree.invoke(entry)
+            codes = [diagnostic["code"] for diagnostic in refused.errors()]
+            assert codes == [OVERFLOW], (entry, refused.diagnostics)
+            continue
         run = tree.run(entry)
         for name in dispatched(run.bundle):
             assert name in run.bundles, (entry, name)
@@ -363,6 +385,6 @@ def test_each_handoff_the_example_publishes_is_followed(tree: Tree) -> None:
 
 def test_a_mode_bundle_carries_the_dispatch_protocol_once(tree: Tree) -> None:
     """A dispatching mode bundle opens with its Prosiform section's one protocol."""
-    bundle = tree.bundled("modes/plan-mode.md")
+    bundle = tree.bundled("modes/hoist-mode.md")
     assert bundle.startswith("# Prosiform\n"), bundle
     assert bundle.count(PROTOCOL) == 1, bundle
