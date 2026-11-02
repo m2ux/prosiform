@@ -19,7 +19,7 @@
 <text x="70" y="810" font-size="20" fill="#e6edf3" font-weight="400">---</text>
 <text x="70" y="847" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
 <text x="70" y="884" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="921" font-size="20" fill="#e6edf3" font-weight="400">    group-depth: [{rules: 2}]</text>
+<text x="70" y="921" font-size="20" fill="#e6edf3" font-weight="400">    group: {rules: 2}</text>
 <text x="70" y="958" font-size="20" fill="#e6edf3" font-weight="400">---</text>
 <text x="44" y="1005" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
 <text x="82" y="1005" font-size="30" fill="#e6edf3" font-weight="500">Reviews</text>
@@ -31,7 +31,7 @@
 <text x="70" y="1258" font-size="20" fill="#e6edf3" font-weight="400">---</text>
 <text x="70" y="1295" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
 <text x="70" y="1332" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="1369" font-size="20" fill="#e6edf3" font-weight="400">    group-depth: [{rules: 2}]</text>
+<text x="70" y="1369" font-size="20" fill="#e6edf3" font-weight="400">    group: {rules: 2}</text>
 <text x="70" y="1406" font-size="20" fill="#e6edf3" font-weight="400">---</text>
 <text x="44" y="1453" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
 <text x="82" y="1453" font-size="30" fill="#e6edf3" font-weight="500">Tests</text>

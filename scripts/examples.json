@@ -18,8 +18,8 @@
     "entry": "SKILL.md",
     "files": {
       "SKILL.md": "---\nprosiform: {}\n---\n# Entry\n\nFollow [Tests](rules/tests.md) and [Reviews](rules/reviews.md).\n",
-      "rules/tests.md": "---\nprosiform:\n  default:\n    group-depth: [{rules: 2}]\n---\n# Tests\n\n## Tests\n\nA change lands with a test that fails without it.\n",
-      "rules/reviews.md": "---\nprosiform:\n  default:\n    group-depth: [{rules: 2}]\n---\n# Reviews\n\n## Tests\n\nA review lands with its findings recorded.\n"
+      "rules/tests.md": "---\nprosiform:\n  default:\n    group: {rules: 2}\n---\n# Tests\n\n## Tests\n\nA change lands with a test that fails without it.\n",
+      "rules/reviews.md": "---\nprosiform:\n  default:\n    group: {rules: 2}\n---\n# Reviews\n\n## Tests\n\nA review lands with its findings recorded.\n"
     }
   },
   "destinations": {
@@ -35,7 +35,7 @@
     "files": {
       "modes/review.md": "---\nprosiform: {}\n---\n# Review Mode\n\nChecks a change against the [Rules](../rules.md#tests) and hands delivery to a sub-agent.\n\n## Procedure\n\n1. Read the [Rules](../rules.md#tests).\n2. Follow [\u21c9 Publish](../protocols/publish.md).\n\n## Notes\n\nA review is not an approval.\n",
       "rules.md": "---\nprosiform: {}\n---\n# Rules\n\n## Tests\n\nA change lands with a test that fails without it.\n\n## Reviews\n\nA change lands reviewed by someone who did not write it.\n",
-      "protocols/publish.md": "---\nprosiform:\n  default:\n    group-depth: [{protocols: 2}]\n---\n# Publish\n\n## Procedure\n\n1. Commit the change.\n2. Push the branch.\n"
+      "protocols/publish.md": "---\nprosiform:\n  default:\n    group: {protocols: 2}\n---\n# Publish\n\n## Procedure\n\n1. Commit the change.\n2. Push the branch.\n"
     }
   },
   "source": {
@@ -57,9 +57,9 @@
     "entry": "modes/review.md",
     "files": {
       "modes/review.md": "---\nprosiform: {}\n---\n# Review Mode\n\n## Procedure\n\n1. Review [\u2afd Code](../protocols/code.md) and [\u2afd Tests](../protocols/tests.md) together.\n2. Follow [\u21c9 Publish](../protocols/publish.md).\n",
-      "protocols/code.md": "---\nprosiform:\n  default:\n    group-depth: [{protocols: 2}]\n---\n# Code\n\n## Procedure\n\n1. Read the change.\n2. Note each departure.\n",
-      "protocols/tests.md": "---\nprosiform:\n  default:\n    group-depth: [{protocols: 2}]\n---\n# Tests\n\n## Procedure\n\n1. Run the suite.\n2. Note each failure.\n",
-      "protocols/publish.md": "---\nprosiform:\n  default:\n    group-depth: [{protocols: 2}]\n---\n# Publish\n\n## Procedure\n\n1. Commit the change.\n2. Push the branch.\n"
+      "protocols/code.md": "---\nprosiform:\n  default:\n    group: {protocols: 2}\n---\n# Code\n\n## Procedure\n\n1. Read the change.\n2. Note each departure.\n",
+      "protocols/tests.md": "---\nprosiform:\n  default:\n    group: {protocols: 2}\n---\n# Tests\n\n## Procedure\n\n1. Run the suite.\n2. Note each failure.\n",
+      "protocols/publish.md": "---\nprosiform:\n  default:\n    group: {protocols: 2}\n---\n# Publish\n\n## Procedure\n\n1. Commit the change.\n2. Push the branch.\n"
     }
   },
   "refused": {
