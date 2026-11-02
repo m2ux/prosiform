@@ -46,11 +46,10 @@ The goal is the initiative's Overview: every document arrives under a heading a 
 
 | Goal clause | Initiative criteria | Epics | Epic criteria | Source requirement |
 | --- | --- | --- | --- | --- |
-| G1 | AC1 | E01 | E01 AC1–AC3 | No marked source |
-| G2 | AC2 | E02 | E02 AC1–AC7 | No marked source |
-| G3 | AC3 | E04 | E04 AC1–AC19 | No marked source |
+| G2 | AC1 | E02 | E02 AC1–AC7 | No marked source |
+| G3 | AC2 | E04 | E04 AC1–AC19 | No marked source |
 
-Each initiative criterion states one clause's outcome and is made true by the one epic citing it: E01 AC2 refuses a bundle in which a destination answers two members, E02 AC1–AC4 compose each file under its own pairs before its parent merges it, and E04 AC3 with AC4 places a composed section beneath its containing heading.
+Each initiative criterion states one clause's outcome and is made true by the one epic citing it: E02 AC1–AC4 compose each file under its own pairs before its parent merges it, and E04 AC3 with AC4 places a composed section beneath its containing heading.
 
 ### Gaps, Ranked
 
@@ -101,6 +100,8 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 - **E02's example row dropped as delivered.** (User, 2026-11-02.) I08:E01 W02 (commit `ea80ce79`) moved every pair onto its leaf. At the I08:E01 base [bb404015](https://github.com/m2ux/prosiform/tree/bb404015/example/work-planner), all 44 documents under `artifacts`, `protocols` and `references` declare one pair naming their own directory's group at depth 1, and none of the 15 others (`SKILL.md`, `configuration.md`, `conventions.md`, `guidelines.md`, `rules.md` and the ten modes) declares any pair. E02 drops the row and its two criteria; the hierarchy row becomes W04 and the criteria renumber to AC1–AC7.
 - **Initiative criteria are the clauses' outcomes.** (User, 2026-11-02.) One criterion per goal clause replaces the fixture, page, per-revision check and closure criteria; each epic row covers its clause's criterion.
 - **Non-Goals.** (User, 2026-11-02.) The four drafted Non-Goals stand.
+- **Grouping Targets moves to I10.** (User, 2026-11-02.) The epic holds an existing rule by validation and changes where nothing arrives, so it serves I10's measurement that can fail. It is I10:E03 (#455) with `priority: 1`; G1 and its criterion leave this initiative, the remaining criteria renumber to AC1–AC2, and its work items stay in `e01/` here, which #455 links. The sections above that name E01 record how it was planned.
+- **I09 precedes I10.** (User, 2026-11-02.) I09 `priority: 2` and I10 `priority: 1`, so the MVP's I08 and I09 are delivered before the evaluation work.
 - **Earlier decisions stand.** (User, 2026-11-02.) E00 and E03 are closed; an earlier E02 row was dropped as delivered by I08; a composed target declaring no `prosiform` is refused.
 
 ## Links
@@ -108,7 +109,6 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 | Resource | Link |
 | --- | --- |
 | Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
-| Epic | [I09:E01 Grouping Targets](https://github.com/m2ux/prosiform/issues/455) |
 | Epic | [I09:E02 Section Placement](https://github.com/m2ux/prosiform/issues/458) |
 | Epic | [I09:E04 Section Composition](https://github.com/m2ux/prosiform/issues/460) |
 | Overlap | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |

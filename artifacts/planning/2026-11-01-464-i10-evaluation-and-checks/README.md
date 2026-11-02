@@ -38,6 +38,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G1 | AC1, AC2, AC9 | E00 | E00 AC1–AC4 | No marked source |
 | G2 | AC3, AC4, AC5, AC7 | E01 | E01 AC1–AC4 | No marked source |
 | G3 | AC6, AC8 | E02 | E02 AC1–AC6 | No marked source |
+| G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
 
 | Initiative criterion | Epic criteria that make it true |
 | --- | --- |
@@ -50,6 +51,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | AC7 | E01 AC4 |
 | AC8 | E02 AC5, AC6 |
 | AC9 | E00 AC1 |
+| AC10 | E03 AC2 |
 
 Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
 
@@ -119,6 +121,7 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **AC8's remedy.** `--eval-root` is the remedy for a refused file above the workspaces only, and E02 states it in its own criterion on the README row.
 - **E02's ancestor files.** The ancestor criterion names `settings.json` and `settings.local.json`.
 - **Managed settings.** The host's managed settings file is a settings file a session reads, so E02 refuses one declaring a hook, on its own row after W01.
+- **Grouping Targets joins as E03.** (2026-11-02.) I09:E01 (#455) holds an existing reference rule by validation, a check that can fail, so it moves here as E03 with `priority: 1`, adding goal clause G4 and AC10. Its work items stay in the [I09 record](../2026-11-02-463-i09-grouping-and-composition/e01/), and I10 now follows I09 (`priority: 1` against I09's `2`).
 - **AC1 and AC2.** They stand as written, although E00 AC3 and AC4 differ from them only by naming the dispatch forms and one model.
 
 ## Links
