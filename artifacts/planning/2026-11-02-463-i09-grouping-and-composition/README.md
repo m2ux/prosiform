@@ -126,6 +126,9 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 ## Decisions
 
+- **A deferral keeps its step's presets or is refused.** (User, 2026-11-02.) A deferred directive whose containing heading selects other presets than its target's own heading selects is refused, naming the link and both selections: activation selects by the target's heading, and no option names a referrer, so deferred content would compile otherwise than composed. Row W11, AC20.
+- **A section is composed or deferred, not both.** (User, 2026-11-02.) A scope that composes a section immediately and also defers it is refused, naming both directives. Row W11, AC21.
+- **No authoring guidance on conditional composition.** (User, 2026-11-02.) The grammar page states no rule about deferring conditionally needed content.
 - **Activation is its own entry run.** (User, 2026-11-02.) The run a deferred directive's generated line names compiles the target as an entry and publishes its own bundle; the earlier bundle keeps the line. A nested deferral may be taken conditionally, so only the agent following the bundle can decide whether to run `pf` on it. AC13 is reworded to this outcome.
 - **E01 restated to enforcement.** (Planning, from the brief.) The delivered reference rule leaves the epic with its criteria; the invariant check and its page stay.
 - **Preset `include` and `exclude` removed.** (User, 2026-11-02.) E04 drops AC20 and its Proposal clause; W09 covers presets and `subst`.
