@@ -272,17 +272,57 @@ class Substitution:
     key served it. A key's authored spelling is kept for the warning that
     states a key no reference named, and a mapping given none writes the
     key's identity back, which is the spelling the caller wrote.
+
+    `documents` holds the pairs each document's governing presets state,
+    by the path of the document that writes the links they redirect. A
+    link is resolved through the mapping in force for the document that
+    wrote it, which `writing` reads: the run's keys with that document's
+    pairs above them, so a pair reaches the links its declaring document
+    writes and no other document's. Every mapping read from one run
+    shares that run's record.
     """
 
     keys: Mapping[tuple[str, str | None], Reference]
     spellings: Mapping[tuple[str, str | None], str] = MappingProxyType({})
     folders: Mapping[str, Reference] = MappingProxyType({})
     redirects: Redirects = field(default_factory=Redirects, compare=False, repr=False)
+    documents: Mapping[str, Mapping[tuple[str, str | None], Reference]] = (
+        MappingProxyType({})
+    )
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "keys", MappingProxyType(dict(self.keys)))
         object.__setattr__(self, "spellings", MappingProxyType(dict(self.spellings)))
         object.__setattr__(self, "folders", MappingProxyType(dict(self.folders)))
+        object.__setattr__(
+            self,
+            "documents",
+            MappingProxyType(
+                {
+                    path: MappingProxyType(dict(pairs))
+                    for path, pairs in self.documents.items()
+                }
+            ),
+        )
+
+    def governed(
+        self, documents: Mapping[str, Mapping[tuple[str, str | None], Reference]]
+    ) -> "Substitution":
+        """This mapping with each document's governing pairs, sharing its record."""
+        return replace(self, documents=documents)
+
+    def writing(self, document: str) -> "Substitution":
+        """The mapping in force for the links one document writes.
+
+        A document's pair holds over a run key naming the same identity,
+        because the document states it for its own links.
+        """
+        pairs = self.documents.get(document)
+        if not pairs:
+            return self
+        return Substitution(
+            {**self.keys, **pairs}, self.spellings, self.folders, self.redirects
+        )
 
     def __len__(self) -> int:
         """How many keys the mapping holds, of either kind."""
@@ -449,7 +489,7 @@ class Substitution:
 
 
 UNSUBSTITUTED = Substitution({})
-"""The mapping a run given no `-m` carries, which redirects nothing."""
+"""The mapping that redirects nothing: no run key and no document's pair."""
 
 
 @dataclass(frozen=True)
@@ -785,7 +825,8 @@ def inside(
     The mapping is consulted on the identity the reference normalized
     to, which is the authored identity and never the substitute's, so
     a substitute is returned wherever it sits and opened through that
-    same walk.
+    same walk. The mapping read is the one in force for `document`, the
+    file that wrote the link.
 
     A remote reference is returned before the mapping is consulted: a
     key is the identity a reference normalized to, and a reference
@@ -801,6 +842,7 @@ def inside(
     found = resolve(text, base)
     if found.external:
         return found
+    substitution = substitution.writing(document)
     if not components(text).path:
         return substitution.redirect(
             replace(found, path=document, walk=document), origin
