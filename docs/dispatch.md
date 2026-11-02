@@ -25,7 +25,7 @@ That `#dispatch` needs a target, and the protocol it names is the bundle's first
 
 ## What a dispatch changes
 
-A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no content, no dependency through the link, no group membership. Its target is required to exist and to name the heading it names, because a sub-agent will follow it and the compilation must be able to succeed.
+A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no content, no dependency through the link, no group membership. Its target is required to exist, to declare `prosiform` and to name the heading it names, because a sub-agent will follow it and the compilation must be able to succeed.
 
 The run compiles each distinct target once, transitively: a dispatched bundle's own dispatches are further bundles in the same run folder. Every dispatch naming one target names that one bundle.
 
@@ -38,7 +38,7 @@ A section that dispatches gains generated structure:
 - one `Dispatch <link text>` sub-section for each target its own `⇉` links name
 - one `Dispatch in parallel` sub-section for the set its `⫽` links form
 
-Both sit one level below the section, after that section's own content and before its child sections. The dispatch sub-sections come first, then the parallel one. A dispatch in content above a group's first heading takes that heading's level.
+Both sit one level below the section, after that section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The dispatch sub-sections come first, then the parallel one. A dispatch in content above a group's first heading takes that heading's level.
 
 A dispatch sub-section's body is one line naming the target's bundle file and linking the protocol it follows. A parallel dispatch sub-section's body lists each target's bundle file once, with the first link's visible text; a set states no order.
 
@@ -47,7 +47,7 @@ flowchart TD
   Section["## Plan Mode"] --> Own["its own content"]
   Section --> D1["### Dispatch Sync"]
   Section --> D2["### Dispatch in parallel"]
-  Section --> Child["## child sections"]
+  Section --> Child["### child sections"]
   D1 --> B1["modes_sync-mode.bundle.md"]
   D2 --> B2["modes_review.bundle.md"]
   D2 --> B3["modes_audit.bundle.md"]
@@ -71,7 +71,7 @@ A dispatch in a heading the bundle emits as text alone has no section to stand b
 
 A bundle carrying a dispatch sub-section or a parallel dispatch sub-section opens with a **Prosiform section**: `# Prosiform`, then `## Dispatch` whenever the bundle dispatches, and `## Parallel dispatch` when it carries a set.
 
-A dispatched bundle carrying a deferred dispatch, or a deferred directive's generated `↳` line, opens with one too, because the sub-agent following it has run no `pf`. Its first sub-section is `## Run pf first`, ahead of any protocol, and the line `Before following this bundle, [run pf first](#run-pf-first).` stands directly above `# Prosiform`. A plain deferred link asks for no run of `pf`, and the entry's bundle is followed by the agent that ran it, so neither takes the sub-section.
+A dispatched bundle carrying a deferred dispatch, or a [deferred directive](composition.md#deferred-directives)'s generated `↳` line, opens with one too, because the sub-agent following it has run no `pf`. Its first sub-section is `## Run pf first`, ahead of any protocol, and the line `Before following this bundle, [run pf first](#run-pf-first).` stands directly above `# Prosiform`. A plain deferred link asks for no run of `pf`, and the entry's bundle is followed by the agent that ran it, so neither takes the sub-section.
 
 These headings are what the generated links point at, so their slugs matter as much as their wording:
 
@@ -92,7 +92,7 @@ Each protocol is one paragraph in wording the profile fixes, so the sub-section 
 
 **Dispatch depth** is the number of dispatch hops along one chain, counted from the run's entry. A chain reaching a fourth hop warns: flattening the chain is the author's optimisation rather than a defect in the bundle, so the run publishes and says so.
 
-A chain returning to a bundle already on it is a **cycle**, and the run fails. Neither search follows a target already on its chain, so the analysis terminates on any graph of dispatches.
+A chain returning to a bundle already on it is a **cycle**, and the run fails with `E_DISPATCH_CYCLE`; a dispatch naming the run's own single selection closes the shortest one. Neither search follows a target already on its chain, so the analysis terminates on any graph of dispatches.
 
 ```mermaid
 flowchart LR
@@ -104,13 +104,12 @@ flowchart LR
 
 *Figure 2. A Chain Reaching a Fourth Hop Publishes and Warns; the Limit Is Fixed.*
 
-A chain that returns to a bundle already on it is refused instead, and the walk stops at a target already seen, so the search ends on any graph of dispatches.
 
 A dispatched link naming the document that writes it warns where it closes no cycle: the sub-agent is being handed material the dispatching session's own document already carries. Its author moves the procedure to a document of its own, or links it without the operator.
 
 ## Generated headings
 
-An authored heading whose text equals one the run emits in the same bundle would give two sections one name. `Prosiform`, `Dispatch`, `Parallel dispatch`, `Dispatch in parallel`, and any dispatch sub-section's heading are refused where the bundle emits them, and the run names the heading and the text it equals.
+An authored heading whose text equals one the run emits in the same bundle would give two sections one name. `Prosiform`, `Run pf first`, `Dispatch`, `Parallel dispatch`, `Dispatch in parallel`, and any dispatch sub-section's heading are refused with `E_HEADING_COLLISION` where the bundle emits them, and the run names the heading and the text it equals.
 
 The comparison is exact, and case-sensitive: `## dispatch` is not `## Dispatch`, so it publishes. It takes `dispatch-1` rather than `dispatch`, because the Prosiform section's heading is the earlier one — which is why the protocol links keep reaching the protocol.
 
