@@ -2,7 +2,7 @@ description = "A target declaring nothing is text: the link is emitted as author
 
 clauses = [
   "Link classification and resource handling — A link naming a document that declares nothing",
-  "Resource limits — -F",
+  "Resource limits — files",
   "Exit status and JSON diagnostics — 0",
 ]
 

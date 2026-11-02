@@ -1,7 +1,7 @@
 description = "A target exactly as far from an entry reference as the expansion-depth budget allows is bundled, so the budget refuses what lies beyond it and nothing short of it."
 
 clauses = [
-  "Resource limits — -E",
+  "Resource limits — depth",
 ]
 
 [invocation]

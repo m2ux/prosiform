@@ -1,7 +1,7 @@
 description = "A complete bundle larger than the output budget fails the run rather than being truncated to fit, and nothing is published."
 
 clauses = [
-  "Resource limits — -O",
+  "Resource limits — output-bytes",
   "Agent delivery contract — No silent fallback",
 ]
 

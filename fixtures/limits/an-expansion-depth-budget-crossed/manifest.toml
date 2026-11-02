@@ -1,7 +1,7 @@
 description = "A target further from every entry reference than the expansion-depth budget names fails the run, the distance counted in link hops along the shortest path from the nearest entry reference."
 
 clauses = [
-  "Resource limits — -E",
+  "Resource limits — depth",
 ]
 
 [invocation]
