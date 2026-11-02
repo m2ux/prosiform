@@ -29,6 +29,32 @@ flowchart LR
 
 *Figure 1. Two Paths to One Target Carry It Once, and Both Links Point at It.*
 
+A link an operator withholds is not followed: a deferred or dispatched target contributes nothing to this closure, as [References](references.md#operators) states. A composition directive is followed, and its target lands beneath the section writing it, as [Composition](composition.md) states.
+
+## Presets in force
+
+A document declares its presets, as [Sources](sources.md#frontmatter) states, and each reference reaching it decides which of them are in force.
+
+- **`default` always applies.** A document's `default` preset is in force wherever it is compiled. The word `default` in a title selects nothing.
+- **A title selects by keyword.** A reference selects each preset of its target whose name appears as a whole word, in any case, in the title of the section holding the reference, so `Checks and Draft` selects `checks` and `draft` and `Checklist` selects neither. A reference in a preamble stands in no section and selects by no keyword.
+- **An entry reads the file it names.** A command-line entry selects by the title of the section it names, or by its document's own title.
+- **Selected presets layer over `default`.** A selected preset's `group` pair holds over `default`'s, and its alternative for a `subst` key holds over `default`'s for that key. The presets one title selects union their settings, and two of them stating different `group` pairs, or mapping one `subst` key to two alternatives, fail the run with `E_INVALID_USAGE` and exit status 2, naming both presets.
+- **A preset governs its own document.** The presets in force decide the group a document's selected content joins, as [Hierarchy](hierarchy.md#groups) states, and the target each link it writes resolves to. A document it links is governed by that document's own presets, as the linking section selects them, and a dispatched or deferred target by its own when it is compiled.
+- **Each link selects for itself.** Two sections linking one document may put different presets of it in force, and one run then places that document under each `group` pair they select.
+- **A preset nothing selected warns.** A preset of a document the run's bundles carry that no reference reaching it selected, in any bundle of the run, raises `W_PRESET_UNUSED`, naming the document and the preset, and the run publishes at exit status 0. `default` is never unused. A document reached only through a deferral raises none: the run compiling the deferral reads its presets.
+
+## The substitution mapping
+
+A `subst` pair states that a link names something else, so a bundle can be built against stand-in material without the tree under test being edited. A preset's `subst` is the only channel a substitution has, and a document whose presets in force state none compiles its links as authored.
+
+A document's links are written once, so they resolve through the `subst` pairs of every preset in force for it, by whichever reference reached it: a pair one reference selects redirects a link in content another reference bundled. Two of those presets mapping one key to two alternatives fail the run with `E_INVALID_USAGE` and exit status 2. The pairs reach only the links that document writes; a document it links, a substitute and a dispatched target each resolve their links under their own presets, so a substitute's fragment-only link names a section of that substitute.
+
+A key is the identity a reference normalized to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document, which covers the document and every fragment of it. Both sides resolve from the declaring document's directory, as every other path it writes does, so one declaration reads the same wherever the run starts, and a side carrying `..` reaches a substitute above the working directory.
+
+The mapping is consulted before the target is asked whether it declares, so a key naming a document that declares nothing, or none at all, makes the reference a dependency on the substitute. The substitute is the target outright: its title, its group and depth, its own declaration and its own links are the ones the run uses, and the bundle reads as if the author had written its path in the link. A pair redirects a deferred, dispatched or composing link as it does any other.
+
+An entry reference is written by no document, so no pair redirects it: the run compiles the document it names and is named for the path the caller wrote. A pair is used only by a link in content the run selected. A pair a link used warns with `W_SUBST_USED` once, at the first link that used it, naming that link, the identity it would have resolved to and the substitute. A pair no link used, a pair whose only link sits in a heading outside the selection included, warns with `W_SUBST_UNUSED`, naming its document.
+
 ## Consolidation
 
 Selections overlap. Asking for a section and then for its parent document would otherwise emit the section twice.
@@ -58,7 +84,7 @@ flowchart TD
 
 *Figure 2. Siblings Stand in the Order the Author Wrote the Links In.*
 
-A group stands where its first source is placed, a merged group inside the division of the document whose link placed it, as [Hierarchy](hierarchy.md#where-a-group-stands) states.
+A group stands where its first source is placed, a merged group inside the division of the document whose link placed it, as [Hierarchy](hierarchy.md#where-a-group-stands) states. A reference reaching a document already placed places nothing more and resolves to the document where it stands.
 
 ## Structural ancestors
 

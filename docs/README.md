@@ -10,9 +10,9 @@ Each page covers one part of a run, and they read in the order a run happens.
 | --- | --- |
 | [Concept](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) | The original design concept |
 | [Architecture](architecture.md) | The whole run, and where each of the pages below fits |
-| [Sources](sources.md) | What a source is, how its declaration includes it, and the boundary its links derive |
+| [Sources](sources.md) | What a source is, how its declaration and presets include it, and the boundary its links derive |
 | [References](references.md) | Which links are dependencies, which are text, and what an operator states |
-| [Selection](selection.md) | How the closure is reached, consolidated and ordered |
+| [Selection](selection.md) | How the closure is reached, which presets are in force, how a `subst` pair redirects a link, and how the closure is consolidated and ordered |
 | [Hierarchy](hierarchy.md) | File headings, groups, member names and the level shift |
 | [Composition](composition.md) | How a directive places a section beneath the section that writes it, and the grammar it is written in |
 | [Destinations](destinations.md) | How a heading is named and how each link is rewritten |
@@ -29,7 +29,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 | [Glossary](glossary.md) | Every term the contract uses, defined once |
 | [Versioning](versioning.md) | What the contract's and each build's version numbers assert |
 | [Diagram Renderer](diagram-renderer.md) | Render one entry and its dependencies as a diagram |
-| [Output budget](output-budget.md) | The bundled size of a measured closure, and how to re-take it |
+| [Output budget](output-budget.md) | What each named budget bounds, the bundled size of a measured closure, and how to re-take it |
 
 ## Commands
 
