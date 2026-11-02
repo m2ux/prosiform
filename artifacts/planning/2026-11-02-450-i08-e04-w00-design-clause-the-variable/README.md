@@ -12,6 +12,7 @@ This record holds its delivery of `AC7`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [w00.md](w00.md) | The work item: the *Conformance faults* section, its clauses and the design pin. |
 
 ## Links
 
