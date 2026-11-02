@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Selects a composed target's presets by the containing heading's title, governs it by the writer's subst, and places no contribution by a group pair.
+Selects a composed target's presets by the containing heading's title, so their subst governs the contribution and their group pair places none, and redirects a directive by the writer's subst.
 
 This record holds its delivery of `AC18,AC19`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
 
@@ -12,6 +12,9 @@ This record holds its delivery of `AC18,AC19`: the work item, the validation evi
 
 | Artifact | What it holds |
 | --- | --- |
+| [W09 work item](w09.md) | Composition under presets and `subst`: a selected preset governs a contribution, a `group` pair places none, and the writer's `subst` redirects a directive |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
