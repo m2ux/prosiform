@@ -1,0 +1,27 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/508",
+    "head": "5ccc55c2273e0a595a24a4ce09deab091e5ba706",
+    "base": "cf98536bf875b8ffb2e26a2d254a3cffe78688d9",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders/agent-review-508.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-02T06:31:17Z",
+    "scope": "Complete integration diff main...i08/e01/main, base cf98536b (origin/main; Update Epic Base found main already merged, 0 commits behind) to head 5ccc55c2: 260 files, carried by task merges #507, #509, #510, #511, #512, #513, #514, #515, #516, #517 and #518 and one review fix (#519, 5ccc55c2). Source read in the diff: metadata.py (Conversion/Preset/Membership/Subst, decode refusing non-mapping preset values and root at either level, _preset admitting group and subst alone, _pair/_membership/_subst entry shapes and their locations); source.py (uses carrying the title of the rooting heading via bisect over sections, sections limited to document-level headings); closure.py (Reference.title); cli.py (substs and stated_once on every read_document, required tagging occurrences with use.title, traverse reselecting a carried target reached from a new title via the titled set without re-entering the frontier, keyworded whole-word case-folded matching, keywords excluding default, pair falling back to default's membership, entry_title for section and whole-document entries, selecting_title, agreed refusing disagreeing group pairs and subst alternatives, joined/group_depths/membership/assembled placing a document in each group its references put in force, coincident reading memberships, unselected and unused_presets intersecting across bundles and emitted in execute after the mock warnings); candidate.py (coverage held per group). Callers checked: compiled -> traverse -> read_document, compose -> joined -> agreed/pair, execute -> unused_presets, dispatched bundles feeding unused_presets. Pages read: invocation.md, docs/sources.md, docs/glossary.md, docs/hierarchy.md, README design pin; tree searched for group-depth, GROUP_DEPTH, path-sub and exclude.",
+    "criteria": "AC1-AC16 of #436, all ticked. Re-verified at the reviewed tree: make corpus 423 fixtures, 423 pass, covering the inclusion fixtures AC1-AC8, AC13, AC15 and AC16 name; make invocation passes (AC9) with the invocation stating presets, the keyword rule, default and what a match governs; make vocabulary passes with the source page and the glossary's preset entry (AC10); make conformance passes at pin c1c68415 with 0 declarations naming no clause (AC11); AC12 and AC14 by git grep for group-depth, GROUP_DEPTH, path-sub and a word exclude over src, docs, invocation.md, fixtures and checks returning nothing beyond the group_depths function name; unit tests for metadata and cli cover the refusals behind AC13, AC15 and AC16.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, steps, authoring, boundary, test 1574 passed, harness 1150 passed, corpus 423/423, smoke, layout, tables, links, vocabulary, invocation, conformance, independence, mock-scenarios 5/5) passed locally at 089cbcdf51db371556ca274605fc8d8e1f4419e5, whose tree is the head's (5ccc55c2 merges it into 923affc3 with no other change), with PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'. A first run at 923affc3 stopped in harness only because the checkout lacked the design pin commit; fetching engineering resolved it. CI workflow Checks passed on 923affc3 and on 5ccc55c2273e0a595a24a4ce09deab091e5ba706: https://github.com/m2ux/prosiform/actions/runs/41399912530/job/125129287022",
+    "findings": [
+      {
+        "description": "False claim on the pages: invocation.md stated that the presets in force decide where each reference the document writes resolves (subst) and that the example's links to steps.md resolve to strict-steps.md, and docs/sources.md said a subst entry maps one reference to another; the build validates subst entries and holds selected presets to agreeing, but applies only the -m substitution mapping. docs/sources.md now states that a run checks each subst entry and redirects no reference by it, and invocation.md links that statement.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/519"
+      },
+      {
+        "description": "Ambiguous sentence in docs/sources.md: 'A key naming a budget ... is among them' followed 'a key outside them fails', so 'them' could read as the admitted keys. It now reads 'is such a key'.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/519"
+      }
+    ]
+  }
+]
