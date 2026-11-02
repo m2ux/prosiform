@@ -42,7 +42,7 @@ FENCE = re.compile(r"```bash\n(.*?)```", re.DOTALL)
 FRONT = re.compile(r"\A---\n(.*?)\n---", re.DOTALL)
 ROOT_KEY = re.compile(r"\broot:")
 TAKES_VALUE = frozenset(
-    {"-o", "-m", "-d", "-x", "-F", "-B", "-I", "-O", "-T", "-L", "-N", "-E"}
+    {"-o", "-m", "-d", "-F", "-B", "-I", "-O", "-T", "-L", "-N", "-E"}
 )
 SWITCH = frozenset({"-c", "-C", "-v", "-h"})
 
