@@ -1,0 +1,16 @@
+description = "A label of an ASCII character, an entity decoding to one, or a scalar above U+007F between spaces is no composition directive, since nothing is trimmed to make a label qualify, so each is an ordinary link in the preamble: its target is bundled and its destination rewritten, and the bundle carries its text as written."
+
+clauses = [
+  "Section composition — Recognition",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Bundle destinations — Internal links",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

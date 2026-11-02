@@ -85,6 +85,7 @@ from prosiform.closure import (
     withholding,
     withholding_target,
 )
+from prosiform.composition import directive
 from prosiform.diagnostics import (
     ERROR,
     FORMATS,
@@ -1712,6 +1713,37 @@ def refusals_of_operators(
         )
 
 
+def refusals_of_directives(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+) -> None:
+    """Refuse a composition directive that no section holds.
+
+    A directive places its target beneath the section containing it, so
+    one written in the preamble has no scope to place it in. The label
+    asks for a placement the run cannot make, which is a source fault:
+    the run reports the link rather than reading it as an ordinary one.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.title is not None or not directive(use.label):
+            continue
+        raise input_failure(
+            f"the link {use.label!r} is a composition directive in the preamble, "
+            f"which no section holds, so the run has no scope to place "
+            f"{use.destination!r} beneath",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy="write the directive inside the section its target belongs "
+            "beneath, or give the link a label that requests no placement",
+            reference=use.destination,
+            source=location(path, source.line(use.line)),
+            chain=(*chain, use.destination),
+        )
+
+
 def withheld(
     path: str,
     source: Source,
@@ -1947,6 +1979,7 @@ def traverse(
                 declarations,
                 substitution,
             )
+            refusals_of_directives(path, read[path], parsed[path], chosen, reached)
             for one in withheld(
                 path,
                 read[path],

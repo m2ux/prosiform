@@ -1,0 +1,15 @@
+description = "A deferred link whose label, once the deferral mark is set aside, is ordinary text is a deferral and no composition directive, so in the preamble it is withheld as any deferral is rather than refused for want of a scope."
+
+clauses = [
+  "Section composition — Operator marks",
+  "Link classification and resource handling — The deferral mark",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

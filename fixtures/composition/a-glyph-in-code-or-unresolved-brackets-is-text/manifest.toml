@@ -1,0 +1,14 @@
+description = "A link written inside a code span and bracketed text no definition resolves are no links, so neither is a composition directive, and the preamble carrying them is bundled as written."
+
+clauses = [
+  "Section composition — Recognition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
