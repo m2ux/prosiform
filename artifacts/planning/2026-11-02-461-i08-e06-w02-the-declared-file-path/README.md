@@ -16,11 +16,13 @@ This record holds its delivery of `AC3, AC8, AC9, AC11`: the work item, the vali
 | [w06.md](w06.md) | The work item for W06: a pair's reach confined to its declaring document's links, and its record keyed by that document. |
 | [w08.md](w08.md) | The work item for W08: the folder pair's retirement and the separator refusal. |
 | [validation.md](validation.md) | The validation evidence for every check the work items name. |
+| [changes.md](changes.md) | The plan changes this session applied and held. |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I08:E06 Preset-Only Substitution](https://github.com/m2ux/prosiform/issues/461) |
+| Pull request | [#565](https://github.com/m2ux/prosiform/pull/565) |
 | Initiative | [I08 Argument Surface](https://github.com/m2ux/prosiform/issues/462) |
 | Epic record | [Declared Inclusion, Target Presets and Exclusion](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) |
