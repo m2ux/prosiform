@@ -41,6 +41,8 @@ File and directory names use hyphens rather than underscores. A path separator i
 
 Two entries whose paths derive one name, `a/b.md` and `a_b.md` among them, join into one name rather than colliding: the run publishes one folder, `a_b+a_b.bundles`, holding one bundle.
 
+Two bundles of one run that derive one name are refused with `E_PUBLICATION_FAILED`, naming both selections, before any bundle is written: an entry `a/b.md` dispatching `a_b.md` is one such run. So is a run folder or bundle name longer than the output folder's filesystem allows, naming the selection it derives from.
+
 ## Publication
 
 The run folder is written whole beside the earlier one and renamed onto it. An earlier set standing there is renamed aside first and removed once the new folder stands, so a reader sees one run's set or the one before it, never a mixture.
@@ -64,6 +66,8 @@ flowchart LR
 `-o DIR` names the folder the run's own folder is written into, made with any absent parents if it is absent. The working directory is the default. `-o -` is refused: standard output carries no bundle, only the guide, an informational response, or nothing.
 
 A run folder holding any source the run reads is refused, so a run can never write over its own input.
+
+An output folder the run cannot make is refused with `E_PUBLICATION_FAILED`. `-c` runs every check publication holds — the output budget, the names, and what stands at the run folder's path — and writes no bundle; it makes an absent output folder as a publishing run does.
 
 ## Delivery
 
