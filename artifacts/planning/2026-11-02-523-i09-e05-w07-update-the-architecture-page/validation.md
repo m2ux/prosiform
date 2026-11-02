@@ -39,6 +39,7 @@ The bundles page read against `cli.publication`, `publish_folder`, `occupied`, `
 - **Added: overlong names.** `overlong` refuses a run folder or bundle name past the filesystem's `PC_NAME_MAX`.
 - **Added: an output folder that cannot be made** is refused with `E_PUBLICATION_FAILED`.
 - **Added: what `-c` checks.** `publication` runs the output budget, name and occupied-path checks before the `check` branch, and makes an absent output folder under `-c` too. Probe: `pf -c -o out3/deep a_b.md` exits 0 and leaves `out3/deep` made and empty.
+- **Arising.** The `-c` folder is raised as [#588](https://github.com/m2ux/prosiform/issues/588).
 - **Held true.** Derived names, publication's swap, the symbolic link and regular-file cases, `-o -` and the run folder holding a source.
 
 ## AC10
@@ -84,3 +85,5 @@ The glossary read term by term against the design at 4958ad38 and the build.
 ## Make Check
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'` at the branch head 0f1df83c exits 0: 1663 check tests, 1161 build tests, 498 of 498 fixtures, smoke, layout, tables, links (143 documents), vocabulary (49 terms), invocation (28 statements), conformance and independence.
+
+After merging `origin/i09/e05/main` (a7eae14c) into the branch, `make check` at 2dd66374 exits 0 with the same counts.
