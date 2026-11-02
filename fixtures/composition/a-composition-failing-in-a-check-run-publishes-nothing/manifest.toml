@@ -1,0 +1,21 @@
+description = "A check run over the same sources fails as the run does: the dispatched log's composition collides with its authored Inputs heading, so the run returns the input status, writes nothing and leaves standard output empty."
+
+clauses = [
+  "Section composition — Failure",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["-c", "guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+message_contains = ["log.md:10"]
+reference = "read.md#inputs"
+source = "log.md:8"
+chain = ["log.md", "read.md#inputs"]
