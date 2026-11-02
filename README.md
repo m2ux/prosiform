@@ -54,7 +54,7 @@ With no arguments, `pf` prints the guide an agent follows a skill by: the compil
 
 ### Declare a Source
 
-A document is compiled when its leading YAML frontmatter declares `prosiform`; a link to a document that declares nothing is left as written. Each key under `prosiform` is a preset: `default` is in force wherever the document is compiled, and another is in force where the title of the section linking the document names it. A preset's `group` pair places the document's sections in a shared group at a depth, and its `subst` pairs redirect the links the document writes. [Sources](docs/sources.md#frontmatter) states the presets in full.
+A document is compiled when its leading YAML frontmatter declares `prosiform`; a link to a document that declares nothing is left as written. Each key under `prosiform` is a preset: `default` is in force wherever the document is compiled, and another is in force where the title of the section linking the document names it. A preset's `group` pair places the document's sections in a shared group at a depth, and its `subst` pairs redirect the links the document writes. [Sources](docs/sources.md#frontmatter) states the declaration and its presets, and [Selection](docs/selection.md#presets-in-force) which presets a link puts in force.
 
 ```yaml
 ---

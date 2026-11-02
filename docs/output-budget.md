@@ -9,7 +9,7 @@ read whole.
 45,065 over the budget, and the run publishes nothing:
 
 ```text
-E_RESOURCE_LIMIT: the run reached 307209 bytes of the complete bundle, which crosses the output-bytes budget of 262144
+E_RESOURCE_LIMIT: the run reached 262254 bytes of the complete bundle, which crosses the output-bytes budget of 262144
   remedy: restructure the sources, or raise --budget output-bytes
 ```
 
@@ -17,6 +17,29 @@ The bundle is 96.6% of the bytes its sources hold: the link-reference definition
 removes and the destinations it shortens to one fragment cost more than the one
 top-level heading per document it adds. A closure of this shape therefore bundles to
 about what it reads, and the default admits roughly five sixths of it.
+
+## The named budgets
+
+`output-bytes` is one of eight budgets a run holds each bundle to, and each fails the
+run rather than truncating it. Four bound what the run reads, three bound how far the
+links lead it, and one bounds what it writes:
+
+| Budget | Bounds |
+| --- | --- |
+| `files` | the source documents a bundle opens |
+| `file-bytes` | the size of any one source |
+| `input-bytes` | the size of every source a bundle reads, together |
+| `nesting` | how deeply one source nests its containers, and its YAML |
+| `targets` | the documents and sections the links discover |
+| `links` | the links and images the selected content writes |
+| `depth` | how many links lie between a target and its entry |
+| `output-bytes` | the size of the bundle the run writes |
+
+
+The [budgets table](../invocation.md#budgets) gives each default and the rule its figure
+is counted by, and `--budget NAME=VALUE` sets one. A document that declares nothing is
+read no further than its frontmatter, so it counts against no source budget, and
+[Validation](validation.md#budgets) states how a crossing is reported.
 
 ## The closure
 
@@ -60,12 +83,14 @@ sed -i 's|(SKILL.md#command-conventions)|(SKILL.md)|' /tmp/closure/skills/work-p
 cd /tmp/closure/skills
 find . -name '*.md' -print0 | xargs -0 perl -0pi -e 's/\A---\n/---\nprosiform: {}\n/ or s/\A/---\nprosiform: {}\n---\n/'
 <build> work-planner/modes/plan-mode.md
+<build> --budget output-bytes=1000000 work-planner/modes/plan-mode.md
 ```
 
-The run is refused, so the figure is read off the refusal: `limits.Crossed` carries the
-budget, the limit and the counted figure, and the diagnostic reports all three. Raising
-`output-bytes` publishes the bundle, and its size on disk equals the figure the
-refusal named.
+The first run is refused. The run counts the bundle as it writes it and stops at the
+first part that crosses the budget, so the refusal names the figure it had reached
+there, 262,254, rather than the size of the complete bundle. The second run raises
+`output-bytes` and publishes the bundle, and its size on disk, 307,209 bytes, is the
+figure above.
 
 ## What the measurement settles
 

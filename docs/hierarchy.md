@@ -1,6 +1,6 @@
 # Hierarchy
 
-A bundle is one Markdown document, and a document is read from its headings. Whatever the run gathered has to arrive as a readable outline: one heading per contributing document or group, and each document's own headings kept beneath it in the shape its author wrote them.
+A bundle is one Markdown document, and a document is read from its headings. Whatever the run gathered has to arrive as a readable outline: one heading per document or group the run places, and each document's own headings kept beneath it in the shape its author wrote them.
 
 ```
 Guide                       ← the entry document's title
@@ -16,9 +16,9 @@ A merged group is where this shows most: several files declaring one name share 
 
 ## File headings
 
-Each contributing source becomes a **file heading**, an H1. Its text is the document's title where it has one: the document's first heading, if that is its only H1 and sits at the document level. A document with no title is headed by its path relative to the working directory, without the Markdown suffix, in title case.
+Each contributing source becomes a **file heading**, an H1. Its text is the document's title where it has one: the document's first heading, if that is its only H1 and sits at the document level. A document with no title is headed by its path relative to the working directory, without the Markdown suffix, in title case. The heading is written as literal text, so punctuation in a title or a path opens no link, image or HTML.
 
-The file heading carries the title, so the title is not emitted again beneath it. A self-reference to that title resolves to the file heading.
+The file heading carries the title, so the title is not emitted again beneath it. A self-reference to that title resolves to the file heading. A title is absorbed only where the bundle emits its section; where a selection leaves it out, the file heading still carries its text and the document's headings shift as below.
 
 There is no heading above the file headings: a file heading stands at the top level of the bundle wherever its document is placed. A directory names no division.
 
@@ -38,7 +38,7 @@ Source headings move down one level beneath their file heading: H1 becomes H2, H
 
 A group whose title the file heading absorbed is the exception: the file heading has already taken the level the shift would make room for, so its source levels stay as written.
 
-A source heading that would land beyond H6 fails the run. The run does not flatten it or write an H7 as though it were a heading.
+A source heading that would land beyond H6 fails the run with `E_HEADING_DEPTH_OVERFLOW`. The run does not flatten it or write an H7 as though it were a heading.
 
 Setext headings are converted to ATX when the shift requires it, keeping their visible text. Heading-like text inside a code block is untouched.
 
@@ -46,16 +46,18 @@ Setext headings are converted to ATX when the shift requires it, keeping their v
 
 A **group** is one division of the bundle. By default a group is one source document and its division is that document's file heading.
 
-A document whose presets in force name a group in `group` joins that **merged group** instead, sharing one heading with every other contributor declaring the same name. Each link places the document under the one pair its selection puts in force, so two links selecting different pairs place it in each of their groups, its selected content emitted once in each.
+A document whose presets in force, as [Selection](selection.md#presets-in-force) states, name a group in `group` joins that **merged group** instead, sharing one heading with every other contributor declaring the same name. Each link places the document under the one pair its selection puts in force, so two links selecting different pairs place it in each of their groups, its selected content emitted once in each.
 
-- The group's heading is the declared name in title case. A name of hyphens, underscores and spaces alone carries no word for title case to name, and fails the run.
-- Every member must declare the same depth. A disagreement fails the run and names both declarations.
+- The group's heading is the declared name in title case, so `harness-rules` heads `Harness-Rules`. A group is identified by its name exactly as declared, with no trimming or case folding.
+- Every member must declare the same depth. A disagreement fails the run with `E_GROUP_CONFLICT`, naming both declarations.
 - Membership is explicit. A declaration discovers no files, and an unannotated sibling keeps its own group.
 - A deferred-only target is validated but joins no group.
 
-Sections at the grouping depth are merged: each distinct heading text is emitted once, with every member's contribution beneath it. The level below the grouping depth becomes one level shallower relative to the merged heading, and so on.
+Sections at the grouping depth are merged: each distinct heading text is emitted once, one level below the group's heading, with every member's contribution beneath it, and each deeper heading keeps its distance below it. A member's heading at the grouping depth is replaced by the merged one.
 
-Where two or more members contribute the same heading text, that section splits into **variants** — one heading per contributing document, carrying that document's text, lists and subheadings. Each item stays with its document.
+Where two or more members contribute the same heading text, that section splits into **variants** — one heading per contributing document, carrying that document's text, lists and subheadings, which move one level down beneath it. Each item stays with its document. A section one member alone contributes keeps that member's arrangement.
+
+A pair places its own document's sections and no other's. A linked document is placed by its own pair wherever a parent bundles it, and is composed under that pair before the parent merges it, so it arrives with every group it placed already standing inside its division. A link a document writes and does not bundle — to a document that declares nothing, a withheld target, a remote address or a resource — places nothing and stays that document's content where it was written.
 
 ## Where a group stands
 
@@ -84,7 +86,7 @@ A member's subsection absorbs the member's own title where the title's slug agre
 
 A member whose content all sits at the grouping depth, with no title for a subsection to absorb, takes no subsection: the merged sections it contributes to name it, and a whole-document reference to it resolves to the first heading the group emits from it that no other member shares.
 
-Where the first entry document is itself a member and carries its title above the grouping depth, that title opens the group in place of the group's name, and the entry takes no subsection.
+The first entry document is the group's **parent** where it is a member. The sections it carries at the grouping depth lead the group's merged sections in its own order, its contribution first where several members share one. Where it carries its title above the grouping depth, that title opens the group in place of the group's name, its other content above that depth follows at the levels its author wrote, the entry takes no subsection, and the other members' subsections follow the merged sections. A whole-document reference to a titled parent resolves to the heading carrying its title.
 
 The member subsections sit beneath an `Overview` heading where the group also emits merged sections and a member carries content beneath its subsection. Where every subsection is the heading alone, or the group emits no merged section, they sit directly beneath the group heading.
 
@@ -101,11 +103,15 @@ flowchart TD
 
 *Figure 2. A Merged Group: Members Above the Grouping Depth, Merged Sections Split into Variants.*
 
+## Composed sections
+
+A composition directive places its target's section beneath the section writing it, not in a division of its own, and a `group` pair places no contribution. [Composition](composition.md#where-it-lands) states where a composed section lands and the levels it takes.
+
 ## Two headings that read alike
 
-Distinct file headings can coincide, as two documents with one title, or two untitled documents whose paths differ only by extension or capitalization. Both are published, the later taking an ordinal as any repeated heading does, and the run warns once naming the shared text and each source. A reader tells them apart by where they stand.
+Distinct file headings can coincide, as two documents with one title, or two untitled documents whose paths differ only by extension or capitalization. Both are published, the later taking an ordinal as any repeated heading does, and the run warns once with `W_COINCIDENT_HEADING`, naming the shared text and each source. A reader tells them apart by where they stand.
 
-The same applies to two member headings of one merged group whose complete paths still yield one name. Repeated headings an author wrote inside one document are the author's own ambiguity, and are refused earlier, when a fragment selects one.
+The same applies to two member headings of one merged group whose complete paths still yield one name. Repeated headings an author wrote inside one document are the author's own ambiguity, and are refused earlier with `E_AMBIGUOUS_SOURCE_HEADING`, when a fragment selects one.
 
 ## Title case
 

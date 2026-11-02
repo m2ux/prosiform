@@ -10,31 +10,23 @@ Every link inside a source is a **reference**, and the run answers that question
 
 ## Classification
 
-A reference is a **dependency** when it carries no scheme and no authority and names a Markdown document, or a section of one, whose leading frontmatter declares `prosiform`. A dependency is followed, its content included, and the link rewritten to the destination the bundle gives it.
+A reference is a **dependency** when it carries no scheme and no authority and names a Markdown document, or a section of one, whose leading frontmatter declares `prosiform`. A dependency is followed, its content included, and the link rewritten to the destination the bundle gives its target, as [Destinations](destinations.md) states. A composition directive is a dependency whose target lands beneath the section writing it, as [Composition](composition.md) states.
 
 The question is asked of the target, not of the source that links it. Where either file sits decides nothing, so one document reached by two sources is one answer, and a link may name a declaring document anywhere, above the working directory included.
+
+A `subst` pair of the writing document's presets is asked first, on the identity the reference normalized to, as [The substitution mapping](selection.md#the-substitution-mapping) states: a reference a pair redirects is a dependency on the substitute, whatever its authored path names.
 
 Everything else is carried as text and never opened:
 
 | Reference | What happens |
 | --- | --- |
 | A link to a remote address | emitted as authored; no scheme is fetched or judged |
-| A link to a document that declares nothing | emitted as authored; its frontmatter is read and nothing more, so it adds no content, no group and nothing to any budget |
+| A link to a document that declares nothing | emitted as authored; its frontmatter is read and nothing more, so it adds no content, no group and nothing to any source budget |
 | A link to a document that does not exist | emitted as authored; nothing states the bundle answers for it |
 | An image, whatever it names | emitted as authored; image syntax embeds, so a document named that way is not bundleable |
 | A link to a non-Markdown file | emitted as authored |
 
-A bundle carrying any of these is still a successful run, and warns once that a resource it names may not be found where the bundle is read.
-
-## The substitution mapping
-
-A `subst` pair of a document's presets in force, as [Sources](sources.md) states, redirects a link that document writes, so a bundle can be built against stand-in material without the tree under test being edited. An entry reference is written by no document, so no pair redirects it: the run compiles the document it names and is named for the path the caller wrote. A pair is used only by a link in content the run selected. A pair a link used warns with `W_SUBST_USED`, naming the link, the identity it would have resolved to and the substitute, and a pair no link used, a pair whose only link sits in a heading outside the selection included, warns with `W_SUBST_UNUSED`, naming its document.
-
-A key is the identity a reference normalized to, so `./rules.md` and `rules.md` name one key. A key carrying a fragment redirects that section alone and takes precedence over a key naming the whole document, which covers the document and every fragment of it. Both sides resolve from the declaring document's directory, as every other path it writes does, so one declaration reads the same wherever the run starts, and a side carrying `..` reaches a substitute above the working directory.
-
-The substitute is the target outright: its title, its group and depth, its own declaration and its own links are the ones the run uses, and the bundle reads as if the author had written its path in the link.
-
-The mapping is consulted on the identity a reference normalized to, before the target is asked whether it declares. A reference naming a document that declares nothing, or none at all, is text the bundle carries — unless a key names it, in which case the run reads the substitute and compiles it like any dependency.
+A bundle carrying an image or a link to a non-Markdown file is still a successful run, and warns once with `W_RESOURCE_PORTABILITY` that a resource it names may not be found where the bundle is read.
 
 ```mermaid
 flowchart TD
@@ -54,7 +46,7 @@ flowchart TD
 
 A reference with no fragment, or an empty one, selects the whole document: its body, its preamble included, less frontmatter. A reference with a fragment selects one section — a document-level heading and its subsections, ending before the next heading of equal or higher level.
 
-Only a heading names a section. A fragment is looked up in the original document's own heading index, exactly as spelled, so `#Run` and `#run` name different things.
+Only a heading names a section. A fragment is looked up in the original document's own heading index, exactly as spelled, so `#Run` and `#run` name different things. A fragment naming no heading in its document fails with `E_TARGET_NOT_FOUND`, one naming a heading nested inside a list or a block quote with `E_NESTED_SECTION_TARGET`, and one naming a slug two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`.
 
 ## Operators
 
@@ -78,7 +70,7 @@ A mark followed directly by text opens no operator. `[⇉Sync](sync.md)` is an o
 
 Symbols are written together, and the one blank stands between the last of them and the link's text. A deferral combines with a dispatch, so `[¬⇉ Rules](rules.md)` is a deferred dispatch: the later run that compiles the rules finds the dispatch. A blank between two symbols — `[¬ ⇉ Rules](rules.md)`, `[¬ →](call.md#outputs)` or `[⇉ →](call.md#outputs)` — states no one operation and is refused, and so are two dispatch marks, `[⇉⫽ Rules](rules.md)`, which state two ways for one sub-agent to run. An operator naming anything but a Markdown document or section that declares `prosiform` is refused on the same ground, and one naming a document that does not exist fails with `E_TARGET_NOT_FOUND`.
 
-A deferral publishes a destination spelled from the invocation working directory, so the same command line can be run from there. A dispatch and a parallel dispatch publish a link to the generated sub-section, which [Dispatch](dispatch.md) covers.
+The published link carries its text without the marks and the blank after them. A deferral publishes a destination spelled from the invocation working directory, so the same command line can be run from there. A dispatch and a parallel dispatch publish a link to the generated sub-section, which [Dispatch](dispatch.md) covers. Neither is rewritten to a destination inside the bundle, even where another reference carried the target into it: what one author withheld, another author's reference does not change.
 
 ```mermaid
 flowchart TD
