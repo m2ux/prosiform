@@ -13,6 +13,7 @@ This record holds its delivery of `AC17`: the work item, the validation evidence
 | Artifact | What it holds |
 | --- | --- |
 | [W08 work item](w08.md) | The composing reach, the included selection, placement through contributions and the diagnostic chains |
+| [Validation](validation.md) | T1 to T3 at the revisions they ran |
 
 ## Links
 
