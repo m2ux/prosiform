@@ -1,0 +1,27 @@
+description = "Two group-depth entries of one preset naming one group pair it twice, even at one depth, so the run fails with E_INVALID_USAGE at the second entry, naming both, and publishes nothing."
+
+clauses = [
+  "Presets — Selected presets union",
+  "Grouping — Group membership",
+  "Metadata failures",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["prosiform.default.group-depth[1] names group 'modes', which prosiform.default.group-depth[0] already names"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 32

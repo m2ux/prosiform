@@ -1260,16 +1260,251 @@ def test_a_depth_disagreement_in_one_of_a_documents_groups_refuses(
     assert diagnostic["related"][0]["file"] == "b.md"
 
 
-def test_a_group_its_preset_names_twice_holds_the_document_once(root: Path) -> None:
+@pytest.mark.parametrize("depths", [(1, 1), (1, 2)])
+def test_a_group_its_preset_names_twice_is_refused(
+    root: Path, depths: tuple[int, int]
+) -> None:
+    """One preset pairing one group twice is refused, at one depth or two."""
     written(root, "guide.md", DECLARED + "# Guide\n\nFollow [the rules](rules.md).\n")
     written(
         root,
         "rules.md",
-        joining(("modes", 1), ("modes", 1)) + "# Rules\n\nEvery rule.\n",
+        joining(("modes", depths[0]), ("modes", depths[1])) + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert diagnostic["message"].startswith(
+        "prosiform.default.group-depth[1] names group 'modes', which "
+        "prosiform.default.group-depth[0] already names"
+    )
+    assert diagnostic["reference"] == "rules.md"
+    assert diagnostic["chain"] == ["guide.md", "rules.md"]
+    assert diagnostic["location"]["file"] == "rules.md"
+    assert diagnostic["related"][0]["message"] == (
+        "prosiform.default.group-depth[0] names group 'modes'"
+    )
+
+
+def substituting(*entries: str) -> str:
+    """One source's conversion metadata whose `default` holds each `subst` entry."""
+    return "---\nprosiform:\n  default:\n    subst: [" + ", ".join(entries) + "]\n---\n"
+
+
+@pytest.mark.parametrize(
+    ("entries", "message"),
+    [
+        (
+            ("{rules.md: a.md}", "{./rules.md: b.md}"),
+            "prosiform.default.subst[1] key './rules.md' names the identity the key "
+            "of prosiform.default.subst[0] names",
+        ),
+        (
+            ('{"rules.md#Checks": a.md}', '{"rules.md#Checks": b.md}'),
+            "prosiform.default.subst[1] key 'rules.md#Checks' names the identity",
+        ),
+        (
+            ("{rules.md: a.md}", "{notes/../rules.md: b.md}"),
+            "prosiform.default.subst[1] key 'notes/../rules.md' names the identity",
+        ),
+        (
+            ("{rules.md: ./rules.md}",),
+            "prosiform.default.subst[0] maps 'rules.md' to './rules.md', which name "
+            "one identity",
+        ),
+        (
+            ('{"guide.md#Checks": "#Checks"}',),
+            "prosiform.default.subst[0] maps 'guide.md#Checks' to '#Checks', which "
+            "name one identity",
+        ),
+        (
+            ('{"#Checks": stub.md}',),
+            "prosiform.default.subst[0] key '#Checks' names a section alone",
+        ),
+    ],
+)
+def test_a_subst_rule_stated_twice_or_against_itself_is_refused(
+    root: Path, entries: tuple[str, ...], message: str
+) -> None:
+    written(
+        root,
+        "guide.md",
+        substituting(*entries) + "# Guide\n\n## Checks\n\nEvery check.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert message in diagnostic["message"]
+    assert diagnostic["location"]["file"] == "guide.md"
+
+
+@pytest.mark.parametrize(
+    "entries",
+    [
+        ("{rules.md: a.md}", '{"rules.md#Checks": b.md}'),
+        ("{rules.md: a.md}", "{notes/rules.md: b.md}"),
+        ('{"rules.md#Checks": "#Checks"}',),
+    ],
+)
+def test_subst_keys_naming_distinct_identities_are_admitted(
+    root: Path, entries: tuple[str, ...]
+) -> None:
+    written(root, "guide.md", substituting(*entries) + "# Guide\n\nAll.\n")
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+
+
+def test_two_selected_presets_pairing_one_group_at_two_depths_are_refused(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks and Draft\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", [("reviews", 1)]), ("Draft", [("reviews", 2)]))
+        + "# Rules\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert diagnostic["message"] == (
+        "prosiform.Checks.group-depth and prosiform.Draft.group-depth, both "
+        "selected by the title 'Checks and Draft', pair group 'reviews' with "
+        "depths 1 and 2"
+    )
+    assert diagnostic["reference"] == "rules.md"
+    assert diagnostic["location"] == {"file": "rules.md", "line": 4, "column": 31}
+    assert diagnostic["related"][0] == {
+        "file": "rules.md",
+        "line": 6,
+        "column": 31,
+        "message": "prosiform.Draft.group-depth for group 'reviews' is 2",
+    }
+
+
+def test_two_selected_presets_mapping_one_key_two_ways_are_refused(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks and Draft\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  Checks:\n    subst: [{steps.md: a.md}]\n"
+        "  Draft:\n    subst: [{./steps.md: b.md}]\n---\n# Rules\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == USAGE_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert diagnostic["message"] == (
+        "prosiform.Checks.subst and prosiform.Draft.subst, both selected by the "
+        "title 'Checks and Draft', map './steps.md' to 'a.md' and 'b.md'"
+    )
+    assert diagnostic["related"][0]["message"] == (
+        "prosiform.Draft.subst maps './steps.md' to 'b.md'"
+    )
+
+
+def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
+    """One group at one depth, and one key to one alternative, state one setting."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks and Draft\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n"
+        "  Checks:\n    group-depth: [{reviews: 1}]\n    subst: [{steps.md: a.md}]\n"
+        "  Draft:\n    group-depth: [{reviews: 1}, {drafts: 1}]\n"
+        "    subst: [{./steps.md: ./a.md}]\n"
+        "---\n# Rules\n\nAll.\n",
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert run.bundle.count("Every rule.") == 1
+    assert run.bundle.count("All.") == 2
+    assert "# Reviews\n\n## Rules" in run.bundle
+    assert "# Drafts\n\n## Rules" in run.bundle
+
+
+def test_a_selected_preset_disagreeing_with_default_holds_over_it(
+    root: Path,
+) -> None:
+    """`default` lies beneath a selection, so it disagrees with no selected preset."""
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n"
+        "  default:\n    group-depth: [{reviews: 2}]\n    subst: [{steps.md: a.md}]\n"
+        "  Checks:\n    group-depth: [{reviews: 1}]\n    subst: [{steps.md: b.md}]\n"
+        "---\n# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules" in run.bundle
+
+
+def test_presets_one_title_leaves_unselected_disagree_with_nothing(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("Checks", [("reviews", 1)]), ("Draft", [("reviews", 2)]))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews\n\n## Rules" in run.bundle
+
+
+def test_a_linking_documents_presets_never_reach_the_document_it_links(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        presets(("default", [("guides", 1)]), ("Checks", [("reviews", 1)]))
+        + "# Release Checks\n\n## Checks\n\nFollow [the rules](rules.md).\n",
+    )
+    written(
+        root,
+        "rules.md",
+        presets(("default", [("rules", 1)]), ("Checks", [("checks", 1)]))
+        + "# Rules\n\nAll.\n",
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Guides\n\n## Release Checks" in run.bundle
+    assert "# Reviews\n\n## Release Checks" in run.bundle
+    assert "# Rules\n\n## Rules\n\nAll." in run.bundle
+    assert "# Checks\n\n## Rules\n\nAll." in run.bundle
+    assert run.bundle.count("All.") == 2
 
 
 def presets(*declared: tuple[str, Sequence[tuple[str, int]]]) -> str:
