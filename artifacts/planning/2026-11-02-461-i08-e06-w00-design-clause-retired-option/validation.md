@@ -21,3 +21,7 @@ Evidence for each check `w00.md` names, run in the task worktree with `PROSIFORM
 ## Repository check
 
 `make check` exits 0: lint, format, typecheck, unit and harness suites (1592 and 1163 passed), corpus 433 of 433 fixtures pass, smoke, layout, tables, links, vocabulary (48 terms), invocation, conformance, independence and mock scenarios (5 of 5) all hold. `make invocation` still compares the `-m` row: the documented table and the help output change together in W04 and W11.
+
+## Merge
+
+Continuous integration passed on `96322841`, and [#558](https://github.com/m2ux/prosiform/pull/558) merged into `i08/e06/main` as `711b61ea`. The epic's draft review pull request is [#561](https://github.com/m2ux/prosiform/pull/561), linked to [#461](https://github.com/m2ux/prosiform/issues/461).
