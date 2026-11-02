@@ -33,7 +33,6 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W10 work item](e04/w10.md) | A deferred dispatch in the entry bundle, compiled then dispatched |
 | [E04 W11 work item](e04/w11.md) | Dispatch three hops deep: a chain, a set, and a question from the deepest level |
 | [E04 W12 work item](e04/w12.md) | A sub-agent's first `pf` run at the first, second and third hop |
-| [E04 W13 work item](e04/w13.md) | The frontmatter and blockquote first-run carriers |
 | [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as `composition-edges.json` |
 | [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
@@ -101,7 +100,7 @@ The agent-behaviour evals of composition, deferral and dispatch are their own ep
 - **Refusals are not agent evals.** A gap between symbols, `[⇉→]`, a preset mismatch on deferral and an immediate-plus-deferred pair are build refusals I09:E04's corpus fixtures hold.
 - **The MVP proof boundary.** I09:E05 W26 writes one section-composition workflow activating an unconditional deferral; E04 measures the conditional, nested, preset-matched and dispatched edges, in workflows of their own, so no component is shared.
 - **Its own record.** The live run is committed as `composition-edges.json` with its report; `baseline.json` (E00 W02) and `mvp-proof.json` (I09:E05 W28) are untouched. Failing sessions are recorded by class; no pass bar gates the run.
-- **Units by area.** The form, scenario field, scorer and harness rows are one unit (W01–W04); the deferral scenarios another (W05–W07); immediate composition and directive labels a third (W08–W09); deferred and nested dispatch and the sub-agent's first run a fourth (W10–W12). W13 depends on W12, and W14 and W15 follow the scenarios.
+- **Units by area.** The form, scenario field, scorer and harness rows are one unit (W01–W04); the deferral scenarios another (W05–W07); immediate composition and directive labels a third (W08–W09); deferred and nested dispatch and the sub-agent's first run a fourth (W10–W12). W14 and W15 follow the scenarios.
 
 ## Measurement of the Name-Based Trigger
 
@@ -112,7 +111,7 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 `deps.py` over the initiative, the five epics, every work item (E03's from the [I09 record](../2026-11-02-463-i09-grouping-and-composition/e01/)) and [joins.md](joins.md), on 2026-11-02:
 
 - **Problems.** None. No unaccounted join; E01 W01 and W03, and E02 W01 and W02, extend one component each and stay split with the reason [joins.md](joins.md) records.
-- **Longest chain.** Three chains of five steps, each ending E04:W12 → E04:W13 → E04:W14 → E04:W15, from E04 W01, W02 or W04.
+- **Longest chain.** Three chains of four steps, each ending E04:W12 → E04:W14 → E04:W15, from E04 W01, W02 or W04.
 - **Contention within the initiative.** E04 W04 with E02 W01 and W02 on `evals/diagram-following/harness.py`, and E04 W15 with E02 W03 on `evals/diagram-following/README.md`.
 - **Proposed epic priority.** E00 2, E01 2, E02 2, E03 2, E04 1: the contention puts E04 after E02, and no epic depends on another.
 - **Not checked.** E00 W03 has no work item, so its component is unread.
@@ -137,7 +136,7 @@ E00 W02 and E02 W03 both edit `evals/diagram-following/README.md`, in different 
 Each decision below is the user's (2026-11-01) unless marked as planning's.
 
 - **E04 runs after E00–E03.** (User, 2026-11-02.) E00–E03 take `priority: 2` and E04 [#579](https://github.com/m2ux/prosiform/issues/579) `priority: 1`, as the dependency check proposes, so E04 follows E02 on `harness.py` and the eval README.
-- **The first-run carrier comparison stays.** (User, 2026-11-02.) E04 W13 measures the frontmatter and blockquote carriers against the Prosiform section.
+- **No first-run carrier comparison.** (User, 2026-11-02.) E04 W13 is dropped: the Prosiform section carries the `pf` command, and no frontmatter or blockquote carrier is measured against it.
 
 - **The baseline runs after the eval tree declares presets, and proves the harness fixes.** E00 W02 depends on I08:E08 W02, each new scenario's documents declare `prosiform`, and the one default-matrix run is the evidence for AC11 and AC12, the harness criteria taken from I07, which E00 W03 verifies. (2026-11-02.)
 - **One baseline.** I07:E00 W11 committed the same file as E00 W02 from a run over the present corpus. W11 leaves I07; E00 W02 produces the one baseline and its AC3 carries W11's criterion.
@@ -169,7 +168,6 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **Nested dispatch to depth three.** (User, 2026-11-02.) The evals confirm nested dispatch to at least three hops, within the depth the run publishes without `W_DISPATCH_DEPTH`: a chain entry `⇉` A `⇉` B `⇉` C, the same depth with a `⫽` set at one level returning before the chain continues, inner levels carrying a deferred dispatch or a `↳` line whose sub-agent runs `pf` first, and a question from the deepest level relayed up to the user. E04 W11 (AC14–AC16) and W12 (AC18).
 - **Composition-following evals.** (User, 2026-11-02.) Agent-behaviour evals cover a skill's hand-written `↳` link, conditional and nested deferral, preset-matched deferral, a sub-agent's first `pf` run, conditional immediate composition, arrow-only directives, self-composition and a deferred dispatch in the entry bundle. Build refusals are left to I09:E04's fixtures.
 - **E04 placement.** (Planning.) A new epic rather than E00 rows, as [Composition Following](#composition-following) states.
-- **The carrier comparison is planned.** (Planning.) The user chose the Prosiform section for a sub-agent's first run; E04 W13 measures it against a frontmatter entry and a top blockquote line. It is one row and can be dropped alone.
 - **No pass bar on the edge run.** (Planning.) The run measures; failing sessions are recorded by class, and a refused run is not committed.
 - **E04 priority; sibling move held.** (Planning.) E04 carries `priority: 1`, the number the map proposes for it. Moving E00–E03 from `1` to `2`, which separates E04 from E02 on `harness.py` and the eval README, is a re-prioritisation held for the user.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.

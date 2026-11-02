@@ -21,8 +21,6 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
   It is outside the default `--forms` and given only to a harness with a shell, so the default matrix and its baseline are unchanged.
 - **One workflow per edge.**
   A bootstrapping skill's `↳` link; conditional and nested deferral; a preset-matched deferral; conditional immediate composition; arrow-only directives and self-composition; a deferred dispatch in the entry bundle; dispatch three hops deep with a set and a returned question; and a sub-agent's first `pf` run at each depth.
-- **The first-run carrier is compared.**
-  Two further forms rewrite the dispatched bundles' Prosiform first-run section as a frontmatter entry and as a top blockquote line.
 - **One live run, its own record.**
   The edge workflows run once on every harness carrying a shell and are committed beside the baseline in a file of their own; failing sessions are recorded by class rather than gating the run.
 - **Refusals stay with the corpus.**
@@ -46,8 +44,7 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 | [W10](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w10.md) | A scenario compiling a deferred dispatch | AC13 | W01, W02 | W11, W12 | |
 | [W11](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w11.md) | Scenarios dispatching three hops deep | AC14, AC15, AC16 | W01, W02, W04 | W10, W12 | |
 | [W12](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w12.md) | Scenarios of a sub-agent's first `pf` run | AC17, AC18 | W01, W02, W04, [I09:E04:W12](https://github.com/m2ux/prosiform/issues/460) | W10, W11 | |
-| [W13](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w13.md) | Frontmatter and blockquote first-run carriers | AC19 | W12 | | |
-| [W14](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md) | Live run of the edge workflows | AC20 | W03, W05, W06, W07, W08, W09, W10, W11, W13 | | |
+| [W14](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md) | Live run of the edge workflows | AC20 | W03, W05, W06, W07, W08, W09, W10, W11, W12 | | |
 | [W15](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w15.md) | The eval page stating the edge workflows | AC21 | W14 | | |
 
 ## Acceptance Criteria
@@ -70,9 +67,8 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 - [ ] **AC16.** A scenario whose third-hop sub-agent returns a question states that question relayed up each level to the user and the chain dispatched again with the answers, as the corpus test `make harness` runs shows.
 - [ ] **AC17.** A scenario whose first-hop dispatched bundle carries a `↳` line and opens with the Prosiform section saying `pf` runs first states that sub-agent's bare `pf` run before its `pf` run on the line, as the corpus test `make harness` runs shows.
 - [ ] **AC18.** A scenario whose bundles at the second and third hop carry a deferred dispatch or a `↳` line states each such sub-agent's bare `pf` run before its `pf` run on that line, as the corpus test `make harness` runs shows.
-- [ ] **AC19.** The sub-agent first-run scenarios run in two further forms whose dispatched bundles carry the instruction to run `pf` first as a frontmatter entry and as a top blockquote line, with no Prosiform first-run section, as a harness test `make harness` runs shows.
 - [ ] **AC20.** The committed edge-case record carries a cell for every model of the default matrix, harness carrying a shell, form and scenario of the edge workflows, as a comparison of the record against those workflows shows.
-- [ ] **AC21.** The eval's README states the `staged` and carrier forms, each edge workflow and scenario, and the pass rates the edge-case record holds, as an inspection of the README against the corpus and the record shows.
+- [ ] **AC21.** The eval's README states the `staged` form, each edge workflow and scenario, and the pass rates the edge-case record holds, as an inspection of the README against the corpus and the record shows.
 - [ ] **AC22.** A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's `pf` run, as a harness test `make harness` runs shows.
 
 ## References
