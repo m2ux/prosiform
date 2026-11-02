@@ -16,8 +16,8 @@ fixture is never reported as holding against a build that never ran.
 The runner uses the working directory the manifest names and asks
 for diagnostics as data through `-d json`. A manifest omits that option, so a
 diagnostic's code is compared as a value rather than as prose. A manifest
-declaring no argument and no fault is the bare command, which reports no
-diagnostic, so the runner invokes the build with nothing added. The runner
+declaring no argument is the bare command, which reports no diagnostic, so
+the runner invokes the build with nothing added. The runner
 names no output folder, so a run writes where its own invocation sends it:
 the working directory, or the folder the manifest's `-o` names.
 
@@ -39,14 +39,15 @@ text it carries. Diagnostics are compared in order on the fields the
 manifest declares, so one that is missing, extra or out of order is
 reported as what it is.
 
-Two of the contract's outcomes are facts about the run rather than about
+Three of the contract's outcomes are facts about the run rather than about
 any document it reads, so no source tree states them. A manifest names
-the fault its run meets and the runner asks the run for it, which the
-contract's command line spells `-x NAME`: the fault is the run's
-own, so what a fixture observes is the build's own detection rather than
-a report the corpus asked for. A fault writes to the tree it runs over,
-so a fixture declaring one runs in a copy of itself and the corpus
-leaves the fixture as it found it.
+the fault its run meets and the runner asks the run for it through the
+environment, as `PROSIFORM_FAULT`, which the contract's Conformance faults
+section declares; a manifest naming none runs with the variable absent.
+The fault is the run's own, so what a fixture observes is the build's own
+detection rather than a report the corpus asked for. A fault writes to the
+tree it runs over, so a fixture declaring one runs in a copy of itself and
+the corpus leaves the fixture as it found it.
 
 Where the whole of an outcome is a build's own, the manifest declares the
 text it must carry instead: `expected.stdout_contains` for a response such
@@ -79,6 +80,7 @@ from manifests import (
 
 BUILD = "PROSIFORM_BUILD"
 BUILD_TIMEOUT = "PROSIFORM_BUILD_TIMEOUT"
+FAULT_VARIABLE = "PROSIFORM_FAULT"
 DEFAULT_TIMEOUT = 60.0
 
 MANIFEST = "manifest"
@@ -516,6 +518,20 @@ def worked(fixture: Path, fault: str | None) -> Iterator[Path]:
         yield copy
 
 
+def environment(fault: str | None) -> dict[str, str]:
+    """The run's environment: this process's own, carrying the declared fault.
+
+    A fixture declaring no fault runs with the variable absent, whatever
+    the environment the corpus was started in carries.
+    """
+    child = {
+        name: value for name, value in os.environ.items() if name != FAULT_VARIABLE
+    }
+    if fault is not None:
+        child[FAULT_VARIABLE] = fault
+    return child
+
+
 def run_fixture(fixture: Path) -> Result:
     """One fixture run against the configured build and compared with its manifest."""
     name = identity(fixture)
@@ -532,15 +548,14 @@ def run_fixture(fixture: Path) -> Result:
     invocation = manifest["invocation"]
     expected = manifest["expected"]
     declared = manifest.get(FAULT)
-    requested = ["-x", declared] if declared is not None else []
     allowed = build_timeout()
     with worked(fixture, declared) as working:
         named = invocation.get("cwd")
         invoked_from = working if named is None else (working / named).resolve()
-        bare = not invocation["arguments"] and declared is None
+        bare = not invocation["arguments"]
         argv = [
             *build_under_test(),
-            *([] if bare else ["-d", "json", *requested]),
+            *([] if bare else ["-d", "json"]),
             *invocation["arguments"],
         ]
         held = (working, invoked_from) if invoked_from.is_dir() else (working,)
@@ -549,6 +564,7 @@ def run_fixture(fixture: Path) -> Result:
             completed = subprocess.run(
                 argv,
                 cwd=invoked_from,
+                env=environment(declared),
                 stdin=subprocess.DEVNULL,
                 capture_output=True,
                 timeout=allowed,

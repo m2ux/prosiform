@@ -842,32 +842,37 @@ def test_a_run_that_does_not_complete_is_reported(
     )
 
 
-def test_the_run_receives_the_fault_the_manifest_names(
+def faulting(record: Path) -> str:
+    """A configured build that writes the fault its environment names, if any."""
+    script = f'printf "%s" "${{PROSIFORM_FAULT-absent}}" > {shlex.quote(str(record))}'
+    return shlex.join(["/bin/sh", "-c", script])
+
+
+def test_the_run_receives_the_fault_the_manifest_names_through_its_environment(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A declared fault reaches the run beside the root and the diagnostic format."""
+    """A declared fault reaches the run as a variable, and adds no argument."""
     fixture = write_fixture(tmp_path / "fixture", fault="source-changed")
-    record = tmp_path / "argv"
+    record = tmp_path / "fault"
+    configure(monkeypatch, faulting(record))
+    run_fixture(fixture)
+    assert record.read_text(encoding="utf-8") == "source-changed"
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     written = record.read_text(encoding="utf-8").splitlines()
-    assert written[-5:] == [
-        "-d",
-        "json",
-        "-x",
-        "source-changed",
-        "guide.md",
-    ]
+    assert written[-3:] == ["-d", "json", "guide.md"]
 
 
-def test_a_run_meeting_no_fault_asks_for_none(
+def test_a_run_meeting_no_fault_carries_no_variable(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """The variable is absent, whatever the corpus's own environment carries."""
     fixture = write_fixture(tmp_path / "fixture")
-    record = tmp_path / "argv"
-    configure(monkeypatch, recording(record))
+    record = tmp_path / "fault"
+    monkeypatch.setenv("PROSIFORM_FAULT", "internal")
+    configure(monkeypatch, faulting(record))
     run_fixture(fixture)
-    assert "-x" not in record.read_text(encoding="utf-8").splitlines()
+    assert record.read_text(encoding="utf-8") == "absent"
 
 
 def test_a_fixture_declaring_a_fault_runs_in_a_copy_of_itself(
