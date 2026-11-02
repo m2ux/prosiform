@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Emits a deferred directive's destination and contribution heading with one generated activation line, and composes or refuses whole-document directives.
+Refuses a directive no section answers, keeps a deferred directive's place with one line naming the run that composes it, and writes operator symbols together.
 
 This record holds its delivery of `AC11,AC12,AC13`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
 
@@ -12,6 +12,9 @@ This record holds its delivery of `AC11,AC12,AC13`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W06 work item](w06.md) | Ineligible targets refused, deferred directives keeping their place with an activation line, and operator symbols written together |
+| [Validation](validation.md) | T1 to T5 at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
