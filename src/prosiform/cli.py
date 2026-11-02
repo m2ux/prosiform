@@ -70,7 +70,6 @@ from prosiform.closure import (
     Declarations,
     Malformed,
     OutsideRoot,
-    Pairing,
     Probed,
     Reference,
     Substitution,
@@ -201,8 +200,6 @@ STANDARD_OUTPUT = "-"
 BUNDLE_SUFFIX = ".bundle.md"
 RUN_FOLDER_SUFFIX = ".bundles"
 CURRENT_FOLDER = "."
-SUBSTITUTION = "="
-"""What separates an `-m` pair's original from its alternative."""
 
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_CONFLICT = "E_GROUP_CONFLICT"
@@ -520,21 +517,6 @@ def budgets(options: argparse.Namespace) -> Limits:
     return in_force(options.budgets)
 
 
-def mock(value: str) -> Pairing:
-    """One `ORIGINAL=ALTERNATIVE` pair, each side read from the working directory.
-
-    Both sides are read by the grammar every other reference is read
-    by, so a substitute kept above the working directory is named as a
-    command-line reference names one. Neither side is matched against
-    the mapping: a substitute is material rather than another
-    indirection, and a value that is also a key is read from disk.
-    """
-    original, given, alternative = value.partition(SUBSTITUTION)
-    if not given or not original or not alternative:
-        raise argparse.ArgumentTypeError(f"{value!r} is no ORIGINAL=ALTERNATIVE pair")
-    return Pairing(entry(original), entry(alternative))
-
-
 def substs(conversion: Conversion) -> None:
     """Hold each `subst` side a document's presets state to the reference grammar.
 
@@ -845,85 +827,6 @@ def governed(
     )
 
 
-def substitution(options: argparse.Namespace) -> Substitution:
-    """The mapping the command line names, by the identity each key normalized to.
-
-    Every key stands for one identity, so two spellings of one path name
-    one key and the section a key carries is part of what it names. The
-    sides were resolved while the grammar was read, before any source
-    was opened. Each key keeps the spelling the caller wrote, because a
-    key no reference named is reported as the caller wrote it.
-
-    A mapping shape that states nothing is refused here, because here is
-    where the whole mapping is known: a key carrying no document, a
-    substitute naming no Markdown document, a key and a substitute naming
-    one identity, and a second key naming an identity the first already
-    names. The four are decided from one set of identities, so no run
-    reaches a shape that would otherwise win silently by being read last.
-
-    The two tests of a pair's own sides answer before the two that
-    compare them, so a pair naming no document reports the side that
-    names none rather than a coincidence between two empty identities.
-    """
-    keys: dict[tuple[str, str | None], Reference] = {}
-    spelled: dict[tuple[str, str | None], str] = {}
-    for pairing in options.mock or ():
-        named = (pairing.original.path, pairing.original.fragment)
-        if not pairing.original.path:
-            raise documentless(pairing.original)
-        elif not is_markdown(pairing.alternative.path):
-            raise unbundleable(pairing.original, pairing.alternative)
-        if identity(pairing.original) == identity(pairing.alternative):
-            raise self_mocked(pairing.original, pairing.alternative)
-        if named in spelled:
-            raise duplicated(spelled[named], pairing.original)
-        spelled[named] = pairing.original.original
-        keys[named] = pairing.alternative
-    return Substitution(keys, spelled)
-
-
-def duplicated(earlier: str, later: Reference) -> Failure:
-    """Two mapping keys naming one identity, as the spellings their author wrote."""
-    return usage_failure(
-        f"the mapping keys {earlier!r} and {later.original!r} name one identity, "
-        f"so only one of them can redirect it",
-        reference=later.original,
-    )
-
-
-def self_mocked(original: Reference, alternative: Reference) -> Failure:
-    """One mapping entry whose substitute names the identity its key names."""
-    return usage_failure(
-        f"the mapping entry {original.original!r}={alternative.original!r} names "
-        f"one identity on both sides, so the substitute stands in for itself",
-        reference=original.original,
-    )
-
-
-def documentless(original: Reference) -> Failure:
-    """One mapping key carrying no document, as a section alone does."""
-    return usage_failure(
-        f"the mapping key {original.original!r} names no document to redirect, so "
-        f"no reference can name it",
-        reference=original.original,
-    )
-
-
-def unbundleable(original: Reference, alternative: Reference) -> Failure:
-    """One mapping entry whose substitute names no Markdown document.
-
-    The substitute is the target outright, so a reference redirected to
-    one the profile classifies as a resource is a reference the run
-    publishes as text rather than bundles.
-    """
-    return usage_failure(
-        f"the mapping entry {original.original!r}={alternative.original!r} gives a "
-        f"substitute naming no Markdown document, so the reference it redirects "
-        f"could only be published as text",
-        reference=alternative.original,
-    )
-
-
 def parser() -> Parser:
     """The command's grammar: every option the contract declares, and no other."""
     grammar = Parser(
@@ -938,17 +841,6 @@ def parser() -> Parser:
         ),
         epilog=f"{BUDGET_TABLE}\n{EXIT_STATUSES}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    grammar.add_argument(
-        "-m",
-        "--mock",
-        dest="mock",
-        metavar="ORIGINAL=ALTERNATIVE",
-        action="append",
-        type=mock,
-        help="redirect one reference to the document or section the run reads "
-        "instead, given once per pairing; both sides read from the working "
-        "directory; repeatable; default none",
     )
     grammar.add_argument(
         "-o",
@@ -1030,7 +922,7 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
         for at, option in enumerate(token[1:], start=1):
             if option in "cCvh":
                 continue
-            if option in "odm":
+            if option in "od":
                 value = token[at + 1 :].removeprefix("=") or next(tokens, "")
                 if option == "d" and value in FORMATS:
                     selected = value
@@ -1038,15 +930,11 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     return selected
 
 
-def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
+def entry(text: str) -> Reference:
     """Normalize a positional reference, keeping the leading parents of a path above.
 
-    The mapping names what the reference resolves to instead, and is
-    read after the normalization: an entry reference is written in no
-    source, so the mapping applies to the identity the reference
-    normalized to rather than to anything a source decides.
-    An entry reference stands in no source, so a redirect of one is
-    recorded with no source position.
+    An entry reference is written by no document, so no `subst` pair
+    redirects it: the run compiles the document it names.
     """
     try:
         found = resolve(text)
@@ -1069,7 +957,7 @@ def entry(text: str, substitution: Substitution = UNSUBSTITUTED) -> Reference:
             remedy="name a document under the invocation working directory",
             reference=text,
         )
-    return substitution.redirect(found)
+    return found
 
 
 def entered(requested: Sequence[Reference]) -> list[Reference]:
@@ -2881,7 +2769,7 @@ def resourced(bundled: str, budget: int) -> bool:
 
 
 def substituted(mapping: Substitution) -> list[Diagnostic]:
-    """One warning for each mapping key a reference named.
+    """One warning for each `subst` pair a reference named.
 
     A key names one substitution, so the references it served state one
     warning at the first of them. The warning names that link as
@@ -2901,27 +2789,6 @@ def substituted(mapping: Substitution) -> list[Diagnostic]:
             location=None if one.origin is None else located(one.origin),
         )
         for one in mapping.redirects.targets()
-    ]
-
-
-def unused(mapping: Substitution) -> list[Diagnostic]:
-    """One warning for each mapping key no reference named.
-
-    A key that matched nothing mocks nothing, so whatever the run asserts
-    of its bundle holds of material the caller did not mean to test. The
-    key states a fact about the invocation rather than about any source,
-    so the warning carries the key's authored spelling and no location.
-    """
-    return [
-        Diagnostic(
-            WARNING,
-            f"the mapping key {spelling!r} names no reference the run resolved, "
-            f"so it substitutes nothing",
-            code=SUBST_UNUSED,
-            source=spelling,
-            remedy="name an identity a source of the run links, or drop the pairing",
-        )
-        for spelling in mapping.unserved()
     ]
 
 
@@ -3284,12 +3151,9 @@ def compiled(
     of what it opens, reaches and publishes, and its expansion depth is
     counted from its own entry.
 
-    The mapping is the command line's and not the bundle's: a dispatched
-    target's own bundle is compiled under every rule an entry's is, and
-    the mapping is one of them, so a link inside a dispatched document
-    resolves the substitute the caller named. Above it, each document's
-    links resolve under the `subst` pairs its own presets put in force
-    for the references this bundle carries.
+    Each document's links resolve under the `subst` pairs its own presets
+    put in force for the references this bundle carries, and every bundle
+    of the run records its substitutions in the run's one mapping.
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
@@ -3487,8 +3351,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             "-o - names standard output, which carries no bundle; -o names the "
             "folder the run's bundles are written under"
         )
-    mapping = substitution(options)
-    requested = [entry(reference, mapping) for reference in options.references]
+    mapping = Substitution()
+    requested = [entry(reference) for reference in options.references]
     for one in requested:
         if not one.path:
             raise usage_failure(
@@ -3543,7 +3407,6 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         fault == CLEANUP_FAULT,
         [
             *substituted(mapping),
-            *unused(mapping),
             *unused_pairs((first, *built.values()), mapping),
             *unused_presets((first, *built.values())),
         ],

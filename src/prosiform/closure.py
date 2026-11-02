@@ -110,7 +110,7 @@ class Reference:
     reference stands at the head of its own chain.
 
     A reference the substitution mapping redirected states that it is
-    one: the caller named the substitute, so a substitute naming no
+    one: its pair named the substitute, so a substitute naming no
     document is refused rather than read as a link to nothing.
 
     A reference a source carries holds the title of the section it is
@@ -127,18 +127,6 @@ class Reference:
     walk: str | None = None
     redirected: bool = False
     title: str | None = None
-
-
-@dataclass(frozen=True)
-class Pairing:
-    """One mapping entry as its caller read it: a reference on each side.
-
-    Each reference carries the spelling its caller wrote, because that is
-    what a diagnostic about the entry names.
-    """
-
-    original: Reference
-    alternative: Reference
 
 
 def identity(reference: Reference, base: str = "") -> str:
@@ -164,8 +152,8 @@ class Redirect:
     one record serves however many references that key served. `would` is
     the identity the first reference to reach it was written to name,
     `source` the destination that reference was written as, and `origin`
-    the source position it stands at, absent where the reference is a
-    command-line entry and stands in no source.
+    the source position it stands at, absent where no caller that reached
+    it knew one.
     """
 
     resolved: str
@@ -174,11 +162,8 @@ class Redirect:
     origin: str | None
 
 
-Served = tuple[str | None, tuple[str, str | None]]
-"""A pair as the run's record names it: its declaring document and its key.
-
-A run key is declared by no document, so its document is absent.
-"""
+Served = tuple[str, tuple[str, str | None]]
+"""A pair as the run's record names it: its declaring document and its key."""
 
 
 class Redirects:
@@ -238,48 +223,41 @@ class Redirects:
 
 @dataclass(frozen=True)
 class Substitution:
-    """The mapping from an authored identity to the reference the run reads instead.
+    """The `subst` pairs each document's presets put in force for its own links.
 
-    A key is the identity a reference normalized to, so two spellings of
+    `documents` holds the pairs each document's governing presets state,
+    by the path of the document that writes the links they redirect. A
+    key is the identity a reference normalized to, so two spellings of
     one path name one key. One lookup answers: the exact document and
     section first, then the document alone, so a key carrying a fragment
     redirects that section and a key naming the whole document covers it
     and every fragment of it.
+
+    A link is resolved through the mapping in force for the document that
+    wrote it, which `writing` reads, so a pair reaches the links its
+    declaring document writes and no other document's. A mapping naming
+    no `writer` redirects nothing.
 
     A lookup returns the substitute's reference whole — its path, its
     section and its authored access walk — while the text the reference
     was written as stays the author's, because that is what a diagnostic
     about the link names.
 
-    The keys are held behind a read-only view, so a mapping is a value:
+    The pairs are held behind a read-only view, so a mapping is a value:
     the same pairs name the same substitution however many stages read
     it. What a run did with it is kept beside it, in `redirects`, because
     that is where a reference is known to have been redirected and which
-    pair served it. A key's authored spelling is kept for the warning that
-    states a key no reference named, and a mapping given none writes the
-    key's identity back, which is the spelling the caller wrote.
-
-    `documents` holds the pairs each document's governing presets state,
-    by the path of the document that writes the links they redirect. A
-    link is resolved through the mapping in force for the document that
-    wrote it, which `writing` reads: the run's keys with that document's
-    pairs above them, so a pair reaches the links its declaring document
-    writes and no other document's. That mapping names the document as
-    its `writer`, so a redirect its pair serves is recorded under that
-    document. Every mapping read from one run shares that run's record.
+    pair served it. Every mapping read from one run shares that run's
+    record.
     """
 
-    keys: Mapping[tuple[str, str | None], Reference]
-    spellings: Mapping[tuple[str, str | None], str] = MappingProxyType({})
-    redirects: Redirects = field(default_factory=Redirects, compare=False, repr=False)
     documents: Mapping[str, Mapping[tuple[str, str | None], Reference]] = (
         MappingProxyType({})
     )
+    redirects: Redirects = field(default_factory=Redirects, compare=False, repr=False)
     writer: str | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "keys", MappingProxyType(dict(self.keys)))
-        object.__setattr__(self, "spellings", MappingProxyType(dict(self.spellings)))
         object.__setattr__(
             self,
             "documents",
@@ -298,45 +276,14 @@ class Substitution:
         return replace(self, documents=documents)
 
     def writing(self, document: str) -> "Substitution":
-        """The mapping in force for the links one document writes.
+        """The mapping in force for the links one document writes."""
+        return replace(self, writer=document)
 
-        A document's pair holds over a run key naming the same identity,
-        because the document states it for its own links.
-        """
-        pairs = self.documents.get(document)
-        if not pairs:
-            return self
-        return replace(self, keys={**self.keys, **pairs}, writer=document)
+    def redirect(self, found: Reference, origin: str | None = None) -> Reference:
+        """One resolved reference as the reference the writer's pairs name, recorded.
 
-    def __len__(self) -> int:
-        """How many keys the mapping holds."""
-        return len(self.keys)
-
-    def __bool__(self) -> bool:
-        """Whether the mapping redirects anything at all."""
-        return bool(self.keys)
-
-    def unserved(self) -> tuple[str, ...]:
-        """Every run key no reference named, as its caller wrote it, in order."""
-        return tuple(
-            self.spelling(key)
-            for key in self.keys
-            if not self.redirects.served((None, key))
-        )
-
-    def spelling(self, key: tuple[str, str | None]) -> str:
-        """One key as the caller wrote it, where the mapping was given its spelling."""
-        written = self.spellings.get(key)
-        if written is not None:
-            return written
-        path, fragment = key
-        return path if fragment is None else f"{path}{FRAGMENT}{fragment}"
-
-    def substitute(self, found: Reference) -> Reference:
-        """One resolved reference as the reference the mapping names instead.
-
-        A reference the mapping does not name, and one naming something
-        other than a local document, is returned as it resolved.
+        A reference no pair names, and one naming something other than a
+        local document, is returned as it resolved.
 
         The lookup answers the exact document and section first, then
         the document alone. A key the second lookup finds names a
@@ -346,96 +293,38 @@ class Substitution:
         states the section the run reads instead, so its section is the
         substitute's whole.
 
-        What is taken is the substitute's path and its authored access
-        walk, and what stays is the text the reference was written as,
-        because that is what a diagnostic about the link names.
+        The record is the run's and not the mapping's, kept under the
+        writer and the key that served the reference: every stage that
+        resolves the same link again records the same substitution, and
+        the first reference to reach one keeps the record, so a warning
+        naming a substitution names where the run first met it. The
+        origin is the position the caller read the link at; a stage that
+        resolves the same link again adds no position of its own, so
+        which caller answers does not change what the record states.
         """
-        answering = self.answering(found)
-        if answering is None:
+        pairs = self.documents.get(self.writer or "", {})
+        if found.external or not pairs:
             return found
-        _key, named = answering
-        return Reference(
+        key: tuple[str, str | None] = (found.path, found.fragment)
+        named = pairs.get(key)
+        if named is None:
+            key = (found.path, None)
+            named = pairs.get(key)
+        if named is None or self.writer is None:
+            return found
+        substituted = Reference(
             found.original,
             named.path,
             found.fragment if named.fragment is None else named.fragment,
             walk=named.walk,
             redirected=True,
         )
-
-    def redirect(self, found: Reference, origin: str | None = None) -> Reference:
-        """One resolved reference as the reference the mapping names, recording it.
-
-        The record is the run's and not the mapping's: every stage that
-        resolves the same link again records the same substitution, and
-        the first reference to reach one keeps the record, so a warning
-        naming a substitution names where the run first met it.
-
-        The origin is the position the caller read the link at, absent for
-        a reference the command line names, which stands in no source. A
-        stage that resolves the same link again records the same pair and
-        adds no position of its own, so which caller answers does not
-        change what the record states.
-        """
-        named = self.substitute(found)
-        if named is found:
-            return named
-        self.redirects.record(self.served_pair(found), named, found, origin)
-        return named
-
-    def served_pair(self, found: Reference) -> Served:
-        """The pair one reference names, which is what a record is kept under.
-
-        The answer follows the lookup's precedence, so a key carrying a
-        section is marked served by the reference that named that section
-        rather than by every reference to its document. A key the
-        writer's own pairs hold is that writer's pair; any other is a run
-        key, declared by no document.
-        """
-        answering = self.answering(found)
-        key = (found.path, None) if answering is None else answering[0]
-        declared = self.writer is not None and key in self.documents.get(
-            self.writer, {}
-        )
-        return (self.writer if declared else None, key)
-
-    def answering(
-        self, found: Reference
-    ) -> tuple[tuple[str, str | None], Reference] | None:
-        """The key that answers one reference and the substitute it names.
-
-        One answer is what the lookup and the record both read, so a
-        caller asking what a reference names and a caller asking which key
-        served it cannot disagree about which of two keys holds.
-
-        The exact document and section answers first, then the document
-        alone. The exact answer is asked for even where the section is
-        absent, because a key naming a document and a key naming that
-        document's section are two keys and the section one states which.
-        """
-        if found.external or not self.keys:
-            return None
-        exact = self.keys.get((found.path, found.fragment))
-        if exact is not None:
-            return ((found.path, found.fragment), exact)
-        whole = self.keys.get((found.path, None))
-        if whole is not None:
-            return ((found.path, None), whole)
-        return None
-
-    def key(self, found: Reference) -> Reference | None:
-        """The substitute one resolved reference's identity names, or nothing.
-
-        A caller for which "the mapping named this" and "the mapping did
-        not" are different outcomes asks this rather than comparing what
-        `substitute` returned, so no case turns on two references being
-        the same object.
-        """
-        answering = self.answering(found)
-        return None if answering is None else answering[1]
+        self.redirects.record((self.writer, key), substituted, found, origin)
+        return substituted
 
 
-UNSUBSTITUTED = Substitution({})
-"""The mapping that redirects nothing: no run key and no document's pair."""
+UNSUBSTITUTED = Substitution()
+"""The mapping that redirects nothing: no document states a pair."""
 
 
 @dataclass(frozen=True)
@@ -793,10 +682,9 @@ def inside(
         return substitution.redirect(
             replace(found, path=document, walk=document), origin
         )
-    resolved = replace(found, walk=posixpath.join(base, found.walk or found.path))
-    if substitution.key(resolved) is not None:
-        return substitution.redirect(resolved, origin)
-    return resolved
+    return substitution.redirect(
+        replace(found, walk=posixpath.join(base, found.walk or found.path)), origin
+    )
 
 
 def bundled(
