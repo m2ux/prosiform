@@ -74,7 +74,7 @@ A mark on its own changes nothing but the link's own text. Placing one on the sa
 
 *The mark is gone, a sub-section the author never wrote names the bundle to follow, and `publish.md` contributes no content to the bundle that linked it.*
 
-A mark followed directly by text opens no operator. `[⇉Sync](sync.md)` is an ordinary link whose text happens to begin with an arrow, and the mark stays in the published text. The one exception is the deferral mark written against a [composition directive](glossary.md)'s label, as in `[¬→](call.md#outputs)`, which defers that directive.
+A mark followed directly by text opens no operator. `[⇉Sync](sync.md)` is an ordinary link whose text happens to begin with an arrow, and the mark stays in the published text. The one exception is the deferral mark written against a [composition directive](glossary.md)'s label, as in `[¬→](call.md#outputs)`, which defers that directive. A dispatch mark written against one, as in `[⇉→](call.md#outputs)`, is refused: a dispatch sends the target to a sub-agent and the directive places it inline, so the two contradict.
 
 Symbols are written together, and the one blank stands between the last of them and the link's text. A deferral combines with a dispatch, so `[¬⇉ Rules](rules.md)` is a deferred dispatch: the later run that compiles the rules finds the dispatch. A blank between two symbols — `[¬ ⇉ Rules](rules.md)`, `[¬ →](call.md#outputs)` or `[⇉ →](call.md#outputs)` — states no one operation and is refused, and so are two dispatch marks, `[⇉⫽ Rules](rules.md)`, which state two ways for one sub-agent to run. An operator naming anything but a Markdown document or section that declares `prosiform` is refused on the same ground, and one naming a document that does not exist fails with `E_TARGET_NOT_FOUND`.
 
@@ -83,7 +83,9 @@ A deferral publishes a destination spelled from the invocation working directory
 ```mermaid
 flowchart TD
   Text["link text opens with marks"] --> Space{"a space follows<br/>the marks?"}
-  Space -- no --> Plain["an ordinary link:<br/>the mark is text"]
+  Space -- no --> Against{"a dispatch mark against<br/>a directive's label?"}
+  Against -- "yes: ⇉→" --> Contradicts["refused: a dispatch<br/>never places inline"]
+  Against -- no --> Plain["an ordinary link:<br/>the mark is text"]
   Space -- yes --> Second{"another symbol<br/>follows the space?"}
   Second -- "yes: ¬ ⇉ or ¬ →" --> Refused["refused: symbols<br/>are written together"]
   Second -- no --> Operator["an operator: ¬, ⇉, ⫽,<br/>¬⇉ or ¬⫽"]

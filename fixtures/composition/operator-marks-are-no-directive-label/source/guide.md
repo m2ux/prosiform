@@ -1,7 +1,7 @@
 ---
 prosiform: {}
 ---
-Read [¬](step.md#output), [⇉](step.md#output), [⫽](step.md#output), [↳](step.md#output) and [⇉→](step.md#output) before the guide.
+Read [¬](step.md#output), [⇉](step.md#output), [⫽](step.md#output), [↳](step.md#output) and [⇉step](step.md#output) before the guide.
 
 # Guide
 

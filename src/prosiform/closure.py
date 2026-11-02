@@ -568,6 +568,24 @@ def gapped(opening: str, label: str | None) -> bool:
     return label is not None and placing(unmarked(label))
 
 
+def contradicting(label: str) -> bool:
+    """Whether a link's plain-text label writes a dispatch mark against a directive's.
+
+    A dispatch sends its material to a sub-agent and a directive places
+    it inline beneath the section writing it, so a dispatch or parallel
+    dispatch mark written against a directive's label, as `⇉→` or `⫽→`,
+    states two contradicting operations and is refused. The label is the
+    link's whole plain text, with its entities decoded.
+    """
+    marks = label[:-1]
+    return (
+        bool(marks)
+        and all(mark in OPERATORS for mark in marks)
+        and (DISPATCH_MARK in marks or PARALLEL_MARK in marks)
+        and placing(label[-1])
+    )
+
+
 def conflicting(opening: str) -> bool:
     """Whether a link's text states operators the run cannot carry out together.
 
