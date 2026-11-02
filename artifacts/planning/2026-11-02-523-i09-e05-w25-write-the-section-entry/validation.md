@@ -1,6 +1,6 @@
 # Validation — I09:E05 W25–W27, W33
 
-Every check the work items name, run in the unit worktree on branch `i09/e05/w25-write-the-section-entry` at `1323d0fc`.
+Every check the work items name, run in the unit worktree on branch `i09/e05/w25-write-the-section-entry` at `1fe57960`.
 
 ## Section entry
 
