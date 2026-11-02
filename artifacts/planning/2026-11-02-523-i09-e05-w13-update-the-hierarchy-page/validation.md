@@ -8,7 +8,7 @@ The checks [W13](w13.md) to [W18](w18.md) name, at the revisions they ran.
 | --- | --- |
 | Build | `main` at [`74b00cd9`](https://github.com/m2ux/prosiform/tree/74b00cd9), the base of `i09/e05/main` |
 | Design | [`4958ad38`](https://github.com/m2ux/prosiform/blob/4958ad38bc2bb6a0786f93aa6de30a7b6a2e27c9/artifacts/planning/2026-10-17-prosiform-v1/design.md), the I09 README's pin |
-| Branch head | `ab8f1cae` on `i09/e05/w13-update-the-hierarchy-page` |
+| Branch head | `ab8f1cae` on `i09/e05/w13-update-the-hierarchy-page`, then `080525fa` holding #583 and #584 merged from the epic base |
 
 Probes ran `uv run --project src --frozen pf` from the worktree in scratch trees.
 
@@ -93,5 +93,7 @@ Result: pass.
 ## T2 Make Check
 
 `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` at `ab8f1cae`, exit 0: lint, format, types; `make test` 1663 passed; `make harness` 1161 passed; the corpus 498 of 498; `make links`, `make tables` and `make vocabulary` ok. The first run failed `test_the_authoring_statements_are_stated_where_they_are_owned`, which pins the sources page's sentence on the working directory; the sentence is kept whole and the parent-segment clause follows it.
+
+Rerun at `080525fa`, after merging `origin/i09/e05/main` (#583, #584) and resolving the docs index and invocation guide conflicts: exit 0, `make test` 1663 passed, `make harness` 1161 passed, the corpus 498 of 498, `make links` resolving `docs/selection.md#the-substitution-mapping` and `#presets-in-force` from `invocation.md` and `README.md`.
 
 Result: pass.

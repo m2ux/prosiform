@@ -19,6 +19,7 @@ This record holds its delivery of `AC14,AC15,AC16,AC17,AC18,AC19`: the work item
 | [W17 work item](w17.md) | The sources page read against the build |
 | [W18 work item](w18.md) | The validation page read against the build |
 | [Validation](validation.md) | T1 and T2 for each page, at the revisions they ran |
+| [Change list](change-list.md) | The plan changes this session applied and held |
 
 
 ## Links
@@ -26,5 +27,8 @@ This record holds its delivery of `AC14,AC15,AC16,AC17,AC18,AC19`: the work item
 | Resource | Link |
 | --- | --- |
 | Epic | [I09:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/523) |
-| Initiative | [I09 Grouping and Composition](https://github.com/m2ux/prosiform/issues/463) |
+| Pull request | [#587](https://github.com/m2ux/prosiform/pull/587) |
+| Review pull request | [#585](https://github.com/m2ux/prosiform/pull/585) |
+| Initiative | [I09 Grouping and Composition]
+(https://github.com/m2ux/prosiform/issues/463) |
 | Epic record | [Grouping and Composition](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) |
