@@ -493,23 +493,28 @@ def dispatched_bundle(section: str) -> str:
 
 
 def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
-    """How a staged scenario's sub-agent actions fail to be what their runs compile.
+    """How a staged scenario's sub-agent runs and actions fail its bundles.
 
     Each sub-agent follows the bundle `pf` wrote for its section, in the
     entry's set or in the set a run on a deferred dispatch wrote, and runs
     `pf` on each deferred line its steps reach, as the session does. The
-    actions a trace entry states are the ones the material those runs compile
-    states, none of them stated by the bundle itself, and a bundle reaching a
-    line opens with the Prosiform section saying `pf` runs first.
+    runs the scenario states `by` a section are those its sub-agents make, in
+    order, and the actions a trace entry states are the ones the material
+    those runs compile states, none of them stated by the bundle itself. A
+    bundle reaching a line opens with the Prosiform section saying `pf` runs
+    first.
     """
     walked, _, faults = staged_walk(workflow, scenario.inputs, output)
     if faults:
         return [f"{scenario.name}: {fault}" for fault in faults]
-    runs = [0]
+    runs: list[tuple[str, ...]] = []
+    made: dict[str, list[tuple[str, ...]]] = {
+        entry.section: [] for entry in scenario.trace
+    }
 
     def activate(reference: str) -> str:
-        runs[0] += 1
-        folder = output / f"sub-{runs[0]}"
+        runs.append((reference,))
+        folder = output / f"sub-{len(runs)}"
         made = compile_reference(workflow.form(STAGED), reference, folder)
         assert made.returncode == 0, made.stderr.decode()
         return (folder / entry_bundle(reference)).read_text()
@@ -521,7 +526,9 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
             continue
         text = written[0].read_text()
         reached = reached_lines(text, text, scenario.inputs, list(walked))
+        before = len(runs)
         compiled = activated(text, text, scenario.inputs, list(walked), activate)
+        made[entry.section] += runs[before:]
         found = tuple(ACTION.findall(compiled))
         if found != entry.actions:
             faults.append(f"{entry.section}'s runs compile the actions {list(found)}")
@@ -529,6 +536,10 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
             faults.append(f"{entry.section}'s bundle states the actions {own}")
         if reached and not text.startswith(RUN_FIRST):
             faults.append(f"{entry.section}'s bundle opens with no pf run first")
+    for section, ran in made.items():
+        stated = [run.args for run in scenario.compile if run.by == section]
+        if ran != stated:
+            faults.append(f"{section}'s sub-agents run pf on {ran}")
     return [f"{scenario.name}: {fault}" for fault in faults]
 
 
