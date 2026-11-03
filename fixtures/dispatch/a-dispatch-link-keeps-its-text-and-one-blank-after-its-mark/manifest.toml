@@ -1,0 +1,15 @@
+description = "A dispatch link publishes with its mark and one blank before its text, and keeps the text its source wrote, whether wrapped across lines, broken by a hard line break or ending in a space."
+
+clauses = [
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review.bundle.md", "expected/rules.bundle.md"]
+diagnostics = []

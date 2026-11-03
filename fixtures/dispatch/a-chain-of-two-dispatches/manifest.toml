@@ -1,4 +1,4 @@
-description = "A chain of two dispatches — the entry dispatching a target whose bundle dispatches once more — publishes one bundle for the entry and one for each target, each dispatching bundle opening with the Prosiform section, and is within the depth a chain is held to, so the run raises no warning."
+description = "A chain of two dispatches — the entry dispatching a target whose bundle dispatches once more — publishes one bundle for the entry and one for each target, each opening with the run-pf line, and is within the depth a chain is held to, so the run raises no warning."
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",

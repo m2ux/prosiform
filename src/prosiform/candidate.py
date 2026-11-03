@@ -79,7 +79,9 @@ from prosiform.closure import (
     bundled,
     deferred,
     dispatched,
+    filed,
     parallel,
+    published_text,
     rebased,
     resolve,
     unmarked,
@@ -88,10 +90,9 @@ from prosiform.closure import (
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     CONTRIBUTION_HEADING,
-    DISPATCH_SECTION,
     FILENAME_WRAPPER,
     GROUP_HEADING,
-    PROSIFORM_SECTION,
+    PARALLEL_SECTION,
     Ancestor,
     Carried,
     Contributing,
@@ -382,13 +383,15 @@ def intended(
     A deferred link naming a declaring document carries its target's
     path from the invocation working directory, so where it points is
     the destination the bundle rebased. A dispatched link points at the
-    dispatch sub-section its region carries for its target. A link
+    bundle file or `In parallel` sub-section its region carries for its
+    target. A link
     resolving nowhere the bundle is responsible for is published as
     authored like any other mention.
 
     What a withheld link shows is its author's text with its mark taken
-    off: the destination or the sub-section states the withholding, so
-    the mark is authoring syntax. A reference the bundle gave no
+    off, except a dispatch pointing at a bundle file, which shows the
+    dispatch mark: the destination states the withholding, so any other
+    mark is authoring syntax. A reference the bundle gave no
     destination keeps its text whole.
 
     Whether the bundle compiled the link is read from the text the
@@ -433,13 +436,13 @@ def intended(
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the dispatch {one.destination!r} in {path!r} was assigned no "
-                    f"sub-section",
+                    f"destination",
                 )
             return Use(
                 one.kind,
-                unmarked(one.text),
+                published_text(one.text, filed(given)),
                 one.title,
-                normalizeLink(f"{ANCHOR}{given}"),
+                normalizeLink(given),
             )
         return Use(
             one.kind,
@@ -1194,6 +1197,7 @@ def preserved(
     published: Side,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> None:
     """Hold one region's untouched bytes and code examples to its source.
 
@@ -1231,12 +1235,12 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if emitted_visible(path, one, declarations, substitution) != visible(each):
+        shown = emitted_visible(path, one, declarations, substitution, dispatched_to)
+        if shown != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{emitted_visible(path, one, declarations, substitution)!r} and the "
-                f"candidate shows {visible(each)!r}",
+                f"{shown!r} and the candidate shows {visible(each)!r}",
             )
 
 
@@ -1244,21 +1248,25 @@ def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
 ) -> None:
-    """Hold each dispatched link's destination to a dispatch sub-section.
+    """Hold each dispatched link's destination to a bundle file or a set's section.
 
-    A sub-section answers to no source target, so what a dispatched
-    link's destination is held to is the kind of heading it reaches.
+    An `In parallel` sub-section answers to no source target, so what a
+    set's link destination is held to is the kind of heading it reaches.
+    A destination that is no fragment of the bundle names a file beside
+    it, which no heading stands for.
     """
     for (path, _line), served in dispatching.items():
         for (target, _parallel), destination in served.items():
-            found = reached.get(destination)
+            if filed(destination):
+                continue
+            found = reached.get(destination.removeprefix(ANCHOR))
             if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == DISPATCH_SECTION
+                isinstance(found[1], Generated) and found[1].kind == PARALLEL_SECTION
             ):
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the destination {destination!r} a dispatch of {target!r} in "
-                    f"{path!r} was given reaches no dispatch sub-section",
+                    f"{path!r} was given reaches no In parallel sub-section",
                 )
 
 
@@ -1284,32 +1292,6 @@ def contributions(
                 f"the destination {destination!r} a directive at line {line + 1} "
                 f"of {path!r} was given reaches no contribution heading",
             )
-
-
-def protocols(
-    reached: Mapping[str, tuple[Record, Emitted]],
-    part: Instruction,
-    span: Token,
-    tokens: Sequence[Token],
-) -> None:
-    """Hold each link an instruction carries to a protocol of the Prosiform section.
-
-    An instruction is the bundle's own text, so the only link it writes
-    names the protocol it follows, and that link reaches the protocol
-    sub-section the bundle's Prosiform section carries.
-    """
-    for inline in inlines(tokens, [span]):
-        for _children, _at, use in uses(inline):
-            found = reached.get(use.destination.removeprefix(ANCHOR))
-            if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == PROSIFORM_SECTION
-            ):
-                raise Invalid(
-                    TARGET_INTEGRITY,
-                    f"the destination {use.destination!r} the instruction "
-                    f"{part.text!r} links reaches no protocol of the Prosiform "
-                    f"section",
-                )
 
 
 def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
@@ -1377,9 +1359,7 @@ def validate(
             structural(record, part, span, tokens)
             continue
         if isinstance(part, Instruction):
-            if part.activates is None:
-                protocols(reached, part, span, tokens)
-            else:
+            if part.activates is not None:
                 activation(part, span, tokens)
             continue
         if isinstance(part, Generated):
@@ -1409,4 +1389,5 @@ def validate(
             published,
             declarations,
             substitution,
+            served.get((carried.path, carried.lines[0]), {}),
         )

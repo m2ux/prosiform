@@ -50,6 +50,7 @@ from prosiform.bundle import (
     document_title,
     file_heading,
     group,
+    opened,
 )
 from prosiform.candidate import (
     CODES as CANDIDATE_CODES,
@@ -3066,7 +3067,6 @@ def compose(
     bundle_file: Callable[[Target], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-    dispatched_bundle: bool = False,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
@@ -3082,12 +3082,13 @@ def compose(
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the dispatch
-    sub-sections its sections need, inserted once the group exists, so
-    the headings the map is built from are every heading the bundle
-    emits. The second pass emits the same headings as the first,
-    because a rewrite edits a link's destination and its mark and
-    nothing a heading is slugged from.
+    compiled link is rewritten through. Each build carries the `In
+    parallel` sub-sections its sections need, inserted once the group
+    exists, and the run-pf line that opens the bundle, so the headings
+    the map is built from are every heading the bundle emits. The
+    second pass emits the same headings as the first, because a rewrite
+    edits a link's destination and its mark and nothing a heading is
+    slugged from.
 
     Candidate validation closes the pass. Every invariant it holds is
     a property of the construction, which an author cannot reach, so a
@@ -3127,8 +3128,8 @@ def compose(
             bundle_file,
             declarations,
             substitution,
-            dispatched_bundle,
         )
+        headed = opened(headed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
@@ -3159,8 +3160,8 @@ def compose(
         bundle_file,
         declarations,
         substitution,
-        dispatched_bundle,
     )
+    groups = opened(groups)
     bundled = assemble(groups)
     try:
         validate(
@@ -3594,15 +3595,12 @@ def compiled(
     options: argparse.Namespace,
     folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
-    dispatched_bundle: bool = False,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
     Each bundle is read by one agent, so each starts from a fresh count
     of what it opens, reaches and publishes, and its expansion depth is
-    counted from its own entry. A dispatched bundle is followed by a
-    sub-agent that has run no `pf`, which its Prosiform section answers
-    where the bundle carries a link a later run compiles.
+    counted from its own entry.
 
     Each document's links resolve under the `subst` pairs its own presets
     put in force for the references this bundle carries, and every bundle
@@ -3634,7 +3632,6 @@ def compiled(
         bundle_file,
         declarations,
         governed(substitution, pairs),
-        dispatched_bundle,
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -3744,9 +3741,7 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(
-            root, [target], options, folder, substitution, dispatched_bundle=True
-        )
+        one = compiled(root, [target], options, folder, substitution)
         built[hop.name] = one
         pending.extend(one.hops)
     return built

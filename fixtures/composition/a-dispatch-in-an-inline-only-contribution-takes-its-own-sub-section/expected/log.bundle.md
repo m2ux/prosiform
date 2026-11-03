@@ -1,3 +1,0 @@
-# Log
-
-Log the step.

@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Read [the first note](#note) and [the second note](#note-1).

@@ -31,6 +31,7 @@ from prosiform.closure import (
     inside,
     operators,
     parallel,
+    published_text,
     rebased,
     resolvable,
     resolve,
@@ -585,3 +586,21 @@ def test_a_mark_written_against_other_text_opens_no_operator() -> None:
     assert operators("¬→ the rules") == ()
     assert operators("⇉→") == ()
     assert operators("¬A") == ()
+
+
+@pytest.mark.parametrize(
+    ("text", "file", "published"),
+    [
+        ("\u21c9 plan", True, "\u21c9 plan"),
+        ("  \u21c9   plan", True, "\u21c9 plan"),
+        ("\u2afd plan", True, "\u21c9 plan"),
+        ("\u2afd plan", False, "plan"),
+        ("\u00ac\u21c9 plan", True, "plan"),
+        ("\u00ac plan", False, "plan"),
+        ("plan", True, "plan"),
+    ],
+)
+def test_a_dispatch_pointing_at_a_file_keeps_its_mark_and_one_blank(
+    text: str, file: bool, published: str
+) -> None:
+    assert published_text(text, file) == published

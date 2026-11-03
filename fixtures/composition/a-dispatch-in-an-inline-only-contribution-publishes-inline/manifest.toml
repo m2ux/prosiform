@@ -1,0 +1,16 @@
+description = "A dispatch inside a contribution whose document no group carries publishes in place with its mark, pointing at its bundle file: the read document's Inputs, reached only by a directive, dispatches the report, and the dispatch the guide writes in its own section keeps its link beside it."
+
+clauses = [
+  "Section composition — Inline-only targets",
+  "Link classification and resource handling — Dispatch sub-sections",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/log.bundle.md", "expected/report.bundle.md"]
+diagnostics = []

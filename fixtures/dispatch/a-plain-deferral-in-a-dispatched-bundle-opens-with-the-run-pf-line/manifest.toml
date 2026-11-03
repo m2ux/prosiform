@@ -1,0 +1,15 @@
+description = "A dispatched bundle carrying only a plain deferred link opens with the run-pf line, as every bundle does."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/steps.bundle.md"]
+diagnostics = []

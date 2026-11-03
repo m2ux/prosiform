@@ -1,4 +1,4 @@
-description = "A deferred dispatch inside a bundle the run dispatches publishes the path the later run follows, in that bundle, and compiles no bundle of its own, so the deferral takes precedence in a dispatched bundle as it does in the entry; the sub-agent following that bundle has run no pf, so the bundle opens with a Prosiform section whose Run pf first sub-section states that pf is run first, and the line above the section refers to it."
+description = "A deferred dispatch inside a bundle the run dispatches publishes the path the later run follows, in that bundle, and compiles no bundle of its own, so the deferral takes precedence in a dispatched bundle as it does in the entry; the bundle opens with the run-pf line."
 
 clauses = [
   "Link classification and resource handling — Operators that combine",

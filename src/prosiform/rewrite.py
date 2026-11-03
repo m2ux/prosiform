@@ -54,10 +54,12 @@ token, and a count that disagrees is content the run resolved and
 cannot edit, which is an internal fault rather than a bundle.
 
 A mark survives the rewrite where it states who compiles the material. A
-dispatch operator is the one thing in the bundle saying the material
-belongs to another agent, so its label reaches the bundle as the author
-wrote it. A deferral states when, which the destination already says, so
-its mark and the blanks following it are dropped from the label it opens.
+dispatch pointing at a bundle file is the one thing in the bundle saying
+the material belongs to another agent, so its label reaches the bundle
+opening with the dispatch mark and one blank. A deferral states when, and
+a set's `In parallel` sub-section states who, which each destination
+already says, so their marks and the blanks following them are dropped
+from the label they open.
 A link the bundle took no destination for opens with no operator, because
 the run refuses an operator naming anything but a Markdown document or
 section under the root, and it is published as its author wrote it.
@@ -72,7 +74,7 @@ from typing import Any
 from markdown_it.common.utils import normalizeReference
 from markdown_it.token import Token
 
-from prosiform.closure import unmarked
+from prosiform.closure import filed, opened, published_text
 from prosiform.profile import MARKER, MARKER_LABELS
 from prosiform.source import (
     HREF,
@@ -534,10 +536,11 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
 
     The one exception is a withheld link's mark, which is authoring
     syntax rather than content: the bundle took a destination for that
-    link, and the destination or the sub-section it names states the
-    withholding, so the mark and the blanks following it go. The edit
-    reaches the prefix of the label, which no nested use opens on, so it
-    still overlaps nothing.
+    link, and the destination states the withholding, so the mark and
+    the blanks following it go, or become the dispatch mark and one
+    blank for a dispatch pointing at a bundle file. The edit reaches the
+    prefix of the label, which no nested use opens on, so it still
+    overlaps nothing.
 
     The destination arrives whole. Where a link points is the bundle's
     question, and this writes the answer, so a fragment of the bundle
@@ -549,8 +552,14 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
         found.append((*one.target, published(one.definition, destination)))
     elif destination is not None:
         found.append((*one.target, destination))
-    if destination is not None and (kept := unmarked(label, raw=True)) != label:
-        found.append((one.label[0], one.label[0] + len(label) - len(kept), ""))
+    shown = (
+        None if destination is None else published_text(label, filed(destination), True)
+    )
+    if shown is not None and shown != label:
+        lead = opened(label, raw=True)
+        assert lead is not None
+        prefix = shown[: len(shown) - (len(label) - lead.after)]
+        found.append((one.label[0], one.label[0] + lead.after, prefix))
     return found
 
 

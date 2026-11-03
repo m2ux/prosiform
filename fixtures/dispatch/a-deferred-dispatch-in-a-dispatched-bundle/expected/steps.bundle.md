@@ -1,10 +1,4 @@
-Before following this bundle, [run pf first](#run-pf-first).
-
-# Prosiform
-
-## Run pf first
-
-Run `pf` first, with no arguments, and follow the guide it prints.
+Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 # Steps
 

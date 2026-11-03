@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Entry
 
 A name two documents carry is reached as [the planning procedure](#plan) and as [the review procedure](#review).
