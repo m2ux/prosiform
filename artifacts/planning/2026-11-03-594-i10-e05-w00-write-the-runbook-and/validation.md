@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w00.md) names, run against branch `i10/e05/w00-write-the-runbook-and` at `d8cfd26f`.
+Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w00.md) names, run against branch `i10/e05/w00-write-the-runbook-and` at `e23d83b9`.
 
 ## AC6
 
@@ -22,15 +22,19 @@ Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w
 
 ## AC8
 
-- **T5 — Proof shakedown.** Not run to a measurement.
-  The shakedown's harness `claude` and model `claude-haiku-5-5`, named by the user on 2026-11-03, are recorded in `RUNBOOK.md` with the USD 5 cap and a USD 0.80 estimate.
-  - **First attempt, at `41841001`.** The preflight refused the eval login before any session: `installed_plugins.json` installs a managed plugin at `managed` scope and the signed `remote-settings.json` enables it.
-  - **User decision, 2026-11-03.** The org-managed plugin is allowed. At `60a2c02d` the preflight admits a plugin installed at managed scope or enabled by signed remote settings, and `run.json` and the report name it, its version and the environment it adds ([#597](https://github.com/m2ux/prosiform/issues/597) closed as not planned).
-  - **Second attempt, at `60a2c02d`, run `mvp-proof-shakedown`.** The preflight passed and all 30 sessions started, with `run.json` recording a managed plugin and six telemetry environment keys. Every session took `errored` with `Failed to authenticate: OAuth session expired and could not be refreshed`, so the run is `refused`, its tokens 0 and its summed cost USD 0. No session reached a hook response, so the managed hook's transcript record is unobserved.
-  - **Third attempt, at `d8cfd26f`, 07:44 CET.** Refused the same way: all 30 sessions `errored` on `OAuth session expired and could not be refreshed`, USD 0. The eval config's `.credentials.json` was last written at 07:35:03, when the second attempt's failed refresh left its access and refresh tokens empty, and its `history.jsonl` holds one interactive entry, `quit`, so no `/login` completed in that directory.
-  - **What it waits on.** A renewed eval login, `CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude` then `/login`, which writes under `config/` and is the user's to run.
+- **T5 — Proof shakedown.** Pass.
+  Run `mvp-proof-shakedown`, the command `e23d83b9` records run on the code at `d8cfd26f`, on the harness `claude` and model `claude-haiku-5-5` the user named on 2026-11-03, within the USD 5 cap after a USD 0.80 estimate:
+  - **Result.** `completed`: 30 of 30 sessions started and passed, so no failing session took a disposition and none was a defect or unclear.
+  - **Measured.** USD 0.123701 in all, USD 0.004123 a session; 3 593 668 tokens, 119 789 a session, the largest 206 458.
+  - **Budget set.** The proof's session cap is 420 000 tokens, its token budget 63 000 000 and its cost cap USD 2, as `RUNBOOK.md` records with the formula each follows.
+  - **Managed plugin.** `run.json` names a managed plugin and six telemetry environment keys. Every one of the 30 transcripts holds its `SessionStart:startup` `hook_response` carrying the organisation's `additionalContext`, and the run completed, so the hook response is accepted rather than failing the run.
+- **Earlier attempts.**
+  - At `41841001` the preflight refused the eval login's managed plugin. By the user's decision of 2026-11-03 the preflight admits it at `60a2c02d` ([#597](https://github.com/m2ux/prosiform/issues/597) closed as not planned).
+  - Two attempts at `60a2c02d` and `d8cfd26f` were `refused`: every session `errored` on an expired OAuth session, USD 0, until the user renewed the eval login.
+  - The next attempt completed but started 16 of 30 sessions, USD 0.073912: a session records over 100 000 tokens, its cache reads included, so the runner's 60 000 default session cap exhausted the 1 800 000 budget. The shakedown's command now passes `--session-budget-tokens 400000` and `--budget-tokens 12000000`, the fault fixed on this branch.
+  - The shakedown's spend over every attempt is USD 0.197613.
 
 ## Make check
 
 - **T6 — `make check` with `PROSIFORM_BUILD` naming the worktree's build.**
-  Exit 0 at `d8cfd26f`: 1663 check tests and 1264 harness tests pass, and `make links`, `make tables` and every other target pass.
+  Exit 0 at `e23d83b9`: 1663 check tests and 1264 harness tests pass, and `make links`, `make tables` and every other target pass.
