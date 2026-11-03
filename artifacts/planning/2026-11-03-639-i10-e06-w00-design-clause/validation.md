@@ -26,3 +26,5 @@ No clause still states a Prosiform section's protocols, a `Run pf first` sub-sec
 ## T2 Make Check
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`, after `git fetch origin engineering`. Result: exit 0. Conformance: 360 clauses, 0 declarations naming no clause, 0 unfixturable codes; vocabulary: 49 marked terms, each defined in `docs/glossary.md`.
+
+Continuous integration on `88e601ad`: the Checks workflow succeeded, and #641 merged into `i10/e06/main` as `48c0f538`.
