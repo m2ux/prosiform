@@ -14,6 +14,7 @@ This record holds its delivery of `AC12,AC13,AC18`: the work item, the validatio
 | --- | --- |
 | [w07.md](w07.md) | The work item: one compiled form carrying `pf` |
 | [validation.md](validation.md) | The evidence for each check the work item names |
+| [change-list.md](change-list.md) | The plan changes this session applied and those it held |
 
 ## Links
 
