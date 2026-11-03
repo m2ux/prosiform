@@ -50,7 +50,7 @@ Each example below runs over a [corpus fixture](fixtures/README.md)'s source tre
 pf
 ```
 
-With no arguments, `pf` prints the guide an agent follows a skill by: the compile step, the rule that a link whose text opens with `↳` names an inline target to compile, read whole and follow, that a link whose text opens with `⇉` names a file to give to a sub-agent, and that an `In parallel` section lists several to give to their own sub-agents at once. Every bundle opens with a line telling its reader to run `pf` first. A skill's bootstrap is one instruction: run `pf` and follow it.
+With no arguments, `pf` prints the guide an agent follows a skill by: the compile step, the rule that a link whose text opens with `↳` names an inline target to compile, read whole and follow, that a link whose text opens with `⇉` names a file to give to a sub-agent, and that an `In parallel` section lists several to give to their own sub-agents at once, with the failures of a set returned together and each sub-agent's question returned unanswered in an answer whose first line reads `Question:`. Every bundle opens with a line telling its reader to run `pf` first. A skill's bootstrap is one instruction: run `pf` and follow it.
 
 ### Declare a Source
 
@@ -89,7 +89,7 @@ A link whose text opens with `¬` is left for a run of its own: the document it 
 
 ### Dispatch to Sub-agents
 
-A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link stays where its author wrote it, with its mark, and points at the file its target was compiled to. The `⫽` links in one section's own content form a parallel set of two or more targets, pointing at one `In parallel` sub-section that lists each bundle as a `⇉` link to dispatch together; a set of one target is a single `⇉` link.
+A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link stays where its author wrote it, with its mark, and points at the file its target was compiled to. The `⫽` links in one section's own content form a parallel set of two or more targets, pointing at one `In parallel` sub-section that lists each bundle as a `⇉` link to dispatch together; a set of one target is a single `⇉` link. A deferral mark written before either, as in `¬⇉`, is refused.
 
 Every bundle opens with one line, ``Before reading on, run `pf` with no arguments and follow the guide it prints.``, as [Dispatch](docs/dispatch.md#the-run-pf-line) states. A bundle carries no protocol paragraph.
 
