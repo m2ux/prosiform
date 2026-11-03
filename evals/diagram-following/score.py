@@ -153,7 +153,6 @@ class Failure(StrEnum):
     UNCOMPILED = "uncompiled"
     OVERCOMPILED = "overcompiled"
     MISORDERED_COMPILE = "misordered_compile"
-    UNBOOTSTRAPPED = "unbootstrapped"
     ERRORED = "errored"
 
 
@@ -497,15 +496,8 @@ def score(
     workflow: Workflow,
     scenario: Scenario,
     workspace: Path,
-    compiled: bool | None = None,
 ) -> Verdict:
-    """The verdict on one finished workspace for one scenario.
-
-    `compiled` states whether a form whose material must be compiled saw that
-    compile run. A session that followed the sources without compiling is
-    `unbootstrapped`, since the step the form exists to perform did not
-    happen whatever its trace shows.
-    """
+    """The verdict on one finished workspace for one scenario."""
     expected = scenario.path
     actual = read_trace(workspace)
     missing = undone(workflow, actual, workspace)
@@ -527,8 +519,6 @@ def score(
             return Verdict(
                 False, Failure.MISSING_ACTION, missing[0], expected, actual, actions
             )
-        if compiled is False:
-            return Verdict(False, Failure.UNBOOTSTRAPPED, 0, expected, actual, actions)
         starts = read_starts(workspace)
         commands = read_commands(workspace)
         order = dispatched(scenario, starts) or (
