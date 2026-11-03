@@ -89,13 +89,13 @@ The live proof of the feature workflows, run by [I10:E05](https://github.com/m2u
 | Forms | The default `--forms`; the feature workflows are written in `bundle` and `tree`, so each scenario takes those two. |
 | Repetitions | 5 |
 | Sessions | 150: fifteen scenarios, two forms, five repetitions. |
-| Session cap | The shakedown's largest session tokens, doubled and rounded up to the next 10 000. |
-| Token budget | 150 times the session cap. |
-| Cost cap | 150 times the shakedown's mean session cost, doubled and rounded up to the next dollar. |
+| Session cap | 420 000 tokens: the shakedown's largest session, 206 458 tokens, doubled and rounded up to the next 10 000. |
+| Token budget | 63 000 000 tokens: 150 times the session cap. |
+| Cost cap | USD 2: 150 times the shakedown's mean session cost of USD 0.004123, doubled and rounded up to the next dollar. |
 | Committed | `report.json` as `evals/diagram-following/mvp-proof.json`, with its `dispositions.json` read into it. `baseline.json` is untouched. |
 
 ```bash
-make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows preset-selection,group-placement,subst-redirect,section-entry,section-composition,declared-inclusion --repetitions 5 --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id mvp-proof'
+make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows preset-selection,group-placement,subst-redirect,section-entry,section-composition,declared-inclusion --repetitions 5 --session-budget-tokens 420000 --budget-tokens 63000000 --run-id mvp-proof'
 ```
 
 The run's own stop rule: where its harness or model differs from the shakedown's below, it first repeats the shakedown on its own, records it here, and takes its session cap, token budget and cost cap from that.
@@ -110,12 +110,13 @@ One repetition of every feature scenario in each form, on the harness and model 
 | Model | `claude-haiku-5-5`, named by the user on 2026-11-03. |
 | Spending cap | USD 5 for every live run of the shakedown together. |
 | Sessions | 30: fifteen scenarios, two forms, one repetition. |
+| Session cap | 400 000 tokens: a session's tokens count its cache reads, so a feature session records over 100 000, past the runner's 60 000 default. |
 | Estimate | USD 0.80: 30 sessions at the committed baseline's mean of USD 0.027 a session, its USD 4.01 over 150 sessions. |
-| Run | `mvp-proof-shakedown`, 2026-11-03: `refused`. All 30 sessions started on the managed `shielded-core-rules` 0.7.3 and each took `errored` with `Failed to authenticate: OAuth session expired and could not be refreshed`, spending USD 0. The eval login is renewed with the one-time login command in the README's [Login](README.md#login) section before the shakedown runs again. |
-| Measured | Nothing, so the proof's session cap, token budget and cost cap are unset and the proof does not start. |
+| Run | `mvp-proof-shakedown`, 2026-11-03: `completed`, all 30 sessions started and passed, with no failing session to triage. Each session carried the managed `shielded-core-rules` 0.7.3's `SessionStart` hook response, which the run records. |
+| Measured | USD 0.123701 in all, USD 0.004123 a session; 3 593 668 tokens, 119 789 a session, the largest 206 458. These set the proof's session cap, token budget and cost cap above. |
 
 ```bash
-make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --workflows preset-selection,group-placement,subst-redirect,section-entry,section-composition,declared-inclusion --repetitions 1 --budget-tokens 1800000 --run-id mvp-proof-shakedown'
+make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --workflows preset-selection,group-placement,subst-redirect,section-entry,section-composition,declared-inclusion --repetitions 1 --session-budget-tokens 400000 --budget-tokens 12000000 --run-id mvp-proof-shakedown'
 ```
 
 ## Baseline
