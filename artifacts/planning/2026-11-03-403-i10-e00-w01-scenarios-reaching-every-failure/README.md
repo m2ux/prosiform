@@ -12,6 +12,12 @@ This record holds its delivery of `AC1,AC2,AC5`: the work item, the validation e
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The scenarios reaching every failure class, with its validation |
+| [Plan changes](changes.md) | The plan changes the session applied and held |
+
+## Decisions
+
+- **The default matrix's model.** (User, 2026-11-03.) The default matrix runs, and this corpus is calibrated against, `claude-haiku-5-5`. E00 W04 records it in `RUNBOOK.md` and E00 W00 sets the `run.py` default.
 
 ## Links
 
