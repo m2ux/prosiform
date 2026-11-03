@@ -12,6 +12,10 @@ This record holds its delivery of `AC6,AC7,AC8,AC9`: the work item, the validati
 
 | Artifact | What it holds |
 | --- | --- |
+| [W05](w05.md) | The undeclared skill entry whose `↳` line a bootstrap session compiles, and the scorer's single missed-run class |
+| [W06](w06.md) | The conditional and nested deferrals a staged session activates only where its path needs them |
+| [W07](w07.md) | The deferral under matched presets whose stand-in states the path |
+| [Validation](validation.md) | Each check the work items name, the revision it ran at and what it showed, and the findings it raised |
 
 ## Links
 
