@@ -18,6 +18,7 @@ Validation compares the finished document with the provenance the run recorded w
 | --- | --- |
 | Resolution | every supported reference resolves to a known document or section |
 | Target integrity | every rewritten link reaches the destination its own target was assigned |
+| One member per destination | no two members of a merged group reach one destination, because no emitted heading answers the targets of two documents |
 | Uniqueness | each destination occurs once and resolves in the renderer that reads the bundle |
 | Boundaries | combining sections has absorbed nothing into an unintended container |
 | Preservation | selected wording and code survive the declared transformations unchanged |
