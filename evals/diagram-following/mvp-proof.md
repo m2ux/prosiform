@@ -3,7 +3,7 @@
 - **Run:** `mvp-proof`, 2026-11-03T07:15:02+00:00; models `claude-haiku-5-5`; 5 repetitions.
 - **Sessions:** 150 of 150 started; 0 not started.
 - **Tokens:** 19268512.
-- **Managed configuration:** 1 plugin(s), 6 environment setting(s) and 0 hook(s), carried by every session; fingerprint `db6a4542c5d7f6daeda51be1bedc91539e54f7de913369ba82375e8f4e8d3529`.
+- **Managed configuration:** 1 plugin(s), 6 environment setting(s) and 1 hook(s), carried by every session; fingerprint `a8f7653310624b30a2b61e762ae8e3444ac8b6c90a5b3afdbb8dbdcc508dd5b8`.
 - **Cost:** USD 0.67671.
 - **Baseline:** `20261028T165414Z`, 2026-10-28T16:54:14+00:00. Change is this run's pass rate less the baseline's, and a failure count's change follows it in brackets.
 
