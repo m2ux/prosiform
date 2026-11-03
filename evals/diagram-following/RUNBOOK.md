@@ -143,14 +143,14 @@ uv run --project src --frozen python evals/diagram-following/report.py evals/dia
 
 ## Edge Run
 
-The edge workflows on every harness carrying a shell, run by [I10:E04](https://github.com/m2ux/prosiform/issues/579) W14 and shaken down by E04 W16. The edge workflows and the `staged` form arrive with E04's earlier rows.
+The edge workflows on every harness carrying a shell, run by [I10:E04](https://github.com/m2ux/prosiform/issues/579) W14 and shaken down by E04 W16. The edge workflows arrive with E04's earlier rows.
 
 | Item | Value |
 | --- | --- |
 | Harnesses | `cursor` and `opencode`: one run each. |
 | Model | The model this runbook records for the baseline, as each harness names it. |
 | Workflows | The edge workflows E04 adds. |
-| Forms | The forms the edge workflows are written in: `staged`, and `bootstrap` for a bootstrapping skill. |
+| Forms | The forms the edge workflows are written in: `compiled`, and `bootstrap` for a bootstrapping skill. |
 | Repetitions | 5 |
 | Sessions | Per harness, the cells the run prints times 5. |
 | Session cap | Set by E04 W16's shakedown, by the proof's rule. |
@@ -159,5 +159,5 @@ The edge workflows on every harness carrying a shell, run by [I10:E04](https://g
 | Committed | Each harness's `report.json` as `evals/diagram-following/composition-edges-<harness>.json` and its `report.md` beside it. `baseline.json` and `mvp-proof.json` are untouched. |
 
 ```bash
-make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms staged,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'
+make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms compiled,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'
 ```

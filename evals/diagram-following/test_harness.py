@@ -110,17 +110,39 @@ def test_no_harness_declares_a_field_nothing_reads() -> None:
         assert not unread, f"{declared.name} declares {unread}, which nothing reads"
 
 
-def test_a_harness_without_a_shell_is_offered_every_form_bundled() -> None:
-    """AC5: a form needing a command goes to a harness with a shell only.
+def test_a_claude_session_given_pf_carries_a_shell_limited_to_pf() -> None:
+    """AC12: the shell reaches a session given `pf`, and admits `pf` alone."""
+    plain = Claude().argv(["claude"], "a-model", 60_000)
+    given = Claude().argv(["claude"], "a-model", 60_000, None, True)
+    assert plain[plain.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task"
+    assert "--allowedTools" not in plain
+    assert given[given.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task,Bash"
+    assert given[given.index("--allowedTools") + 1] == "Bash(pf:*)"
 
-    The bootstrap form has the session run `pf`, so a harness without a shell
-    cannot measure it. The form is withheld from that harness by `runnable`
-    rather than run and recorded as the agent's failure.
-    """
-    from run import runnable
 
-    assert runnable("bootstrap", Opencode())
-    assert runnable("bootstrap", Cursor())
+def test_claude_reads_the_shell_commands_a_session_ran(tmp_path: Path) -> None:
+    """AC12: a session's `pf` command is read from its `Bash` calls."""
+    held = transcript(
+        tmp_path,
+        [
+            claude_call("a", "plan#work"),
+            {
+                "type": "assistant",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "b",
+                            "name": "Bash",
+                            "input": {"command": "pf --help"},
+                        }
+                    ]
+                },
+            },
+        ],
+    )
+    assert Claude().commands(held) == ("pf --help",)
+    assert Claude().commands(tmp_path / "absent.jsonl") == ()
 
 
 def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:

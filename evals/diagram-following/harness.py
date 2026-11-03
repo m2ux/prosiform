@@ -188,12 +188,10 @@ class Claude:
     hooks: str = "hooks"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
-    shell: bool = False
-    """Whether a session may run a command, which a shell form needs.
-
-    The tool allowlist above names no shell, so this harness cannot run one.
-    A form whose material a session must compile cannot be measured here.
-    """
+    shell_tool: str = "Bash"
+    """The tool a session given `pf` also carries."""
+    pf_only: str = "Bash(pf:*)"
+    """The allowlist rule confining that tool to the build under test."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
@@ -213,7 +211,12 @@ class Claude:
     )
 
     def argv(
-        self, agent: list[str], model: str, budget: int, workspace: Path | None = None
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        workspace: Path | None = None,
+        pf: bool = False,
     ) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
@@ -221,7 +224,11 @@ class Claude:
         price a session is allowed to spend rather than the token count: the
         CLI enforces dollars between calls, and the run's own guard holds the
         token budget from what each session reports.
+
+        A session given `pf` carries the shell tool and `--allowedTools`
+        admits `pf` commands alone, so every other command is refused.
         """
+        tools = [self.tools, self.shell_tool] if pf else [self.tools]
         return [
             *agent,
             "-p",
@@ -231,7 +238,8 @@ class Claude:
             "stream-json",
             "--verbose",
             "--tools",
-            self.tools,
+            ",".join(tools),
+            *(["--allowedTools", self.pf_only] if pf else []),
             "--permission-mode",
             "acceptEdits",
             "--no-session-persistence",
@@ -458,9 +466,29 @@ class Claude:
             for key, (target, together) in found.items()
         )
 
-    def commands(self, transcript: Path) -> tuple[str, ...] | None:
-        """The shell commands a session ran, or nothing where it can run none."""
-        return None
+    def commands(self, transcript: Path) -> tuple[str, ...]:
+        """The shell commands a session ran, in order.
+
+        A `tool_use` block naming the shell tool carries the command line.
+        """
+        found: list[str] = []
+        for held in messages(transcript):
+            carried = held.get(MESSAGE)
+            content = carried.get("content") if isinstance(carried, dict) else None
+            if held.get("type") != ASSISTANT or not isinstance(content, list):
+                continue
+            for block in content:
+                if not isinstance(block, dict) or block.get("type") != TOOL_USE:
+                    continue
+                if block.get("name") != self.shell_tool:
+                    continue
+                held_input = block.get("input")
+                command = (
+                    held_input.get(COMMAND) if isinstance(held_input, dict) else None
+                )
+                if isinstance(command, str):
+                    found.append(command)
+        return tuple(found)
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
         """The tokens one session processed, from the usage it reported."""
@@ -481,13 +509,6 @@ class Cursor:
     name: str = "cursor"
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
-    shell: bool = True
-    """Whether a session may run a command, which a shell form needs.
-
-    The CLI carries a shell, so a session can compile its material. The
-    command it runs is confined by workspace trust alone, which is wider than
-    a form that only reads files needs.
-    """
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = False
@@ -505,13 +526,20 @@ class Cursor:
     )
 
     def argv(
-        self, agent: list[str], model: str, budget: int, workspace: Path | None = None
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        workspace: Path | None = None,
+        pf: bool = False,
     ) -> list[str]:
         """One session's command line, the workspace given as its argument.
 
         The CLI has no session spend cap and no tool allowlist, so the run's
         own token guard is the whole budget, and the workspace the run laid
-        out is what a session is confined to.
+        out is what a session is confined to. Its shell is there to every
+        session, so a session given `pf` is confined to the command by what
+        the instruction names alone; `pf` changes nothing on this command line.
 
         A workspace must be trusted for the CLI to run in it at all, since
         it prompts otherwise and a prompt is no session. `--sandbox` is left
@@ -702,11 +730,6 @@ class Opencode:
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
-    shell: bool = True
-    """Whether a session may run a command, which a shell form needs.
-
-    The CLI carries a shell, so a session can compile its material.
-    """
     prompt_on_argv: bool = True
     """Whether the task text is an argument rather than the session's input.
 
@@ -721,7 +744,12 @@ class Opencode:
     """
 
     def argv(
-        self, agent: list[str], model: str, budget: int, workspace: Path | None = None
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        workspace: Path | None = None,
+        pf: bool = False,
     ) -> list[str]:
         """One session's command line, its prompt given as its argument.
 
@@ -737,7 +765,8 @@ class Opencode:
         `--dir` names the workspace outright. The CLI otherwise takes its
         project from remembered state as readily as from its working
         directory, and a session that names no workspace of its own can run
-        in the repository this file was written in.
+        in the repository this file was written in. Its shell is there to every
+        session, so `pf` changes nothing on this command line.
         """
         return [
             *agent,
