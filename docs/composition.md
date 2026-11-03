@@ -241,7 +241,7 @@ Design rules: *Deferred composition* and *Activation*, and *The Prosiform sectio
 - [a-deferred-directive-is-activated-by-the-run-its-line-names](../fixtures/composition/a-deferred-directive-is-activated-by-the-run-its-line-names)
 - [a-deferred-body-that-fails-is-deferred-without-failing](../fixtures/composition/a-deferred-body-that-fails-is-deferred-without-failing)
 - [a-deferred-body-that-fails-fails-when-activated](../fixtures/composition/a-deferred-body-that-fails-fails-when-activated)
-- [a-deferred-directive-in-a-dispatched-bundle-opens-with-a-first-run](../fixtures/dispatch/a-deferred-directive-in-a-dispatched-bundle-opens-with-a-first-run)
+- [a-deferred-directive-in-a-dispatched-bundle-opens-with-the-run-pf-line](../fixtures/dispatch/a-deferred-directive-in-a-dispatched-bundle-opens-with-a-first-run)
 
 ## Failure
 
