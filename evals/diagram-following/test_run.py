@@ -266,9 +266,11 @@ def material(session: Session) -> set[str]:
 
 
 def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -> None:
-    sessions = matrix(list(CORPUS.values()), ["a", "b"], list(FORMS), 5)
+    sessions = matrix(list(CORPUS.values()), ["a", "b"], list(DEFAULT_FORMS), 5)
     assert (
-        len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
+        len(sessions)
+        == len(set(sessions))
+        == every_session(["a", "b"], list(DEFAULT_FORMS), 5)
     )
     assert len(sessions) == 2 * 5 * 58
 
@@ -336,11 +338,15 @@ def test_a_staged_session_receives_the_bundle_set_and_the_build(
 
 
 def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> None:
-    """AC3: `staged` is outside the default forms and needs a harness with a shell.
+    """AC3, AC26: `staged` is outside the default forms and needs a shell.
 
     The default matrix the baseline measures holds no staged cell on any
     harness; naming the form gives staged sessions to Cursor and opencode,
-    which carry a shell, and none to Claude, which does not.
+    which carry a shell, in the scenarios whose starts and runs their
+    streams report, `subagent-first-run`'s none, since each states a
+    sub-agent's run. Claude's
+    staged session carries a shell and its stream reports every sub-agent's
+    calls, so it is given every staged scenario, the nested ones among them.
     """
     corpus = list(CORPUS.values())
     assert STAGED_SET not in DEFAULT_FORMS
@@ -358,25 +364,39 @@ def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> Non
                 "directive-labels",
                 "dispatch-set",
                 "preset-deferral",
-                "subagent-first-run",
             )
         }
-    assert matrix(corpus, ["m"], [STAGED_SET], 1, Claude()) == []
+    claude = matrix(corpus, ["m"], [STAGED_SET], 1, Claude())
+    assert {(item.workflow, item.scenario) for item in claude} == {
+        (workflow.name, scenario.name)
+        for workflow in corpus
+        if STAGED in workflow.forms
+        for scenario in workflow.scenarios
+    }
+    assert {
+        ("dispatch-depth", "three-hop-chain"),
+        ("dispatch-depth", "three-hop-set"),
+        ("dispatch-depth", "three-hop-question"),
+        ("subagent-first-run", "deep-hop-runs"),
+    } <= {(item.workflow, item.scenario) for item in claude}
 
 
 def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> None:
-    """AC22: a scenario stating a sub-agent's `pf` run needs that agent's commands.
+    """AC22, AC26: a scenario stating a sub-agent's `pf` run needs its commands.
 
-    No declared harness reports a sub-agent's commands: Claude carries no
-    shell, and neither Cursor's stream nor opencode's carries a sub-agent's
-    own calls. A harness that did would be given the scenario, and a run the
-    session makes itself is given wherever a shell is.
+    Claude reports them in the staged form, whose session carries a shell,
+    and in no form whose session carries none. Neither Cursor's stream nor
+    opencode's carries a sub-agent's own calls; a harness that did would be
+    given the scenario, and a run the session makes itself is given wherever
+    a shell is.
     """
     workflow = CORPUS["dispatch-set"]
     [scenario] = workflow.scenarios
     by_sub_agent = replace(scenario, compile=(Compile("review#tests", ()),))
     by_session = replace(scenario, compile=(Compile(None, ()),))
-    for harness in HARNESSES.values():
+    assert observable(workflow, by_sub_agent, STAGED_SET, Claude())
+    assert not observable(workflow, by_sub_agent, COMPILED_SET, Claude())
+    for harness in (Cursor(), Opencode()):
         assert not observable(workflow, by_sub_agent, STAGED_SET, harness)
     assert observable(
         workflow, by_sub_agent, STAGED_SET, replace(Opencode(), sub_agent_calls=True)
@@ -389,14 +409,59 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
 def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> None:
     """A deferred dispatch's targets start from the session, so a shell harness
     reporting only the session's own starts observes them; a start a sub-agent
-    makes, at any depth, it does not.
+    makes, at any depth, it does not, nor a run a sub-agent makes.
     """
     staged = matrix(list(CORPUS.values()), ["m"], [STAGED_SET], 1, Cursor())
     given = {(item.workflow, item.scenario) for item in staged}
     assert ("deferred-dispatch", "deferred-dispatch-compiled") in given
-    assert ("subagent-first-run", "first-hop-run") in given
+    assert ("subagent-first-run", "first-hop-run") not in given
     assert ("subagent-first-run", "deep-hop-runs") not in given
     assert not any(workflow == "dispatch-depth" for workflow, _ in given)
+
+
+def test_a_staged_claude_run_scores_each_nested_scenario_on_its_starts_runs(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC26: the nested scenarios take a Claude cell, scored on each start's runs.
+
+    The stub's staged session carries `Bash`, so it makes each stated `pf`
+    run under the start whose sub-agent makes it, and the record holds them
+    there. Every cell passes, `deep-hop-runs` among them, and its review and
+    ruling hold their own runs.
+    """
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-depth,subagent-first-run", "--forms", STAGED_SET),
+        *("--repetitions", "1", "--budget-tokens", "100000"),
+    )
+    cells = {(item["workflow"], item["scenario"]) for item in records(tmp_path)}
+    assert record["started"] == len(cells) == 5
+    assert {
+        ("dispatch-depth", "three-hop-chain"),
+        ("dispatch-depth", "three-hop-set"),
+        ("dispatch-depth", "three-hop-question"),
+        ("subagent-first-run", "deep-hop-runs"),
+    } <= cells
+    assert all(item["verdict"]["passed"] for item in records(tmp_path))
+    for entry in seen(log):
+        argv = entry["argv"]
+        assert argv[argv.index("--tools") + 1].endswith(",Bash")
+    deep = (
+        tmp_path
+        / "results"
+        / "test"
+        / "stub-model"
+        / "subagent-first-run"
+        / "deep-hop-runs"
+        / STAGED_SET
+        / "1"
+    )
+    assert [(start.target, start.commands) for start in read_starts(deep)] == [
+        ("hop/audit#sweep", ()),
+        ("hop/review#scan", ("pf steps/weighing.md#weigh",)),
+        ("steps/ruling#rule", ("pf steps/recording.md#file",)),
+    ]
+    assert json.loads((deep / SUBAGENTS).read_text())["commands"] == []
 
 
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
@@ -405,9 +470,9 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     record = eval_run(
         tmp_path, "--repetitions", "2", "--budget-tokens", "100000", "--parallel", "3"
     )
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
+    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(DEFAULT_FORMS), 2)
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
-    expected = every_session(["stub-model"], list(FORMS), 2)
+    expected = every_session(["stub-model"], list(DEFAULT_FORMS), 2)
     assert record["started"] == len(sessions) == expected
     entries = seen(log)
     assert len(entries) == len(sessions)
@@ -538,7 +603,7 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
     monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
     eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "100000")
     written = records(tmp_path)
-    assert len(written) == every_session(["stub-model"], list(FORMS), 1)
+    assert len(written) == every_session(["stub-model"], list(DEFAULT_FORMS), 1)
     for record in written:
         session = Session(
             record["model"],
@@ -625,7 +690,7 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tokens each records.
     """
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
+    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(DEFAULT_FORMS), 1)
     budget = 250 * len(sessions)
     record = eval_run(
         tmp_path,
