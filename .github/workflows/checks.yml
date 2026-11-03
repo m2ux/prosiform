@@ -1,19 +1,38 @@
-# The repository's checks, run on every change to the branches that carry the
-# build. The job calls the named command a developer calls, so one
-# configuration governs a local run and a remote one: `make check` runs the
-# checks in the order the Makefile declares, stops at the first failure, and
-# names the target that failed.
+# The repository's checks, run on every change that can break what they read.
+# The job calls the named command a developer calls, so one configuration
+# governs a local run and a remote one: `make check` runs the checks in the
+# order the Makefile declares, stops at the first failure, and names the
+# target that failed.
 
 name: Checks
 
 on:
-  push:
+  # A pull request is where a change is accepted, so the changed paths decide
+  # whether it runs the checks and its branch name decides nothing. Its base is
+  # a branch that carries the build: main, or an initiative's branch, which
+  # targets main. The workspace branch carries the tooling and the engineering
+  # branch the planning records; neither holds a build to check.
+  pull_request:
     branches:
-      # main carries the build and an initiative's branches target it. The
-      # workspace branch carries the tooling and the engineering branch the
-      # planning records; neither holds a build to check.
       - main
       - "i[0-9][0-9]/**"
+    # Every path a check reads: the build, the corpus, the checks, the evals
+    # and scripts they run, the documents they read, the Makefile that names
+    # them and this workflow.
+    paths:
+      - src/**
+      - fixtures/**
+      - checks/**
+      - evals/**
+      - scripts/**
+      - docs/**
+      - "*.md"
+      - Makefile
+      - .github/workflows/checks.yml
+  # The merge commit on main is checked whatever it changed.
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
