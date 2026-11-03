@@ -144,7 +144,7 @@ A session that still carries context the run did not supply fails the run after 
 | --- | --- |
 | `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its token budget is `EVAL_BUDGET_TOKENS` and its harness `HARNESS`; `ARGS='...'` passes the runner's options through, a later `--budget-tokens` among them overriding the default. |
 
-The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
+Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -186,7 +186,7 @@ A run writes its records under `results/<run-id>/`, which git ignores: per sessi
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
 ```
 
-The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens and the count of sessions not started, and closes with those sessions listed.
+The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens, its cost, the sum of every session's reported cost, and the count of sessions not started. It then lists each failing session with the disposition its triage gave it in `dispositions.json` beside `run.json`, as the [runbook](RUNBOOK.md#dispositions-file) states, and closes with the sessions not started.
 
 A refused run — one every started session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` writes only from a run whose report holds a cell, so a refused run, or one that started nothing, leaves the committed baseline as it was.
 
