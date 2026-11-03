@@ -22,6 +22,7 @@ This record holds its delivery of `AC5,AC6,AC7,AC8,AC9`: the work item, the vali
 
 | Resource | Link |
 | --- | --- |
+| Pull request | [#643](https://github.com/m2ux/prosiform/pull/643), merged into `i10/e06/main` as `9c300923` |
 | Epic | [I10:E06 Agent Guide](https://github.com/m2ux/prosiform/issues/639) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |

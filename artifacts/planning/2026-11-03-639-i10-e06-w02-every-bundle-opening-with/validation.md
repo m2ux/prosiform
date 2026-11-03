@@ -1,6 +1,6 @@
 # Validation
 
-The checks W02, W03 and W04's work items name, run against task branch `i10/e06/w02-every-bundle-opening-with` at `dbe7d339`, on the design pinned at engineering commit `884681c0cc4caaa9a1740a24fab204fea9a39d1a`.
+The checks W02, W03 and W04's work items name, run against task branch `i10/e06/w02-every-bundle-opening-with` at `0048e071`, on the design pinned at engineering commit `884681c0cc4caaa9a1740a24fab204fea9a39d1a`.
 
 ## T1 Run-pf Line On Every Bundle
 
@@ -29,3 +29,5 @@ Every `expected/*.bundle.md` of the 507 conformance fixtures opens with ``Before
 ## T7 Make Check
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`, after `git fetch origin engineering` and a merge of `origin/i10/e06/main` at `754a7ad2`. Corpus: 507 fixtures, 507 pass; conformance: 360 clauses, 0 declarations naming no clause; harness: 1286 passed; smoke, layout, tables, links, vocabulary, invocation and independence: ok.
+
+Continuous integration on `0048e071`: the Checks workflow succeeded, and #643 merged into `i10/e06/main` as `9c300923`.
