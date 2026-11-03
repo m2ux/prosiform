@@ -16,7 +16,20 @@ at their timeout in `timeouts`, the mean `tokens` of each kind over the
 sessions recording tokens, and the mean `cost_usd` over the sessions
 recording a cost; a mean is null when no session records it. The report
 also gives the run's id, date, models, repetitions, matrix size, sessions
-started, recorded cost, and the sessions it did not start.
+started, tokens, the sessions it did not start, `managed`, the plugins the
+organisation manages that reached every session with the environment
+variables they add, as `run.json` records them, and its `cost_usd`: the
+sum of every session's reported cost, errored sessions included, null when
+no session reports one, as a harness reporting no cost leaves it.
+
+Each failing session is listed in `failing` with its class and the
+disposition the run's triage gave it, read from `dispositions.json` beside
+`run.json`. That file maps a session's place in the matrix,
+`<model>/<workflow>/<scenario>/<form>/<repetition>`, to its `disposition`,
+one of `miss`, `defect` and `unclear`, and the `evidence` that decided it.
+A failing session the file does not name carries a null disposition, so an
+untriaged failure reads as one; a disposition outside the three, or an
+entry naming no failing session, is refused.
 
 The baseline is `baseline.json` beside this file, or the file `--baseline`
 names. It holds a reviewed run's id, date, models, repetitions and cost,
@@ -59,6 +72,8 @@ COMPLETED = "completed"
 REFUSED = "refused"
 REPORT_JSON = "report.json"
 REPORT_MD = "report.md"
+DISPOSITIONS = "dispositions.json"
+DISPOSITION_NAMES = ("miss", "defect", "unclear")
 BASELINE = ROOT / "baseline.json"
 TIMEOUT = "timeout"
 
@@ -191,7 +206,9 @@ def report(run_directory: Path, baseline: Path = BASELINE) -> Row:
     run = json.loads((run_directory / RUN).read_text())
     base = json.loads(baseline.read_text()) if baseline.is_file() else None
     state = run.get(STATE, COMPLETED)
-    records = [] if state == REFUSED else sessions(run_directory)
+    recorded = sessions(run_directory)
+    records = [] if state == REFUSED else recorded
+    costs = [record["cost_usd"] for record in recorded if record.get("cost_usd")]
     built: Row = {
         "run_id": run["run_id"],
         "date": run["date"],
@@ -202,8 +219,11 @@ def report(run_directory: Path, baseline: Path = BASELINE) -> Row:
         "sessions": run["sessions"],
         "started": run["started"],
         "harness": run.get("harness"),
+        "managed": run["managed"],
         "tokens": run["tokens"],
+        "cost_usd": round(sum(costs), 6) if costs else None,
         "not_started": run["not_started"],
+        "failing": failing(run_directory, records),
         "baseline": None
         if base is None or state == REFUSED
         else {field: base[field] for field in ("run_id", "date")},
@@ -217,6 +237,42 @@ def report(run_directory: Path, baseline: Path = BASELINE) -> Row:
         built["baseline_only"][name] = compare(rows, key, base_rows)
         built[name] = rows
     return built
+
+
+def place(record: Row) -> str:
+    """A session's place in the matrix, as one path-like name."""
+    return "/".join(
+        str(record[field])
+        for field in ("model", "workflow", "scenario", "form", "repetition")
+    )
+
+
+def failing(run_directory: Path, records: list[Row]) -> list[Row]:
+    """Each failing session with its class and the disposition triage gave it."""
+    path = run_directory / DISPOSITIONS
+    given: dict[str, Row] = json.loads(path.read_text()) if path.is_file() else {}
+    failed = {
+        place(record): record["verdict"]["failure"]
+        for record in records
+        if record["verdict"]["failure"] is not None
+    }
+    for name, entry in given.items():
+        if name not in failed:
+            raise CorpusError(f"{DISPOSITIONS} names {name}, which did not fail")
+        if entry.get("disposition") not in DISPOSITION_NAMES:
+            raise CorpusError(
+                f"{DISPOSITIONS} gives {name} {entry.get('disposition')!r}, "
+                f"not one of {', '.join(DISPOSITION_NAMES)}"
+            )
+    return [
+        {
+            "session": name,
+            "failure": failure,
+            "disposition": given.get(name, {}).get("disposition"),
+            "evidence": given.get(name, {}).get("evidence"),
+        }
+        for name, failure in failed.items()
+    ]
 
 
 def baseline_of(built: Row) -> Row:
@@ -303,6 +359,21 @@ def table(rows: list[Row], key: tuple[str, ...]) -> list[str]:
     return lines
 
 
+def managed_line(managed: Row) -> str:
+    """The managed plugins every session carried, as the report states them."""
+    if not managed["plugins"]:
+        return "- **Managed plugins:** none."
+    plugins = ", ".join(
+        f"`{item['plugin']}` {item['version'] or 'uninstalled'}"
+        for item in managed["plugins"]
+    )
+    added = ", ".join(f"`{name}`" for name in managed["environment"]) or "none"
+    return (
+        f"- **Managed plugins:** {plugins}, whose injected rules every session "
+        f"carried; environment added: {added}."
+    )
+
+
 def markdown(built: Row) -> str:
     """A report as Markdown: the run, then each level, then what is missing."""
     base = built["baseline"]
@@ -315,6 +386,10 @@ def markdown(built: Row) -> str:
         f"- **Sessions:** {built['started']} of {built['sessions']} started; "
         f"{len(built['not_started'])} not started.",
         f"- **Tokens:** {built['tokens']}.",
+        managed_line(built["managed"]),
+        "- **Cost:** no session reported a cost."
+        if built["cost_usd"] is None
+        else f"- **Cost:** USD {built['cost_usd']:g}.",
     ]
     if built["state"] == REFUSED:
         lines += [
@@ -348,6 +423,19 @@ def markdown(built: Row) -> str:
     ]
     if absent:
         lines += ["", "## Baseline Only", "", *(f"- {item}" for item in absent)]
+    if built["failing"]:
+        lines += [
+            "",
+            "## Failing Sessions",
+            "",
+            "| Session | Class | Disposition | Evidence |",
+            "| --- | --- | --- | --- |",
+        ]
+        lines += [
+            f"| `{item['session']}` | `{item['failure']}` | "
+            f"{item['disposition'] or 'untriaged'} | {item['evidence'] or '—'} |"
+            for item in built["failing"]
+        ]
     if built["not_started"]:
         lines += ["", "## Not Started", ""]
         lines += [

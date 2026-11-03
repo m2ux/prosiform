@@ -27,15 +27,24 @@ memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
 fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin or whose remote settings enable
-one, naming the file that says so: a plugin's hooks reach a session before
+does one whose directory installs a plugin at a scope other than managed,
+whose unsigned remote settings enable one, or whose settings file declares a
+hook, naming the file that says so: a plugin's hooks reach a session before
 its first turn and no flag the runner passes suppresses them.
 
+A plugin the organisation manages, installed at managed scope or enabled by
+the signed remote settings, reaches every session, and the run records it:
+`run.json` names each such plugin with its version, and each environment
+variable the remote settings add, so every recorded session is read as
+carrying the organisation's injected rules.
+
 What a session's agent did carry is read back from its transcript, so the
-boundary is observed rather than assumed. A hook's response, an appended
-system prompt or a memory file is context the run did not supply, and a run
-one of whose sessions carries one fails, naming the session and what it
-carried.
+boundary is observed rather than assumed. An appended system prompt or a
+memory file is context the run did not supply, and so is a hook's response
+where no managed plugin is recorded; a run one of whose sessions carries
+one fails, naming the session and what it carried. Where a managed plugin
+is recorded, a hook's response is that plugin's, since the preflight admits
+no other hook.
 `<root>/workspaces/<run-id>/` holds the run's workspaces, each at its
 session's place in the matrix and removed once its records are kept.
 
@@ -47,7 +56,7 @@ the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
 `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, recorded cost, the sessions it did not
+holds the run's date, options, recorded tokens, the sessions it did not
 start and the run's state. Once `run.json` is written, `report.py` writes
 the run's report beside it, compared with the committed baseline.
 
@@ -66,17 +75,18 @@ process group, the agent and every process it started, is killed; its exit
 status is recorded as `timeout`, and what its workspace holds by then is
 kept and scored like any other session's.
 
-The spending cap holds a run's recorded cost within `--budget-usd`. A run
-whose budget does not cover every session of its matrix at the session cap,
-`--session-budget-usd`, is refused before it starts a session, naming both.
-The agent checks its session cap between calls, so a session can record
-more than its cap, and the run guards its budget against that: a
-session starts only when the recorded cost, plus the session cap reserved
+The token budget holds a run's recorded tokens within `--budget-tokens`. A
+run whose budget does not cover every session of its matrix at the session
+cap, `--session-budget-tokens`, is refused before it starts a session,
+naming both. The agent checks its own cap between calls, so a session can
+record more than its cap, and the run guards its budget against that: a
+session starts only when the recorded tokens, plus the session cap reserved
 for each session in flight, plus its own session cap, is within the
 budget; while it is not and a session is in flight, the next one waits for
 it to settle. When it is not and none is in flight, the run starts no more
-sessions and lists the rest as not started. A session settles at the cost
-its `result` message reports, or at its session cap when it reports none.
+sessions and lists the rest as not started. A session settles at the tokens
+its `result` message reports, or holds its session cap against the budget
+when it reports none.
 """
 
 import argparse
@@ -445,9 +455,15 @@ def keep(workspace: Path, records: Path) -> None:
         shutil.copytree(workspace / ACTIONS, records / ACTIONS)
 
 
-def carried_context(message: dict[str, object]) -> str | None:
-    """The context one transcript message adds that the run did not supply."""
+def carried_context(message: dict[str, object], hooked: bool) -> str | None:
+    """The context one transcript message adds that the run did not supply.
+
+    `hooked` says whether the run records a managed plugin, whose hook
+    response is context the run accounts for.
+    """
     if message.get("type") == HOOK_RESPONSE or message.get("subtype") == HOOK_RESPONSE:
+        if hooked:
+            return None
         kind = "a hook response"
     elif message.get("type") != SYSTEM:
         return None
@@ -474,12 +490,13 @@ def identify(session: Session) -> str:
     )
 
 
-def injected(transcript: Path) -> str | None:
+def injected(transcript: Path, hooked: bool) -> str | None:
     """The context an agent added to its session, which the run did not supply.
 
     The form and the instruction are all a session is given, so a hook's
     response, an appended system prompt or a memory file is another
-    instruction set arriving beside them, whatever its source.
+    instruction set arriving beside them. `hooked` says whether the run
+    records a managed plugin, whose hook response it accounts for.
     """
     if not transcript.is_file():
         return None
@@ -490,7 +507,7 @@ def injected(transcript: Path) -> str | None:
             continue
         if not isinstance(message, dict):
             continue
-        carried = carried_context(message)
+        carried = carried_context(message, hooked)
         if carried is not None:
             return carried
     return None
@@ -708,6 +725,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     if refused is not None:
         raise CorpusError(refused)
     env = harness.environment(config, dict(os.environ))
+    managed = harness.managed(config)
     corpus = workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
@@ -788,7 +806,13 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     carried = [
         f"{identify(session)} carried {what}"
         for session in sessions
-        if (what := injected(session.directory(run_directory) / TRANSCRIPT)) is not None
+        if (
+            what := injected(
+                session.directory(run_directory) / TRANSCRIPT,
+                bool(managed["plugins"]),
+            )
+        )
+        is not None
     ]
     if carried:
         raise CorpusError(
@@ -804,6 +828,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             for key, value in vars(arguments).items()
         },
         "harness": harness.name,
+        "managed": managed,
         "command": harness.argv(agent, "<model>", ledger.session_cap),
         STATE: state,
         REASON: reason,

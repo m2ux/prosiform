@@ -29,6 +29,7 @@ import json
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from workflow import CorpusError
 
@@ -134,7 +135,9 @@ class Claude:
     login: str = ".credentials.json"
     plugins: str = "plugins/installed_plugins.json"
     remote: str = "remote-settings.json"
+    signature: str = "remote-settings.json.signature.json"
     enabled: str = "enabledPlugins"
+    managed_scope: str = "managed"
     settings: str = "settings.json"
     hooks: str = "hooks"
     default_agent: str = "claude"
@@ -202,26 +205,42 @@ class Claude:
         return {**kept, self.config_variable: str(config)}
 
     def preflight(self, config: Path) -> str | None:
-        """How a configuration directory fails to isolate a session, if it does."""
+        """How a configuration directory fails to isolate a session, if it does.
+
+        A plugin the organisation manages is no refusal: it is installed at
+        managed scope, or enabled by the signed remote settings, and the run
+        records it through `managed()`. A plugin installed at any other scope,
+        and one an unsigned remote settings file enables, is refused.
+        """
         if not (config / self.login).is_file():
             return (
                 f"{config} holds no login; log in once with "
                 f"`{self.config_variable}={config} claude`, then `/login`"
             )
         installing = config / self.plugins
-        if _record(installing).get("plugins"):
-            return (
-                f"{installing} installs a plugin, whose hooks reach every session "
-                f"before its first turn; remove {installing} before this run"
-            )
+        installed = _record(installing).get("plugins")
+        if isinstance(installed, dict):
+            for plugin, installs in installed.items():
+                entries = installs if isinstance(installs, list) else [installs]
+                unmanaged = sorted(
+                    {
+                        str(entry.get("scope") if isinstance(entry, dict) else None)
+                        for entry in entries
+                    }
+                    - {self.managed_scope}
+                )
+                if unmanaged:
+                    return (
+                        f"{installing} installs {plugin} at {', '.join(unmanaged)} "
+                        f"scope, whose hooks reach every session before its first "
+                        f"turn; remove it before this run"
+                    )
         enabling = config / self.remote
-        enabled = _record(enabling).get(self.enabled)
-        if isinstance(enabled, dict) and any(
-            value is True for value in enabled.values()
-        ):
+        if self._enabled(config) and not (config / self.signature).is_file():
             return (
-                f"{enabling} enables a plugin and its environment, which reach "
-                f"every session before its first turn; remove {enabling}"
+                f"{enabling} enables a plugin and its environment without a "
+                f"signature, so the organisation does not manage it; remove "
+                f"{enabling}"
             )
         declared = config / self.settings
         hooks = _record(declared).get(self.hooks)
@@ -234,6 +253,44 @@ class Claude:
                     f"{declared} before this run"
                 )
         return None
+
+    def _enabled(self, config: Path) -> list[str]:
+        """The plugins the remote settings enable, in name order."""
+        enabled = _record(config / self.remote).get(self.enabled)
+        if not isinstance(enabled, dict):
+            return []
+        return sorted(name for name, value in enabled.items() if value is True)
+
+    def managed(self, config: Path) -> dict[str, list[Any]]:
+        """The organisation's plugins a session carries, and the environment added.
+
+        Each plugin installed at managed scope or enabled by the signed remote
+        settings is named with its installed version, null where it is enabled
+        but not installed here. `environment` names each variable the remote
+        settings add over the scrubbed environment. A run records both, so its
+        sessions are read as carrying the organisation's injected rules.
+        """
+        installed = _record(config / self.plugins).get("plugins")
+        versions: dict[str, str | None] = {}
+        if isinstance(installed, dict):
+            for plugin, installs in installed.items():
+                for entry in installs if isinstance(installs, list) else []:
+                    if (
+                        isinstance(entry, dict)
+                        and entry.get("scope") == self.managed_scope
+                    ):
+                        versions[plugin] = entry.get("version")
+        signed = (config / self.signature).is_file()
+        for plugin in self._enabled(config) if signed else []:
+            versions.setdefault(plugin, None)
+        env = _record(config / self.remote).get("env") if signed else None
+        return {
+            "plugins": [
+                {"plugin": plugin, "version": version}
+                for plugin, version in sorted(versions.items())
+            ],
+            "environment": sorted(env) if isinstance(env, dict) else [],
+        }
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -391,6 +448,10 @@ class Cursor:
                 f"whose config records that boundary"
             )
         return None
+
+    def managed(self, config: Path) -> dict[str, list[Any]]:
+        """No managed plugin is read: the CLI keeps no configuration directory."""
+        return {"plugins": [], "environment": []}
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -593,6 +654,10 @@ class Opencode:
                 f"configuration, so name an eval root whose config records that"
             )
         return None
+
+    def managed(self, config: Path) -> dict[str, list[Any]]:
+        """No managed plugin is read: the CLI keeps no configuration directory."""
+        return {"plugins": [], "environment": []}
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's spend, one `step_finish` record summing every step.
