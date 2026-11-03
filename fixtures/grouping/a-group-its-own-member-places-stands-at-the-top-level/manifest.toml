@@ -1,4 +1,4 @@
-description = "A group whose first member a later member's link places in it would stand inside itself, so it stands at the top level: the notice joins Messages and Announcements, Beta joins Announcements after it, and Beta's link from its Announce section is the one placing the notice in Announcements."
+description = "A group whose first member a later member's link places in it would stand inside itself, so it stands at the top level: the notice joins Messages and `Announcements`, Beta joins `Announcements` after it, and Beta's link from its `Announce` section is the one placing the notice in `Announcements`."
 
 clauses = [
   "Grouping — Nested groups",
