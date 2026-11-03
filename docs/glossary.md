@@ -12,7 +12,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **bundle** (n.) | One validated document a run produces: the entry's, or one dispatched target's. |
 | **candidate** | A bundle before it has passed validation. Nothing is published while a check fails. |
 | **profile** | The named, versioned Markdown grammar and option set a run declares. |
-| **guide** | What `pf` run with no arguments prints to standard output: the compile step, `pf -o <folder> <destination>` from the skill's directory; the rule that a link whose text opens with `↳` names an inline target, compiled, read whole and followed; that a `⇉` link names a file given to a sub-agent and an `In parallel` section lists several given to their own sub-agents at once; and that a sub-agent returns each question unanswered. It is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. |
+| **guide** | What `pf` run with no arguments prints to standard output: the compile step, `pf -o <folder> <destination>` from the skill's directory; the rule that a link whose text opens with `↳` names an inline target, compiled, read whole and followed; that a `⇉` link names a file given to a sub-agent and an `In parallel` section lists several given to their own sub-agents at once; and that a sub-agent returns each question unanswered, in an answer whose first line reads `Question:`. It is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. |
 
 ## Sources
 

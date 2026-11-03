@@ -20,6 +20,8 @@ A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no cont
 
 The run compiles each distinct target once, transitively: a dispatched bundle's own dispatches are further bundles in the same run folder. Every dispatch naming one target names that one bundle file.
 
+A dispatch is compiled up front, so a deferral mark has nothing to defer: `[¬⇉ the lift](lift.md)` and `[¬⫽ the lift](lift.md)` are refused, as [References](references.md#operators) states.
+
 Each bundle is compiled under every rule an entry's is. Budgets hold per bundle, so `depth` counts hops from that bundle's entry and the others count what that bundle alone opens, reaches and publishes.
 
 ## Where the links point
@@ -51,9 +53,13 @@ A set in a level-6 section leaves no level for its sub-section, so the run fails
 
 A dispatch in a heading the bundle emits as text alone has no link to publish, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
 
+## The guide
+
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and an `In parallel` section ask of an agent, the inputs a sub-agent is given, waiting for every sub-agent of a set, failures returned together, and the returned question. A sub-agent asks nothing itself; it returns each question unanswered in an answer whose first line reads `Question:`, and the file is given again with the answer.
+
 ## The run-pf line
 
-Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Before reading on, run `pf` with no arguments and follow the guide it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds the guide's rules before it meets a `↳` line, a `⇉` link or an `In parallel` sub-section.
+Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Before reading on, run `pf` with no arguments and follow the guide it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds [the guide](#the-guide)'s rules before it meets a `↳` line, a `⇉` link or an `In parallel` sub-section.
 
 ## Depth and cycles
 
@@ -80,7 +86,7 @@ An authored heading whose text equals `In parallel` in a bundle that emits an `I
 
 The comparison is exact, and case-sensitive: `## in parallel` is not `## In parallel`, so it publishes and takes the ordinal the renderer gives a repeated slug.
 
-A heading the run does not emit in that bundle is the author's there: a bundle carrying no set may carry `In parallel`, and every bundle may carry `Prosiform` and any heading opening with `Dispatch`.
+A heading the run does not emit in that bundle is the author's there: a bundle carrying no set may carry `In parallel`.
 
 ## Target shape
 
