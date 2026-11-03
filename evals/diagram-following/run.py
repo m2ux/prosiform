@@ -27,17 +27,22 @@ memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
 fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin at a scope other than managed,
-whose unsigned remote settings enable one, or whose settings file declares a
-hook, naming the file that says so: a plugin's hooks reach a session before
-its first turn and no flag the runner passes suppresses them.
+does one whose directory installs a plugin at a scope other than managed
+or whose unsigned remote settings enable one, naming the file that says so:
+a plugin's hooks reach a session before its first turn and no flag the
+runner passes suppresses them. So does a settings file declaring a hook:
+the configuration directory's, a `.claude` settings file in a workflow's
+form tree, and one in the `.claude` directory of any ancestor of the
+workspaces, for which `--eval-root` names the remedy.
 
-A managed configuration, a plugin installed at managed scope or enabled
-by the signed remote settings with the environment those settings add and
-the hooks its plugins declare, reaches every session, and the run records
-it under `managed` in `run.json`: how many managed plugins, environment
-settings and hooks there are, and a fingerprint telling two configurations
-apart, naming none of them.
+A managed configuration reaches every session wherever the configuration
+directory points, so the run records it rather than refusing it: a plugin
+installed at managed scope or enabled by the signed remote settings, the
+environment those settings add, and the hooks its plugins and the host's
+managed settings file declare, a file its administrator owns. `run.json`
+records it under `managed`: how many managed plugins, environment settings
+and hooks there are, and a fingerprint telling two configurations apart,
+naming none of them.
 
 What a session's agent did carry is read back from its transcript, so the
 boundary is observed rather than assumed. An appended system prompt or a
@@ -723,11 +728,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         raise CorpusError(f"no agent command {command!r} is found")
     eval_root = arguments.eval_root.expanduser()
     config = eval_root / CONFIG
-    refused = harness.preflight(config)
-    if refused is not None:
-        raise CorpusError(refused)
     env = harness.environment(config, dict(os.environ))
-    managed = harness.managed(config)
     corpus = workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
@@ -747,6 +748,18 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     sessions = matrix(
         corpus, names(arguments.models), forms, arguments.repetitions, harness
     )
+    sources = tuple(
+        workflow.form(FORMS[form])
+        for workflow in corpus
+        for form in forms
+        if form not in BUNDLED
+        and form != BOOTSTRAP_SET
+        and FORMS[form] in workflow.forms
+    )
+    refused = harness.preflight(config, eval_root / WORKSPACES, sources)
+    if refused is not None:
+        raise CorpusError(refused)
+    managed = harness.managed(config)
     unobservable = [
         f"{workflow.name}/{scenario.name}/{form}"
         for workflow in corpus

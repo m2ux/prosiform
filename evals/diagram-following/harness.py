@@ -28,6 +28,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -35,6 +36,13 @@ from workflow import CorpusError
 
 QUESTION = "question"
 DONE = "done"
+
+MANAGED_SETTINGS = {
+    "linux": "/etc/claude-code/managed-settings.json",
+    "darwin": "/Library/Application Support/ClaudeCode/managed-settings.json",
+    "win32": "C:/Program Files/ClaudeCode/managed-settings.json",
+}
+"""The file Claude Code reads the host's managed settings from, by platform."""
 
 MESSAGE = "message"
 ASSISTANT = "assistant"
@@ -170,6 +178,13 @@ class Claude:
     plugin_hooks: str = "hooks/hooks.json"
     """The file under a plugin's install path declaring its hooks."""
     settings: str = "settings.json"
+    managed_settings: str = MANAGED_SETTINGS.get(
+        sys.platform, MANAGED_SETTINGS["linux"]
+    )
+    """The host's managed settings file, whose hooks reach every session."""
+    project: str = ".claude"
+    """The directory holding a project's own settings, in a workspace or above it."""
+    project_settings: tuple[str, ...] = ("settings.json", "settings.local.json")
     hooks: str = "hooks"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
@@ -235,13 +250,24 @@ class Claude:
         }
         return {**kept, self.config_variable: str(config)}
 
-    def preflight(self, config: Path) -> str | None:
-        """How a configuration directory fails to isolate a session, if it does.
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
+        """How the settings a session reads would let a hook reach it, if they do.
 
-        A plugin the organisation manages is no refusal: it is installed at
-        managed scope, or enabled by the signed remote settings, and the run
-        records it through `managed()`. A plugin installed at any other scope,
-        and one an unsigned remote settings file enables, is refused.
+        Claude Code reads a hook from the configuration directory, from each
+        project's `.claude` settings at a session's working directory, and from
+        such a directory on the path from that working directory to the
+        filesystem root. `sources` are the trees a session's workspace is
+        copied from, so a project file a tree carries reaches every session of
+        that tree; `workspaces` is the run's workspace root, which every
+        session's workspace sits under.
+
+        A managed configuration is no refusal: a plugin installed at managed
+        scope or enabled by the signed remote settings, and the host's managed
+        settings file, reach every session and the run records them through
+        `managed()`. A plugin installed at any other scope, and one an unsigned
+        remote settings file enables, is refused.
         """
         if not (config / self.login).is_file():
             return (
@@ -274,13 +300,34 @@ class Claude:
                 f"{enabling}"
             )
         declared = config / self.settings
-        events = self.hook_events(declared)
-        if events:
-            return (
-                f"{declared} declares a hook for {', '.join(events)}, which "
-                f"reaches every session before its first turn; remove "
-                f"{declared} before this run"
-            )
+        refused = self.hook_refusal(
+            declared,
+            f"reaches every session before its first turn; remove {declared} "
+            f"before this run",
+        )
+        if refused is not None:
+            return refused
+        for source in sources:
+            for name in self.project_settings:
+                held = source / self.project / name
+                refused = self.hook_refusal(
+                    held,
+                    f"reaches every session before its first turn; remove {held} "
+                    f"before this run",
+                )
+                if refused is not None:
+                    return refused
+        resolved = workspaces.resolve()
+        for ancestor in (resolved, *resolved.parents):
+            for name in self.project_settings:
+                held = ancestor / self.project / name
+                refused = self.hook_refusal(
+                    held,
+                    f"reaches every session under {workspaces}; pass an --eval-root "
+                    f"outside {ancestor} before this run",
+                )
+                if refused is not None:
+                    return refused
         return None
 
     def _enabled(self, config: Path) -> list[str]:
@@ -298,7 +345,10 @@ class Claude:
         installed here. A managed environment setting is a key the signed
         remote settings' `env` adds over the scrubbed environment. A managed
         hook is an event a managed plugin's hooks file, under its install
-        path, declares a hook for. The run records them through `counted()`.
+        path, declares a hook for, or one the host's managed settings file
+        declares a hook for: the administrator owns that file and Claude Code
+        reads it wherever the configuration directory points. The run records
+        them through `counted()`.
         """
         installed = _record(config / self.plugins).get("plugins")
         versions: dict[str, str | None] = {}
@@ -315,6 +365,7 @@ class Claude:
                         if isinstance(place, str):
                             declared = Path(place) / self.plugin_hooks
                             hooks.extend(self.hook_events(declared))
+        hooks.extend(self.hook_events(Path(self.managed_settings)))
         signed = (config / self.signature).is_file()
         for plugin in self._enabled(config) if signed else []:
             versions.setdefault(plugin, None)
@@ -327,6 +378,13 @@ class Claude:
         if not isinstance(hooks, dict):
             return []
         return sorted(str(event) for event, commands in hooks.items() if commands)
+
+    def hook_refusal(self, path: Path, consequence: str) -> str | None:
+        """Why a settings file declaring a hook is refused, or nothing if none is."""
+        events = self.hook_events(path)
+        if not events:
+            return None
+        return f"{path} declares a hook for {', '.join(events)}, which {consequence}"
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -466,7 +524,9 @@ class Cursor:
             if not name.startswith(self.scrubbed)
         }
 
-    def preflight(self, config: Path) -> str | None:
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
         """What a run under this harness cannot guarantee, stated as a refusal.
 
         The CLI declares no configuration directory, no MCP switch, no
@@ -677,7 +737,9 @@ class Opencode:
             if not name.startswith(self.scrubbed)
         }
 
-    def preflight(self, config: Path) -> str | None:
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
         """What this harness cannot guarantee, stated as a refusal.
 
         The CLI has no configuration directory of its own and reads plugins
