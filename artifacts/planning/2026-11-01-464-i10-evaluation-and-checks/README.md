@@ -39,6 +39,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
 | [E04 W16 work item](e04/w16.md) | The edge-run runbook's shakedown over the edge workflows |
 | [E05 W00 work item](e05/w00.md) | The triage rubric, a runbook per live run, and the user's model, in `RUNBOOK.md` |
+| [E05 W03 work item](e05/w03.md) | A run's managed configuration recorded by count and fingerprint |
 | [E05 W01 work item](e05/w01.md) | The live run of the feature workflows, committed as `mvp-proof.json` |
 | [E05 W02 work item](e05/w02.md) | The eval page stating the feature workflows and the proof |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
@@ -200,6 +201,7 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **Two lanes, minimal slack.** (User, 2026-11-03.) Two sessions run side by side, one per lane, as [Delivery Lanes](#delivery-lanes) states. E05 W00 shakes down only the proof's runbook; E00 W04 and E04 W16 shake down the baseline's and the edge run's once their scenarios exist. Priorities: E05 `4`, E00 `3`, E04 and E02 `2`, E01 and E03 `1`. This supersedes E05 `3` and E00–E03 `2` with E04 `1` above.
 - **The default model is asked where it is first needed.** (User, 2026-11-03.) E05 W00's shakedown runs on the model and harness the user names for it; the default matrix's model is asked at E00 W01, which calibrates against it, and E00 W04 records it, so E00 W00 depends on W04.
 - **A managed plugin is recorded, not refused.** (User, 2026-11-03.) The eval login carries an org-managed plugin whose SessionStart hook adds a short rules preamble to every session. The claude harness preflight accepts a plugin installed or enabled at managed scope and the run record names it, so each committed run states what its sessions carried; every other isolation refusal stands. Delivered in E05 W00 (#596). E02 W02 AC4 follows: a managed hook is recorded rather than refused.
+- **Managed configuration stays generic.** (User, 2026-11-03.) No platform's managed configuration is written into the repository: a run counts the managed plugins, settings and hooks its sessions carried and records a fingerprint of them, naming none (E05 W03, AC9); documents and tests describe managed scope generically. The proof run's record is regenerated in that form before it merges.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links

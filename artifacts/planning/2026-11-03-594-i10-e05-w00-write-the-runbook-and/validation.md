@@ -27,7 +27,7 @@ Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w
   - **Result.** `completed`: 30 of 30 sessions started and passed, so no failing session took a disposition and none was a defect or unclear.
   - **Measured.** USD 0.123701 in all, USD 0.004123 a session; 3 593 668 tokens, 119 789 a session, the largest 206 458.
   - **Budget set.** The proof's session cap is 420 000 tokens, its token budget 63 000 000 and its cost cap USD 2, as `RUNBOOK.md` records with the formula each follows.
-  - **Managed plugin.** `run.json` names a managed plugin and six telemetry environment keys. Every one of the 30 transcripts holds its `SessionStart:startup` `hook_response` carrying the organisation's `additionalContext`, and the run completed, so the hook response is accepted rather than failing the run.
+  - **Managed plugin.** `run.json` records the managed configuration the sessions carried (one plugin, six environment settings). Every one of the 30 transcripts holds its `SessionStart:startup` `hook_response` carrying the organisation's `additionalContext`, and the run completed, so the hook response is accepted rather than failing the run.
 - **Earlier attempts.**
   - At `41841001` the preflight refused the eval login's managed plugin. By the user's decision of 2026-11-03 the preflight admits it at `60a2c02d` ([#597](https://github.com/m2ux/prosiform/issues/597) closed as not planned).
   - Two attempts at `60a2c02d` and `d8cfd26f` were `refused`: every session `errored` on an expired OAuth session, USD 0, until the user renewed the eval login.
