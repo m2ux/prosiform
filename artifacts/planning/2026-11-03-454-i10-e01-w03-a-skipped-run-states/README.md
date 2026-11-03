@@ -12,6 +12,8 @@ This record holds its delivery of `AC3`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W03 work item](w03.md) | The checks job reporting a skipped run, with its validation |
+| [Plan changes](changes.md) | The plan changes the session applied and held |
 
 ## Links
 
