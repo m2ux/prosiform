@@ -12,6 +12,7 @@ This record holds its delivery of `AC9`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [w03.md](w03.md) | The work item and its validation of every check |
 
 ## Links
 
