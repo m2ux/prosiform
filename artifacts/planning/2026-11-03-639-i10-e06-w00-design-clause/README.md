@@ -14,6 +14,7 @@ This record holds its delivery of `AC1`: the work item, the validation evidence 
 | --- | --- |
 | [w00.md](w00.md) | The work item: the design clause stating the guide, the run-pf line, the inline dispatch mark and the In parallel section, the retired deferred dispatch and `↳` as the composition mark |
 | [validation.md](validation.md) | The evidence for each check the work item names: the design inspection against AC1 and the make check run |
+| [change-list.md](change-list.md) | The plan changes this session applied and those it held for the user |
 
 ## Links
 
