@@ -111,7 +111,7 @@ One repetition of every feature scenario in each form, on the harness and model 
 | Spending cap | USD 5 for every live run of the shakedown together. |
 | Sessions | 30: fifteen scenarios, two forms, one repetition. |
 | Estimate | USD 0.80: 30 sessions at the committed baseline's mean of USD 0.027 a session, its USD 4.01 over 150 sessions. |
-| Run | Not run. The Claude harness's preflight refuses the eval login: `config/plugins/installed_plugins.json` installs the org-managed a managed plugin plugin and `config/remote-settings.json` enables it, and both are org-managed. |
+| Run | `mvp-proof-shakedown`, 2026-11-03: `refused`. All 30 sessions started on the managed a managed plugin and each took `errored` with `Failed to authenticate: OAuth session expired and could not be refreshed`, spending USD 0. The eval login is renewed with the one-time login command in the README's [Login](README.md#login) section before the shakedown runs again. |
 | Measured | Nothing, so the proof's session cap, token budget and cost cap are unset and the proof does not start. |
 
 ```bash
