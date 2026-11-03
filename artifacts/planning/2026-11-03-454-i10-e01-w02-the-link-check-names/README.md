@@ -12,6 +12,7 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The plan for the task, and its validation evidence |
 
 ## Links
 
