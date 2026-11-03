@@ -374,7 +374,7 @@ def observable(
     A trace names one start per dispatch a correct run makes, nested ones
     included. A harness that does not surface a sub-agent's own calls can
     report only the starts the session makes itself, those the path's own
-    sections and the deferred dispatches its steps reach start, so a scenario
+    sections and the material its `↳` lines compile start, so a scenario
     whose trace outruns that count is beyond it. A stated run a sub-agent makes is
     read from that sub-agent's commands, which a harness reports only where
     the form's session carries a shell and the harness surfaces a sub-agent's

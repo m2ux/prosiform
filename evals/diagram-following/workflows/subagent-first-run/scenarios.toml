@@ -4,9 +4,9 @@
 # sub-agent follows, in the order the walk dispatches it, what it returned,
 # and the actions it does: each a file under actions/ and the value it holds.
 #
-# A dispatched bundle carrying a deferred line opens with the Prosiform
-# section saying pf runs first, and only the material pf compiles on that line
-# states the sub-agent's action. Each sub-agent's own pf run is stated by the
+# Every bundle opens with the run-pf line, so a sub-agent reads the guide
+# before it meets a deferred line, and only the material pf compiles on that
+# line states the sub-agent's action. Each sub-agent's own pf run is stated by the
 # section it follows, and the action that run's material states shows it on a
 # harness reporting no sub-agent's commands.
 
@@ -24,9 +24,9 @@ actions = { "closing.txt" = "closed" }
 by = "hop/ledger#balance"
 args = ["steps/closing.md#close"]
 
-# The review, at the second hop, compiles the weighing rules its deferred
-# dispatch names; their bundle states its action and dispatches the ruling,
-# whose bundle, at the third hop, carries a line its own run compiles.
+# The review, at the second hop, compiles the weighing rules its line names;
+# their bundle states its action and dispatches the ruling, whose bundle, at
+# the third hop, carries a line its own run compiles.
 
 [[scenario]]
 name = "deep-hop-runs"

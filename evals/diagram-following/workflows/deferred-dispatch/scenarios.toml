@@ -5,10 +5,11 @@
 # returned. A compile entry names the reference one pf run compiles, from the
 # workspace, in the order the session makes them.
 #
-# Pack defers a dispatch under a step that holds where order.txt reads bulk,
-# and pf publishes it as a plain link to the loading crew's section. The run
-# on that link writes a bundle dispatching the lift, then the strap, so the
-# sub-agents a correct run starts are the ones that run's bundle dispatches.
+# Pack defers the loading crew's section, which dispatches, under a step that
+# holds where order.txt reads bulk, and pf publishes it as a line beneath that
+# step. The run on that line writes a bundle dispatching the lift, then the
+# strap, so the sub-agents a correct run starts are the ones that run's bundle
+# dispatches.
 
 [[scenario]]
 name = "deferred-dispatch-compiled"
