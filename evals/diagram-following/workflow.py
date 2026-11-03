@@ -75,8 +75,10 @@ beyond the warning codes the workflow's `scenarios.toml` declares under
 `warnings`, which a feature such as `subst` raises wherever it is used.
 
 The diagram form's bundle states a path of its own: a state's section is
-the heading the previous section's link or the bundle's diagram names, and
-what `pf` placed into a group or redirected through `subst` is what that
+the heading the previous section's link or the bundle's diagram names, a
+link naming the state by its text or, labelled with one symbol as a
+directive or a footnote mark is, by the heading it links, and what `pf`
+placed into a group or redirected through `subst` is what that
 section holds. A scenario's path is held to that walk as well as to the
 sources', so a workflow built on a feature states the path its bundle
 states.
@@ -1157,11 +1159,14 @@ def bundle_walk(
     The walk reads the bundle alone, as a session given it does: the
     bundle's diagram names each edge, its clicks name the first state's
     section, and each state is entered at the section the previous state's
-    own link names, or else at the one the diagram clicks. Each section
-    states its action and its transition, so what `pf` placed, redirected or
-    substituted is what the walk follows. A state whose bundled action is
-    not the one its source states is a fault, since the scorer holds a
-    session to the source's.
+    own link names, or else at the one the diagram clicks. A link names a
+    state by its text, or by the heading it links where a directive or a
+    footnote mark labels it with one symbol, so a state composed beneath a
+    step, or published as a document a footnote opens, is entered where the
+    link leads. Each section states its action and its transition, so what
+    `pf` placed, redirected or substituted is what the walk follows. A state
+    whose bundled action is not the one its source states is a fault, since
+    the scorer holds a session to the source's.
 
     Given `activate`, which compiles a `↳` line's reference and returns the
     bundle it writes, a state's section also holds what the runs on the
@@ -1220,6 +1225,11 @@ def bundle_walk(
             target
             for text, target in FRAGMENT_LINK.findall(section.text)
             if text == state
+            or (
+                len(text.strip()) == 1
+                and target in sections
+                and sections[target].title == state
+            )
         ]
         fragment = (
             linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
