@@ -12,6 +12,7 @@ This record holds its delivery of `AC38`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W34](../2026-11-02-463-i09-grouping-and-composition/e05/w34.md) | The work item for placing each group where its reference stands |
 
 ## Links
 

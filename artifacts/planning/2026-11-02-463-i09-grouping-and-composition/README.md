@@ -66,6 +66,7 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E05 W31 work item](e05/w31.md) | The design stating how `subst` pairs combine across references |
 | [E05 W32 work item](e05/w32.md) | The design's option table declaring the code listing |
 | [E05 W33 work item](e05/w33.md) | The harness compiling each workflow from the entry its scenarios name |
+| [E05 W34 work item](e05/w34.md) | Each group a document joins placed where its own reference stands |
 | [E05 review](e05/review.md) | Every clause changed since `contract/v0.15.0` read against the merged build, and the three departures |
 | [Joins](joins.md) | The candidate unit that ships as separate pull requests, and why |
 | [Change list](change-list.md) | The plan changes this run applied and held |
