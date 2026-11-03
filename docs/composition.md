@@ -110,13 +110,13 @@ Beneath the scope, one level down, each target title takes one **destination sec
 flowchart TD
   Scope["## Prepare<br/><i>the scope</i>"] --> Own["its own content"]
   Scope --> Dest["### Inputs<br/><i>a destination section</i>"]
-  Scope --> Disp["### Dispatch …<br/><i>dispatch sub-sections</i>"]
+  Scope --> Disp["### In parallel<br/><i>a set's sub-section</i>"]
   Scope --> Child["### child sections"]
   Dest --> C1["#### Read<br/><i>a contribution</i>"]
   Dest --> C2["#### Write<br/><i>a contribution</i>"]
 ```
 
-*Figure 1. Destination Sections Follow the Scope's Own Content and Precede Its Dispatch Sub-Sections and Child Sections.*
+*Figure 1. Destination Sections Follow the Scope's Own Content and Precede Its In Parallel Sub-Section and Child Sections.*
 
 Destination sections stand in the order their first directive is written, and contributions within one in the order their directives are. A composed heading past H6 fails with `E_HEADING_DEPTH_OVERFLOW`, and an authored child heading of the scope equal to a destination section's fails with `E_HEADING_COLLISION`.
 
@@ -142,7 +142,7 @@ Design rules: *The destination scope*, *Destination sections*, *Contributions*, 
 
 A contribution is its source's content. Its links resolve from its source's directory and against its source's definitions, a diagnostic inside it names that source, and a document it links is bundled, deferred or dispatched as from anywhere else. Every directive contributes, a repeated one included, and an ordinary link to the same section keeps its own meaning.
 
-A document reached only through directives contributes to its contributions alone: no file group and no copy of its own. A document an ordinary link also reaches keeps that inclusion beside its contributions. A dispatch written inside an inline-only contribution takes its own dispatch sub-section one level below the contribution heading holding it, as [Dispatch](dispatch.md#sub-sections) places one beneath any section.
+A document reached only through directives contributes to its contributions alone: no file group and no copy of its own. A document an ordinary link also reaches keeps that inclusion beside its contributions. A dispatch written inside an inline-only contribution publishes in place like any other, as [Dispatch](dispatch.md#where-the-links-point) states.
 
 A directive inside composed content composes beneath the heading holding it there.
 
@@ -157,7 +157,7 @@ Design rules: *The source of composed content*, *Every occurrence composes*, *In
 - [a-target-only-directives-reach-takes-no-group](../fixtures/composition/a-target-only-directives-reach-takes-no-group)
 - [an-inclusion-of-another-section-keeps-only-that-section](../fixtures/composition/an-inclusion-of-another-section-keeps-only-that-section)
 - [an-inclusion-of-the-composed-section-keeps-its-group](../fixtures/composition/an-inclusion-of-the-composed-section-keeps-its-group)
-- [a-dispatch-in-an-inline-only-contribution-takes-its-own-sub-section](../fixtures/composition/a-dispatch-in-an-inline-only-contribution-takes-its-own-sub-section)
+- [a-dispatch-in-an-inline-only-contribution-publishes-inline](../fixtures/composition/a-dispatch-in-an-inline-only-contribution-publishes-inline)
 - [a-directive-inside-a-contribution-composes-beneath-it](../fixtures/composition/a-directive-inside-a-contribution-composes-beneath-it)
 
 ## Cycles and self-composition
@@ -232,7 +232,7 @@ Takes a URL and returns the page it names.
 
 A scope composes a section or defers it: one scope holding an immediate and a deferred directive naming one section is refused.
 
-The `↳` line names the run that activates the target: `pf fetch.md#implementation` compiles it as an entry under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. A dispatched bundle carrying such a line opens with a `Run pf first` sub-section, because its sub-agent has run no `pf`, as [The Prosiform section](dispatch.md#the-prosiform-section) states.
+The `↳` line names the run that activates the target: `pf fetch.md#implementation` compiles it as an entry under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
 
 Design rules: *Deferred composition* and *Activation*, and *The Prosiform section*. Fixtures:
 

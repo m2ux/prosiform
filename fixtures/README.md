@@ -24,7 +24,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `destinations/` | The destination each bundled heading takes. |
 | `determinism/` | Bundle order independent of entry and discovery order. |
 | `diagnostics/` | Diagnostic chains, JSON lines and a run that fails in itself. |
-| `dispatch/` | The dispatch operator: dispatched bundles, sub-sections, chains, depth and cycles. |
+| `dispatch/` | The dispatch operator: dispatched bundles, inline links, chains, depth and cycles. |
 | `extraction/` | Section extraction: the headings a fragment names and where its section ends. |
 | `file-wide-safety/` | A safety limit crossed in content no selection reaches. |
 | `frontmatter/` | Frontmatter delimiters, YAML and the `prosiform` mapping. |
@@ -38,10 +38,10 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `mock/` | A `subst` pair redirecting a reference, and its warnings. |
 | `normalization/` | The resolution sequence for a reference's spelling. |
 | `ownership/` | Self and ancestor references after consolidation. |
-| `parallel-dispatch/` | The parallel dispatch mark and its `Dispatch in parallel` sub-section. |
+| `parallel-dispatch/` | The parallel dispatch mark and its `In parallel` sub-section. |
 | `parser-limit/` | Parser viability gates: a reference lookup the parser suppresses or declines. |
 | `profile/` | The Markdown profile: suffixes, encoding, HTML and unsupported constructs. |
-| `prosiform/` | The Prosiform section a dispatching bundle opens with. |
+| `prosiform/` | The run-pf line every bundle opens with, and the protocol paragraphs no bundle carries. |
 | `publication/` | Publication of a run's folder, and what a failing or check run leaves. |
 | `real-source/` | Documents copied from this workspace's skills, described under [Copied sources](#copied-sources). |
 | `reference/` | Links, definitions and diagram clicks a source writes. |
@@ -272,7 +272,7 @@ An error decides a failing run.
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
 | `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions, and Section composition, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle, a destination section among them. |
-| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow; Link classification and resource handling, Dispatch sub-sections; and Section composition, Heading depth — an emitted heading beyond H6, a dispatch sub-section or a composed heading among them. |
+| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow; Link classification and resource handling, Dispatch sub-sections; and Section composition, Heading depth — an emitted heading beyond H6, an `In parallel` sub-section or a composed heading among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping, the refused `root` among them. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML or duplicate keys. |

@@ -62,15 +62,15 @@ An operator withholds what the link would otherwise add: the target contributes 
 
 A mark on its own changes nothing but the link's own text. Placing one on the same link turns it into a dispatch, and the run publishes a second bundle rather than carrying the rules file:
 
-![modes/review.md, rules.md and protocols/publish.md on the left. On the right, two bundles: the entry's, with a Dispatch Publish sub-section naming protocols_publish.bundle.md, and that bundle on its own holding Publish.](images/dispatch.svg)
+![modes/review.md, rules.md and protocols/publish.md on the left. On the right, two bundles: the entry's, with a dispatch link to protocols_publish.bundle.md, and that bundle on its own holding Publish.](images/dispatch.svg)
 
-*The mark is gone, a sub-section the author never wrote names the bundle to follow, and `publish.md` contributes no content to the bundle that linked it.*
+*The link keeps its mark and points at the bundle to follow, and `publish.md` contributes no content to the bundle that linked it.*
 
 A mark followed directly by text opens no operator. `[⇉Sync](sync.md)` is an ordinary link whose text happens to begin with an arrow, and the mark stays in the published text. The one exception is the deferral mark written against a [composition directive](composition.md)'s label, as in `[¬→](call.md#outputs)`, which defers that directive. A dispatch mark written against one, as in `[⇉→](call.md#outputs)`, is refused: a dispatch sends the target to a sub-agent and the directive places it inline, so the two contradict.
 
 Symbols are written together, and the one blank stands between the last of them and the link's text. A deferral combines with a dispatch, so `[¬⇉ Rules](rules.md)` is a deferred dispatch: the later run that compiles the rules finds the dispatch. A blank between two symbols — `[¬ ⇉ Rules](rules.md)`, `[¬ →](call.md#outputs)` or `[⇉ →](call.md#outputs)` — states no one operation and is refused, and so are two dispatch marks, `[⇉⫽ Rules](rules.md)`, which state two ways for one sub-agent to run. An operator naming anything but a Markdown document or section that declares `prosiform` is refused on the same ground, and one naming a document that does not exist fails with `E_TARGET_NOT_FOUND`.
 
-The published link carries its text without the marks and the blank after them. A deferral publishes a destination spelled from the invocation working directory, so the same command line can be run from there. A dispatch and a parallel dispatch publish a link to the generated sub-section, which [Dispatch](dispatch.md) covers. Neither is rewritten to a destination inside the bundle, even where another reference carried the target into it: what one author withheld, another author's reference does not change.
+The published link carries its text without the marks and the blank after them, but a dispatch to a bundle file, which carries the dispatch mark and one blank. A deferral publishes a destination spelled from the invocation working directory, so the same command line can be run from there. A dispatch publishes a link to its target's bundle file, and a parallel set a link to its `In parallel` sub-section, which [Dispatch](dispatch.md) covers. Neither is rewritten to a destination inside the bundle, even where another reference carried the target into it: what one author withheld, another author's reference does not change.
 
 ```mermaid
 flowchart TD

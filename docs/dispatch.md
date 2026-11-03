@@ -6,87 +6,54 @@ Sending it anyway would pad the bundle with instructions nobody is about to foll
 
 ## What it looks like
 
-One step of a procedure carries the mark. The run opens three files, and publishes two bundles: the entry's, which names the second, and the second on its own.
+One step of a procedure carries the mark. The run opens three files, and publishes two bundles: the entry's, which links the second, and the second on its own.
 
-![The three source files on the left — modes/review.md, rules.md and protocols/publish.md — and on the right the two bundles the run wrote. modes_review.bundle.md opens with the Prosiform section and the Dispatch protocol, then Review Mode with its procedure, the dispatch sub-section naming protocols_publish.bundle.md, and the Tests section of rules.md. protocols_publish.bundle.md holds Publish alone.](images/dispatch.svg)
+![The three source files on the left — modes/review.md, rules.md and protocols/publish.md — and on the right the two bundles the run wrote. modes_review.bundle.md opens with the run-pf line, then Review Mode with its procedure, the dispatch link to protocols_publish.bundle.md, and the Tests section of rules.md. protocols_publish.bundle.md opens with the run-pf line, then holds Publish alone.](images/dispatch.svg)
 
 *Every panel is the build's own output: the left column is what the run read, the right what it wrote.*
 
-The entry's bundle keeps the link and drops the mark; `Publish` is compiled as if it had been asked for on its own.
-
-That `#dispatch` needs a target, and the protocol it names is the bundle's first section. Every bundle that dispatches opens with it, in wording the profile fixes:
-
-| The Prosiform section, opening `modes_review.bundle.md` | |
-| --- | --- |
-| `# Prosiform` | |
-| `## Dispatch` | `Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.` |
-
-*The anchor resolves to the first heading to take that slug, and this section is the bundle's first heading. A later heading producing `dispatch` — an author's lowercase `## dispatch`, say — takes `dispatch-1` instead, so the protocol link keeps pointing at the protocol.*
+The entry's bundle keeps the link where its author wrote it, with its mark, and points it at the file `Publish` was compiled to, as if it had been asked for on its own. A reader opens the file the link names, and an agent follows it as the [guide](../invocation.md#guide) states: give the linked file to a sub-agent and continue with its answer. A condition the author writes stays in the prose around the link.
 
 ## What a dispatch changes
 
 A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no content, no dependency through the link, no group membership. Its target is required to exist, to declare `prosiform` and to name the heading it names, because a sub-agent will follow it and the compilation must be able to succeed.
 
-The run compiles each distinct target once, transitively: a dispatched bundle's own dispatches are further bundles in the same run folder. Every dispatch naming one target names that one bundle.
+The run compiles each distinct target once, transitively: a dispatched bundle's own dispatches are further bundles in the same run folder. Every dispatch naming one target names that one bundle file.
 
 Each bundle is compiled under every rule an entry's is. Budgets hold per bundle, so `depth` counts hops from that bundle's entry and the others count what that bundle alone opens, reaches and publishes.
 
-## Sub-sections
+## Where the links point
 
-A section that dispatches gains generated structure:
+A `⇉` link publishes in place with its mark and the one blank after it, pointing at its target's bundle file. A section gains no generated structure for it, and a dispatch in a level-6 section publishes like any other.
 
-- one `Dispatch <link text>` sub-section for each target its own `⇉` links name
-- one `Dispatch in parallel` sub-section for the set its `⫽` links form
-
-Both sit one level below the section, after that section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The dispatch sub-sections come first, then the parallel one. A dispatch in content above a group's first heading takes that heading's level.
-
-A dispatch sub-section's body is one line naming the target's bundle file and linking the protocol it follows. A parallel dispatch sub-section's body lists each target's bundle file once, with the first link's visible text; a set states no order.
+The `⫽` links in a section's own content are one **set**, and a child section's links form its own. A set of two or more distinct targets gains one `In parallel` sub-section: one level below the section, after the section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The set's links are published without their marks and point at it. A set of one distinct target is a single dispatch: each of its links is published as a `⇉` link to the target's bundle file, and the section gains no sub-section.
 
 ```mermaid
 flowchart TD
   Section["## Plan Mode"] --> Own["its own content"]
-  Section --> D1["### Dispatch Sync"]
-  Section --> D2["### Dispatch in parallel"]
+  Section --> D2["### In parallel"]
   Section --> Child["### child sections"]
-  D1 --> B1["modes_sync-mode.bundle.md"]
   D2 --> B2["modes_review.bundle.md"]
   D2 --> B3["modes_audit.bundle.md"]
 ```
 
-*Figure 1. The Generated Sub-Sections Sit Between a Section's Own Content and Its Child Sections.*
+*Figure 1. A Set's Sub-Section Sits Between a Section's Own Content and Its Child Sections.*
 
-A run carrying both kinds shows them together. Two `⫽` links form one set and publish one bundle each; a `⇉` link on its own publishes a third:
+The sub-section's body is one line, `Give each of these to its own sub-agent at the same time, and continue when all have answered:`, and a list holding one item for each distinct target, in the order its first link is written: `- [⇉ the lift](lift__do.bundle.md)`, the first link's text without its mark. A set states no order. A set above a group's first heading takes that heading's level.
 
-![modes/review.md and three protocol files on the left. On the right, four panels: the entry's bundle with a Dispatch Publish sub-section and a Dispatch in parallel sub-section listing two bundles, then code, tests and publish each as a bundle of their own.](images/parallel.svg)
+A run carrying both kinds shows them together. Two `⫽` links form one set and publish one bundle each; a `⇉` link on its own publishes a third and stays where it was written:
 
-*The entry's bundle names what to hand over; the three procedures are compiled as if each had been asked for on its own.*
+![modes/review.md and three protocol files on the left. On the right, four panels: the entry's bundle with an inline dispatch link to publish and an In parallel sub-section listing two bundles, then code, tests and publish each as a bundle of their own.](images/parallel.svg)
 
-The links are published without their marks and point at these sub-sections. Links in one section naming one target share one sub-section, named by the first.
+*The entry's bundle links what to hand over; the three procedures are compiled as if each had been asked for on its own.*
 
-A dispatch in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark leaves its sub-section nothing to be named by, and is refused too.
+A set in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
 
-A dispatch in a heading the bundle emits as text alone has no section to stand beneath, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
+A dispatch in a heading the bundle emits as text alone has no link to publish, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
 
-## The Prosiform section
+## The run-pf line
 
-A bundle carrying a dispatch sub-section or a parallel dispatch sub-section opens with a **Prosiform section**: `# Prosiform`, then `## Dispatch` whenever the bundle dispatches, and `## Parallel dispatch` when it carries a set.
-
-A dispatched bundle carrying a deferred dispatch, or a [deferred directive](composition.md#deferred-directives)'s generated `↳` line, opens with one too, because the sub-agent following it has run no `pf`. Its first sub-section is `## Run pf first`, ahead of any protocol, and the line `Before following this bundle, [run pf first](#run-pf-first).` stands directly above `# Prosiform`. A plain deferred link asks for no run of `pf`, and the entry's bundle is followed by the agent that ran it, so neither takes the sub-section.
-
-These headings are what the generated links point at, so their slugs matter as much as their wording:
-
-| Heading | Destination | Reached by |
-| --- | --- | --- |
-| `# Prosiform` | `#prosiform` | nothing; it names the section |
-| `## Run pf first` | `#run-pf-first` | the line above the section |
-| `## Dispatch` | `#dispatch` | each dispatch sub-section's one line |
-| `## Parallel dispatch` | `#parallel-dispatch` | each parallel dispatch sub-section's one line |
-
-A parallel dispatch sub-section's own heading gives `#dispatch-in-parallel`, which its section's `⫽` links point at.
-
-The section is the bundle's first heading, ahead of any file heading, and that position is what keeps the destinations unambiguous: a slug goes to the first heading to take it, so a later heading producing `dispatch` takes `dispatch-1`. A parallel dispatch is dispatch done together, so a bundle carrying only sets carries both protocols, the parallel protocol linking the Dispatch one.
-
-Each protocol is one paragraph in wording the profile fixes, so the sub-section is byte-identical in every bundle that carries it. A bundle that dispatches nothing and needs no first run carries no Prosiform section.
+Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Before reading on, run `pf` with no arguments and follow the guide it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds the guide's rules before it meets a `↳` line, a `⇉` link or an `In parallel` sub-section.
 
 ## Depth and cycles
 
@@ -109,11 +76,11 @@ A dispatched link naming the document that writes it warns where it closes no cy
 
 ## Generated headings
 
-An authored heading whose text equals one the run emits in the same bundle would give two sections one name. `Prosiform`, `Run pf first`, `Dispatch`, `Parallel dispatch`, `Dispatch in parallel`, and any dispatch sub-section's heading are refused with `E_HEADING_COLLISION` where the bundle emits them, and the run names the heading and the text it equals.
+An authored heading whose text equals `In parallel` in a bundle that emits an `In parallel` sub-section would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
 
-The comparison is exact, and case-sensitive: `## dispatch` is not `## Dispatch`, so it publishes. It takes `dispatch-1` rather than `dispatch`, because the Prosiform section's heading is the earlier one — which is why the protocol links keep reaching the protocol.
+The comparison is exact, and case-sensitive: `## in parallel` is not `## In parallel`, so it publishes and takes the ordinal the renderer gives a repeated slug.
 
-A heading the run does not emit in that bundle is the author's there: a bundle dispatching nothing may carry `Prosiform`, and one carrying no set may carry `Dispatch in parallel`.
+A heading the run does not emit in that bundle is the author's there: a bundle carrying no set may carry `In parallel`, and every bundle may carry `Prosiform` and any heading opening with `Dispatch`.
 
 ## Target shape
 
