@@ -73,6 +73,28 @@ Compiling runs a command, so only a harness carrying a shell gives a session in 
 | `bootstrap-audit` | `blocking-two-halves` | Source and tests gathered as a set, the appraisal, a blocking verdict, then the repair. |
 | `bootstrap-audit` | `clean-one-half` | Source and tests gathered as a set, the appraisal, then a clean verdict straight to publishing. |
 
+### Feature scenarios
+
+The six feature workflows each build on one bundling feature, and each scenario of one fixes a permutation of it. A session takes `bundle` or `tree`.
+
+| Workflow | Scenario | Permutation |
+| --- | --- | --- |
+| `preset-selection` | `default-alone` | A link whose section title selects no preset of its document, so the document's default places the state. |
+| `preset-selection` | `title-selected` | A section title selecting one preset of the document its link names. |
+| `preset-selection` | `two-presets-one-title` | A section title selecting two presets of one document together. |
+| `group-placement` | `leaf-group` | Two states that link nothing, placed in one group. |
+| `group-placement` | `nested-intermediate` | A state placed in a group inside the group of the state linking it, and a second inside that. |
+| `group-placement` | `two-presets-one-document` | One document reached under its default and under a preset, so it stands in two groups. |
+| `subst-redirect` | `document-redirect` | A default substitute redirecting a link to another document. |
+| `subst-redirect` | `section-redirect` | A default substitute redirecting a link to one section of another document. |
+| `subst-redirect` | `preset-over-default` | A preset's substitute holding over the default's. |
+| `section-entry` | `document-fragment` | An entry naming one section of a document, which leaves the document's other sections out. |
+| `section-composition` | `merged-sources` | Two sections written by one section's links, merged into one. |
+| `section-composition` | `deferred-occurrence` | A link whose composition a later run of `pf` defers. |
+| `section-composition` | `nested-composition` | A linked section that itself links a further section, composed inside it. |
+| `declared-inclusion` | `declared-link-followed` | A state a document links that the diagram also declares, entered along the diagram's edge. |
+| `declared-inclusion` | `undeclared-link-as-text` | A link to a document the diagram does not declare, which the session reads as text and does not enter. |
+
 ## Scoring
 
 A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of eight classes that fits where its trace departs from the path:
@@ -193,6 +215,12 @@ The [report](report.py) gives three tables: per model, per model and form across
 A refused run — one every started session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` writes only from a run whose report holds a cell, so a refused run, or one that started nothing, leaves the committed baseline as it was.
 
 `baseline.json` beside this file is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. [`report.md`](report.md) beside it is that run's report. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
+
+## MVP proof
+
+[`mvp-proof.json`](mvp-proof.json) records a live run of the [feature scenarios](#feature-scenarios), with its [report](mvp-proof.md) beside it: 150 sessions on the `claude` harness and `claude-haiku-5-5`, fifteen scenarios in `bundle` and `tree`, five repetitions each. It proves that an agent given a feature workflow in either form follows it to completion: 148 sessions pass, all 75 in `bundle` and 73 of 75 in `tree`. The two failures, in `section-composition`'s `nested-composition`, are triaged as misses in the file. The run measured USD 0.67671 over 19 268 512 tokens, so a rerun spends the same budget.
+
+The managed platform configuration the sessions carried is recorded by count and fingerprint, as [Isolation](#isolation) states. [`RUNBOOK.md`](RUNBOOK.md#mvp-proof) states how the run is made.
 
 ## Refreshing the baseline
 
