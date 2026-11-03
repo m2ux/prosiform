@@ -207,6 +207,8 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **Managed configuration stays generic.** (User, 2026-11-03.) No platform's managed configuration is written into the repository: a run counts the managed plugins, settings and hooks its sessions carried and records a fingerprint of them, naming none (E05 W03, AC9); documents and tests describe managed scope generically. The proof run's record is regenerated in that form before it merges.
 - **A sub-agent's pf run is tested by its effect.** (User, 2026-11-03.) No harness reports a command a sub-agent runs, so W12's scenarios state actions only the content a sub-agent's `pf` run compiles defines; a sub-agent that runs no `pf` fails on its path. AC17 and AC18 say so; #623 closed as not planned.
 - **`unbootstrapped` retires.** (User, 2026-11-03.) `uncompiled` covers a bootstrap session that ran no `pf` once its scenarios state their runs, so E04 W05 removes `unbootstrapped` with its rubric row.
+- **A bootstrap skill names `pf` in its opening paragraph.** (User, 2026-11-03.) "Run `pf`." stands in the skill's opening paragraph, apart from its `↳` line, so a session holds the command before it meets the symbol; folded into E04 W08.
+- **Managed hooks are counted from the transcripts.** (User, 2026-11-03.) A run counts the managed hooks its sessions carried from the hook events their transcripts show, so a hook declared where no config read reaches is still counted; E05 integration applies it.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
