@@ -1,0 +1,39 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/585",
+    "head": "6f253815d8e65b589d38847571002e54cc7fb2ec",
+    "base": "74b00cd972497476fa1aa3a25dde85aec4f98d34",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition/agent-review-585.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-03T05:51:41Z",
+    "scope": "Complete integration diff main...i09/e05/main, base 74b00cd9 (origin/main; Update Epic Base found it merged, 0 commits behind) to head 6f253815: 126 files, carried by task merges #583, #584, #586, #587, #589, #590, #591, #593 and the review fix #595. Source read in full: src/prosiform/cli.py placement, holders, level and assembled (W34), with callers compose and assembled and callees pair, entry_title and joined measured by GitNexus at the head; evals/diagram-following workflow.py (entry, warnings, stray, bundled, bundled_sections, bundle_walk), run.py (bundles_of, prepare), stub_agent.py, test_workflow.py and test_run.py; Makefile, checks/smoke.py and scripts/render-diagram.py. Documentation read against the build: README.md, invocation.md, checks.md, checks/README.md, docs/ (architecture against the module list, hierarchy, selection, sources, references, validation, output-budget, bundles, destinations, dispatch, diagram-renderer, glossary, versioning), fixtures/README.md and evals/diagram-following/README.md (matrix counts recomputed from the workflows: 24 scenarios over 13 Claude-runnable workflows, 580 sessions, 34 800 000 tokens within EVAL_BUDGET_TOKENS 35 000 000). Design pin: README pins 682cdf7e, the last engineering commit to design.md, which carries W30 (-o folder made), W31 (subst pairs across references), W32 (-C/--codes, --version, --help) and W34 (Nested groups per reference); no later design commit exists. Scope note: the live proof run (former W28, W29, AC29-AC33) belongs to I10:E05 #594 and is outside this review.",
+    "criteria": "AC1-AC28 and AC34-AC39 of #523, all ticked. AC1-AC2 by the W01 review record (commit 3bd5124e, e05/review.md) and rows W30-W32; AC3-AC22 by each page's read recorded in #583, #584, #586 and #587, spot-checked here against make invocation, make tables, make links and the source; AC23-AC28 and AC37 by make harness (test_each_scenario_path_is_the_walk_its_bundle_states and the per-feature arrangement tests); AC34-AC36 by the design at the pin; AC38 by inclusion/two-documents-placing-one-document-in-two-groups and the group-placement two-presets scenario; AC39 by a rendered read of the eval page in #595. Every task pull request's test plan carries a passing result per row.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, test 1663 passed, harness 1253 passed, corpus 504/504, smoke, layout, tables, links, vocabulary, invocation, conformance, independence) passed locally on the epic base head 6f253815 with PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'; the same run passed at the pre-fix head d987ae17. Update Epic Base found origin/main 74b00cd9 already merged. CI workflow Checks passed on 6f253815d8e65b589d38847571002e54cc7fb2ec (https://github.com/m2ux/prosiform/actions/runs/41585920211/job/125751242078).",
+    "findings": [
+      {
+        "description": "evals/diagram-following/README.md ran the undeclared/ statement and the warnings key together on consecutive lines, rendering them as one paragraph. Fixed by #595 (W35, AC39) merged into i09/e05/main.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/595"
+      },
+      {
+        "description": "#590's body carried #591's text: its Overview, Changes and Test Plan named the preset, group and subst workflows and AC23-AC25, and no test named AC26, AC27, AC28 or AC37. Rewritten from its validation record to the section-entry, composition and declared-inclusion workflows and the entry key, each criterion with its test.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/590"
+      },
+      {
+        "description": "#523's W01 row linked its planning folder rather than its delivery, and the joined rows W25, W26, W27 and W33 named only part of their unit in Joins. W01 now links the commit recording its review, and each joined row names the other three.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/issues/523"
+      },
+      {
+        "description": "The I09 planning record still stated E05 as running the live proof: G4, the goal trace (E05 AC1-AC33), its prose (AC23-AC30 run live) and the dependency check (W28, W29). Restated to the review and the feature workflows, the live run being I10:E05's.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition/README.md"
+      }
+    ]
+  }
+]
