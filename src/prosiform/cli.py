@@ -300,41 +300,35 @@ EXIT_STATUSES = """exit statuses:
   4  unexpected internal error
 """
 
-GUIDE = """# Following a Skill with pf
+GUIDE = """\
+pf compiles a skill's linked Markdown into files you read whole.
 
-A skill's links name the documents to read. pf compiles a linked document, \
-and everything it reaches, into a bundle that is read whole.
+Run it from the skill's directory, the one holding SKILL.md:
 
-## Compile
+  pf -o <folder> <destination>
 
-From the skill's directory, which holds `SKILL.md`, run:
+A non-zero exit stops the run: report its diagnostics and go no further.
 
-```bash
-pf -o <folder> <destination>
-```
+A link whose text opens with \u21b3 names a section to inline. Compile its \
+destination with pf, read the file it writes whole, keep it in context, follow \
+it where the link stands, and continue.
 
-- `<destination>`  The link's destination as written.
-- `<folder>`  A working directory outside the repository. The run makes it \
-if it is not there.
+A link whose text opens with \u21c9 names a file to hand on. Give the linked \
+file to a sub-agent with the inputs of the step that led there, and continue \
+with its answer.
 
-The run writes its bundles into `<folder>/<name>.bundles/`, where `<name>` is \
-the destination's path without its Markdown suffix, each `/` written as `_` \
-and a fragment added after `__`: `modes/plan-mode.md` compiles to \
-`modes_plan-mode.bundles/modes_plan-mode.bundle.md`, beside a bundle for each \
-target it dispatches.
+An In parallel section lists several \u21c9 links. Give each linked file to its \
+own sub-agent at the same time, each with the inputs of the step that led \
+there; where that step applies to each of several values, give one per value. \
+Continue when all have answered. A failure cancels nothing, and all failures \
+return together.
 
-A non-zero exit stops the run and reports pf's diagnostics.
-
-## Inline Targets
-
-A link whose text opens with `↳` names an inline target: compile it, read the \
-whole bundle and follow it.
-
-## Following a Bundle
-
-A bundle that opens with a Prosiform section is followed from there: the \
-section states how each dispatched bundle in the run's folder is handed to a \
-sub-agent, and the steps after it name the bundles they dispatch.
+A sub-agent asks nothing itself. It returns each question unanswered, with its \
+context and options, in an answer whose first line reads Question:. Put the \
+question to the user, or return it the same way when you are a sub-agent \
+yourself, then give the file again with the answer. Questions from one In \
+parallel section return together once all have answered, and only the files \
+that asked are given again.
 """
 
 
@@ -854,7 +848,7 @@ def parser() -> Parser:
         description=(
             "Bundle the local Markdown closure of one or more entry references, "
             "and of each target they dispatch, into validated bundles. Run with "
-            "no arguments, pf prints the guide to compiling and following them."
+            "no arguments, pf prints the guide to following a compiled skill."
         ),
         epilog=f"{BUDGET_TABLE}\n{EXIT_STATUSES}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
