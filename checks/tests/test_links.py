@@ -543,3 +543,90 @@ def test_every_reference_the_literal_document_carries_is_read() -> None:
 
 def test_a_heading_naming_a_code_span_still_generates_its_fragment() -> None:
     assert "the-link-form" in links.fragments_of("# Doc\n\n## The `link` Form\n")
+
+
+def git(repository: Path, *arguments: str) -> str:
+    return subprocess.run(
+        ["git", "-c", "user.name=t", "-c", "user.email=t@t", *arguments],
+        cwd=repository,
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+
+
+@pytest.fixture
+def repository(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """A repository whose `topic` branch holds one file, as the check's root."""
+    root = tmp_path / "repository"
+    root.mkdir()
+    git(root, "init", "--quiet", "--initial-branch=topic")
+    (root / "present.md").write_text("# Present\n")
+    git(root, "add", "-A")
+    git(root, "commit", "--quiet", "-m", "first")
+    monkeypatch.setattr(links, "ROOT", root)
+    links.resolved_branches.clear()
+    return root
+
+
+PREFIX = "https://github.com/m2ux/prosiform/blob/"
+
+
+def test_a_failure_into_a_branch_names_the_commit_it_read(
+    repository: Path, tmp_path: Path
+) -> None:
+    commit = git(repository, "rev-parse", "topic")
+    document = tmp_path / "entry.md"
+    document.write_text(f"# Entry\n\n[Gone]({PREFIX}topic/missing.md)\n")
+    failures, _ = links.check(document, online=False)
+    assert failures == [
+        f"{PREFIX}topic/missing.md — missing.md does not exist on "
+        f"topic at {commit[:12]}"
+    ]
+
+
+def test_a_branch_is_read_at_one_commit_for_the_whole_run(
+    repository: Path, tmp_path: Path
+) -> None:
+    first = git(repository, "rev-parse", "topic")
+    document = tmp_path / "entry.md"
+    document.write_text(f"# Entry\n\n[Here]({PREFIX}topic/present.md)\n")
+    assert links.check(document, online=False) == ([], [])
+    (repository / "later.md").write_text("# Later\n")
+    git(repository, "add", "-A")
+    git(repository, "commit", "--quiet", "-m", "second")
+    later = tmp_path / "later.md"
+    later.write_text(f"# Later\n\n[There]({PREFIX}topic/later.md)\n")
+    failures, _ = links.check(later, online=False)
+    assert failures == [
+        f"{PREFIX}topic/later.md — later.md does not exist on topic at {first[:12]}"
+    ]
+    assert links.revisions_read() == [f"read topic at {first[:12]}"]
+
+
+def test_the_summary_names_each_branch_and_its_commit(
+    repository: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    commit = git(repository, "rev-parse", "topic")
+    (repository / "entry.md").write_text(
+        f"# Entry\n\n[Here]({PREFIX}topic/present.md)\n"
+    )
+    monkeypatch.setattr("sys.argv", ["links.py", "entry.md"])
+    assert links.main() == 0
+    assert f"read topic at {commit[:12]}" in capsys.readouterr().out
+
+
+def test_a_reference_pinned_to_a_commit_reads_as_written(
+    repository: Path, tmp_path: Path
+) -> None:
+    commit = git(repository, "rev-parse", "topic")
+    document = tmp_path / "entry.md"
+    document.write_text(f"# Entry\n\n[Gone]({PREFIX}{commit}/missing.md)\n")
+    failures, _ = links.check(document, online=False)
+    assert failures == [
+        f"{PREFIX}{commit}/missing.md — missing.md does not exist on {commit}"
+    ]
+    assert links.revisions_read() == []
