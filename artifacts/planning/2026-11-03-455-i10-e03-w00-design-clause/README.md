@@ -12,6 +12,8 @@ This record holds its delivery of `AC1`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [Work item](w00.md) | The plan for the design clause |
+| [Validation](validation.md) | The design inspection and the `make check` result at the new pin |
 
 ## Links
 
