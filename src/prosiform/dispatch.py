@@ -10,43 +10,19 @@ of those bundles, counted from the run's entry: a dispatch the entry
 carries is the first hop, a dispatch that target's bundle carries is
 the second, and so on.
 
-A dispatched link publishes no mark. A `⇉` link points at a *dispatch
-sub-section* of the section holding it: a heading `Dispatch <link
-text>` one level below that section, after the section's own content
-and before its child sections, whose one line names the target's
-bundle file. The `⫽` links in a section's own content are one *set*,
-and every one of them points at the section's one `Dispatch in
-parallel` sub-section, placed after its dispatch sub-sections, which
-lists each target's bundle file once with its link text. A set states
-no order. Each sub-section's instruction links the protocol it follows.
-A dispatch above the group's first heading takes that heading's level.
-Links in one section naming one target with one operator share its
-sub-section, and each section dispatching a target
-carries its own. The sub-sections are inserted into a group once it is
-built, before the bundle's destinations are assigned, so the ordinal a
-renderer gives a repeated heading counts them as it counts every other
-heading.
-
-A bundle that dispatches opens with a *Prosiform section*: a heading
-`Prosiform`, then a `Dispatch` protocol sub-section whenever the bundle
-dispatches at all, and a `Parallel dispatch` one when it carries a set,
-each stating its protocol in wording the profile fixes. The section is
-the bundle's first heading, ahead of a file heading and of any
-sub-section content above the first heading takes, so its protocols
-take the destinations their slugs name and an agent reading top-down
-meets each before the instruction that invokes it. Its levels are
-fixed, so each protocol sub-section is the same bytes in every bundle
-carrying it.
-
-A dispatched bundle's sub-agent has run no `pf`, so one carrying a link
-a later run of `pf` compiles — a deferred dispatch, or a deferred
-directive's `↳` line — opens with a Prosiform section as well: its
-first sub-section, `Run pf first`, states that `pf` is run before the
-bundle is followed, and a line directly above the section refers to
-it. A plain deferred link asks for no run of `pf`, and the entry's
-bundle is followed by the agent that ran `pf`, so neither takes it. A
-bundle that dispatches nothing and needs no first run carries no
-Prosiform section.
+A `⇉` link publishes where its author wrote it, with its mark, pointing
+at the file its target was compiled to. The `⫽` links in a section's own
+content are one *set*. A set of two or more distinct targets points at
+the section's one `In parallel` sub-section: a heading one level below
+the section, after the section's own content and before its child
+sections, whose list holds each target once as a `⇉` link to its file.
+A set of one target publishes as that single `⇉` link and carries no
+sub-section. A set states no order. A set above the group's first
+heading takes that heading's level. Each section carrying a set
+carries its own sub-section. The sub-sections are inserted into a group
+once it is built, before the bundle's destinations are assigned, so the
+ordinal a renderer gives a repeated heading counts them as it counts
+every other heading.
 
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so three dispatches publish nothing:
@@ -54,10 +30,9 @@ place, so three dispatches publish nothing:
 - A chain of bundles returning to one already on it is a cycle: its
   sub-agents would dispatch one another without end. A dispatch naming
   the run's own single selection closes the shortest one.
-- A dispatch in a level-6 section leaves no level for its sub-section.
-- An authored heading whose text equals one pf emits in the same bundle
-  — `Prosiform`, `Dispatch in parallel`, a protocol sub-section's or a
-  dispatch sub-section's — would give two sections one name.
+- A set in a level-6 section leaves no level for its sub-section.
+- An authored heading whose text equals `In parallel` in a bundle that
+  emits one would give two sections one name.
 
 A chain deeper than the limit still publishes, and warns: flattening it
 is the author's optimisation rather than a defect. A dispatch naming
@@ -71,12 +46,13 @@ followed again, so both searches terminate on any graph of dispatches.
 The dispatches a bundle carries name each target once, at the first
 link naming it, so each search follows each target once from a bundle.
 
-A dispatched link's text names its sub-section, so the text is written
-with each run of whitespace, a line break among them, as one space.
+A set member's link text is written with each run of whitespace, a line
+break among them, as one space.
 """
 
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
+from urllib.parse import quote
 
 from markdown_it.token import Token
 
@@ -91,11 +67,11 @@ from prosiform.bundle import (
 )
 from prosiform.closure import (
     DECLARING,
+    DISPATCH_MARK,
     UNSUBSTITUTED,
     Declarations,
     Reference,
     Substitution,
-    deferred,
     dispatched,
     identity,
     parallel,
@@ -111,9 +87,8 @@ from prosiform.diagnostics import (
 )
 from prosiform.provenance import (
     COMPOSED_HEADINGS,
-    DISPATCH_SECTION,
     FILENAME_WRAPPER,
-    PROSIFORM_SECTION,
+    PARALLEL_SECTION,
     Ancestor,
     Carried,
     Emitted,
@@ -126,6 +101,7 @@ from prosiform.provenance import (
     Target,
 )
 from prosiform.source import (
+    ANCHOR,
     LINK_OPEN,
     Source,
     events,
@@ -133,7 +109,6 @@ from prosiform.source import (
     opening_text,
     regions,
     shown,
-    slug,
 )
 
 DISPATCH_DEPTH = "W_DISPATCH_DEPTH"
@@ -143,47 +118,11 @@ HEADING_COLLISION = "E_HEADING_COLLISION"
 
 CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 
-PROSIFORM = "Prosiform"
-FIRST_RUN = "Run pf first"
-PARALLEL = "Dispatch in parallel"
-DISPATCH = "Dispatch"
-PARALLEL_DISPATCH = "Parallel dispatch"
-
-DISPATCH_PROTOCOL = (
-    "Hand the named bundle to one sub-agent with the invoking step's inputs, to "
-    "follow from its start, and continue with its result. A dispatched run asks "
-    "nothing: it returns each question, with its context and options, "
-    "unanswered. The dispatching session puts that question to the user, or "
-    "returns it in turn when itself dispatched, then dispatches again with the "
-    "answers."
-)
-
-
-def rules_link(name: str, text: str) -> str:
-    """A link to one protocol sub-section, carrying its own link text."""
-    return f"[{text}](#{slug(name)})"
-
-
-FIRST_RUN_PROTOCOL = (
-    "Run `pf` first, with no arguments, and follow the guide it prints."
-)
-
-FIRST_RUN_LINE = (
-    f"Before following this bundle, {rules_link(FIRST_RUN, 'run pf first')}."
-)
-
-PARALLEL_PROTOCOL = (
-    "Dispatch every listed bundle at once, each to a sub-agent of its own per "
-    f"{rules_link(DISPATCH, 'dispatch')}; an item the invoking step applies "
-    '"for each" of several values is dispatched once per value, together. '
-    "Continue when every item has returned; a failed item cancels nothing, and "
-    "every failure returns together as blockers. Questions return together once "
-    "all items have, and only the items that asked are dispatched again."
-)
+PARALLEL = "In parallel"
 
 TOGETHER = (
-    "Dispatch these bundles together, each to a sub-agent, per "
-    f"{rules_link(PARALLEL_DISPATCH, 'parallel dispatch')}:"
+    "Give each of these to its own sub-agent at the same time, and continue "
+    "when all have answered:"
 )
 
 LINK_CLOSE = "link_close"
@@ -202,13 +141,14 @@ CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching 
 LEVEL_REMEDY = "move the dispatch to a section above the sixth level"
 COLLISION_REMEDY = "retitle the authored heading"
 
-Placed = dict[tuple[str, int], dict[Served, int]]
-"""Each dispatch sub-section's heading, by the region and link it serves.
+Placed = dict[tuple[str, int], dict[Served, int | str]]
+"""Where each dispatched link points, by the region and link it serves.
 
 A region is the document and the first line of content it opens on, so
 every link one region writes naming one target with one operator
-reaches one sub-section, and the value is that heading's position among
-every heading the bundle emits.
+points at one place. The place is the position of an `In parallel`
+sub-section among every heading the bundle emits, or the destination of
+a bundle file.
 """
 
 Anchors = Mapping[tuple[str, int], Mapping[Served, str]]
@@ -420,7 +360,7 @@ class Link:
 
     @property
     def served(self) -> Served:
-        """The sub-section the link points at, as its target and operator."""
+        """Where the link points, as its target and operator."""
         return (self.target, self.parallel)
 
 
@@ -455,9 +395,7 @@ def written_in(
             if child.type != LINK_OPEN:
                 continue
             opening = opening_text(children, at)
-            if not dispatched(opening) or deferred(opening):
-                # A deferred dispatch belongs to the run that compiles it
-                # later, so this bundle names no sub-section for it.
+            if not dispatched(opening):
                 continue
             destination = str(child.attrGet("href") or "")
             target = withheld(path, destination, opening, declarations, substitution)
@@ -476,14 +414,17 @@ def written_in(
     return found
 
 
-def instruction(bundle_file: str) -> str:
-    """The one line a dispatch sub-section carries."""
-    return f"{rules_link(DISPATCH, 'Dispatch')} `{bundle_file}` to a sub-agent."
+def file_destination(bundle_file: str) -> str:
+    """The destination a link takes to one bundle file beside the bundle."""
+    return quote(bundle_file, safe="")
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:
-    """The list a `Dispatch in parallel` sub-section carries, one bundle an item."""
-    return "\n".join(f"- `{file}` ({escaped(text)})" for file, text in entries)
+    """The list an `In parallel` sub-section carries, one `⇉` link to a bundle each."""
+    return "\n".join(
+        f"- [{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
+        for file, text in entries
+    )
 
 
 def region_of(tokens: Sequence[Token], part: Range) -> Token:
@@ -491,47 +432,17 @@ def region_of(tokens: Sequence[Token], part: Range) -> Token:
     return next(one for one in regions(tokens) if one.map == list(part.lines))
 
 
-def first_run(groups: Sequence[Group], parsed: Mapping[str, Sequence[Token]]) -> bool:
-    """Whether a bundle carries a link a later run of `pf` compiles.
-
-    Such a link is a deferred dispatch, or the line a deferred
-    directive's contribution carries. A plain deferred link asks for no
-    run of `pf`.
-    """
-    for one in groups:
-        if any(
-            isinstance(part, Instruction) and part.activates is not None
-            for part in one.record.parts
-        ):
-            return True
-        for part in one.record.ranges:
-            tokens = parsed[part.path]
-            for inline in inlines(tokens, [region_of(tokens, part)]):
-                for children, at, child in events(inline.children or []):
-                    if child.type != LINK_OPEN:
-                        continue
-                    opening = opening_text(children, at)
-                    if deferred(opening) and dispatched(opening):
-                        return True
-    return False
-
-
 class Placing:
-    """One bundle's groups rebuilt with its Prosiform section and its sub-sections.
-
-    The operators are those the bundle's dispatched links carry, `False`
-    for `⇉` and `True` for `⫽`, which decide the protocols the
-    Prosiform section states. A bundle needing a first run of `pf`
-    states that first, with the line referring to it above the section.
+    """One bundle's groups rebuilt with the `In parallel` sub-sections its sets take.
 
     The grouped regions are those a group carries as its own, by the
     document and first line naming each. A dispatch a contribution
-    carries points at the sub-section its source's own region is given
-    where a group carries that region. Where none does, the region's
-    first contribution gives the dispatch a sub-section of its own,
-    beneath the composed section holding the link and ahead of the
-    next composed heading, so a scope's own sub-sections still follow
-    its destination sections.
+    carries points where its source's own region is given where a group
+    carries that region. Where none does, the region's first contribution
+    gives the dispatch a place of its own: a set's sub-section sits
+    beneath the composed section holding the link and ahead of the next
+    composed heading, so a scope's own sub-sections still follow its
+    destination sections.
     """
 
     def __init__(
@@ -539,21 +450,16 @@ class Placing:
         parsed: Mapping[str, Sequence[Token]],
         read: Mapping[str, Source],
         bundle_file: Callable[[Target], str],
-        operators: Collection[bool],
         grouped: Collection[tuple[str, int]],
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
-        first: bool = False,
     ) -> None:
         self.parsed = parsed
-        self.first = first
         self.grouped = grouped
         self.read = read
         self.bundle_file = bundle_file
-        self.operators = operators
         self.declarations = declarations
         self.substitution = substitution
-        self.opened = False
         self.placed: Placed = {}
         self.at = 0
         self.emitted: list[str] = []
@@ -566,64 +472,25 @@ class Placing:
         self.inner_serving: list[tuple[tuple[str, int], Served]] = []
         self.inner_level = 0
 
-    def heading(
-        self,
-        text: str,
-        depth: int,
-        body: Sequence[Instruction],
-        kind: str = DISPATCH_SECTION,
-    ) -> int:
+    def heading(self, text: str, depth: int, body: Sequence[Instruction]) -> int:
         """Emit one generated section, returning its heading's bundle position."""
         at = self.at + len(self.headings)
         self.emitted.append(f"{ATX * depth} {escaped(text)}")
-        self.parts.append(Generated(text, depth, kind))
-        self.headings.append(Generated(text, depth, kind))
+        self.parts.append(Generated(text, depth, PARALLEL_SECTION))
+        self.headings.append(Generated(text, depth, PARALLEL_SECTION))
         for one in body:
             self.emitted.append(one.text)
             self.parts.append(one)
         return at
 
-    def open(self) -> bool:
-        """Emit the Prosiform section once, where the bundle carries one.
-
-        It is called ahead of the bundle's first heading, and reports
-        whether it emitted the section there.
-        """
-        if self.opened or not (self.operators or self.first):
-            return False
-        self.opened = True
-        if self.first:
-            self.emitted.append(FIRST_RUN_LINE)
-            self.parts.append(Instruction(FIRST_RUN_LINE))
-        self.heading(PROSIFORM, 1, [], PROSIFORM_SECTION)
-        if self.first:
-            self.heading(
-                FIRST_RUN, 2, [Instruction(FIRST_RUN_PROTOCOL)], PROSIFORM_SECTION
-            )
-        if self.operators:
-            self.heading(
-                DISPATCH, 2, [Instruction(DISPATCH_PROTOCOL)], PROSIFORM_SECTION
-            )
-        if True in self.operators:
-            self.heading(
-                PARALLEL_DISPATCH,
-                2,
-                [Instruction(PARALLEL_PROTOCOL)],
-                PROSIFORM_SECTION,
-            )
-        return True
-
     def flush(self, following: int | None) -> None:
-        """Emit the sub-sections the section just closed carries.
+        """Emit the sub-section the section just closed carries.
 
-        Each `⇉` target takes a sub-section of its own, in the order its
-        first link is written, and the section's `⫽` set takes one after
-        them. Ahead of the bundle's first heading, and ahead of content
-        above it that dispatches, the Prosiform section comes first.
+        The section's `⫽` set takes one where it holds two or more
+        targets. Content above the bundle's first heading takes that
+        heading's level.
         """
         self.close()
-        if self.level is None and (following is not None or self.pending):
-            self.open()
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
@@ -632,7 +499,7 @@ class Placing:
         self.serving = []
 
     def close(self) -> None:
-        """Emit the sub-sections the composed section just closed carries."""
+        """Emit the sub-section the composed section just closed carries."""
         if self.inner:
             self.place(self.inner, self.inner_serving, self.inner_level + 1)
         self.inner = {}
@@ -644,30 +511,32 @@ class Placing:
         links: Sequence[tuple[tuple[str, int], Served]],
         depth: int,
     ) -> None:
-        """Emit the sub-sections one section's dispatched links take, at one depth."""
-        if depth > MAX_LEVEL:
-            first = next(iter(pending.values()))
-            raise Refused(
-                Diagnostic(
-                    ERROR,
-                    f"the dispatch {first.written!r} sits in a level-{MAX_LEVEL} "
-                    f"section, so its sub-section would be emitted at level "
-                    f"{depth}, which is beyond H{MAX_LEVEL}",
-                    code=HEADING_DEPTH_OVERFLOW,
-                    reference=first.written,
-                    remedy=LEVEL_REMEDY,
-                    location=first.location,
+        """Say where one section's dispatched links point, emitting its set's section.
+
+        A `⇉` link, and the one `⫽` link of a set of one target, point at
+        their target's bundle file. A set of two or more targets points
+        at the `In parallel` sub-section emitted here.
+        """
+        together = [link for link in pending.values() if link.parallel]
+        serving: dict[Served, int | str] = {
+            served: file_destination(self.bundle_file(link.target))
+            for served, link in pending.items()
+        }
+        if len(together) > 1:
+            if depth > MAX_LEVEL:
+                first = together[0]
+                raise Refused(
+                    Diagnostic(
+                        ERROR,
+                        f"the dispatch {first.written!r} sits in a level-{MAX_LEVEL} "
+                        f"section, so its sub-section would be emitted at level "
+                        f"{depth}, which is beyond H{MAX_LEVEL}",
+                        code=HEADING_DEPTH_OVERFLOW,
+                        reference=first.written,
+                        remedy=LEVEL_REMEDY,
+                        location=first.location,
+                    )
                 )
-            )
-        serving: dict[Served, int] = {}
-        together: list[Link] = []
-        for served, link in pending.items():
-            if link.parallel:
-                together.append(link)
-                continue
-            body = Instruction(instruction(self.bundle_file(link.target)))
-            serving[served] = self.heading(f"{DISPATCH} {link.text}", depth, [body])
-        if together:
             listed = listing(
                 [(self.bundle_file(link.target), link.text) for link in together]
             )
@@ -679,23 +548,14 @@ class Placing:
             self.placed.setdefault(key, {})[served] = serving[served]
 
     def group(self, one: Group) -> Group:
-        """One group with its sub-sections, the headings before it counted.
-
-        A file heading the Prosiform section precedes is a part of the
-        group rather than the heading it opens on.
-        """
+        """One group with its sub-sections, the headings before it counted."""
         offset = 1 if one.wrapped else 0
-        wrapped = one.wrapped
         self.emitted = []
         self.parts = []
         self.headings = []
         self.level = None
         if one.wrapped:
             wrapper = one.record.headings[0]
-            assert isinstance(wrapper, Generated)
-            if self.open():
-                wrapped = False
-                self.parts.append(wrapper)
             self.emitted.append(one.parts[0])
             self.headings.append(wrapper)
             self.level = wrapper.level
@@ -763,7 +623,7 @@ class Placing:
         return Group(
             tuple(self.emitted),
             replace(one.record, headings=tuple(self.headings), parts=tuple(self.parts)),
-            wrapped=wrapped,
+            wrapped=one.wrapped,
             level=one.level,
         )
 
@@ -775,26 +635,19 @@ def subsections(
     bundle_file: Callable[[Target], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-    dispatched_bundle: bool = False,
 ) -> tuple[list[Group], Placed]:
-    """Every group with the bundle's generated sections, and where each one stands.
+    """Every group with its `In parallel` sub-sections, and where each link points.
 
     A group's sections are read in the order it emits them: a heading
-    part closes the section above it, and the sub-sections that section
-    collected are emitted ahead of the heading. A wrapped group's file
+    part closes the section above it, and the sub-section that section
+    collected is emitted ahead of the heading. A wrapped group's file
     heading opens its first section; a group the parent's title opens
-    has no section above that title, so a dispatch there takes the
-    level of the heading that follows it. The operators the bundle's
-    links carry are read first, because the Prosiform section stating
-    their protocols precedes every one of them.
+    has no section above that title, so a set there takes the level of
+    the heading that follows it.
 
     A destination section and the contributions beneath it are content
     of the scope that composes them, so they close none of its sections,
-    and a dispatch a contribution carries takes its sub-section as
-    `Placing` states.
-
-    A dispatched bundle carrying a link a later run of `pf` compiles
-    opens with the Prosiform section stating that first run.
+    and a dispatch a contribution carries points where `Placing` states.
     """
     grouped = {
         (part.path, part.lines[0])
@@ -802,30 +655,7 @@ def subsections(
         for part in one.record.ranges
         if not part.composed
     }
-    operators = {
-        link.parallel
-        for one in groups
-        for part in one.record.ranges
-        if not part.composed or (part.path, part.lines[0]) not in grouped
-        for link in written_in(
-            part.path,
-            read[part.path],
-            parsed[part.path],
-            region_of(parsed[part.path], part),
-            declarations,
-            substitution,
-        )
-    }
-    placing = Placing(
-        parsed,
-        read,
-        bundle_file,
-        operators,
-        grouped,
-        declarations,
-        substitution,
-        dispatched_bundle and first_run(groups, parsed),
-    )
+    placing = Placing(parsed, read, bundle_file, grouped, declarations, substitution)
     rebuilt = [placing.group(one) for one in groups]
     return rebuilt, placing.placed
 
@@ -855,8 +685,7 @@ def collisions(groups: Sequence[Group], read: Mapping[str, Source]) -> None:
         one.text
         for group in groups
         for one in group.record.headings
-        if isinstance(one, Generated)
-        and one.kind in (DISPATCH_SECTION, PROSIFORM_SECTION)
+        if isinstance(one, Generated) and one.kind == PARALLEL_SECTION
     }
     for group in groups:
         for one, at in authored(group.record, read):
@@ -883,6 +712,9 @@ def anchors(
 ) -> dict[tuple[str, int], dict[Served, str]]:
     """The destination each region's dispatched links take, by link."""
     return {
-        key: {link: assigned[at] for link, at in served.items()}
+        key: {
+            link: f"{ANCHOR}{assigned[at]}" if isinstance(at, int) else at
+            for link, at in served.items()
+        }
         for key, served in placed.items()
     }

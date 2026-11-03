@@ -7,7 +7,7 @@ prosiform: {}
 
 1. Read the rules.
 
-   [→](#rules)
+   [↳ Rules](#rules)
 
 ## Reference
 

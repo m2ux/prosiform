@@ -1,0 +1,15 @@
+description = "A bundle that dispatches emits no heading reading Dispatch, so an authored heading of that text publishes with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Run-pf line",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md"]
+diagnostics = []

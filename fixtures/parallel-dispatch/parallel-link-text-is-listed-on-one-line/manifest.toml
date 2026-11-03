@@ -1,4 +1,4 @@
-description = "A parallel link's text names its item in the Dispatch in parallel sub-section, so text wrapped across lines or ending in a space is listed with each run of whitespace as one space, while the published link keeps the text its source wrote."
+description = "A parallel link's text names its item in the In parallel sub-section, so text wrapped across lines or ending in a space is listed with each run of whitespace as one space."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",

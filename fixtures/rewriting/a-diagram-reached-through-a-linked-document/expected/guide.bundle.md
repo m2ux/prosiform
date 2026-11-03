@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Ticket Guide
 
 A ticket moves through the states the [lifecycle](#lifecycle) diagram shows.

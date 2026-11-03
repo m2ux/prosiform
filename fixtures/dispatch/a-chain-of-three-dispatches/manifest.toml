@@ -1,10 +1,8 @@
-description = "A chain of three dispatches — the entry dispatching a target whose bundle dispatches, whose bundle dispatches once more — publishes one bundle for the entry and one for each target, each dispatch pointing at a sub-section naming its target's bundle, and is as deep as a chain is held to, so the run raises no warning."
+description = "A chain of three dispatches — the entry dispatching a target whose bundle dispatches, whose bundle dispatches once more — publishes one bundle for the entry and one for each target, each dispatch linking its target's bundle file, and is as deep as a chain is held to, so the run raises no warning."
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
-  "Link classification and resource handling — Dispatch sub-sections",
-  "Link classification and resource handling — Dispatch depth",
-  "Adversarial acceptance fixtures — Dispatch",
+  "Link classification and resource handling — Dispatch links",
 ]
 
 [invocation]

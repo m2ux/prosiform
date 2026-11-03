@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 An opening paragraph, above the first eligible heading.
 
 # The Standing Order

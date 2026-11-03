@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Read [the notes](#notes-1) and [the plain page](#plain).

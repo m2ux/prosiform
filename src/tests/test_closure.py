@@ -21,16 +21,21 @@ from prosiform.closure import (
     OutsideRoot,
     Probed,
     Reference,
+    arrowed,
     boundary,
     bundled,
     conflicting,
+    contradicting,
     deferred,
+    deferring_dispatch,
+    directive,
     dispatched,
     gapped,
     identity,
     inside,
     operators,
     parallel,
+    published_text,
     rebased,
     resolvable,
     resolve,
@@ -196,17 +201,32 @@ def test_two_dispatch_marks_opening_one_text_conflict() -> None:
     assert conflicting(" ⇉⫽⇉ the rules")
 
 
-def test_a_deferral_and_a_dispatch_mark_written_together_are_admitted() -> None:
-    """A deferral says when, a dispatch says who, so together they agree."""
-    assert not conflicting("¬⇉ the rules")
-    assert not conflicting("¬⫽ the rules")
-    assert conflicting("⇉⫽ the rules")
-    assert conflicting("¬⇉⫽ the rules")
+@pytest.mark.parametrize("opening", ["¬⇉ the rules", "¬⫽ the rules", "¬⇉⫽ the rules"])
+def test_a_deferral_written_against_a_dispatch_mark_is_refused(opening: str) -> None:
+    """A dispatch is compiled up front, so no bundle publishes a deferred one."""
+    assert deferring_dispatch(opening)
+    assert conflicting(opening)
+
+
+@pytest.mark.parametrize("opening", ["⇉↳ the rules", "⫽↳ the rules", "¬⇉↳ the rules"])
+def test_a_dispatch_mark_written_against_the_composition_mark_contradicts(
+    opening: str,
+) -> None:
+    assert contradicting(opening)
+    assert conflicting(opening)
+
+
+def test_the_deferral_mark_beside_the_composition_mark_is_admitted() -> None:
+    assert not conflicting("¬↳ the rules")
+    assert not conflicting("↳ the rules")
+    assert not deferring_dispatch("¬↳ the rules")
+    assert not contradicting("¬↳ the rules")
 
 
 def test_one_operator_alone_does_not_conflict() -> None:
     assert not conflicting("¬ the rules")
     assert not conflicting("⇉ the rules")
+    assert not conflicting("↳ the rules")
     assert not conflicting("¬ and ⇉ the rules")
 
 
@@ -223,9 +243,8 @@ def test_operators_are_each_operator_one_text_opens_with() -> None:
 
 
 def test_the_marks_of_a_compound_operator_are_one_group() -> None:
-    assert operators("¬⇉ the rules") == ("¬", "⇉")
-    assert operators("¬⫽ the rules") == ("¬", "⫽")
-    assert operators(" ¬⫽  the reviews") == ("¬", "⫽")
+    assert operators("¬↳ the rules") == ("¬", "↳")
+    assert operators(" ¬↳  the reviews") == ("¬", "↳")
 
 
 def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
@@ -237,9 +256,9 @@ def test_an_unspaced_withholding_mark_is_published_as_written() -> None:
 
 
 def test_the_marks_of_one_operator_go_together() -> None:
-    assert unmarked("¬⇉ the rules") == "the rules"
-    assert unmarked("¬⫽ the rules") == "the rules"
-    assert unmarked("¬⇉Rules") == "¬⇉Rules"
+    assert unmarked("¬↳ the rules") == "the rules"
+    assert unmarked("↳ the rules") == "the rules"
+    assert unmarked("¬↳Rules") == "¬↳Rules"
 
 
 def test_a_link_resolves_against_the_directory_of_the_document_carrying_it() -> None:
@@ -436,17 +455,24 @@ def test_the_parallel_mark_conflicts_with_the_dispatch_mark(opening: str) -> Non
     assert conflicting(opening)
 
 
-def test_the_parallel_mark_beside_a_deferral_states_one_compilation() -> None:
-    assert not conflicting("¬⫽ the reviews")
+def test_the_parallel_mark_beside_a_deferral_is_refused() -> None:
+    assert conflicting("¬⫽ the reviews")
 
 
 @pytest.mark.parametrize(
-    "opening", ["¬ ⇉ the rules", "¬ ⫽ the reviews", "⇉ ⫽ the reviews", "⇉ ¬ the rules"]
+    "opening",
+    [
+        "¬ ⇉ the rules",
+        "¬ ↳ the rules",
+        "⇉ ⫽ the reviews",
+        "⇉ ¬ the rules",
+        "↳ ¬ the rules",
+    ],
 )
 def test_a_blank_between_the_marks_of_a_compound_operator_is_refused(
     opening: str,
 ) -> None:
-    assert gapped(opening, None)
+    assert gapped(opening)
 
 
 def probing(answers: dict[str, Probed]) -> tuple[Declarations, list[Reference]]:
@@ -573,15 +599,58 @@ def test_the_boundary_holds_paths_climbing_different_distances(
     assert bounded("skill/guide.md", links + "\n") == expected
 
 
-def test_the_deferral_mark_written_against_a_glyph_defers_it() -> None:
-    assert operators("¬→") == ("¬",)
-    assert deferred("¬→")
-    assert unmarked("¬→") == "→"
-    assert unmarked("¬&rarr;", raw=True) == "&rarr;"
-    assert unmarked("¬&rarr;") == "¬&rarr;"
+def test_the_composition_mark_opens_a_directive() -> None:
+    assert directive("↳ Inputs")
+    assert directive("¬↳ Inputs")
+    assert deferred("¬↳ Inputs")
+    assert not deferred("↳ Inputs")
+    assert not withholding("↳ Inputs")
+    assert withholding("¬↳ Inputs")
+
+
+@pytest.mark.parametrize(
+    "opening", ["↳Inputs", "↳", "the ↳ Inputs", "⇉ Inputs", "¬ Inputs"]
+)
+def test_a_text_not_opening_with_the_composition_mark_is_no_directive(
+    opening: str,
+) -> None:
+    assert not directive(opening)
 
 
 def test_a_mark_written_against_other_text_opens_no_operator() -> None:
     assert operators("¬→ the rules") == ()
     assert operators("⇉→") == ()
+    assert operators("¬↳Inputs") == ()
     assert operators("¬A") == ()
+
+
+@pytest.mark.parametrize(
+    "label", ["→", "¬→", "¬ →", "⇉ →", "⫽→", "⇉→", "🡒", "➔", "⬅", "↳ →"]
+)
+def test_a_label_of_one_arrow_beside_its_marks_is_an_arrow_label(label: str) -> None:
+    assert arrowed(label)
+
+
+@pytest.mark.parametrize(
+    "label", ["⇉", "↳", "⫽", "¬", " → ", "→→", "↓↑", "A", "†", "¹", ""]
+)
+def test_any_other_label_is_no_arrow_label(label: str) -> None:
+    assert not arrowed(label)
+
+
+@pytest.mark.parametrize(
+    ("text", "file", "published"),
+    [
+        ("\u21c9 plan", True, "\u21c9 plan"),
+        ("  \u21c9   plan", True, "\u21c9 plan"),
+        ("\u2afd plan", True, "\u21c9 plan"),
+        ("\u2afd plan", False, "plan"),
+        ("\u00ac\u21c9 plan", True, "plan"),
+        ("\u00ac plan", False, "plan"),
+        ("plan", True, "plan"),
+    ],
+)
+def test_a_dispatch_pointing_at_a_file_keeps_its_mark_and_one_blank(
+    text: str, file: bool, published: str
+) -> None:
+    assert published_text(text, file) == published

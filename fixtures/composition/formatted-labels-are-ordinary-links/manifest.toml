@@ -1,4 +1,4 @@
-description = "A label carrying emphasis, strong emphasis, a code span or a strikethrough is not plain text, so none is a composition directive and each is an ordinary link in the preamble."
+description = "A label carrying emphasis, strong emphasis, a code span or a strikethrough is not plain text, so none is an arrow label and each is an ordinary link in the preamble."
 
 clauses = [
   "Section composition — Recognition",

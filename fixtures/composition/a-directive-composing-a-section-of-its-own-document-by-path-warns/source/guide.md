@@ -7,7 +7,7 @@ prosiform: {}
 
 1. Read the rules.
 
-   [→](guide.md#rules)
+   [↳ Rules](guide.md#rules)
 
 ## Reference
 
