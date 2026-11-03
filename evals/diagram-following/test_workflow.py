@@ -8,7 +8,8 @@ transition paragraphs, and a dispatch form's in the step handing a section
 to a sub-agent too; and each scenario's path is a walk of the diagram from
 its start to a terminal state that every form's sections lead through for
 the scenario's inputs, and the diagram form's bundle states, with the
-dispatch trace its sources state. Each property is a function returning the faults it
+dispatch trace its sources state and `pf` runs naming documents its sources
+hold. Each property is a function returning the faults it
 finds, so the corpus is held to an empty list and a copy of it broken on
 purpose is held to a fault.
 """
@@ -36,6 +37,7 @@ from workflow import (
     LINKED_FORM,
     MARKED_FORMS,
     PROSE,
+    STAGED,
     STATES,
     STEP_ONE,
     STEP_SET,
@@ -44,6 +46,7 @@ from workflow import (
     UNDRAWN,
     UNLABELLED,
     WORKFLOWS,
+    Compile,
     CorpusError,
     Scenario,
     Workflow,
@@ -51,6 +54,7 @@ from workflow import (
     bundle_walk,
     bundled,
     bundled_sections,
+    compile_faults,
     dispatch_walk,
     dispatched,
     inputs_read,
@@ -372,10 +376,10 @@ def reached(workflow: Workflow, state: str) -> set[str]:
 
 
 def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
-    """How a scenario's path or trace fails to be what its sources state."""
+    """How a scenario's path, trace or runs fail to be what its sources state."""
     diagram = workflow.diagram
     path = scenario.path
-    faults = []
+    faults = compile_faults(workflow, scenario)
     if not path or path[0] != diagram.start:
         faults.append(f"{scenario.name}: the path does not open at {diagram.start}")
     # A state reaches the next state through a decision and a condition, so a
@@ -396,7 +400,7 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
         if walked != path:
             faults.append(f"{scenario.name}: the {form} sections lead {walked}")
     dispatching = [
-        form for form in (*DISPATCH_FORMS, BOOTSTRAP) if form in workflow.forms
+        form for form in (*DISPATCH_FORMS, BOOTSTRAP, STAGED) if form in workflow.forms
     ]
     if not dispatching:
         if scenario.trace:
@@ -910,9 +914,101 @@ def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
         'dispatch = "review#tests"\nreturned = "done"\n',
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
-    assert len(faults) == len(DISPATCH_FORMS) and all(
+    assert len(faults) == len(workflow.forms) and all(
         "parallel-set: the" in fault for fault in faults
     )
+
+
+def test_a_scenario_states_each_pf_run_in_order_with_its_arguments() -> None:
+    """AC1: a run names the agent making it and the references it compiles."""
+    named = {workflow.name: workflow for workflow in CORPUS}
+    for scenario in named["bootstrap-audit"].scenarios:
+        assert scenario.compile == (
+            Compile(None, ()),
+            Compile(None, ("sources/workflow.md",)),
+        )
+    assert [scenario.compile for scenario in named["dispatch-set"].scenarios] == [()]
+
+
+def test_a_sub_agents_run_is_read_by_the_section_it_follows(tmp_path: Path) -> None:
+    """AC1: a run a sub-agent makes names the section of the trace it follows."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-set",
+        "scenarios.toml",
+        "together = true\n",
+        'together = true\n\n[[scenario.compile]]\nby = "review#tests"\nargs = []\n',
+    )
+    [scenario] = workflow.scenarios
+    assert scenario.compile == (Compile("review#tests", ()),)
+    assert compile_faults(workflow, scenario) == []
+
+
+@pytest.mark.parametrize(
+    ("run", "fault"),
+    [
+        (
+            'args = ["absent.md#work"]',
+            "parallel-set: a run names absent.md#work, no document of its sources",
+        ),
+        (
+            'args = ["#source"]',
+            "parallel-set: a run names #source, no document of its sources",
+        ),
+        (
+            'by = "review#absent"',
+            "parallel-set: a run by review#absent is by no start",
+        ),
+    ],
+)
+def test_a_stated_run_naming_no_document_of_the_sources_is_a_fault(
+    tmp_path: Path, run: str, fault: str
+) -> None:
+    """AC1: the corpus test refuses a run naming what the sources do not hold."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-set",
+        "scenarios.toml",
+        "together = true\n",
+        f"together = true\n\n[[scenario.compile]]\n{run}\n",
+    )
+    [scenario] = workflow.scenarios
+    assert scenario_faults(workflow, scenario) == [fault]
+
+
+def test_a_run_stated_by_a_workflow_running_no_command_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    """AC1: a workflow written in no shell form gives no session a run to make."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-chain",
+        "scenarios.toml",
+        'dispatch = "review#check"\nreturned = "done"\n',
+        'dispatch = "review#check"\nreturned = "done"\n\n'
+        '[[scenario.compile]]\nargs = ["plan.md#work"]\n',
+    )
+    [scenario] = workflow.scenarios
+    assert scenario_faults(workflow, scenario) == [
+        "chain: it states a pf run, and no form runs one"
+    ]
+
+
+@pytest.mark.parametrize(
+    "run", ['args = "workflow.md"', "args = [1]", "by = 2"], ids=str
+)
+def test_a_run_whose_fields_are_not_references_is_refused(
+    tmp_path: Path, run: str
+) -> None:
+    """AC1: `by` is a section and `args` a list of references, or nothing reads."""
+    with pytest.raises(CorpusError, match="parallel-set: a run's"):
+        broken(
+            tmp_path,
+            "dispatch-set",
+            "scenarios.toml",
+            "together = true\n",
+            f"together = true\n\n[[scenario.compile]]\n{run}\n",
+        )
 
 
 def test_a_compiled_step_stating_its_dispatch_in_prose_is_a_fault(

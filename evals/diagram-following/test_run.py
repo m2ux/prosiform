@@ -22,16 +22,18 @@ from typing import Any
 
 import pytest
 import workflow as source
-from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Opencode
+from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Cursor, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
     BUNDLE,
     BUNDLED,
     COMPILED_SET,
+    DEFAULT_FORMS,
     FORMS,
     LINKED_TREE,
     PROSE_BUNDLE,
+    STAGED_SET,
     TRANSCRIPT,
     TREE,
     Ledger,
@@ -57,6 +59,8 @@ from score import (
 from workflow import (
     ENTRY,
     LINKED_FORM,
+    STAGED,
+    Compile,
     CorpusError,
     workflows,
 )
@@ -208,11 +212,21 @@ def material(session: Session) -> set[str]:
 
     A bundled form's entry bundle is `workflow.md`, and every other bundle
     of its set sits beside it under the name `pf` gave it. A form read as a
-    source tree gives its own files.
+    source tree gives its own files, and a staged form its sources, its
+    bundle set in the folder `pf` writes it to, and the build.
     """
     workflow = CORPUS[session.workflow]
     scenario = next(i for i in workflow.scenarios if i.name == session.scenario)
     inputs = {f"inputs/{name}" for name in scenario.inputs}
+    if session.form == STAGED_SET:
+        tree = workflow.form(STAGED)
+        folder = workflow.entry_bundle.parent
+        return (
+            {str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()}
+            | {str(folder / name) for name in bundles_of(workflow, STAGED_SET)}
+            | {"bin/pf"}
+            | inputs
+        )
     if session.form in BUNDLED:
         return (
             {ENTRY}
@@ -265,7 +279,80 @@ def test_the_readme_states_every_form_the_runner_offers_and_its_default() -> Non
     """
     assert [row[0] for row in readme_rows("Form")] == list(FORMS)
     forms = [row for row in readme_rows("Option") if row[0] == "--forms"]
-    assert [row[1] for row in forms] == [",".join(FORMS)]
+    assert [row[1] for row in forms] == [",".join(DEFAULT_FORMS)]
+    assert options(["--budget-tokens", "1"]).forms == ",".join(DEFAULT_FORMS)
+
+
+def test_a_staged_session_receives_the_bundle_set_and_the_build(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """AC2: the compiled bundle set, its sources, and the build as `pf` on its path.
+
+    The set sits in the folder `pf` writes it to, beside the sources a `↳`
+    line names its target from, and the instruction names the entry's bundle
+    there. The `pf` the session's path resolves to is the build this run was
+    given, copied into the workspace. Cursor carries a shell, so it is given
+    the session.
+    """
+    monkeypatch.setattr("run.harness_named", lambda name: Cursor())
+    eval_run(
+        tmp_path,
+        *("--harness", "cursor", "--workflows", "dispatch-set", "--forms", STAGED_SET),
+        *("--repetitions", "1", "--budget-tokens", "4000"),
+    )
+    workflow = CORPUS["dispatch-set"]
+    bundles = bundles_of(workflow, STAGED_SET)
+    assert set(bundles) == set(bundles_of(workflow, COMPILED_SET))
+    [entry] = seen(log)
+    workspace = Path(entry["workspace"])
+    folder = workflow.entry_bundle.parent
+    assert {str(folder / name) for name in bundles} <= set(entry["files"])
+    assert {"workflow.md", "review.md", "states/survey.md"} <= set(entry["files"])
+    assert entry["pf"] == str(workspace / "bin" / "pf")
+    assert f"{workflow.entry_bundle.as_posix()} describes a workflow" in entry["prompt"]
+    assert "pf with no arguments" in " ".join(entry["prompt"].split())
+
+
+def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> None:
+    """AC3: `staged` is outside the default forms and needs a harness with a shell.
+
+    The default matrix the baseline measures holds no staged cell on any
+    harness; naming the form gives staged sessions to Cursor and opencode,
+    which carry a shell, and none to Claude, which does not.
+    """
+    corpus = list(CORPUS.values())
+    assert STAGED_SET not in DEFAULT_FORMS
+    for harness in HARNESSES.values():
+        defaults = matrix(corpus, ["m"], list(DEFAULT_FORMS), 1, harness)
+        assert all(session.form != STAGED_SET for session in defaults)
+    for harness in (Cursor(), Opencode()):
+        staged = matrix(corpus, ["m"], [STAGED_SET], 1, harness)
+        assert {(item.workflow, item.form) for item in staged} == {
+            ("dispatch-set", STAGED_SET)
+        }
+    assert matrix(corpus, ["m"], [STAGED_SET], 1, Claude()) == []
+
+
+def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> None:
+    """AC22: a scenario stating a sub-agent's `pf` run needs that agent's commands.
+
+    No declared harness reports a sub-agent's commands: Claude carries no
+    shell, and neither Cursor's stream nor opencode's carries a sub-agent's
+    own calls. A harness that did would be given the scenario, and a run the
+    session makes itself is given wherever a shell is.
+    """
+    workflow = CORPUS["dispatch-set"]
+    [scenario] = workflow.scenarios
+    by_sub_agent = replace(scenario, compile=(Compile("review#tests", ()),))
+    by_session = replace(scenario, compile=(Compile(None, ()),))
+    for harness in HARNESSES.values():
+        assert not observable(workflow, by_sub_agent, STAGED_SET, harness)
+    assert observable(
+        workflow, by_sub_agent, STAGED_SET, replace(Opencode(), sub_agent_calls=True)
+    )
+    assert observable(workflow, by_session, STAGED_SET, Opencode())
+    staged = replace(workflow, scenarios=(by_sub_agent,))
+    assert matrix([staged], ["m"], [STAGED_SET], 1, Opencode()) == []
 
 
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(

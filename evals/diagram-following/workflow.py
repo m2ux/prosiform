@@ -27,6 +27,9 @@ case and headed with the state's name.
   `authored/` writes the same step with the protocol as prose and only
   ordinary links, so it publishes one bundle and the protocol an agent
   reads is the corpus's text rather than the profile's.
+- `staged/` holds a workflow written as `compiled/` is, whose session
+  receives the bundle set `pf` compiles from it beside the sources and the
+  build, so a `↳` line its bundle carries is compiled where it stands.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
@@ -49,6 +52,14 @@ the sub-agent follows as the document and heading it was compiled from,
 what it returned, and `together` on each entry of a set started at once.
 A run writes each input to `inputs/<name>` as the value followed by a
 newline, and a condition reads the file with surrounding whitespace removed.
+
+A scenario also lists the `pf` runs a correct run makes: one
+`[[scenario.compile]]` table per run, in the order the walk makes them,
+naming in `by` the section of the trace whose sub-agent makes it, absent
+for the session's own, and in `args` each reference it compiles, empty for
+bare `pf`. A reference resolves from the directory a shell form runs `pf`
+in, so a run naming a document that is not there states no run of the
+workflow.
 
 A form is bundled by the `pf` command the environment provides, run from
 the form's directory, so the bundle is the one this checkout builds. The
@@ -86,6 +97,7 @@ ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
 INSTRUCTION = ROOT / "instruction.md"
 INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
+INSTRUCTION_STAGED = ROOT / "instruction-staged.md"
 
 ENTRY = "workflow.md"
 UNDECLARED = "undeclared"
@@ -98,7 +110,8 @@ LINKED_FORM = "linked"
 COMPILED_FORM = "compiled"
 AUTHORED_FORM = "authored"
 BOOTSTRAP = "bootstrap"
-FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM, BOOTSTRAP)
+STAGED = "staged"
+FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM, BOOTSTRAP, STAGED)
 BOOTSTRAP_DIR = "skill"
 """The directory a bootstrap form's SKILL.md sits in, beside its documents."""
 
@@ -110,13 +123,14 @@ FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
 
 A bootstrap form's tree is its skill, which carries the documents it names.
 """
-MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
+MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP, STAGED)
 """The forms whose dispatch steps are written as marked links and no prose.
 
-A bootstrap skill's documents are the ones its compiled bundle carries, so a
-step states its dispatch by its marks there as it does in the compiled form.
+A bootstrap skill's documents are the ones its compiled bundle carries, and a
+staged form's are compiled as the compiled form's are, so a step states its
+dispatch by its marks in each.
 """
-SHELL_FORMS = (BOOTSTRAP,)
+SHELL_FORMS = (BOOTSTRAP, STAGED)
 """The forms a session runs a command to read, which no other form needs."""
 
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
@@ -135,12 +149,13 @@ label on the entry's flowchart would let a session choose the branch without
 opening the rule, and the form would no longer measure whether a decision is
 resolved by following its link.
 """
-DRAWN = (DIAGRAM, COMPILED_FORM)
+DRAWN = (DIAGRAM, COMPILED_FORM, STAGED)
 """The forms whose entry documents draw the workflow, in the order they are tried.
 
 A workflow drawing a diagram form holds it there; one written in the two
 dispatch forms holds the same diagram in its compiled form's entry, since
 both forms draw the workflow and only the compiled one's entry dispatches.
+A workflow written in the staged form alone draws it in that form's entry.
 """
 
 TRANSITION = {
@@ -150,6 +165,7 @@ TRANSITION = {
     COMPILED_FORM: DIAGRAM,
     AUTHORED_FORM: DIAGRAM,
     BOOTSTRAP: DIAGRAM,
+    STAGED: DIAGRAM,
 }
 """The form whose transition sentences a form's sections are written in.
 
@@ -428,16 +444,33 @@ class Dispatch:
 
 
 @dataclass(frozen=True)
-class Scenario:
-    """One run's inputs, the path a correct run walks and its dispatch trace.
+class Compile:
+    """One `pf` run a correct run makes.
 
-    `trace` is empty for a form that dispatches nothing.
+    `by` is the section of the trace whose sub-agent makes the run, as
+    `<document>#<heading>`, or nothing for the session's own. `args` are the
+    references the run compiles, each `<document>[#<fragment>]` from the
+    directory a shell form runs `pf` in, and none for bare `pf`. An option
+    such as `-o` is the agent's to choose, so a run states none.
+    """
+
+    by: str | None
+    args: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class Scenario:
+    """One run's inputs, the path a correct run walks, its trace and its runs.
+
+    `trace` is empty for a form that dispatches nothing, and `compile` for a
+    scenario whose correct run runs no `pf`.
     """
 
     name: str
     inputs: dict[str, str]
     path: tuple[str, ...]
     trace: tuple[Dispatch, ...] = ()
+    compile: tuple[Compile, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -482,6 +515,21 @@ class Workflow:
     def forms(self) -> tuple[str, ...]:
         """The forms this workflow is written in."""
         return tuple(form for form in FORMS if self.form(form).is_dir())
+
+    @property
+    def compile_root(self) -> Path | None:
+        """The directory a session's `pf` runs resolve their references from.
+
+        A bootstrap session runs `pf` from the skill's directory, as the guide
+        states, and a staged session from its workspace, which holds the
+        staged form's sources as they stand. A workflow written in no shell
+        form runs `pf` nowhere.
+        """
+        if BOOTSTRAP in self.forms:
+            return self.directory / BOOTSTRAP_DIR
+        if STAGED in self.forms:
+            return self.form(STAGED)
+        return None
 
     @property
     def walked(self) -> dict[str, Section]:
@@ -746,6 +794,17 @@ def read_warnings(path: Path) -> frozenset[str]:
         return frozenset(tomllib.load(handle).get("warnings", ()))
 
 
+def read_compile(row: dict[str, object], named: str) -> Compile:
+    """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+    by = row.get("by")
+    args = row.get("args", [])
+    if by is not None and not isinstance(by, str):
+        raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
+    if not isinstance(args, list) or not all(isinstance(arg, str) for arg in args):
+        raise CorpusError(f"{named}: a run's args are {args!r}, not references")
+    return Compile(by, tuple(args))
+
+
 def read_scenarios(path: Path) -> tuple[Scenario, ...]:
     """The scenarios a workflow's `scenarios.toml` lists."""
     with path.open("rb") as handle:
@@ -759,9 +818,36 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
                 Dispatch(row["dispatch"], row["returned"], row.get("together", False))
                 for row in entry.get("trace", ())
             ),
+            tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
         )
         for entry in entries
     )
+
+
+def compile_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
+    """How a scenario's stated runs fail to name what its workflow holds.
+
+    A run is made by the session or by a sub-agent its trace starts, and
+    each reference it names is a document under the directory `pf` runs in.
+    A workflow written in no shell form gives no session a command to run.
+    """
+    if not scenario.compile:
+        return []
+    root = workflow.compile_root
+    if root is None:
+        return [f"{scenario.name}: it states a pf run, and no form runs one"]
+    sections = {entry.section for entry in scenario.trace}
+    faults = []
+    for run in scenario.compile:
+        if run.by is not None and run.by not in sections:
+            faults.append(f"{scenario.name}: a run by {run.by} is by no start")
+        for arg in run.args:
+            document = arg.partition("#")[0]
+            if not document or not (root / document).is_file():
+                faults.append(
+                    f"{scenario.name}: a run names {arg}, no document of its sources"
+                )
+    return faults
 
 
 def form_directory(workflow_directory: Path, form: str) -> Path:
@@ -821,9 +907,12 @@ def instruction(entry: str, form: str = "") -> str:
 
     A bootstrap session is given its own text, which names the skill it reads
     rather than a bundle, since that form's document is a skill that states a
-    compile rather than a workflow to follow.
+    compile rather than a workflow to follow. A staged session is given its
+    own too, naming the entry's bundle and the `pf` beside it.
     """
-    source = INSTRUCTION_BOOTSTRAP if form == BOOTSTRAP else INSTRUCTION
+    source = {BOOTSTRAP: INSTRUCTION_BOOTSTRAP, STAGED: INSTRUCTION_STAGED}.get(
+        form, INSTRUCTION
+    )
     blocks: list[str] = [
         body for kind, body in FENCE.findall(source.read_text()) if kind == "text"
     ]

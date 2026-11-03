@@ -14,7 +14,11 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
   it compiles, with the build under test on the session's path; a harness
-  with no shell gives no session in it.
+  with no shell gives no session in it;
+- `staged`: the staged form's sources, with the entry's bundle set in the
+  folder `pf` writes it to and the build under test on the session's path;
+  it is outside the default `--forms`, and a harness with no shell gives no
+  session in it.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
@@ -53,7 +57,9 @@ session's place in the matrix and removed once its records are kept.
 Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
 agent printed; `stderr.log` when it printed any; `subagents.json`, the
-sub-agent starts the transcript records, in order, with what each returned;
+session's shell commands and the sub-agent starts the transcript records, in
+order, with what each returned, the start whose sub-agent made it and the
+commands its own sub-agent ran;
 the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
@@ -126,8 +132,10 @@ from score import (
     TRACES,
     Failure,
     Verdict,
+    pf_runs,
+    read_commands,
     read_trace,
-    record_starts,
+    record_calls,
     score,
 )
 from workflow import (
@@ -141,6 +149,7 @@ from workflow import (
     PROSE,
     ROOT,
     SHELL_FORMS,
+    STAGED,
     CorpusError,
     Scenario,
     Workflow,
@@ -171,6 +180,7 @@ LINKED_TREE = "linked"
 COMPILED_SET = "compiled"
 AUTHORED_SET = "authored"
 BOOTSTRAP_SET = "bootstrap"
+STAGED_SET = "staged"
 FORMS = {
     BUNDLE: DIAGRAM,
     TREE: DIAGRAM,
@@ -179,8 +189,19 @@ FORMS = {
     COMPILED_SET: COMPILED_FORM,
     AUTHORED_SET: AUTHORED_FORM,
     BOOTSTRAP_SET: BOOTSTRAP,
+    STAGED_SET: STAGED,
 }
+DEFAULT_FORMS = tuple(form for form in FORMS if form != STAGED_SET)
+"""The forms a run gives sessions in unless `--forms` names others.
+
+A staged session measures the edges of composition its own workflows state,
+so a run names it, and the default matrix the committed baseline measures
+holds no staged cell.
+"""
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
+"""The forms whose whole material is `pf`'s bundle set."""
+PUBLISHED = {*BUNDLED, STAGED_SET}
+"""The forms whose session receives `pf`'s bundle set, alone or beside sources."""
 BUILD = "build"
 """The existing folder a bootstrapping session compiles into."""
 BIN = "bin"
@@ -302,7 +323,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--models", default=",".join(DEFAULT_MODELS))
     parser.add_argument("--repetitions", type=int, default=DEFAULT_REPETITIONS)
     parser.add_argument("--workflows", help="workflow names; every one by default")
-    parser.add_argument("--forms", default=",".join(FORMS))
+    parser.add_argument("--forms", default=",".join(DEFAULT_FORMS))
     parser.add_argument("--parallel", type=int, default=DEFAULT_PARALLEL)
     parser.add_argument(
         "--harness",
@@ -364,17 +385,23 @@ def runnable(form: str, harness: Harness) -> bool:
 def observable(
     workflow: Workflow, scenario: Scenario, form: str, harness: Harness
 ) -> bool:
-    """Whether a scenario's trace is one this harness reports.
+    """Whether a scenario's trace and stated runs are ones this harness reports.
 
     A trace names one start per dispatch a correct run makes, nested ones
-    included. A harness that does not surface a sub-agent's own dispatch can
+    included. A harness that does not surface a sub-agent's own calls can
     report only the starts the path's own sections make, so a scenario whose
-    trace outruns that count is beyond it.
+    trace outruns that count is beyond it. A stated run a sub-agent makes is
+    read from that sub-agent's commands, which a harness reports only where it
+    carries a shell and surfaces a sub-agent's own calls.
 
     The corpus names its forms by what they hold, so the runner's form is
     read as the corpus form it carries before its sections are asked for.
     """
-    if harness.nested_starts:
+    if any(run.by is not None for run in scenario.compile) and not (
+        harness.shell and harness.sub_agent_calls
+    ):
+        return False
+    if harness.sub_agent_calls:
         return True
     written = FORMS[form]
     sections = sections_of(workflow, written)
@@ -424,8 +451,20 @@ def prepare(
     every other bundle in its set is written beside it under the name `pf`
     gave it, since a dispatching bundle names the bundles it hands to
     sub-agents by that name.
+
+    A staged workspace is what a `pf` run over the staged sources leaves: the
+    sources as they stand, since a `↳` line names its target from the
+    directory `pf` ran in, and the bundle set in the folder `pf` writes it to,
+    with the build beside them.
     """
-    if form in BUNDLED:
+    if form == STAGED_SET:
+        shutil.copytree(workflow.form(STAGED), workspace, dirs_exist_ok=True)
+        folder = workspace / workflow.entry_bundle.parent
+        folder.mkdir()
+        for name, content in sets[(workflow.name, form)].items():
+            (folder / name).write_bytes(content)
+        place_pf(workspace)
+    elif form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
             written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
@@ -559,7 +598,7 @@ def start(
     workspace.mkdir(parents=True)
     try:
         prepare(workspace, workflow, scenario, session.form, sets)
-        if session.form == BOOTSTRAP_SET:
+        if FORMS[session.form] in SHELL_FORMS:
             env = {**env, "PATH": f"{workspace / BIN}:{env.get('PATH', '')}"}
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
@@ -576,10 +615,10 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
-        record_starts(records / TRANSCRIPT, records, harness)
+        record_calls(records / TRANSCRIPT, records, harness)
         result = harness.result(records / TRANSCRIPT)
         ran = read_trace(records)
-        compiled = compiled_by(harness, records / TRANSCRIPT, session.form)
+        compiled = compiled_by(records, session.form)
         verdict = (
             errored(workflow, scenario)
             if (result is not None and result.get("is_error"))
@@ -606,7 +645,7 @@ def start(
 
 
 def place_pf(workspace: Path) -> Path:
-    """Put the build under test where a bootstrapping session's shell finds it.
+    """Put the build under test where a shell form's session finds it.
 
     A session runs its own shell, whose path is the caller's and not this
     run's, so the build is copied into a folder of the workspace's own and
@@ -624,25 +663,27 @@ def place_pf(workspace: Path) -> Path:
     return workspace / BIN
 
 
-def compiled_by(harness: Harness, transcript: Path, form: str) -> bool | None:
+def compiled_by(records: Path, form: str) -> bool | None:
     """Whether a session compiled its material, for a form that must.
 
-    A form outside the shell forms needs no compile, so nothing is asked. A
-    shell form's session is held to having run `pf`: a command whose first
-    word is `pf` or a path ending in `/pf`, since a command may be prefixed
-    by a directory or a wrapper.
+    A bootstrap session is handed sources and no bundle, so it is held to
+    having run `pf` at all, as its record's commands state. Every other form
+    is handed a bundle, so nothing is asked, and neither is it of a session
+    whose harness reports no command.
     """
-    if FORMS[form] not in SHELL_FORMS:
+    if FORMS[form] != BOOTSTRAP:
         return None
-    commands = harness.commands(transcript)
-    if commands is None:
-        return None
-    for command in commands:
-        for part in command.replace("&&", ";").replace("|", ";").split(";"):
-            words = part.split()
-            if words and words[0].rsplit("/", 1)[-1] == "pf":
-                return True
-    return False
+    commands = read_commands(records)
+    return None if commands is None else bool(pf_runs(commands))
+
+
+def entry_named(workflow: Workflow, form: str) -> str:
+    """The document a session's instruction names.
+
+    A staged session reads the entry's bundle where `pf` wrote it, beside the
+    sources it was compiled from; every other form's entry is `workflow.md`.
+    """
+    return workflow.entry_bundle.as_posix() if form == STAGED_SET else ENTRY
 
 
 def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
@@ -737,7 +778,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         (workflow.name, form): bundles_of(workflow, form)
         for workflow in corpus
         for form in forms
-        if form in BUNDLED and FORMS[form] in workflow.forms
+        if form in PUBLISHED and FORMS[form] in workflow.forms
     }
     sessions = matrix(
         corpus, names(arguments.models), forms, arguments.repetitions, harness
@@ -774,7 +815,11 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     run_directory = arguments.results / run_id
     run_directory.mkdir(parents=True)
     workspaces = eval_root / WORKSPACES / run_id
-    prompts = {form: instruction(ENTRY, FORMS[form]) for form in forms}
+    prompts = {
+        (workflow.name, form): instruction(entry_named(workflow, form), FORMS[form])
+        for workflow in corpus
+        for form in forms
+    }
     ledger = Ledger(arguments.budget_tokens, arguments.session_budget_tokens)
 
     def attempt(session: Session) -> bool:
@@ -796,7 +841,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                     ledger.session_cap,
                     session.directory(workspaces),
                 ),
-                prompts[session.form],
+                prompts[(session.workflow, session.form)],
                 sets,
                 session.directory(run_directory),
                 session.directory(workspaces),

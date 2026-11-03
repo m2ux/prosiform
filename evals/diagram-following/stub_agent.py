@@ -30,7 +30,8 @@ The environment scripts it:
   whose question the session answered in the sub-agent's place does;
 - `STUB_AGENT_LOG`: a directory to which it writes, per session, the files
   its workspace held on starting, its arguments, its prompt, the names of
-  its environment's variables and its `CLAUDE_CONFIG_DIR`;
+  its environment's variables, its `CLAUDE_CONFIG_DIR` and the `pf` its path
+  resolves to;
 - `STUB_AGENT_SILENT`: when set, it prints no `result` message;
 - `STUB_AGENT_ERROR`: when set, its `result` message reports `is_error` true,
   as a refusal or a crashed agent does;
@@ -48,6 +49,7 @@ The environment scripts it:
 import json
 import os
 import re
+import shutil
 import sys
 import time
 import uuid
@@ -215,6 +217,7 @@ def main() -> int:
         entry["prompt"] = prompt
         entry["variables"] = sorted(os.environ)
         entry["config"] = os.environ.get("CLAUDE_CONFIG_DIR")
+        entry["pf"] = shutil.which("pf")
         (Path(log) / f"{uuid.uuid4()}.json").write_text(json.dumps(entry))
     headings = {
         heading
