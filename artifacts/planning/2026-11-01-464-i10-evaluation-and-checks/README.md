@@ -35,7 +35,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W10 work item](e04/w10.md) | A deferred dispatch in the entry bundle, compiled then dispatched |
 | [E04 W11 work item](e04/w11.md) | Dispatch three hops deep: a chain, a set, and a question from the deepest level |
 | [E04 W12 work item](e04/w12.md) | A sub-agent's first `pf` run at the first, second and third hop |
-| [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as `composition-edges.json` |
+| [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as one `composition-edges-<harness>.json` per shell harness |
 | [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
 | [E04 W16 work item](e04/w16.md) | The edge-run runbook's shakedown over the edge workflows |
 | [E05 W00 work item](e05/w00.md) | The triage rubric, a runbook per live run, and the user's model, in `RUNBOOK.md` |
@@ -108,7 +108,7 @@ The agent-behaviour evals of composition, deferral and dispatch are their own ep
 - **A scenario states the `pf` runs.** A pass is the agent's path matching the one its bundle states. Where an edge is whether `pf` runs (condition false, nested deferral not needed, a sub-agent's first run), the path alone cannot fail, so a scenario also states each `pf` run and the scorer fails a session whose runs differ.
 - **Refusals are not agent evals.** A gap between symbols, `[⇉→]`, a preset mismatch on deferral and an immediate-plus-deferred pair are build refusals I09:E04's corpus fixtures hold.
 - **The MVP proof boundary.** I09:E05 W26 writes one section-composition workflow activating an unconditional deferral; E04 measures the conditional, nested, preset-matched and dispatched edges, in workflows of their own, so no component is shared.
-- **Its own record.** The live run is committed as `composition-edges.json` with its report; `baseline.json` (E00 W02) and `mvp-proof.json` (I09:E05 W28) are untouched. Failing sessions are recorded by class; no pass bar gates the run.
+- **Its own record.** Each shell harness's live run is committed as `composition-edges-<harness>.json` with its report (user, 2026-11-03, as one `run.py` run takes one harness); `baseline.json` (E00 W02) and `mvp-proof.json` (I09:E05 W28) are untouched. Failing sessions are recorded by class; no pass bar gates the run.
 - **Units by area.** The form, scenario field, scorer and harness rows are one unit (W01–W04); the deferral scenarios another (W05–W07); immediate composition and directive labels a third (W08–W09); deferred and nested dispatch and the sub-agent's first run a fourth (W10–W12). W14 and W15 follow the scenarios.
 
 ## Measurement of the Name-Based Trigger

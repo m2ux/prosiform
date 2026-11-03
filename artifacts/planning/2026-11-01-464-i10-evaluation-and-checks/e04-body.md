@@ -68,11 +68,11 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 - [ ] **AC16.** A scenario whose third-hop sub-agent returns a question states that question relayed up each level to the user and the chain dispatched again with the answers, as the corpus test `make harness` runs shows.
 - [ ] **AC17.** A scenario whose first-hop dispatched bundle carries a `↳` line and opens with the Prosiform section saying `pf` runs first states that sub-agent's bare `pf` run before its `pf` run on the line, as the corpus test `make harness` runs shows.
 - [ ] **AC18.** A scenario whose bundles at the second and third hop carry a deferred dispatch or a `↳` line states each such sub-agent's bare `pf` run before its `pf` run on that line, as the corpus test `make harness` runs shows.
-- [ ] **AC20.** The committed edge-case record carries a cell for every model of the default matrix, harness carrying a shell, form and scenario of the edge workflows, as a comparison of the record against those workflows shows.
-- [ ] **AC21.** The eval's README states the `staged` form, each edge workflow and scenario, and the pass rates the edge-case record holds, as an inspection of the README against the corpus and the record shows.
+- [ ] **AC20.** Each harness carrying a shell has a committed edge-case record, `composition-edges-<harness>.json`, carrying a cell for every model of the default matrix, form and scenario of the edge workflows, as a comparison of the records against those workflows shows.
+- [ ] **AC21.** The eval's README states the `staged` form, each edge workflow and scenario, and the pass rates each edge-case record holds, as an inspection of the README against the corpus and the records show.
 - [ ] **AC22.** A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's `pf` run, as a harness test `make harness` runs shows.
 - [ ] **AC23.** Every class the scorer gains for a session's `pf` runs has an entry in `RUNBOOK.md`'s triage rubric, as a read of the rubric against the scorer shows.
-- [ ] **AC24.** The edge-case record gives every failing session the triage rubric's disposition, as the record shows.
+- [ ] **AC24.** Each edge-case record gives every failing session the triage rubric's disposition, as the records show.
 - [ ] **AC25.** `RUNBOOK.md`'s edge-run runbook carries a shakedown over the edge workflows on each harness carrying a shell, whose measured cost sets its budget, and each rubric entry for a `pf`-run class decides a shakedown session or is recorded as produced by none, as the file shows.
 
 ## References
