@@ -54,6 +54,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E06 W07 work item](e06/w07.md) | One `compiled` form carrying the build and a `pf` shell, `staged` folded into it |
 | [E06 W08 work item](e06/w08.md) | `↳` composing, `¬↳` deferring, arrow labels refused |
 | [E06 W09 work item](e06/w09.md) | The composition page stating `↳` |
+| [E06 W10 work item](e06/w10.md) | The dispatch refusals stating no link to publish, found by the integration review |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
 | [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
 | [E05 draft](e05-body.md) | The E05 epic body as saved, the source of its next edit |
