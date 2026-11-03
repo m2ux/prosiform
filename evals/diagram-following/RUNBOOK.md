@@ -155,7 +155,8 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Token budget | 85 880 000 tokens: 76 times the session cap. |
 | Estimate | USD 0.41: 76 sessions at the first run's mean of USD 0.005429 a session. |
 | Run | `baseline-shakedown`, 2026-11-03: at a 400 000-token session cap, stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap. |
-| Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). The shakedown is repeated once I10:E06's guide states the marker a returned question opens with. |
+| Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). |
+| Second run | `baseline-shakedown`, 2026-11-03, on #632's and #637's fixes and I10:E06's guide: crashed at 65 of 76 sessions on the first run's leftover workspaces, USD 0.359917 spent, 56 passed; 8 failures `defect` (`pf` asked for where no shell is given, `pf` refused under `Bash(pf:*)`, starts the scorer cannot match to their sections) and 1 `miss`, escalated as [#650](https://github.com/m2ux/prosiform/issues/650). It sets no cap; the shakedown repeats once #650 is settled, with `workspaces/baseline-shakedown` removed beside `results/baseline-shakedown`. |
 
 ```bash
 make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 85880000 --run-id baseline-shakedown'
