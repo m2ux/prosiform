@@ -1,4 +1,4 @@
-description = "A command line holding no argument prints the guide: the compile step, the inline target rule and that a bundle opening with a Prosiform section is followed from there. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
+description = "A command line holding no argument prints the guide: how to run pf, what a ↳ link and a ⇉ link mean, how an In parallel section is followed, the inputs a dispatch carries, that a set is waited on until every member answers, that failures return together, and that a returned question opens with a first line reading Question:. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
 
 clauses = [
   "Guide",
@@ -15,7 +15,13 @@ stdout_contains = [
   "pf -o <folder> <destination>",
   "SKILL.md",
   "non-zero exit stops the run",
-  "↳",
-  "Prosiform section is followed from there",
+  "A link whose text opens with ↳ names a section to inline",
+  "keep it in context",
+  "A link whose text opens with ⇉ names a file to hand on",
+  "An In parallel section lists several ⇉ links",
+  "each with the inputs of the step that led there",
+  "Continue when all have answered",
+  "all failures return together",
+  "whose first line reads Question:",
 ]
 diagnostics = []
