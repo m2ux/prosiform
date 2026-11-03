@@ -12,6 +12,10 @@ This record holds its delivery of `AC1,AC2,AC3,AC4,AC5,AC22`: the work item, the
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01](w01.md) | The `compile` table a scenario states its `pf` runs in, and the `staged` form in the corpus |
+| [W02](w02.md) | The staged workspace, its instruction, and the sessions a run gives each harness |
+| [W03](w03.md) | The check holding a session to its stated runs, and its three classes |
+| [W04](w04.md) | Each sub-agent's starts and commands attributed in the session record, and each harness's declared depth |
 
 ## Links
 
