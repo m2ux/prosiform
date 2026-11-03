@@ -63,7 +63,7 @@ counts.
 
 Composition runs on the built groups ahead of the dispatch pass, which
 reads what a destination section carries as the scope's own content:
-a scope's dispatch sub-sections follow its destination sections, and
+a scope's `In parallel` sub-sections follow its destination sections, and
 its child sections follow both.
 
 Titles are matched exactly as their headings show them: no case
@@ -146,7 +146,6 @@ from prosiform.source import (
     level,
     lines,
     opening_text,
-    plain_label,
     section,
 )
 
@@ -300,7 +299,7 @@ class Composing:
                     continue
                 here = position
                 position += 1
-                if not directive(plain_label(children, at)):
+                if not directive(opening_text(children, at)):
                     continue
                 written = str(child.attrGet(HREF) or "")
                 found = resolvable(path, written, self.declarations, self.substitution)

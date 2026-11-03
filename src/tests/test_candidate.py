@@ -26,6 +26,7 @@ from prosiform.candidate import (
     NO_NEW_LINKS,
     NO_OMISSIONS,
     ONE_DESTINATION,
+    ONE_MEMBER,
     OUTLINE_PRESERVATION,
     PRESERVATION,
     REFERENCE_PRESERVATION,
@@ -33,7 +34,8 @@ from prosiform.candidate import (
     UNSAFE_BUNDLE_BOUNDARY,
     Invalid,
     Unsafe,
-    protocols,
+    dispatches,
+    one_member,
     validate,
 )
 from prosiform.cli import (
@@ -42,22 +44,22 @@ from prosiform.cli import (
 )
 from prosiform.closure import Reference
 from prosiform.composition import contributions
+from prosiform.grouping import merged, prepared
 from prosiform.limits import NESTING, in_force
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     FILENAME_WRAPPER,
-    PROSIFORM_SECTION,
+    PARALLEL_SECTION,
     Ancestor,
     Carried,
     Contributing,
     Generated,
-    Instruction,
     Origin,
     Range,
     Record,
 )
 from prosiform.rewrite import Definition, definitions
-from prosiform.source import Source, fragments, lines, regions
+from prosiform.source import Source, fragments, lines
 
 BUDGET = NESTING.default
 
@@ -229,11 +231,11 @@ COMPOSING = """# Guide
 
 ## First step
 
-Read the detail [→](note.md#detail).
+Read the detail [↳ Detail](note.md#detail).
 
 ## Second step
 
-Read it again [→](note.md#detail).
+Read it again [↳ Detail](note.md#detail).
 """
 
 
@@ -301,6 +303,80 @@ def test_a_destination_reaching_no_heading_fails() -> None:
     one = built({"guide.md": GUIDE}, ["guide.md#rules"])
     one.targets = dict(one.targets) | {("guide.md", "rules"): "nowhere"}
     assert refused(one).invariant == TARGET_INTEGRITY
+
+
+def merging(one: Built) -> Built:
+    """The candidate with each of its groups recorded as a merged group."""
+    one.groups = [
+        replace(group, record=replace(group.record, merged=2)) for group in one.groups
+    ]
+    return one
+
+
+def test_a_heading_answering_two_members_of_a_group_fails() -> None:
+    one = merging(built({"guide.md": GUIDE, "note.md": NOTE}, []))
+    shared = one.groups[0].record
+    heading = shared.headings[0]
+    other = ("note.md", "note")
+    assert other not in heading.answers
+    one.groups[0] = replace(
+        one.groups[0],
+        record=replace(
+            shared,
+            headings=(
+                replace(heading, answers=(*heading.answers, other)),
+                *shared.headings[1:],
+            ),
+        ),
+    )
+    caught = refused(one)
+    assert caught.invariant == ONE_MEMBER
+    assert "guide.md" in caught.detail
+    assert "note.md" in caught.detail
+
+
+def test_a_candidate_whose_merged_headings_each_answer_one_member_validates() -> None:
+    merging(built({"guide.md": GUIDE, "note.md": NOTE}, [])).validate()
+
+
+def grouped(documents: dict[str, str], depth: int) -> Group:
+    """One merged group over the sources, built by the grouping arrangement."""
+    return merged(
+        "rules",
+        depth,
+        [
+            prepared(path, parse(text), lines(text), {}, None, None, depth)
+            for path, text in sorted(documents.items())
+        ],
+    )
+
+
+def test_a_variant_heading_answers_its_own_document() -> None:
+    one_member(
+        [
+            grouped(
+                {
+                    "rules/a.md": "# A\n\n## Steps\n\nOne.\n",
+                    "rules/b.md": "# B\n\n## Steps\n\nTwo.\n",
+                },
+                2,
+            )
+        ]
+    )
+
+
+def test_a_merged_heading_one_document_contributes_answers_that_member() -> None:
+    one_member(
+        [
+            grouped(
+                {
+                    "rules/a.md": "# A\n\n## Steps\n\nOne.\n",
+                    "rules/b.md": "# B\n\n## Notes\n\nTwo.\n",
+                },
+                2,
+            )
+        ]
+    )
 
 
 def test_a_destination_map_the_candidate_does_not_generate_fails() -> None:
@@ -777,34 +853,31 @@ def test_a_link_inside_image_alternative_content_the_bundle_altered_fails() -> N
     assert refused(one).invariant == REFERENCE_PRESERVATION
 
 
-def instructing(destination: str) -> None:
-    """Hold one instruction linking one destination to the Prosiform protocols."""
-    line = f"[Dispatch]({destination}) `plan.bundle.md` to a sub-agent."
-    text = f"# Prosiform\n\n## Dispatch\n\nProtocol.\n\n# Guide\n\n{line}\n"
-    tokens = parse(text, BUDGET)
+def pointing(destination: str) -> None:
+    """Hold one dispatched link's destination to a bundle file or a set's section."""
     headings = (
-        Generated("Prosiform", 1, PROSIFORM_SECTION),
-        Generated("Dispatch", 2, PROSIFORM_SECTION),
         Generated("Guide", 1, FILENAME_WRAPPER),
+        Generated("In parallel", 2, PARALLEL_SECTION),
     )
     record = Record("guide.md", None, headings, ())
     reached = {
         fragment: (record, heading)
-        for fragment, heading in zip(
-            ["prosiform", "dispatch", "guide"], headings, strict=True
-        )
+        for fragment, heading in zip(["guide", "in-parallel"], headings, strict=True)
     }
-    protocols(reached, Instruction(line), list(regions(tokens))[-1], tokens)
+    dispatches(reached, {("guide.md", 0): {(("plan.md", None), True): destination}})
 
 
-def test_an_instruction_linking_its_protocol_holds() -> None:
-    instructing("#dispatch")
+@pytest.mark.parametrize("destination", ["#in-parallel", "plan.bundle.md"])
+def test_a_dispatch_pointing_at_a_set_section_or_a_bundle_file_holds(
+    destination: str,
+) -> None:
+    pointing(destination)
 
 
 @pytest.mark.parametrize("destination", ["#guide", "#nowhere"])
-def test_an_instruction_linking_no_protocol_of_the_prosiform_section_is_invalid(
+def test_a_dispatch_pointing_at_no_in_parallel_sub_section_is_invalid(
     destination: str,
 ) -> None:
     with pytest.raises(Invalid) as caught:
-        instructing(destination)
+        pointing(destination)
     assert caught.value.invariant == TARGET_INTEGRITY

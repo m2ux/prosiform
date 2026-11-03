@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Prepare
 
-Plan the work [→](plan.md#steps).
+Plan the work [↳ Steps](plan.md#steps).

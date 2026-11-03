@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Entry
 
 Both members are reached as whole documents: [With Preamble](#with-preamble) carries content above the grouping depth and [Bare](#outcomes) carries none.

@@ -1,10 +1,12 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Each tool is stated whole: [alpha](#alpha) and [beta](#beta).
 
 ## Prepare
 
-Call alpha [→](#call), then beta [→](#call-1).
+Call alpha [Inputs](#call), then beta [Inputs](#call-1).
 
 ### Inputs
 

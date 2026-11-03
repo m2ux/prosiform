@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Entry
 
 Both runs are recorded: [Alpha](#alphanotes) and [Beta](#betanotes).

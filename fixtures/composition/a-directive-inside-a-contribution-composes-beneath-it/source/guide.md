@@ -5,7 +5,7 @@ prosiform: {}
 
 Each call is stated whole in its own document: [read](read.md) and [paths](paths.md).
 
-Read the file [→](read.md#inputs).
+Read the file [↳ Inputs](read.md#inputs).
 
 ## Then
 

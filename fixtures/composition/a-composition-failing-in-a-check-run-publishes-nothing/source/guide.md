@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Prepare
 
-Read the path [→](read.md#inputs), and [⇉ log the step](log.md).
+Read the path [↳ Inputs](read.md#inputs), and [⇉ log the step](log.md).

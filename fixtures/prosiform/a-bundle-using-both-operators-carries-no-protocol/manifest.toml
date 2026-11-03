@@ -1,0 +1,17 @@
+description = "A bundle dispatching from one section and dispatching in parallel from another carries no protocol paragraph: it opens with the run-pf line, keeps its dispatch link inline and points its set at one In parallel sub-section."
+
+clauses = [
+  "Link classification and resource handling — The run-pf line",
+  "Link classification and resource handling — Dispatch links",
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Run-pf line",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review__source.bundle.md", "expected/review__tests.bundle.md"]
+diagnostics = []

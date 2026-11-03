@@ -1,7 +1,7 @@
 ---
 prosiform: {}
 ---
-# Step [→](read.md#inputs)
+# Step [↳ Inputs](read.md#inputs)
 
 ## Do
 

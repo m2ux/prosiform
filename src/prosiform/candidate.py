@@ -15,7 +15,7 @@ against the other, so an agreement means the candidate says what its
 construction recorded rather than that it is internally consistent.
 
 The invariants checked here are block boundary safety, target
-integrity, exactly-once coverage within each group,
+integrity, one member per destination, exactly-once coverage within each group,
 absence of new links, absence of surviving definitions, reference
 preservation, outline preservation, depth safety, group isolation, one
 intended destination per rewritten link, and the two
@@ -77,9 +77,10 @@ from prosiform.closure import (
     Declarations,
     Substitution,
     bundled,
-    deferred,
     dispatched,
+    filed,
     parallel,
+    published_text,
     rebased,
     resolve,
     unmarked,
@@ -88,10 +89,9 @@ from prosiform.closure import (
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     CONTRIBUTION_HEADING,
-    DISPATCH_SECTION,
     FILENAME_WRAPPER,
     GROUP_HEADING,
-    PROSIFORM_SECTION,
+    PARALLEL_SECTION,
     Ancestor,
     Carried,
     Contributing,
@@ -164,6 +164,7 @@ OUTLINE_PRESERVATION = "outline preservation"
 DEPTH_SAFETY = "depth safety"
 GROUP_ISOLATION = "group isolation"
 ONE_DESTINATION = "one intended destination"
+ONE_MEMBER = "one destination answers one member"
 NO_OMISSIONS = "no accidental omissions"
 NO_EXPANSION = "no accidental expansion"
 PRESERVATION = "preservation"
@@ -381,13 +382,15 @@ def intended(
     A deferred link naming a declaring document carries its target's
     path from the invocation working directory, so where it points is
     the destination the bundle rebased. A dispatched link points at the
-    dispatch sub-section its region carries for its target. A link
+    bundle file or `In parallel` sub-section its region carries for its
+    target. A link
     resolving nowhere the bundle is responsible for is published as
     authored like any other mention.
 
     What a withheld link shows is its author's text with its mark taken
-    off: the destination or the sub-section states the withholding, so
-    the mark is authoring syntax. A reference the bundle gave no
+    off, except a dispatch pointing at a bundle file, which shows the
+    dispatch mark: the destination states the withholding, so any other
+    mark is authoring syntax. A reference the bundle gave no
     destination keeps its text whole.
 
     Whether the bundle compiled the link is read from the text the
@@ -415,16 +418,6 @@ def intended(
         )
         if withheld is None:
             return one
-        if deferred(opening):
-            # A deferred dispatch belongs to the run that compiles it later.
-            # This bundle published the path that run follows, so there is no
-            # sub-section to reach here.
-            return Use(
-                one.kind,
-                unmarked(one.text),
-                one.title,
-                normalizeLink(rebased(withheld, one.destination)),
-            )
         if dispatched(opening):
             served = {} if dispatched_to is None else dispatched_to
             given = served.get(((withheld.path, withheld.fragment), parallel(opening)))
@@ -432,13 +425,13 @@ def intended(
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the dispatch {one.destination!r} in {path!r} was assigned no "
-                    f"sub-section",
+                    f"destination",
                 )
             return Use(
                 one.kind,
-                unmarked(one.text),
+                published_text(one.text, filed(given)),
                 one.title,
-                normalizeLink(f"{ANCHOR}{given}"),
+                normalizeLink(given),
             )
         return Use(
             one.kind,
@@ -1054,6 +1047,32 @@ def integrity(
             )
 
 
+def one_member(groups: Sequence[Group]) -> None:
+    """Hold each merged group's emitted heading to answering one member.
+
+    A merged group's members are the documents it merges, and a heading
+    records the targets it answers, each held in one document. A heading
+    answering targets of two documents is where a reference to either
+    member lands, so the two members reach one destination and a link
+    meant for one opens the other's content. A merged heading answers a
+    target only where one document contributes it, a variant heading
+    answers its own document and a member subsection answers that
+    member, so no heading of a correctly built group fails here.
+    """
+    for group in groups:
+        record = group.record
+        if record.merged is None:
+            continue
+        for one in record.headings:
+            members = sorted({path for path, _ in one.answers})
+            if len(members) > 1:
+                raise Invalid(
+                    ONE_MEMBER,
+                    f"the heading {one.text!r} of the group {record.path!r} answers "
+                    f"the targets of {members[0]!r} and {members[1]!r}",
+                )
+
+
 def leakage(environment: Mapping[str, Any]) -> None:
     """Hold the candidate to carrying no surviving link-reference definition.
 
@@ -1167,6 +1186,7 @@ def preserved(
     published: Side,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_to: Mapping[Served, str] | None = None,
 ) -> None:
     """Hold one region's untouched bytes and code examples to its source.
 
@@ -1204,12 +1224,12 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        if emitted_visible(path, one, declarations, substitution) != visible(each):
+        shown = emitted_visible(path, one, declarations, substitution, dispatched_to)
+        if shown != visible(each):
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{emitted_visible(path, one, declarations, substitution)!r} and the "
-                f"candidate shows {visible(each)!r}",
+                f"{shown!r} and the candidate shows {visible(each)!r}",
             )
 
 
@@ -1217,21 +1237,25 @@ def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
 ) -> None:
-    """Hold each dispatched link's destination to a dispatch sub-section.
+    """Hold each dispatched link's destination to a bundle file or a set's section.
 
-    A sub-section answers to no source target, so what a dispatched
-    link's destination is held to is the kind of heading it reaches.
+    An `In parallel` sub-section answers to no source target, so what a
+    set's link destination is held to is the kind of heading it reaches.
+    A destination that is no fragment of the bundle names a file beside
+    it, which no heading stands for.
     """
     for (path, _line), served in dispatching.items():
         for (target, _parallel), destination in served.items():
-            found = reached.get(destination)
+            if filed(destination):
+                continue
+            found = reached.get(destination.removeprefix(ANCHOR))
             if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == DISPATCH_SECTION
+                isinstance(found[1], Generated) and found[1].kind == PARALLEL_SECTION
             ):
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the destination {destination!r} a dispatch of {target!r} in "
-                    f"{path!r} was given reaches no dispatch sub-section",
+                    f"{path!r} was given reaches no In parallel sub-section",
                 )
 
 
@@ -1257,32 +1281,6 @@ def contributions(
                 f"the destination {destination!r} a directive at line {line + 1} "
                 f"of {path!r} was given reaches no contribution heading",
             )
-
-
-def protocols(
-    reached: Mapping[str, tuple[Record, Emitted]],
-    part: Instruction,
-    span: Token,
-    tokens: Sequence[Token],
-) -> None:
-    """Hold each link an instruction carries to a protocol of the Prosiform section.
-
-    An instruction is the bundle's own text, so the only link it writes
-    names the protocol it follows, and that link reaches the protocol
-    sub-section the bundle's Prosiform section carries.
-    """
-    for inline in inlines(tokens, [span]):
-        for _children, _at, use in uses(inline):
-            found = reached.get(use.destination.removeprefix(ANCHOR))
-            if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == PROSIFORM_SECTION
-            ):
-                raise Invalid(
-                    TARGET_INTEGRITY,
-                    f"the destination {use.destination!r} the instruction "
-                    f"{part.text!r} links reaches no protocol of the Prosiform "
-                    f"section",
-                )
 
 
 def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
@@ -1341,6 +1339,7 @@ def validate(
     sourced = {path: runs(one) for path, one in parsed.items()}
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
+    one_member(groups)
     dispatches(reached, served)
     contributing = {} if composing is None else composing
     contributions(reached, contributing)
@@ -1349,9 +1348,7 @@ def validate(
             structural(record, part, span, tokens)
             continue
         if isinstance(part, Instruction):
-            if part.activates is None:
-                protocols(reached, part, span, tokens)
-            else:
+            if part.activates is not None:
                 activation(part, span, tokens)
             continue
         if isinstance(part, Generated):
@@ -1381,4 +1378,5 @@ def validate(
             published,
             declarations,
             substitution,
+            served.get((carried.path, carried.lines[0]), {}),
         )

@@ -85,8 +85,14 @@ is a member of a merged group. A fragment takes the
 destination of the heading it named, and a fragment-only link resolves
 inside its own source first and then takes that heading's destination. A destination
 is scoped to the whole bundle, so a reference from one group to another
-is spelled as one inside a group is. A mark goes with the rewrite,
-because a reader of the bundle has no use for authoring syntax.
+is spelled as one inside a group is. A deferral's mark goes with the
+rewrite, because a reader of the bundle has no use for authoring
+syntax; a dispatch pointing at a bundle file keeps its mark, because
+the mark tells an agent the file goes to a sub-agent.
+
+Every bundle opens with the run-pf line, ahead of any other content and
+followed by one blank line, so its reader holds the guide's rules before
+it meets any mark or section they govern.
 
 A Mermaid diagram's link destination is a link written inside a code
 example, and the bundle rewrites it as it rewrites any other: the
@@ -120,12 +126,14 @@ from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
     Declarations,
+    Reference,
     Substitution,
     bundled,
-    deferred,
     directive,
     dispatched,
+    filed,
     parallel,
+    published_text,
     rebased,
     resolvable,
     unmarked,
@@ -139,6 +147,7 @@ from prosiform.provenance import (
     Carried,
     Emitted,
     Generated,
+    Instruction,
     Located,
     Origin,
     Part,
@@ -166,7 +175,6 @@ from prosiform.source import (
     lines,
     opening_markers,
     opening_text,
-    plain_label,
     regions,
     shown,
     slug,
@@ -190,6 +198,8 @@ ATX = "#"
 SPACE = " "
 HEADING_OPEN = "heading_open"
 
+RUN_PF = "Before reading on, run `pf` with no arguments and follow the guide it prints."
+
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
@@ -208,14 +218,15 @@ class Overflow(Exception):
 
 
 class Unplaced(Exception):
-    """A link asking for a section beneath its own that no section holds.
+    """A dispatch or composition directive in a heading emitted as text alone.
 
-    A dispatch sub-section stands one level below the section holding the
-    link it serves, and a composition directive's destination section one
-    level below the section writing it. A title the file heading absorbs
-    is emitted as that heading rather than as a section of its own, so a
-    link the title carries has no section to stand beneath and the run
-    states the dispatch, or places the composition, nowhere.
+    A composition directive's destination section stands one level below
+    the section writing it, and a dispatch is a link the bundle publishes.
+    A title the file heading absorbs is emitted as that heading rather
+    than as a section of its own, so a directive the title carries has
+    no section to stand beneath and a dispatch it carries is no link in
+    the bundle: the run states the dispatch, or places the composition,
+    nowhere.
     """
 
     def __init__(
@@ -278,8 +289,8 @@ class Group:
     those parts join into, because the separation between two of them is
     the bundle's own and the bundle states it in one place. A group the
     parent's own title opens has no file heading ahead of those regions,
-    and a group the Prosiform section opens carries its file heading as
-    a part after that section.
+    and a group the run-pf line precedes carries its file heading as
+    a part after that line.
     The text the group publishes is those parts with one blank line
     between each.
 
@@ -360,18 +371,88 @@ def is_atx(token: Token) -> bool:
     return token.markup.startswith(ATX)
 
 
+def pointing(
+    target: Reference,
+    opening: str,
+    dispatched_to: Mapping[Served, str] | None,
+    alone: bool = False,
+) -> bool:
+    """Whether a withheld link points at a bundle file the dispatch map names.
+
+    A `⇉` link always does. A `⫽` link does where the map gives its
+    target a file, and a link the map says nothing of points at its set's
+    sub-section. Where there is no map, `alone` states that the link's
+    set holds one target, which is published as a dispatch to its file.
+    """
+    if not parallel(opening):
+        return True
+    if dispatched_to is None:
+        return alone
+    given = dispatched_to.get(((target.path, target.fragment), True))
+    return given is not None and filed(given)
+
+
+def sole_set(
+    path: str,
+    tokens: Sequence[Token],
+    heading: Token,
+    declarations: Declarations = DECLARING,
+    substitution: Substitution = UNSUBSTITUTED,
+) -> bool:
+    """Whether the `⫽` links a heading's own section writes name one distinct target.
+
+    The section's own content runs from its heading to the next
+    document-level heading. A set of one target publishes as a dispatch,
+    so the heading carrying one of its links shows the dispatch mark.
+    """
+    targets: set[tuple[str, str | None]] = set()
+    counting = False
+    for region in regions(tokens):
+        if region.type == HEADING_OPEN:
+            if counting:
+                break
+            counting = region is heading
+        if not counting:
+            continue
+        for inline in inlines(tokens, [region]):
+            for children, at, child in events(inline.children or []):
+                if child.type != LINK_OPEN:
+                    continue
+                opening = opening_text(children, at)
+                if not parallel(opening):
+                    continue
+                found = withholding_target(
+                    path,
+                    str(child.attrGet(HREF) or ""),
+                    opening,
+                    declarations,
+                    substitution,
+                )
+                if found is not None:
+                    targets.add((found.path, found.fragment))
+    return len(targets) == 1
+
+
 def emitted_visible(
     path: str,
     inline: Token,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    dispatched_to: Mapping[Served, str] | None = None,
+    alone: bool = False,
 ) -> str:
     """The text one inline token shows once the bundle has rewritten its links.
 
     A heading can carry a link, and one the run withholds a compilation
-    of publishes without its deferral or dispatch mark. What the heading shows is
-    therefore what the renderer slugs, so the destination the heading
+    of publishes without its deferral mark, and without its dispatch
+    mark unless the link points at a bundle file; a composition directive
+    publishes without its composition mark. What the heading shows
+    is therefore what the renderer slugs, so the destination the heading
     takes names the heading a reader finds.
+
+    A `⫽` link points at a bundle file where its set holds one target,
+    which the dispatch map states for the region carrying it. Without a
+    map, `alone` states whether its set holds one target.
 
     A link the bundle took no destination for shows the text its author
     wrote. That covers a markup or resource reference and a reference
@@ -395,9 +476,16 @@ def emitted_visible(
                 declarations,
                 substitution,
             )
-            carried.append(
-                unmarked(child.content) if target is not None else child.content
-            )
+            if target is not None:
+                shown_label = published_text(
+                    child.content,
+                    pointing(target, child.content, dispatched_to, alone),
+                )
+            elif directive(child.content):
+                shown_label = unmarked(child.content)
+            else:
+                shown_label = child.content
+            carried.append(shown_label)
             continue
         carried.append(shown(child))
     return "".join(carried)
@@ -416,7 +504,13 @@ def shown_text(
     destination the heading takes names what a reader finds.
     """
     return {
-        id(opening): emitted_visible(path, inline, declarations, substitution)
+        id(opening): emitted_visible(
+            path,
+            inline,
+            declarations,
+            substitution,
+            alone=sole_set(path, tokens, opening, declarations, substitution),
+        )
         for opening, inline in headings(tokens)
     }
 
@@ -468,11 +562,12 @@ def rewrite(
     written on, so the line count holds there too. Several destinations
     on one line are replaced in written order.
 
-    A dispatched link takes the destination of the sub-section its
-    region carries for its target, which the dispatch map holds by the
-    region's first line. A dispatch the map holds none for is refused,
-    and the line the refusal names is the line of the file the source was
-    read from, which the first line of its content states.
+    A dispatched link takes the destination its region carries for its
+    target, which the dispatch map holds by the region's first line: a
+    bundle file, or the `In parallel` sub-section of a set. A dispatch the
+    map holds none for is refused, and the line the refusal names is the
+    line of the file the source was read from, which the first line of its
+    content states.
 
     A composition directive takes the destination of the contribution
     it places, which the composition map holds by the link's own
@@ -564,7 +659,7 @@ def unplaced(
         opening = opening_text(children, at)
         if (path, start, here) in contributing:
             continue
-        if not directive(plain_label(children, at)):
+        if not directive(opening_text(children, at)):
             continue
         destination = str(child.attrGet(HREF) or "")
         found = resolvable(path, destination, declarations, substitution)
@@ -609,14 +704,13 @@ def target(
     A deferred link naming a declaring document takes its target's
     path from the invocation working directory, so the run that
     compiles it later, from that directory, follows it as written. A
-    dispatched one takes the destination of the dispatch sub-section
-    its section carries for its target, and a dispatch the map holds no
-    sub-section for is refused rather than published: the link states a
-    handoff the bundle does not state, and a run that published it would
-    name a destination no heading carries. Neither is rewritten to the
-    destination of the target's own heading, even where another
-    reference carried its target into the bundle: what one author
-    withheld cannot be changed by another author's reference.
+    dispatched one takes the destination its section carries for its
+    target, a bundle file or an `In parallel` sub-section, and a
+    dispatch the map holds none for is refused rather than published:
+    the link states a handoff the bundle does not state. Neither is
+    rewritten to the destination of the target's own heading, even where
+    another reference carried its target into the bundle: what one
+    author withheld cannot be changed by another author's reference.
 
     A link naming a document that declares nothing, and one naming no
     Markdown document, is text the bundle carries and takes no
@@ -630,18 +724,12 @@ def target(
     )
     if withheld is None:
         return None
-    # A deferral states when the material is compiled, and a dispatch mark
-    # beside it says who compiles it in that later run. Deferral dominates:
-    # the destination is the path that run follows, which is what a reader
-    # of this bundle needs, and the dispatch it carries is not this run's.
-    if deferred(opening):
-        return rebased(withheld, destination)
     if dispatched(opening):
         held = {} if dispatched_to is None else dispatched_to
         served = ((withheld.path, withheld.fragment), parallel(opening))
         if served not in held:
             raise Unplaced(path, line, destination, opening, composing=False)
-        return f"{anchor}{held[served]}"
+        return held[served]
     return rebased(withheld, destination)
 
 
@@ -760,14 +848,15 @@ def line_of(token: Token, first_line: int = 1) -> int:
 
 
 def placing_in(tokens: Sequence[Token], token: Token) -> tuple[str, str, bool] | None:
-    """The link one heading carries that asks for a section beneath it.
+    """The dispatch or composition directive one heading carries.
 
-    Where the heading is emitted as text alone, a dispatch or a
-    composition directive in it has no section to stand beneath. An
-    ancestor heading the run did not select is emitted as its title and
-    nothing else, and a title is flattened to the one line an ATX heading
-    is. Its link is therefore no link in the bundle: nothing places a
-    section for it, and the target it names is compiled by no run. The
+    Where the heading is emitted as text alone, a composition directive
+    in it has no section to stand beneath and a dispatch in it is no link
+    to publish. An ancestor heading the run did not select is emitted as
+    its title and nothing else, and a title is flattened to the one line
+    an ATX heading is. Its link is therefore no link in the bundle:
+    nothing places a section for it, and the target it names is compiled
+    by no run. The
     heading's inline tokens are read rather than the copied line, because
     the copy is what the run publishes, while the link is what the
     author wrote. The link arrives with its destination, its opening and
@@ -783,9 +872,9 @@ def placing_in(tokens: Sequence[Token], token: Token) -> tuple[str, str, bool] |
                 continue
             destination = str(child.attrGet(HREF) or "")
             opened = opening_text(children, at)
-            if directive(plain_label(children, at)):
+            if directive(opening_text(children, at)):
                 return destination, opened, True
-            if dispatched(opened) and not deferred(opened):
+            if dispatched(opened):
                 return destination, opened, False
     return None
 
@@ -1142,6 +1231,32 @@ def assemble(groups: Sequence[Group]) -> str:
     closes with the one its final part carries.
     """
     return joined([part for one in groups for part in one.parts])
+
+
+def opened(groups: Sequence[Group]) -> list[Group]:
+    """The groups with the run-pf line ahead of the first group's first part.
+
+    The line is a part of its own, so a file heading it precedes is a
+    part of the group rather than the heading the group opens on.
+    """
+    if not groups:
+        return list(groups)
+    first, *rest = groups
+    line = Instruction(RUN_PF)
+    recorded: tuple[Part, ...] = (line, *first.record.parts)
+    if first.wrapped:
+        wrapper = first.record.headings[0]
+        assert isinstance(wrapper, Generated)
+        recorded = (line, wrapper, *first.record.parts)
+    return [
+        replace(
+            first,
+            parts=(RUN_PF, *first.parts),
+            record=replace(first.record, parts=recorded),
+            wrapped=False,
+        ),
+        *rest,
+    ]
 
 
 def openings(groups: Sequence[Group]) -> list[int]:

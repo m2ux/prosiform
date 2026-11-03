@@ -3,4 +3,4 @@ prosiform: {}
 ---
 # Guide
 
-Run the call [→](call.md#steps), again [→](call.md#steps) and once more [→](call.md#steps).
+Run the call [↳ Steps](call.md#steps), again [↳ Steps](call.md#steps) and once more [↳ Steps](call.md#steps).

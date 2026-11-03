@@ -5,7 +5,7 @@ prosiform: {}
 
 ## Prepare
 
-Read the path [→](read.md#inputs), then write the text [→](write.md#inputs).
+Read the path [↳ Inputs](read.md#inputs), then write the text [↳ Inputs](write.md#inputs).
 
 ## Run
 

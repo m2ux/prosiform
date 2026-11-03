@@ -1,0 +1,21 @@
+description = "The deferral mark written against an arrow label opens no deferred directive, so the run refuses the link, naming it and pointing at the composition mark; no bundle is published."
+
+clauses = [
+  "Section composition — Operator marks",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["arrow"]
+reference = "¬→"
+source = "guide.md:8"
+chain = ["guide.md", "step.md#output"]

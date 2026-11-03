@@ -50,6 +50,7 @@ from prosiform.bundle import (
     document_title,
     file_heading,
     group,
+    opened,
 )
 from prosiform.candidate import (
     CODES as CANDIDATE_CODES,
@@ -64,6 +65,7 @@ from prosiform.closure import (
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
+    INLINE_MARK,
     PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
@@ -73,11 +75,12 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
-    Unresolvable,
+    arrowed,
     components,
     conflicting,
     contradicting,
     deferred,
+    deferring_dispatch,
     directive,
     gapped,
     identity,
@@ -240,6 +243,7 @@ OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
     DISPATCH_MARK: "the dispatch mark",
     PARALLEL_MARK: "the parallel dispatch mark",
+    INLINE_MARK: "the composition mark",
 }
 
 CODES = tuple(
@@ -300,41 +304,35 @@ EXIT_STATUSES = """exit statuses:
   4  unexpected internal error
 """
 
-GUIDE = """# Following a Skill with pf
+GUIDE = """\
+pf compiles a skill's linked Markdown into files you read whole.
 
-A skill's links name the documents to read. pf compiles a linked document, \
-and everything it reaches, into a bundle that is read whole.
+Run it from the skill's directory, the one holding SKILL.md:
 
-## Compile
+  pf -o <folder> <destination>
 
-From the skill's directory, which holds `SKILL.md`, run:
+A non-zero exit stops the run: report its diagnostics and go no further.
 
-```bash
-pf -o <folder> <destination>
-```
+A link whose text opens with \u21b3 names a section to inline. Compile its \
+destination with pf, read the file it writes whole, keep it in context, follow \
+it where the link stands, and continue.
 
-- `<destination>`  The link's destination as written.
-- `<folder>`  A working directory outside the repository. The run makes it \
-if it is not there.
+A link whose text opens with \u21c9 names a file to hand on. Give the linked \
+file to a sub-agent with the inputs of the step that led there, and continue \
+with its answer.
 
-The run writes its bundles into `<folder>/<name>.bundles/`, where `<name>` is \
-the destination's path without its Markdown suffix, each `/` written as `_` \
-and a fragment added after `__`: `modes/plan-mode.md` compiles to \
-`modes_plan-mode.bundles/modes_plan-mode.bundle.md`, beside a bundle for each \
-target it dispatches.
+An In parallel section lists several \u21c9 links. Give each linked file to its \
+own sub-agent at the same time, each with the inputs of the step that led \
+there; where that step applies to each of several values, give one per value. \
+Continue when all have answered. A failure cancels nothing, and all failures \
+return together.
 
-A non-zero exit stops the run and reports pf's diagnostics.
-
-## Inline Targets
-
-A link whose text opens with `↳` names an inline target: compile it, read the \
-whole bundle and follow it.
-
-## Following a Bundle
-
-A bundle that opens with a Prosiform section is followed from there: the \
-section states how each dispatched bundle in the run's folder is handed to a \
-sub-agent, and the steps after it name the bundles they dispatch.
+A sub-agent asks nothing itself. It returns each question unanswered, with its \
+context and options, in an answer whose first line reads Question:. Put the \
+question to the user, or return it the same way when you are a sub-agent \
+yourself, then give the file again with the answer. Questions from one In \
+parallel section return together once all have answered, and only the files \
+that asked are given again.
 """
 
 
@@ -854,7 +852,7 @@ def parser() -> Parser:
         description=(
             "Bundle the local Markdown closure of one or more entry references, "
             "and of each target they dispatch, into validated bundles. Run with "
-            "no arguments, pf prints the guide to compiling and following them."
+            "no arguments, pf prints the guide to following a compiled skill."
         ),
         epilog=f"{BUDGET_TABLE}\n{EXIT_STATUSES}",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -1551,7 +1549,7 @@ def required(
             origin=at,
             chain=(*chain, identity(found)),
             title=use.title,
-            composes=found.fragment is not None and directive(use.label),
+            composes=found.fragment is not None and directive(use.opening),
         )
         if not declarations.declares(occurrence):
             continue
@@ -1569,13 +1567,12 @@ def refusals_of_operators(
 ) -> None:
     """Refuse a link whose operators state no one compilation the run can carry out.
 
-    A deferral says when the material is compiled and a dispatch says who
-    compiles it, so the two are carried out together, their marks written
-    together: a blank between two symbols — two marks, or a mark and a
-    composition directive's label — states no one operation. A dispatch
-    sends material to a sub-agent and a directive places it inline, so a
-    dispatch mark written against a directive's label states two
-    contradicting operations. Two dispatch marks
+    A blank between two symbols states no one operation. A link labelled
+    with an arrow states none either, composition having one mark. A
+    dispatch is compiled up front, so the deferral mark written against
+    one states a dispatch no bundle publishes, and a dispatch sends material
+    to a sub-agent while the composition mark places it inline, so the two
+    written together contradict. Two dispatch marks
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
@@ -1595,7 +1592,7 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if gapped(use.opening, use.label):
+        if gapped(use.opening):
             raise input_failure(
                 f"the link {use.opening!r} writes a blank between "
                 + " and ".join(
@@ -1611,19 +1608,36 @@ def refusals_of_operators(
                 source=at,
                 chain=(*chain, use.destination),
             )
-        if use.label is not None and contradicting(use.label):
+        if use.label is not None and arrowed(use.label):
             raise input_failure(
-                f"the link {use.opening!r} writes "
-                + " and ".join(
-                    OPERATOR_NAMES[mark]
-                    for mark in dict.fromkeys(use.label[:-1])
-                    if mark != DEFERRAL_MARK
-                )
-                + " against a composition directive's label, so it sends its "
-                "material to a sub-agent and places it inline at once",
+                f"the link {use.label!r} is labelled with an arrow, which states "
+                f"no operation",
                 code=UNSUPPORTED_CONSTRUCT,
-                remedy="write the directive's label alone to compose the section, "
-                "or the dispatch mark, a space and text to dispatch it",
+                remedy=f"write the composition mark {INLINE_MARK!r}, a space and "
+                "the link's text to compose the section",
+                reference=use.label,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if deferring_dispatch(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} writes the deferral mark against a "
+                "dispatch mark, which states a dispatch no bundle publishes",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="write the dispatch mark, a space and the link's text, "
+                "which compiles the target up front",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if contradicting(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} writes a dispatch mark against the "
+                "composition mark, so it sends its material to a sub-agent and "
+                "places it inline at once",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy=f"write the composition mark {INLINE_MARK!r} alone to "
+                "compose the section, or the dispatch mark to dispatch it",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),
@@ -1702,13 +1716,12 @@ def refusals_of_directives(
     """Refuse a composition directive no section holds or no section answers.
 
     A directive places its target beneath the section containing it, so
-    one written in the preamble has no scope to place it in. One naming a
-    Markdown path that holds no document names a target that cannot be
-    read, and fails as a reference naming nothing does. A directive names
-    a section of a document that declares `prosiform`, so one naming a
-    remote address, a resource, a document that declares nothing or a
-    whole document asks for a composition no such target can answer.
-    Each label asks for a placement the run cannot make, which is a
+    one written in the preamble has no scope to place it in. A directive
+    names a section of a document that declares `prosiform`, so one naming
+    a whole document asks for a composition no such target can answer. The
+    operator refusals have already refused a directive naming a document
+    that is absent, declares nothing, or is a remote address or a
+    resource. Each asks for a placement the run cannot make, which is a
     source fault: the run reports the link rather than reading it as an
     ordinary one.
 
@@ -1723,57 +1736,38 @@ def refusals_of_directives(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     placed: dict[tuple[int | None, str, str | None, bool], tuple[str, str]] = {}
     for use in uses(tokens, selected):
-        if not directive(use.label):
+        if not directive(use.opening):
             continue
         at = location(path, source.line(use.line))
         if use.title is not None:
             target = named(path, use.destination, substitution, at, chain)
-            if target is None:
-                try:
-                    inside(path, use.destination, substitution)
-                except Unresolvable:
-                    continue
-                ineligible = "a remote address or a resource, which holds no section"
-            elif (answer := declarations.answer(target)) is Probed.ABSENT:
+            if target is None or declarations.answer(target) is not Probed.DECLARING:
+                continue
+            if target.fragment is None:
                 raise input_failure(
-                    f"the directive {use.label!r} names {use.destination!r}, "
-                    f"which names no document, so its composition has no "
-                    f"section to place",
-                    code=TARGET_NOT_FOUND,
-                    remedy="name a section of a Markdown document that exists",
+                    f"the directive {use.opening!r} names {use.destination!r}, a "
+                    f"whole document rather than a section of it, so no section "
+                    f"answers its composition",
+                    code=UNSUPPORTED_CONSTRUCT,
+                    remedy="name a section of the document",
                     reference=use.destination,
                     source=at,
                     chain=(*chain, use.destination),
                 )
-            elif answer is Probed.SILENT:
-                ineligible = "a document whose frontmatter declares no prosiform"
-            elif target.fragment is None:
-                ineligible = "a whole document rather than a section of it"
-            else:
-                later = deferred(use.opening)
-                section = (use.heading, target.path, target.fragment)
-                other = placed.get((*section, not later))
-                if other is not None:
-                    raise placed_twice(use, at, other, later, chain)
-                placed.setdefault((*section, later), (use.label or "", at))
-                continue
-            raise input_failure(
-                f"the directive {use.label!r} names {use.destination!r}, "
-                f"{ineligible}, so no section answers its composition",
-                code=UNSUPPORTED_CONSTRUCT,
-                remedy="name a section of a Markdown document that declares "
-                "prosiform, or give the link a label that requests no placement",
-                reference=use.destination,
-                source=at,
-                chain=(*chain, use.destination),
-            )
+            later = deferred(use.opening)
+            section = (use.heading, target.path, target.fragment)
+            other = placed.get((*section, not later))
+            if other is not None:
+                raise placed_twice(use, at, other, later, chain)
+            placed.setdefault((*section, later), (use.opening, at))
+            continue
         raise input_failure(
-            f"the link {use.label!r} is a composition directive in the preamble, "
+            f"the link {use.opening!r} is a composition directive in the preamble, "
             f"which no section holds, so the run has no scope to place "
             f"{use.destination!r} beneath",
             code=UNSUPPORTED_CONSTRUCT,
             remedy="write the directive inside the section its target belongs "
-            "beneath, or give the link a label that requests no placement",
+            "beneath, or write the link without the composition mark",
             reference=use.destination,
             source=at,
             chain=(*chain, use.destination),
@@ -1788,7 +1782,7 @@ def placed_twice(
     chain: Sequence[str],
 ) -> Failure:
     """One scope composing a section and deferring it, naming both directives."""
-    this = (use.label or "", at)
+    this = (use.opening, at)
     immediate, deferring = (other, this) if later else (this, other)
     return input_failure(
         f"the directive {immediate[0]!r} at {immediate[1]} composes "
@@ -1814,14 +1808,14 @@ def composing_itself(
     """One warning for each directive composing a section of the document writing it.
 
     The section is material that document already carries, so its author
-    moves it to a document of its own or links it without a directive's
-    label. A directive composing the section holding it is a cycle, which
+    moves it to a document of its own or links it without the composition
+    mark. A directive composing the section holding it is a cycle, which
     composition refuses, and a deferred directive composes nothing in the
     run, so it warns of nothing.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if use.title is None or not directive(use.label) or deferred(use.opening):
+        if use.title is None or not directive(use.opening) or deferred(use.opening):
             continue
         at = location(path, source.line(use.line))
         target = named(path, use.destination, substitution, at, chain)
@@ -1829,7 +1823,7 @@ def composing_itself(
             continue
         yield Diagnostic(
             WARNING,
-            f"the directive {use.label!r} composes {identity(target)!r} in the "
+            f"the directive {use.opening!r} composes {identity(target)!r} in the "
             f"document that writes it, so it places material that document "
             f"already carries",
             code=COMPOSE_SELF,
@@ -1837,7 +1831,7 @@ def composing_itself(
             resolved=identity(target),
             chain=target.chain,
             remedy="move the section to a document of its own, or link it "
-            "without a directive's label",
+            "without the composition mark",
             location=Location(path, source.line(use.line) or 1, 1),
         )
 
@@ -1925,7 +1919,7 @@ def withheld(
             origin=at,
             chain=(*chain, identity(found)),
             title=use.title,
-            composes=directive(use.label),
+            composes=directive(use.opening),
         )
 
 
@@ -1943,11 +1937,11 @@ def dispatches(
     A dispatch is a withheld link whose target the run compiles as a
     bundle of its own, so what is yielded is the target the link names,
     with the place the link is written: the hop a chain of dispatches
-    takes from here. The links are those the bundle's dispatch
-    sub-sections are placed for, read by the one reader that places
-    them, so every hop the run follows has its sub-section. A link with
-    no text after its mark leaves that sub-section nothing to be named
-    by, so it is refused as the operator refusals are, naming the route.
+    takes from here. The links are those the bundle points at a bundle
+    file or an `In parallel` sub-section, read by the one reader that
+    places them, so every hop the run follows has its file. A link with
+    no text after its mark names nothing for its reader, so it is
+    refused as the operator refusals are, naming the route.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
@@ -1957,8 +1951,8 @@ def dispatches(
             if not link.text:
                 raise input_failure(
                     f"the link {link.opening!r} dispatches {link.written!r} with "
-                    f"no text after its mark, so no sub-section heading can "
-                    f"name it",
+                    f"no text after its mark, so it names nothing for its "
+                    f"reader",
                     code=UNSUPPORTED_CONSTRUCT,
                     remedy="write the link's text after its mark",
                     reference=link.opening,
@@ -2928,8 +2922,8 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     """One assembly, a source fault it meets reported as the input it is.
 
     A heading beyond the sixth level is a hierarchy the bundle cannot
-    emit, a dispatched link the bundle places no sub-section for is a
-    handoff it cannot state, and a directive whose composition has no
+    emit, a dispatched link in a heading the bundle emits as text alone
+    is a handoff it cannot state, and a directive whose composition has no
     section, parent or level to take, or a name its scope already
     holds, is a placement it cannot make, and a composition reaching a
     section that holds a directive on its own chain is one that would
@@ -2961,7 +2955,7 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             f"has no parent to name",
             code=UNSUPPORTED_CONSTRUCT,
             remedy="name a section that stands beneath a heading of its document, "
-            "or give the link a label that requests no placement",
+            "or write the link without the composition mark",
             reference=parentless.destination,
             source=location(parentless.path, parentless.line),
             chain=(*chains.get(parentless.path, ()), parentless.destination),
@@ -2992,8 +2986,8 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
                 reference=closing.written,
                 source=location(closing.at[0], closing.line),
                 chain=(*chains.get(first.at[0], ()), *sections),
-                remedy="remove a directive from the chain, or give one a label "
-                "that requests no placement",
+                remedy="remove a directive from the chain, or write one without the "
+                "composition mark",
                 location=Location(closing.at[0], closing.line or 1, 1),
                 related=tuple(
                     RelatedLocation(
@@ -3024,14 +3018,16 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
         ) from colliding
     except Unplaced as unplaced:
         kind = "directive" if unplaced.composing else "dispatch"
-        placed = "destination section" if unplaced.composing else "dispatch sub-section"
+        why = (
+            "is no section a destination section can stand beneath"
+            if unplaced.composing
+            else "is emitted as text alone, so the bundle has no link to publish"
+        )
         raise input_failure(
             f"the {kind} {unplaced.opening!r} in {unplaced.path!r} names "
-            f"{unplaced.destination!r}, and the heading that carries it is no "
-            f"section a {placed} can stand beneath",
+            f"{unplaced.destination!r}, and the heading that carries it {why}",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy=f"write the {kind} in the body beneath the heading, where a "
-            f"{placed} has a section to follow",
+            remedy=f"write the {kind} in the body beneath the heading",
             reference=unplaced.destination,
             source=location(unplaced.path, unplaced.line),
             chain=chains.get(unplaced.path, ()),
@@ -3072,7 +3068,6 @@ def compose(
     bundle_file: Callable[[Target], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-    dispatched_bundle: bool = False,
 ) -> tuple[str, list[Diagnostic]]:
     """The complete bundle candidate, and the warnings its headings raise.
 
@@ -3088,12 +3083,13 @@ def compose(
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the dispatch
-    sub-sections its sections need, inserted once the group exists, so
-    the headings the map is built from are every heading the bundle
-    emits. The second pass emits the same headings as the first,
-    because a rewrite edits a link's destination and its mark and
-    nothing a heading is slugged from.
+    compiled link is rewritten through. Each build carries the `In
+    parallel` sub-sections its sections need, inserted once the group
+    exists, and the run-pf line that opens the bundle, so the headings
+    the map is built from are every heading the bundle emits. The
+    second pass emits the same headings as the first, because a rewrite
+    edits a link's destination and its mark and nothing a heading is
+    slugged from.
 
     Candidate validation closes the pass. Every invariant it holds is
     a property of the construction, which an author cannot reach, so a
@@ -3133,8 +3129,8 @@ def compose(
             bundle_file,
             declarations,
             substitution,
-            dispatched_bundle,
         )
+        headed = opened(headed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
@@ -3165,8 +3161,8 @@ def compose(
         bundle_file,
         declarations,
         substitution,
-        dispatched_bundle,
     )
+    groups = opened(groups)
     bundled = assemble(groups)
     try:
         validate(
@@ -3600,15 +3596,12 @@ def compiled(
     options: argparse.Namespace,
     folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
-    dispatched_bundle: bool = False,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
     Each bundle is read by one agent, so each starts from a fresh count
     of what it opens, reaches and publishes, and its expansion depth is
-    counted from its own entry. A dispatched bundle is followed by a
-    sub-agent that has run no `pf`, which its Prosiform section answers
-    where the bundle carries a link a later run compiles.
+    counted from its own entry.
 
     Each document's links resolve under the `subst` pairs its own presets
     put in force for the references this bundle carries, and every bundle
@@ -3640,7 +3633,6 @@ def compiled(
         bundle_file,
         declarations,
         governed(substitution, pairs),
-        dispatched_bundle,
     )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
@@ -3750,9 +3742,7 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(
-            root, [target], options, folder, substitution, dispatched_bundle=True
-        )
+        one = compiled(root, [target], options, folder, substitution)
         built[hop.name] = one
         pending.extend(one.hops)
     return built

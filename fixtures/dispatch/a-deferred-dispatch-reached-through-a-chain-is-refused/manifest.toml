@@ -1,0 +1,21 @@
+description = "A deferred dispatch inside a document reached by an ordinary chain of links is refused however deep the link sits, naming the link and the route that reached it, and the run publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["deferral mark", "dispatch"]
+reference = "¬⇉ the rules"
+source = "steps.md:8"
+chain = ["guide.md", "steps.md", "rules.md"]

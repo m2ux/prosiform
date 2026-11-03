@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Entry
 
 It reads the [common rules](#common) and the [unnamed rules](#rules-md).

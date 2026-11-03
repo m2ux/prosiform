@@ -15,7 +15,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-message_contains = ["resource"]
+message_contains = ["no Markdown document or section"]
 reference = "step.txt"
 source = "guide.md:8"
 chain = ["guide.md", "step.txt"]

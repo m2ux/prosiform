@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Prepare
 
-Prepare once more [→](#prepare).
+Prepare once more [↳ Prepare](#prepare).

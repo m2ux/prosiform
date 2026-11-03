@@ -47,3 +47,26 @@ def test_the_proof_section_states_the_cost_the_file_records() -> None:
     proof = section("## MVP proof")
     assert f"USD {PROOF['cost_usd']}" in proof
     assert f"{PROOF['sessions']} sessions" in proof
+
+
+def test_the_page_states_one_compiled_form_carrying_the_run_pf_line() -> None:
+    """AC13: one `compiled` form carrying `pf`, and no `staged` form or section."""
+    forms = [row[0] for row in table_rows(section("## Forms"))]
+    assert forms.count("compiled") == 1 and "staged" not in forms
+    [row] = [row for row in table_rows(section("## Forms")) if row[0] == "compiled"]
+    assert "run-pf line" in row[1] and "as `pf`" in row[1]
+    assert "shell limited to `pf`" in row[1]
+    assert "staged" not in README.lower()
+    assert "Prosiform section" not in README
+
+
+def table_rows(text: str) -> list[list[str]]:
+    """The cells of each table row in `text`, a form's name stripped of marks."""
+    return [
+        [
+            cell.strip().strip("`") if i == 0 else cell.strip()
+            for i, cell in enumerate(line.split("|")[1:-1])
+        ]
+        for line in text.splitlines()
+        if line.startswith("| ") and not line.startswith("| -")
+    ]

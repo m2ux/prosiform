@@ -1,0 +1,15 @@
+description = "A set naming one distinct target publishes each of its links as a dispatch link to that target's bundle file, with the dispatch mark in place of the parallel mark, and its section carries no In parallel sub-section."
+
+clauses = [
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/review__source.bundle.md"]
+diagnostics = []
