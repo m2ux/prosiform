@@ -16,6 +16,7 @@ This record holds its delivery of `AC1,AC2,AC3,AC4,AC5,AC22`: the work item, the
 | [W02](w02.md) | The staged workspace, its instruction, and the sessions a run gives each harness |
 | [W03](w03.md) | The check holding a session to its stated runs, and its three classes |
 | [W04](w04.md) | Each sub-agent's starts and commands attributed in the session record, and each harness's declared depth |
+| [Validation](validation.md) | Each check the work items name, the revision it ran at and what it showed, and the findings it raised |
 
 ## Links
 
