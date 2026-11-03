@@ -25,3 +25,7 @@ Run in the task worktree on branch `i10/e05/w02-state-the-proof-on`, with `PROSI
 ## T6 Full check
 
 `make check` before opening and before merging. Result: passed.
+
+## CI
+
+The remote `Checks` run on the first head failed `checks/tests/test_catalogue.py` because the README's design profile badge named a commit a later rebase of the engineering branch had left unreachable. The badge names the equivalent commit the branch holds, and the run on head `e274420e6` passed.

@@ -14,6 +14,7 @@ This record holds its delivery of `AC4,AC5`: the work item, the validation evide
 | --- | --- |
 | [Work item](w02.md) | The plan for stating the proof on the eval page. |
 | [Validation](validation.md) | The result of each check the work item names. |
+| [Changes](changes.md) | The plan changes the session applied and held. |
 
 ## Links
 
