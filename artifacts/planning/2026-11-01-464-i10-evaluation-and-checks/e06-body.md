@@ -52,7 +52,7 @@ An agent following a bundle meets `↳` and `⇉` links, parallel sets and retur
 | [W07](https://github.com/m2ux/prosiform/pull/646) | One compiled form carrying `pf` | AC12, AC13, AC18 | W05 | | ✓ |
 | [W08](https://github.com/m2ux/prosiform/pull/644) | `↳` composing, arrow labels refused | AC14, AC15, AC16 | W02, W03, W04 | W05 | ✓ |
 | [W09](https://github.com/m2ux/prosiform/pull/647) | The composition page stating `↳` | AC17 | W05, W08 | | ✓ |
-| [W10](https://github.com/m2ux/prosiform/pull/649) | Dispatch refusals stating no link to publish | AC19 | W03, W05, W08 | | |
+| [W10](https://github.com/m2ux/prosiform/pull/649) | Dispatch refusals stating no link to publish | AC19 | W03, W05, W08 | | ✓ |
 
 ## Acceptance Criteria
 
@@ -74,10 +74,11 @@ An agent following a bundle meets `↳` and `⇉` links, parallel sets and retur
 - [x] **AC16.** A link labelled with an arrow, `[→](…)` and `[¬→](…)` among them, fails with `E_UNSUPPORTED_CONSTRUCT` naming the link and pointing at `[↳ …]`, and `[⇉↳ …]` and `[⫽↳ …]` fail as contradicting, each publishing nothing, as refused conformance fixtures `make check` runs show.
 - [x] **AC17.** `docs/composition.md` states `↳` as the composition mark and `¬↳` as its deferral, and no page of the README or `docs/` describes an arrow directive, as a read of the pages against the composition fixtures shows.
 - [x] **AC18.** No form is named `staged`: a run given `--forms staged` is refused as naming an unknown form, as a harness test `make harness` runs shows.
-- [ ] **AC19.** A dispatch in a heading the bundle emits as text alone fails with `E_UNSUPPORTED_CONSTRUCT`, its diagnostic stating the heading is emitted as text alone, and no diagnostic, docstring or fixture manifest names a dispatch sub-section, as the dispatch fixtures `make check` runs and a read of `src/` and `fixtures/` show.
+- [x] **AC19.** A dispatch in a heading the bundle emits as text alone fails with `E_UNSUPPORTED_CONSTRUCT`, its diagnostic stating the heading is emitted as text alone, and no diagnostic, docstring or fixture manifest names a dispatch sub-section, as the dispatch fixtures `make check` runs and a read of `src/` and `fixtures/` show.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) — the work items, the decisions and the dependency check.
 - **R2.** [Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) — *Guide*, *Link classification and resource handling*, *Section composition* and *Agent delivery contract*.
 - **R3.** [Dispatch scenarios on a headless session](https://github.com/m2ux/prosiform/issues/637) — the returned question the marker settles.
+
