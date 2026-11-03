@@ -12,6 +12,9 @@ This record holds its delivery of `AC23`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W17](w17.md) | The triage rubric's rows for the run classes, and no row for a retired class |
+| [Validation](validation.md) | Each check the work item names, the revision it ran at and what it showed, and the findings it raised |
+| [Change list](change-list.md) | The plan changes the session applied and those it held |
 
 ## Links
 
