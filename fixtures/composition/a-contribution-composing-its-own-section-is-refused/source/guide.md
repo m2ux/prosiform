@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Prepare
 
-Read the file [→](read.md#inputs).
+Read the file [↳ Inputs](read.md#inputs).

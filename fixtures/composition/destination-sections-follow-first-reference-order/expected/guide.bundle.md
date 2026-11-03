@@ -1,12 +1,14 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Each call is stated whole in its own document: [read](#read-4) and [write](#write-3).
 
 ## Prepare
 
-Keep the count [→](#write), then read the path [→](#read-1).
+Keep the count [Outputs](#write), then read the path [Inputs](#read-1).
 
-Keep the text [→](#read) and write it [→](#write-1).
+Keep the text [Outputs](#read) and write it [Inputs](#write-1).
 
 ### Outputs
 
@@ -34,7 +36,7 @@ Check the count.
 
 ## Run
 
-Read the path [→](#read-2), write the text [→](#write-2) and keep it [→](#read-3).
+Read the path [Inputs](#read-2), write the text [Inputs](#write-2) and keep it [Outputs](#read-3).
 
 ### Inputs
 

@@ -26,10 +26,10 @@ case and headed with the state's name.
   for a set of them, so `pf` compiles each target into a bundle of its own.
   `authored/` writes the same step with the protocol as prose and only
   ordinary links, so it publishes one bundle and the protocol an agent
-  reads is the corpus's text rather than the profile's.
-- `staged/` holds a workflow written as `compiled/` is, whose session
-  receives the bundle set `pf` compiles from it beside the sources and the
-  build, so a `↳` line its bundle carries is compiled where it stands.
+  reads is the corpus's text rather than the profile's. A compiled
+  session receives the bundle set `pf` compiles from `compiled/` beside the
+  sources and the build, so a `↳` line its bundle carries is compiled where
+  it stands.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
@@ -87,7 +87,7 @@ section holds. A scenario's path is held to that walk as well as to the
 sources', so a workflow built on a feature states the path its bundle
 states.
 
-A staged form's bundle states a path and runs of its own: a deferred
+A compiled form's bundle states a path and runs of its own: a deferred
 directive is published as a `↳` line beneath the step writing it, a step
 opening with a condition reaches its lines only where the condition holds,
 and the walk runs `pf` on each line a step it takes reaches, reading what
@@ -116,7 +116,7 @@ ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
 INSTRUCTION = ROOT / "instruction.md"
 INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
-INSTRUCTION_STAGED = ROOT / "instruction-staged.md"
+INSTRUCTION_COMPILED = ROOT / "instruction-compiled.md"
 
 ENTRY = "workflow.md"
 UNDECLARED = "undeclared"
@@ -129,8 +129,7 @@ LINKED_FORM = "linked"
 COMPILED_FORM = "compiled"
 AUTHORED_FORM = "authored"
 BOOTSTRAP = "bootstrap"
-STAGED = "staged"
-FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM, BOOTSTRAP, STAGED)
+FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM, BOOTSTRAP)
 BOOTSTRAP_DIR = "skill"
 """The directory a bootstrap form's SKILL.md sits in, beside its documents."""
 
@@ -142,15 +141,14 @@ FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
 
 A bootstrap form's tree is its skill, which carries the documents it names.
 """
-MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP, STAGED)
+MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
 """The forms whose dispatch steps are written as marked links and no prose.
 
-A bootstrap skill's documents are the ones its compiled bundle carries, and a
-staged form's are compiled as the compiled form's are, so a step states its
-dispatch by its marks in each.
+A bootstrap skill's documents are the ones its compiled bundle carries, so a
+step states its dispatch by its marks in each.
 """
-SHELL_FORMS = (BOOTSTRAP, STAGED)
-"""The forms a session runs a command to read, which no other form needs."""
+SHELL_FORMS = (COMPILED_FORM, BOOTSTRAP)
+"""The forms whose session is given the build under test as `pf` and a shell."""
 
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
 UNDRAWN = (PROSE,)
@@ -168,13 +166,12 @@ label on the entry's flowchart would let a session choose the branch without
 opening the rule, and the form would no longer measure whether a decision is
 resolved by following its link.
 """
-DRAWN = (DIAGRAM, COMPILED_FORM, STAGED)
+DRAWN = (DIAGRAM, COMPILED_FORM)
 """The forms whose entry documents draw the workflow, in the order they are tried.
 
 A workflow drawing a diagram form holds it there; one written in the two
 dispatch forms holds the same diagram in its compiled form's entry, since
 both forms draw the workflow and only the compiled one's entry dispatches.
-A workflow written in the staged form alone draws it in that form's entry.
 """
 
 TRANSITION = {
@@ -184,7 +181,6 @@ TRANSITION = {
     COMPILED_FORM: DIAGRAM,
     AUTHORED_FORM: DIAGRAM,
     BOOTSTRAP: DIAGRAM,
-    STAGED: DIAGRAM,
 }
 """The form whose transition sentences a form's sections are written in.
 
@@ -586,14 +582,14 @@ class Workflow:
         """The directory a session's `pf` runs resolve their references from.
 
         A bootstrap session runs `pf` from the skill's directory, as the guide
-        states, and a staged session from its workspace, which holds the
-        staged form's sources as they stand. A workflow written in no shell
+        states, and a compiled session from its workspace, which holds the
+        compiled form's sources as they stand. A workflow written in neither
         form runs `pf` nowhere.
         """
         if BOOTSTRAP in self.forms:
             return self.directory / BOOTSTRAP_DIR
-        if STAGED in self.forms:
-            return self.form(STAGED)
+        if COMPILED_FORM in self.forms:
+            return self.form(COMPILED_FORM)
         return None
 
     @property
@@ -987,12 +983,13 @@ def instruction(entry: str, form: str = "") -> str:
 
     A bootstrap session is given its own text, which names the skill it reads
     rather than a bundle, since that form's document is a skill that states a
-    compile rather than a workflow to follow. A staged session is given its
+    compile rather than a workflow to follow. A compiled session is given its
     own too, naming the entry's bundle and the `pf` beside it.
     """
-    source = {BOOTSTRAP: INSTRUCTION_BOOTSTRAP, STAGED: INSTRUCTION_STAGED}.get(
-        form, INSTRUCTION
-    )
+    source = {
+        BOOTSTRAP: INSTRUCTION_BOOTSTRAP,
+        COMPILED_FORM: INSTRUCTION_COMPILED,
+    }.get(form, INSTRUCTION)
     blocks: list[str] = [
         body for kind, body in FENCE.findall(source.read_text()) if kind == "text"
     ]
@@ -1288,19 +1285,19 @@ def bundle_walk(
         )
 
 
-def staged_walk(
+def compiled_walk(
     workflow: Workflow, inputs: dict[str, str], output: Path
 ) -> tuple[tuple[str, ...], tuple[Compile, ...], list[str]]:
-    """The path and the session's runs the staged form's bundles state, and faults.
+    """The path and the session's runs the compiled form's bundles state, and faults.
 
-    The walk reads the entry's bundle `pf` compiles from the staged sources,
+    The walk reads the entry's bundle `pf` compiles from the compiled sources,
     and runs `pf` from them on each `↳` line and deferred dispatch a state's
     steps reach, as a session does, so the runs are the ones a correct
     session makes and the path is the one the bundles they write state. Each
     run writes under `output`, and one failing is a fault.
     """
     entry = output / "entry"
-    run = bundle(workflow, STAGED, entry)
+    run = bundle(workflow, COMPILED_FORM, entry)
     if run.returncode != 0:
         return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
     runs: list[Compile] = []
@@ -1308,7 +1305,7 @@ def staged_walk(
     def activate(reference: str) -> str:
         runs.append(Compile(None, (reference,)))
         folder = output / f"run-{len(runs)}"
-        made = compile_reference(workflow.form(STAGED), reference, folder)
+        made = compile_reference(workflow.form(COMPILED_FORM), reference, folder)
         if made.returncode != 0:
             raise CorpusError(
                 f"pf {reference} exited {made.returncode}: {made.stderr.decode()}"

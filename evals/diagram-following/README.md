@@ -4,7 +4,7 @@ How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link 
 
 ## Forms
 
-Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the state the branch enters, the two dispatch forms a workflow dispatching a target is written in, a skill handing over a workflow's sources to compile, and a staged form handing over a compiled bundle set beside its sources and the build. A session receives one of the forms below; every form but `bootstrap` and `staged` is entered at `workflow.md`:
+Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the state the branch enters, the two dispatch forms a workflow dispatching a target is written in, and a skill handing over a workflow's sources to compile. A session receives one of the forms below; every form but `bootstrap` and `compiled` is entered at `workflow.md`:
 
 | Form | Material | What it isolates |
 | --- | --- | --- |
@@ -12,18 +12,17 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `tree` | The diagram form's source tree, unbundled. | Against `bundle`, what bundling adds. |
 | `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
 | `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
-| `compiled` | The compiled form's bundle set: the entry's bundle, every dispatched target's beside it, and the Prosiform section `pf` emits around each. | Whether an agent follows the dispatch protocol `pf` compiles. |
+| `compiled` | The compiled form's sources, with the bundle set `pf` compiles from them in the folder `pf` writes it to: the entry's bundle and every dispatched target's beside it, each opening with the run-pf line, with the build under test as `pf` on the session's path and a shell limited to `pf`. | Whether an agent runs `pf`, follows the guide it prints and the dispatch links of each bundle, and compiles the material a bundle defers as it follows it. |
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
-| `staged` | The staged form's sources, written as the compiled form is, with the entry's bundle set in the folder `pf` writes it to and the build under test as `pf` on the session's path. | Whether an agent compiles, as it follows a bundle, the material the bundle defers. |
 
-A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, the three [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `staged` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the three [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
 Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
-Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `staged` session [its own](instruction-staged.md), naming the entry's bundle and telling it `pf` with no arguments prints how a bundle names material to compile. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
+Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to compile from the directory holding the sources. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
 
 | Field | Meaning |
 | --- | --- |
@@ -65,7 +64,7 @@ A dispatch scenario's `scenarios.toml` names the trace a correct run produces be
 
 The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps and the target of each deferred dispatch a step reaches, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: the operator states the dispatch and the `Dispatch` protocol `pf` publishes from it states what to do, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
 
-`dispatch-depth`, written in the `staged` form alone, dispatches three hops below the session, the depth `pf` publishes with no `W_DISPATCH_DEPTH`. A sub-agent's own dispatch starts before it returns, so each hop is listed after the one that started it.
+`dispatch-depth`, written in the `compiled` form alone, dispatches three hops below the session, the depth `pf` publishes with no `W_DISPATCH_DEPTH`. A sub-agent's own dispatch starts before it returns, so each hop is listed after the one that started it.
 
 | Workflow | Scenario | What it dispatches |
 | --- | --- | --- |
@@ -82,11 +81,11 @@ A scenario names each `pf` run a correct session and each of its sub-agents make
 | `by` | Optional. The section of the scenario's trace whose sub-agent makes the run, as `<document>#<heading>`; absent for the session's own run. |
 | `args` | Optional. Each reference the run compiles, as `<document>` or `<document>#<fragment>`; empty, or absent, for bare `pf`, which prints the guide. An option such as `-o` is the agent's to choose, so a run states none. |
 
-A reference resolves from the directory a shell form runs `pf` in: the skill's directory for `bootstrap`, as the guide states, and the workspace for `staged`, which holds the staged form's sources as they stand. The corpus test refuses a reference naming no document there, a `by` naming no section of the trace, and a run stated by a workflow written in no shell form.
+A reference resolves from the directory a shell form runs `pf` in: the skill's directory for `bootstrap`, as the guide states, and the workspace for `compiled`, which holds the compiled form's sources as they stand. The corpus test refuses a reference naming no document there, a `by` naming no section of the trace, and a run stated by a workflow written in neither form.
 
-A `staged` session reads the bundle set `pf` compiled from the staged form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. `dispatch-set` is written in the form with nothing to compile, so its scenario states no run.
+A `compiled` session reads the bundle set `pf` compiled from the compiled form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. The four dispatch scenarios compile nothing, so they state no run.
 
-A stated run a sub-agent makes is read from that sub-agent's own commands, which a harness reports only where the form's session carries a shell and its stream carries a sub-agent's own calls: `claude` in the `staged` form. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports: those the session makes itself, from its path's own steps and from the bundle a deferred dispatch's run writes.
+A stated run a sub-agent makes is read from that sub-agent's own commands, which a harness reports only where the form's session carries a shell and its stream carries a sub-agent's own calls: `claude` in the `compiled` form. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports: those the session makes itself, from its path's own steps and from the bundle a deferred dispatch's run writes.
 
 ### Sub-agent runs
 
@@ -101,7 +100,7 @@ A sub-agent's `pf` run is stated by the section it follows and read from that su
 
 The two bootstrap workflows say whether an agent handed a skill, rather than an entry document, compiles the workflow the skill names before following it. A session finds the skill under `.claude/skills/<workflow>/` in its workspace, where the agent CLI discovers skills. The skill's `SKILL.md` says to run `pf`, then holds one hand-written `[↳ <title>](<path>)` line, titled as the document it names is headed, so the guide bare `pf` prints says to compile that document, read it whole and follow it, and the bundle that run writes is the document stating the workflow. The run puts the build under test on the session's path, so the `pf` a session compiles with is the one the run was configured with.
 
-Compiling runs a command, so only a harness whose session in the form carries a shell gives a session in this form or in `staged`: `cursor` and `opencode` carry one in every form, and `claude` in `staged` alone, so it is given no `bootstrap` session. Each scenario states bare `pf`, then `pf` on the line's path, and its path is the walk of the bundle that run writes, as the corpus test compiles it from the skill's directory. `bootstrap-audit`'s sources dispatch sub-agents, so each of its scenarios names the trace a correct run produces as a dispatch scenario does, and a harness that reports no sub-agent's own dispatch is given only the scenarios whose trace it can observe. `inline-bootstrap`'s `SKILL.md` declares no `prosiform`, so its line is held as written, and its sources dispatch nothing.
+Compiling runs a command, so the session is given `pf` and a shell as a `compiled` session is. Each scenario states bare `pf`, then `pf` on the line's path, and its path is the walk of the bundle that run writes, as the corpus test compiles it from the skill's directory. `bootstrap-audit`'s sources dispatch sub-agents, so each of its scenarios names the trace a correct run produces as a dispatch scenario does, and a harness that reports no sub-agent's own dispatch is given only the scenarios whose trace it can observe. `inline-bootstrap`'s `SKILL.md` declares no `prosiform`, so its line is held as written, and its sources dispatch nothing.
 
 | Workflow | Scenario | What it walks |
 | --- | --- | --- |
@@ -112,7 +111,7 @@ Compiling runs a command, so only a harness whose session in the form carries a 
 
 ### Deferral scenarios
 
-The three deferral workflows say whether an agent following a `staged` bundle runs `pf` on each `↳` line and deferred link its path needs, and on no other. A source writes a deferred directive, `[¬→](<path>#<section>)`, and `pf` publishes it as a `↳` line naming that section, beneath the step writing it. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the staged sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
+The three deferral workflows say whether an agent following a `compiled` bundle runs `pf` on each `↳` line and deferred link its path needs, and on no other. A source writes a deferred directive, `[¬→](<path>#<section>)`, and `pf` publishes it as a `↳` line naming that section, beneath the step writing it. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the compiled sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
 
 A source may also defer a dispatch, `[¬⇉ <text>](<path>#<section>)`, which `pf` publishes as a plain link to that path from the workspace, its marks removed. Only the guide tells a session the link is compiled: the run on it writes a bundle dispatching the section's own targets, and those are the sub-agents the session starts.
 
@@ -130,7 +129,7 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 
 ### Composition scenarios
 
-The two composition workflows say whether an agent following a `staged` bundle reads each label as `pf` publishes it. An arrow, `[→](<path>#<section>)`, composes its section beneath the step writing it, so the bundle carries that material whatever the inputs; a footnote mark such as `[†](<path>#<section>)` is an ordinary link, so `pf` publishes its target as a document of its own and the agent opens it. A state the diagram clicks nowhere is entered where the previous state's directive or footnote leads, so a correct path reaches it only through that label.
+The two composition workflows say whether an agent following a `compiled` bundle reads each label as `pf` publishes it. An arrow, `[→](<path>#<section>)`, composes its section beneath the step writing it, so the bundle carries that material whatever the inputs; a footnote mark such as `[†](<path>#<section>)` is an ordinary link, so `pf` publishes its target as a document of its own and the agent opens it. A state the diagram clicks nowhere is entered where the previous state's directive or footnote leads, so a correct path reaches it only through that label.
 
 | Workflow | Scenario | What it walks |
 | --- | --- | --- |
@@ -201,7 +200,7 @@ A run that passes the dispatch checks and its sub-agents' actions is held to the
 | `overcompiled` | or a sub-agent made a run naming a reference no stated run names, as one on a deferred line its path did not reach does. A bare `pf` beyond those stated prints the guide and compiles nothing, so it is no departure. |
 | `misordered_compile` | or a sub-agent made its stated runs in another order. |
 
-The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade. A harness reporting no command, as the Claude harness does in every form but `staged`, holds a session to none of them.
+The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade. A harness reporting no command, as the Claude harness does in every form but `compiled` and `bootstrap`, holds a session to none of them.
 
 A run in which every session it started took `errored` is **refused**. No session entered a state, so the matrix is no result, and its pass rates would read a spent login as a matrix of failing agents. `run.json` records `"state": "refused"` and a `reason`, and its report names both instead of giving tables or comparing pass rates. The reason is one session's own `result` text, so a reader sees the limit the agent reported. A run its budget stopped part way is refused on the same terms, since the sessions it never started add nothing its errored ones lack; one where some sessions errored on a genuine fault beside sessions that entered a state is a completed run whose failures are its result. The boundary is decided once the sessions settle, before `run.json` is written.
 
@@ -224,8 +223,8 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is the only one set. |
 | `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
 | `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
-| `--tools Read,Write,Edit,Glob,Grep,Task` | Every other tool, `Bash` included, so a session cannot reach past its workspace, and `Task` is the one tool a dispatch protocol needs. A `staged` session also carries `Bash`, since it compiles what its bundle defers, and no other form's session does. |
-| `--allowedTools Bash(pf:*)` | In a `staged` session, every command but `pf`, which `acceptEdits` would leave unapproved and a headless session cannot be asked about, so the shell compiles material and reaches nothing else. |
+| `--tools Read,Write,Edit,Glob,Grep,Task` | Every other tool, so a session cannot reach past its workspace, and `Task` is the one tool a dispatch protocol needs. |
+| `--tools ...,Bash` with `--allowedTools Bash(pf:*)`, for a session given `pf` | Every command but `pf`: the `compiled` and `bootstrap` forms add the shell tool and admit `pf` commands alone. |
 | `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
@@ -262,7 +261,7 @@ Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also hold
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
-| `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in, and a harness only in the forms it can run. `staged` is given only where named. |
+| `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
@@ -277,17 +276,17 @@ For example, one model over one workflow:
 make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-tokens 100000 --session-budget-tokens 20000'
 ```
 
-The nested-dispatch scenarios, `dispatch-depth`'s and `subagent-first-run`'s, are written in `staged` alone, which a Claude session runs with its shell:
+The nested-dispatch scenarios, `dispatch-depth`'s and `subagent-first-run`'s, are written in `compiled` alone, whose Claude session carries the shell limited to `pf`:
 
 ```bash
-make eval-diagrams ARGS='--forms staged --workflows dispatch-depth,subagent-first-run --repetitions 1 --budget-tokens 600000'
+make eval-diagrams ARGS='--forms compiled --workflows dispatch-depth,subagent-first-run --repetitions 1 --budget-tokens 600000'
 ```
 
 ### Default matrix and budget
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the twenty-four scenarios of the thirteen workflows the Claude harness can run, in the forms each is written in, 58 cells in all; and five repetitions: 580 sessions. The `bootstrap` form adds none, since a Claude session carries a shell in `staged` alone. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the forty-four scenarios of the twenty-two workflows, in the forms each is written in, 78 cells in all; and five repetitions: 780 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
 
-A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 580 sessions at the 60 000-token session cap need 34 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
+A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 780 sessions at the 60 000-token session cap need 46 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
 
 The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 

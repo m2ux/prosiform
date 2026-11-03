@@ -1,6 +1,6 @@
 # Instruction
 
-The task every session of the diagram-following eval is given, in every form but `bootstrap` and `staged`, whose sessions take their own: [bootstrap](instruction-bootstrap.md) and [staged](instruction-staged.md). A run puts the form's entry document in place of `ENTRY`; nothing else in the text differs between forms.
+The task every session of the diagram-following eval is given, in every form but `bootstrap` and `compiled`, whose sessions take their own: [bootstrap](instruction-bootstrap.md) and [compiled](instruction-compiled.md). A run puts the form's entry document in place of `ENTRY`; nothing else in the text differs between forms.
 
 ```text
 ENTRY describes a workflow. Interpret it as a workflow and follow it to

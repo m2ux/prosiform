@@ -7,8 +7,8 @@ Each call is stated whole in its own document: [read](read.md).
 
 ## First step
 
-Read the path [→](read.md#inputs).
+Read the path [↳ Inputs](read.md#inputs).
 
 ## Second step
 
-Read it again [→](read.md#inputs).
+Read it again [↳ Inputs](read.md#inputs).

@@ -1,0 +1,21 @@
+description = "A link opening with the deferral mark and then the parallel dispatch mark states a dispatch no bundle publishes, so the run refuses the link, naming it, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["deferral mark", "dispatch"]
+reference = "¬⫽ the reviews"
+source = "guide.md:8"
+chain = ["guide.md", "plan.md#reviews"]

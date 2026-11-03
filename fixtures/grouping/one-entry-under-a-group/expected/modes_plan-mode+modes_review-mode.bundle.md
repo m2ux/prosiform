@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Plan Mode
 
 Scopes the solution before any work starts.

@@ -7,9 +7,9 @@ Each call is stated whole in its own document: [read](read.md) and [write](write
 
 ## Prepare
 
-Keep the count [→](write.md#outputs), then read the path [→](read.md#inputs).
+Keep the count [↳ Outputs](write.md#outputs), then read the path [↳ Inputs](read.md#inputs).
 
-Keep the text [→](read.md#outputs) and write it [→](write.md#inputs).
+Keep the text [↳ Outputs](read.md#outputs) and write it [↳ Inputs](write.md#inputs).
 
 ### Check
 
@@ -17,4 +17,4 @@ Check the count.
 
 ## Run
 
-Read the path [→](read.md#inputs), write the text [→](write.md#inputs) and keep it [→](read.md#outputs).
+Read the path [↳ Inputs](read.md#inputs), write the text [↳ Inputs](write.md#inputs) and keep it [↳ Outputs](read.md#outputs).

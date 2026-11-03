@@ -1,0 +1,15 @@
+description = "A bundle carrying a parallel set emits no heading reading Parallel dispatch, so an authored heading of that text publishes beside the set's In parallel sub-section with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Run-pf line",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/review__source.bundle.md"]
+diagnostics = []

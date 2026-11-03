@@ -23,8 +23,7 @@ from any of them, so the scorer above it is unaware of which CLI produced
 them. Each start names the start whose sub-agent made it and the shell
 commands its own sub-agent ran, wherever the stream attributes a call to a
 sub-agent; `sub_agent_calls` declares whether it does, as read from what
-each CLI prints. `shell(form)` says whether a session given a form carries
-a shell, so a form needing one is given only where it does.
+each CLI prints.
 """
 
 from __future__ import annotations
@@ -36,7 +35,7 @@ import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from workflow import STAGED, CorpusError
+from workflow import CorpusError
 
 QUESTION = "question"
 DONE = "done"
@@ -203,20 +202,10 @@ class Claude:
     hooks: str = "hooks"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
-    """The tools every session carries, which name no shell."""
-    shell_forms: tuple[str, ...] = (STAGED,)
-    """The forms whose session also carries the shell tool.
-
-    A staged session compiles what its bundle names, so it carries `Bash`;
-    every other form's session carries none, `bootstrap` among them.
-    """
-    shell_allowed: str = "Bash(pf:*)"
-    """The commands a shell-carrying session runs without being asked.
-
-    `acceptEdits` approves edits and no command, and a headless session
-    cannot be asked, so the shell is approved for `pf` alone: a session
-    compiles its material and reaches nothing else past its workspace.
-    """
+    shell_tool: str = SHELL_TOOL
+    """The tool a session given `pf` also carries."""
+    pf_only: str = "Bash(pf:*)"
+    """The allowlist rule confining that tool to the build under test."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     sub_agent_calls: bool = True
@@ -240,17 +229,13 @@ class Claude:
         "cache_read_input_tokens",
     )
 
-    def shell(self, form: str) -> bool:
-        """Whether a session given this corpus form carries a shell."""
-        return form in self.shell_forms
-
     def argv(
         self,
         agent: list[str],
         model: str,
         budget: int,
-        form: str,
         workspace: Path | None = None,
+        pf: bool = False,
     ) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
@@ -259,14 +244,10 @@ class Claude:
         CLI enforces dollars between calls, and the run's own guard holds the
         token budget from what each session reports.
 
-        A session given a form in `shell_forms` carries `Bash` beside the
-        other tools, approved for `pf` alone.
+        A session given `pf` carries the shell tool and `--allowedTools`
+        admits `pf` commands alone, so every other command is refused.
         """
-        shell = (
-            [f"{self.tools},{SHELL_TOOL}", "--allowedTools", self.shell_allowed]
-            if self.shell(form)
-            else [self.tools]
-        )
+        tools = [self.tools, self.shell_tool] if pf else [self.tools]
         return [
             *agent,
             "-p",
@@ -276,7 +257,8 @@ class Claude:
             "stream-json",
             "--verbose",
             "--tools",
-            *shell,
+            ",".join(tools),
+            *(["--allowedTools", self.pf_only] if pf else []),
             "--permission-mode",
             "acceptEdits",
             "--no-session-persistence",
@@ -563,28 +545,21 @@ class Cursor:
         "cacheReadTokens",
     )
 
-    def shell(self, form: str) -> bool:
-        """Whether a session given a form carries a shell, which every one does.
-
-        The CLI carries a shell, so a session can compile its material. The
-        command it runs is confined by workspace trust alone, which is wider than
-        a form that only reads files needs.
-        """
-        return True
-
     def argv(
         self,
         agent: list[str],
         model: str,
         budget: int,
-        form: str,
         workspace: Path | None = None,
+        pf: bool = False,
     ) -> list[str]:
         """One session's command line, the workspace given as its argument.
 
         The CLI has no session spend cap and no tool allowlist, so the run's
         own token guard is the whole budget, and the workspace the run laid
-        out is what a session is confined to.
+        out is what a session is confined to. Its shell is there to every
+        session, so a session given `pf` is confined to the command by what
+        the instruction names alone; `pf` changes nothing on this command line.
 
         A workspace must be trusted for the CLI to run in it at all, since
         it prompts otherwise and a prompt is no session. `--sandbox` is left
@@ -822,20 +797,13 @@ class Opencode:
     Cursor.
     """
 
-    def shell(self, form: str) -> bool:
-        """Whether a session given a form carries a shell, which every one does.
-
-        The CLI carries a shell, so a session can compile its material.
-        """
-        return True
-
     def argv(
         self,
         agent: list[str],
         model: str,
         budget: int,
-        form: str,
         workspace: Path | None = None,
+        pf: bool = False,
     ) -> list[str]:
         """One session's command line, its prompt given as its argument.
 
@@ -851,7 +819,8 @@ class Opencode:
         `--dir` names the workspace outright. The CLI otherwise takes its
         project from remembered state as readily as from its working
         directory, and a session that names no workspace of its own can run
-        in the repository this file was written in.
+        in the repository this file was written in. Its shell is there to every
+        session, so `pf` changes nothing on this command line.
         """
         return [
             *agent,

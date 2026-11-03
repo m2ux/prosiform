@@ -15,7 +15,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-message_contains = ["'→' at guide.md:8", "'¬→' at guide.md:8", "fetch.md#implementation"]
+message_contains = ["'↳ Implementation' at guide.md:8", "'¬↳ Implementation' at guide.md:8", "fetch.md#implementation"]
 reference = "fetch.md#implementation"
 source = "guide.md:8"
 chain = ["guide.md", "fetch.md#implementation"]

@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Fetch the page
 
-Call the fetcher [→](fetch.md#implementation), then leave it to a later run [¬→](fetch.md#implementation).
+Call the fetcher [↳ Implementation](fetch.md#implementation), then leave it to a later run [¬↳ Implementation](fetch.md#implementation).

@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from test_cli import OPENING
 
 from prosiform.bundle import shown_text
 from prosiform.candidate import carried, intended
@@ -533,7 +534,7 @@ def test_a_substitute_declaring_a_group_joins_it_under_its_own_member_heading(
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
     status, published, _said = grouped(tree, "guide.md")
     assert status == 0
-    assert published.startswith("# Rules\n")
+    assert published.startswith(f"{OPENING}# Rules\n")
     assert "### Stand-In" in published
     assert published.count("The stand-in preamble.") == 1
     assert "Every rule the tree under test holds." not in published
@@ -562,7 +563,7 @@ def test_the_group_a_substitute_declares_is_the_one_the_bundle_merges(
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
     status, published, _said = grouped(tree, "guide.md")
     assert status == 0
-    assert published.startswith("# Rules\n")
+    assert published.startswith(f"{OPENING}# Rules\n")
     assert "# Authored" not in published
 
 
@@ -649,7 +650,7 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tree / "out" / "guide.bundles"
     published = (folder / "guide.bundle.md").read_text()
-    assert published.startswith("# Rules\n")
+    assert published.startswith(f"{OPENING}# Rules\n")
     assert "### Entry" in published
     assert "[its detail](detail.md)" in published
     assert "Beside the stand-in." not in published
@@ -750,8 +751,10 @@ def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
     assert (folder / "stand-in.bundle.md").is_file()
     assert not (folder / "rules.bundle.md").exists()
     published = (folder / "guide.bundle.md").read_text()
-    assert "`stand-in.bundle.md`" in published
-    assert (folder / "stand-in.bundle.md").read_text().startswith("# Stand-in\n")
+    assert "(stand-in.bundle.md)" in published
+    assert (
+        (folder / "stand-in.bundle.md").read_text().startswith(f"{OPENING}# Stand-in\n")
+    )
 
 
 def test_a_parallel_dispatched_target_is_redirected_and_listed_once(
@@ -776,7 +779,7 @@ def test_a_parallel_dispatched_target_is_redirected_and_listed_once(
     folder = tmp_path / "out" / "guide.bundles"
     assert (folder / "stand-in.bundle.md").is_file()
     listed = (folder / "guide.bundle.md").read_text()
-    assert "`stand-in.bundle.md` (the rules)" in listed
+    assert "[\u21c9 the rules](stand-in.bundle.md)" in listed
 
 
 def test_the_candidate_comparison_reads_the_same_substitute() -> None:

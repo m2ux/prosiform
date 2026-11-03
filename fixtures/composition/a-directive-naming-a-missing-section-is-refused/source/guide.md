@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Prepare
 
-Keep the text [→](read.md#outputs).
+Keep the text [↳ Outputs](read.md#outputs).

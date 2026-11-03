@@ -13,8 +13,8 @@ share: a sentence repeated in two sections is two ranges, so repeated
 identical prose is not duplication and a count of occurrences is not a
 coverage test. A *generated* record names a heading the bundle wrote
 itself — the filename wrapper, and the group, overview and variant
-headings a metadata-declared group produces, each dispatch
-sub-section with the one line of instruction beneath it, and the
+headings a metadata-declared group produces, each `In parallel`
+sub-section with the instruction and list beneath it, and the
 destination section and contribution heading a composition directive
 places its target beneath — which carries
 no source range and so can never stand in for selected body content a
@@ -63,8 +63,7 @@ MEMBER_OVERVIEW = "member overview"
 VARIANT_HEADING = "variant heading"
 STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
-DISPATCH_SECTION = "dispatch sub-section"
-PROSIFORM_SECTION = "Prosiform section"
+PARALLEL_SECTION = "In parallel sub-section"
 DESTINATION_SECTION = "destination section"
 CONTRIBUTION_HEADING = "contribution heading"
 
@@ -214,16 +213,14 @@ class Range:
 
 @dataclass(frozen=True)
 class Instruction:
-    """One block the bundle wrote itself beneath a heading it generated.
+    """One block the bundle wrote itself, with no source range.
 
-    A dispatch sub-section carries one: the instruction naming the
-    bundle a sub-agent is handed. A `Dispatch in parallel` sub-section
-    carries two: the instruction, and the bulleted list of the bundles
-    it hands out together. A protocol sub-section of the Prosiform
-    section carries one: the protocol it states. It carries no source
-    range, so it can never stand in for selected body content a group
-    failed to emit. A listed instruction is a bulleted list, and every
-    other one a paragraph.
+    The run-pf line that opens every bundle is one: a paragraph. An
+    `In parallel` sub-section carries two: the instruction, and the
+    bulleted list of the bundles it hands out together. It carries no
+    source range, so it can never stand in for selected body content a
+    group failed to emit. A listed instruction is a bulleted list, and
+    every other one a paragraph.
 
     A deferred directive's contribution heading carries one as well: the
     line naming the target a later run composes, which `activates`

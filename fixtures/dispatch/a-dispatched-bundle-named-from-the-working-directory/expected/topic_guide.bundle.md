@@ -1,18 +1,6 @@
-# Prosiform
-
-## Dispatch
-
-Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 # Guide
 
-Dispatch [the shared rules](#dispatch-the-shared-rules)
-and [the draft](#dispatch-the-draft) to a sub-agent.
-
-## Dispatch the shared rules
-
-[Dispatch](#dispatch) `shared_rules__every-rule.bundle.md` to a sub-agent.
-
-## Dispatch the draft
-
-[Dispatch](#dispatch) `shared_my rules__run.bundle.md` to a sub-agent.
+Dispatch [⇉ the shared rules](shared_rules__every-rule.bundle.md)
+and [⇉ the draft](shared_my%20rules__run.bundle.md) to a sub-agent.

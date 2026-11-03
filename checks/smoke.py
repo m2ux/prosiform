@@ -68,7 +68,10 @@ SOURCE = (
     "---\nprosiform: {}\n---\n"
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
-BUNDLE = "# Guide\n\nThe installed command bundles this document.\n"
+BUNDLE = (
+    "Before reading on, run `pf` with no arguments and follow the guide it prints.\n\n"
+    "# Guide\n\nThe installed command bundles this document.\n"
+)
 
 
 class Failed(Exception):

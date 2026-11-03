@@ -28,7 +28,7 @@ from score import (
     record_calls,
     score,
 )
-from workflow import COMPILED_FORM, STAGED, Compile, Scenario, Workflow, workflows
+from workflow import COMPILED_FORM, Compile, Scenario, Workflow, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -661,20 +661,20 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
     assert (verdict.passed, verdict.failure) == (True, None)
 
 
-STAGED_RUNS = (
+STATED_RUNS = (
     Compile(None, ()),
     Compile(None, ("fetch.md#implementation",)),
     Compile("review#tests", ()),
     Compile("review#tests", ("net.md#retry",)),
 )
-"""Runs a staged scenario states: the session's two, then a sub-agent's two."""
+"""Runs a compiled scenario states: the session's two, then a sub-agent's two."""
 
 
 def compiling(
     tmp_path: Path,
     session: list[str] | None,
     sub_agent: list[str],
-    runs: tuple[Compile, ...] = STAGED_RUNS,
+    runs: tuple[Compile, ...] = STATED_RUNS,
 ) -> Verdict:
     """The verdict on a correct walk of `dispatch-set` whose record holds commands.
 
@@ -797,12 +797,12 @@ def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, obj
     ],
     ids=["stated", "unstated-run", "no-run"],
 )
-def test_a_staged_claude_record_holds_each_hops_runs(
+def test_a_compiled_claude_record_holds_each_hops_runs(
     tmp_path: Path, ruling: list[str], failure: str | None
 ) -> None:
-    """AC26: `deep-hop-runs` is scored on the runs each nested start's sub-agent made.
+    """AC12: `deep-hop-runs` is scored on the runs each nested start's sub-agent made.
 
-    The stream a staged Claude session prints files each `Bash` call under
+    The stream a compiled Claude session prints files each `Bash` call under
     the `Task` call its sub-agent runs under, so the ruling's runs, three
     hops down, are held to the one the scenario states by the ruling.
     """
@@ -827,7 +827,7 @@ def test_a_staged_claude_record_holds_each_hops_runs(
         *(claude_message("c", bash(command)) for command in ruling),
     ]
     stream.write_text("".join(json.dumps(line) + "\n" for line in lines))
-    record_calls(stream, held, Claude(), STAGED)
+    record_calls(stream, held, Claude(), COMPILED_FORM)
     expected = {
         None: None,
         "over": Failure.OVERCOMPILED,
@@ -844,7 +844,7 @@ def test_a_harness_reporting_no_command_asks_no_run(tmp_path: Path) -> None:
 def test_the_run_checks_follow_the_dispatch_checks(tmp_path: Path) -> None:
     """A record failing a dispatch check takes it, whatever its runs."""
     workflow = CORPUS["dispatch-set"]
-    item = replace(scenario("dispatch-set", "parallel-set"), compile=STAGED_RUNS)
+    item = replace(scenario("dispatch-set", "parallel-set"), compile=STATED_RUNS)
     held = workspace(tmp_path, workflow, list(item.path))
     (held / SUBAGENTS).write_text(json.dumps({"commands": [], "starts": []}))
     assert score(workflow, item, held).failure == Failure.UNDISPATCHED

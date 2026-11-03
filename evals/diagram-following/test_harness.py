@@ -15,7 +15,7 @@ from dataclasses import fields
 from pathlib import Path
 
 from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
-from workflow import COMPILED_FORM, FORMS, STAGED
+from workflow import AUTHORED_FORM, COMPILED_FORM
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -111,17 +111,39 @@ def test_no_harness_declares_a_field_nothing_reads() -> None:
         assert not unread, f"{declared.name} declares {unread}, which nothing reads"
 
 
-def test_a_harness_without_a_shell_is_offered_every_form_bundled() -> None:
-    """AC5: a form needing a command goes to a harness with a shell only.
+def test_a_claude_session_given_pf_carries_a_shell_limited_to_pf() -> None:
+    """AC12: the shell reaches a session given `pf`, and admits `pf` alone."""
+    plain = Claude().argv(["claude"], "a-model", 60_000)
+    given = Claude().argv(["claude"], "a-model", 60_000, None, True)
+    assert plain[plain.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task"
+    assert "--allowedTools" not in plain
+    assert given[given.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task,Bash"
+    assert given[given.index("--allowedTools") + 1] == "Bash(pf:*)"
 
-    The bootstrap form has the session run `pf`, so a harness without a shell
-    cannot measure it. The form is withheld from that harness by `runnable`
-    rather than run and recorded as the agent's failure.
-    """
-    from run import runnable
 
-    assert runnable("bootstrap", Opencode())
-    assert runnable("bootstrap", Cursor())
+def test_claude_reads_the_shell_commands_a_session_ran(tmp_path: Path) -> None:
+    """AC12: a session's `pf` command is read from its `Bash` calls."""
+    held = transcript(
+        tmp_path,
+        [
+            claude_call("a", "plan#work"),
+            {
+                "type": "assistant",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "id": "b",
+                            "name": "Bash",
+                            "input": {"command": "pf --help"},
+                        }
+                    ]
+                },
+            },
+        ],
+    )
+    assert Claude().commands(held) == ("pf --help",)
+    assert Claude().commands(tmp_path / "absent.jsonl") == ()
 
 
 def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
@@ -290,42 +312,20 @@ def test_an_absent_transcript_names_no_start(tmp_path: Path) -> None:
 
 def test_the_claude_cli_is_capped_in_dollars_not_tokens(tmp_path: Path) -> None:
     """A token budget is not a dollar cap, so the CLI is given a price."""
-    argv = Claude().argv(["claude"], "a-model", 60_000, COMPILED_FORM)
+    argv = Claude().argv(["claude"], "a-model", 60_000)
     assert argv[argv.index("--max-budget-usd") + 1] == "0.5"
     assert "60000" not in argv
-
-
-def test_a_staged_claude_session_carries_a_shell_and_no_other_form_does() -> None:
-    """AC26: `Bash`, approved for `pf` alone, reaches the staged form's session.
-
-    Every other form's session keeps the allowlist naming no shell, so the
-    staged form is the one shell form the Claude harness runs and bootstrap
-    stays withheld from it.
-    """
-    from run import runnable
-
-    for form in FORMS:
-        argv = Claude().argv(["claude"], "a-model", 60_000, form)
-        tools = argv[argv.index("--tools") + 1].split(",")
-        if form == STAGED:
-            assert tools[-1] == "Bash"
-            assert argv[argv.index("--allowedTools") + 1] == "Bash(pf:*)"
-        else:
-            assert "Bash" not in tools and "--allowedTools" not in argv
-        assert Claude().shell(form) is (form == STAGED)
-    assert runnable("staged", Claude())
-    assert not runnable("bootstrap", Claude())
 
 
 def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
     tmp_path: Path,
 ) -> None:
-    """AC26: a `Bash` call is the session's or the start its parent names.
+    """AC12: a `Bash` call is the session's or the start its parent names.
 
     The session runs `pf` on its line, the review's sub-agent compiles its
-    deferred dispatch and starts the ruling, and the ruling's sub-agent
-    compiles its own line. A staged session records the session's command
-    list; one in a form carrying no shell records none.
+    line and starts the ruling, and the ruling's sub-agent compiles its own
+    line. A compiled session records the session's command list; one in a
+    form carrying no shell records none.
     """
     from score import read_commands, read_starts, record_calls
 
@@ -350,15 +350,15 @@ def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
             ("pf -o out steps/recording.md#file",),
         ),
     )
-    staged = tmp_path / "staged"
-    staged.mkdir()
-    record_calls(held, staged, Claude(), STAGED)
-    assert read_commands(staged) == ("pf reference/loading.md#crew",)
-    assert read_starts(staged) == Claude().starts(held)
     compiled = tmp_path / "compiled"
     compiled.mkdir()
     record_calls(held, compiled, Claude(), COMPILED_FORM)
-    assert read_commands(compiled) is None
+    assert read_commands(compiled) == ("pf reference/loading.md#crew",)
+    assert read_starts(compiled) == Claude().starts(held)
+    authored = tmp_path / "authored"
+    authored.mkdir()
+    record_calls(held, authored, Claude(), AUTHORED_FORM)
+    assert read_commands(authored) is None
 
 
 def shell_call(identifier: str, command: str) -> dict[str, object]:
@@ -630,7 +630,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
     record_calls(held, records, Claude(), COMPILED_FORM)
     written = json.loads((records / SUBAGENTS).read_text())
     assert written == {
-        "commands": None,
+        "commands": [],
         "starts": [
             {
                 "target": "plan#work",
@@ -649,7 +649,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
         ],
     }
     assert read_starts(records) == Claude().starts(held)
-    assert read_commands(records) is None
+    assert read_commands(records) == ()
     (records / SUBAGENTS).write_text(
         json.dumps(
             {
@@ -677,7 +677,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
     stream = transcript(
         opencode, [shell, opencode_part(tool="task", description="plan#work")]
     )
-    record_calls(stream, opencode, Opencode(), STAGED)
+    record_calls(stream, opencode, Opencode(), COMPILED_FORM)
     assert read_commands(opencode) == ("pf",)
     assert read_starts(opencode) == (Start("plan#work", "done", False),)
 

@@ -1,0 +1,15 @@
+description = "A bundle whose links carry no dispatch operator and no parallel dispatch mark opens with the run-pf line, ahead of its own first section."
+
+clauses = [
+  "Link classification and resource handling — The run-pf line",
+  "Adversarial acceptance fixtures — Run-pf line",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

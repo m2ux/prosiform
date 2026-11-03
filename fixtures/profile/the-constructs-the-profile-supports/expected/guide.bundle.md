@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 A paragraph carrying a `code span`, an inline link to [the steps](#steps), a

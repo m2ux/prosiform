@@ -1,4 +1,4 @@
-description = "Only an arrow labels a composition directive, so a label of one footnote mark, written or as an entity, a superscript, a letter, a supplementary-plane letter, another symbol, or a whitespace or format scalar is an ordinary link: each in the preamble has its target bundled and its destination rewritten, and the bundle carries its text as written."
+description = "Only an arrow label is refused, so a label of one footnote mark, written or as an entity, a superscript, a letter, a supplementary-plane letter, another symbol, or a whitespace or format scalar is an ordinary link: each in the preamble has its target bundled and its destination rewritten, and the bundle carries its text as written."
 
 clauses = [
   "Section composition — Recognition",

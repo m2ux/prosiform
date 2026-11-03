@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Steps
 
-Read [→](read.md#inputs), read [→](read.md#inputs) and read [→](read.md#inputs).
+Read [↳ Inputs](read.md#inputs), read [↳ Inputs](read.md#inputs) and read [↳ Inputs](read.md#inputs).

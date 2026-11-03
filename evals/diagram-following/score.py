@@ -116,7 +116,7 @@ __all__ = [
     "record_calls",
     "score",
 ]
-from workflow import FEWER, START, Dispatch, Scenario, Workflow
+from workflow import FEWER, SHELL_FORMS, START, Dispatch, Scenario, Workflow
 
 PF = "pf"
 SEPARATORS = re.compile(r"&&|\|\||[;|\n]")
@@ -269,14 +269,14 @@ def record_calls(
 
     The record is `subagents.json` beside the trace and the session's tokens:
     `commands`, the shell commands the session ran, null where the harness
-    gives a session in its corpus form, `form`, no shell, and `starts`, one
+    gives a session in its corpus form, `form`, no `pf`, and `starts`, one
     entry per start in the order the transcript made them, each naming its
     parent start and its sub-agent's commands. The scorer reads it instead of
     the transcript. The harness reads its own stream, so one record shape
     serves every agent CLI.
     """
     starts = harness.starts(transcript)
-    commands = harness.commands(transcript) if harness.shell(form) else None
+    commands = harness.commands(transcript) if form in SHELL_FORMS else None
     held = {
         "commands": None if commands is None else list(commands),
         "starts": [start.record() for start in starts],

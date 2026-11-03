@@ -57,63 +57,50 @@
 <text x="44" y="2194" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
 <text x="94" y="2194" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
 <text x="70" y="2242" font-size="20" fill="#e6edf3" font-weight="400">1. Run the suite.</text>
-<text x="70" y="2279" font-size="20" fill="#e6edf3" font-weight="400">2. Note each failure.</text><rect x="1110" y="80" width="1000" height="1230" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="70" y="2279" font-size="20" fill="#e6edf3" font-weight="400">2. Note each failure.</text><rect x="1110" y="80" width="1000" height="584" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/modes_review.bundle.md</text>
 <path d="M1110 134 H2110" stroke="#303b49"/>
-<text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">Prosiform</text>
-<text x="1122" y="255" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="255" font-size="26" fill="#e6edf3" font-weight="500">Dispatch</text>
-<text x="1148" y="303" font-size="20" fill="#e6edf3" font-weight="400">Hand the named bundle to one sub-agent with the invoking step&#x27;s inputs,</text>
-<text x="1148" y="340" font-size="20" fill="#e6edf3" font-weight="400">to follow from its start, and continue with its result. A dispatched run</text>
-<text x="1148" y="377" font-size="20" fill="#e6edf3" font-weight="400">asks nothing: it returns each question, with its context and options,</text>
-<text x="1148" y="414" font-size="20" fill="#e6edf3" font-weight="400">unanswered. The dispatching session puts that question to the user, or</text>
-<text x="1148" y="451" font-size="20" fill="#e6edf3" font-weight="400">returns it in turn when itself dispatched, then dispatches again with</text>
-<text x="1148" y="488" font-size="20" fill="#e6edf3" font-weight="400">the answers.</text>
-<text x="1122" y="542" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="542" font-size="26" fill="#e6edf3" font-weight="500">Parallel dispatch</text>
-<text x="1148" y="590" font-size="20" fill="#e6edf3" font-weight="400">Dispatch every listed bundle at once, each to a sub-agent of its own per</text>
-<text x="1148" y="627" font-size="20" fill="#e6edf3" font-weight="400">dispatch; an item the invoking step applies &quot;for each&quot; of several values</text>
-<text x="1148" y="664" font-size="20" fill="#e6edf3" font-weight="400">is dispatched once per value, together. Continue when every item has</text>
-<text x="1148" y="701" font-size="20" fill="#e6edf3" font-weight="400">returned; a failed item cancels nothing, and every failure returns</text>
-<text x="1148" y="738" font-size="20" fill="#e6edf3" font-weight="400">together as blockers. Questions return together once all items have, and</text>
-<text x="1148" y="775" font-size="20" fill="#58a6ff" font-weight="400">only the items that asked are dispatched again.</text>
-<text x="1122" y="833" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="833" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
-<text x="1122" y="887" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="887" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="935" font-size="20" fill="#58a6ff" font-weight="400">1. Review Code and Tests together.</text>
-<text x="1148" y="972" font-size="20" fill="#58a6ff" font-weight="400">2. Follow Publish.</text>
-<text x="1122" y="1023" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1184" y="1023" font-size="23" fill="#e6edf3" font-weight="500">Dispatch Publish</text>
-<text x="1148" y="1071" font-size="20" fill="#58a6ff" font-weight="400">Dispatch `protocols_publish.bundle.md` to a sub-agent.</text>
-<text x="1122" y="1122" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1184" y="1122" font-size="23" fill="#e6edf3" font-weight="500">Dispatch in parallel</text>
-<text x="1148" y="1170" font-size="20" fill="#e6edf3" font-weight="400">Dispatch these bundles together, each to a sub-agent, per parallel</text>
-<text x="1148" y="1207" font-size="20" fill="#58a6ff" font-weight="400">dispatch:</text>
-<text x="1148" y="1255" font-size="20" fill="#e6edf3" font-weight="400">• `protocols_code.bundle.md` (Code)</text>
-<text x="1148" y="1292" font-size="20" fill="#e6edf3" font-weight="400">• `protocols_tests.bundle.md` (Tests)</text><rect x="1110" y="1332" width="1000" height="278" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1134" y="1368" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_code.bundle.md</text>
-<path d="M1110 1386 H2110" stroke="#303b49"/>
-<text x="1122" y="1453" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="1453" font-size="30" fill="#e6edf3" font-weight="500">Code</text>
-<text x="1122" y="1507" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="1507" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="1555" font-size="20" fill="#e6edf3" font-weight="400">1. Read the change.</text>
-<text x="1148" y="1592" font-size="20" fill="#e6edf3" font-weight="400">2. Note each departure.</text><rect x="1110" y="1632" width="1000" height="278" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1134" y="1668" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_publish.bundle.md</text>
-<path d="M1110 1686 H2110" stroke="#303b49"/>
-<text x="1122" y="1753" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="1753" font-size="30" fill="#e6edf3" font-weight="500">Publish</text>
-<text x="1122" y="1807" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="1807" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="1855" font-size="20" fill="#e6edf3" font-weight="400">1. Commit the change.</text>
-<text x="1148" y="1892" font-size="20" fill="#e6edf3" font-weight="400">2. Push the branch.</text><rect x="1110" y="1932" width="1000" height="278" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1134" y="1968" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_tests.bundle.md</text>
-<path d="M1110 1986 H2110" stroke="#303b49"/>
-<text x="1122" y="2053" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="2053" font-size="30" fill="#e6edf3" font-weight="500">Tests</text>
-<text x="1122" y="2107" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="2107" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="2155" font-size="20" fill="#e6edf3" font-weight="400">1. Run the suite.</text>
-<text x="1148" y="2192" font-size="20" fill="#e6edf3" font-weight="400">2. Note each failure.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>
+<text x="1148" y="191" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
+<text x="1148" y="228" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
+<text x="1122" y="286" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="286" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="1122" y="340" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="340" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="388" font-size="20" fill="#58a6ff" font-weight="400">1. Review Code and Tests together.</text>
+<text x="1148" y="425" font-size="20" fill="#e3b341" font-weight="400">2. Follow ⇉ Publish.</text>
+<text x="1122" y="476" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="476" font-size="23" fill="#e6edf3" font-weight="500">In parallel</text>
+<text x="1148" y="524" font-size="20" fill="#e6edf3" font-weight="400">Give each of these to its own sub-agent at the same time, and continue</text>
+<text x="1148" y="561" font-size="20" fill="#e6edf3" font-weight="400">when all have answered:</text>
+<text x="1148" y="609" font-size="20" fill="#e3b341" font-weight="400">• ⇉ Code</text>
+<text x="1148" y="646" font-size="20" fill="#e3b341" font-weight="400">• ⇉ Tests</text><rect x="1110" y="686" width="1000" height="363" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="722" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_code.bundle.md</text>
+<path d="M1110 740 H2110" stroke="#303b49"/>
+<text x="1148" y="797" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
+<text x="1148" y="834" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
+<text x="1122" y="892" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="892" font-size="30" fill="#e6edf3" font-weight="500">Code</text>
+<text x="1122" y="946" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="946" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="994" font-size="20" fill="#e6edf3" font-weight="400">1. Read the change.</text>
+<text x="1148" y="1031" font-size="20" fill="#e6edf3" font-weight="400">2. Note each departure.</text><rect x="1110" y="1071" width="1000" height="363" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="1107" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_publish.bundle.md</text>
+<path d="M1110 1125 H2110" stroke="#303b49"/>
+<text x="1148" y="1182" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
+<text x="1148" y="1219" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
+<text x="1122" y="1277" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="1277" font-size="30" fill="#e6edf3" font-weight="500">Publish</text>
+<text x="1122" y="1331" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1331" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="1379" font-size="20" fill="#e6edf3" font-weight="400">1. Commit the change.</text>
+<text x="1148" y="1416" font-size="20" fill="#e6edf3" font-weight="400">2. Push the branch.</text><rect x="1110" y="1456" width="1000" height="363" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="1492" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_tests.bundle.md</text>
+<path d="M1110 1510 H2110" stroke="#303b49"/>
+<text x="1148" y="1567" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
+<text x="1148" y="1604" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
+<text x="1122" y="1662" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="1662" font-size="30" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="1122" y="1716" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1716" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="1764" font-size="20" fill="#e6edf3" font-weight="400">1. Run the suite.</text>
+<text x="1148" y="1801" font-size="20" fill="#e6edf3" font-weight="400">2. Note each failure.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

@@ -5,7 +5,7 @@ prosiform: {}
 
 ## Prepare
 
-Read the path [→](read.md#inputs).
+Read the path [↳ Inputs](read.md#inputs).
 
 ### Inputs
 

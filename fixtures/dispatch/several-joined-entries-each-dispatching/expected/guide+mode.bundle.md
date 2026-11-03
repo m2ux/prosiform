@@ -1,26 +1,10 @@
-# Prosiform
-
-## Dispatch
-
-Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 # Guide
 
-1. Apply: [plan](#dispatch-plan).
-
-## Dispatch plan
-
-[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
+1. Apply: [⇉ plan](plan.bundle.md).
 
 # Mode
 
-1. Apply: [review](#dispatch-review).
-2. Then apply: [plan](#dispatch-plan-1).
-
-## Dispatch review
-
-[Dispatch](#dispatch) `review.bundle.md` to a sub-agent.
-
-## Dispatch plan
-
-[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent.
+1. Apply: [⇉ review](review.bundle.md).
+2. Then apply: [⇉ plan](plan.bundle.md).

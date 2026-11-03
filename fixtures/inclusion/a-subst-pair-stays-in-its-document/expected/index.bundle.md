@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Index
 
 Read [the guide](#guide), then [the rules](#rules).

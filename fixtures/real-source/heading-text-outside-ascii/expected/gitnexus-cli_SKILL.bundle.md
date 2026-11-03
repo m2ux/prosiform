@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # GitNexus CLI Commands
 
 All commands work via `npx` — no global install required.

@@ -1,12 +1,14 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Each call is stated whole in its own document: [read](#read-2) and [write](#write-1).
 
 ## Prepare
 
-Read the path [→](#read), then write the text [→](#write).
+Read the path [Inputs](#read), then write the text [Inputs](#write).
 
-Keep what was read [→](#read-1).
+Keep what was read [Outputs](#read-1).
 
 ### Inputs
 

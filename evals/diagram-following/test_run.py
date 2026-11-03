@@ -14,6 +14,7 @@ wrong reason fails where it fires.
 import json
 import re
 import shutil
+import subprocess
 import sys
 import time
 from dataclasses import replace
@@ -26,14 +27,14 @@ from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Cursor, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
+    BOOTSTRAP_SET,
     BUNDLE,
     BUNDLED,
     COMPILED_SET,
-    DEFAULT_FORMS,
     FORMS,
     LINKED_TREE,
+    PF_SETS,
     PROSE_BUNDLE,
-    STAGED_SET,
     TRANSCRIPT,
     TREE,
     Ledger,
@@ -45,6 +46,7 @@ from run import (
     matrix,
     observable,
     options,
+    prepare,
     run,
 )
 from score import (
@@ -59,9 +61,9 @@ from score import (
 )
 from stub_agent import recognised
 from workflow import (
+    COMPILED_FORM,
     ENTRY,
     LINKED_FORM,
-    STAGED,
     Compile,
     CorpusError,
     workflows,
@@ -235,30 +237,43 @@ def material(session: Session) -> set[str]:
 
     A bundled form's entry bundle is `workflow.md`, and every other bundle
     of its set sits beside it under the name `pf` gave it. A form read as a
-    source tree gives its own files, and a staged form its sources, its
+    source tree gives its own files, and the compiled form its sources, its
     bundle set in the folder `pf` writes it to, and the build.
     """
     workflow = CORPUS[session.workflow]
     scenario = next(i for i in workflow.scenarios if i.name == session.scenario)
     inputs = {f"inputs/{name}" for name in scenario.inputs}
-    if session.form == STAGED_SET:
-        tree = workflow.form(STAGED)
+    build = {"bin/pf"} if session.form in PF_SETS else set()
+    if session.form == COMPILED_SET:
+        tree = workflow.form(COMPILED_FORM)
         folder = workflow.entry_bundle.parent
         return (
             {str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()}
-            | {str(folder / name) for name in bundles_of(workflow, STAGED_SET)}
-            | {"bin/pf"}
+            | {str(folder / name) for name in bundles_of(workflow, COMPILED_SET)}
+            | build
             | inputs
         )
     if session.form in BUNDLED:
         return (
             {ENTRY}
             | inputs
+            | build
             | {
                 name
                 for name in bundles_of(workflow, session.form)
                 if name != workflow.entry_bundle.name
             }
+        )
+    if session.form == BOOTSTRAP_SET:
+        skill = workflow.directory / source.BOOTSTRAP_DIR
+        return (
+            {
+                f".claude/skills/{workflow.name}/{path.relative_to(skill)}"
+                for path in skill.rglob("*")
+                if path.is_file()
+            }
+            | inputs
+            | build
         )
     tree = workflow.form(FORMS[session.form])
     return {
@@ -267,13 +282,11 @@ def material(session: Session) -> set[str]:
 
 
 def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -> None:
-    sessions = matrix(list(CORPUS.values()), ["a", "b"], list(DEFAULT_FORMS), 5)
+    sessions = matrix(list(CORPUS.values()), ["a", "b"], list(FORMS), 5)
     assert (
-        len(sessions)
-        == len(set(sessions))
-        == every_session(["a", "b"], list(DEFAULT_FORMS), 5)
+        len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 58
+    assert len(sessions) == 2 * 5 * 78
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -304,11 +317,11 @@ def test_the_readme_states_every_form_the_runner_offers_and_its_default() -> Non
     """
     assert [row[0] for row in readme_rows("Form")] == list(FORMS)
     forms = [row for row in readme_rows("Option") if row[0] == "--forms"]
-    assert [row[1] for row in forms] == [",".join(DEFAULT_FORMS)]
-    assert options(["--budget-tokens", "1"]).forms == ",".join(DEFAULT_FORMS)
+    assert [row[1] for row in forms] == [",".join(FORMS)]
+    assert options(["--budget-tokens", "1"]).forms == ",".join(FORMS)
 
 
-def test_a_staged_session_receives_the_bundle_set_and_the_build(
+def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """AC2: the compiled bundle set, its sources, and the build as `pf` on its path.
@@ -316,62 +329,52 @@ def test_a_staged_session_receives_the_bundle_set_and_the_build(
     The set sits in the folder `pf` writes it to, beside the sources a `↳`
     line names its target from, and the instruction names the entry's bundle
     there. The `pf` the session's path resolves to is the build this run was
-    given, copied into the workspace. Cursor carries a shell, so it is given
-    the session.
+    given, copied into the workspace.
     """
     monkeypatch.setattr("run.harness_named", lambda name: Cursor())
     eval_run(
         tmp_path,
-        *("--harness", "cursor", "--workflows", "dispatch-set", "--forms", STAGED_SET),
-        *("--repetitions", "1", "--budget-tokens", "4000"),
+        *("--harness", "cursor", "--workflows", "dispatch-set"),
+        *("--forms", COMPILED_SET, "--repetitions", "1", "--budget-tokens", "4000"),
     )
     workflow = CORPUS["dispatch-set"]
-    bundles = bundles_of(workflow, STAGED_SET)
-    assert set(bundles) == set(bundles_of(workflow, COMPILED_SET))
+    bundles = bundles_of(workflow, COMPILED_SET)
     [entry] = seen(log)
     workspace = Path(entry["workspace"])
     folder = workflow.entry_bundle.parent
     assert {str(folder / name) for name in bundles} <= set(entry["files"])
     assert {"workflow.md", "review.md", "states/survey.md"} <= set(entry["files"])
-    assert entry["pf"] == str(workspace / "bin" / "pf")
+    assert entry["which_pf"] == str(workspace / "bin" / "pf")
     assert f"{workflow.entry_bundle.as_posix()} describes a workflow" in entry["prompt"]
-    assert "pf with no arguments" in " ".join(entry["prompt"].split())
+    assert "run each compile from this directory" in " ".join(entry["prompt"].split())
 
 
-def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> None:
-    """AC3, AC26: `staged` is outside the default forms and needs a shell.
+def test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports() -> None:
+    """AC3, AC12: every compiled scenario reaches Claude; a nested one no other.
 
-    The default matrix the baseline measures holds no staged cell on any
-    harness; naming the form gives staged sessions to Cursor and opencode,
-    which carry a shell, in the scenarios whose starts and runs their
-    streams report, `subagent-first-run`'s none, since each states a
-    sub-agent's run. Claude's
-    staged session carries a shell and its stream reports every sub-agent's
-    calls, so it is given every staged scenario, the nested ones among them.
+    Cursor and opencode report no sub-agent's own calls, so they are given
+    the compiled scenarios whose starts and runs the session makes itself,
+    `subagent-first-run`'s none, since each states a sub-agent's run, and no
+    `dispatch-chain` or `dispatch-depth` scenario, whose sub-agents dispatch.
+    Claude's compiled session carries a shell and its stream reports every
+    sub-agent's calls, so it is given every compiled scenario, the nested
+    ones among them.
     """
     corpus = list(CORPUS.values())
-    assert STAGED_SET not in DEFAULT_FORMS
-    for harness in HARNESSES.values():
-        defaults = matrix(corpus, ["m"], list(DEFAULT_FORMS), 1, harness)
-        assert all(session.form != STAGED_SET for session in defaults)
     for harness in (Cursor(), Opencode()):
-        staged = matrix(corpus, ["m"], [STAGED_SET], 1, harness)
-        assert {(item.workflow, item.form) for item in staged} == {
-            (name, STAGED_SET)
-            for name in (
-                "conditional-composition",
-                "deferred-composition",
-                "deferred-dispatch",
-                "directive-labels",
-                "dispatch-set",
-                "preset-deferral",
-            )
+        given = matrix(corpus, ["m"], [COMPILED_SET], 1, harness)
+        assert {item.workflow for item in given} == {
+            workflow.name
+            for workflow in corpus
+            if COMPILED_FORM in workflow.forms
+            and workflow.name
+            not in ("dispatch-chain", "dispatch-depth", "subagent-first-run")
         }
-    claude = matrix(corpus, ["m"], [STAGED_SET], 1, Claude())
+    claude = matrix(corpus, ["m"], [COMPILED_SET], 1, Claude())
     assert {(item.workflow, item.scenario) for item in claude} == {
         (workflow.name, scenario.name)
         for workflow in corpus
-        if STAGED in workflow.forms
+        if COMPILED_FORM in workflow.forms
         for scenario in workflow.scenarios
     }
     assert {
@@ -385,7 +388,7 @@ def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> Non
 def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> None:
     """AC22, AC26: a scenario stating a sub-agent's `pf` run needs its commands.
 
-    Claude reports them in the staged form, whose session carries a shell,
+    Claude reports them in the compiled form, whose session carries a shell,
     and in no form whose session carries none. Neither Cursor's stream nor
     opencode's carries a sub-agent's own calls; a harness that did would be
     given the scenario, and a run the session makes itself is given wherever
@@ -395,16 +398,16 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
     [scenario] = workflow.scenarios
     by_sub_agent = replace(scenario, compile=(Compile("review#tests", ()),))
     by_session = replace(scenario, compile=(Compile(None, ()),))
-    assert observable(workflow, by_sub_agent, STAGED_SET, Claude())
-    assert not observable(workflow, by_sub_agent, COMPILED_SET, Claude())
+    assert observable(workflow, by_sub_agent, COMPILED_SET, Claude())
+    assert not observable(workflow, by_sub_agent, AUTHORED_SET, Claude())
     for harness in (Cursor(), Opencode()):
-        assert not observable(workflow, by_sub_agent, STAGED_SET, harness)
+        assert not observable(workflow, by_sub_agent, COMPILED_SET, harness)
     assert observable(
-        workflow, by_sub_agent, STAGED_SET, replace(Opencode(), sub_agent_calls=True)
+        workflow, by_sub_agent, COMPILED_SET, replace(Opencode(), sub_agent_calls=True)
     )
-    assert observable(workflow, by_session, STAGED_SET, Opencode())
-    staged = replace(workflow, scenarios=(by_sub_agent,))
-    assert matrix([staged], ["m"], [STAGED_SET], 1, Opencode()) == []
+    assert observable(workflow, by_session, COMPILED_SET, Opencode())
+    alone = replace(workflow, scenarios=(by_sub_agent,))
+    assert matrix([alone], ["m"], [COMPILED_SET], 1, Opencode()) == []
 
 
 def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> None:
@@ -412,27 +415,27 @@ def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> 
     reporting only the session's own starts observes them; a start a sub-agent
     makes, at any depth, it does not, nor a run a sub-agent makes.
     """
-    staged = matrix(list(CORPUS.values()), ["m"], [STAGED_SET], 1, Cursor())
-    given = {(item.workflow, item.scenario) for item in staged}
+    compiled = matrix(list(CORPUS.values()), ["m"], [COMPILED_SET], 1, Cursor())
+    given = {(item.workflow, item.scenario) for item in compiled}
     assert ("deferred-dispatch", "deferred-dispatch-compiled") in given
     assert ("subagent-first-run", "first-hop-run") not in given
     assert ("subagent-first-run", "deep-hop-runs") not in given
     assert not any(workflow == "dispatch-depth" for workflow, _ in given)
 
 
-def test_a_staged_claude_run_scores_each_nested_scenario_on_its_starts_runs(
+def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC26: the nested scenarios take a Claude cell, scored on each start's runs.
+    """AC12: the nested scenarios take a Claude cell, scored on each start's runs.
 
-    The stub's staged session carries `Bash`, so it makes each stated `pf`
+    The stub's compiled session carries `Bash`, so it makes each stated `pf`
     run under the start whose sub-agent makes it, and the record holds them
     there. Every cell passes, `deep-hop-runs` among them, and its review and
     ruling hold their own runs.
     """
     record = eval_run(
         tmp_path,
-        *("--workflows", "dispatch-depth,subagent-first-run", "--forms", STAGED_SET),
+        *("--workflows", "dispatch-depth,subagent-first-run", "--forms", COMPILED_SET),
         *("--repetitions", "1", "--budget-tokens", "100000"),
     )
     cells = {(item["workflow"], item["scenario"]) for item in records(tmp_path)}
@@ -454,7 +457,7 @@ def test_a_staged_claude_run_scores_each_nested_scenario_on_its_starts_runs(
         / "stub-model"
         / "subagent-first-run"
         / "deep-hop-runs"
-        / STAGED_SET
+        / COMPILED_SET
         / "1"
     )
     assert [(start.target, start.commands) for start in read_starts(deep)] == [
@@ -471,9 +474,9 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     record = eval_run(
         tmp_path, "--repetitions", "2", "--budget-tokens", "100000", "--parallel", "3"
     )
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(DEFAULT_FORMS), 2)
+    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
-    expected = every_session(["stub-model"], list(DEFAULT_FORMS), 2)
+    expected = every_session(["stub-model"], list(FORMS), 2)
     assert record["started"] == len(sessions) == expected
     entries = seen(log)
     assert len(entries) == len(sessions)
@@ -482,11 +485,14 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     assert found == sorted(sorted(material(session)) for session in sessions)
     for entry in entries:
         argv = entry["argv"]
-        assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task"
+        tools = "Read,Write,Edit,Glob,Grep,Task"
+        assert argv[argv.index("--tools") + 1] == tools + (",Bash" * entry["pf"])
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
-        assert "--allowedTools" not in argv and "Bash" not in " ".join(argv)
-        assert ENTRY in entry["prompt"]
+        shell = entry["pf"]
+        assert ("--allowedTools" in argv) is shell
+        assert ("Bash" in " ".join(argv)) is shell
+        assert (ENTRY in entry["prompt"]) is (ENTRY in entry["files"])
         assert Path(entry["workspace"]).is_relative_to(workspaces)
         assert not Path(entry["workspace"]).exists()
         assert entry["config"] == str(tmp_path / "eval" / "config")
@@ -531,12 +537,8 @@ def test_a_compiled_form_gives_its_whole_bundle_set(tmp_path: Path, log: Path) -
         *("--repetitions", "1", "--budget-tokens", "4000"),
     )
     [workflow] = [CORPUS["dispatch-chain"]]
-    published = (
-        name
-        for name in bundles_of(workflow, COMPILED_SET)
-        if name != workflow.entry_bundle.name
-    )
-    expected = {ENTRY, *published}
+    folder = workflow.entry_bundle.parent
+    expected = {str(folder / name) for name in bundles_of(workflow, COMPILED_SET)}
     for entry in seen(log):
         assert expected <= set(entry["files"])
 
@@ -604,7 +606,7 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
     monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
     eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "100000")
     written = records(tmp_path)
-    assert len(written) == every_session(["stub-model"], list(DEFAULT_FORMS), 1)
+    assert len(written) == every_session(["stub-model"], list(FORMS), 1)
     for record in written:
         session = Session(
             record["model"],
@@ -691,7 +693,7 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tokens each records.
     """
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(DEFAULT_FORMS), 1)
+    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
     budget = 250 * len(sessions)
     record = eval_run(
         tmp_path,
@@ -1707,7 +1709,7 @@ def test_a_sub_agent_untold_its_trace_name_keeps_none(
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-chain"),
-        *("--forms", COMPILED_SET, "--repetitions", "1"),
+        *("--forms", AUTHORED_SET, "--repetitions", "1"),
         *("--budget-tokens", "2000"),
     )
     [record] = records(tmp_path)
@@ -1848,3 +1850,70 @@ def test_a_clean_run_passes_every_dispatch_cell(tmp_path: Path, log: Path) -> No
         assert verdict["passed"] is True, f"{scenario}/{form}: {verdict}"
         assert verdict["failure"] is None
         assert verdict["actual"] == verdict["expected"]
+
+
+def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
+    tmp_path: Path,
+) -> None:
+    """AC12: the build under test is `pf` on a compiled session's path.
+
+    The shell the session gets runs bare `pf` for the guide and compiles a
+    `↳` line, which a bundle set alone cannot do.
+    """
+    workflow = CORPUS["dispatch-chain"]
+    scenario = workflow.scenarios[0]
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    sets = {(workflow.name, COMPILED_SET): bundles_of(workflow, COMPILED_SET)}
+    prepare(workspace, workflow, scenario, COMPILED_SET, sets)
+    pf = str(workspace / "bin" / "pf")
+    guide = subprocess.run([pf], capture_output=True, text=True, check=False)
+    assert guide.stdout.startswith("pf compiles"), guide.stdout
+    (workspace / "guide.md").write_text(
+        "---\nprosiform: {}\n---\n# Guide\n\n## Run\n\nDo [↳ Steps](plan.md#steps).\n"
+    )
+    (workspace / "plan.md").write_text(
+        "---\nprosiform: {}\n---\n# Plan\n\n## Steps\n\nCount the files.\n"
+    )
+    compiled = subprocess.run(
+        [pf, "guide.md", "-o", str(tmp_path / "out")],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert compiled.returncode == 0, compiled.stderr
+    [written] = (tmp_path / "out").glob("*.bundles/guide.bundle.md")
+    assert "Count the files." in written.read_text()
+
+
+def test_a_compiled_session_is_given_pf_and_a_shell_limited_to_it(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC12: every compiled session has `pf` and the pf-only shell."""
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
+        *("--repetitions", "1", "--budget-tokens", "4000"),
+    )
+    entries = seen(log)
+    assert entries
+    for entry in entries:
+        argv = entry["argv"]
+        assert "bin/pf" in entry["files"]
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf:*)"
+        assert argv[argv.index("--tools") + 1].endswith(",Bash")
+    transcripts = [
+        path.read_text() for path in (tmp_path / "results" / "test").rglob(TRANSCRIPT)
+    ]
+    assert all('"command": "pf"' in text for text in transcripts)
+
+
+def test_a_run_naming_the_staged_form_is_refused_as_an_unknown_form(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC18: one `compiled` form, and `staged` names none."""
+    assert "staged" not in FORMS
+    with pytest.raises(CorpusError, match="unknown form staged"):
+        eval_run(tmp_path, "--forms", "staged", "--budget-tokens", "4000")
+    assert not list(log.iterdir())

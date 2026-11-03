@@ -1,4 +1,4 @@
-description = "A label of two scalars, a combining sequence, a variation-selector sequence or a joined emoji is more than one scalar, so none is a composition directive and each is an ordinary link in the preamble."
+description = "A label of two scalars, a combining sequence, a variation-selector sequence or a joined emoji is more than one scalar, so none is an arrow label and each is an ordinary link in the preamble."
 
 clauses = [
   "Section composition — Recognition",

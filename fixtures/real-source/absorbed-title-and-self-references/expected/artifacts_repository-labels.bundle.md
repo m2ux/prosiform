@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Repository Labels
 
 The labels available for issue metadata in one repository.

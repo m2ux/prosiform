@@ -22,7 +22,9 @@ actions the scenario states for it.
 Where its `--tools` names `Bash`, it makes each `pf` run the scenario
 states as a `Bash` call: the session's own in a message of its own, and a
 sub-agent's in a message naming that sub-agent's `Task` call as
-`parent_tool_use_id`, as the CLI prints a sub-agent's calls.
+`parent_tool_use_id`, as the CLI prints a sub-agent's calls. A session whose
+workspace holds `bin/pf` and whose scenario states no run of its own runs
+bare `pf`, as its bundle's first line asks.
 
 The environment scripts it:
 
@@ -274,10 +276,11 @@ def main() -> int:
     if log := os.environ.get("STUB_AGENT_LOG"):
         entry: dict[str, object] = {"workspace": str(workspace), "files": files}
         entry["argv"] = sys.argv[1:]
+        entry["pf"] = (workspace / "bin" / "pf").is_file()
         entry["prompt"] = prompt
         entry["variables"] = sorted(os.environ)
         entry["config"] = os.environ.get("CLAUDE_CONFIG_DIR")
-        entry["pf"] = shutil.which("pf")
+        entry["which_pf"] = shutil.which("pf")
         (Path(log) / f"{uuid.uuid4()}.json").write_text(json.dumps(entry))
     headings = {
         heading
@@ -322,9 +325,11 @@ def main() -> int:
             )
         )
     runs = shell_runs(item, sys.argv[1:])
-    for by, command in runs:
-        if by is None:
-            print(json.dumps(shell_call(command, None)))
+    own = [command for by, command in runs if by is None]
+    if not own and (workspace / "bin" / "pf").is_file():
+        own = ["pf"]
+    for command in own:
+        print(json.dumps(shell_call(command, None)))
     if dispatch:
         for said in transcript_of(dispatch, prompt, runs):
             print(json.dumps(said))
