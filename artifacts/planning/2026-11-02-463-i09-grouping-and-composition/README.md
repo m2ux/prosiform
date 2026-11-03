@@ -60,8 +60,6 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E05 W25 work item](e05/w25.md) | The section entry workflow and its scenarios |
 | [E05 W26 work item](e05/w26.md) | The section composition workflow and its scenarios |
 | [E05 W27 work item](e05/w27.md) | The declared inclusion workflow and its scenarios |
-| [E05 W28 work item](e05/w28.md) | The live default-matrix run committed as `mvp-proof.json` |
-| [E05 W29 work item](e05/w29.md) | The eval page stating the feature workflows and the proof |
 | [E05 W30 work item](e05/w30.md) | The design stating the output folder made where absent |
 | [E05 W31 work item](e05/w31.md) | The design stating how `subst` pairs combine across references |
 | [E05 W32 work item](e05/w32.md) | The design's option table declaring the code listing |
@@ -135,6 +133,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 ## Decisions
 - **Only arrows are directives.** (User, 2026-11-02.) A link whose label is one Unicode arrow is a composition directive; a single footnote mark, superscript, letter or other symbol is an ordinary link. Row W12, AC22.
+- **The MVP proof moves to I10.** (User, 2026-11-03.) W28 and W29 move to I10:E05 [#594](https://github.com/m2ux/prosiform/issues/594) as W01 and W02 with AC29–AC33, and AC3 states the review and the feature workflows; the run lives in the [I10 record](../2026-11-01-464-i10-evaluation-and-checks/README.md#decisions), whose session asks for its harness and model.
 - **The MVP proof runs on Haiku.** (User, 2026-11-03.) W28 first runs a shakedown subset on Haiku on one harness, then the full default matrix of harnesses and forms on Haiku alone; AC29, AC30 and I09 AC3 say so.
 - **A second group stands where its reference is.** (User, 2026-11-03.) When two references place one document under different `group` pairs, each group stands inside the division of the document whose reference placed its first member, as *Nested groups* reads; the build changes ([#592](https://github.com/m2ux/prosiform/issues/592)). Row E05 W34, AC38.
 - **Self-composition warns.** (User, 2026-11-02.) A directive composing a section of the document that writes it publishes with a warning naming the link, as a self-dispatch does. Row W12, AC23.
@@ -177,7 +176,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 E05 proves the MVP: the I08 and I09 work merged into `main` since `contract/v0.15.0`.
 
-- **Review, then documentation, then scenarios, then the run.** W01 reviews against the pinned design and raises each departure as a row here; W02–W21 bring each page to the build, one page per row since a row extends one component; W22–W27 write one workflow per feature; W28 runs the default matrix live; W29 states the result on the eval page.
+- **Review, then documentation, then scenarios, then the run.** W01 reviews against the pinned design and raises each departure as a row here; W02–W21 bring each page to the build, one page per row since a row extends one component; W22–W27 write one workflow per feature, which I10:E05 runs live.
 - **Dependency check.** No problems. W21 and W29 both extend the eval page and are split by rule, since W29 needs W22, which needs W21. E02 W03 and E05 W03 contend on `invocation.md`, and E02 W04 and E05 W13 on `docs/hierarchy.md`; E05 depends on E02, so the priority map separates them. Longest chain: fourteen steps, E04:W00 through E04:W10, then E05 W01, a page row, a scenario row, W28 and W29.
 - **Proposed epic priority.** E02 3, E04 2, E05 1, derived from E05's edges to E02 and E04.
 

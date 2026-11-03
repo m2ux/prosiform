@@ -35,8 +35,11 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W12 work item](e04/w12.md) | A sub-agent's first `pf` run at the first, second and third hop |
 | [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as `composition-edges.json` |
 | [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
+| [E05 W01 work item](e05/w01.md) | The live run of the feature workflows, committed as `mvp-proof.json` |
+| [E05 W02 work item](e05/w02.md) | The eval page stating the feature workflows and the proof |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
 | [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
+| [E05 draft](e05-body.md) | The E05 epic body as saved, the source of its next edit |
 | [Joins](joins.md) | Each independent pair, and each same-component pair, that ships as two pull requests |
 
 ## Goal
@@ -48,6 +51,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 - **G3.** An eval session reads only what the run gave it.
 - **G4.** Validation refuses a bundle whose reference lands on a destination two documents share.
 - **G5.** The eval measures how an agent follows a bundle that defers, composes or dispatches.
+- **G6.** One live run proves the MVP's features followed.
 
 ## Goal Trace
 
@@ -58,6 +62,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G3 | AC6, AC8 | E02 | E02 AC1–AC6 | No marked source |
 | G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
 | G5 | AC13 | E04 | E04 AC1–AC22 | No marked source |
+| G6 | AC14 | E05 | E05 AC1–AC5 | No marked source |
 
 | Initiative criterion | Epic criteria that make it true |
 | --- | --- |
@@ -170,6 +175,8 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **E04 placement.** (Planning.) A new epic rather than E00 rows, as [Composition Following](#composition-following) states.
 - **No pass bar on the edge run.** (Planning.) The run measures; failing sessions are recorded by class, and a refused run is not committed.
 - **E04 priority; sibling move held.** (Planning.) E04 carries `priority: 1`, the number the map proposes for it. Moving E00–E03 from `1` to `2`, which separates E04 from E02 on `harness.py` and the eval README, is a re-prioritisation held for the user.
+- **The MVP proof joins as E05.** (User, 2026-11-03.) I09:E05's last two rows are evals, so W28 and W29 move here as E05 [#594](https://github.com/m2ux/prosiform/issues/594) W01 and W02, with AC29–AC33 as its AC1–AC5 and I09 AC3 as AC14 under goal clause G6. E05 depends on I09:E05, whose feature workflows it runs, and carries `priority: 1`. Its earlier decisions (the pass bar, its own file, `baseline.json` untouched) stay in the [I09 record](../2026-11-02-463-i09-grouping-and-composition/README.md#decisions).
+- **Harness and model are asked.** (User, 2026-11-03.) The proof run's session asks the user which harness and, open-ended, which model it uses; E05 AC1 names neither. This supersedes I09's Haiku and full-matrix decisions.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
