@@ -1,6 +1,6 @@
 # Validation
 
-Evidence for the check that a heading answers one member, observed at branch head `906e92c2` of `i10/e03/w01-a-destination-answers-one`.
+Evidence for the check that a heading answers one member, observed at branch head `8e1d48ce` of `i10/e03/w01-a-destination-answers-one`.
 
 ## A heading answering two members fails
 
