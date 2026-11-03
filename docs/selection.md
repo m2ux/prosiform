@@ -84,7 +84,7 @@ flowchart TD
 
 *Figure 2. Siblings Stand in the Order the Author Wrote the Links In.*
 
-A group stands where its first source is placed, a merged group inside the division of the document whose link placed it, as [Hierarchy](hierarchy.md#where-a-group-stands) states. A reference reaching a document already placed places nothing more and resolves to the document where it stands.
+A group stands where its first source is placed, a merged group inside the division of the document whose link placed its first member in it, as [Hierarchy](hierarchy.md#where-a-group-stands) states. A reference reaching a document already placed under the pair it puts in force places nothing more and resolves to the document where it stands; one putting another pair in force places the document in that pair's group too.
 
 ## Structural ancestors
 

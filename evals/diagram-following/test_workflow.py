@@ -640,16 +640,17 @@ def test_group_pairs_place_each_file_from_the_leaves_up(tmp_path: Path) -> None:
     Lint and Unit share the leaf group `Checks`. Package stands in a group
     inside Compile's division, and Sign in a group inside Package's, so the
     intermediate file arrives in its parent with its own group composed. Notify
-    is reached under its default and under `announce`, so it stands in both
-    groups, its section emitted once in each.
+    is reached from the diagram under its default and from Announce under
+    `announce`, so it stands in both groups, its section emitted once in each:
+    Messages inside the entry's division and Announcements inside Announce's.
     """
     workflow = read_workflow(WORKFLOWS / "group-placement")
     text = compiled_bundle(workflow, tmp_path)
     assert enclosing(text, "Lint") == enclosing(text, "Unit") == ["Delivery", "Checks"]
     assert enclosing(text, "Package") == ["Compile", "Packaging"]
     assert enclosing(text, "Sign") == ["Compile", "Packaging", "Signing"]
-    assert enclosing(text, "Notify", 0)[-1] == "Messages"
-    assert enclosing(text, "Notify", 1)[-1] == "Announcements"
+    assert enclosing(text, "Notify", 0) == ["Delivery", "Messages"]
+    assert enclosing(text, "Notify", 1) == ["Announce", "Announcements"]
 
 
 def test_subst_pairs_redirect_the_links_a_document_writes(tmp_path: Path) -> None:

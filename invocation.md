@@ -76,7 +76,7 @@ A link under a section titled `Release checks` puts `default` and `checks` in fo
 
 A link places a document under one group. Two links selecting different pairs place it in each of their groups, and it is emitted under each. Contributing files declaring the same group must agree on depth.
 
-A named group nests inside the division of the document whose link placed its first member, one heading level deeper per enclosing division, and a heading pushed past H6 fails the run with `E_HEADING_DEPTH_OVERFLOW`. [Hierarchy](docs/hierarchy.md#where-a-group-stands) states where each group stands and what an author changes when nesting overflows.
+A named group nests inside the division of the document whose link placed its first member in that group, one heading level deeper per enclosing division, and a heading pushed past H6 fails the run with `E_HEADING_DEPTH_OVERFLOW`. [Hierarchy](docs/hierarchy.md#where-a-group-stands) states where each group stands and what an author changes when nesting overflows.
 
 [Sources](docs/sources.md) states the frontmatter grammar, the declaration, the fields, the derived boundary and the metadata codes.
 
