@@ -117,16 +117,16 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 
 ## Delivery Lanes
 
-Two sessions deliver I10 at once (user, 2026-11-03): a frontier session takes every eval-design row, and a low-cost session takes every run and the rows a written plan fully states. Each takes the highest-priority row whose dependencies are met in its own lane, so neither waits while the other has work it can feed.
+Two sessions deliver I10 at once (user, 2026-11-03), one per lane. Each work item states its lane as `**Lane:** <n>`, and a session takes the highest-priority row whose dependencies are met in its own lane, so neither waits while the other has work it can feed.
 
 | Lane | Rows, in the order they come free |
 | --- | --- |
-| Frontier | E05 W00 · E00 W01 · E00 W04 · E04 W01, W02, W03, W04 · E04 W05–W12 · E04 W16 |
-| Low-cost | E02 W01–W03 · E01 W01–W04 · E03 W00–W02 (filler, taken while no run is free) · E05 W01, W02 · E00 W00 · E00 W02, W03 · E04 W14, W15 |
+| 1 | E05 W00 · E00 W01 · E00 W04 · E04 W01, W02, W03, W04 · E04 W05–W12 · E04 W16 |
+| 2 | E02 W01–W03 · E01 W01–W04 · E03 W00–W02 (filler, taken while no run is free) · E05 W01, W02 · E00 W00 · E00 W02, W03 · E04 W14, W15 |
 
-- **The frontier lane never waits on the low-cost lane.** E00 W01 depends on E05 W00 for the model, not on E00 W00's code change.
-- **Each run is fed by one frontier row.** The proof by E05 W00 (and the user's merge of I09:E05), the baseline by E00 W04, the edge run by E04 W16.
-- **Filler covers the low-cost lane's waits.** At the start, while E05 W00 runs, and in the long stretch while the frontier lane designs E04. E02 goes first so its `harness.py` rows land before E04 W04, which depends on E02 W02.
+- **Lane 1 never waits on lane 2.** E00 W01 depends on E05 W00 for the model, not on E00 W00's code change.
+- **Each run is fed by one lane 1 row.** The proof by E05 W00 (and the user's merge of I09:E05), the baseline by E00 W04, the edge run by E04 W16.
+- **Filler covers lane 2's waits.** At the start, while E05 W00 runs, and in the long stretch while lane 1 designs E04. E02 goes first so its `harness.py` rows land before E04 W04, which depends on E02 W02.
 
 ## Dependency Check
 
@@ -194,9 +194,9 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **E04 priority; sibling move held.** (Planning.) E04 carries `priority: 1`, the number the map proposes for it. Moving E00–E03 from `1` to `2`, which separates E04 from E02 on `harness.py` and the eval README, is a re-prioritisation held for the user.
 - **The MVP proof joins as E05.** (User, 2026-11-03.) I09:E05's last two rows are evals, so W28 and W29 move here as E05 [#594](https://github.com/m2ux/prosiform/issues/594) W01 and W02, with AC29–AC33 as its AC1–AC5 and I09 AC3 as AC14 under goal clause G6. E05 depends on I09:E05, whose feature workflows it runs, and carries `priority: 3`, so it runs first in I10, ahead of E00–E03 (`2`) and E04 (`1`) (user, 2026-11-03). Its earlier decisions (the pass bar, its own file, `baseline.json` untouched) stay in the [I09 record](../2026-11-02-463-i09-grouping-and-composition/README.md#decisions).
 - **Harness and model are asked.** (User, 2026-11-03.) The proof run's session asks the user which harness and, open-ended, which model it uses; E05 AC1 names neither. This supersedes I09's Haiku and full-matrix decisions.
-- **Frontier designs, a general-purpose model runs.** (User, 2026-11-03.) Low-cost models perform the evals; frontier models design them. One frontier row up front, E05 W00, writes `RUNBOOK.md`: a triage rubric giving each scorer class the evidence for agent miss, defect or unclear, and a runbook per live run (E05 W01, E00 W02, E04 W14) proven by a shakedown. Each run row follows its runbook, records the rubric's disposition for every failing session, and escalates a defect or an unclear session; it edits no scenario, harness or scorer. E04 W03 adds its classes to the rubric. Initiative AC15.
-- **One low-cost model, the user's.** (User, 2026-11-03.) The default matrix runs one low-cost model and the corpus is calibrated against it (E00 W00, W01). The plan names no model: E05 W00 asks the user, open-ended. The non-goal on the default matrix now covers harnesses and forms only.
-- **Two lanes, minimal slack.** (User, 2026-11-03.) A frontier and a low-cost session run side by side, as [Delivery Lanes](#delivery-lanes) states. E05 W00 shakes down only the proof's runbook; E00 W04 and E04 W16 shake down the baseline's and the edge run's once their scenarios exist. Priorities: E05 `4`, E00 `3`, E04 and E02 `2`, E01 and E03 `1`. This supersedes E05 `3` and E00–E03 `2` with E04 `1` above.
+- **Runs follow a runbook.** (User, 2026-11-03.) One row up front, E05 W00, writes `RUNBOOK.md`: a triage rubric giving each scorer class the evidence for agent miss, defect or unclear, and a runbook per live run (E05 W01, E00 W02, E04 W14) proven by a shakedown. Each run row follows its runbook, records the rubric's disposition for every failing session, and escalates a defect or an unclear session; it edits no scenario, harness or scorer. E04 W03 adds its classes to the rubric. Initiative AC15.
+- **One model, the user's.** (User, 2026-11-03.) The default matrix runs one model and the corpus is calibrated against it (E00 W00, W01). The plan names no model: E05 W00 asks the user, open-ended. The non-goal on the default matrix now covers harnesses and forms only.
+- **Two lanes, minimal slack.** (User, 2026-11-03.) Two sessions run side by side, one per lane, as [Delivery Lanes](#delivery-lanes) states. E05 W00 shakes down only the proof's runbook; E00 W04 and E04 W16 shake down the baseline's and the edge run's once their scenarios exist. Priorities: E05 `4`, E00 `3`, E04 and E02 `2`, E01 and E03 `1`. This supersedes E05 `3` and E00–E03 `2` with E04 `1` above.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
