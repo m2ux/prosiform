@@ -81,15 +81,25 @@ section holds. A scenario's path is held to that walk as well as to the
 sources', so a workflow built on a feature states the path its bundle
 states.
 
+A staged form's bundle states a path and runs of its own: a deferred
+directive is published as a `↳` line beneath the step writing it, a step
+opening with a condition reaches its lines only where the condition holds,
+and the walk runs `pf` on each line a step it takes reaches, reading what
+the run writes as part of that state. A state may defer its transition, so
+its document writes no transition paragraph and the material its deferral
+compiles states the edge taken.
+
 A document under an `undeclared/` directory declares no `prosiform`, so a
-link to it is left as written rather than followed; every other document
-declares.
+link to it is left as written rather than followed; a skill's `SKILL.md`,
+which its agent CLI reads rather than `pf`, may declare nothing; every
+other document declares.
 """
 
 import re
 import shutil
 import subprocess
 import tomllib
+from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
@@ -273,6 +283,12 @@ OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
 RULE_STATEMENT = re.compile(r"^The transition into `(\w+)` applies\.$", re.MULTILINE)
 _DIAGRAM_DECISION = re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$")
 _DIAGRAM_ONLY_EDGE = re.compile(rf"^{re.escape(ONLY_EDGE)}$")
+LABELLED_EDGE = re.compile(r"^Take the transition labelled `([^`]+)`\.$")
+"""A transition taking one labelled edge, as material a deferral activates states.
+
+A state deferring its transition names no condition, so the material its
+deferral compiles, a preset's stand-in among them, states the one edge taken.
+"""
 DECISION = {
     DIAGRAM: _DIAGRAM_DECISION,
     PROSE: re.compile(rf"^If (.+), {GO_TO}\. Otherwise, {GO_TO}\.$"),
@@ -304,6 +320,18 @@ FRAGMENT_LINK = re.compile(r"\[([^\]]+)\]\(#([^)]+)\)")
 
 NEXT_PARAGRAPH = re.compile(rf"^{re.escape(NEXT)}(.+)$", re.MULTILINE)
 """A section's transition paragraph as a bundle carries it."""
+
+DEFERRAL_MARK = "[¬→]("
+"""A deferred directive as a source writes it, which `pf` publishes as a `↳` line."""
+
+INLINE_LINE = re.compile(r"^\[↳ ([^\]]+)\]\(([^)]+)\)$", re.MULTILINE)
+"""A `↳` line: the heading it names and the reference a run of `pf` compiles."""
+
+DIRECTIVE_FRAGMENT = re.compile(r"\[[^\]\s]\]\(#([^)]+)\)")
+"""A directive as a bundle carries it: a one-symbol label linking its own heading."""
+
+CONDITIONAL_STEP = re.compile(r"^If (`inputs/[^`]+` reads `[^`]*`), ")
+"""A step that holds only under a condition, which its opening clause states."""
 
 
 class CorpusError(Exception):
@@ -417,7 +445,10 @@ class Section:
     """One state's document: its action and its transition.
 
     `body` is the document up to the transition paragraph, which is the part
-    the two forms share. A terminal section carries no transition.
+    the two forms share. A terminal section carries no transition, and nor
+    does a `deferred` one, which writes no transition paragraph and defers
+    the material stating its transition, so only the run activating that
+    material reads where it goes.
     """
 
     state: str
@@ -425,6 +456,7 @@ class Section:
     body: str
     action: tuple[str, str]
     transition: Transition | None
+    deferred: bool = False
 
 
 @dataclass(frozen=True)
@@ -656,6 +688,8 @@ def parse_transition(
         condition, then, otherwise = decision.groups()
         input_read(condition)
         return Transition(condition, then, otherwise)
+    if form == DIAGRAM and (labelled := LABELLED_EDGE.match(text)):
+        return Transition(None, labelled.group(1), None)
     if unconditional := UNCONDITIONAL[form].match(text):
         target = unconditional.group(1) if unconditional.groups() else None
         return Transition(None, target, None)
@@ -724,6 +758,7 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
         body,
         actions[0],
         parse_transition(form, transition.strip(), path.parent) if marker else None,
+        not marker and DEFERRAL_MARK in body,
     )
 
 
@@ -930,12 +965,22 @@ def bundle(
     succeeds, and every other bundle the run writes sits beside it in the
     same folder.
     """
+    return compile_reference(workflow.form(form), workflow.entry, output)
+
+
+def compile_reference(
+    root: Path, reference: str, output: Path
+) -> subprocess.CompletedProcess[bytes]:
+    """The `pf` run compiling one reference from `root` under `output`.
+
+    Its entry's bundle is `output / entry_bundle(reference)` once it succeeds.
+    """
     command = shutil.which("pf")
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, workflow.entry, "-o", str(output)],
-        cwd=workflow.form(form),
+        [command, reference, "-o", str(output)],
+        cwd=root,
         capture_output=True,
         check=False,
     )
@@ -1051,8 +1096,61 @@ def bundled_sections(bundle_text: str) -> dict[str, BundledSection]:
     return sections
 
 
+def reached_lines(
+    bundle_text: str, scope: str, inputs: dict[str, str], trace: list[str]
+) -> list[str]:
+    """The references of the `↳` lines a scope's steps reach, in step order.
+
+    A deferred directive is published linking the heading its `↳` line sits
+    under, so a step reaches each line its directives link. A step opening
+    with a condition reaches its lines only where the condition holds.
+    """
+    sections = bundled_sections(bundle_text)
+    found: list[str] = []
+    for line in scope.splitlines():
+        fragments = DIRECTIVE_FRAGMENT.findall(line)
+        if not fragments:
+            continue
+        if (step := CONDITIONAL_STEP.match(line)) and not holds(
+            step.group(1), inputs, trace
+        ):
+            continue
+        for fragment in fragments:
+            if fragment in sections:
+                found += [
+                    reference
+                    for _, reference in INLINE_LINE.findall(sections[fragment].text)
+                ]
+    return found
+
+
+def activated(
+    bundle_text: str,
+    scope: str,
+    inputs: dict[str, str],
+    trace: list[str],
+    activate: Callable[[str], str],
+) -> str:
+    """The text the runs on a scope's reached `↳` lines compile, in run order.
+
+    An activated bundle's own steps may reach further lines, each compiled
+    after the run that wrote it, so the text holds every level a walk needs.
+    """
+    texts: list[str] = []
+    for reference in reached_lines(bundle_text, scope, inputs, trace):
+        compiled = activate(reference)
+        texts += [
+            compiled,
+            activated(compiled, compiled, inputs, trace, activate),
+        ]
+    return "".join(texts)
+
+
 def bundle_walk(
-    workflow: Workflow, bundle_text: str, inputs: dict[str, str]
+    workflow: Workflow,
+    bundle_text: str,
+    inputs: dict[str, str],
+    activate: Callable[[str], str] | None = None,
 ) -> tuple[tuple[str, ...], list[str]]:
     """The path a diagram form's bundle states for the inputs, and its faults.
 
@@ -1064,6 +1162,10 @@ def bundle_walk(
     substituted is what the walk follows. A state whose bundled action is
     not the one its source states is a fault, since the scorer holds a
     session to the source's.
+
+    Given `activate`, which compiles a `↳` line's reference and returns the
+    bundle it writes, a state's section also holds what the runs on the
+    lines its steps reach compile, so a transition stated there is followed.
     """
     diagram = read_diagram_text(mermaid_text(bundle_text), named="the bundle")
     sections = bundled_sections(bundle_text)
@@ -1077,6 +1179,12 @@ def bundle_walk(
         section = sections.get(fragment)
         if section is None or section.title != state:
             return tuple(path), [f"the bundle heads no {state} section at #{fragment}"]
+        if activate is not None:
+            section = replace(
+                section,
+                text=section.text
+                + activated(bundle_text, section.text, inputs, path, activate),
+            )
         actions = ACTION.findall(section.text)
         if len(actions) != 1:
             return tuple(path), [f"the bundle's {state} states {len(actions)} actions"]
@@ -1116,6 +1224,42 @@ def bundle_walk(
         fragment = (
             linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
         )
+
+
+def staged_walk(
+    workflow: Workflow, inputs: dict[str, str], output: Path
+) -> tuple[tuple[str, ...], tuple[Compile, ...], list[str]]:
+    """The path and the session's runs the staged form's bundles state, and faults.
+
+    The walk reads the entry's bundle `pf` compiles from the staged sources,
+    and runs `pf` from them on each `↳` line a state's steps reach, as a
+    session does, so the runs are the ones a correct session makes and the
+    path is the one the bundles they write state. Each run writes under
+    `output`, and one failing is a fault.
+    """
+    entry = output / "entry"
+    run = bundle(workflow, STAGED, entry)
+    if run.returncode != 0:
+        return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
+    runs: list[Compile] = []
+
+    def activate(reference: str) -> str:
+        runs.append(Compile(None, (reference,)))
+        folder = output / f"run-{len(runs)}"
+        made = compile_reference(workflow.form(STAGED), reference, folder)
+        if made.returncode != 0:
+            raise CorpusError(
+                f"pf {reference} exited {made.returncode}: {made.stderr.decode()}"
+            )
+        return (folder / entry_bundle(reference)).read_text()
+
+    try:
+        path, faults = bundle_walk(
+            workflow, (entry / workflow.entry_bundle).read_text(), inputs, activate
+        )
+    except CorpusError as error:
+        return (), tuple(runs), [str(error)]
+    return path, tuple(runs), faults
 
 
 def section_body(directory: Path, document: str, heading: str) -> str:
@@ -1247,9 +1391,9 @@ def nested_conditions(workflow: Workflow, root: Path) -> tuple[str, ...]:
 
 
 def dispatch_walk(
-    workflow: Workflow, form: str, inputs: dict[str, str]
+    workflow: Workflow, form: str, path: tuple[str, ...]
 ) -> tuple[tuple[str, bool], ...]:
-    """The sub-agents a correct run of one form starts, in order.
+    """The sub-agents a correct run of one form starts along a path, in order.
 
     Each state on the path dispatches the targets its section's steps name,
     and a dispatched section dispatches its own targets in turn, so the walk
@@ -1271,7 +1415,7 @@ def dispatch_walk(
                     written.parent,
                 )
 
-    for state in walk(workflow, form, inputs):
+    for state in path:
         section = sections_of(workflow, form)[state]
         follow(section.body, section.path.parent)
     return tuple(trace)
@@ -1311,12 +1455,29 @@ def inputs_read(workflow: Workflow, form: str) -> set[str]:
             for condition in workflow.conditions.values()
             if condition.condition is not None
         }
-        return found | nested_inputs(workflow)
+        return found | nested_inputs(workflow) | deferral_inputs(workflow, form)
     written = form if form in workflow.sections else TRANSITION[form]
     return {
         input_read(section.transition.condition)
         for section in workflow.sections[written].values()
         if section.transition is not None and section.transition.condition is not None
+    } | deferral_inputs(workflow, form)
+
+
+def deferral_inputs(workflow: Workflow, form: str) -> set[str]:
+    """The inputs a form's conditional deferrals read, in any document of it.
+
+    A deferred directive under a conditional step is reached only where its
+    condition holds, and an activated target's own steps decide on inputs
+    too, so each document the form holds is read, not only its states.
+    """
+    if form not in workflow.forms:
+        return set()
+    return {
+        input_read(step.group(1))
+        for path in sorted(workflow.form(form).rglob("*.md"))
+        for line in authored(path).splitlines()
+        if DEFERRAL_MARK in line and (step := CONDITIONAL_STEP.match(line))
     }
 
 
@@ -1331,7 +1492,13 @@ def successor(
     """The state one form's section for a state says comes next, if any."""
     if workflow.diagram.decisions:
         return drawn_successor(workflow, state, inputs, trace)
-    transition = sections_of(workflow, form)[state].transition
+    section = sections_of(workflow, form)[state]
+    if section.deferred:
+        raise CorpusError(
+            f"{workflow.name}: {state} defers its transition, which only the run"
+            " activating it states"
+        )
+    transition = section.transition
     if transition is None:
         return None
     chosen = transition.then

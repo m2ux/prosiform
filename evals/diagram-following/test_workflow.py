@@ -25,6 +25,7 @@ from score import SUB_AGENT_TRACE
 from workflow import (
     AUTHORED_FORM,
     BOOTSTRAP,
+    BOOTSTRAP_DIR,
     COMPILED_FORM,
     COMPILED_STEP,
     DIAGRAM,
@@ -34,9 +35,11 @@ from workflow import (
     FENCE,
     FORMS,
     FRONTMATTER,
+    INLINE_LINE,
     LINKED_FORM,
     MARKED_FORMS,
     PROSE,
+    SKILL_ENTRY,
     STAGED,
     STATES,
     STEP_ONE,
@@ -50,17 +53,21 @@ from workflow import (
     CorpusError,
     Scenario,
     Workflow,
+    authored,
     bundle,
     bundle_walk,
     bundled,
     bundled_sections,
     compile_faults,
+    compile_reference,
     dispatch_walk,
     dispatched,
+    entry_bundle,
     inputs_read,
     instruction,
     read_workflow,
     reported,
+    staged_walk,
     stray,
     walk,
     workflows,
@@ -70,6 +77,8 @@ BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 CORPUS = workflows()
 DISPATCHING = [workflow for workflow in CORPUS if COMPILED_FORM in workflow.forms]
 DRAWING = [workflow for workflow in CORPUS if DIAGRAM in workflow.forms]
+STAGING = [workflow for workflow in CORPUS if STAGED in workflow.forms]
+BOOTSTRAPPING = [workflow for workflow in CORPUS if BOOTSTRAP in workflow.forms]
 FEATURES = ["group-placement", "preset-selection", "subst-redirect"]
 """The workflows whose sources use a feature that changes what `pf` emits."""
 
@@ -86,13 +95,17 @@ def declaration_faults(root: Path) -> list[str]:
     mapping, and each key of that mapping names a preset holding a mapping
     of its settings, so `pf` carries the document and reads its settings as
     the build reads a preset. A document under an `undeclared/` directory
-    declares nothing, so a link to it is left as written.
+    declares nothing, so a link to it is left as written. A skill's
+    `SKILL.md` is the entry its agent CLI reads rather than a source `pf`
+    compiles, so it may declare nothing too.
     """
     faults = []
     for path in sorted(root.rglob("*.md")):
         where = path.relative_to(root)
         block = FRONTMATTER.match(path.read_text())
         front = YAML(typ="safe", pure=True).load(block.group()[4:-4]) if block else None
+        if skill_entry(path) and not (isinstance(front, dict) and "prosiform" in front):
+            continue
         if UNDECLARED in where.parts:
             if isinstance(front, dict) and "prosiform" in front:
                 faults.append(f"{where} declares prosiform under {UNDECLARED}/")
@@ -108,6 +121,11 @@ def declaration_faults(root: Path) -> list[str]:
             if not isinstance(settings, dict):
                 faults.append(f"{where} declares prosiform.{preset} outside a preset")
     return faults
+
+
+def skill_entry(path: Path) -> bool:
+    """Whether a document is a bootstrap skill's entry, its `SKILL.md`."""
+    return path.name == SKILL_ENTRY and path.parent.name == BOOTSTRAP_DIR
 
 
 def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
@@ -287,6 +305,8 @@ def transition_faults(workflow: Workflow) -> list[str]:
             leaving = diagram.leaving(state)
             labels = {edge.label for edge in leaving}
             drawn = workflow.sections[form][state].transition
+            if workflow.sections[form][state].deferred:
+                continue
             if drawn is None:
                 if leaving or state not in diagram.terminals:
                     faults.append(
@@ -395,7 +415,11 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
     if set(scenario.inputs) != read:
         faults.append(f"{scenario.name}: its inputs are not the files decisions read")
         return faults
+    # A form deferring a transition states its walk only through the runs
+    # activating it, which the staged walk holds the path to.
     for form in workflow.forms:
+        if any(section.deferred for section in workflow.sections[form].values()):
+            continue
         walked = walk(workflow, form, scenario.inputs)
         if walked != path:
             faults.append(f"{scenario.name}: the {form} sections lead {walked}")
@@ -406,11 +430,8 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
         if scenario.trace:
             faults.append(f"{scenario.name}: a form that dispatches names a trace")
         return faults
-    if not scenario.trace:
-        faults.append(f"{scenario.name}: it names no dispatch trace")
-        return faults
     for form in dispatching:
-        stated = dispatch_walk(workflow, form, scenario.inputs)
+        stated = dispatch_walk(workflow, form, path)
         named = tuple((entry.section, entry.together) for entry in scenario.trace)
         if named != stated:
             faults.append(
@@ -436,6 +457,54 @@ def bundle_path_faults(
     )
     if not faults and walked != scenario.path:
         faults.append(f"the bundle leads {walked}")
+    return [f"{scenario.name}: {fault}" for fault in faults]
+
+
+def staged_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
+    """How a staged scenario's path or own runs fail to be what its bundles state.
+
+    The walk runs `pf` on each `↳` line a state's steps reach, as a correct
+    session does, so the session's stated runs are the walk's, and the path
+    is the one the entry's bundle and the bundles those runs write state.
+    """
+    walked, runs, faults = staged_walk(workflow, scenario.inputs, output)
+    if not faults and walked != scenario.path:
+        faults.append(f"the staged bundles lead {walked}")
+    stated = tuple(run for run in scenario.compile if run.by is None)
+    if runs != stated:
+        faults.append(f"the walk runs pf on {[run.args for run in runs]}")
+    return [f"{scenario.name}: {fault}" for fault in faults]
+
+
+def bootstrap_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
+    """How a bootstrap scenario fails to state its skill's runs and their walk.
+
+    The skill's `SKILL.md` holds one `↳` line, titled as the document it
+    names is headed, so a correct session runs bare `pf` for the guide, then
+    `pf` on that line's reference, and walks the bundle it writes. A drawn
+    decision is read from the sources, which the bundle walk does not read,
+    so a workflow drawing one is held to its runs and title alone.
+    """
+    root = workflow.directory / BOOTSTRAP_DIR
+    lines = INLINE_LINE.findall(authored(root / SKILL_ENTRY))
+    if len(lines) != 1:
+        return [f"{scenario.name}: the skill holds {len(lines)} inline lines"]
+    [(title, reference)] = lines
+    faults = []
+    if scenario.compile != (Compile(None, ()), Compile(None, (reference,))):
+        faults.append(f"it states {scenario.compile}, not pf, then pf {reference}")
+    headed = re.search(r"^# (.+)$", authored(root / reference), re.MULTILINE)
+    if headed is None or headed.group(1) != title:
+        faults.append(f"the line is titled {title!r}, not as {reference} is headed")
+    run = compile_reference(root, reference, output)
+    if run.returncode != 0:
+        faults.append(f"pf {reference} exited {run.returncode}")
+    elif not workflow.diagram.decisions:
+        compiled = (output / entry_bundle(reference)).read_text()
+        walked, walk_faults = bundle_walk(workflow, compiled, scenario.inputs)
+        faults += walk_faults
+        if not walk_faults and walked != scenario.path:
+            faults.append(f"the compiled target leads {walked}")
     return [f"{scenario.name}: {fault}" for fault in faults]
 
 
@@ -475,13 +544,16 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
         "bootstrap-audit",
         "branching",
         "declared-inclusion",
+        "deferred-composition",
         "dispatch-beside",
         "dispatch-chain",
         "dispatch-question",
         "dispatch-set",
         "group-placement",
+        "inline-bootstrap",
         "linear",
         "looping",
+        "preset-deferral",
         "preset-selection",
         "section-composition",
         "section-entry",
@@ -597,6 +669,155 @@ def test_each_scenario_path_is_the_walk_its_bundle_states(
 ) -> None:
     """AC23, AC24, AC25: the path is the one the bundle `pf` compiles states."""
     assert bundle_path_faults(workflow, scenario, tmp_path) == []
+
+
+@pytest.mark.parametrize(
+    ("workflow", "scenario"),
+    [(workflow, scenario) for workflow in STAGING for scenario in workflow.scenarios],
+    ids=lambda item: item.name,
+)
+def test_each_staged_scenario_states_the_runs_and_path_its_bundles_state(
+    workflow: Workflow, scenario: Scenario, tmp_path: Path
+) -> None:
+    """AC7, AC8, AC9: each run is on a line the path reaches, and the path theirs."""
+    assert staged_faults(workflow, scenario, tmp_path) == []
+
+
+@pytest.mark.parametrize(
+    ("workflow", "scenario"),
+    [
+        (workflow, scenario)
+        for workflow in BOOTSTRAPPING
+        for scenario in workflow.scenarios
+    ],
+    ids=lambda item: item.name,
+)
+def test_each_bootstrap_scenario_states_the_guide_its_line_and_the_walk(
+    workflow: Workflow, scenario: Scenario, tmp_path: Path
+) -> None:
+    """AC6: bare `pf`, `pf` on the skill's line, then the compiled target's walk."""
+    assert bootstrap_faults(workflow, scenario, tmp_path) == []
+
+
+def test_a_skill_entry_declaring_nothing_holds_its_line_as_written() -> None:
+    """AC6: the inline skill's entry declares no `prosiform`, and holds one line."""
+    entry = WORKFLOWS / "inline-bootstrap" / BOOTSTRAP_DIR / SKILL_ENTRY
+    block = FRONTMATTER.match(entry.read_text())
+    assert block is not None
+    assert "prosiform" not in YAML(typ="safe", pure=True).load(block.group()[4:-4])
+    assert INLINE_LINE.findall(entry.read_text()) == [
+        ("Release", "sources/workflow.md")
+    ]
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "fault"),
+    [
+        (
+            "[↳ Release]",
+            "[↳ Cut]",
+            "feature-tagged: the line is titled 'Cut', not as"
+            " sources/workflow.md is headed",
+        ),
+    ],
+    ids=["title"],
+)
+def test_a_skill_line_its_scenario_does_not_compile_is_a_fault(
+    tmp_path: Path, old: str, new: str, fault: str
+) -> None:
+    """AC6: the line's title is held to the document it names."""
+    workflow = broken(
+        tmp_path, "inline-bootstrap", f"{BOOTSTRAP_DIR}/{SKILL_ENTRY}", old, new
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    assert fault in bootstrap_faults(workflow, workflow.scenarios[0], output)
+
+
+def test_a_bootstrap_scenario_omitting_the_guide_is_a_fault(tmp_path: Path) -> None:
+    """AC6: the scenario states bare `pf` before `pf` on the skill's line."""
+    workflow = broken(
+        tmp_path,
+        "inline-bootstrap",
+        "scenarios.toml",
+        "[[scenario.compile]]\nargs = []\n\n",
+        "",
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    assert bootstrap_faults(workflow, workflow.scenarios[0], output) == [
+        "feature-tagged: it states (Compile(by=None, args=('sources/workflow.md',)),),"
+        " not pf, then pf sources/workflow.md"
+    ]
+
+
+def test_a_conditional_deferral_is_run_where_its_step_holds_and_nowhere_else() -> None:
+    """AC7, AC8: the outer line reached and passed, the nested needed and not."""
+    named = {workflow.name: workflow for workflow in CORPUS}
+    migration = Compile(None, ("reference/migration.md#steps",))
+    archive = Compile(None, ("reference/archive.md#steps",))
+    assert {
+        scenario.name: scenario.compile
+        for scenario in named["deferred-composition"].scenarios
+    } == {
+        "deferral-reached": (migration,),
+        "deferral-passed": (),
+        "nested-needed": (migration, archive),
+        "nested-unreached": (),
+    }
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "fault"),
+    [
+        (
+            '"scope.txt" = "large", "history.txt" = "dropped"',
+            '"scope.txt" = "small", "history.txt" = "dropped"',
+            "deferral-reached: the walk runs pf on []",
+        ),
+        (
+            '"scope.txt" = "large", "history.txt" = "kept"',
+            '"scope.txt" = "large", "history.txt" = "dropped"',
+            "nested-needed: the walk runs pf on [('reference/migration.md#steps',)]",
+        ),
+    ],
+    ids=["outer-passed", "nested-unneeded"],
+)
+def test_a_run_on_a_line_the_path_does_not_reach_is_a_fault(
+    tmp_path: Path, old: str, new: str, fault: str
+) -> None:
+    """AC7, AC8: a stated run whose step does not hold is no run of the walk."""
+    workflow = broken(tmp_path, "deferred-composition", "scenarios.toml", old, new)
+    faults = [
+        found
+        for index, scenario in enumerate(workflow.scenarios)
+        for found in staged_faults(workflow, scenario, tmp_path / str(index))
+    ]
+    assert faults == [fault]
+
+
+def test_the_real_target_of_a_preset_deferral_leads_elsewhere(tmp_path: Path) -> None:
+    """AC9: without the preset's stand-in, the path leaves Mirror by `live`."""
+    workflow = broken(
+        tmp_path,
+        "preset-deferral",
+        f"{STAGED}/reference/fetch.md",
+        "prosiform:\n  mirror:\n    subst: [{net.md: cache.md}]\n",
+        "prosiform:\n  mirror: {}\n",
+    )
+    [scenario] = workflow.scenarios
+    assert staged_faults(workflow, scenario, tmp_path / "output") == [
+        "stand-in-followed: the staged bundles lead ('Solicit', 'Mirror', 'Serve')"
+    ]
+
+
+def test_a_preset_deferral_states_the_stand_ins_path() -> None:
+    """AC9: one preset on both headings, a stand-in, and the path it sends."""
+    workflow = next(item for item in CORPUS if item.name == "preset-deferral")
+    [scenario] = workflow.scenarios
+    assert scenario.path == ("Solicit", "Mirror", "Restore")
+    assert scenario.compile == (Compile(None, ("reference/fetch.md#read-mirror",)),)
+    assert workflow.sections[STAGED]["Mirror"].deferred
 
 
 def test_the_feature_workflows_are_preset_selection_group_placement_and_subst() -> None:
@@ -901,7 +1122,11 @@ def test_a_scenario_naming_no_trace_is_a_fault(tmp_path: Path) -> None:
         count=-1,
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
-    assert faults == ["parallel-set: it names no dispatch trace"]
+    assert faults == [
+        f"parallel-set: the {form} form dispatches ['review#source', 'review#tests'],"
+        " not the [section, set] pairs the trace names: []"
+        for form in (COMPILED_FORM, AUTHORED_FORM, STAGED)
+    ]
 
 
 def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
