@@ -23,7 +23,8 @@ from any of them, so the scorer above it is unaware of which CLI produced
 them. Each start names the start whose sub-agent made it and the shell
 commands its own sub-agent ran, wherever the stream attributes a call to a
 sub-agent; `sub_agent_calls` declares whether it does, as read from what
-each CLI prints.
+each CLI prints. `shell(form)` says whether a session given a form carries
+a shell, so a form needing one is given only where it does.
 """
 
 from __future__ import annotations
@@ -35,7 +36,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from workflow import CorpusError
+from workflow import STAGED, CorpusError
 
 QUESTION = "question"
 DONE = "done"
@@ -56,6 +57,8 @@ CALL_ID = "tool_use_id"
 PARENT = "parent_tool_use_id"
 """The `Task` call a Claude message runs under, null for the session's own."""
 TASK = "Task"
+SHELL_TOOL = "Bash"
+"""The Claude Code tool that runs a command line."""
 DESCRIPTION = "description"
 RESULT = "result"
 IS_ERROR = "is_error"
@@ -167,11 +170,19 @@ class Claude:
     hooks: str = "hooks"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
-    shell: bool = False
-    """Whether a session may run a command, which a shell form needs.
+    """The tools every session carries, which name no shell."""
+    shell_forms: tuple[str, ...] = (STAGED,)
+    """The forms whose session also carries the shell tool.
 
-    The tool allowlist above names no shell, so this harness cannot run one.
-    A form whose material a session must compile cannot be measured here.
+    A staged session compiles what its bundle names, so it carries `Bash`;
+    every other form's session carries none, `bootstrap` among them.
+    """
+    shell_allowed: str = "Bash(pf:*)"
+    """The commands a shell-carrying session runs without being asked.
+
+    `acceptEdits` approves edits and no command, and a headless session
+    cannot be asked, so the shell is approved for `pf` alone: a session
+    compiles its material and reaches nothing else past its workspace.
     """
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
@@ -179,7 +190,8 @@ class Claude:
     """Whether a sub-agent's own tool calls reach the session's stream.
 
     They do: a sub-agent's messages are printed in the session's stream, each
-    naming the `Task` call it runs under as `parent_tool_use_id`.
+    naming the `Task` call it runs under as `parent_tool_use_id`, so its
+    starts and its shell commands are read under the start it follows.
     """
     session_cap_usd: float = 0.50
     """The price the CLI itself may spend in one session.
@@ -195,8 +207,17 @@ class Claude:
         "cache_read_input_tokens",
     )
 
+    def shell(self, form: str) -> bool:
+        """Whether a session given this corpus form carries a shell."""
+        return form in self.shell_forms
+
     def argv(
-        self, agent: list[str], model: str, budget: int, workspace: Path | None = None
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        form: str,
+        workspace: Path | None = None,
     ) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
@@ -204,7 +225,15 @@ class Claude:
         price a session is allowed to spend rather than the token count: the
         CLI enforces dollars between calls, and the run's own guard holds the
         token budget from what each session reports.
+
+        A session given a form in `shell_forms` carries `Bash` beside the
+        other tools, approved for `pf` alone.
         """
+        shell = (
+            [f"{self.tools},{SHELL_TOOL}", "--allowedTools", self.shell_allowed]
+            if self.shell(form)
+            else [self.tools]
+        )
         return [
             *agent,
             "-p",
@@ -214,7 +243,7 @@ class Claude:
             "stream-json",
             "--verbose",
             "--tools",
-            self.tools,
+            *shell,
             "--permission-mode",
             "acceptEdits",
             "--no-session-persistence",
@@ -339,11 +368,13 @@ class Claude:
         assistant message started together. A start's target is the
         `description` its input carries, naming the section handed over, and
         its parent is the start whose `Task` call the message's
-        `parent_tool_use_id` names. The session has no shell, so no start
-        carries a command.
+        `parent_tool_use_id` names. A start's commands are those of the `Bash`
+        calls in messages naming its own `Task` call that way, which its
+        sub-agent made.
         """
         found: dict[str, tuple[str, bool, str | None]] = {}
         returned: dict[str, str] = {}
+        ran = _shell_calls(transcript)
         for held in messages(transcript):
             kind = held.get("type")
             carried = held.get(MESSAGE)
@@ -351,8 +382,7 @@ class Claude:
             if not isinstance(content, list):
                 continue
             if kind == ASSISTANT:
-                owner = held.get(PARENT)
-                parent = owner if isinstance(owner, str) else None
+                parent = _owner(held)
                 first = None
                 for block in content:
                     if not isinstance(block, dict) or block.get("type") != TOOL_USE:
@@ -385,13 +415,21 @@ class Claude:
                 returned.get(key, DONE),
                 together,
                 order.get(parent) if parent is not None else None,
+                tuple(command for owner, command in ran if owner == key),
             )
             for key, (target, together, parent) in found.items()
         )
 
-    def commands(self, transcript: Path) -> tuple[str, ...] | None:
-        """The shell commands a session ran, or nothing where it can run none."""
-        return None
+    def commands(self, transcript: Path) -> tuple[str, ...]:
+        """The shell commands the session itself ran, in order.
+
+        A `Bash` call in a message naming no `parent_tool_use_id` is the
+        session's own; one naming a `Task` call is that sub-agent's, and is
+        read under its start.
+        """
+        return tuple(
+            command for owner, command in _shell_calls(transcript) if owner is None
+        )
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
         """The tokens one session processed, from the usage it reported."""
@@ -412,13 +450,6 @@ class Cursor:
     name: str = "cursor"
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
-    shell: bool = True
-    """Whether a session may run a command, which a shell form needs.
-
-    The CLI carries a shell, so a session can compile its material. The
-    command it runs is confined by workspace trust alone, which is wider than
-    a form that only reads files needs.
-    """
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     sub_agent_calls: bool = False
@@ -436,8 +467,22 @@ class Cursor:
         "cacheReadTokens",
     )
 
+    def shell(self, form: str) -> bool:
+        """Whether a session given a form carries a shell, which every one does.
+
+        The CLI carries a shell, so a session can compile its material. The
+        command it runs is confined by workspace trust alone, which is wider than
+        a form that only reads files needs.
+        """
+        return True
+
     def argv(
-        self, agent: list[str], model: str, budget: int, workspace: Path | None = None
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        form: str,
+        workspace: Path | None = None,
     ) -> list[str]:
         """One session's command line, the workspace given as its argument.
 
@@ -600,6 +645,36 @@ class Cursor:
         return None
 
 
+def _owner(held: dict[str, object]) -> str | None:
+    """The `Task` call a Claude message runs under, or nothing for the session's."""
+    owner = held.get(PARENT)
+    return owner if isinstance(owner, str) else None
+
+
+def _shell_calls(transcript: Path) -> list[tuple[str | None, str]]:
+    """Each `Bash` call a Claude stream records, with the `Task` call it runs under."""
+    found: list[tuple[str | None, str]] = []
+    for held in messages(transcript):
+        if held.get("type") != ASSISTANT:
+            continue
+        carried = held.get(MESSAGE)
+        content = carried.get("content") if isinstance(carried, dict) else None
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if not isinstance(block, dict) or block.get("type") != TOOL_USE:
+                continue
+            if block.get("name") != SHELL_TOOL:
+                continue
+            carried_input = block.get("input")
+            command = (
+                carried_input.get(COMMAND) if isinstance(carried_input, dict) else None
+            )
+            if isinstance(command, str):
+                found.append((_owner(held), command))
+    return found
+
+
 def _record(path: Path) -> dict[str, object]:
     """One settings file read as JSON, or nothing where it is absent.
 
@@ -632,11 +707,6 @@ class Opencode:
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
-    shell: bool = True
-    """Whether a session may run a command, which a shell form needs.
-
-    The CLI carries a shell, so a session can compile its material.
-    """
     prompt_on_argv: bool = True
     """Whether the task text is an argument rather than the session's input.
 
@@ -652,8 +722,20 @@ class Opencode:
     Cursor.
     """
 
+    def shell(self, form: str) -> bool:
+        """Whether a session given a form carries a shell, which every one does.
+
+        The CLI carries a shell, so a session can compile its material.
+        """
+        return True
+
     def argv(
-        self, agent: list[str], model: str, budget: int, workspace: Path | None = None
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        form: str,
+        workspace: Path | None = None,
     ) -> list[str]:
         """One session's command line, its prompt given as its argument.
 

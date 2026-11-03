@@ -14,16 +14,18 @@ scenario's inputs, each as the value followed by a newline. The forms are:
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
   it compiles, with the build under test on the session's path; a harness
-  with no shell gives no session in it;
+  giving the form no shell gives no session in it;
 - `staged`: the staged form's sources, with the entry's bundle set in the
   folder `pf` writes it to and the build under test on the session's path;
-  it is outside the default `--forms`, and a harness with no shell gives no
-  session in it.
+  it is outside the default `--forms`, and a harness giving the form no shell
+  gives no session in it.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
-searching files and to starting a sub-agent, with no MCP server and no
-shell. `acceptEdits` lets it change files only within its workspace.
+searching files and to starting a sub-agent, with no MCP server. A `staged`
+session also carries the shell, approved for `pf` alone; every other form's
+session carries none. `acceptEdits` lets it change files only within its
+workspace.
 
 Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
 eval's own Claude configuration directory, holding its login, settings and
@@ -64,9 +66,10 @@ the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
 `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, managed hooks, recorded cost, the sessions it
-did not start and the run's state. Once `run.json` is written, `report.py` writes
-the run's report beside it, compared with the committed baseline.
+holds the run's date, options, each form's command line, managed hooks,
+recorded cost, the sessions it did not start and the run's state. Once
+`run.json` is written, `report.py` writes the run's report beside it,
+compared with the committed baseline.
 
 A run every session of which took the `errored` verdict is `refused`: no
 session entered a state, so the matrix is no result and its pass rates
@@ -373,10 +376,10 @@ def runnable(form: str, harness: Harness) -> bool:
     """Whether a harness can read this form at all.
 
     A form whose material a session must compile needs a command to run, so a
-    harness without a shell cannot measure it: the cell would record a
-    refusal as the agent's failure.
+    harness giving the form no shell cannot measure it: the cell would record
+    a refusal as the agent's failure.
     """
-    return harness.shell or FORMS[form] not in SHELL_FORMS
+    return harness.shell(FORMS[form]) or FORMS[form] not in SHELL_FORMS
 
 
 def observable(
@@ -389,14 +392,15 @@ def observable(
     report only the starts the session makes itself, those the path's own
     sections and the deferred dispatches its steps reach start, so a scenario
     whose trace outruns that count is beyond it. A stated run a sub-agent makes is
-    read from that sub-agent's commands, which a harness reports only where it
-    carries a shell and surfaces a sub-agent's own calls.
+    read from that sub-agent's commands, which a harness reports only where
+    the form's session carries a shell and the harness surfaces a sub-agent's
+    own calls.
 
     The corpus names its forms by what they hold, so the runner's form is
     read as the corpus form it carries before its sections are asked for.
     """
     if any(run.by is not None for run in scenario.compile) and not (
-        harness.shell and harness.sub_agent_calls
+        harness.shell(FORMS[form]) and harness.sub_agent_calls
     ):
         return False
     if harness.sub_agent_calls:
@@ -602,7 +606,7 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
-        record_calls(records / TRANSCRIPT, records, harness)
+        record_calls(records / TRANSCRIPT, records, harness, FORMS[session.form])
         result = harness.result(records / TRANSCRIPT)
         ran = read_trace(records)
         verdict = (
@@ -811,6 +815,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                     agent,
                     session.model,
                     ledger.session_cap,
+                    FORMS[session.form],
                     session.directory(workspaces),
                 ),
                 prompts[(session.workflow, session.form)],
@@ -855,7 +860,10 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         },
         "harness": harness.name,
         "managed": managed,
-        "command": harness.argv(agent, "<model>", ledger.session_cap),
+        "commands": {
+            form: harness.argv(agent, "<model>", ledger.session_cap, FORMS[form])
+            for form in forms
+        },
         STATE: state,
         REASON: reason,
         "sessions": len(sessions),

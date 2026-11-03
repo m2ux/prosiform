@@ -6,9 +6,9 @@
 #
 # A dispatched bundle carrying a deferred line opens with the Prosiform
 # section saying pf runs first, and only the material pf compiles on that line
-# states the sub-agent's action. A sub-agent's own pf runs are read from no
-# harness's stream, so its run is shown by the action that run's material
-# states rather than stated as a run of its own.
+# states the sub-agent's action. Each sub-agent's own pf run is stated by the
+# section it follows, and the action that run's material states shows it on a
+# harness reporting no sub-agent's commands.
 
 [[scenario]]
 name = "first-hop-run"
@@ -19,6 +19,10 @@ inputs = { "reach.txt" = "near" }
 dispatch = "hop/ledger#balance"
 returned = "done"
 actions = { "closing.txt" = "closed" }
+
+[[scenario.compile]]
+by = "hop/ledger#balance"
+args = ["steps/closing.md#close"]
 
 # The review, at the second hop, compiles the weighing rules its deferred
 # dispatch names; their bundle states its action and dispatches the ruling,
@@ -42,3 +46,11 @@ actions = { "weighing.txt" = "weighed" }
 dispatch = "steps/ruling#rule"
 returned = "done"
 actions = { "ruling.txt" = "ruled" }
+
+[[scenario.compile]]
+by = "hop/review#scan"
+args = ["steps/weighing.md#weigh"]
+
+[[scenario.compile]]
+by = "steps/ruling#rule"
+args = ["steps/recording.md#file"]

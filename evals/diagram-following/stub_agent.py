@@ -19,6 +19,11 @@ instruction names the sub-agent trace, each call's prompt hands that name on,
 and each sub-agent writes the trace its prompt names and no other, and the
 actions the scenario states for it.
 
+Where its `--tools` names `Bash`, it makes each `pf` run the scenario
+states as a `Bash` call: the session's own in a message of its own, and a
+sub-agent's in a message naming that sub-agent's `Task` call as
+`parent_tool_use_id`, as the CLI prints a sub-agent's calls.
+
 The environment scripts it:
 
 - `STUB_AGENT_COST`: the cost its `result` message reports, in USD;
@@ -58,6 +63,7 @@ import time
 import uuid
 from pathlib import Path
 
+from harness import PARENT, SHELL_TOOL
 from harness import QUESTION as RETURNED_QUESTION
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
 from workflow import Scenario, Workflow, walk, workflows
@@ -134,6 +140,35 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
     ]
 
 
+def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None, str]]:
+    """Each stated `pf` run as the agent making it and its command line.
+
+    A session whose `--tools` names no shell runs none.
+    """
+    tools = argv[argv.index("--tools") + 1] if "--tools" in argv else ""
+    if item is None or SHELL_TOOL not in tools.split(","):
+        return []
+    return [(run.by, " ".join(["pf", *run.args])) for run in item.compile]
+
+
+def shell_call(command: str, owner: str | None) -> dict[str, object]:
+    """One assistant message making a `Bash` call, under `owner`'s `Task` call."""
+    return {
+        "type": "assistant",
+        PARENT: owner,
+        "message": {
+            "content": [
+                {
+                    "type": "tool_use",
+                    "id": f"toolu_{uuid.uuid4().hex[:12]}",
+                    "name": SHELL_TOOL,
+                    "input": {"command": command},
+                }
+            ]
+        },
+    }
+
+
 def handed(section: str, instruction: str) -> str:
     """The prompt a session's `Task` call gives the sub-agent following a section.
 
@@ -174,13 +209,16 @@ def message(
 
 
 def transcript_of(
-    started: list[tuple[str, str, bool]], instruction: str
+    started: list[tuple[str, str, bool]],
+    instruction: str,
+    runs: list[tuple[str | None, str]],
 ) -> list[dict[str, object]]:
     """The assistant and user messages a session's sub-agent starts print.
 
     Two starts together share one assistant message, and each call is
     answered on its own, so a reader recovers both the order and what each
-    sub-agent returned.
+    sub-agent returned. A sub-agent's run is printed under the first start
+    of the section it states, before any call is answered.
     """
     messages: list[dict[str, object]] = []
     made: list[tuple[str, str]] = []
@@ -199,6 +237,12 @@ def transcript_of(
         group.append(message(identifier, start, instruction))
         made.append((identifier, returned))
     flush()
+    first: dict[str, str] = {}
+    for (section, _, _), (identifier, _) in zip(started, made, strict=True):
+        first.setdefault(section, identifier)
+    messages.extend(
+        shell_call(command, first.get(by)) for by, command in runs if by is not None
+    )
     for identifier, returned in made:
         text = (
             "question: which provider should the draft name?"
@@ -277,8 +321,12 @@ def main() -> int:
                 }
             )
         )
+    runs = shell_runs(item, sys.argv[1:])
+    for by, command in runs:
+        if by is None:
+            print(json.dumps(shell_call(command, None)))
     if dispatch:
-        for said in transcript_of(dispatch, prompt):
+        for said in transcript_of(dispatch, prompt, runs):
             print(json.dumps(said))
     else:
         print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))

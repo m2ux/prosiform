@@ -263,19 +263,20 @@ def sub_agent_undone(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
 
 
 def record_calls(
-    transcript: Path, records: Path, harness: Harness
+    transcript: Path, records: Path, harness: Harness, form: str
 ) -> tuple[Start, ...]:
     """Read a session's transcript for its commands and starts and record them.
 
     The record is `subagents.json` beside the trace and the session's tokens:
     `commands`, the shell commands the session ran, null where the harness
-    gives it no shell, and `starts`, one entry per start in the order the
-    transcript made them, each naming its parent start and its sub-agent's
-    commands. The scorer reads it instead of the transcript. The harness
-    reads its own stream, so one record shape serves every agent CLI.
+    gives a session in its corpus form, `form`, no shell, and `starts`, one
+    entry per start in the order the transcript made them, each naming its
+    parent start and its sub-agent's commands. The scorer reads it instead of
+    the transcript. The harness reads its own stream, so one record shape
+    serves every agent CLI.
     """
     starts = harness.starts(transcript)
-    commands = harness.commands(transcript)
+    commands = harness.commands(transcript) if harness.shell(form) else None
     held = {
         "commands": None if commands is None else list(commands),
         "starts": [start.record() for start in starts],
