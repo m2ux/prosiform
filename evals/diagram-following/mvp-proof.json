@@ -13,8 +13,8 @@
   "managed": {
     "plugins": 1,
     "environment": 6,
-    "hooks": 0,
-    "fingerprint": "db6a4542c5d7f6daeda51be1bedc91539e54f7de913369ba82375e8f4e8d3529"
+    "hooks": 1,
+    "fingerprint": "a8f7653310624b30a2b61e762ae8e3444ac8b6c90a5b3afdbb8dbdcc508dd5b8"
   },
   "tokens": 19268512,
   "cost_usd": 0.67671,
