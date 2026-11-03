@@ -20,6 +20,7 @@ This record holds its delivery of `AC2,AC3,AC4`: the work item, the validation e
 
 | Resource | Link |
 | --- | --- |
+| Pull request | [#642](https://github.com/m2ux/prosiform/pull/642), merged into `i10/e06/main` as `754a7ad2` |
 | Epic | [I10:E06 Agent Guide](https://github.com/m2ux/prosiform/issues/639) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |

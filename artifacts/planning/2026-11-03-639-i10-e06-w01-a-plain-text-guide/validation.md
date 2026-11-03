@@ -13,3 +13,5 @@ The checks W01's work item names, run against task branch `i10/e06/w01-a-plain-t
 ## T3 Make Check
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`, after `git fetch origin engineering`. Result: exit 0. Conformance: 360 clauses, 0 declarations naming no clause, 0 unfixturable codes; corpus: 504 fixtures.
+
+Continuous integration on `48233105`: the Checks workflow succeeded, and #642 merged into `i10/e06/main` as `754a7ad2`.
