@@ -151,13 +151,14 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Model | `claude-haiku-5-5`, named by the user on 2026-11-03. |
 | Spending cap | USD 5 for every live run of the shakedown together. |
 | Sessions | 74: the default matrix's 74 cells, one repetition. |
-| Session cap | 400 000 tokens: the proof shakedown's session cap, which held its largest session of 206 458. |
-| Token budget | 29 600 000 tokens: 74 times the session cap. |
-| Estimate | USD 0.31: 74 sessions at the proof shakedown's mean of USD 0.004123 a session. |
-| Run | `baseline-shakedown`, 2026-11-03: stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap; the shakedown is repeated once the fix lands. |
+| Session cap | 1 130 000 tokens: the first run's largest session, 560 936 tokens, doubled and rounded up to the next 10 000. |
+| Token budget | 83 620 000 tokens: 74 times the session cap. |
+| Estimate | USD 0.41: 74 sessions at the first run's mean of USD 0.005429 a session. |
+| Run | `baseline-shakedown`, 2026-11-03: at a 400 000-token session cap, stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap. |
+| Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). The shakedown is repeated once #637 is settled. |
 
 ```bash
-make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 400000 --budget-tokens 29600000 --run-id baseline-shakedown'
+make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 83620000 --run-id baseline-shakedown'
 ```
 
 ## Edge Run
