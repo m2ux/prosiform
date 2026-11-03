@@ -16,9 +16,9 @@ at their timeout in `timeouts`, the mean `tokens` of each kind over the
 sessions recording tokens, and the mean `cost_usd` over the sessions
 recording a cost; a mean is null when no session records it. The report
 also gives the run's id, date, models, repetitions, matrix size, sessions
-started, tokens, the sessions it did not start, `managed`, the plugins the
-organisation manages that reached every session with the environment
-variables they add, as `run.json` records them, and its `cost_usd`: the
+started, tokens, the sessions it did not start, `managed`, the counts of
+managed plugins, environment settings and hooks every session carried and
+their fingerprint, as `run.json` records them, and its `cost_usd`: the
 sum of every session's reported cost, errored sessions included, null when
 no session reports one, as a harness reporting no cost leaves it.
 
@@ -360,17 +360,14 @@ def table(rows: list[Row], key: tuple[str, ...]) -> list[str]:
 
 
 def managed_line(managed: Row) -> str:
-    """The managed plugins every session carried, as the report states them."""
-    if not managed["plugins"]:
-        return "- **Managed plugins:** none."
-    plugins = ", ".join(
-        f"`{item['plugin']}` {item['version'] or 'uninstalled'}"
-        for item in managed["plugins"]
-    )
-    added = ", ".join(f"`{name}`" for name in managed["environment"]) or "none"
+    """The managed configuration every session carried, counted and unnamed."""
+    if managed["fingerprint"] is None:
+        return "- **Managed configuration:** none."
     return (
-        f"- **Managed plugins:** {plugins}, whose injected rules every session "
-        f"carried; environment added: {added}."
+        f"- **Managed configuration:** {managed['plugins']} plugin(s), "
+        f"{managed['environment']} environment setting(s) and "
+        f"{managed['hooks']} hook(s), carried by every session; "
+        f"fingerprint `{managed['fingerprint']}`."
     )
 
 
