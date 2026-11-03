@@ -16,7 +16,8 @@ the outcome the scenario gives it. The entries a scenario marks `together`
 share one assistant message, so they read as started at once, and each
 call is answered by a `tool_result` carrying `question` or `done`. Where its
 instruction names the sub-agent trace, each call's prompt hands that name on,
-and each sub-agent writes the trace its prompt names and no other.
+and each sub-agent writes the trace its prompt names and no other, and the
+actions the scenario states for it.
 
 The environment scripts it:
 
@@ -256,6 +257,10 @@ def main() -> int:
     write_sub_agent_traces(
         workspace, [handed(section, prompt) for section, _, _ in dispatch]
     )
+    if item is not None and dispatch:
+        for due in item.trace:
+            for name, value in due.actions:
+                (workspace / ACTIONS / name).write_text(f"{value}\n")
     hang = os.environ.get("STUB_AGENT_HANG")
     if hang and not Path(hang).exists():
         Path(hang).touch()

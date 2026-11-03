@@ -72,6 +72,14 @@ def workspace(
     return tmp_path
 
 
+def done_by_sub_agents(held: Path, item: Scenario) -> Path:
+    """Write the actions a scenario states its sub-agents do, as they would."""
+    for entry in item.trace:
+        for name, value in entry.actions:
+            (held / ACTIONS / name).write_text(f"{value}\n")
+    return held
+
+
 def run(tmp_path: Path, workflow: str, name: str, trace: list[str]) -> Verdict:
     """The verdict on a hand-made trace for one scenario."""
     held = CORPUS[workflow]
@@ -89,21 +97,27 @@ def test_a_run_walking_its_scenario_path_with_every_action_passes(
 ) -> None:
     """AC3: a dispatch scenario's own record passes beside its path."""
     held = workspace(tmp_path, workflow, list(item.path), starts=starts_of(item))
+    done_by_sub_agents(held, item)
     assert score(workflow, item, held) == Verdict(
         True, None, None, item.path, item.path, ()
     )
 
 
 @pytest.mark.parametrize(
-    "workflow",
-    [workflow for workflow in CORPUS if workflow.startswith("dispatch")],
+    ("workflow", "name"),
+    [
+        (workflow, item.name)
+        for workflow in CORPUS
+        if workflow.startswith("dispatch")
+        for item in CORPUS[workflow].scenarios
+    ],
 )
 def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
-    tmp_path: Path, workflow: str
+    tmp_path: Path, workflow: str, name: str
 ) -> None:
     """AC3: every bundle a scenario names reached a sub-agent, in its order."""
     held = CORPUS[workflow]
-    [item] = held.scenarios
+    item = scenario(workflow, name)
     verdict = score(
         held, item, workspace(tmp_path, held, list(item.path), starts=starts_of(item))
     )
@@ -519,6 +533,49 @@ def test_a_start_naming_a_section_by_its_heading_is_that_section() -> None:
     assert names("Dispatch plan work bundle", "plan#work") is True
     assert names("Dispatch plan__work.bundle.md", "plan#work") is True
     assert names("Follow the Review section", "plan#work") is False
+
+
+def test_a_bundle_of_a_document_in_a_folder_names_its_section() -> None:
+    """`pf` writes each `/` of a dispatched document's path as `_` in its bundle."""
+    assert names("Dispatch ask_enquiry__pose.bundle.md", "ask/enquiry#pose") is True
+    assert names("Dispatch ask_probe__probe.bundle.md", "ask/enquiry#pose") is False
+
+
+@pytest.mark.parametrize(
+    ("name", "undone"),
+    [
+        ("first-hop-run", ("closing.txt",)),
+        ("deep-hop-runs", ("weighing.txt", "ruling.txt")),
+    ],
+)
+def test_a_sub_agent_running_no_pf_on_its_line_misses_its_action(
+    tmp_path: Path, name: str, undone: tuple[str, ...]
+) -> None:
+    """AC17, AC18: only the line's compiled material states the sub-agent's action.
+
+    Each start is recorded, and the session's path and its states' actions are
+    done, so a sub-agent that ran no `pf` on its line leaves only the action
+    that material states undone, which no harness's stream need carry.
+    """
+    held = CORPUS["subagent-first-run"]
+    item = scenario("subagent-first-run", name)
+    workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    verdict = score(held, item, tmp_path)
+    assert verdict == Verdict(
+        False, Failure.MISSING_ACTION, None, item.path, item.path, undone
+    )
+    done_by_sub_agents(tmp_path, item)
+    assert score(held, item, tmp_path).passed is True
+
+
+def test_a_sub_agent_never_started_is_undispatched_before_its_action(
+    tmp_path: Path,
+) -> None:
+    """AC18: the dispatch checks read first, so an unstarted hop is `undispatched`."""
+    held = CORPUS["subagent-first-run"]
+    item = scenario("subagent-first-run", "deep-hop-runs")
+    workspace(tmp_path, held, list(item.path), starts=starts_of(item)[:2])
+    assert score(held, item, tmp_path).failure == Failure.UNDISPATCHED
 
 
 def test_a_start_naming_its_compiled_bundle_names_the_same_section(

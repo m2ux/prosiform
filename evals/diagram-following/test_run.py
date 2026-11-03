@@ -354,9 +354,11 @@ def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> Non
             for name in (
                 "conditional-composition",
                 "deferred-composition",
+                "deferred-dispatch",
                 "directive-labels",
                 "dispatch-set",
                 "preset-deferral",
+                "subagent-first-run",
             )
         }
     assert matrix(corpus, ["m"], [STAGED_SET], 1, Claude()) == []
@@ -382,6 +384,19 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
     assert observable(workflow, by_session, STAGED_SET, Opencode())
     staged = replace(workflow, scenarios=(by_sub_agent,))
     assert matrix([staged], ["m"], [STAGED_SET], 1, Opencode()) == []
+
+
+def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> None:
+    """A deferred dispatch's targets start from the session, so a shell harness
+    reporting only the session's own starts observes them; a start a sub-agent
+    makes, at any depth, it does not.
+    """
+    staged = matrix(list(CORPUS.values()), ["m"], [STAGED_SET], 1, Cursor())
+    given = {(item.workflow, item.scenario) for item in staged}
+    assert ("deferred-dispatch", "deferred-dispatch-compiled") in given
+    assert ("subagent-first-run", "first-hop-run") in given
+    assert ("subagent-first-run", "deep-hop-runs") not in given
+    assert not any(workflow == "dispatch-depth" for workflow, _ in given)
 
 
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
@@ -1289,6 +1304,7 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
             "section": entry.section,
             "returned": entry.returned,
             "together": entry.together,
+            "actions": [list(action) for action in entry.actions],
         }
         for entry in scenario.trace
     ]

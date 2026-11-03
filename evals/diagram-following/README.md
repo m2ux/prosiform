@@ -17,7 +17,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 | `staged` | The staged form's sources, written as the compiled form is, with the entry's bundle set in the folder `pf` writes it to and the build under test as `pf` on the session's path. | Whether an agent compiles, as it follows a bundle, the material the bundle defers. |
 
-A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, the two [deferral workflows](#deferral-scenarios) and the two [composition workflows](#composition-scenarios) take `staged` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, the three [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `staged` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
@@ -61,8 +61,17 @@ A dispatch scenario's `scenarios.toml` names the trace a correct run produces be
 | `dispatch` | The section the sub-agent follows, as `<document>#<heading>`. Both forms name a section, so one trace is the trace of both. |
 | `returned` | What the sub-agent gave back: `done`, or `question` for one it returned unanswered. |
 | `together` | Whether it started beside the entry above it, which marks every member of a set but the one opening it. |
+| `actions` | Optional. Each file under `actions/` the sub-agent writes, by file name and value, which only the material a `pf` run on a deferred line of its bundle compiles states, as [Sub-agent runs](#sub-agent-runs) states. |
 
-The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: the operator states the dispatch and the `Dispatch` protocol `pf` publishes from it states what to do, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
+The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps and the target of each deferred dispatch a step reaches, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: the operator states the dispatch and the `Dispatch` protocol `pf` publishes from it states what to do, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
+
+`dispatch-depth`, written in the `staged` form alone, dispatches three hops below the session, the depth `pf` publishes with no `W_DISPATCH_DEPTH`. A sub-agent's own dispatch starts before it returns, so each hop is listed after the one that started it.
+
+| Workflow | Scenario | What it dispatches |
+| --- | --- | --- |
+| `dispatch-depth` | `three-hop-chain` | A chain of three sections, each dispatching the next. |
+| `dispatch-depth` | `three-hop-set` | A section whose first step starts two sections as a set at the second hop, and whose second step starts a section dispatching the third. |
+| `dispatch-depth` | `three-hop-question` | A chain of three whose last section returns a question, relayed up each hop to the user, then the chain dispatched again with the answers. |
 
 ### Stated runs
 
@@ -77,7 +86,16 @@ A reference resolves from the directory a shell form runs `pf` in: the skill's d
 
 A `staged` session reads the bundle set `pf` compiled from the staged form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. `dispatch-set` is written in the form with nothing to compile, so its scenario states no run.
 
-A stated run a sub-agent makes is read from that sub-agent's own commands, which a harness reports only where it carries a shell and its stream carries a sub-agent's own calls. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports.
+A stated run a sub-agent makes is read from that sub-agent's own commands, which a harness reports only where it carries a shell and its stream carries a sub-agent's own calls. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports: those the session makes itself, from its path's own steps and from the bundle a deferred dispatch's run writes.
+
+### Sub-agent runs
+
+No declared harness reports a sub-agent's commands, so a sub-agent's `pf` run is shown by what it makes possible. A dispatched bundle carrying a `↳` line or a deferred dispatch opens with the Prosiform section, its `Run pf first` sub-section saying `pf` runs first, since the sub-agent following it read no guide. A trace entry's `actions` are the files only the material `pf` compiles on that line states, so a sub-agent that ran no `pf` writes none of them. The corpus test compiles each dispatched bundle a scenario's trace follows, from the entry's set or the set a deferred dispatch's run wrote, runs `pf` on each line its steps reach, and holds the entry's `actions` to the ones that material states and the bundle itself does not.
+
+| Workflow | Scenario | What its sub-agents run |
+| --- | --- | --- |
+| `subagent-first-run` | `first-hop-run` | The ledger, dispatched from the path, compiles its `↳` line, whose material states its action. |
+| `subagent-first-run` | `deep-hop-runs` | The review, at the second hop, compiles its deferred dispatch, whose material states its action and dispatches the ruling; the ruling, at the third, compiles its `↳` line, whose material states its own. |
 
 ### Bootstrap scenarios
 
@@ -94,7 +112,9 @@ Compiling runs a command, so only a harness carrying a shell gives a session in 
 
 ### Deferral scenarios
 
-The two deferral workflows say whether an agent following a `staged` bundle runs `pf` on each `↳` line its path needs, and on no other. A source writes a deferred directive, `[¬→](<path>#<section>)`, and `pf` publishes it as a `↳` line naming that section, beneath the step writing it. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the staged sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
+The three deferral workflows say whether an agent following a `staged` bundle runs `pf` on each `↳` line and deferred link its path needs, and on no other. A source writes a deferred directive, `[¬→](<path>#<section>)`, and `pf` publishes it as a `↳` line naming that section, beneath the step writing it. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the staged sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
+
+A source may also defer a dispatch, `[¬⇉ <text>](<path>#<section>)`, which `pf` publishes as a plain link to that path from the workspace, its marks removed. Only the guide tells a session the link is compiled: the run on it writes a bundle dispatching the section's own targets, and those are the sub-agents the session starts.
 
 A state may also defer its transition: its document writes no `**Next.**` paragraph, and the material its deferral compiles states "Take the transition labelled `<label>`.", so only a session that ran `pf` on the line knows the edge to take.
 
@@ -104,6 +124,8 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 | `deferred-composition` | `deferral-passed` | Nothing: Relocate's step does not hold, so its line is passed. |
 | `deferred-composition` | `nested-needed` | The migration's line, then the archive's line its bundle holds, whose step holds where `history.txt` reads `kept`. |
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
+| `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the plain link `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches the lift, then the strap. |
+| `deferred-dispatch` | `deferred-dispatch-passed` | Nothing: `Pack`'s step does not hold, so its link is passed and nothing is dispatched. |
 | `preset-deferral` | `stand-in-followed` | `pf` on `reference/fetch.md#read-mirror`. `Mirror` and `Read mirror` both select `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 
 ### Composition scenarios
@@ -123,7 +145,7 @@ A session records each state it enters as a line of `trace.log` and does each st
 
 | Class | The session |
 | --- | --- |
-| `missing_action` | walked the path and left a state's action undone or wrong. |
+| `missing_action` | walked the path and left a state's action, or a sub-agent's stated action, undone or wrong. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
 | `loop_miscount` | repeated a loop more times than its input requires. |
@@ -145,9 +167,11 @@ A dispatch scenario states the sub-agents a correct run starts, so a run whose t
 
 The three are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier. A scenario that dispatches nothing passes all three.
 
+A run passing them is then held to each sub-agent's stated `actions`, whatever its harness reports: one absent or wrong is `missing_action`, so a sub-agent that ran no `pf` on its line fails though no stream carries what it ran.
+
 ### Run checks
 
-A run that passes the dispatch checks is held to the `pf` runs its scenario states, wherever its harness reports the commands a session ran. A run is a command, split at `;`, `&&`, `||` and `|`, whose first word is `pf` or a path ending `/pf`; its references are its words other than options and their values, and one names a stated reference when it is that reference or ends `/` and that reference. The session's runs, and each sub-agent's from the commands of the starts naming its section, are held to those stated for it:
+A run that passes the dispatch checks and its sub-agents' actions is held to the `pf` runs its scenario states, wherever its harness reports the commands a session ran. A run is a command, split at `;`, `&&`, `||` and `|`, whose first word is `pf` or a path ending `/pf`; its references are its words other than options and their values, and one names a stated reference when it is that reference or ends `/` and that reference. The session's runs, and each sub-agent's from the commands of the starts naming its section, are held to those stated for it:
 
 | Class | The session |
 | --- | --- |

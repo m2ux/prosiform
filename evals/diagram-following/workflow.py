@@ -53,6 +53,10 @@ what it returned, and `together` on each entry of a set started at once.
 A run writes each input to `inputs/<name>` as the value followed by a
 newline, and a condition reads the file with surrounding whitespace removed.
 
+A trace entry may also list the actions its sub-agent does, each a file
+under `actions/` and the value it holds, which only the material a `pf`
+run on a deferred line of its bundle compiles states.
+
 A scenario also lists the `pf` runs a correct run makes: one
 `[[scenario.compile]]` table per run, in the order the walk makes them,
 naming in `by` the section of the trace whose sub-agent makes it, absent
@@ -87,9 +91,12 @@ A staged form's bundle states a path and runs of its own: a deferred
 directive is published as a `↳` line beneath the step writing it, a step
 opening with a condition reaches its lines only where the condition holds,
 and the walk runs `pf` on each line a step it takes reaches, reading what
-the run writes as part of that state. A state may defer its transition, so
-its document writes no transition paragraph and the material its deferral
-compiles states the edge taken.
+the run writes as part of that state. A deferred dispatch is published as a
+plain link to the path it names, which the walk compiles where a step reaches
+it as it does a `↳` line, and the bundle that run writes dispatches its
+target's own targets. A state may defer its transition, so its document
+writes no transition paragraph and the material its deferral compiles states
+the edge taken.
 
 A document under an `undeclared/` directory declares no `prosiform`, so a
 link to it is left as written rather than followed; a skill's `SKILL.md`,
@@ -329,6 +336,26 @@ DEFERRAL_MARK = "[¬→]("
 INLINE_LINE = re.compile(r"^\[↳ ([^\]]+)\]\(([^)]+)\)$", re.MULTILINE)
 """A `↳` line: the heading it names and the reference a run of `pf` compiles."""
 
+DEFERRED_DISPATCH = re.compile(
+    rf"\[¬(?:{DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\(([^)#]*)(?:#([^)]*))?\)"
+)
+"""A deferred dispatch as a source writes it, with its document and heading.
+
+`pf` publishes it as a plain link to the path it names, and the run on that
+path writes a bundle dispatching the target's own targets.
+"""
+
+PUBLISHED_DEFERRAL = re.compile(
+    r"\[(?!↳ )[^\]]+\]\(([^)#:\s][^):\s]*\.md(?:#[^)\s]*)?)\)"
+)
+"""A link a bundle publishes to a source path rather than a heading of its own.
+
+`pf` rewrites every link it follows to a heading the bundle carries, so a link
+naming a Markdown path is one it deferred, a deferred dispatch among them, and
+a run of `pf` on that path compiles it. A `↳` line names its path too, and is
+read through the directive linking it.
+"""
+
 DIRECTIVE_FRAGMENT = re.compile(r"\[[^\]\s]\]\(#([^)]+)\)")
 """A directive as a bundle carries it: a one-symbol label linking its own heading."""
 
@@ -469,12 +496,16 @@ class Dispatch:
     `<document>#<heading>`, since an author and the profile both name the
     target's section rather than the bundle it compiles to. `returned` is
     what it gave back, and `together` marks an entry of a set started
-    beside the entry above it.
+    beside the entry above it. `actions` are the files under `actions/` its
+    sub-agent writes, each with the value it holds, which only the material
+    a `pf` run on a deferred line of its bundle compiles states; none where
+    the scenario states the sub-agent's work by its starts alone.
     """
 
     section: str
     returned: str
     together: bool
+    actions: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -842,6 +873,21 @@ def read_compile(row: dict[str, object], named: str) -> Compile:
     return Compile(by, tuple(args))
 
 
+def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
+    """One sub-agent start, as a `[[scenario.trace]]` table writes it."""
+    actions = row.get("actions", {})
+    if not isinstance(actions, dict) or not all(
+        isinstance(value, str) for value in actions.values()
+    ):
+        raise CorpusError(f"{named}: a start's actions are {actions!r}, not values")
+    return Dispatch(
+        str(row["dispatch"]),
+        str(row["returned"]),
+        bool(row.get("together", False)),
+        tuple(actions.items()),
+    )
+
+
 def read_scenarios(path: Path) -> tuple[Scenario, ...]:
     """The scenarios a workflow's `scenarios.toml` lists."""
     with path.open("rb") as handle:
@@ -851,10 +897,7 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
             entry["name"],
             dict(entry["inputs"]),
             tuple(entry["path"]),
-            tuple(
-                Dispatch(row["dispatch"], row["returned"], row.get("together", False))
-                for row in entry.get("trace", ())
-            ),
+            tuple(read_dispatch(row, entry["name"]) for row in entry.get("trace", ())),
             tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
         )
         for entry in entries
@@ -1101,27 +1144,36 @@ def bundled_sections(bundle_text: str) -> dict[str, BundledSection]:
 def reached_lines(
     bundle_text: str, scope: str, inputs: dict[str, str], trace: list[str]
 ) -> list[str]:
-    """The references of the `↳` lines a scope's steps reach, in step order.
+    """The references of the deferred lines a scope's steps reach, in step order.
 
     A deferred directive is published linking the heading its `↳` line sits
-    under, so a step reaches each line its directives link. A step opening
-    with a condition reaches its lines only where the condition holds.
+    under, so a step reaches each line its directives link; a deferred
+    dispatch is published as a plain link to its path, which the step
+    reaches where it stands. A step opening with a condition reaches its
+    lines only where the condition holds.
     """
     sections = bundled_sections(bundle_text)
     found: list[str] = []
     for line in scope.splitlines():
-        fragments = DIRECTIVE_FRAGMENT.findall(line)
-        if not fragments:
+        marks = sorted(
+            [*DIRECTIVE_FRAGMENT.finditer(line), *PUBLISHED_DEFERRAL.finditer(line)],
+            key=lambda mark: mark.start(),
+        )
+        if not marks:
             continue
         if (step := CONDITIONAL_STEP.match(line)) and not holds(
             step.group(1), inputs, trace
         ):
             continue
-        for fragment in fragments:
-            if fragment in sections:
+        for mark in marks:
+            if mark.re is PUBLISHED_DEFERRAL:
+                found.append(mark.group(1))
+            elif mark.group(1) in sections:
                 found += [
                     reference
-                    for _, reference in INLINE_LINE.findall(sections[fragment].text)
+                    for _, reference in INLINE_LINE.findall(
+                        sections[mark.group(1)].text
+                    )
                 ]
     return found
 
@@ -1242,10 +1294,10 @@ def staged_walk(
     """The path and the session's runs the staged form's bundles state, and faults.
 
     The walk reads the entry's bundle `pf` compiles from the staged sources,
-    and runs `pf` from them on each `↳` line a state's steps reach, as a
-    session does, so the runs are the ones a correct session makes and the
-    path is the one the bundles they write state. Each run writes under
-    `output`, and one failing is a fault.
+    and runs `pf` from them on each `↳` line and deferred dispatch a state's
+    steps reach, as a session does, so the runs are the ones a correct
+    session makes and the path is the one the bundles they write state. Each
+    run writes under `output`, and one failing is a fault.
     """
     entry = output / "entry"
     run = bundle(workflow, STAGED, entry)
@@ -1401,33 +1453,68 @@ def nested_conditions(workflow: Workflow, root: Path) -> tuple[str, ...]:
 
 
 def dispatch_walk(
-    workflow: Workflow, form: str, path: tuple[str, ...]
+    workflow: Workflow, form: str, path: tuple[str, ...], inputs: dict[str, str]
 ) -> tuple[tuple[str, bool], ...]:
     """The sub-agents a correct run of one form starts along a path, in order.
+
+    Each pair is a start's section and whether it started beside the entry
+    above it, as `dispatch_starts` walks them.
+    """
+    return tuple(
+        (section, together)
+        for section, together, _ in dispatch_starts(workflow, form, path, inputs)
+    )
+
+
+def dispatch_starts(
+    workflow: Workflow, form: str, path: tuple[str, ...], inputs: dict[str, str]
+) -> tuple[tuple[str, bool, int], ...]:
+    """Each sub-agent start a correct run of one form makes along a path, in order.
 
     Each state on the path dispatches the targets its section's steps name,
     and a dispatched section dispatches its own targets in turn, so the walk
     is the source's statement of which sub-agents start, in what order, and
-    which of them start together. What each returned is the scenario's to
-    state, since it is the sub-agent's to give.
+    which of them start together. A deferred dispatch a step reaches, where
+    its condition holds, is compiled by the agent following that step, and
+    the bundle that run writes dispatches the target's own targets, so they
+    start from that agent. Each start carries its depth: 0 for one the session
+    makes itself, one more for each sub-agent between. What each returned is
+    the scenario's to state, since it is the sub-agent's to give.
     """
     root = workflow.form(form)
-    trace: list[tuple[str, bool]] = []
+    trace: list[tuple[str, bool, int]] = []
 
-    def follow(body: str, directory: Path) -> None:
-        for together, targets in dispatched(body, directory, root, form):
-            for index, target in enumerate(targets):
-                trace.append((target, together and index > 0))
-                document, _, heading = target.partition("#")
-                written = root / f"{document}.md"
+    def follow(body: str, directory: Path, depth: int, walked: list[str]) -> None:
+        for line in body.splitlines():
+            if (step := CONDITIONAL_STEP.match(line)) and not holds(
+                step.group(1), inputs, walked
+            ):
+                continue
+            for document, heading in DEFERRED_DISPATCH.findall(line):
+                written = (directory / document).resolve()
                 follow(
-                    section_body(written.parent, written.name, heading),
+                    section_body(written.parent, written.name, heading)
+                    if heading
+                    else authored(written),
                     written.parent,
+                    depth,
+                    walked,
                 )
+            for together, targets in dispatched(line, directory, root, form):
+                for index, target in enumerate(targets):
+                    trace.append((target, together and index > 0, depth))
+                    document, _, heading = target.partition("#")
+                    written = root / f"{document}.md"
+                    follow(
+                        section_body(written.parent, written.name, heading),
+                        written.parent,
+                        depth + 1,
+                        walked,
+                    )
 
-    for state in path:
+    for index, state in enumerate(path):
         section = sections_of(workflow, form)[state]
-        follow(section.body, section.path.parent)
+        follow(section.body, section.path.parent, 0, list(path[: index + 1]))
     return tuple(trace)
 
 
@@ -1487,7 +1574,8 @@ def deferral_inputs(workflow: Workflow, form: str) -> set[str]:
         input_read(step.group(1))
         for path in sorted(workflow.form(form).rglob("*.md"))
         for line in authored(path).splitlines()
-        if DEFERRAL_MARK in line and (step := CONDITIONAL_STEP.match(line))
+        if (DEFERRAL_MARK in line or DEFERRED_DISPATCH.search(line))
+        and (step := CONDITIONAL_STEP.match(line))
     }
 
 
