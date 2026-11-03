@@ -12,6 +12,8 @@ This record holds its delivery of `AC4`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W04 work item](w04.md) | The checks page's statement of the trigger rule, with its validation |
+| [Plan changes](changes.md) | The plan changes the session applied and held |
 
 ## Links
 
