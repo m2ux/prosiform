@@ -47,7 +47,7 @@ the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
 `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, recorded cost, the sessions it did not
+holds the run's date, options, recorded tokens, the sessions it did not
 start and the run's state. Once `run.json` is written, `report.py` writes
 the run's report beside it, compared with the committed baseline.
 
@@ -66,17 +66,18 @@ process group, the agent and every process it started, is killed; its exit
 status is recorded as `timeout`, and what its workspace holds by then is
 kept and scored like any other session's.
 
-The spending cap holds a run's recorded cost within `--budget-usd`. A run
-whose budget does not cover every session of its matrix at the session cap,
-`--session-budget-usd`, is refused before it starts a session, naming both.
-The agent checks its session cap between calls, so a session can record
-more than its cap, and the run guards its budget against that: a
-session starts only when the recorded cost, plus the session cap reserved
+The token budget holds a run's recorded tokens within `--budget-tokens`. A
+run whose budget does not cover every session of its matrix at the session
+cap, `--session-budget-tokens`, is refused before it starts a session,
+naming both. The agent checks its own cap between calls, so a session can
+record more than its cap, and the run guards its budget against that: a
+session starts only when the recorded tokens, plus the session cap reserved
 for each session in flight, plus its own session cap, is within the
 budget; while it is not and a session is in flight, the next one waits for
 it to settle. When it is not and none is in flight, the run starts no more
-sessions and lists the rest as not started. A session settles at the cost
-its `result` message reports, or at its session cap when it reports none.
+sessions and lists the rest as not started. A session settles at the tokens
+its `result` message reports, or holds its session cap against the budget
+when it reports none.
 """
 
 import argparse

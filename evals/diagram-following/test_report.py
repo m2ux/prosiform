@@ -14,6 +14,7 @@ from typing import Any
 
 import pytest
 from report import (
+    DISPOSITIONS,
     FAILURES,
     REPORT_JSON,
     REPORT_MD,
@@ -211,6 +212,67 @@ def test_the_report_gives_the_run_cost_and_the_sessions_not_started(
     assert (built["sessions"], built["started"]) == (12, 10)
     assert built["tokens"] == 2750
     assert built["not_started"] == NOT_STARTED
+
+
+def test_the_report_sums_every_session_cost(recorded: Path, tmp_path: Path) -> None:
+    """The run's cost is every reported cost summed, and null when none is."""
+    absent = tmp_path / "absent.json"
+    built = report(recorded, absent)
+    assert built["cost_usd"] is None
+    assert "- **Cost:** no session reported a cost." in markdown(built)
+    for path in recorded.rglob(SESSION):
+        record = json.loads(path.read_text())
+        record["cost_usd"] = 0.25
+        path.write_text(json.dumps(record))
+    built = report(recorded, absent)
+    assert built["cost_usd"] == 2.5
+    assert "- **Cost:** USD 2.5." in markdown(built)
+
+
+HAIKU_UNFINISHED = f"{HAIKU}/linear/straight-through/bundle/4"
+HAIKU_MISCOUNT = f"{HAIKU}/looping/two-rounds/prose/2"
+HAIKU_PASSED = f"{HAIKU}/linear/straight-through/bundle/1"
+
+
+def test_each_failing_session_carries_the_disposition_triage_gave_it(
+    recorded: Path, tmp_path: Path
+) -> None:
+    """A failing session the dispositions file does not name reads untriaged."""
+    given = {
+        HAIKU_UNFINISHED: {"disposition": "miss", "evidence": "stopped at Review"},
+        HAIKU_MISCOUNT: {"disposition": "defect", "evidence": "input reads 3"},
+    }
+    (recorded / DISPOSITIONS).write_text(json.dumps(given))
+    built = report(recorded, tmp_path / "absent.json")
+    assert {item["session"]: item["failure"] for item in built["failing"]} == {
+        f"{HAIKU}/branching/high-severity/tree/1": "skipped_state",
+        f"{HAIKU}/branching/high-severity/tree/2": "missing_action",
+        HAIKU_UNFINISHED: "unfinished",
+        HAIKU_MISCOUNT: "loop_miscount",
+    }
+    by_session = {item["session"]: item for item in built["failing"]}
+    assert by_session[HAIKU_UNFINISHED]["disposition"] == "miss"
+    assert by_session[HAIKU_MISCOUNT]["evidence"] == "input reads 3"
+    assert by_session[f"{HAIKU}/branching/high-severity/tree/1"]["disposition"] is None
+    text = markdown(built)
+    assert f"| `{HAIKU_UNFINISHED}` | `unfinished` | miss | stopped at Review |" in text
+    untriaged = f"`{HAIKU}/branching/high-severity/tree/2` | `missing_action`"
+    assert f"| {untriaged} | untriaged | — |" in text
+
+
+@pytest.mark.parametrize(
+    ("given", "refusal"),
+    [
+        ({HAIKU_UNFINISHED: {"disposition": "flaky"}}, "not one of miss"),
+        ({HAIKU_PASSED: {"disposition": "miss"}}, "did not fail"),
+    ],
+)
+def test_a_disposition_outside_the_rubric_or_the_failures_is_refused(
+    recorded: Path, tmp_path: Path, given: dict[str, Any], refusal: str
+) -> None:
+    (recorded / DISPOSITIONS).write_text(json.dumps(given))
+    with pytest.raises(CorpusError, match=refusal):
+        report(recorded, tmp_path / "absent.json")
 
 
 def test_without_a_baseline_no_row_is_compared(recorded: Path, tmp_path: Path) -> None:
