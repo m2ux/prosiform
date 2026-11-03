@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/884681c0cc4caaa9a1740a24fab204fea9a39d1a/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/fa29043d1f9d56f9a4f4e4fdf107e311d15a1b93/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches as one validated bundle, and each target it dispatches as a bundle of its own.
@@ -100,4 +100,4 @@ cd fixtures/composition/titles-from-several-sources-share-one-destination-sectio
 pf guide.md
 ```
 
-A link labelled with one arrow, as in `[→](read.md#inputs)`, is a composition directive. It places the section it names beneath the section that writes it, and `[¬→](read.md#inputs)` defers that placement to a later run. [Composition](docs/composition.md) states the grammar.
+A link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`, is a composition directive. It places the section it names beneath the section that writes it, and `[¬↳ Inputs](read.md#inputs)` defers that placement to a later run. [Composition](docs/composition.md) states the grammar.
