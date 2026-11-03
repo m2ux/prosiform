@@ -218,15 +218,15 @@ class Overflow(Exception):
 
 
 class Unplaced(Exception):
-    """A link asking for a section beneath its own that no section holds.
+    """A dispatch or composition directive in a heading emitted as text alone.
 
-    An `In parallel` sub-section stands one level below the section
-    holding the links it serves, and a composition directive's
-    destination section one level below the section writing it. A title
-    the file heading absorbs is emitted as that heading rather than as a
-    section of its own, so a link the title carries has no section to
-    stand beneath and the run states the dispatch, or places the
-    composition, nowhere.
+    A composition directive's destination section stands one level below
+    the section writing it, and a dispatch is a link the bundle publishes.
+    A title the file heading absorbs is emitted as that heading rather
+    than as a section of its own, so a directive the title carries has
+    no section to stand beneath and a dispatch it carries is no link in
+    the bundle: the run states the dispatch, or places the composition,
+    nowhere.
     """
 
     def __init__(
@@ -848,14 +848,15 @@ def line_of(token: Token, first_line: int = 1) -> int:
 
 
 def placing_in(tokens: Sequence[Token], token: Token) -> tuple[str, str, bool] | None:
-    """The link one heading carries that asks for a section beneath it.
+    """The dispatch or composition directive one heading carries.
 
-    Where the heading is emitted as text alone, a dispatch or a
-    composition directive in it has no section to stand beneath. An
-    ancestor heading the run did not select is emitted as its title and
-    nothing else, and a title is flattened to the one line an ATX heading
-    is. Its link is therefore no link in the bundle: nothing places a
-    section for it, and the target it names is compiled by no run. The
+    Where the heading is emitted as text alone, a composition directive
+    in it has no section to stand beneath and a dispatch in it is no link
+    to publish. An ancestor heading the run did not select is emitted as
+    its title and nothing else, and a title is flattened to the one line
+    an ATX heading is. Its link is therefore no link in the bundle:
+    nothing places a section for it, and the target it names is compiled
+    by no run. The
     heading's inline tokens are read rather than the copied line, because
     the copy is what the run publishes, while the link is what the
     author wrote. The link arrives with its destination, its opening and

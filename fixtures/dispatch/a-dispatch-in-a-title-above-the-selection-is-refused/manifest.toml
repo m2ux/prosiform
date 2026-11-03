@@ -16,7 +16,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-message_contains = ["⇉ Publish"]
+message_contains = ["⇉ Publish", "emitted as text alone"]
 reference = "publish.md"
 source = "notes.md:4"
 chain = ["guide.md", "notes.md#procedure"]

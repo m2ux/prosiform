@@ -1937,11 +1937,11 @@ def dispatches(
     A dispatch is a withheld link whose target the run compiles as a
     bundle of its own, so what is yielded is the target the link names,
     with the place the link is written: the hop a chain of dispatches
-    takes from here. The links are those the bundle's dispatch
-    sub-sections are placed for, read by the one reader that places
-    them, so every hop the run follows has its sub-section. A link with
-    no text after its mark leaves that sub-section nothing to be named
-    by, so it is refused as the operator refusals are, naming the route.
+    takes from here. The links are those the bundle points at a bundle
+    file or an `In parallel` sub-section, read by the one reader that
+    places them, so every hop the run follows has its file. A link with
+    no text after its mark names nothing for its reader, so it is
+    refused as the operator refusals are, naming the route.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
@@ -1951,8 +1951,8 @@ def dispatches(
             if not link.text:
                 raise input_failure(
                     f"the link {link.opening!r} dispatches {link.written!r} with "
-                    f"no text after its mark, so no sub-section heading can "
-                    f"name it",
+                    f"no text after its mark, so it names nothing for its "
+                    f"reader",
                     code=UNSUPPORTED_CONSTRUCT,
                     remedy="write the link's text after its mark",
                     reference=link.opening,
@@ -2922,8 +2922,8 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     """One assembly, a source fault it meets reported as the input it is.
 
     A heading beyond the sixth level is a hierarchy the bundle cannot
-    emit, a dispatched link the bundle places no sub-section for is a
-    handoff it cannot state, and a directive whose composition has no
+    emit, a dispatched link in a heading the bundle emits as text alone
+    is a handoff it cannot state, and a directive whose composition has no
     section, parent or level to take, or a name its scope already
     holds, is a placement it cannot make, and a composition reaching a
     section that holds a directive on its own chain is one that would
@@ -3018,14 +3018,16 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
         ) from colliding
     except Unplaced as unplaced:
         kind = "directive" if unplaced.composing else "dispatch"
-        placed = "destination section" if unplaced.composing else "dispatch sub-section"
+        why = (
+            "is no section a destination section can stand beneath"
+            if unplaced.composing
+            else "is emitted as text alone, so the bundle has no link to publish"
+        )
         raise input_failure(
             f"the {kind} {unplaced.opening!r} in {unplaced.path!r} names "
-            f"{unplaced.destination!r}, and the heading that carries it is no "
-            f"section a {placed} can stand beneath",
+            f"{unplaced.destination!r}, and the heading that carries it {why}",
             code=UNSUPPORTED_CONSTRUCT,
-            remedy=f"write the {kind} in the body beneath the heading, where a "
-            f"{placed} has a section to follow",
+            remedy=f"write the {kind} in the body beneath the heading",
             reference=unplaced.destination,
             source=location(unplaced.path, unplaced.line),
             chain=chains.get(unplaced.path, ()),

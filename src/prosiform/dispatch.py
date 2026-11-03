@@ -360,7 +360,7 @@ class Link:
 
     @property
     def served(self) -> Served:
-        """The sub-section the link points at, as its target and operator."""
+        """Where the link points, as its target and operator."""
         return (self.target, self.parallel)
 
 
