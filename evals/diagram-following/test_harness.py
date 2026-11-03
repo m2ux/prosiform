@@ -298,12 +298,12 @@ def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> Non
     """Each harness names what confines a session, and refuses what it cannot."""
     config = tmp_path / "config"
     config.mkdir()
-    refused = Claude().preflight(config)
+    refused = Claude().preflight(config, tmp_path, ())
     assert refused is not None and refused.startswith(f"{config} holds no login")
     (config / ".credentials.json").touch()
-    assert Claude().preflight(config) is None
-    assert Cursor().preflight(config) is None
-    refused = Cursor().preflight(tmp_path / "absent")
+    assert Claude().preflight(config, tmp_path, ()) is None
+    assert Cursor().preflight(config, tmp_path, ()) is None
+    refused = Cursor().preflight(tmp_path / "absent", tmp_path, ())
     assert refused is not None and "is no directory" in refused
 
 

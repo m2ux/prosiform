@@ -128,15 +128,22 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
 
-Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one reach a session. It fails before the first session starts, naming the file to remove:
+Neither flag suppresses a plugin's hooks or a settings file's, so the preflight refuses a run whose settings would let one reach a session. It fails before the first session starts, naming the file to remove. Each file below is read from the scope shown, and a file holding only preferences is no refusal. Files in the eval's config directory are read under the user scope:
 
 - `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
 - `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint;
-- `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, and a settings file holding only preferences is no refusal, so the directory keeps its theme and model.
+- `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, so the directory keeps its theme and model.
+
+Files in a project's `.claude` directory are read under the project scope, `settings.local.json` being its untracked local variant. A file of either name declaring a hook for any event is refused, naming each event, from two places:
+
+- a workflow's form tree, the source a session's workspace is copied from, so the file reaches every session of that tree; remove the file from the tree;
+- the `.claude` directory of every ancestor of the workspaces, the workspace root `<eval-root>/workspaces` included, since Claude Code reads project settings from each directory on the path from a session's working directory to the filesystem root. Remove the file, or pass an `--eval-root` outside that ancestor, which moves the workspaces from under it.
 
 A run whose config directory holds no login fails the same way, naming the one-time login command.
 
-A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
+The host's managed settings file, `/etc/claude-code/managed-settings.json` on Linux, belongs to the host's administrator and reaches every session wherever the config directory points. The run records it rather than refusing it: when its `hooks` block declares a hook, `run.json` names the file and each event under `managed.hooks`, so every recorded session reads as carrying that hook. A host with no such file, or one declaring no hook, records none, and the sessions start either way.
+
+A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Where a managed hook is recorded, a hook's response is that hook's, since the preflight admits no other. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
 
 ## Running
 
@@ -180,7 +187,7 @@ The run's guard reads each session's reported tokens when it settles: a session 
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, managed hooks, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
