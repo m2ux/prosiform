@@ -112,7 +112,7 @@ One repetition of every feature scenario in each form, on the harness and model 
 | Sessions | 30: fifteen scenarios, two forms, one repetition. |
 | Session cap | 400 000 tokens: a session's tokens count its cache reads, so a feature session records over 100 000, past the runner's 60 000 default. |
 | Estimate | USD 0.80: 30 sessions at the committed baseline's mean of USD 0.027 a session, its USD 4.01 over 150 sessions. |
-| Run | `mvp-proof-shakedown`, 2026-11-03: `completed`, all 30 sessions started and passed, with no failing session to triage. Each session carried a managed plugin's hook response, which the run records. |
+| Run | `mvp-proof-shakedown`, 2026-11-03: `completed`, all 30 sessions started and passed, with no failing session to triage. Each session carried a managed plugin's hook response, which the run counts from its transcript. |
 | Measured | USD 0.123701 in all, USD 0.004123 a session; 3 593 668 tokens, 119 789 a session, the largest 206 458. These set the proof's session cap, token budget and cost cap above. |
 
 ```bash
