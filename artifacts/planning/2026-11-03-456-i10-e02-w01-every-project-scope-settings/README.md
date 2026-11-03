@@ -13,6 +13,18 @@ This record holds its delivery of `AC1,AC2,AC3`: the work item, the validation e
 | Artifact | What it holds |
 | --- | --- |
 
+## Test Evidence
+
+Each check is a stub-agent test in `evals/diagram-following/test_run.py`, run by `make check` in the row worktree at commit `b0bc6bca`. No live session or paid run is made.
+
+| Check | Procedure | Coverage |
+| --- | --- | --- |
+| Form tree settings | A copied form tree plants a `SessionStart` hook in its `.claude/settings.json`, then in `.claude/settings.local.json`. Each run is refused before the first session, naming the file and no results folder is written. | AC1 |
+| Ancestor settings declaring a hook | A `.claude` directory above the eval workspaces plants a `SessionStart` hook in each of its two settings files. Each run is refused, naming the file and `--eval-root`. | AC3 |
+| Ancestor settings declaring no hook | A `.claude` directory above the eval workspaces holds `settings.json` with preferences only. The session starts. | AC2 |
+
+`make check` exits 0 with the `PROSIFORM_BUILD` setting from the brief.
+
 ## Links
 
 | Resource | Link |
