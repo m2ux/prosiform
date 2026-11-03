@@ -1,0 +1,26 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+#
+# Each state's document places its own section by the group pair its presets
+# in force state, composed from the leaves up.
+
+# Lint and Unit link nothing, and both join one group.
+[[scenario]]
+name = "leaf-group"
+path = ["Scope", "Lint", "Unit", "Release"]
+inputs = { "work.txt" = "test", "stage.txt" = "build" }
+
+# Package, which Compile links, stands in a group inside Compile's division,
+# and Sign, which Package links, in a group composed inside Package's.
+[[scenario]]
+name = "nested-intermediate"
+path = ["Scope", "Stage", "Compile", "Package", "Sign", "Release"]
+inputs = { "work.txt" = "release", "stage.txt" = "build" }
+
+# notify.md is reached from the diagram under its default and from Announce
+# under its announce preset, so it stands in two groups: Messages inside the
+# entry's division and Announcements inside Announce's.
+[[scenario]]
+name = "two-presets-one-document"
+path = ["Scope", "Stage", "Announce", "Notify", "Release"]
+inputs = { "work.txt" = "release", "stage.txt" = "announce" }

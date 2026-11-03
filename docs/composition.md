@@ -183,7 +183,7 @@ Design rule: *Budgets*. Fixtures:
 
 ## Presets and `subst`
 
-A directive is a reference, so its scope's title selects the target's presets as [Sources](sources.md) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
+A directive is a reference, so its scope's title selects the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
 
 An immediate directive is held to no heading of its target. A deferred one is compiled later under the presets its target's own heading selects, so a deferred directive whose scope title selects other presets of the target is refused with `E_UNSUPPORTED_CONSTRUCT`, naming both selections.
 

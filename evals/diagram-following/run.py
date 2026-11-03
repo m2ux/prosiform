@@ -126,7 +126,6 @@ from workflow import (
     COMPILED_FORM,
     DIAGRAM,
     ENTRY,
-    ENTRY_BUNDLE,
     LINKED_FORM,
     PROSE,
     ROOT,
@@ -139,6 +138,7 @@ from workflow import (
     dispatched,
     instruction,
     sections_of,
+    stray,
     workflows,
 )
 
@@ -171,6 +171,7 @@ FORMS = {
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
 BUILD = "build"
+"""The existing folder a bootstrapping session compiles into."""
 BIN = "bin"
 SKILL = "SKILL.md"
 SKILL_HOME = Path(".claude") / "skills"
@@ -182,7 +183,6 @@ instruction naming it.
 """
 SKILL_FILES = (SKILL,)
 """The files a bootstrap skill carries beside the documents it compiles."""
-"""The existing folder a bootstrapping session compiles into."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
@@ -296,7 +296,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--harness",
         default="claude",
-        help="the agent CLI the run drives: claude or cursor",
+        help="the agent CLI the run drives: claude, cursor or opencode",
     )
     parser.add_argument(
         "--agent-command", help="the agent's command line, overriding the harness"
@@ -381,13 +381,18 @@ def observable(
 
 
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
-    """One bundled form's bundle set, each bundle by the name `pf` gave it."""
+    """One bundled form's bundle set, each bundle by the name `pf` gave it.
+
+    A run reporting any diagnostic beyond the warnings the workflow declares
+    is refused, as one exiting nonzero is.
+    """
     with tempfile.TemporaryDirectory() as output:
-        built = bundle(workflow.form(FORMS[form]), Path(output))
-        if built.returncode != 0 or built.stderr:
+        built = bundle(workflow, FORMS[form], Path(output))
+        reported = stray(workflow, built.stderr)
+        if built.returncode != 0 or reported:
             raise CorpusError(
                 f"{workflow.name}: pf bundled the {form} form with exit "
-                f"{built.returncode} and {built.stderr.decode()!r}"
+                f"{built.returncode} and {reported!r}"
             )
         written = bundled(Path(output))
         if not written:
@@ -411,7 +416,7 @@ def prepare(
     """
     if form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
-            written = ENTRY if name == ENTRY_BUNDLE.name else name
+            written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
     elif form == BOOTSTRAP_SET:
         placed = workspace / SKILL_HOME / workflow.name

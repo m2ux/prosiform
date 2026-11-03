@@ -2,7 +2,9 @@
 
 Two scripts draw a bundle. `render-diagram.py` takes any entry document and draws the files it opened beside the bundle. `render-example.py` draws the fixed cases the architecture pages carry, from the cases declared in `scripts/examples.json`.
 
-Both use the same drawing: one panel per file, heading levels marked at the left margin, links in blue, operators in amber.
+Both use the same drawing: one panel per file, heading levels marked at the left margin, links in blue, operator marks in amber.
+
+The scripts draw bundles for a reader of these pages. How a Mermaid diagram's own links are read is stated at [Diagram links](references.md#diagram-links), and `make render` holds them to rendering as links a reader can follow, as [Rendering](../checks.md#rendering) states.
 
 ## The architecture examples
 
@@ -24,11 +26,11 @@ python3 scripts/render-example.py dispatch --build 'pf' --output /tmp
 | `--output DIR` | Directory the drawings are written to; `docs/images` when absent. |
 | `--build COMMAND` | The build's command line, split as a shell splits one; `pf` when absent. |
 
-A case that exits nonzero still draws, and the run reports the status, so a case meant to fail is visible as one.
+Every case draws and reports the build's exit status, so a case meant to fail is visible as one. A case declares the status it expects as `status`, `0` when absent, and the script fails when the build exits otherwise.
 
 ## Rendering any entry
 
-`render-diagram.py` bundles one Markdown entry document and draws its opened source files beside the output. Each call produces one diagram. Local Markdown dependencies are discovered by Prosiform.
+`render-diagram.py` bundles one Markdown entry document and draws its opened source files beside the entry's bundle. Each call produces one diagram; a dispatched target's bundle is not drawn. Local Markdown dependencies are discovered by Prosiform.
 
 Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync --frozen --no-dev` to install the compiler. From the repository root, use that environment's Python:
 
@@ -39,7 +41,7 @@ Use a clean Prosiform compiler checkout. In its `src/` directory, run `uv sync -
 | Argument | Purpose |
 | --- | --- |
 | `document` | Entry Markdown file, such as `SKILL.md`. |
-| `--output PREFIX` | Required output path prefix. Existing files with this prefix are overwritten. |
+| `--output PREFIX` | Required output path prefix. Existing files with this prefix are overwritten; a prefix that would overwrite a source document is refused. |
 | `--cwd DIR` | Invocation working directory; defaults to the entry document's directory. |
 | `--section FRAGMENT` | Bundle one section of the entry document. |
 | `--max-output-bytes N` | Compiler output-size budget in bytes; use a positive integer. |

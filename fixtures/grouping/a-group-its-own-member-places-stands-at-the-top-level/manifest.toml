@@ -1,0 +1,15 @@
+description = "A group whose first member a later member's link places in it would stand inside itself, so it stands at the top level: the notice joins Messages and `Announcements`, Beta joins `Announcements` after it, and Beta's link from its `Announce` section is the one placing the notice in `Announcements`."
+
+clauses = [
+  "Grouping — Nested groups",
+  "Presets — A document in several groups",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

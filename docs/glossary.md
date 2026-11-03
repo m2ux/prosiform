@@ -24,7 +24,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **region** | A contiguous span of a source document selected for inclusion: a whole document, or a section. |
 | **preamble** | Content above a source document's first heading. It belongs to no section, so only a whole-document selection carries it. |
 | **frontmatter** | A leading delimited YAML block, validated and retained as source metadata, excluded from Markdown content and dependency discovery. |
-| **preset** | A named mapping of conversion settings a document declares in `prosiform` to govern its own content: `default` is always in force, and each other preset is in force where its name is a word of the title of the section holding the link that reaches the document. Distinct from the profile, the grammar a run implements. |
+| **preset** | A named mapping of conversion settings a document declares in `prosiform` to govern its own content: `default` is always in force, and each other preset is in force where its name is a word of the title of the section holding the link that reaches the document. An entry reference, which no section holds, selects by the title of the section or document it names, and so does a dispatched target, which compiles as an entry. Distinct from the profile, the grammar a run implements. |
 
 ## References
 
@@ -47,7 +47,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **dispatch depth** | The number of dispatch hops along one chain of bundles, counted from the run's entry: a dispatch the entry carries is the first hop, and a dispatch a dispatched bundle carries is one hop further. A chain deeper than three warns. |
 | **closure** | The transitive closure of the reference relation over the entry references: every declaring target reachable by following the references selected content carries. |
 | **expansion depth** | Link hops from the nearest entry reference to a target, along its shortest path. |
-| **substitution mapping** | The `subst` pairs a document's presets in force state, each naming a different document or section for one reference that document writes: a key is the identity a reference normalizes to, a key carrying a fragment redirects that section alone and states precedence over a key naming the whole document, and both sides resolve from the declaring document's directory. It is read before classification, closure and rewriting and is applied to the identity a reference normalized to, so every reference the document writes is redirected — a compiled, deferred, dispatched or parallel-dispatched target alike, a reference naming a document that declares and one the run would carry as a citation. A key naming a document that does not exist is redirected like any other. |
+| **substitution mapping** | The `subst` pairs a document's presets in force state for every reference reaching it in one bundle, each naming a different document or section for one reference that document writes: a key is the identity a reference normalizes to, a key carrying a fragment redirects that section alone and states precedence over a key naming the whole document, and both sides resolve from the declaring document's directory. It is read before classification, closure and rewriting and is applied to the identity a reference normalized to, so every reference the document writes is redirected — a compiled, deferred, dispatched or parallel-dispatched target alike, a reference naming a document that declares and one the run would carry as a citation. A key naming a document that does not exist is redirected like any other. A document's links are written once, so two presets in force for it that map one key to two alternatives are refused. |
 | **substitute** | The target a substitution mapping names, which is the target outright rather than an overlay of its bytes: its title, its group and depth, its own declaration and its own links are the ones the run uses, and a bundle reads as if the author had written the substitute's path in the link. |
 | **resource** | A reference the bundle carries as text rather than opening: an image whatever file it names, a remote address, any other link naming no local Markdown document. It is emitted as authored and never opened, rebased or resolved. |
 
@@ -64,6 +64,9 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **member** | A contributing source document whose metadata declares a named group. |
 | **variant** | One of several same-named sections a merged group draws from different documents. Emitted once as a shared heading, with one subheading per source document. |
 | **overview** | The section a merged group gathers its member subheadings beneath, where it also emits merged sections. A titled entry member opens its group with its own title and preamble, its sections lead, and the other members' subheadings follow in the overview. |
+| **scope** | The section holding a composition directive, at the heading the bundle emits for it. A directive in a preamble, or in a heading the bundle emits as text alone, has none and is refused. |
+| **destination section** | The section a scope gains, one level below it, for each heading title its directives' targets carry, headed by that title; directives in one scope naming same-titled targets share one. |
+| **contribution** | What one composition directive places in its destination section: a heading naming the target's immediate parent, one level further down, then the target's body and subsections at their relative depth. The directive's link points at that heading. |
 | **title case** | The spelling every heading the bundle generates carries: each word of the name capitalized, every separator the name carries kept. It changes letters and not structure, and it reaches what the compiler writes and nothing else. |
 
 ## Addressing
@@ -84,6 +87,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **invariant** | A property validation establishes, such as exactly-once coverage or one intended destination per rewritten reference. |
 | **diagnostic** | One message a run emits to standard error, carrying a severity, a stable code, the reference or location it concerns, the identity that reference resolved to and the chain of references that reached it where it has them, and a remedy where one is accurate. |
 | **publication** | Writing every bundle a run produces — the entry's and each dispatched bundle, its bundle set — once every one has validated, into a folder of the run's own, named for its entry with the `.bundles` suffix, under the output folder, built beside it and swapped in whole. |
+| **run folder** | The folder a run publishes its bundles into: the joined name of its entry selections with the `.bundles` suffix, under the output folder `-o` names, which the run makes where absent. |
 | **delivery** | Transporting a published bundle to the caller. A successful build does not establish a successful delivery. |
 
 ## Terms deliberately not used

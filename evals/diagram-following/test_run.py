@@ -54,7 +54,6 @@ from score import (
 )
 from workflow import (
     ENTRY,
-    ENTRY_BUNDLE,
     LINKED_FORM,
     CorpusError,
     workflows,
@@ -219,7 +218,7 @@ def material(session: Session) -> set[str]:
             | {
                 name
                 for name in bundles_of(workflow, session.form)
-                if name != ENTRY_BUNDLE.name
+                if name != workflow.entry_bundle.name
             }
         )
     tree = workflow.form(FORMS[session.form])
@@ -233,7 +232,7 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 28
+    assert len(sessions) == 2 * 5 * 58
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -334,7 +333,9 @@ def test_a_compiled_form_gives_its_whole_bundle_set(tmp_path: Path, log: Path) -
     )
     [workflow] = [CORPUS["dispatch-chain"]]
     published = (
-        name for name in bundles_of(workflow, COMPILED_SET) if name != ENTRY_BUNDLE.name
+        name
+        for name in bundles_of(workflow, COMPILED_SET)
+        if name != workflow.entry_bundle.name
     )
     expected = {ENTRY, *published}
     for entry in seen(log):
@@ -484,16 +485,25 @@ def test_a_budget_short_of_every_session_at_its_cap_starts_no_session(
 def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """The budget covers every session's cap, and each records twice its cap.
+
+    A session starts while the tokens recorded and its own cap fit, so the
+    run starts one more session than the budget, less one cap, holds at the
+    tokens each records.
+    """
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
+    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
+    budget = 250 * len(sessions)
     record = eval_run(
         tmp_path,
         *("--repetitions", "1", "--parallel", "1"),
-        *("--budget-tokens", "7000", "--session-budget-tokens", "250"),
+        *("--budget-tokens", str(budget), "--session-budget-tokens", "250"),
     )
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
-    assert record["started"] == 14
-    assert record["tokens"] == 7000
-    assert len(seen(log)) == len(records(tmp_path)) == 14
+    started = (budget - 250) // 500 + 1
+    assert started < len(sessions)
+    assert record["started"] == started
+    assert record["tokens"] == 500 * started
+    assert len(seen(log)) == len(records(tmp_path)) == started
     not_started = record["not_started"]
     assert not_started == [
         {
@@ -503,7 +513,7 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
             "form": session.form,
             "repetition": session.repetition,
         }
-        for session in sessions[14:]
+        for session in sessions[started:]
     ]
     written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
     assert written["not_started"] == not_started

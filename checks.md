@@ -43,7 +43,9 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 - **Fixtures.** Every fixture matches the [manifest schema](fixtures/README.md).
 - **Diagnostic codes.** Each catalogue of diagnostic codes is exactly the set the design declares.
 - **Runner.** The runner decides a fixture's result from its manifest and files alone.
-- **Diagram-following corpus.** The [corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, and its forms differ only in their transitions. Each scenario's path is the walk through the diagram that its inputs determine.
+- **Check readings.** Each check parses its own input correctly on cases written to be misread, and the heading-slug rule generates the anchors GitHub generated for a captured document.
+- **Authoring guidance.** Each `pf` command the [invocation guide](invocation.md) and the [README](README.md) show names a file this repository holds and passes only declared options, and both recommend hyphens rather than underscores in names.
+- **Diagram-following corpus.** The [corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, reporting only the warnings a workflow declares, and its forms differ only in their transitions. Each scenario's path is the walk through the diagram that its inputs determine, and the walk the bundle `pf` compiles from the diagram form states.
 - **Scorer.** The [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done. It classifies each failing run by how it departs from the path.
 - **Eval runner.** The [runner](evals/diagram-following/run.py) is driven by a stub agent, and:
   - starts each session in a fresh workspace holding its form and inputs;
@@ -64,11 +66,11 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 
 | Command | Asserts |
 | --- | --- |
-| `make layout` | Each of the four trees holds a tracked file. |
+| `make layout` | Each of the four trees, `fixtures/`, `src/`, `docs/` and `evals/`, holds a tracked file. |
 | `make tables` | The command and dependency tables in the documentation name every target the [`Makefile`](Makefile) declares and every dependency [`src/pyproject.toml`](src/README.md) declares, and nothing else. |
 | `make links` | Every link in every document in this repository resolves, except those in the fixture corpus. |
 | `make vocabulary` | The [glossary](docs/glossary.md) defines every contract term the design marks. |
-| `make invocation` | The documented invocation names every argument and exit status the build under test reports for itself, and nothing else. Each one reproduces that build's own help output. |
+| `make invocation` | The documented invocation names every argument, budget and exit status the build under test reports for itself, and nothing else, each reproducing that build's own help output, and it names the profile `-v` reports and carries the statements the contract requires of it. |
 
 ### The Contract
 
@@ -109,6 +111,7 @@ These two checks keep the corpus tied to the design rather than to any one build
 | --- | --- |
 | `make render` | Each diagram link form the corpus bundles renders under Mermaid as one followable link per link line. See [Rendering](#rendering). |
 | `make examples` | Each case in [`scripts/examples.json`](scripts/examples.json) runs against the build, and its drawing under [`docs/images/`](docs/images/) shows the files the run read beside the bundles it wrote. |
+| `make eval-diagrams` | Real agents follow the diagram-following workflows over the default matrix, and the report gives each cell's pass rate. See [The Diagram-Following Eval](#the-diagram-following-eval). |
 
 ### Rendering
 
@@ -123,15 +126,15 @@ These two checks keep the corpus tied to the design rather than to any one build
 
 ### The Diagram-Following Eval
 
-`make eval-diagrams` runs the [diagram-following eval](evals/diagram-following/README.md). It starts paid agent sessions, so no check depends on it. Instead, [the harness](#the-harness) holds its runner, scorer and report against a stub agent and recorded results.
+`make eval-diagrams` runs the [diagram-following eval](evals/diagram-following/README.md), which states its budget, harness and options. It starts paid agent sessions, so no check depends on it. Instead, [the harness](#the-harness) holds its runner, scorer and report against a stub agent and recorded results.
 
 ## Setup
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness` and `make corpus`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus`, `make examples` and `make eval-diagrams`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
-- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links` and `make vocabulary` are standard-library scripts in [`checks/`](checks/README.md).
+- **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 
 ### Network Access
 

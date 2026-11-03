@@ -16,23 +16,23 @@ Two documents with the same heading text make the point, because the second has 
 
 ```text
 #heading-slug        a heading whose slug is unique in the bundle
-#heading-slug-2      the second heading in the bundle to carry that slug
+#heading-slug-1      the second heading in the bundle to carry that slug
 ```
 
 The bundle carries no anchor elements and no identifiers. The headings it already emits are what a renderer indexes, so a destination is a name for a place rather than markup in it.
 
 ## Ordinals
 
-Headings are walked in bundle order — file headings, structural ancestors, selected source headings, and headings inside a retained container alike — and each takes its slug. A heading whose slug something already carries takes the slug and an ordinal, counting from one and passing over any ordinal already in use.
+Headings are walked in bundle order — the Prosiform section's, file headings, a merged group's headings, structural ancestors, selected source headings, headings inside a retained container, dispatch sub-sections, and composition's destination sections and contribution headings alike — and each takes its slug. A heading whose slug something already carries takes the slug and an ordinal, counting from one and passing over any ordinal already in use.
 
 An ordinal is safe in a bundle in a way it is not in a source. In a source, an edit elsewhere changes how many similar headings precede a target, so a stored link silently repoints. A bundle is generated whole in one pass and validated against the map that produced it, so every ordinal it carries is assigned and checked in the same run.
 
 ```mermaid
 flowchart TD
   F["# Guide"] --> A["## Run → #run"]
-  A --> B["### Run → #run-2"]
+  A --> B["### Run → #run-1"]
   B --> C["### Notes → #notes"]
-  C --> D["## Run → #run-3"]
+  C --> D["## Run → #run-2"]
 ```
 
 *Figure 1. Headings Are Walked in Bundle Order, and Each Repeat Takes the Next Ordinal, Whatever Its Level.*
@@ -47,7 +47,7 @@ A source heading's own fragment is the slug its visible text produces. Nothing n
 
 A compiled reference is rewritten to the destination of the target it resolved to. A reference the run compiled is a reference the bundle carries, so each one has a destination.
 
-The rest keep the bytes their author wrote: a link to a document that declares nothing or to none, a link with a scheme, an image, a non-Markdown target. A deferred link points at a path from the invocation working directory, and a dispatched link at its generated sub-section. Each is published without its operator mark.
+The rest keep the bytes their author wrote: a link to a document that declares nothing or to none, a link with a scheme, an image, a non-Markdown target. A deferred link points at a path from the invocation working directory, and a dispatched link at its generated sub-section. Each is published without its operator mark. A composition directive, deferred or not, points at the contribution heading it places, as [Composition](composition.md#where-it-lands) states.
 
 ```mermaid
 flowchart LR

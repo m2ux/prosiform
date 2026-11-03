@@ -1,0 +1,12 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+
+[[scenario]]
+name = "declared-link-followed"
+path = ["Receive", "Inspect", "Verify", "Archive"]
+inputs = { "supplier.txt" = "internal" }
+
+[[scenario]]
+name = "undeclared-link-as-text"
+path = ["Receive", "Liaise", "Archive"]
+inputs = { "supplier.txt" = "vendor" }
