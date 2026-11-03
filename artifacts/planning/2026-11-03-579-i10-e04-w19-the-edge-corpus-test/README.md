@@ -12,6 +12,9 @@ This record holds its delivery of `AC27`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [W19](w19.md) | The edge workflows composing with `↳`, the reworked deferred dispatches, and the corpus test reading the guide's bundles |
+| [Validation](validation.md) | The epic base update, each check the work item names, the revision it ran at and what it showed, and the findings it raised |
+| [Change list](change-list.md) | The plan changes the session applied and those it held |
 
 ## Links
 
