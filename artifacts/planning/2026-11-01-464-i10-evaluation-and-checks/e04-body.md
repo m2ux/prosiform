@@ -46,10 +46,10 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 | [W12](https://github.com/m2ux/prosiform/pull/634) | Scenarios of a sub-agent's first `pf` run | AC17, AC18 | W01, W02, W04, [I09:E04:W12](https://github.com/m2ux/prosiform/issues/460) | W10, W11 | ✓ |
 | [W14](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md) | Live run of the edge workflows | AC20, AC24 | W03, W05, W06, W07, W08, W09, W10, W11, W12, W16 | | |
 | [W15](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w15.md) | The eval page stating the edge workflows | AC21 | W14 | | |
-| [W16](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w16.md) | Shake down the edge-run runbook | AC25 | W05, W06, W07, W08, W09, W11, W17, W18, W19, [I10:E06:W01](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W06](https://github.com/m2ux/prosiform/issues/639) | | |
+| [W16](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w16.md) | Shake down the edge-run runbook | AC25 | W05, W06, W07, W08, W09, W17, W18, W19, [I10:E06:W01](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W07](https://github.com/m2ux/prosiform/issues/639) | | |
 | [W17](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w17.md) | Triage rubric entries for the run classes | AC23 | W03, [I10:E05:W00](https://github.com/m2ux/prosiform/issues/594) | | |
 | [W18](https://github.com/m2ux/prosiform/pull/638) | A staged Claude session carrying a shell | AC26 | W02, W04 | | ✓ |
-| [W19](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w19.md) | The edge corpus test reading the new bundles | AC27 | W10, W12, [I10:E06:W02](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W03](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W04](https://github.com/m2ux/prosiform/issues/639) | | |
+| [W19](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w19.md) | The edge corpus test reading the new bundles | AC27 | W10, W11, W12, [I10:E06:W02](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W03](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W04](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W05](https://github.com/m2ux/prosiform/issues/639) | | |
 
 ## Acceptance Criteria
 
@@ -78,7 +78,7 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 - [ ] **AC24.** Each edge-case record gives every failing session the triage rubric's disposition, as the records show.
 - [ ] **AC25.** `RUNBOOK.md`'s edge-run runbook carries a shakedown over the edge workflows on each harness carrying a shell, whose measured cost sets its budget, and each rubric entry for a `pf`-run class decides a shakedown session or is recorded as produced by none, as the file shows.
 - [x] **AC26.** A Claude session given the `staged` form carries a shell and no other form does, and `make eval-diagrams` gives the nested-dispatch scenarios a Claude cell whose scorer reads each start's `pf` runs, as a harness test `make harness` runs shows.
-- [ ] **AC27.** The edge workflows' corpus test holds each dispatched bundle a scenario follows to the run-pf line every bundle opens with, and each deferred dispatch to the form the design publishes it in, against I10:E06's build, as the corpus test `make harness` runs shows.
+- [ ] **AC27.** No edge workflow's source writes `¬⇉` or `¬⫽`, and the corpus test holds each dispatched bundle a scenario follows to the run-pf line every bundle opens with and to the files its `Dispatch` and `In parallel` sections link, against I10:E06's build, as the corpus test `make harness` runs shows.
 
 ## References
 
