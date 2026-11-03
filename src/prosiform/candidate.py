@@ -15,7 +15,7 @@ against the other, so an agreement means the candidate says what its
 construction recorded rather than that it is internally consistent.
 
 The invariants checked here are block boundary safety, target
-integrity, exactly-once coverage within each group,
+integrity, one member per destination, exactly-once coverage within each group,
 absence of new links, absence of surviving definitions, reference
 preservation, outline preservation, depth safety, group isolation, one
 intended destination per rewritten link, and the two
@@ -164,6 +164,7 @@ OUTLINE_PRESERVATION = "outline preservation"
 DEPTH_SAFETY = "depth safety"
 GROUP_ISOLATION = "group isolation"
 ONE_DESTINATION = "one intended destination"
+ONE_MEMBER = "one destination answers one member"
 NO_OMISSIONS = "no accidental omissions"
 NO_EXPANSION = "no accidental expansion"
 PRESERVATION = "preservation"
@@ -1054,6 +1055,32 @@ def integrity(
             )
 
 
+def one_member(groups: Sequence[Group]) -> None:
+    """Hold each merged group's emitted heading to answering one member.
+
+    A merged group's members are the documents it merges, and a heading
+    records the targets it answers, each held in one document. A heading
+    answering targets of two documents is where a reference to either
+    member lands, so the two members reach one destination and a link
+    meant for one opens the other's content. A merged heading answers a
+    target only where one document contributes it, a variant heading
+    answers its own document and a member subsection answers that
+    member, so no heading of a correctly built group fails here.
+    """
+    for group in groups:
+        record = group.record
+        if record.merged is None:
+            continue
+        for one in record.headings:
+            members = sorted({path for path, _ in one.answers})
+            if len(members) > 1:
+                raise Invalid(
+                    ONE_MEMBER,
+                    f"the heading {one.text!r} of the group {record.path!r} answers "
+                    f"the targets of {members[0]!r} and {members[1]!r}",
+                )
+
+
 def leakage(environment: Mapping[str, Any]) -> None:
     """Hold the candidate to carrying no surviving link-reference definition.
 
@@ -1341,6 +1368,7 @@ def validate(
     sourced = {path: runs(one) for path, one in parsed.items()}
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
+    one_member(groups)
     dispatches(reached, served)
     contributing = {} if composing is None else composing
     contributions(reached, contributing)

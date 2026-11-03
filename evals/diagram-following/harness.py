@@ -29,12 +29,12 @@ a shell, so a form needing one is given only where it does.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
 
 from workflow import STAGED, CorpusError
 
@@ -148,6 +148,37 @@ def said(text: object) -> str:
     return QUESTION if held.startswith(QUESTION) else DONE
 
 
+def counted(
+    plugins: dict[str, str | None], environment: list[str], hooks: list[str]
+) -> dict[str, int | str | None]:
+    """A managed configuration as `run.json` records it, naming none of it.
+
+    `plugins` maps each managed plugin to its version, `environment` holds
+    each key the managed settings add, and `hooks` each event a session's
+    transcript shows a managed hook responding to, once per event. The
+    hook events come from the transcripts, never the hooks' content. The
+    record gives how many of each
+    there are and a `fingerprint`: the SHA-256 hex digest of the three
+    sorted, as canonical JSON, so two runs on one configuration give one
+    fingerprint and a changed plugin, version, key or event gives another.
+    A configuration with nothing managed has a null fingerprint.
+    """
+    held = {
+        "plugins": sorted([plugin, version] for plugin, version in plugins.items()),
+        "environment": sorted(environment),
+        "hooks": sorted(hooks),
+    }
+    canonical = json.dumps(held, sort_keys=True, separators=(",", ":"))
+    return {
+        "plugins": len(plugins),
+        "environment": len(environment),
+        "hooks": len(hooks),
+        "fingerprint": hashlib.sha256(canonical.encode()).hexdigest()
+        if plugins or environment or hooks
+        else None,
+    }
+
+
 @dataclass(frozen=True)
 class Claude:
     """The Claude Code CLI: `-p` with a stream-json session stream."""
@@ -158,7 +189,9 @@ class Claude:
     login: str = ".credentials.json"
     plugins: str = "plugins/installed_plugins.json"
     remote: str = "remote-settings.json"
+    signature: str = "remote-settings.json.signature.json"
     enabled: str = "enabledPlugins"
+    managed_scope: str = "managed"
     settings: str = "settings.json"
     managed_settings: str = MANAGED_SETTINGS.get(
         sys.platform, MANAGED_SETTINGS["linux"]
@@ -274,6 +307,12 @@ class Claude:
         copied from, so a project file a tree carries reaches every session of
         that tree; `workspaces` is the run's workspace root, which every
         session's workspace sits under.
+
+        A managed configuration is no refusal: a plugin installed at managed
+        scope or enabled by the signed remote settings, and the host's managed
+        settings file, reach every session and the run counts them through
+        `managed()`. A plugin installed at any other scope, and one an unsigned
+        remote settings file enables, is refused.
         """
         if not (config / self.login).is_file():
             return (
@@ -281,19 +320,29 @@ class Claude:
                 f"`{self.config_variable}={config} claude`, then `/login`"
             )
         installing = config / self.plugins
-        if _record(installing).get("plugins"):
-            return (
-                f"{installing} installs a plugin, whose hooks reach every session "
-                f"before its first turn; remove {installing} before this run"
-            )
+        installed = _record(installing).get("plugins")
+        if isinstance(installed, dict):
+            for plugin, installs in installed.items():
+                entries = installs if isinstance(installs, list) else [installs]
+                unmanaged = sorted(
+                    {
+                        str(entry.get("scope") if isinstance(entry, dict) else None)
+                        for entry in entries
+                    }
+                    - {self.managed_scope}
+                )
+                if unmanaged:
+                    return (
+                        f"{installing} installs {plugin} at {', '.join(unmanaged)} "
+                        f"scope, whose hooks reach every session before its first "
+                        f"turn; remove it before this run"
+                    )
         enabling = config / self.remote
-        enabled = _record(enabling).get(self.enabled)
-        if isinstance(enabled, dict) and any(
-            value is True for value in enabled.values()
-        ):
+        if self._enabled(config) and not (config / self.signature).is_file():
             return (
-                f"{enabling} enables a plugin and its environment, which reach "
-                f"every session before its first turn; remove {enabling}"
+                f"{enabling} enables a plugin and its environment without a "
+                f"signature, so the organisation does not manage it; remove "
+                f"{enabling}"
             )
         declared = config / self.settings
         refused = self.hook_refusal(
@@ -326,6 +375,66 @@ class Claude:
                     return refused
         return None
 
+    def _enabled(self, config: Path) -> list[str]:
+        """The plugins the remote settings enable, in name order."""
+        enabled = _record(config / self.remote).get(self.enabled)
+        if not isinstance(enabled, dict):
+            return []
+        return sorted(name for name, value in enabled.items() if value is True)
+
+    def _plugins(self, config: Path) -> dict[str, str | None]:
+        """Each managed plugin with its version, in no particular order.
+
+        A managed plugin is one installed at managed scope or enabled by the
+        signed remote settings, its version null where it is enabled but not
+        installed here.
+        """
+        installed = _record(config / self.plugins).get("plugins")
+        versions: dict[str, str | None] = {}
+        if isinstance(installed, dict):
+            for plugin, installs in installed.items():
+                for entry in installs if isinstance(installs, list) else [installs]:
+                    if (
+                        isinstance(entry, dict)
+                        and entry.get("scope") == self.managed_scope
+                    ):
+                        versions[plugin] = entry.get("version")
+        if (config / self.signature).is_file():
+            for plugin in self._enabled(config):
+                versions.setdefault(plugin, None)
+        return versions
+
+    def hooked(self, config: Path) -> bool:
+        """Whether a managed configuration can deliver a hook to a session.
+
+        A managed plugin can, and so can the host's managed settings file when
+        it declares a hook: the administrator owns that file and Claude Code
+        reads it wherever the configuration directory points. The preflight
+        admits no other hook, so a hook response a session carries is the
+        managed configuration's exactly when this holds.
+        """
+        return bool(self._plugins(config)) or bool(
+            self.hook_events(Path(self.managed_settings))
+        )
+
+    def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
+        """The managed configuration every session carries, counted.
+
+        The plugins are `_plugins()`'s. A managed environment setting is a key
+        the signed remote settings' `env` adds over the scrubbed environment.
+        `hooks` are the hook events the run's transcripts show a hook
+        responding to, which the run passes in once its sessions finish, since
+        no file the harness reads states every hook a managed plugin brings.
+        The run records them through `counted()`.
+        """
+        signed = (config / self.signature).is_file()
+        env = _record(config / self.remote).get("env") if signed else None
+        return counted(
+            self._plugins(config),
+            sorted(env) if isinstance(env, dict) else [],
+            hooks,
+        )
+
     def hook_events(self, path: Path) -> list[str]:
         """The events a settings file declares a hook for, in name order."""
         hooks = _record(path).get(self.hooks)
@@ -339,19 +448,6 @@ class Claude:
         if not events:
             return None
         return f"{path} declares a hook for {', '.join(events)}, which {consequence}"
-
-    def managed(self, config: Path) -> dict[str, list[Any]]:
-        """The hooks the host's managed settings deliver to every session.
-
-        The administrator owns the managed settings file, and Claude Code reads
-        it wherever the configuration directory points, so the run records it
-        rather than refusing it: the file and each event it declares a hook
-        for. A host with no such file, or none declaring a hook, records
-        nothing.
-        """
-        path = Path(self.managed_settings)
-        events = self.hook_events(path)
-        return {"hooks": [{"file": str(path), "events": events}] if events else []}
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -540,9 +636,13 @@ class Cursor:
             )
         return None
 
-    def managed(self, config: Path) -> dict[str, list[Any]]:
-        """No managed hook is read: the CLI keeps no managed settings file."""
-        return {"hooks": []}
+    def hooked(self, config: Path) -> bool:
+        """No managed hook reaches a session: the CLI keeps no managed settings."""
+        return False
+
+    def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
+        """Nothing managed is read: the CLI keeps no configuration directory."""
+        return counted({}, [], [])
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -789,9 +889,13 @@ class Opencode:
             )
         return None
 
-    def managed(self, config: Path) -> dict[str, list[Any]]:
-        """No managed hook is read: the CLI keeps no managed settings file."""
-        return {"hooks": []}
+    def hooked(self, config: Path) -> bool:
+        """No managed hook reaches a session: the CLI keeps no managed settings."""
+        return False
+
+    def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
+        """Nothing managed is read: the CLI keeps no configuration directory."""
+        return counted({}, [], [])
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's spend, one `step_finish` record summing every step.
