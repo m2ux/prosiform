@@ -128,15 +128,17 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
 
-Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one reach a session. It fails before the first session starts, naming the file to remove:
+Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one the organisation does not manage reach a session. It fails before the first session starts, naming the file to remove:
 
-- `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
-- `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint;
+- `plugins/installed_plugins.json` installing a plugin at any scope but `managed`, whose `hooks/hooks.json` may declare a `SessionStart` hook;
+- `remote-settings.json` enabling a plugin in `enabledPlugins` with no `remote-settings.json.signature.json` beside it, so no organisation signed it;
 - `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, and a settings file holding only preferences is no refusal, so the directory keeps its theme and model.
 
 A run whose config directory holds no login fails the same way, naming the one-time login command.
 
-A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
+A plugin the organisation manages, installed at `managed` scope or enabled by the signed `remote-settings.json`, reaches every session: its `SessionStart` hook adds the organisation's rules, and the remote settings' `env` is applied over the scrubbed environment. The run records it rather than refusing it: `run.json` and the report name each such plugin with its version and each environment variable the remote settings add, so every recorded session reads as carrying the organisation's injected rules. The eval's own login carries one, a managed plugin.
+
+A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: an appended system prompt, a memory file, or a hook's `additionalContext` where no managed plugin is recorded is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Where a managed plugin is recorded, a hook's response is that plugin's, since the preflight admits no other hook. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
 
 ## Running
 
@@ -144,7 +146,7 @@ A session that still carries context the run did not supply fails the run after 
 | --- | --- |
 | `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its token budget is `EVAL_BUDGET_TOKENS` and its harness `HARNESS`; `ARGS='...'` passes the runner's options through, a later `--budget-tokens` among them overriding the default. |
 
-The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
+Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -180,13 +182,13 @@ The run's guard reads each session's reported tokens when it settles: a session 
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, managed plugins, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
 ```
 
-The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens and the count of sessions not started, and closes with those sessions listed.
+The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens, the managed plugins its sessions carried, its cost, the sum of every session's reported cost, and the count of sessions not started. It then lists each failing session with the disposition its triage gave it in `dispositions.json` beside `run.json`, as the [runbook](RUNBOOK.md#dispositions-file) states, and closes with the sessions not started.
 
 A refused run — one every started session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` writes only from a run whose report holds a cell, so a refused run, or one that started nothing, leaves the committed baseline as it was.
 

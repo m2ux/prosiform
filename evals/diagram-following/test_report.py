@@ -14,6 +14,7 @@ from typing import Any
 
 import pytest
 from report import (
+    DISPOSITIONS,
     FAILURES,
     REPORT_JSON,
     REPORT_MD,
@@ -35,6 +36,12 @@ USAGE = {
     "cache_creation_input_tokens": 300,
     "cache_read_input_tokens": 400,
 }
+
+MANAGED = {
+    "plugins": [{"plugin": "core-rules@org", "version": "0.7.3"}],
+    "environment": ["CLAUDE_CODE_ENABLE_TELEMETRY", "OTEL_METRICS_EXPORTER"],
+}
+UNMANAGED: dict[str, list[Any]] = {"plugins": [], "environment": []}
 
 # Each session: model, workflow, scenario, form, failure, exit status, cost.
 RECORDED: list[tuple[str, str, str, str, str | None, int | str, float | None]] = [
@@ -138,6 +145,7 @@ def recorded(tmp_path: Path) -> Path:
         "sessions": len(RECORDED) + len(NOT_STARTED),
         "started": len(RECORDED),
         "tokens": 2750,
+        "managed": MANAGED,
         "not_started": NOT_STARTED,
     }
     (directory / RUN).write_text(json.dumps(run))
@@ -211,6 +219,86 @@ def test_the_report_gives_the_run_cost_and_the_sessions_not_started(
     assert (built["sessions"], built["started"]) == (12, 10)
     assert built["tokens"] == 2750
     assert built["not_started"] == NOT_STARTED
+
+
+def test_the_report_names_the_managed_plugins_every_session_carried(
+    recorded: Path, tmp_path: Path
+) -> None:
+    """A run on a managed login states the rules its sessions were injected with."""
+    built = report(recorded, tmp_path / "absent.json")
+    assert built["managed"] == MANAGED
+    assert (
+        "- **Managed plugins:** `core-rules@org` 0.7.3, whose injected rules every "
+        "session carried; environment added: `CLAUDE_CODE_ENABLE_TELEMETRY`, "
+        "`OTEL_METRICS_EXPORTER`."
+    ) in markdown(built)
+    run = json.loads((recorded / RUN).read_text())
+    run["managed"] = UNMANAGED
+    (recorded / RUN).write_text(json.dumps(run))
+    assert "- **Managed plugins:** none." in markdown(
+        report(recorded, tmp_path / "absent.json")
+    )
+
+
+def test_the_report_sums_every_session_cost(recorded: Path, tmp_path: Path) -> None:
+    """The run's cost is every reported cost summed, and null when none is."""
+    absent = tmp_path / "absent.json"
+    built = report(recorded, absent)
+    assert built["cost_usd"] is None
+    assert "- **Cost:** no session reported a cost." in markdown(built)
+    for path in recorded.rglob(SESSION):
+        record = json.loads(path.read_text())
+        record["cost_usd"] = 0.25
+        path.write_text(json.dumps(record))
+    built = report(recorded, absent)
+    assert built["cost_usd"] == 2.5
+    assert "- **Cost:** USD 2.5." in markdown(built)
+
+
+HAIKU_UNFINISHED = f"{HAIKU}/linear/straight-through/bundle/4"
+HAIKU_MISCOUNT = f"{HAIKU}/looping/two-rounds/prose/2"
+HAIKU_PASSED = f"{HAIKU}/linear/straight-through/bundle/1"
+
+
+def test_each_failing_session_carries_the_disposition_triage_gave_it(
+    recorded: Path, tmp_path: Path
+) -> None:
+    """A failing session the dispositions file does not name reads untriaged."""
+    given = {
+        HAIKU_UNFINISHED: {"disposition": "miss", "evidence": "stopped at Review"},
+        HAIKU_MISCOUNT: {"disposition": "defect", "evidence": "input reads 3"},
+    }
+    (recorded / DISPOSITIONS).write_text(json.dumps(given))
+    built = report(recorded, tmp_path / "absent.json")
+    assert {item["session"]: item["failure"] for item in built["failing"]} == {
+        f"{HAIKU}/branching/high-severity/tree/1": "skipped_state",
+        f"{HAIKU}/branching/high-severity/tree/2": "missing_action",
+        HAIKU_UNFINISHED: "unfinished",
+        HAIKU_MISCOUNT: "loop_miscount",
+    }
+    by_session = {item["session"]: item for item in built["failing"]}
+    assert by_session[HAIKU_UNFINISHED]["disposition"] == "miss"
+    assert by_session[HAIKU_MISCOUNT]["evidence"] == "input reads 3"
+    assert by_session[f"{HAIKU}/branching/high-severity/tree/1"]["disposition"] is None
+    text = markdown(built)
+    assert f"| `{HAIKU_UNFINISHED}` | `unfinished` | miss | stopped at Review |" in text
+    untriaged = f"`{HAIKU}/branching/high-severity/tree/2` | `missing_action`"
+    assert f"| {untriaged} | untriaged | — |" in text
+
+
+@pytest.mark.parametrize(
+    ("given", "refusal"),
+    [
+        ({HAIKU_UNFINISHED: {"disposition": "flaky"}}, "not one of miss"),
+        ({HAIKU_PASSED: {"disposition": "miss"}}, "did not fail"),
+    ],
+)
+def test_a_disposition_outside_the_rubric_or_the_failures_is_refused(
+    recorded: Path, tmp_path: Path, given: dict[str, Any], refusal: str
+) -> None:
+    (recorded / DISPOSITIONS).write_text(json.dumps(given))
+    with pytest.raises(CorpusError, match=refusal):
+        report(recorded, tmp_path / "absent.json")
 
 
 def test_without_a_baseline_no_row_is_compared(recorded: Path, tmp_path: Path) -> None:
@@ -336,6 +424,7 @@ def test_a_refused_run_gives_its_state_and_reason_and_no_row(
         "sessions": 1,
         "started": 1,
         "tokens": 0,
+        "managed": UNMANAGED,
         "not_started": [],
     }
     (directory / RUN).write_text(json.dumps(run))
@@ -395,6 +484,7 @@ def test_a_run_that_measured_no_cell_writes_no_baseline(
         "sessions": 0,
         "started": 0,
         "tokens": 0,
+        "managed": UNMANAGED,
         "not_started": [],
     }
     (directory / RUN).write_text(json.dumps(run))
