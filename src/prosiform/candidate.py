@@ -77,7 +77,6 @@ from prosiform.closure import (
     Declarations,
     Substitution,
     bundled,
-    deferred,
     dispatched,
     filed,
     parallel,
@@ -419,16 +418,6 @@ def intended(
         )
         if withheld is None:
             return one
-        if deferred(opening):
-            # A deferred dispatch belongs to the run that compiles it later.
-            # This bundle published the path that run follows, so there is no
-            # sub-section to reach here.
-            return Use(
-                one.kind,
-                unmarked(one.text),
-                one.title,
-                normalizeLink(rebased(withheld, one.destination)),
-            )
         if dispatched(opening):
             served = {} if dispatched_to is None else dispatched_to
             given = served.get(((withheld.path, withheld.fragment), parallel(opening)))

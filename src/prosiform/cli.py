@@ -65,6 +65,7 @@ from prosiform.closure import (
     DEFERRAL_MARK,
     DISPATCH_MARK,
     DRIVE,
+    INLINE_MARK,
     PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
@@ -74,11 +75,12 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
-    Unresolvable,
+    arrowed,
     components,
     conflicting,
     contradicting,
     deferred,
+    deferring_dispatch,
     directive,
     gapped,
     identity,
@@ -241,6 +243,7 @@ OPERATOR_NAMES = {
     DEFERRAL_MARK: "the deferral mark",
     DISPATCH_MARK: "the dispatch mark",
     PARALLEL_MARK: "the parallel dispatch mark",
+    INLINE_MARK: "the composition mark",
 }
 
 CODES = tuple(
@@ -1546,7 +1549,7 @@ def required(
             origin=at,
             chain=(*chain, identity(found)),
             title=use.title,
-            composes=found.fragment is not None and directive(use.label),
+            composes=found.fragment is not None and directive(use.opening),
         )
         if not declarations.declares(occurrence):
             continue
@@ -1564,13 +1567,12 @@ def refusals_of_operators(
 ) -> None:
     """Refuse a link whose operators state no one compilation the run can carry out.
 
-    A deferral says when the material is compiled and a dispatch says who
-    compiles it, so the two are carried out together, their marks written
-    together: a blank between two symbols — two marks, or a mark and a
-    composition directive's label — states no one operation. A dispatch
-    sends material to a sub-agent and a directive places it inline, so a
-    dispatch mark written against a directive's label states two
-    contradicting operations. Two dispatch marks
+    A blank between two symbols states no one operation. A link labelled
+    with an arrow states none either, composition having one mark. A
+    dispatch is compiled up front, so the deferral mark written against
+    one states a dispatch no bundle publishes, and a dispatch sends material
+    to a sub-agent while the composition mark places it inline, so the two
+    written together contradict. Two dispatch marks
     say who, differently — one sub-agent, or one beside its section's
     others — so a link stating both states two ways for one sub-agent to
     run, and the run says so rather than choosing. An operator names the
@@ -1590,7 +1592,7 @@ def refusals_of_operators(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
         at = location(path, source.line(use.line))
-        if gapped(use.opening, use.label):
+        if gapped(use.opening):
             raise input_failure(
                 f"the link {use.opening!r} writes a blank between "
                 + " and ".join(
@@ -1606,19 +1608,36 @@ def refusals_of_operators(
                 source=at,
                 chain=(*chain, use.destination),
             )
-        if use.label is not None and contradicting(use.label):
+        if use.label is not None and arrowed(use.label):
             raise input_failure(
-                f"the link {use.opening!r} writes "
-                + " and ".join(
-                    OPERATOR_NAMES[mark]
-                    for mark in dict.fromkeys(use.label[:-1])
-                    if mark != DEFERRAL_MARK
-                )
-                + " against a composition directive's label, so it sends its "
-                "material to a sub-agent and places it inline at once",
+                f"the link {use.label!r} is labelled with an arrow, which states "
+                f"no operation",
                 code=UNSUPPORTED_CONSTRUCT,
-                remedy="write the directive's label alone to compose the section, "
-                "or the dispatch mark, a space and text to dispatch it",
+                remedy=f"write the composition mark {INLINE_MARK!r}, a space and "
+                "the link's text to compose the section",
+                reference=use.label,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if deferring_dispatch(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} writes the deferral mark against a "
+                "dispatch mark, which states a dispatch no bundle publishes",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy="write the dispatch mark, a space and the link's text, "
+                "which compiles the target up front",
+                reference=use.opening,
+                source=at,
+                chain=(*chain, use.destination),
+            )
+        if contradicting(use.opening):
+            raise input_failure(
+                f"the link {use.opening!r} writes a dispatch mark against the "
+                "composition mark, so it sends its material to a sub-agent and "
+                "places it inline at once",
+                code=UNSUPPORTED_CONSTRUCT,
+                remedy=f"write the composition mark {INLINE_MARK!r} alone to "
+                "compose the section, or the dispatch mark to dispatch it",
                 reference=use.opening,
                 source=at,
                 chain=(*chain, use.destination),
@@ -1697,13 +1716,12 @@ def refusals_of_directives(
     """Refuse a composition directive no section holds or no section answers.
 
     A directive places its target beneath the section containing it, so
-    one written in the preamble has no scope to place it in. One naming a
-    Markdown path that holds no document names a target that cannot be
-    read, and fails as a reference naming nothing does. A directive names
-    a section of a document that declares `prosiform`, so one naming a
-    remote address, a resource, a document that declares nothing or a
-    whole document asks for a composition no such target can answer.
-    Each label asks for a placement the run cannot make, which is a
+    one written in the preamble has no scope to place it in. A directive
+    names a section of a document that declares `prosiform`, so one naming
+    a whole document asks for a composition no such target can answer. The
+    operator refusals have already refused a directive naming a document
+    that is absent, declares nothing, or is a remote address or a
+    resource. Each asks for a placement the run cannot make, which is a
     source fault: the run reports the link rather than reading it as an
     ordinary one.
 
@@ -1718,57 +1736,38 @@ def refusals_of_directives(
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     placed: dict[tuple[int | None, str, str | None, bool], tuple[str, str]] = {}
     for use in uses(tokens, selected):
-        if not directive(use.label):
+        if not directive(use.opening):
             continue
         at = location(path, source.line(use.line))
         if use.title is not None:
             target = named(path, use.destination, substitution, at, chain)
-            if target is None:
-                try:
-                    inside(path, use.destination, substitution)
-                except Unresolvable:
-                    continue
-                ineligible = "a remote address or a resource, which holds no section"
-            elif (answer := declarations.answer(target)) is Probed.ABSENT:
+            if target is None or declarations.answer(target) is not Probed.DECLARING:
+                continue
+            if target.fragment is None:
                 raise input_failure(
-                    f"the directive {use.label!r} names {use.destination!r}, "
-                    f"which names no document, so its composition has no "
-                    f"section to place",
-                    code=TARGET_NOT_FOUND,
-                    remedy="name a section of a Markdown document that exists",
+                    f"the directive {use.opening!r} names {use.destination!r}, a "
+                    f"whole document rather than a section of it, so no section "
+                    f"answers its composition",
+                    code=UNSUPPORTED_CONSTRUCT,
+                    remedy="name a section of the document",
                     reference=use.destination,
                     source=at,
                     chain=(*chain, use.destination),
                 )
-            elif answer is Probed.SILENT:
-                ineligible = "a document whose frontmatter declares no prosiform"
-            elif target.fragment is None:
-                ineligible = "a whole document rather than a section of it"
-            else:
-                later = deferred(use.opening)
-                section = (use.heading, target.path, target.fragment)
-                other = placed.get((*section, not later))
-                if other is not None:
-                    raise placed_twice(use, at, other, later, chain)
-                placed.setdefault((*section, later), (use.label or "", at))
-                continue
-            raise input_failure(
-                f"the directive {use.label!r} names {use.destination!r}, "
-                f"{ineligible}, so no section answers its composition",
-                code=UNSUPPORTED_CONSTRUCT,
-                remedy="name a section of a Markdown document that declares "
-                "prosiform, or give the link a label that requests no placement",
-                reference=use.destination,
-                source=at,
-                chain=(*chain, use.destination),
-            )
+            later = deferred(use.opening)
+            section = (use.heading, target.path, target.fragment)
+            other = placed.get((*section, not later))
+            if other is not None:
+                raise placed_twice(use, at, other, later, chain)
+            placed.setdefault((*section, later), (use.opening, at))
+            continue
         raise input_failure(
-            f"the link {use.label!r} is a composition directive in the preamble, "
+            f"the link {use.opening!r} is a composition directive in the preamble, "
             f"which no section holds, so the run has no scope to place "
             f"{use.destination!r} beneath",
             code=UNSUPPORTED_CONSTRUCT,
             remedy="write the directive inside the section its target belongs "
-            "beneath, or give the link a label that requests no placement",
+            "beneath, or write the link without the composition mark",
             reference=use.destination,
             source=at,
             chain=(*chain, use.destination),
@@ -1783,7 +1782,7 @@ def placed_twice(
     chain: Sequence[str],
 ) -> Failure:
     """One scope composing a section and deferring it, naming both directives."""
-    this = (use.label or "", at)
+    this = (use.opening, at)
     immediate, deferring = (other, this) if later else (this, other)
     return input_failure(
         f"the directive {immediate[0]!r} at {immediate[1]} composes "
@@ -1809,14 +1808,14 @@ def composing_itself(
     """One warning for each directive composing a section of the document writing it.
 
     The section is material that document already carries, so its author
-    moves it to a document of its own or links it without a directive's
-    label. A directive composing the section holding it is a cycle, which
+    moves it to a document of its own or links it without the composition
+    mark. A directive composing the section holding it is a cycle, which
     composition refuses, and a deferred directive composes nothing in the
     run, so it warns of nothing.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
-        if use.title is None or not directive(use.label) or deferred(use.opening):
+        if use.title is None or not directive(use.opening) or deferred(use.opening):
             continue
         at = location(path, source.line(use.line))
         target = named(path, use.destination, substitution, at, chain)
@@ -1824,7 +1823,7 @@ def composing_itself(
             continue
         yield Diagnostic(
             WARNING,
-            f"the directive {use.label!r} composes {identity(target)!r} in the "
+            f"the directive {use.opening!r} composes {identity(target)!r} in the "
             f"document that writes it, so it places material that document "
             f"already carries",
             code=COMPOSE_SELF,
@@ -1832,7 +1831,7 @@ def composing_itself(
             resolved=identity(target),
             chain=target.chain,
             remedy="move the section to a document of its own, or link it "
-            "without a directive's label",
+            "without the composition mark",
             location=Location(path, source.line(use.line) or 1, 1),
         )
 
@@ -1920,7 +1919,7 @@ def withheld(
             origin=at,
             chain=(*chain, identity(found)),
             title=use.title,
-            composes=directive(use.label),
+            composes=directive(use.opening),
         )
 
 
@@ -2956,7 +2955,7 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             f"has no parent to name",
             code=UNSUPPORTED_CONSTRUCT,
             remedy="name a section that stands beneath a heading of its document, "
-            "or give the link a label that requests no placement",
+            "or write the link without the composition mark",
             reference=parentless.destination,
             source=location(parentless.path, parentless.line),
             chain=(*chains.get(parentless.path, ()), parentless.destination),
@@ -2987,8 +2986,8 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
                 reference=closing.written,
                 source=location(closing.at[0], closing.line),
                 chain=(*chains.get(first.at[0], ()), *sections),
-                remedy="remove a directive from the chain, or give one a label "
-                "that requests no placement",
+                remedy="remove a directive from the chain, or write one without the "
+                "composition mark",
                 location=Location(closing.at[0], closing.line or 1, 1),
                 related=tuple(
                     RelatedLocation(

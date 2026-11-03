@@ -231,11 +231,11 @@ COMPOSING = """# Guide
 
 ## First step
 
-Read the detail [→](note.md#detail).
+Read the detail [↳ Detail](note.md#detail).
 
 ## Second step
 
-Read it again [→](note.md#detail).
+Read it again [↳ Detail](note.md#detail).
 """
 
 

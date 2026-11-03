@@ -7,35 +7,37 @@ it declares nothing. Canonical source identities are relative to the
 invocation working directory, independent of the discovering parent, and
 one above it keeps its leading parent segments.
 
-Three operators open a link's text, their marks written together and
-followed by a space, and a deferral combines with one dispatch. Each
+Four operators open a link's text, their marks written together and
+followed by a space; the deferral mark combines with the composition mark
+alone. Each of the deferral, dispatch and parallel dispatch marks
 withholds the same compilation from the bundle carrying the link: a
-deferral states when the material is
-compiled, a dispatch that a sub-agent follows it, and a parallel dispatch
-that a sub-agent follows it together with the section's other parallel
-dispatches. A deferred link's destination is the target's path, which no
-compiled link carries, so the deferral is stated there; a dispatched link
-points at a sub-section naming the bundle the run compiles for its
-target, which states the dispatch. Every mark is therefore authoring
-syntax, and the bundle drops it.
+deferral states when the material is compiled, a dispatch that a
+sub-agent follows it, and a parallel dispatch that a sub-agent follows it
+together with the section's other parallel dispatches. A deferred link's
+destination is the target's path, which no compiled link carries, so the
+deferral is stated there; a dispatched link points at a bundle file or an
+`In parallel` sub-section naming the bundle the run compiles for its
+target, which states the dispatch. The composition mark places the
+target's section beneath the section writing it, so the link points at
+that placement. Every mark is therefore authoring syntax, and the bundle
+drops it, a dispatch pointing at a bundle file keeping its own.
 
-A composition directive is a link whose label, read as plain text with
-its entities decoded, is exactly one Unicode arrow: an assigned scalar
-of the four Arrows blocks, or a scalar of the Dingbats or Miscellaneous
+A composition directive is a link whose text opens with the composition
+mark `↳` and a space, alone or written after the deferral mark as `¬↳`.
+The mark requests placement and nothing else, so the meaning an author
+gives the material stays with the link's text.
+
+A link labelled with one Unicode arrow, once the operator marks and
+blanks before it are set aside, is refused: an assigned scalar of the
+four Arrows blocks, or a scalar of the Dingbats or Miscellaneous
 Symbols and Arrows block whose character name holds the word `ARROW`.
 Any other single scalar — a footnote mark, a superscript, a letter —
-labels an ordinary link. The label requests placement and nothing
-else, so every arrow means the same and the meaning an author gives
-one stays with the author.
+labels an ordinary link, and so do `⇉` and `↳` alone.
 
 Symbols are written together, and the one blank stands between the
-last of them and the link's text. The deferral mark written against a
-qualifying label, as `¬→`, is a deferred directive; a blank between two
-symbols — two marks, or a mark and a qualifying label — states no one
-operation and is refused. Every other operator opens a link that is no
-directive, and the marks that open an operator or a convention are no
-directive's label. Nothing is trimmed or normalised to make a label
-qualify."""
+last of them and the link's text. A blank between two symbols states
+no one operation and is refused. Nothing is trimmed or normalised to
+make a label qualify."""
 
 import posixpath
 import re
@@ -46,7 +48,6 @@ from types import MappingProxyType
 from unicodedata import category, name
 from urllib.parse import quote
 
-from markdown_it.common.utils import unescapeAll
 from markdown_it.token import Token
 
 from prosiform.profile import is_markdown
@@ -57,8 +58,7 @@ DISPATCH_MARK = "⇉"
 PARALLEL_MARK = "⫽"
 INLINE_MARK = "↳"
 
-# The arrows that open an operator or a convention, which no label
-# requests placement with.
+# The arrows that open an operator, which no arrow refusal reaches.
 MARKS = (DISPATCH_MARK, INLINE_MARK)
 
 # The blocks every assigned scalar of which is an arrow: Arrows and
@@ -97,17 +97,16 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 PATH_PART = "path segment"
 FRAGMENT_PART = "fragment"
 
-OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK)
+OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK, INLINE_MARK)
 
-# The operator groups one link may state. A deferral carries the dispatch
-# that the run compiling the material later finds, and the marks of one
-# group are written together.
+# The operator groups one link may state, their marks written together.
+# Only a composition can be deferred.
 ADMITTED = (
     (DEFERRAL_MARK,),
     (DISPATCH_MARK,),
     (PARALLEL_MARK,),
-    (DEFERRAL_MARK, DISPATCH_MARK),
-    (DEFERRAL_MARK, PARALLEL_MARK),
+    (INLINE_MARK,),
+    (DEFERRAL_MARK, INLINE_MARK),
 )
 
 
@@ -484,14 +483,12 @@ def normalized(base: str, segments: Sequence[str]) -> str:
 class Opened:
     """The operator marks one link's text opens with, and where its text begins.
 
-    The text after the marks begins at `after`. The marks are followed
-    by a blank, or they are the deferral mark written against a
-    directive's label, whose text begins at the label.
+    The marks are followed by a blank, and the text after the blanks
+    begins at `after`.
     """
 
     marks: str
     after: int
-    blank: bool
 
 
 def arrow(scalar: str) -> bool:
@@ -510,37 +507,13 @@ def arrow(scalar: str) -> bool:
     )
 
 
-def placing(requested: str) -> bool:
-    """Whether a label is one Unicode arrow requesting placement.
-
-    An arrow opening an operator or a convention states something else,
-    so it requests no placement.
-    """
-    return len(requested) == 1 and requested not in MARKS and arrow(requested)
-
-
-def against(text: str, raw: bool = False) -> bool:
-    """Whether text is the deferral mark written against a directive's label.
-
-    Raw text is the label as its source spelled it, so its entities and
-    escapes are decoded before the label is read.
-    """
-    label = text[len(DEFERRAL_MARK) :]
-    return text.startswith(DEFERRAL_MARK) and placing(
-        unescapeAll(label) if raw else label
-    )
-
-
-def opened(text: str, raw: bool = False) -> Opened | None:
+def opened(text: str) -> Opened | None:
     """The operator marks one link's text opens with, where it states any.
 
     Symbols are written together and one blank separates the last of
     them from the link's text, so an operator is a run of marks followed
-    by a blank, the blanks before the run being its spacing. The
-    deferral mark written against a directive's label is the one run
-    with no blank after it, because the label is a symbol and the link
-    has no text beyond it. Any other mark followed directly by text is
-    the author's text, and opens nothing.
+    by a blank, the blanks before the run being its spacing. A mark
+    followed directly by text is the author's text, and opens nothing.
     """
     at = 0
     while at < len(text) and text[at] in BLANKS:
@@ -548,73 +521,77 @@ def opened(text: str, raw: bool = False) -> Opened | None:
     end = at
     while end < len(text) and text[end] in OPERATORS:
         end += 1
-    if end == at:
+    if end == at or text[end : end + 1] != SPACE:
         return None
-    if text[end : end + 1] == SPACE:
-        after = end
-        while after < len(text) and text[after] in BLANKS:
-            after += 1
-        return Opened(text[at:end], after, blank=True)
-    if at == 0 and against(text, raw):
-        return Opened(DEFERRAL_MARK, len(DEFERRAL_MARK), blank=False)
-    return None
+    after = end
+    while after < len(text) and text[after] in BLANKS:
+        after += 1
+    return Opened(text[at:end], after)
 
 
 def operators(opening: str) -> tuple[str, ...]:
     """Each operator one link's text opens with, in the order it is written.
 
-    One link states both a deferral and a dispatch by writing the two
-    marks together, as `¬⇉ target`.
+    One link states a deferred composition by writing the two marks
+    together, as `¬↳ target`.
     """
     found = opened(opening)
     return () if found is None else tuple(found.marks)
 
 
-def gapped(opening: str, label: str | None) -> bool:
-    """Whether a link's text writes a blank between two of its symbols.
+def gapped(opening: str) -> bool:
+    """Whether a link's text writes a blank between two of its operator marks.
 
-    A symbol is an operator mark or a composition directive's label.
-    The marks of a compound operator are written together, and so are
-    the deferral mark and the label it defers, so a blank between two
-    symbols states no one operation: `¬ ⇉ target`, `¬ →` and `⇉ →` are
-    each refused. The label is the link's whole plain text, absent
-    where the text is not plain, which no directive's is.
+    The marks of a compound operator are written together, so a blank
+    between two symbols states no one operation: `¬ ⇉ target` and
+    `¬ ↳ target` are each refused.
     """
     found = opened(opening)
-    if found is None or not found.blank:
-        return False
-    if opening[found.after : found.after + 1] in OPERATORS:
-        return True
-    return label is not None and placing(unmarked(label))
+    return found is not None and opening[found.after : found.after + 1] in OPERATORS
 
 
-def contradicting(label: str) -> bool:
-    """Whether a link's plain-text label writes a dispatch mark against a directive's.
+def arrowed(label: str) -> bool:
+    """Whether a link's plain-text label is one Unicode arrow beside its operator marks.
 
-    A dispatch sends its material to a sub-agent and a directive places
-    it inline beneath the section writing it, so a dispatch or parallel
-    dispatch mark written against a directive's label, as `⇉→` or `⫽→`,
-    states two contradicting operations and is refused. The label is the
+    The marks, and the blanks after them, written before the arrow are set
+    aside, and the operator marks `⇉` and `↳` are no arrow. Composition has one mark, so
+    a link labelled with any other arrow is refused. The label is the
     link's whole plain text, with its entities decoded.
     """
-    marks = label[:-1]
-    return (
-        bool(marks)
-        and all(mark in OPERATORS for mark in marks)
-        and (DISPATCH_MARK in marks or PARALLEL_MARK in marks)
-        and placing(label[-1])
+    rest = (
+        label.lstrip(BLANKS + "".join(OPERATORS))
+        if label.startswith(OPERATORS)
+        else label
     )
+    return len(rest) == 1 and rest not in MARKS and arrow(rest)
+
+
+def deferring_dispatch(opening: str) -> bool:
+    """Whether a link's text writes the deferral mark against a dispatch mark.
+
+    A dispatch is compiled up front into a bundle of its own, so a
+    deferred dispatch states a dispatch no bundle publishes.
+    """
+    found = operators(opening)
+    return DEFERRAL_MARK in found and (DISPATCH_MARK in found or PARALLEL_MARK in found)
+
+
+def contradicting(opening: str) -> bool:
+    """Whether a link's text writes a dispatch mark against the composition mark.
+
+    A dispatch sends its material to a sub-agent and a composition
+    places it inline beneath the section writing it, so the two marks
+    state contradicting operations, as `⇉↳` and `⫽↳` do.
+    """
+    found = operators(opening)
+    return INLINE_MARK in found and (DISPATCH_MARK in found or PARALLEL_MARK in found)
 
 
 def conflicting(opening: str) -> bool:
     """Whether a link's text states operators the run cannot carry out together.
 
-    A deferral says when the material is compiled and a dispatch says who
-    compiles it, so the two are written together as `¬⇉` or `¬⫽` and
-    state one compilation: the material is deferred, and the run that
-    later compiles it finds a dispatch. Two dispatch marks state two ways
-    for one sub-agent to run, which is why the refusal outlives the
-    deferral.
+    Two dispatch marks state two ways for one sub-agent to run, which is
+    why the run refuses the link rather than choosing.
     """
     found = operators(opening)
     if not found:
@@ -660,21 +637,20 @@ def withholding(opening: str) -> bool:
     return deferred(opening) or dispatched(opening)
 
 
-def unmarked(text: str, raw: bool = False) -> str:
+def unmarked(text: str) -> str:
     """One link's text as the bundle publishes it, with its operator's marks taken off.
 
     Every mark is authoring syntax rather than content, so they go with
-    the blanks that are their spacing, and a deferred directive keeps
-    its label alone.
+    the blanks that are their spacing.
 
     Text opening with no operator is the author's prose and is returned
-    as written. Raw text is the label as its source spelled it.
+    as written.
 
     The caller applies it where the bundle gave the link a destination
     of its own, which is where that destination states the withholding;
     `published_text` decides the dispatches that keep their mark.
     """
-    found = opened(text, raw)
+    found = opened(text)
     return text if found is None else text[found.after :]
 
 
@@ -683,7 +659,7 @@ def filed(destination: str) -> bool:
     return not destination.startswith(ANCHOR)
 
 
-def published_text(text: str, file: bool, raw: bool = False) -> str:
+def published_text(text: str, file: bool) -> str:
     """One link's text as the bundle publishes it, given whether it points at a file.
 
     A dispatch pointing at a bundle file keeps its mark, written as the
@@ -692,11 +668,10 @@ def published_text(text: str, file: bool, raw: bool = False) -> str:
     one target points at the file too, so it publishes as that dispatch.
     Every other operator's marks go, with the blanks that are their
     spacing, because the destination states what they stated: a path for
-    a deferral and the `In parallel` sub-section for a set.
-
-    Raw text is the label as its source spelled it.
+    a deferral, the contribution heading for a composition and the
+    `In parallel` sub-section for a set.
     """
-    found = opened(text, raw)
+    found = opened(text)
     if found is None:
         return text
     rest = text[found.after :]
@@ -705,17 +680,13 @@ def published_text(text: str, file: bool, raw: bool = False) -> str:
     return rest
 
 
-def directive(label: str | None) -> bool:
-    """Whether a link with this plain-text label is a composition directive.
+def directive(opening: str) -> bool:
+    """Whether a link opening with this text is a composition directive.
 
-    The label is absent where the link's text is not plain text, which
-    no directive's is. A label is one scalar requesting placement, alone
-    or with the deferral mark written against it; every other operator
-    states how its material is compiled and requests no placement.
+    The composition mark requests placement and nothing else; every
+    other operator states how its material is compiled.
     """
-    if label is None:
-        return False
-    return placing(label) or against(label)
+    return INLINE_MARK in operators(opening)
 
 
 def resolve(text: str, base: str = "") -> Reference:

@@ -2495,16 +2495,75 @@ def test_a_mark_with_no_space_after_it_opens_an_ordinary_link(
     assert run.diagnostics() == []
 
 
-def test_the_marks_of_a_compound_operator_are_written_together(root: Path) -> None:
+def test_a_deferred_composition_is_written_with_its_marks_together(
+    root: Path,
+) -> None:
     written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [\u00ac\u21c9 Rules](rules.md).\n"
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\nSee [\u00ac\u21b3 Rules](rules.md#detail).\n",
     )
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
+    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [Rules](rules.md)." in run.bundle
+    assert "See [Rules](#rules)." in run.bundle
+    assert "[\u21b3 Detail](rules.md#detail)" in run.bundle
+    assert "Every rule." not in run.bundle
     assert run.diagnostics() == []
-    assert sorted(run.bundles) == ["guide.bundle.md"]
+
+
+@pytest.mark.parametrize(
+    ("label", "contains"),
+    [
+        ("\u00ac\u21c9 Rules", "dispatch mark"),
+        ("\u00ac\u2afd Rules", "dispatch mark"),
+        ("\u21c9\u21b3 Rules", "composition mark"),
+        ("\u2afd\u21b3 Rules", "composition mark"),
+        ("\u2192", "arrow"),
+        ("\u00ac\u2192", "arrow"),
+        ("\u00ac \u21b3 Rules", "written together"),
+    ],
+    ids=[
+        "a deferred dispatch",
+        "a deferred parallel dispatch",
+        "a dispatch written against the composition mark",
+        "a parallel dispatch written against the composition mark",
+        "an arrow label",
+        "a deferred arrow label",
+        "a blank between the deferral and composition marks",
+    ],
+)
+def test_a_link_stating_no_one_operation_is_refused_and_publishes_nothing(
+    root: Path, label: str, contains: str
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + f"# Guide\n\n## Run\n\nSee [{label}](rules.md#detail).\n",
+    )
+    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert contains in reported["message"]
+
+
+def test_an_arrow_label_names_the_link_and_points_at_the_composition_mark(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\nSee [\u2192](rules.md#detail).\n",
+    )
+    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    [reported] = run.diagnostics()
+    assert reported["reference"] == "\u2192"
+    assert reported["source"] == "guide.md:8"
+    assert "\u21b3" in reported["remedy"]
 
 
 def test_a_deferral_stands_where_another_reference_carried_its_target(
@@ -3681,7 +3740,7 @@ def test_a_directive_composing_a_section_of_its_own_document_warns(
     written(
         root,
         "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [→](#rules)\n\n"
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [↳ Rules](#rules)\n\n"
         "## Reference\n\n### Rules\n\nEvery rule.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -3699,7 +3758,7 @@ def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
     written(
         root,
         "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [¬→](#rules)\n\n"
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [¬↳ Rules](#rules)\n\n"
         "## Reference\n\n### Rules\n\nEvery rule.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -3707,25 +3766,15 @@ def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
     assert run.diagnostics() == []
 
 
-def test_a_dispatched_bundle_carrying_a_deferred_dispatch_opens_with_the_run_pf_line(
+def test_a_dispatched_bundle_carrying_a_deferral_opens_with_the_run_pf_line(
     root: Path,
 ) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\n1. Run [⇉ a](a.md).\n")
-    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬⇉ b](b.md).\n")
+    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬ b](b.md).\n")
     written(root, "b.md", DECLARED + "# B\n\nBody.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundles["a.bundle.md"].startswith(f"{OPENING}# A\n")
-    assert run.bundles["guide.bundle.md"].startswith(f"{OPENING}# Guide\n")
-
-
-def test_an_entry_carrying_a_deferred_dispatch_needs_no_first_run(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n1. Defer [¬⇉ b](b.md).\n")
-    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
     assert run.bundles["guide.bundle.md"].startswith(f"{OPENING}# Guide\n")
 
 
@@ -4233,15 +4282,19 @@ def test_a_cycle_of_directives_names_each_earlier_directive_as_related(
 ) -> None:
     """The closing directive is the location; each earlier one is related."""
     written(
-        root, "guide.md", DECLARED + "# Guide\n\n## Prepare\n\nDo [→](plan.md#steps).\n"
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Prepare\n\nDo [↳ Steps](plan.md#steps).\n",
     )
     written(
-        root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nDo [→](review.md#checks).\n"
+        root,
+        "plan.md",
+        DECLARED + "# Plan\n\n## Steps\n\nDo [↳ Checks](review.md#checks).\n",
     )
     written(
         root,
         "review.md",
-        DECLARED + "# Review\n\n## Checks\n\nDo [→](plan.md#steps).\n",
+        DECLARED + "# Review\n\n## Checks\n\nDo [↳ Steps](plan.md#steps).\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -4261,8 +4314,8 @@ def test_a_multiplying_composition_fails_before_it_is_whole(root: Path) -> None:
     The figure the crossing reports stands below the bytes the whole
     bundle carries, so the run stopped at the first emission crossing it.
     """
-    many = ", ".join(["[→](call.md#steps)"] * 4)
-    calls = ", ".join(["[→](read.md#inputs)"] * 4)
+    many = ", ".join(["[↳ Steps](call.md#steps)"] * 4)
+    calls = ", ".join(["[↳ Inputs](read.md#inputs)"] * 4)
     written(root, "guide.md", DECLARED + f"# Guide\n\nRun {many}.\n")
     written(root, "call.md", DECLARED + f"# Call\n\n## Steps\n\nRead {calls}.\n")
     written(

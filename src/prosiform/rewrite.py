@@ -56,10 +56,10 @@ cannot edit, which is an internal fault rather than a bundle.
 A mark survives the rewrite where it states who compiles the material. A
 dispatch pointing at a bundle file is the one thing in the bundle saying
 the material belongs to another agent, so its label reaches the bundle
-opening with the dispatch mark and one blank. A deferral states when, and
-a set's `In parallel` sub-section states who, which each destination
-already says, so their marks and the blanks following them are dropped
-from the label they open.
+opening with the dispatch mark and one blank. A deferral states when, a
+composition where, and a set's `In parallel` sub-section states who,
+which each destination already says, so their marks and the blanks
+following them are dropped from the label they open.
 A link the bundle took no destination for opens with no operator, because
 the run refuses an operator naming anything but a Markdown document or
 section under the root, and it is published as its author wrote it.
@@ -552,11 +552,9 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
         found.append((*one.target, published(one.definition, destination)))
     elif destination is not None:
         found.append((*one.target, destination))
-    shown = (
-        None if destination is None else published_text(label, filed(destination), True)
-    )
+    shown = None if destination is None else published_text(label, filed(destination))
     if shown is not None and shown != label:
-        lead = opened(label, raw=True)
+        lead = opened(label)
         assert lead is not None
         prefix = shown[: len(shown) - (len(label) - lead.after)]
         found.append((one.label[0], one.label[0] + lead.after, prefix))

@@ -72,7 +72,6 @@ from prosiform.closure import (
     Declarations,
     Reference,
     Substitution,
-    deferred,
     dispatched,
     identity,
     parallel,
@@ -396,9 +395,7 @@ def written_in(
             if child.type != LINK_OPEN:
                 continue
             opening = opening_text(children, at)
-            if not dispatched(opening) or deferred(opening):
-                # A deferred dispatch belongs to the run that compiles it
-                # later, so this bundle names no sub-section for it.
+            if not dispatched(opening):
                 continue
             destination = str(child.attrGet("href") or "")
             target = withheld(path, destination, opening, declarations, substitution)
