@@ -20,5 +20,6 @@ This record holds its delivery of `AC3`: the work item, the validation evidence 
 | Resource | Link |
 | --- | --- |
 | Epic | [I10:E01 Check Coverage](https://github.com/m2ux/prosiform/issues/454) |
+| Pull request | [I10:E01 Report a pull request whose change is not checked](https://github.com/m2ux/prosiform/pull/614) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
