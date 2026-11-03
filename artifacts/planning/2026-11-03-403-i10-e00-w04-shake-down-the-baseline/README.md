@@ -12,6 +12,7 @@ This record holds its delivery of `AC10`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [w04.md](w04.md) | The W04 work item: the baseline shakedown's design, budget rule and tests. |
 
 ## Links
 
