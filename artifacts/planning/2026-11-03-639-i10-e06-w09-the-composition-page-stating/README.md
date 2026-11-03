@@ -12,6 +12,9 @@ This record holds its delivery of `AC17`: the work item, the validation evidence
 
 | Artifact | What it holds |
 | --- | --- |
+| [w09.md](w09.md) | The work item: the composition page stating `↳` |
+| [validation.md](validation.md) | The evidence for each check the work item names |
+| [change-list.md](change-list.md) | The plan changes this session applied and those it held |
 
 ## Links
 
