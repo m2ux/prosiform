@@ -12,6 +12,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 
 | Artifact | What it holds |
 | --- | --- |
+| [E00 W00 work item](e00/w00.md) | The default matrix running the one model the user chose |
 | [E00 W01 work item](e00/w01.md) | Scenarios reaching every failure class the scorer defines |
 | [E00 W02 work item](e00/w02.md) | The every-form baseline over the hardened corpus |
 | [E01 W01 work item](e01/w01.md) | The checks trigger reading the changed paths |
@@ -35,6 +36,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W12 work item](e04/w12.md) | A sub-agent's first `pf` run at the first, second and third hop |
 | [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as `composition-edges.json` |
 | [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
+| [E05 W00 work item](e05/w00.md) | The triage rubric, a runbook per live run, and the user's model, in `RUNBOOK.md` |
 | [E05 W01 work item](e05/w01.md) | The live run of the feature workflows, committed as `mvp-proof.json` |
 | [E05 W02 work item](e05/w02.md) | The eval page stating the feature workflows and the proof |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
@@ -177,6 +179,8 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **E04 priority; sibling move held.** (Planning.) E04 carries `priority: 1`, the number the map proposes for it. Moving E00–E03 from `1` to `2`, which separates E04 from E02 on `harness.py` and the eval README, is a re-prioritisation held for the user.
 - **The MVP proof joins as E05.** (User, 2026-11-03.) I09:E05's last two rows are evals, so W28 and W29 move here as E05 [#594](https://github.com/m2ux/prosiform/issues/594) W01 and W02, with AC29–AC33 as its AC1–AC5 and I09 AC3 as AC14 under goal clause G6. E05 depends on I09:E05, whose feature workflows it runs, and carries `priority: 3`, so it runs first in I10, ahead of E00–E03 (`2`) and E04 (`1`) (user, 2026-11-03). Its earlier decisions (the pass bar, its own file, `baseline.json` untouched) stay in the [I09 record](../2026-11-02-463-i09-grouping-and-composition/README.md#decisions).
 - **Harness and model are asked.** (User, 2026-11-03.) The proof run's session asks the user which harness and, open-ended, which model it uses; E05 AC1 names neither. This supersedes I09's Haiku and full-matrix decisions.
+- **Frontier designs, a general-purpose model runs.** (User, 2026-11-03.) Low-cost models perform the evals; frontier models design them. One frontier row up front, E05 W00, writes `RUNBOOK.md`: a triage rubric giving each scorer class the evidence for agent miss, defect or unclear, and a runbook per live run (E05 W01, E00 W02, E04 W14) proven by a shakedown. Each run row follows its runbook, records the rubric's disposition for every failing session, and escalates a defect or an unclear session; it edits no scenario, harness or scorer. E04 W03 adds its classes to the rubric. Initiative AC15.
+- **One low-cost model, the user's.** (User, 2026-11-03.) The default matrix runs one low-cost model and the corpus is calibrated against it (E00 W00, W01). The plan names no model: E05 W00 asks the user, open-ended. The non-goal on the default matrix now covers harnesses and forms only.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
