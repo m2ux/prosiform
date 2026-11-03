@@ -12,6 +12,10 @@ This record holds its delivery of `AC10,AC11,AC12`: the work item, the validatio
 
 | Artifact | What it holds |
 | --- | --- |
+| [W08](w08.md) | The state a conditional step composes, entered where the step holds and omitted where it fails |
+| [W09](w09.md) | The footnote opened as a document, the arrow read in place, and the self-composed section |
+| [Validation](validation.md) | Each check the work items name, the revision it ran at and what it showed, and the findings it raised |
+| [Change list](change-list.md) | The plan changes the session applied and those it held |
 
 ## Links
 
