@@ -33,3 +33,5 @@ Every placement fixture of `composition/` writes `[↳ Title](p.md#s)` and publi
 ## T8 Make Check
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`, after `git fetch origin engineering`, with `origin/i10/e06/main` already merged. Corpus: 515 fixtures, 515 pass; harness, which carries the `section-composition` corpus test: 1294 passed; lint, format, types, smoke, layout, tables, links, vocabulary, invocation, conformance and independence: ok.
+
+Continuous integration on `1f45185c`: the Checks workflow succeeded, and #644 merged into `i10/e06/main` as `05ce8754452b09e1a23167e8f5cecb91013e7cb2`.

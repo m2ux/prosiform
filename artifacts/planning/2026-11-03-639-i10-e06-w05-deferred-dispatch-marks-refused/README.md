@@ -21,6 +21,7 @@ This record holds its delivery of `AC10,AC14,AC15,AC16`: the work items, the val
 
 | Resource | Link |
 | --- | --- |
+| Pull request | [#644](https://github.com/m2ux/prosiform/pull/644), merged into `i10/e06/main` as `05ce8754` |
 | Epic | [I10:E06 Agent Guide](https://github.com/m2ux/prosiform/issues/639) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
