@@ -56,6 +56,7 @@ from score import (
     Start,
     read_starts,
 )
+from stub_agent import recognised
 from workflow import (
     ENTRY,
     LINKED_FORM,
@@ -119,6 +120,27 @@ absent fails here as surely as one that does not fire where it is present.
 def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
     """The sessions a run of the whole corpus starts."""
     return len(matrix(list(CORPUS.values()), models, forms, repetitions))
+
+
+def test_the_stub_recognises_the_workflow_holding_the_most_states() -> None:
+    """A workflow whose states another holds is not taken for that one."""
+    looping = CORPUS["looping"]
+    fewer = replace(
+        looping,
+        name="fewer",
+        diagram=replace(
+            looping.diagram,
+            edges=tuple(
+                edge
+                for edge in looping.diagram.edges
+                if "Check" not in (edge.source, edge.target)
+            ),
+        ),
+    )
+    assert fewer.diagram.states < looping.diagram.states
+    headings = set(looping.diagram.states)
+    assert recognised(headings, [fewer, looping]) is looping
+    assert recognised(headings - {"Check"}, [fewer, looping]) is fewer
 
 
 def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
@@ -329,7 +351,13 @@ def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> Non
         staged = matrix(corpus, ["m"], [STAGED_SET], 1, harness)
         assert {(item.workflow, item.form) for item in staged} == {
             (name, STAGED_SET)
-            for name in ("deferred-composition", "dispatch-set", "preset-deferral")
+            for name in (
+                "conditional-composition",
+                "deferred-composition",
+                "directive-labels",
+                "dispatch-set",
+                "preset-deferral",
+            )
         }
     assert matrix(corpus, ["m"], [STAGED_SET], 1, Claude()) == []
 

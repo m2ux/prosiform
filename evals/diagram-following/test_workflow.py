@@ -543,8 +543,10 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
     assert [workflow.name for workflow in CORPUS] == [
         "bootstrap-audit",
         "branching",
+        "conditional-composition",
         "declared-inclusion",
         "deferred-composition",
+        "directive-labels",
         "dispatch-beside",
         "dispatch-chain",
         "dispatch-question",
@@ -818,6 +820,154 @@ def test_a_preset_deferral_states_the_stand_ins_path() -> None:
     assert scenario.path == ("Solicit", "Mirror", "Restore")
     assert scenario.compile == (Compile(None, ("reference/fetch.md#read-mirror",)),)
     assert workflow.sections[STAGED]["Mirror"].deferred
+
+
+def staged_bundle(workflow: Workflow, output: Path) -> tuple[str, bytes]:
+    """The entry bundle `pf` compiles from a workflow's staged form, and its stderr."""
+    run = bundle(workflow, STAGED, output)
+    assert run.returncode == 0, run.stderr.decode()
+    return (output / workflow.entry_bundle).read_text(), run.stderr
+
+
+def test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds(
+    tmp_path: Path,
+) -> None:
+    """AC10: the bundle always carries Convert, and the path enters it on `large`.
+
+    Gauge composes Convert's section with `[→]` beneath a step reading
+    `scope.txt`, so the bundle holds Convert's action and transition for
+    either input, and the diagram clicks no Convert: the directive is the
+    only way into it.
+    """
+    workflow = CORPUS_BY_NAME["conditional-composition"]
+    assert "Convert" not in workflow.diagram.clicks
+    paths = {
+        scenario.name: (scenario.inputs, scenario.path)
+        for scenario in workflow.scenarios
+    }
+    assert paths == {
+        "composed-entered": (
+            {"scope.txt": "large"},
+            ("Sample", "Gauge", "Convert", "Finish"),
+        ),
+        "composed-omitted": ({"scope.txt": "small"}, ("Sample", "Gauge", "Finish")),
+    }
+    text, _ = staged_bundle(workflow, tmp_path / "entry")
+    assert enclosing(text, "Convert") == ["Gauge", "Rows"]
+    for index, scenario in enumerate(workflow.scenarios):
+        assert staged_faults(workflow, scenario, tmp_path / str(index)) == []
+
+
+@pytest.mark.parametrize(
+    ("path", "old", "new", "fault"),
+    [
+        (
+            "scenarios.toml",
+            'path = ["Sample", "Gauge", "Finish"]',
+            'path = ["Sample", "Gauge", "Convert", "Finish"]',
+            "composed-omitted: the staged bundles lead ('Sample', 'Gauge', 'Finish')",
+        ),
+        (
+            f"{STAGED}/{document('Gauge')}",
+            "[→](convert.md#rows)",
+            "[the rows](convert.md#rows)",
+            "composed-entered: the bundle heads no Convert section at #",
+        ),
+    ],
+    ids=["entered-where-it-fails", "linked-not-composed"],
+)
+def test_a_composed_state_entered_off_its_condition_is_a_fault(
+    tmp_path: Path, path: str, old: str, new: str, fault: str
+) -> None:
+    """AC10: the path omits Convert where the step fails, and enters it by `[→]`."""
+    workflow = broken(tmp_path, "conditional-composition", path, old, new)
+    faults = [
+        found
+        for index, scenario in enumerate(workflow.scenarios)
+        for found in staged_faults(workflow, scenario, tmp_path / str(index))
+    ]
+    assert faults == [fault]
+
+
+def test_a_footnote_opens_its_target_and_an_arrow_composes_in_place(
+    tmp_path: Path,
+) -> None:
+    """AC11: Vet is a document the footnote opens, the style a section in place.
+
+    Compose writes `[→]` to the house style's rules and `[†]` to Vet, which
+    the diagram clicks nowhere, so the bundle places the rules beneath
+    Compose's step and publishes Vet as a document of its own, and the
+    `footnote-opened` path enters Vet where the footnote leads.
+    """
+    workflow = CORPUS_BY_NAME["directive-labels"]
+    compose = workflow.sections[STAGED]["Compose"].body
+    assert "[→](../reference/style.md#rules)" in compose
+    assert "[†](vet.md#vet)" in compose
+    assert "Vet" not in workflow.diagram.clicks
+    text, _ = staged_bundle(workflow, tmp_path / "entry")
+    assert enclosing(text, "Style") == ["Compose", "Rules"]
+    assert enclosing(text, "Vet") == []
+    assert "[†](#vet)" in bundled_state(text, "Compose")
+    scenario = next(
+        item for item in workflow.scenarios if item.name == "footnote-opened"
+    )
+    assert scenario.path == ("Compose", "Vet", "Issue")
+    assert staged_faults(workflow, scenario, tmp_path / "walk") == []
+
+
+def test_a_path_the_footnote_does_not_open_is_a_fault(tmp_path: Path) -> None:
+    """AC11: without the footnote, no link in Compose leads to Vet."""
+    workflow = broken(
+        tmp_path,
+        "directive-labels",
+        f"{STAGED}/{document('Compose')}",
+        " [†](vet.md#vet)",
+        "",
+    )
+    scenario = next(
+        item for item in workflow.scenarios if item.name == "footnote-opened"
+    )
+    assert staged_faults(workflow, scenario, tmp_path / "walk") == [
+        "footnote-opened: the bundle heads no Vet section at #"
+    ]
+
+
+def test_a_self_composed_section_warns_and_states_its_bundles_path(
+    tmp_path: Path,
+) -> None:
+    """AC12: Issue composes its own Summary, and the bundle states the path.
+
+    The run publishes with `W_COMPOSE_SELF`, which the workflow declares,
+    and the composed copy of the summary stands beneath Issue's Release
+    step beside the section it copies.
+    """
+    workflow = CORPUS_BY_NAME["directive-labels"]
+    assert "W_COMPOSE_SELF" in workflow.warnings
+    assert "[→](#summary)" in workflow.sections[STAGED]["Issue"].body
+    text, stderr = staged_bundle(workflow, tmp_path / "entry")
+    assert reported(stderr) == {"W_COMPOSE_SELF"}
+    assert enclosing(text, "Summary") == ["Issue"]
+    assert enclosing(text, "Summary", 1) == ["Issue", "Release"]
+    scenario = next(item for item in workflow.scenarios if item.name == "self-composed")
+    assert scenario.path == ("Compose", "Issue")
+    assert staged_faults(workflow, scenario, tmp_path / "walk") == []
+
+
+def test_a_self_composed_scenario_stating_another_path_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    """AC12: the self-composed scenario is held to the walk its bundle states."""
+    workflow = broken(
+        tmp_path,
+        "directive-labels",
+        "scenarios.toml",
+        'path = ["Compose", "Issue"]',
+        'path = ["Compose", "Vet", "Issue"]',
+    )
+    scenario = next(item for item in workflow.scenarios if item.name == "self-composed")
+    assert staged_faults(workflow, scenario, tmp_path / "walk") == [
+        "self-composed: the staged bundles lead ('Compose', 'Issue')"
+    ]
 
 
 def test_the_feature_workflows_are_preset_selection_group_placement_and_subst() -> None:
