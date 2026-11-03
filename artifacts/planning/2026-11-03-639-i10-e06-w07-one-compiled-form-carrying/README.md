@@ -20,6 +20,7 @@ This record holds its delivery of `AC12,AC13,AC18`: the work item, the validatio
 
 | Resource | Link |
 | --- | --- |
+| Pull request | [#646](https://github.com/m2ux/prosiform/pull/646), merged into `i10/e06/main` as `7962bb03e955a4114a8df544c01d4ba183c8f70d` |
 | Epic | [I10:E06 Agent Guide](https://github.com/m2ux/prosiform/issues/639) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |

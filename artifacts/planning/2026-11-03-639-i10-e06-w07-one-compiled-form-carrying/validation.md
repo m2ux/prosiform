@@ -25,3 +25,5 @@ The checks W07's work item names, run against task branch `i10/e06/w07-one-compi
 ## T6 Make Check
 
 `make check` with `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'`: harness 1299 passed, which carries the corpus test; lint, format, types, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence: ok.
+
+Continuous integration on `eac1330b`: the Checks workflow succeeded, and #646 merged into `i10/e06/main` as `7962bb03e955a4114a8df544c01d4ba183c8f70d`.
