@@ -12,6 +12,9 @@ This record holds its delivery of `AC2,AC3,AC4`: the work item, the validation e
 
 | Artifact | What it holds |
 | --- | --- |
+| [w01.md](w01.md) | The work item: the plain-text guide bare pf prints, its fixture and the plain-text test |
+| [validation.md](validation.md) | The evidence for each check the work item names |
+| [change-list.md](change-list.md) | The plan changes this session applied and those it held |
 
 ## Links
 
