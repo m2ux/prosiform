@@ -73,6 +73,28 @@ Compiling runs a command, so only a harness carrying a shell gives a session in 
 | `bootstrap-audit` | `blocking-two-halves` | Source and tests gathered as a set, the appraisal, a blocking verdict, then the repair. |
 | `bootstrap-audit` | `clean-one-half` | Source and tests gathered as a set, the appraisal, then a clean verdict straight to publishing. |
 
+### Feature scenarios
+
+The six feature workflows each build on one bundling feature, and each scenario of one fixes a permutation of it. A session takes `bundle` or `tree`.
+
+| Workflow | Scenario | Permutation |
+| --- | --- | --- |
+| `preset-selection` | `default-alone` | A link whose section title selects no preset of its document, so the document's default places the state. |
+| `preset-selection` | `title-selected` | A section title selecting one preset of the document its link names. |
+| `preset-selection` | `two-presets-one-title` | A section title selecting two presets of one document together. |
+| `group-placement` | `leaf-group` | Two states that link nothing, placed in one group. |
+| `group-placement` | `nested-intermediate` | A state placed in a group inside the group of the state linking it, and a second inside that. |
+| `group-placement` | `two-presets-one-document` | One document reached under its default and under a preset, so it stands in two groups. |
+| `subst-redirect` | `document-redirect` | A default substitute redirecting a link to another document. |
+| `subst-redirect` | `section-redirect` | A default substitute redirecting a link to one section of another document. |
+| `subst-redirect` | `preset-over-default` | A preset's substitute holding over the default's. |
+| `section-entry` | `document-fragment` | An entry naming one section of a document, which leaves the document's other sections out. |
+| `section-composition` | `merged-sources` | Two sections written by one section's links, merged into one. |
+| `section-composition` | `deferred-occurrence` | A link whose composition a later run of `pf` defers. |
+| `section-composition` | `nested-composition` | A linked section that itself links a further section, composed inside it. |
+| `declared-inclusion` | `declared-link-followed` | A state a document links that the diagram also declares, entered along the diagram's edge. |
+| `declared-inclusion` | `undeclared-link-as-text` | A link to a document the diagram does not declare, which the session reads as text and does not enter. |
+
 ## Scoring
 
 A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of eight classes that fits where its trace departs from the path:
@@ -128,10 +150,10 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
 
-Neither flag suppresses a plugin's hooks or a settings file's, so the preflight refuses a run whose settings would let one reach a session. It fails before the first session starts, naming the file to remove. Each file below is read from the scope shown, and a file holding only preferences is no refusal. Files in the eval's config directory are read under the user scope:
+Neither flag suppresses a plugin's hooks or a settings file's, so the preflight refuses a run whose settings would let one the organisation does not manage reach a session. It fails before the first session starts, naming the file to remove. Each file below is read from the scope shown, and a file holding only preferences is no refusal. Files in the eval's config directory are read under the user scope:
 
-- `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
-- `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint;
+- `plugins/installed_plugins.json` installing a plugin at any scope but `managed`, whose `hooks/hooks.json` may declare a `SessionStart` hook;
+- `remote-settings.json` enabling a plugin in `enabledPlugins` with no `remote-settings.json.signature.json` beside it, so no organisation signed it;
 - `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, so the directory keeps its theme and model.
 
 Files in a project's `.claude` directory are read under the project scope, `settings.local.json` being its untracked local variant. A file of either name declaring a hook for any event is refused, naming each event, from two places:
@@ -141,9 +163,9 @@ Files in a project's `.claude` directory are read under the project scope, `sett
 
 A run whose config directory holds no login fails the same way, naming the one-time login command.
 
-The host's managed settings file, `/etc/claude-code/managed-settings.json` on Linux, belongs to the host's administrator and reaches every session wherever the config directory points. The run records it rather than refusing it: when its `hooks` block declares a hook, `run.json` names the file and each event under `managed.hooks`, so every recorded session reads as carrying that hook. A host with no such file, or one declaring no hook, records none, and the sessions start either way.
+A managed configuration reaches every session wherever the config directory points: a plugin installed at `managed` scope or enabled by the signed `remote-settings.json`, the environment settings that file's `env` applies over the scrubbed environment, and the hooks a managed plugin or the host's managed settings file, `/etc/claude-code/managed-settings.json` on Linux, which belongs to the host's administrator, delivers. The run records it rather than refusing it, and names none of it: `run.json` and the report state how many managed plugins, environment settings and hooks the sessions carried, and a fingerprint, a SHA-256 digest over the plugin identifiers and versions, the environment keys and the hook events, so two runs on one configuration show one fingerprint and a changed configuration shows another. The hooks are counted from the transcripts once the sessions finish: each hook event a session's transcript shows a hook responding to counts once, its output never read, since no file the harness reads states every hook a managed plugin brings. A host with nothing managed records zero counts and a null fingerprint, and the sessions start either way.
 
-A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Where a managed hook is recorded, a hook's response is that hook's, since the preflight admits no other. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
+A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: an appended system prompt, a memory file, or a hook's `additionalContext` where no managed plugin is present and the host's managed settings file declares no hook is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Otherwise a hook's response is the managed configuration's, since the preflight admits no other hook. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
 
 ## Running
 
@@ -151,7 +173,7 @@ A session that still carries context the run did not supply fails the run after 
 | --- | --- |
 | `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its token budget is `EVAL_BUDGET_TOKENS` and its harness `HARNESS`; `ARGS='...'` passes the runner's options through, a later `--budget-tokens` among them overriding the default. |
 
-The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
+Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -187,17 +209,23 @@ The run's guard reads each session's reported tokens when it settles: a session 
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, managed hooks, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, managed configuration, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
 ```
 
-The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens and the count of sessions not started, and closes with those sessions listed.
+The [report](report.py) gives three tables: per model, per model and form across scenarios, and per model, form and scenario. Each row gives its sessions and passes, the pass rate, each failure class's count, the sessions ended at their timeout, the mean tokens and the mean cost where a harness reports one. The report opens with the run's tokens, the managed configuration its sessions carried, counted and fingerprinted, its cost, the sum of every session's reported cost, and the count of sessions not started. It then lists each failing session with the disposition its triage gave it in `dispositions.json` beside `run.json`, as the [runbook](RUNBOOK.md#dispositions-file) states, and closes with the sessions not started.
 
 A refused run — one every started session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` writes only from a run whose report holds a cell, so a refused run, or one that started nothing, leaves the committed baseline as it was.
 
 `baseline.json` beside this file is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. [`report.md`](report.md) beside it is that run's report. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
+
+## MVP proof
+
+[`mvp-proof.json`](mvp-proof.json) records a live run of the [feature scenarios](#feature-scenarios), with its [report](mvp-proof.md) beside it: 150 sessions on the `claude` harness and `claude-haiku-5-5`, fifteen scenarios in `bundle` and `tree`, five repetitions each. It proves that an agent given a feature workflow in either form follows it to completion: 148 sessions pass, all 75 in `bundle` and 73 of 75 in `tree`. The two failures, in `section-composition`'s `nested-composition`, are triaged as misses in the file. The run measured USD 0.67671 over 19 268 512 tokens, so a rerun spends the same budget.
+
+The managed platform configuration the sessions carried is recorded by count and fingerprint, as [Isolation](#isolation) states. [`RUNBOOK.md`](RUNBOOK.md#mvp-proof) states how the run is made.
 
 ## Refreshing the baseline
 
