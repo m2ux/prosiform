@@ -12,6 +12,7 @@ This record holds its delivery of `AC1`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [w00.md](w00.md) | The work item: the design clause stating the guide, the run-pf line, the dispatch sections, the retired deferred dispatch and `↳` as the composition mark |
 
 ## Links
 
