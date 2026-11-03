@@ -16,7 +16,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 
-A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `bootstrap-audit` takes `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: the five workflows walking a decision to a terminal state, `linear`, `branching`, `looping`, `pricing` and `rework`, take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `bootstrap-audit` takes `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
@@ -89,6 +89,18 @@ A session records each state it enters as a line of `trace.log` and does each st
 | `invalid_transition` | entered a state no edge leads to: a step back, a state after the end, or the same state again. |
 
 A session whose agent reports an error, or prints no `result` message, takes `errored` instead of any of these. It entered no state, so its trace says nothing about how it followed the workflow: a refusal, an expired quota or a crashed command fails `errored` rather than as an `unfinished` run.
+
+### Misreadings the scenarios provoke
+
+Each failure class the scorer defines is produced by some scenario, and the corpus test names any class none produces: it scores each scenario's path departed from once at every point, and a session whose agent reported an error is `errored` on any scenario. Each workflow is written so a plausible misreading departs in a class of its own, so a run's failures say which way an agent departed.
+
+| Workflow | What it makes possible to misread |
+| --- | --- |
+| `linear` | A state skipped or repeated on a path with no decision. |
+| `branching` | One decision's branch. |
+| `looping` | A two-round loop, and `Check`, a state no click names, reached only through the link in `Revise`'s section. |
+| `pricing` | A second decision after the first, read from its own input, and `Refund`, a state drawn and linked from the terminal `Invoice` that no edge leads to. |
+| `rework` | A four-round loop whose bound counts `Retest`, a state no click names, reached only through the link in `Rework`'s section. |
 
 ### Dispatch checks
 
@@ -170,9 +182,9 @@ make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetiti
 
 ### Default matrix and budget
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the twenty-four scenarios of the thirteen workflows the Claude harness can run, in the forms each is written in, 58 cells in all; and five repetitions: 580 sessions. The `bootstrap` form adds none, since the Claude harness carries no shell. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the twenty-eight scenarios of the fifteen workflows the Claude harness can run, in the forms each is written in, 74 cells in all; and five repetitions: 740 sessions. The `bootstrap` form adds none, since the Claude harness carries no shell. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
 
-A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 580 sessions at the 60 000-token session cap need 34 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
+A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 740 sessions at the 60 000-token session cap need 44 400 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
 
 The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 

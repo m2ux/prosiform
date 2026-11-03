@@ -232,7 +232,7 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 58
+    assert len(sessions) == 2 * 5 * 74
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -575,7 +575,8 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
     monkeypatch.setenv("STUB_AGENT_SILENT", "1")
     record = eval_run(
         tmp_path,
-        *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
+        *("--workflows", "linear,branching,looping", "--forms", PROSE_BUNDLE),
+        *("--repetitions", "1", "--parallel", "1"),
         *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 5
@@ -699,7 +700,8 @@ def test_a_run_the_budget_stopped_whose_sessions_all_errored_is_refused(
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     record = eval_run(
         tmp_path,
-        *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
+        *("--workflows", "linear,branching,looping", "--forms", PROSE_BUNDLE),
+        *("--repetitions", "1", "--parallel", "1"),
         *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 3 and record["sessions"] == 5
