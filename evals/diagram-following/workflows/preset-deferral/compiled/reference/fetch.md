@@ -7,4 +7,4 @@ prosiform:
 
 ## Read mirror
 
-Open the page [→](net.md#open).
+Open the page [↳ Open](net.md#open).
