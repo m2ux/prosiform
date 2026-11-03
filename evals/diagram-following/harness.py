@@ -20,7 +20,10 @@ the harness is the whole of what an agent CLI differs in.
 
 A harness reads its own stream: `starts()` returns the same `Start` values
 from any of them, so the scorer above it is unaware of which CLI produced
-them.
+them. Each start names the start whose sub-agent made it and the shell
+commands its own sub-agent ran, wherever the stream attributes a call to a
+sub-agent; `sub_agent_calls` declares whether it does, as read from what
+each CLI prints.
 """
 
 from __future__ import annotations
@@ -50,6 +53,8 @@ USER = "user"
 TOOL_USE = "tool_use"
 TOOL_RESULT = "tool_result"
 CALL_ID = "tool_use_id"
+PARENT = "parent_tool_use_id"
+"""The `Task` call a Claude message runs under, null for the session's own."""
 TASK = "Task"
 DESCRIPTION = "description"
 RESULT = "result"
@@ -99,11 +104,18 @@ class Start:
     `target` is the text the dispatching call carried, naming the section it
     handed over; `returned` is what the sub-agent gave back, and `together`
     says whether it started in the same message as the start above it.
+    `parent` is the index of the start whose sub-agent made this one, or
+    nothing for a start the session made itself, so each sub-agent's own
+    starts sit under the section it followed at whatever depth. `commands`
+    are the shell commands this start's sub-agent ran, in order, as the
+    stream attributes them to it.
     """
 
     target: str
     returned: str
     together: bool
+    parent: int | None = None
+    commands: tuple[str, ...] = ()
 
     def record(self) -> dict[str, object]:
         """The start as plain values `json.dumps` writes unchanged."""
@@ -163,8 +175,12 @@ class Claude:
     """
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
-    nested_starts: bool = True
-    """Whether a sub-agent's own dispatch reaches the parent's transcript."""
+    sub_agent_calls: bool = True
+    """Whether a sub-agent's own tool calls reach the session's stream.
+
+    They do: a sub-agent's messages are printed in the session's stream, each
+    naming the `Task` call it runs under as `parent_tool_use_id`.
+    """
     session_cap_usd: float = 0.50
     """The price the CLI itself may spend in one session.
 
@@ -321,9 +337,12 @@ class Claude:
 
         A `tool_use` block naming `Task` is one start; two such blocks in one
         assistant message started together. A start's target is the
-        `description` its input carries, naming the section handed over.
+        `description` its input carries, naming the section handed over, and
+        its parent is the start whose `Task` call the message's
+        `parent_tool_use_id` names. The session has no shell, so no start
+        carries a command.
         """
-        found: dict[str, tuple[str, bool]] = {}
+        found: dict[str, tuple[str, bool, str | None]] = {}
         returned: dict[str, str] = {}
         for held in messages(transcript):
             kind = held.get("type")
@@ -332,6 +351,8 @@ class Claude:
             if not isinstance(content, list):
                 continue
             if kind == ASSISTANT:
+                owner = held.get(PARENT)
+                parent = owner if isinstance(owner, str) else None
                 first = None
                 for block in content:
                     if not isinstance(block, dict) or block.get("type") != TOOL_USE:
@@ -347,7 +368,7 @@ class Claude:
                     key = block.get("id")
                     if not isinstance(key, str) or not isinstance(target, str):
                         continue
-                    found[key] = (target, first is not None)
+                    found[key] = (target, first is not None, parent)
                     if first is None:
                         first = key
             elif kind == USER:
@@ -357,9 +378,15 @@ class Claude:
                     key = block.get(CALL_ID)
                     if isinstance(key, str):
                         returned[key] = said(block.get("content"))
+        order = {key: index for index, key in enumerate(found)}
         return tuple(
-            Start(target, returned.get(key, DONE), together)
-            for key, (target, together) in found.items()
+            Start(
+                target,
+                returned.get(key, DONE),
+                together,
+                order.get(parent) if parent is not None else None,
+            )
+            for key, (target, together, parent) in found.items()
         )
 
     def commands(self, transcript: Path) -> tuple[str, ...] | None:
@@ -394,12 +421,13 @@ class Cursor:
     """
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
-    nested_starts: bool = False
-    """Whether a sub-agent's own dispatch reaches the parent's transcript.
+    sub_agent_calls: bool = False
+    """Whether a sub-agent's own tool calls reach the session's stream.
 
-    It does not: the CLI reports a sub-agent's final text and the steps it
+    They do not: the CLI reports a sub-agent's final text and the steps it
     took, and no tool call it made. A scenario whose trace names a start
-    made inside a sub-agent cannot be observed on this harness.
+    made inside a sub-agent, or which states a sub-agent's `pf` run, cannot
+    be observed on this harness.
     """
     usage: tuple[str, str, str, str] = (
         "inputTokens",
@@ -491,7 +519,7 @@ class Cursor:
         stream is not part of its parent's transcript, so a dispatch nested
         inside a sub-agent leaves its parent's record silent about it. A
         scenario stating such a start is beyond what this harness reports,
-        which `observes` states.
+        as `sub_agent_calls` declares.
         """
         found: list[tuple[str, str, bool]] = []
         returned: dict[str, str] = {}
@@ -596,6 +624,8 @@ class Opencode:
     distinct from an assistant message, so a start and a command are read from
     what the session did rather than from prose. Tokens and cost are reported
     on each `step_finish` part, one per model step, and summed over the session.
+    The parts printed are the started session's alone, so a sub-agent's own
+    calls are not among them.
     """
 
     name: str = "opencode"
@@ -613,11 +643,13 @@ class Opencode:
     The CLI reads its prompt from its arguments, so a run appends it there.
     A prompt written to its input instead is read by nothing.
     """
-    nested_starts: bool = True
-    """Whether a sub-agent's own dispatch reaches the parent's stream.
+    sub_agent_calls: bool = False
+    """Whether a sub-agent's own tool calls reach the session's stream.
 
-    It does: a session's `tool_use` parts include those its sub-agents made,
-    so a trace naming a nested start is observable here.
+    They do not: the run command prints a part only where its `sessionID` is
+    the session it started, and a sub-agent runs in a child session of its
+    own. A sub-agent's starts and commands are therefore absent, as for
+    Cursor.
     """
 
     def argv(
