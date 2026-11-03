@@ -28,7 +28,7 @@ from score import (
     record_calls,
     score,
 )
-from workflow import Compile, Scenario, Workflow, workflows
+from workflow import COMPILED_FORM, STAGED, Compile, Scenario, Workflow, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -514,7 +514,7 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
     )
     records = tmp_path / "records"
     records.mkdir()
-    record_calls(held, records, Claude())
+    record_calls(held, records, Claude(), COMPILED_FORM)
     assert read_starts(records) == (
         Start("plan#work", "done", False),
         Start("review#source", "question", False),
@@ -597,7 +597,9 @@ def test_an_absent_transcript_records_no_start(tmp_path: Path) -> None:
     """A session that dispatched nothing, or wrote no transcript, records none."""
     records = tmp_path / "records"
     records.mkdir()
-    assert record_calls(tmp_path / "absent.jsonl", records, Claude()) == ()
+    assert (
+        record_calls(tmp_path / "absent.jsonl", records, Claude(), COMPILED_FORM) == ()
+    )
     assert read_starts(records) == ()
     assert read_starts(tmp_path / "unwritten") == ()
 
@@ -650,7 +652,7 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
     records = tmp_path / "records"
     records.mkdir()
     workspace(records, corpus, list(item.path))
-    record_calls(held, records, Opencode())
+    record_calls(held, records, Opencode(), COMPILED_FORM)
     assert [start.returned for start in read_starts(records)] == [
         "question",
         "done",
@@ -775,6 +777,63 @@ def test_a_run_from_another_directory_names_the_same_document(tmp_path: Path) ->
     assert compiling(tmp_path, ["pf other/workflow.md"], [], runs=runs).failure == (
         Failure.UNCOMPILED
     )
+
+
+def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, object]:
+    """One Claude assistant message holding one call, under `owner`'s `Task` call."""
+    return {
+        "type": "assistant",
+        "parent_tool_use_id": owner,
+        "message": {"content": [{"type": "tool_use", **block}]},
+    }
+
+
+@pytest.mark.parametrize(
+    ("ruling", "failure"),
+    [
+        (["pf steps/recording.md#file"], None),
+        (["pf steps/recording.md#file", "pf steps/closing.md#close"], "over"),
+        ([], "un"),
+    ],
+    ids=["stated", "unstated-run", "no-run"],
+)
+def test_a_staged_claude_record_holds_each_hops_runs(
+    tmp_path: Path, ruling: list[str], failure: str | None
+) -> None:
+    """AC26: `deep-hop-runs` is scored on the runs each nested start's sub-agent made.
+
+    The stream a staged Claude session prints files each `Bash` call under
+    the `Task` call its sub-agent runs under, so the ruling's runs, three
+    hops down, are held to the one the scenario states by the ruling.
+    """
+    workflow = CORPUS["subagent-first-run"]
+    item = scenario("subagent-first-run", "deep-hop-runs")
+    records = tmp_path / "records"
+    records.mkdir()
+    held = done_by_sub_agents(workspace(records, workflow, list(item.path)), item)
+
+    def task(key: str, target: str) -> dict[str, object]:
+        return {"id": key, "name": "Task", "input": {"description": target}}
+
+    def bash(command: str) -> dict[str, object]:
+        return {"id": f"bash-{command}", "name": "Bash", "input": {"command": command}}
+
+    stream = tmp_path / "transcript.jsonl"
+    lines = [
+        claude_message(None, task("a", "hop/audit#sweep")),
+        claude_message("a", task("b", "hop/review#scan")),
+        claude_message("b", bash("pf steps/weighing.md#weigh")),
+        claude_message("b", task("c", "steps/ruling#rule")),
+        *(claude_message("c", bash(command)) for command in ruling),
+    ]
+    stream.write_text("".join(json.dumps(line) + "\n" for line in lines))
+    record_calls(stream, held, Claude(), STAGED)
+    expected = {
+        None: None,
+        "over": Failure.OVERCOMPILED,
+        "un": Failure.UNCOMPILED,
+    }[failure]
+    assert score(workflow, item, held).failure == expected
 
 
 def test_a_harness_reporting_no_command_asks_no_run(tmp_path: Path) -> None:
