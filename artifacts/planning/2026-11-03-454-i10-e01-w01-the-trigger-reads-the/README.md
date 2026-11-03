@@ -12,6 +12,7 @@ This record holds its delivery of `AC1`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The checks trigger reading the changed paths |
 
 ## Links
 
