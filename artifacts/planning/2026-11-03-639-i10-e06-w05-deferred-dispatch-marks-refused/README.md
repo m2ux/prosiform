@@ -6,12 +6,16 @@
 
 A deferred dispatch mark is refused; the inline mark composes a section now or defers it, and an arrow label is refused.
 
-This record holds its delivery of `AC10,AC14,AC15,AC16`: the work item, the validation evidence for every check the work item names, and the plan changes the session applied and held.
+This record holds its delivery of `AC10,AC14,AC15,AC16`: the work items, the validation evidence for every check the work items name, and the plan changes the session applied and held.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
+| [w05.md](w05.md) | The work item: `¬⇉` and `¬⫽` refused |
+| [w08.md](w08.md) | The work item: `↳` composing, arrow labels refused |
+| [validation.md](validation.md) | The evidence for each check the work items name |
+| [change-list.md](change-list.md) | The plan changes this session applied and those it held |
 
 ## Links
 
