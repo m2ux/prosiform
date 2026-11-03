@@ -38,6 +38,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as one `composition-edges-<harness>.json` per shell harness |
 | [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
 | [E04 W16 work item](e04/w16.md) | The edge-run runbook's shakedown over the edge workflows |
+| [E04 W17 work item](e04/w17.md) | The triage rubric's entries for the scorer's `pf`-run classes |
 | [E05 W00 work item](e05/w00.md) | The triage rubric, a runbook per live run, and the user's model, in `RUNBOOK.md` |
 | [E05 W03 work item](e05/w03.md) | A run's managed configuration recorded by count and fingerprint |
 | [E05 W01 work item](e05/w01.md) | The live run of the feature workflows, committed as `mvp-proof.json` |
