@@ -13,6 +13,8 @@ This record holds its delivery of `AC26`: the work item, the validation evidence
 | Artifact | What it holds |
 | --- | --- |
 | [W18](w18.md) | The staged Claude session's shell, each start's commands, and the nested scenarios' Claude cells |
+| [Validation](validation.md) | Each check the work item names, the revision it ran at and what it showed, and the findings it raised |
+| [Change list](change-list.md) | The plan changes the session applied and those it held |
 
 ## Links
 
