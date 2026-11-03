@@ -23,6 +23,7 @@ in the folder the run does not produce is left as it was.
 
 import json
 import os
+import re
 import shutil
 from collections.abc import Callable, Mapping, Sequence
 from contextlib import chdir
@@ -248,14 +249,29 @@ def test_a_bare_command_prints_the_guide(tmp_path: Path) -> None:
     assert list(tmp_path.iterdir()) == []
 
 
-def test_the_guide_states_the_compile_step_the_inline_rule_and_the_section() -> None:
-    assert "pf -o <folder> <destination>" in GUIDE
-    assert "`SKILL.md`" in GUIDE
-    assert "A non-zero exit stops the run" in GUIDE
-    assert "`↳` names an inline target" in GUIDE
-    assert "A bundle that opens with a Prosiform section is followed from there" in (
-        GUIDE
-    )
+def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
+    for rule in (
+        "pf -o <folder> <destination>",
+        "SKILL.md",
+        "A non-zero exit stops the run",
+        "A link whose text opens with \u21b3",
+        "keep it in context",
+        "A link whose text opens with \u21c9",
+        "An In parallel section lists several \u21c9 links",
+        "each with the inputs of the step that led there",
+        "Continue when all have answered",
+        "all failures return together",
+        "in an answer whose first line reads Question:",
+    ):
+        assert rule in " ".join(GUIDE.split())
+
+
+def test_the_guide_is_plain_text() -> None:
+    assert not re.search(r"^#", GUIDE, re.MULTILINE)
+    assert "`" not in GUIDE
+    assert "*" not in GUIDE
+    assert "_" not in GUIDE
+    assert not re.search(r"\[[^\]]*\]\([^)]*\)", GUIDE)
 
 
 def test_the_help_response_names_the_bare_command() -> None:
