@@ -49,7 +49,7 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 - **Scorer.** The [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done. It classifies each failing run by how it departs from the path.
 - **Eval runner.** The [runner](evals/diagram-following/run.py) is driven by a stub agent, and:
   - starts each session in a fresh workspace holding its form and inputs;
-  - refuses a run, before its first session, when the config directory installs or enables a plugin or declares a hook in its settings file;
+  - refuses a run, before its first session, when the config directory installs a plugin at a scope other than managed, enables one through unsigned remote settings, or declares a hook in its settings file, and records each managed plugin and the environment it adds;
   - fails a run when a session carried context the runner did not supply;
   - records each session's transcript, usage, cost and verdict;
   - records a run whose every started session errored as refused, with the agent's own reason, whether or not its budget stopped it;

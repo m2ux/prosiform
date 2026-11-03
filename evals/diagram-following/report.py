@@ -16,7 +16,9 @@ at their timeout in `timeouts`, the mean `tokens` of each kind over the
 sessions recording tokens, and the mean `cost_usd` over the sessions
 recording a cost; a mean is null when no session records it. The report
 also gives the run's id, date, models, repetitions, matrix size, sessions
-started, tokens, and the sessions it did not start, and its `cost_usd`: the
+started, tokens, the sessions it did not start, `managed`, the plugins the
+organisation manages that reached every session with the environment
+variables they add, as `run.json` records them, and its `cost_usd`: the
 sum of every session's reported cost, errored sessions included, null when
 no session reports one, as a harness reporting no cost leaves it.
 
@@ -217,6 +219,7 @@ def report(run_directory: Path, baseline: Path = BASELINE) -> Row:
         "sessions": run["sessions"],
         "started": run["started"],
         "harness": run.get("harness"),
+        "managed": run["managed"],
         "tokens": run["tokens"],
         "cost_usd": round(sum(costs), 6) if costs else None,
         "not_started": run["not_started"],
@@ -356,6 +359,21 @@ def table(rows: list[Row], key: tuple[str, ...]) -> list[str]:
     return lines
 
 
+def managed_line(managed: Row) -> str:
+    """The managed plugins every session carried, as the report states them."""
+    if not managed["plugins"]:
+        return "- **Managed plugins:** none."
+    plugins = ", ".join(
+        f"`{item['plugin']}` {item['version'] or 'uninstalled'}"
+        for item in managed["plugins"]
+    )
+    added = ", ".join(f"`{name}`" for name in managed["environment"]) or "none"
+    return (
+        f"- **Managed plugins:** {plugins}, whose injected rules every session "
+        f"carried; environment added: {added}."
+    )
+
+
 def markdown(built: Row) -> str:
     """A report as Markdown: the run, then each level, then what is missing."""
     base = built["baseline"]
@@ -368,6 +386,7 @@ def markdown(built: Row) -> str:
         f"- **Sessions:** {built['started']} of {built['sessions']} started; "
         f"{len(built['not_started'])} not started.",
         f"- **Tokens:** {built['tokens']}.",
+        managed_line(built["managed"]),
         "- **Cost:** no session reported a cost."
         if built["cost_usd"] is None
         else f"- **Cost:** USD {built['cost_usd']:g}.",
