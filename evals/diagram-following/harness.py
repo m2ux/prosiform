@@ -136,6 +136,9 @@ class Claude:
     remote: str = "remote-settings.json"
     enabled: str = "enabledPlugins"
     settings: str = "settings.json"
+    project: str = ".claude"
+    """The directory holding a project's own settings, in a workspace or above it."""
+    project_settings: tuple[str, ...] = ("settings.json", "settings.local.json")
     hooks: str = "hooks"
     default_agent: str = "claude"
     tools: str = "Read,Write,Edit,Glob,Grep,Task"
@@ -201,8 +204,19 @@ class Claude:
         }
         return {**kept, self.config_variable: str(config)}
 
-    def preflight(self, config: Path) -> str | None:
-        """How a configuration directory fails to isolate a session, if it does."""
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
+        """How the settings a session reads would let a hook reach it, if they do.
+
+        Claude Code reads a hook from the configuration directory, from each
+        project's `.claude` settings at a session's working directory, and from
+        such a directory on the path from that working directory to the
+        filesystem root. `sources` are the trees a session's workspace is
+        copied from, so a project file a tree carries reaches every session of
+        that tree; `workspaces` is the run's workspace root, which every
+        session's workspace sits under.
+        """
         if not (config / self.login).is_file():
             return (
                 f"{config} holds no login; log in once with "
@@ -224,16 +238,45 @@ class Claude:
                 f"every session before its first turn; remove {enabling}"
             )
         declared = config / self.settings
-        hooks = _record(declared).get(self.hooks)
-        if isinstance(hooks, dict):
-            events = sorted(str(event) for event, commands in hooks.items() if commands)
-            if events:
-                return (
-                    f"{declared} declares a hook for {', '.join(events)}, which "
-                    f"reaches every session before its first turn; remove "
-                    f"{declared} before this run"
+        refused = self.hook_refusal(
+            declared,
+            f"reaches every session before its first turn; remove {declared} "
+            f"before this run",
+        )
+        if refused is not None:
+            return refused
+        for source in sources:
+            for name in self.project_settings:
+                held = source / self.project / name
+                refused = self.hook_refusal(
+                    held,
+                    f"reaches every session before its first turn; remove {held} "
+                    f"before this run",
                 )
+                if refused is not None:
+                    return refused
+        resolved = workspaces.resolve()
+        for ancestor in (resolved, *resolved.parents):
+            for name in self.project_settings:
+                held = ancestor / self.project / name
+                refused = self.hook_refusal(
+                    held,
+                    f"reaches every session under {workspaces}; pass an --eval-root "
+                    f"outside {ancestor} before this run",
+                )
+                if refused is not None:
+                    return refused
         return None
+
+    def hook_refusal(self, path: Path, consequence: str) -> str | None:
+        """Why a settings file declaring a hook is refused, or nothing if none is."""
+        hooks = _record(path).get(self.hooks)
+        if not isinstance(hooks, dict):
+            return None
+        events = sorted(str(event) for event, commands in hooks.items() if commands)
+        if not events:
+            return None
+        return f"{path} declares a hook for {', '.join(events)}, which {consequence}"
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -373,7 +416,9 @@ class Cursor:
             if not name.startswith(self.scrubbed)
         }
 
-    def preflight(self, config: Path) -> str | None:
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
         """What a run under this harness cannot guarantee, stated as a refusal.
 
         The CLI declares no configuration directory, no MCP switch, no
@@ -580,7 +625,9 @@ class Opencode:
             if not name.startswith(self.scrubbed)
         }
 
-    def preflight(self, config: Path) -> str | None:
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
         """What this harness cannot guarantee, stated as a refusal.
 
         The CLI has no configuration directory of its own and reads plugins

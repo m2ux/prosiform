@@ -13,6 +13,7 @@ wrong reason fails where it fires.
 
 import json
 import re
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -927,6 +928,79 @@ def test_a_settings_file_that_is_not_json_is_refused(tmp_path: Path, log: Path) 
             *("--budget-tokens", "1000"),
         )
     assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+HOOKED = {
+    "hooks": {
+        "SessionStart": [{"hooks": [{"type": "command", "command": "cat rules.md"}]}]
+    }
+}
+
+
+def copied_tree(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """The linear workflow's diagram tree, copied where a test may plant settings."""
+    corpus = tmp_path / "corpus"
+    shutil.copytree(source.WORKFLOWS / "linear", corpus / "linear")
+    monkeypatch.setattr(
+        "run.workflows", lambda: [source.read_workflow(corpus / "linear")]
+    )
+    return corpus / "linear" / "diagram"
+
+
+@pytest.mark.parametrize("name", ["settings.json", "settings.local.json"])
+def test_a_form_tree_whose_project_settings_declare_a_hook_starts_no_session(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, name: str
+) -> None:
+    """A tree's project settings reach every session copied from that tree."""
+    tree = copied_tree(tmp_path, monkeypatch)
+    (tree / ".claude").mkdir()
+    (tree / ".claude" / name).write_text(json.dumps(HOOKED))
+    with pytest.raises(
+        CorpusError,
+        match=rf"\.claude/{re.escape(name)} declares a hook for SessionStart.*"
+        rf"remove .*{re.escape(name)} before this run",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", TREE, "--repetitions", "1"),
+            *("--budget-tokens", "1000"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+@pytest.mark.parametrize("name", ["settings.json", "settings.local.json"])
+def test_a_claude_directory_above_the_workspaces_declaring_a_hook_starts_no_session(
+    tmp_path: Path, log: Path, name: str
+) -> None:
+    """An ancestor's project settings reach every session under the eval root."""
+    (tmp_path / ".claude").mkdir()
+    (tmp_path / ".claude" / name).write_text(json.dumps(HOOKED))
+    with pytest.raises(
+        CorpusError,
+        match=rf"\.claude/{re.escape(name)} declares a hook for SessionStart.*"
+        r"--eval-root",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-tokens", "1000"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+def test_a_claude_directory_above_the_workspaces_without_a_hook_starts_its_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """An ancestor's settings that declare no hook are no refusal."""
+    (tmp_path / ".claude").mkdir()
+    (tmp_path / ".claude" / "settings.json").write_text(json.dumps({"theme": "dark"}))
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    assert len(seen(log)) == 1
 
 
 def test_a_session_carrying_injected_context_fails_the_run(

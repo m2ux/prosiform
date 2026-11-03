@@ -704,9 +704,6 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         raise CorpusError(f"no agent command {command!r} is found")
     eval_root = arguments.eval_root.expanduser()
     config = eval_root / CONFIG
-    refused = harness.preflight(config)
-    if refused is not None:
-        raise CorpusError(refused)
     env = harness.environment(config, dict(os.environ))
     corpus = workflows()
     if arguments.workflows:
@@ -727,6 +724,17 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     sessions = matrix(
         corpus, names(arguments.models), forms, arguments.repetitions, harness
     )
+    sources = tuple(
+        workflow.form(FORMS[form])
+        for workflow in corpus
+        for form in forms
+        if form not in BUNDLED
+        and form != BOOTSTRAP_SET
+        and FORMS[form] in workflow.forms
+    )
+    refused = harness.preflight(config, eval_root / WORKSPACES, sources)
+    if refused is not None:
+        raise CorpusError(refused)
     unobservable = [
         f"{workflow.name}/{scenario.name}/{form}"
         for workflow in corpus
