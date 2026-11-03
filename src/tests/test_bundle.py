@@ -699,8 +699,7 @@ def test_a_set_of_one_target_publishes_as_an_inline_dispatch(
     status, bundles, _ = compiled(
         tmp_path,
         {
-            "guide.md": DECLARED
-            + "# Guide\n\nRun [\u2afd plan](plan.md) then "
+            "guide.md": DECLARED + "# Guide\n\nRun [\u2afd plan](plan.md) then "
             "[\u2afd the plan again](plan.md).\n",
             "plan.md": DECLARED + "# Plan\n",
         },
