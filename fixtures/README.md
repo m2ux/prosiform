@@ -357,3 +357,4 @@ make harness
 ```
 
 Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them. The same target holds the [diagram-following eval](../evals/diagram-following/README.md)'s corpus, scorer, runner and report.
+
