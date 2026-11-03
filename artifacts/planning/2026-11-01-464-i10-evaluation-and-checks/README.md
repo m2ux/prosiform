@@ -209,6 +209,7 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **`unbootstrapped` retires.** (User, 2026-11-03.) `uncompiled` covers a bootstrap session that ran no `pf` once its scenarios state their runs, so E04 W05 removes `unbootstrapped` with its rubric row.
 - **A bootstrap skill names `pf` in its opening paragraph.** (User, 2026-11-03.) "Run `pf`." stands in the skill's opening paragraph, apart from its `↳` line, so a session holds the command before it meets the symbol; folded into E04 W08.
 - **Managed hooks are counted from the transcripts.** (User, 2026-11-03.) A run counts the managed hooks its sessions carried from the hook events their transcripts show, so a hook declared where no config read reaches is still counted; E05 integration applies it.
+- **The baseline shakedown fixes the sub-agent reading it found.** (User, 2026-11-03.) The shakedown found the claude harness reading no sub-agent start, stopping at the first state while sub-agents ran in the background, and counting one turn's tokens (#632); E00 W04 fixes it in its own pull request and reruns, as its work item states.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
