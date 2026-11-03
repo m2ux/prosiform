@@ -8,10 +8,11 @@ transition paragraphs, and a dispatch form's in the step handing a section
 to a sub-agent too; and each scenario's path is a walk of the diagram from
 its start to a terminal state that every form's sections lead through for
 the scenario's inputs, and the diagram form's bundle states, with the
-dispatch trace its sources state and `pf` runs naming documents its sources
-hold. Each property is a function returning the faults it
-finds, so the corpus is held to an empty list and a copy of it broken on
-purpose is held to a fault.
+dispatch trace its sources state, `pf` runs naming documents its sources
+hold, and each sub-agent's actions the material its own runs compile
+states. Each property is a function returning the faults it finds, so the
+corpus is held to an empty list and a copy of it broken on purpose is held
+to a fault.
 """
 
 import re
@@ -23,6 +24,7 @@ import pytest
 from ruamel.yaml import YAML
 from score import SUB_AGENT_TRACE
 from workflow import (
+    ACTION,
     AUTHORED_FORM,
     BOOTSTRAP,
     BOOTSTRAP_DIR,
@@ -39,6 +41,7 @@ from workflow import (
     LINKED_FORM,
     MARKED_FORMS,
     PROSE,
+    PUBLISHED_DEFERRAL,
     SKILL_ENTRY,
     STAGED,
     STATES,
@@ -53,6 +56,7 @@ from workflow import (
     CorpusError,
     Scenario,
     Workflow,
+    activated,
     authored,
     bundle,
     bundle_walk,
@@ -60,11 +64,13 @@ from workflow import (
     bundled_sections,
     compile_faults,
     compile_reference,
+    dispatch_starts,
     dispatch_walk,
     dispatched,
     entry_bundle,
     inputs_read,
     instruction,
+    reached_lines,
     read_workflow,
     reported,
     staged_walk,
@@ -74,6 +80,10 @@ from workflow import (
 )
 
 BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
+RUN_FIRST = (
+    "Before following this bundle, [run pf first](#run-pf-first).\n\n# Prosiform"
+)
+"""The opening of a dispatched bundle whose sub-agent must run `pf` before it acts."""
 CORPUS = workflows()
 DISPATCHING = [workflow for workflow in CORPUS if COMPILED_FORM in workflow.forms]
 DRAWING = [workflow for workflow in CORPUS if DIAGRAM in workflow.forms]
@@ -431,7 +441,7 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
             faults.append(f"{scenario.name}: a form that dispatches names a trace")
         return faults
     for form in dispatching:
-        stated = dispatch_walk(workflow, form, path)
+        stated = dispatch_walk(workflow, form, path, scenario.inputs)
         named = tuple((entry.section, entry.together) for entry in scenario.trace)
         if named != stated:
             faults.append(
@@ -473,6 +483,52 @@ def staged_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[
     stated = tuple(run for run in scenario.compile if run.by is None)
     if runs != stated:
         faults.append(f"the walk runs pf on {[run.args for run in runs]}")
+    return [f"{scenario.name}: {fault}" for fault in faults]
+
+
+def dispatched_bundle(section: str) -> str:
+    """The name `pf` gives the bundle it compiles for a dispatched section."""
+    document, _, heading = section.partition("#")
+    return f"{document.replace('/', '_')}__{heading}.bundle.md"
+
+
+def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
+    """How a staged scenario's sub-agent actions fail to be what their runs compile.
+
+    Each sub-agent follows the bundle `pf` wrote for its section, in the
+    entry's set or in the set a run on a deferred dispatch wrote, and runs
+    `pf` on each deferred line its steps reach, as the session does. The
+    actions a trace entry states are the ones the material those runs compile
+    states, none of them stated by the bundle itself, and a bundle reaching a
+    line opens with the Prosiform section saying `pf` runs first.
+    """
+    walked, _, faults = staged_walk(workflow, scenario.inputs, output)
+    if faults:
+        return [f"{scenario.name}: {fault}" for fault in faults]
+    runs = [0]
+
+    def activate(reference: str) -> str:
+        runs[0] += 1
+        folder = output / f"sub-{runs[0]}"
+        made = compile_reference(workflow.form(STAGED), reference, folder)
+        assert made.returncode == 0, made.stderr.decode()
+        return (folder / entry_bundle(reference)).read_text()
+
+    for entry in scenario.trace:
+        written = sorted(output.rglob(dispatched_bundle(entry.section)))
+        if not written:
+            faults.append(f"no run writes the bundle {entry.section} follows")
+            continue
+        text = written[0].read_text()
+        reached = reached_lines(text, text, scenario.inputs, list(walked))
+        compiled = activated(text, text, scenario.inputs, list(walked), activate)
+        found = tuple(ACTION.findall(compiled))
+        if found != entry.actions:
+            faults.append(f"{entry.section}'s runs compile the actions {list(found)}")
+        if own := ACTION.findall(text):
+            faults.append(f"{entry.section}'s bundle states the actions {own}")
+        if reached and not text.startswith(RUN_FIRST):
+            faults.append(f"{entry.section}'s bundle opens with no pf run first")
     return [f"{scenario.name}: {fault}" for fault in faults]
 
 
@@ -546,9 +602,11 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
         "conditional-composition",
         "declared-inclusion",
         "deferred-composition",
+        "deferred-dispatch",
         "directive-labels",
         "dispatch-beside",
         "dispatch-chain",
+        "dispatch-depth",
         "dispatch-question",
         "dispatch-set",
         "group-placement",
@@ -559,6 +617,7 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
         "preset-selection",
         "section-composition",
         "section-entry",
+        "subagent-first-run",
         "subst-redirect",
     ]
 
@@ -683,6 +742,18 @@ def test_each_staged_scenario_states_the_runs_and_path_its_bundles_state(
 ) -> None:
     """AC7, AC8, AC9: each run is on a line the path reaches, and the path theirs."""
     assert staged_faults(workflow, scenario, tmp_path) == []
+
+
+@pytest.mark.parametrize(
+    ("workflow", "scenario"),
+    [(workflow, scenario) for workflow in STAGING for scenario in workflow.scenarios],
+    ids=lambda item: item.name,
+)
+def test_each_staged_sub_agent_states_the_actions_its_runs_compile(
+    workflow: Workflow, scenario: Scenario, tmp_path: Path
+) -> None:
+    """AC17, AC18: a sub-agent's actions are what its own `pf` runs compile."""
+    assert sub_agent_faults(workflow, scenario, tmp_path) == []
 
 
 @pytest.mark.parametrize(
@@ -820,6 +891,207 @@ def test_a_preset_deferral_states_the_stand_ins_path() -> None:
     assert scenario.path == ("Solicit", "Mirror", "Restore")
     assert scenario.compile == (Compile(None, ("reference/fetch.md#read-mirror",)),)
     assert workflow.sections[STAGED]["Mirror"].deferred
+
+
+def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches(
+    tmp_path: Path,
+) -> None:
+    """AC13: the plain link compiled where Pack's step holds, then its dispatches."""
+    workflow = next(item for item in CORPUS if item.name == "deferred-dispatch")
+    text, _ = staged_bundle(workflow, tmp_path / "entry")
+    assert PUBLISHED_DEFERRAL.findall(text) == ["reference/loading.md#crew"]
+    assert "¬" not in text and "⇉" not in text
+    compiled, passed = workflow.scenarios
+    assert compiled.compile == (Compile(None, ("reference/loading.md#crew",)),)
+    assert dispatch_starts(workflow, STAGED, compiled.path, compiled.inputs) == (
+        ("reference/crew#lift", False, 0),
+        ("reference/crew#strap", False, 0),
+    )
+    assert [(entry.section, entry.returned) for entry in compiled.trace] == [
+        ("reference/crew#lift", "done"),
+        ("reference/crew#strap", "done"),
+    ]
+    assert (passed.compile, passed.trace) == ((), ())
+    assert dispatch_walk(workflow, STAGED, passed.path, passed.inputs) == ()
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "faults"),
+    [
+        (
+            '"order.txt" = "single"',
+            '"order.txt" = "bulk"',
+            [
+                "deferred-dispatch-passed: the walk runs pf on"
+                " [('reference/loading.md#crew',)]",
+                "deferred-dispatch-passed: the staged form dispatches"
+                " ['reference/crew#lift', 'reference/crew#strap'], not the"
+                " [section, set] pairs the trace names: []",
+            ],
+        ),
+        (
+            '[[scenario.compile]]\nargs = ["reference/loading.md#crew"]\n',
+            "",
+            [
+                "deferred-dispatch-compiled: the walk runs pf on"
+                " [('reference/loading.md#crew',)]"
+            ],
+        ),
+    ],
+    ids=["passed-reaches", "run-unstated"],
+)
+def test_a_deferred_dispatch_stated_off_its_walk_is_a_fault(
+    tmp_path: Path, old: str, new: str, faults: list[str]
+) -> None:
+    """AC13: the run and its dispatches are stated where the step holds alone."""
+    workflow = broken(tmp_path, "deferred-dispatch", "scenarios.toml", old, new)
+    found = [
+        fault
+        for index, scenario in enumerate(workflow.scenarios)
+        for fault in [
+            *staged_faults(workflow, scenario, tmp_path / str(index)),
+            *scenario_faults(workflow, scenario),
+        ]
+    ]
+    assert found == faults
+
+
+def test_a_three_hop_chain_starts_each_hop_in_order_with_no_depth_warning(
+    tmp_path: Path,
+) -> None:
+    """AC14: three hops below the session, each done before its caller goes on."""
+    workflow = next(item for item in CORPUS if item.name == "dispatch-depth")
+    _, stderr = staged_bundle(workflow, tmp_path)
+    assert b"W_DISPATCH_DEPTH" not in stderr and stderr == b""
+    chain = next(item for item in workflow.scenarios if item.name == "three-hop-chain")
+    assert dispatch_starts(workflow, STAGED, chain.path, chain.inputs) == (
+        ("line/scope#frame", False, 0),
+        ("line/detail#expand", False, 1),
+        ("line/tally#count", False, 2),
+    )
+    assert {entry.returned for entry in chain.trace} == {"done"}
+
+
+def test_a_set_three_hops_deep_starts_together_before_the_chain_goes_on() -> None:
+    """AC15: the second hop's set starts at once, ahead of the join and the seal."""
+    workflow = next(item for item in CORPUS if item.name == "dispatch-depth")
+    fan = next(item for item in workflow.scenarios if item.name == "three-hop-set")
+    assert dispatch_starts(workflow, STAGED, fan.path, fan.inputs) == (
+        ("fan/divide#portion", False, 0),
+        ("fan/east#east", False, 1),
+        ("fan/west#west", True, 1),
+        ("fan/join#join", False, 1),
+        ("fan/seal#seal", False, 2),
+    )
+    assert [(entry.section, entry.together) for entry in fan.trace] == [
+        (section, together)
+        for section, together, _ in dispatch_starts(
+            workflow, STAGED, fan.path, fan.inputs
+        )
+    ]
+    assert {entry.returned for entry in fan.trace} == {"done"}
+
+
+def test_a_question_three_hops_deep_is_relayed_and_the_chain_dispatched_again() -> None:
+    """AC16: the question returned up every hop, then the chain run with answers."""
+    workflow = next(item for item in CORPUS if item.name == "dispatch-depth")
+    asked = next(
+        item for item in workflow.scenarios if item.name == "three-hop-question"
+    )
+    chain = ["ask/enquiry#pose", "ask/probe#probe", "ask/choice#elect"]
+    assert [(entry.section, entry.returned) for entry in asked.trace] == [
+        *((section, "question") for section in chain),
+        *((section, "done") for section in chain),
+    ]
+    assert [
+        depth
+        for _, _, depth in dispatch_starts(workflow, STAGED, asked.path, asked.inputs)
+    ] == [0, 1, 2, 0, 1, 2]
+
+
+def test_a_hop_missing_from_a_deep_trace_is_a_fault(tmp_path: Path) -> None:
+    """AC14: a trace stopping a hop short is not the walk its sources state."""
+    workflow = broken(
+        tmp_path,
+        "dispatch-depth",
+        "scenarios.toml",
+        '[[scenario.trace]]\ndispatch = "line/tally#count"\nreturned = "done"\n',
+        "",
+    )
+    [fault] = [
+        fault
+        for scenario in workflow.scenarios
+        for fault in scenario_faults(workflow, scenario)
+    ]
+    assert fault.startswith(
+        "three-hop-chain: the staged form dispatches"
+        " ['line/scope#frame', 'line/detail#expand', 'line/tally#count']"
+    )
+
+
+def test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action(
+    tmp_path: Path,
+) -> None:
+    """AC17: the ledger's bundle opens saying `pf` runs first; its line, the action."""
+    workflow = next(item for item in CORPUS if item.name == "subagent-first-run")
+    first = next(item for item in workflow.scenarios if item.name == "first-hop-run")
+    staged_bundle(workflow, tmp_path)
+    ledger = (
+        tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
+    ).read_text()
+    assert ledger.startswith(RUN_FIRST)
+    assert INLINE_LINE.findall(ledger) == [("Close", "steps/closing.md#close")]
+    [entry] = first.trace
+    assert (entry.section, entry.actions) == (
+        "hop/ledger#balance",
+        (("closing.txt", "closed"),),
+    )
+
+
+def test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles() -> None:
+    """AC18: the review's deferred dispatch and the ruling's line each state one."""
+    workflow = next(item for item in CORPUS if item.name == "subagent-first-run")
+    deep = next(item for item in workflow.scenarios if item.name == "deep-hop-runs")
+    assert [
+        (section, depth)
+        for section, _, depth in dispatch_starts(
+            workflow, STAGED, deep.path, deep.inputs
+        )
+    ] == [("hop/audit#sweep", 0), ("hop/review#scan", 1), ("steps/ruling#rule", 2)]
+    assert [(entry.section, entry.actions) for entry in deep.trace] == [
+        ("hop/audit#sweep", ()),
+        ("hop/review#scan", (("weighing.txt", "weighed"),)),
+        ("steps/ruling#rule", (("ruling.txt", "ruled"),)),
+    ]
+
+
+@pytest.mark.parametrize(
+    ("path", "old", "new", "fault"),
+    [
+        (
+            "scenarios.toml",
+            '"closing.txt" = "closed"',
+            '"closing.txt" = "shut"',
+            "first-hop-run: hop/ledger#balance's runs compile the actions"
+            " [('closing.txt', 'closed')]",
+        ),
+        (
+            f"{STAGED}/hop/ledger.md",
+            "1. Total the ledger.",
+            "Write `actions/closing.txt` containing `closed`.",
+            "first-hop-run: hop/ledger#balance's bundle states the actions"
+            " [('closing.txt', 'closed')]",
+        ),
+    ],
+    ids=["action-uncompiled", "action-in-bundle"],
+)
+def test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault(
+    tmp_path: Path, path: str, old: str, new: str, fault: str
+) -> None:
+    """AC17: the action is the line's material's, and no other text states it."""
+    workflow = broken(tmp_path, "subagent-first-run", path, old, new)
+    first = next(item for item in workflow.scenarios if item.name == "first-hop-run")
+    assert sub_agent_faults(workflow, first, tmp_path / "output") == [fault]
 
 
 def staged_bundle(workflow: Workflow, output: Path) -> tuple[str, bytes]:

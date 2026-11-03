@@ -52,10 +52,18 @@ sub-agents it started, and a record failing two checks takes the earlier.
 A scenario that dispatches nothing passes all three, and a record absent
 from a session that dispatches nothing names no start.
 
+A start the scenario states may also name the actions its sub-agent does,
+which only the material a `pf` run on a deferred line of its bundle
+compiles states. A run passing the dispatch checks is held to those files
+as a state's action is, whatever its harness reports of the sub-agent's
+commands: one absent or wrong is *missing action*, so a sub-agent that ran
+no `pf` on its line fails though no stream carries what it ran.
+
 A scenario also states the `pf` runs a correct run makes, so a run that
-passes the dispatch checks is held to them wherever its harness reports the
-commands a session ran. The record holds the session's commands beside its
-starts, and each start the commands its own sub-agent ran. A command is a
+passes the dispatch checks and its sub-agents' actions is held to them
+wherever its harness reports the commands a session ran. The record holds
+the session's commands beside its starts, and each start the commands its
+own sub-agent ran. A command is a
 `pf` run in each segment `;`, `&&`, `||` or `|` separate whose first word is
 `pf` or a path ending `/pf`, and the run's references are its words other
 than options and their values. A reference names a stated one when it is that
@@ -162,9 +170,11 @@ class Verdict:
 
     `divergence` is the first index at which the trace and the expected path
     differ; for a missing action, the first index whose state has not done
-    its action; for an unfinished run, the trace's length. A pass carries no
-    failure and no divergence. `actions` names the action files absent or
-    wrong among the diagram states the trace entered, in trace order.
+    its action, or none where a sub-agent's is the one undone; for an
+    unfinished run, the trace's length. A pass carries no failure and no
+    divergence. `actions` names the action files absent or wrong among the
+    diagram states the trace entered, in trace order, or, where those are
+    done, among the sub-agents' actions the scenario states.
     """
 
     passed: bool
@@ -235,6 +245,21 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
     if entered != previous and entered in reachable(workflow, previous):
         return Failure.SKIPPED_STATE
     return Failure.INVALID_TRANSITION
+
+
+def sub_agent_undone(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
+    """The action files a scenario's sub-agents leave undone, in trace order."""
+    return tuple(
+        dict.fromkeys(
+            name
+            for entry in scenario.trace
+            for name, value in entry.actions
+            if not (
+                (written := workspace / ACTIONS / name).is_file()
+                and written.read_text().strip() == value
+            )
+        )
+    )
 
 
 def record_calls(
@@ -522,9 +547,13 @@ def score(
             )
         starts = read_starts(workspace)
         commands = read_commands(workspace)
-        order = dispatched(scenario, starts) or (
-            None if commands is None else compiles(scenario, commands, starts)
-        )
+        order = dispatched(scenario, starts)
+        if order is None and (undone_by := sub_agent_undone(scenario, workspace)):
+            return Verdict(
+                False, Failure.MISSING_ACTION, None, expected, actual, undone_by
+            )
+        if order is None and commands is not None:
+            order = compiles(scenario, commands, starts)
         if order is None:
             return Verdict(True, None, None, expected, actual, actions)
         failure, at = order, None

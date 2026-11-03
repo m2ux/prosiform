@@ -153,9 +153,8 @@ from workflow import (
     Workflow,
     bundle,
     bundled,
-    dispatched,
+    dispatch_starts,
     instruction,
-    sections_of,
     stray,
     workflows,
 )
@@ -387,8 +386,9 @@ def observable(
 
     A trace names one start per dispatch a correct run makes, nested ones
     included. A harness that does not surface a sub-agent's own calls can
-    report only the starts the path's own sections make, so a scenario whose
-    trace outruns that count is beyond it. A stated run a sub-agent makes is
+    report only the starts the session makes itself, those the path's own
+    sections and the deferred dispatches its steps reach start, so a scenario
+    whose trace outruns that count is beyond it. A stated run a sub-agent makes is
     read from that sub-agent's commands, which a harness reports only where it
     carries a shell and surfaces a sub-agent's own calls.
 
@@ -401,19 +401,8 @@ def observable(
         return False
     if harness.sub_agent_calls:
         return True
-    written = FORMS[form]
-    sections = sections_of(workflow, written)
-    root = workflow.form(written)
-    top = 0
-    for state in scenario.path:
-        section = sections[state]
-        top += sum(
-            len(targets)
-            for _, targets in dispatched(
-                section.body, section.path.parent, root, written
-            )
-        )
-    return len(scenario.trace) <= top
+    starts = dispatch_starts(workflow, FORMS[form], scenario.path, scenario.inputs)
+    return len(scenario.trace) <= sum(1 for _, _, depth in starts if depth == 0)
 
 
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
