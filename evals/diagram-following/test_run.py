@@ -13,14 +13,16 @@ wrong reason fails where it fires.
 
 import json
 import re
+import shutil
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 import pytest
 import workflow as source
-from harness import DONE, HARNESSES, Opencode
+from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -35,6 +37,7 @@ from run import (
     Ledger,
     Session,
     bundles_of,
+    hook_events_seen,
     injected,
     keep,
     matrix,
@@ -771,7 +774,7 @@ def test_the_context_read_finds_each_form_of_injected_context(
     )
     for kind, message in cases:
         transcript.write_text(json.dumps(message) + "\n")
-        carried = injected(transcript)
+        carried = injected(transcript, False)
         assert carried is not None and carried.startswith(kind), (kind, carried)
 
     transcript.write_text(
@@ -784,18 +787,18 @@ def test_the_context_read_finds_each_form_of_injected_context(
             )
         )
     )
-    assert injected(transcript) is None
-    assert injected(tmp_path / "absent.jsonl") is None
+    assert injected(transcript, False) is None
+    assert injected(tmp_path / "absent.jsonl", False) is None
 
 
-def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
+def test_a_run_whose_config_installs_an_unmanaged_plugin_starts_no_session(
     tmp_path: Path, log: Path
 ) -> None:
-    """The config directory's plugin is refused before the first session.
+    """A plugin installed at a scope the organisation does not manage is refused.
 
     A plugin's `SessionStart` hook reaches a session before its first turn,
-    and no flag the runner passes suppresses it, so a directory holding one
-    is a run the eval cannot measure a form in.
+    and no flag the runner passes suppresses it, so a plugin the run cannot
+    attribute to the organisation is a run the eval cannot measure a form in.
     """
     installed = tmp_path / "eval" / "config" / "plugins" / "installed_plugins.json"
     installed.parent.mkdir(parents=True)
@@ -804,12 +807,14 @@ def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
             {
                 "version": 2,
                 "plugins": {
-                    "other-rules@elsewhere": [{"scope": "managed", "version": "0.1.0"}]
+                    "plugin-b@example": [{"scope": "user", "version": "0.1.0"}]
                 },
             }
         )
     )
-    with pytest.raises(CorpusError, match="installs a plugin.*remove .*installed"):
+    with pytest.raises(
+        CorpusError, match="installs plugin-b@example at user scope.*remove"
+    ):
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
@@ -820,20 +825,22 @@ def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
     assert not (tmp_path / "results").exists()
 
 
-def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
+def test_a_run_whose_unsigned_remote_settings_enable_a_plugin_starts_no_session(
     tmp_path: Path, log: Path
 ) -> None:
-    """The plugin need not be installed here for its settings to be refused."""
+    """Remote settings with no signature beside them are not the organisation's."""
     remote = tmp_path / "eval" / "config" / "remote-settings.json"
     remote.write_text(
         json.dumps(
             {
-                "enabledPlugins": {"other-rules@elsewhere": True},
-                "env": {"CLAUDE_CODE_ENABLE_TELEMETRY": "1"},
+                "enabledPlugins": {"plugin-b@example": True},
+                "env": {"EXAMPLE_SETTING": "1"},
             }
         )
     )
-    with pytest.raises(CorpusError, match="enables a plugin.*remove .*remote-settings"):
+    with pytest.raises(
+        CorpusError, match="enables a plugin.*without a signature.*remove .*remote"
+    ):
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
@@ -842,6 +849,147 @@ def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
         )
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
+
+
+def manage(
+    config: Path,
+    plugins: dict[str, str],
+    environment: dict[str, str],
+) -> None:
+    """Install each plugin at managed scope and sign `environment`.
+
+    Each plugin's install path holds no hooks file, so a hook the run counts
+    comes from the transcripts alone, and the remote settings enable every
+    plugin with a signature beside them.
+    """
+    installed = config / "plugins" / "installed_plugins.json"
+    installed.parent.mkdir(parents=True, exist_ok=True)
+    installs: dict[str, list[dict[str, str]]] = {}
+    for plugin, version in plugins.items():
+        place = config / "plugins" / "cache" / plugin / version
+        place.mkdir(parents=True, exist_ok=True)
+        installs[plugin] = [
+            {"scope": "managed", "version": version, "installPath": str(place)}
+        ]
+    installed.write_text(json.dumps({"version": 2, "plugins": installs}))
+    (config / "remote-settings.json").write_text(
+        json.dumps(
+            {
+                "enabledPlugins": {plugin: True for plugin in plugins},
+                "env": environment,
+            }
+        )
+    )
+    (config / "remote-settings.json.signature.json").write_text("{}")
+
+
+def test_a_managed_configuration_is_recorded_by_count_and_fingerprint(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A managed configuration reaches every session and is counted, not named.
+
+    A plugin installed at managed scope and enabled by signed remote settings
+    starts its session; `run.json` and the report give how many managed
+    plugins, environment settings and hooks there are and a fingerprint, and
+    neither names a plugin, version, key or event. The plugin declares no
+    hooks file, and the hook its session shows responding is counted from the
+    transcript and accounted for.
+    """
+    config = tmp_path / "eval" / "config"
+    manage(
+        config,
+        {"plugin-a@example": "1.0.0"},
+        {"EXAMPLE_SETTING": "1", "EXAMPLE_OTHER_SETTING": "on"},
+    )
+    monkeypatch.setenv("STUB_AGENT_INJECT", "apply the managed rules")
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    directory = tmp_path / "results" / "test"
+    written = json.loads((directory / RUN).read_text())
+    fingerprint = written["managed"].pop("fingerprint")
+    assert written["managed"] == {"plugins": 1, "environment": 2, "hooks": 1}
+    assert re.fullmatch(r"[0-9a-f]{64}", fingerprint)
+    shown = (directory / RUN).read_text() + (directory / REPORT_MD).read_text()
+    assert fingerprint in (directory / REPORT_MD).read_text()
+    for named in (
+        "plugin-a",
+        "1.0.0",
+        "EXAMPLE_SETTING",
+        "EXAMPLE_OTHER_SETTING",
+        "SessionStart",
+        "apply the managed rules",
+    ):
+        assert named not in shown, named
+
+
+def test_a_fingerprint_tells_two_managed_configurations_apart(
+    tmp_path: Path, managed_settings: Path
+) -> None:
+    """One configuration gives one fingerprint; a changed one gives another.
+
+    A changed version, environment key or hook event each changes the
+    fingerprint, while the counts alone could not tell them apart, and a
+    configuration with nothing managed has none.
+    """
+    claude = replace(Claude(), managed_settings=str(managed_settings))
+
+    def fingerprint(name: str, version: str, environment: str, event: str) -> object:
+        config = tmp_path / name
+        manage(config, {"plugin-a@example": version}, {environment: "1"})
+        return claude.managed(config, [event])["fingerprint"]
+
+    first = fingerprint("first", "1.0.0", "EXAMPLE_SETTING", "EXAMPLE_EVENT")
+    assert first == fingerprint("again", "1.0.0", "EXAMPLE_SETTING", "EXAMPLE_EVENT")
+    others = {
+        fingerprint("version", "1.0.1", "EXAMPLE_SETTING", "EXAMPLE_EVENT"),
+        fingerprint("setting", "1.0.0", "EXAMPLE_OTHER", "EXAMPLE_EVENT"),
+        fingerprint("event", "1.0.0", "EXAMPLE_SETTING", "EXAMPLE_OTHER_EVENT"),
+    }
+    assert first not in others and len(others) == 3
+    (tmp_path / "none").mkdir()
+    assert claude.managed(tmp_path / "none", []) == {
+        "plugins": 0,
+        "environment": 0,
+        "hooks": 0,
+        "fingerprint": None,
+    }
+
+
+def test_hook_events_are_read_from_every_transcript_once_each(
+    tmp_path: Path,
+) -> None:
+    """Each event a hook response names counts once, whatever the sessions.
+
+    Only the event is read, never the hook's output; a response naming no
+    event counts as unnamed, and a missing transcript adds nothing.
+    """
+    first = tmp_path / "first.jsonl"
+    second = tmp_path / "second.jsonl"
+    response = {"type": "system", "subtype": "hook_response"}
+    first.write_text(
+        "\n".join(
+            json.dumps(message)
+            for message in (
+                {**response, "hook_event": "SessionStart", "output": "rules"},
+                {"type": "system", "subtype": "hook_started", "hook_event": "Stop"},
+                {"type": "assistant", "message": {"content": []}},
+            )
+        )
+    )
+    second.write_text(
+        "not json\n"
+        + json.dumps({**response, "hook_event": "SessionStart"})
+        + "\n"
+        + json.dumps({**response, "hook_event": "PreToolUse"})
+        + "\n"
+        + json.dumps(response)
+    )
+    seen = hook_events_seen([first, second, tmp_path / "absent.jsonl"])
+    assert seen == ["PreToolUse", "SessionStart", "unnamed"]
 
 
 def test_a_config_with_no_plugin_starts_every_session(
@@ -929,6 +1077,196 @@ def test_a_settings_file_that_is_not_json_is_refused(tmp_path: Path, log: Path) 
             *("--budget-tokens", "1000"),
         )
     assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+HOOKED = {
+    "hooks": {
+        "SessionStart": [{"hooks": [{"type": "command", "command": "cat rules.md"}]}]
+    }
+}
+
+
+def copied_tree(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """The linear workflow's diagram tree, copied where a test may plant settings."""
+    corpus = tmp_path / "corpus"
+    shutil.copytree(source.WORKFLOWS / "linear", corpus / "linear")
+    monkeypatch.setattr(
+        "run.workflows", lambda: [source.read_workflow(corpus / "linear")]
+    )
+    return corpus / "linear" / "diagram"
+
+
+@pytest.mark.parametrize("name", ["settings.json", "settings.local.json"])
+def test_a_form_tree_whose_project_settings_declare_a_hook_starts_no_session(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, name: str
+) -> None:
+    """A tree's project settings reach every session copied from that tree."""
+    tree = copied_tree(tmp_path, monkeypatch)
+    (tree / ".claude").mkdir()
+    (tree / ".claude" / name).write_text(json.dumps(HOOKED))
+    with pytest.raises(
+        CorpusError,
+        match=rf"\.claude/{re.escape(name)} declares a hook for SessionStart.*"
+        rf"remove .*{re.escape(name)} before this run",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", TREE, "--repetitions", "1"),
+            *("--budget-tokens", "1000"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+@pytest.mark.parametrize("name", ["settings.json", "settings.local.json"])
+def test_a_claude_directory_above_the_workspaces_declaring_a_hook_starts_no_session(
+    tmp_path: Path, log: Path, name: str
+) -> None:
+    """An ancestor's project settings reach every session under the eval root."""
+    (tmp_path / ".claude").mkdir()
+    (tmp_path / ".claude" / name).write_text(json.dumps(HOOKED))
+    with pytest.raises(
+        CorpusError,
+        match=rf"\.claude/{re.escape(name)} declares a hook for SessionStart.*"
+        r"--eval-root",
+    ):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-tokens", "1000"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+def test_a_claude_directory_above_the_workspaces_without_a_hook_starts_its_session(
+    tmp_path: Path, log: Path
+) -> None:
+    """An ancestor's settings that declare no hook are no refusal."""
+    (tmp_path / ".claude").mkdir()
+    (tmp_path / ".claude" / "settings.json").write_text(json.dumps({"theme": "dark"}))
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    assert len(seen(log)) == 1
+
+
+@pytest.fixture(autouse=True)
+def managed_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """The managed settings path a run reads, planted under tmp_path.
+
+    The host's own file is never read: the Claude harness holds this path in
+    its `managed_settings` field, absent until a test writes the file.
+    """
+    path = tmp_path / "managed" / "managed-settings.json"
+    held = replace(Claude(), managed_settings=str(path))
+    monkeypatch.setattr("run.harness_named", lambda name: held)
+    return path
+
+
+def test_a_managed_settings_hook_is_counted_and_its_sessions_start(
+    tmp_path: Path, log: Path, managed_settings: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The host's managed hook reaches every session, so the run counts it.
+
+    The administrator owns the file and Claude Code reads it wherever the
+    configuration directory points, so the run starts its sessions and
+    counts each hook event the transcripts show a hook responding to, not
+    each the file declares, naming neither the file nor an event. The hook's
+    response is the managed hook's, so it is no context the run failed to
+    account for.
+    """
+    managed_settings.parent.mkdir()
+    managed_settings.write_text(
+        json.dumps(
+            {
+                "hooks": {
+                    "SessionStart": [
+                        {"hooks": [{"type": "command", "command": "cat rules.md"}]}
+                    ],
+                    "Stop": [],
+                    "PreToolUse": [
+                        {"hooks": [{"type": "command", "command": "audit.sh"}]}
+                    ],
+                }
+            }
+        )
+    )
+    monkeypatch.setenv("STUB_AGENT_INJECT", "apply the host's rules")
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    assert len(seen(log)) == 1
+    shown = (tmp_path / "results" / "test" / RUN).read_text()
+    written = json.loads(shown)
+    fingerprint = written["managed"].pop("fingerprint")
+    assert written["managed"] == {"plugins": 0, "environment": 0, "hooks": 1}
+    assert re.fullmatch(r"[0-9a-f]{64}", fingerprint)
+    for named in ("managed-settings.json", "PreToolUse", "SessionStart"):
+        assert named not in shown, named
+
+
+def test_an_absent_managed_settings_file_counts_no_hook(
+    tmp_path: Path, log: Path, managed_settings: Path
+) -> None:
+    """A host with no managed settings file records nothing and starts its sessions."""
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert written["managed"] == {
+        "plugins": 0,
+        "environment": 0,
+        "hooks": 0,
+        "fingerprint": None,
+    }
+
+
+def test_a_managed_settings_file_declaring_no_hook_counts_none(
+    tmp_path: Path, log: Path, managed_settings: Path
+) -> None:
+    """Managed preferences are no hook, so nothing is recorded."""
+    managed_settings.parent.mkdir()
+    managed_settings.write_text(json.dumps({"permissions": {"deny": ["WebFetch"]}}))
+    eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert written["managed"] == {
+        "plugins": 0,
+        "environment": 0,
+        "hooks": 0,
+        "fingerprint": None,
+    }
+
+
+def test_a_managed_settings_file_that_is_not_json_is_refused(
+    tmp_path: Path, log: Path, managed_settings: Path
+) -> None:
+    """An unreadable managed file is refused rather than read as declaring nothing."""
+    managed_settings.parent.mkdir()
+    managed_settings.write_text("{not json")
+    with pytest.raises(CorpusError, match=r"managed-settings\.json is not JSON"):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-tokens", "1000"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+def test_the_claude_harness_defaults_its_managed_settings_to_the_hosts_path() -> None:
+    """The unplanted harness reads the platform's system path."""
+    assert Claude().managed_settings in MANAGED_SETTINGS.values()
 
 
 def test_a_session_carrying_injected_context_fails_the_run(
