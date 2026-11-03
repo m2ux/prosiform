@@ -17,7 +17,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 | `staged` | The staged form's sources, written as the compiled form is, with the entry's bundle set in the folder `pf` writes it to and the build under test as `pf` on the session's path. | Whether an agent compiles, as it follows a bundle, the material the bundle defers. |
 
-A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, the two [deferral workflows](#deferral-scenarios) take `staged` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, the two [deferral workflows](#deferral-scenarios) and the two [composition workflows](#composition-scenarios) take `staged` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
@@ -39,7 +39,7 @@ A `scenarios.toml` may also declare, above its tables, `warnings`: the warning c
 
 Every workflow document declares `prosiform` save those under an `undeclared/` directory, which declare nothing, so a link to one is left as written; `declared-inclusion` links one beside a declared state document `pf` follows. A skill's `SKILL.md` is the entry the agent CLI reads rather than a source `pf` compiles, so it may declare nothing too.
 
-A diagram form's bundle states a path of its own, and a scenario's path is held to it beside the sources' walk. Each state is entered at the heading the previous state's link names, or else the one the bundle's diagram clicks, and its action and transition are read from what that heading holds. A state `pf` placed into a group or reached through a `subst` pair is followed where the bundle puts it, and the bundle must state the action the sources state, since the scorer reads the sources'. A feature workflow's substitutes therefore state the action and transition of the state they stand in for, so the `tree` form walks the same path the `bundle` form does.
+A diagram form's bundle states a path of its own, and a scenario's path is held to it beside the sources' walk. Each state is entered at the heading the previous state's link names, by its text or, for a directive or footnote mark labelled with one symbol, by the heading it links, or else the one the bundle's diagram clicks, and its action and transition are read from what that heading holds. A state `pf` placed into a group or reached through a `subst` pair is followed where the bundle puts it, and the bundle must state the action the sources state, since the scorer reads the sources'. A feature workflow's substitutes therefore state the action and transition of the state they stand in for, so the `tree` form walks the same path the `bundle` form does.
 
 A diagram form's `click` lines carry destinations relative to the document that writes them, so a node opens its section for a reader of the source tree and for a session in its workspace. GitHub draws a Mermaid fence in a frame of its own and resolves such a destination against that frame, so a diagram form's clicks open nothing in the blob view; the state documents sit beside the entry document all the same.
 
@@ -105,6 +105,17 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 | `deferred-composition` | `nested-needed` | The migration's line, then the archive's line its bundle holds, whose step holds where `history.txt` reads `kept`. |
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
 | `preset-deferral` | `stand-in-followed` | `pf` on `reference/fetch.md#read-mirror`. `Mirror` and `Read mirror` both select `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
+
+### Composition scenarios
+
+The two composition workflows say whether an agent following a `staged` bundle reads each label as `pf` publishes it. An arrow, `[→](<path>#<section>)`, composes its section beneath the step writing it, so the bundle carries that material whatever the inputs; a footnote mark such as `[†](<path>#<section>)` is an ordinary link, so `pf` publishes its target as a document of its own and the agent opens it. A state the diagram clicks nowhere is entered where the previous state's directive or footnote leads, so a correct path reaches it only through that label.
+
+| Workflow | Scenario | What it walks |
+| --- | --- | --- |
+| `conditional-composition` | `composed-entered` | `Convert`, which `Gauge` composes beneath a step holding where `scope.txt` reads `large`. |
+| `conditional-composition` | `composed-omitted` | Past `Convert`: the bundle still carries it beneath `Gauge`'s step, which does not hold. |
+| `directive-labels` | `footnote-opened` | The house style composed in place beneath `Compose`'s step, then `Vet`, the document its footnote opens. |
+| `directive-labels` | `self-composed` | `Issue`, whose `Release` step composes the `Summary` section of its own document, which `pf` publishes with `W_COMPOSE_SELF`. |
 
 ## Scoring
 

@@ -1,0 +1,16 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+#
+# Gauge composes Convert's section beneath a step that holds where scope.txt
+# reads large, so the bundle carries Convert whatever the input, and the path
+# enters it only where the step holds.
+
+[[scenario]]
+name = "composed-entered"
+path = ["Sample", "Gauge", "Convert", "Finish"]
+inputs = { "scope.txt" = "large" }
+
+[[scenario]]
+name = "composed-omitted"
+path = ["Sample", "Gauge", "Finish"]
+inputs = { "scope.txt" = "small" }
