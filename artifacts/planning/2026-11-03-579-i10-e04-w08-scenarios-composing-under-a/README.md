@@ -24,3 +24,5 @@ This record holds its delivery of `AC10,AC11,AC12`: the work item, the validatio
 | Epic | [I10:E04 Composition Following](https://github.com/m2ux/prosiform/issues/579) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
+| Pull request | [#628](https://github.com/m2ux/prosiform/pull/628) |
+| Review pull request | [#622](https://github.com/m2ux/prosiform/pull/622) |
