@@ -56,7 +56,7 @@ jobs:
             :(glob)evals/**
             :(glob)scripts/**
             :(glob)docs/**
-            :(glob)*.md
+            :(glob)**/*.md
             Makefile
             .github/workflows/checks.yml
         run: |
