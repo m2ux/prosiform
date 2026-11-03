@@ -18,7 +18,8 @@ path = ["Scope", "Stage", "Compile", "Package", "Sign", "Release"]
 inputs = { "work.txt" = "release", "stage.txt" = "build" }
 
 # notify.md is reached from the diagram under its default and from Announce
-# under its announce preset, so it stands in two groups.
+# under its announce preset, so it stands in two groups: Messages inside the
+# entry's division and Announcements inside Announce's.
 [[scenario]]
 name = "two-presets-one-document"
 path = ["Scope", "Stage", "Announce", "Notify", "Release"]
