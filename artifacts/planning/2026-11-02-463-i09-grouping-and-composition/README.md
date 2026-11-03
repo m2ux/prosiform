@@ -134,6 +134,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 
 ## Decisions
 - **Only arrows are directives.** (User, 2026-11-02.) A link whose label is one Unicode arrow is a composition directive; a single footnote mark, superscript, letter or other symbol is an ordinary link. Row W12, AC22.
+- **A second group stands where its reference is.** (User, 2026-11-03.) When two references place one document under different `group` pairs, each group stands inside the division of the document whose reference placed its first member, as *Nested groups* reads; the build changes ([#592](https://github.com/m2ux/prosiform/issues/592)). Row E05 W34, AC38.
 - **Self-composition warns.** (User, 2026-11-02.) A directive composing a section of the document that writes it publishes with a warning naming the link, as a self-dispatch does. Row W12, AC23.
 - **A sub-agent's bundle says to run pf first.** (User, 2026-11-02.) A plain deferred link is no `pf` instruction and stays a plain link. A dispatched bundle's sub-agent has not run `pf` with no arguments, so a dispatched bundle carrying a deferred dispatch or a `↳` line opens with a minimal Prosiform section stating that `pf` is run first, referred to from its preamble; bare `pf` prints the rest. Row W12, AC24.
 
