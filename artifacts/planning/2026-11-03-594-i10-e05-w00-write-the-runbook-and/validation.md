@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w00.md) names, run against branch `i10/e05/w00-write-the-runbook-and` at `41841001`.
+Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w00.md) names, run against branch `i10/e05/w00-write-the-runbook-and` at `d8cfd26f`.
 
 ## AC6
 
@@ -22,16 +22,14 @@ Each check the [W00 work item](../2026-11-01-464-i10-evaluation-and-checks/e05/w
 
 ## AC8
 
-- **T5 — Proof shakedown.** Not run.
-  The shakedown's harness `claude` and model `claude-haiku-5-5`, named by the user on 2026-11-03, are recorded in `RUNBOOK.md` with the USD 5 cap and a USD 0.80 estimate. The run stopped before its first session, spending nothing:
-
-  ```text
-  workflow.CorpusError: /home/mike1/projects/eval/prosiform/config/plugins/installed_plugins.json installs a plugin, whose hooks reach every session before its first turn; remove /home/mike1/projects/eval/prosiform/config/plugins/installed_plugins.json before this run
-  ```
-
-  `installed_plugins.json` installs a managed plugin at `managed` scope, and the signed `remote-settings.json` enables it with telemetry environment. Both are org-managed and were left untouched, so no cost was measured and the proof's budget is unset.
+- **T5 — Proof shakedown.** Not run to a measurement.
+  The shakedown's harness `claude` and model `claude-haiku-5-5`, named by the user on 2026-11-03, are recorded in `RUNBOOK.md` with the USD 5 cap and a USD 0.80 estimate.
+  - **First attempt, at `41841001`.** The preflight refused the eval login before any session: `installed_plugins.json` installs a managed plugin at `managed` scope and the signed `remote-settings.json` enables it.
+  - **User decision, 2026-11-03.** The org-managed plugin is allowed. At `60a2c02d` the preflight admits a plugin installed at managed scope or enabled by signed remote settings, and `run.json` and the report name it, its version and the environment it adds ([#597](https://github.com/m2ux/prosiform/issues/597) closed as not planned).
+  - **Second attempt, at `60a2c02d`, run `mvp-proof-shakedown`.** The preflight passed and all 30 sessions started, with `run.json` recording a managed plugin and six telemetry environment keys. Every session took `errored` with `Failed to authenticate: OAuth session expired and could not be refreshed`, so the run is `refused`, its tokens 0 and its summed cost USD 0. No session reached a hook response, so the managed hook's transcript record is unobserved.
+  - **What it waits on.** A renewed eval login, `CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude` then `/login`, which writes under `config/` and is the user's to run.
 
 ## Make check
 
 - **T6 — `make check` with `PROSIFORM_BUILD` naming the worktree's build.**
-  Exit 0: 1663 check tests and 1262 harness tests pass, and `make links`, `make tables` and every other target pass.
+  Exit 0 at `d8cfd26f`: 1663 check tests and 1264 harness tests pass, and `make links`, `make tables` and every other target pass.
