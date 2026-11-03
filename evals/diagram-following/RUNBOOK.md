@@ -141,6 +141,25 @@ make eval-diagrams ARGS='--models <model> --session-budget-tokens <session cap> 
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/baseline --write-baseline
 ```
 
+### Shakedown
+
+One repetition of every cell of the default matrix, on the baseline's harness and model. Its measured tokens and cost set the baseline's session cap, token budget and cost cap above, and the runner's default session cap and `EVAL_BUDGET_TOKENS` beside them.
+
+| Item | Value |
+| --- | --- |
+| Harness | `claude` |
+| Model | `claude-haiku-5-5`, named by the user on 2026-11-03. |
+| Spending cap | USD 5 for every live run of the shakedown together. |
+| Sessions | 74: the default matrix's 74 cells, one repetition. |
+| Session cap | 400 000 tokens: the proof shakedown's session cap, which held its largest session of 206 458. |
+| Token budget | 29 600 000 tokens: 74 times the session cap. |
+| Estimate | USD 0.31: 74 sessions at the proof shakedown's mean of USD 0.004123 a session. |
+| Run | `baseline-shakedown`, 2026-11-03: stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap; the shakedown is repeated once the fix lands. |
+
+```bash
+make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 400000 --budget-tokens 29600000 --run-id baseline-shakedown'
+```
+
 ## Edge Run
 
 The edge workflows on every harness carrying a shell, run by [I10:E04](https://github.com/m2ux/prosiform/issues/579) W14 and shaken down by E04 W16. The edge workflows and the `staged` form arrive with E04's earlier rows.
