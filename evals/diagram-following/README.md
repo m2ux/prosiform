@@ -33,8 +33,9 @@ Every session is given the same [instruction](instruction.md), naming only the e
 
 A top-level `entry` key names the reference every form of the workflow is compiled from, `workflow.md` when absent. `section-entry` names `workflow.md#onboarding`, so its bundle carries that section's workflow and none of the document's other sections, and its session still receives the bundle as `workflow.md`.
 
-Every workflow document declares `prosiform` save those under an `undeclared/` directory, which declare nothing, so a link to one is left as written; `declared-inclusion` links one beside a declared state document `pf` follows.
 A `scenarios.toml` may also declare, above its tables, `warnings`: the warning codes `pf` reports bundling the workflow. A feature such as `subst` warns wherever it is used, so a workflow built on one declares each code it raises, and its bundle is held to raising those and no other diagnostic.
+
+Every workflow document declares `prosiform` save those under an `undeclared/` directory, which declare nothing, so a link to one is left as written; `declared-inclusion` links one beside a declared state document `pf` follows.
 
 A diagram form's bundle states a path of its own, and a scenario's path is held to it beside the sources' walk. Each state is entered at the heading the previous state's link names, or else the one the bundle's diagram clicks, and its action and transition are read from what that heading holds. A state `pf` placed into a group or reached through a `subst` pair is followed where the bundle puts it, and the bundle must state the action the sources state, since the scorer reads the sources'. A feature workflow's substitutes therefore state the action and transition of the state they stand in for, so the `tree` form walks the same path the `bundle` form does.
 
