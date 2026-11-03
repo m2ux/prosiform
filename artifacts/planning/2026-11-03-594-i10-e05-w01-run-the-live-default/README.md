@@ -21,4 +21,9 @@ This record holds its delivery of `AC1,AC2,AC3`: the work item, the validation e
 | Epic | [I10:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/594) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
+| Pull request | [#620](https://github.com/m2ux/prosiform/pull/620), merged into the epic base; supersedes [#611](https://github.com/m2ux/prosiform/pull/611) |
 | Feature workflows | [I09:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/523) |
+
+## Plan changes
+
+Applied: none. Held: none.
