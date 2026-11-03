@@ -136,7 +136,9 @@ Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose c
 
 A run whose config directory holds no login fails the same way, naming the one-time login command.
 
-A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
+The host's managed settings file, `/etc/claude-code/managed-settings.json` on Linux, belongs to the host's administrator and reaches every session wherever the config directory points. The run records it rather than refusing it: when its `hooks` block declares a hook, `run.json` names the file and each event under `managed.hooks`, so every recorded session reads as carrying that hook. A host with no such file, or one declaring no hook, records none, and the sessions start either way.
+
+A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: a plugin hook's `additionalContext`, an appended system prompt, or a memory file is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Where a managed hook is recorded, a hook's response is that hook's, since the preflight admits no other. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
 
 ## Running
 
@@ -180,7 +182,7 @@ The run's guard reads each session's reported tokens when it settles: a session 
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, harness, managed hooks, tokens, state and sessions not started. `subagents.json` holds the sub-agent starts the transcript records, one per entry, in order, so a reader sees what the agent dispatched; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
