@@ -18,7 +18,10 @@ Four classes of reference, each resolved by what it names:
   it, and its fragment against the headings of the Markdown file it names;
 - a GitHub blob or tree URL into this repository resolves against the git
   ref it names, so a reference to the engineering branch is checked without
-  the network;
+  the network. Each branch name resolves to a commit once, at the start of
+  the run, and every reference into that branch reads that commit. The
+  summary and each failure on such a reference name it, so a result states
+  a revision. A URL naming a commit reads as written;
 - any other absolute URL is reached over the network, which `--online`
   turns on. An issue, a pull request or a project board is read through
   the GitHub API with the caller's credentials, because a private
@@ -152,7 +155,14 @@ def references(text: str) -> list[str]:
     return ordered
 
 
-def git_ref(name: str) -> str | None:
+COMMIT_NAME = re.compile(r"[0-9a-f]{40}")
+SHORT = 12
+
+resolved_branches: dict[str, str | None] = {}
+
+
+def git_commit(name: str) -> str | None:
+    """The commit one ref name resolves to, read from git."""
     for candidate in (f"origin/{name}", name):
         result = subprocess.run(
             ["git", "rev-parse", "--verify", "--quiet", f"{candidate}^{{commit}}"],
@@ -161,8 +171,31 @@ def git_ref(name: str) -> str | None:
             text=True,
         )
         if result.returncode == 0:
-            return candidate
+            return result.stdout.strip()
     return None
+
+
+def git_ref(name: str) -> str | None:
+    """The commit a ref name resolves to for the whole run.
+
+    A name is read from git on first use and held, so every reference into
+    one branch reads one commit however the branch moves meanwhile. A name
+    that is itself a commit is that commit and is not recorded as a read.
+    """
+    if COMMIT_NAME.fullmatch(name):
+        return name
+    if name not in resolved_branches:
+        resolved_branches[name] = git_commit(name)
+    return resolved_branches[name]
+
+
+def revisions_read() -> list[str]:
+    """One line for each branch the run resolved, naming its commit."""
+    return [
+        f"read {name} at {commit[:SHORT]}"
+        for name, commit in resolved_branches.items()
+        if commit
+    ]
 
 
 def git_show(ref: str, path: str) -> str | None:
@@ -222,12 +255,13 @@ def resolve_repository_url(target: str) -> str | None:
     ref = git_ref(ref_name)
     if ref is None:
         return f"no git ref named {ref_name}"
+    named = ref_name if ref == ref_name else f"{ref_name} at {ref[:SHORT]}"
     if path and not git_path_exists(ref, path):
-        return f"{path} does not exist on {ref_name}"
+        return f"{path} does not exist on {named}"
     if fragment and path.endswith((".md", ".markdown")):
         content = git_show(ref, path)
         if content is None or fragment not in fragments_of(content):
-            return f"no heading in {path} on {ref_name} generates #{fragment}"
+            return f"no heading in {path} on {named} generates #{fragment}"
     return None
 
 
@@ -437,6 +471,7 @@ def main() -> int:
     )
     arguments = parser.parse_args()
 
+    resolved_branches.clear()
     named = [(ROOT / name).resolve() for name in arguments.documents]
     selected = named or documents()
     failures: list[str] = []
@@ -460,12 +495,16 @@ def main() -> int:
         print(f"FAIL {failure}", file=sys.stderr)
     if failures:
         print(f"\nlink check: {len(failures)} unresolved reference(s)", file=sys.stderr)
+        for line in revisions_read():
+            print(line, file=sys.stderr)
         return 1
     resolved = f"link check: every reference in {len(selected)} document(s) resolved"
     if unanswered:
         print(f"\n{resolved}, except {len(unanswered)} whose host did not answer")
-        return 0
-    print(f"\n{resolved}")
+    else:
+        print(f"\n{resolved}")
+    for line in revisions_read():
+        print(line)
     return 0
 
 
