@@ -21,7 +21,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E01 W03 work item](e01/w03.md) | A pull request whose checks do not run stating so |
 | [E01 W04 work item](e01/w04.md) | The checks page stating the trigger rule |
 | [E02 W01 work item](e02/w01.md) | The preflight refusing every project-scope settings file declaring a hook |
-| [E02 W02 work item](e02/w02.md) | The preflight refusing a managed settings file declaring a hook |
+| [E02 W02 work item](e02/w02.md) | The run record naming the hook a managed settings file declares |
 | [E02 W03 work item](e02/w03.md) | The eval README stating each refused settings file, its scope and the remedy |
 | [E04 W01 work item](e04/w01.md) | Scenarios stating the `pf` runs a session and its sub-agents make |
 | [E04 W02 work item](e04/w02.md) | The `staged` form, given only to a harness with a shell |
@@ -45,6 +45,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
 | [E05 draft](e05-body.md) | The E05 epic body as saved, the source of its next edit |
 | [Joins](joins.md) | Each independent pair, and each same-component pair, that ships as two pull requests |
+| [A: agent review of #600](agent-review-600.json) | The agent review record of the I10:E02 integration pull request, by reviewed head and target |
 
 ## Goal
 
