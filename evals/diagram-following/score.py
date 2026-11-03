@@ -52,7 +52,7 @@ sub-agents it started, and a record failing two checks takes the earlier.
 A scenario that dispatches nothing passes all three, and a record absent
 from a session that dispatches nothing names no start.
 
-A start is a `Task` tool call in the transcript, which names the section
+A start is an `Agent` tool call in the transcript, which names the section
 it hands over in the call's `description` as `<document>#<heading>`; its
 return is the text of the answer to that call, read as `question` when
 that text opens with the word and as `done` otherwise. Two starts in one

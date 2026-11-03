@@ -50,11 +50,12 @@ USER = "user"
 TOOL_USE = "tool_use"
 TOOL_RESULT = "tool_result"
 CALL_ID = "tool_use_id"
-TASK = "Task"
+AGENT = "Agent"
 DESCRIPTION = "description"
 RESULT = "result"
 IS_ERROR = "is_error"
 USAGE = "usage"
+MODEL_USAGE = "modelUsage"
 
 TOOL_CALL = "tool_call"
 STARTED = "started"
@@ -187,7 +188,14 @@ class Claude:
     project_settings: tuple[str, ...] = ("settings.json", "settings.local.json")
     hooks: str = "hooks"
     default_agent: str = "claude"
-    tools: str = "Read,Write,Edit,Glob,Grep,Task"
+    tools: str = "Read,Write,Edit,Glob,Grep,Agent"
+    foreground: tuple[str, str] = ("CLAUDE_CODE_DISABLE_BACKGROUND_TASKS", "1")
+    """The variable holding each sub-agent within the call that starts it.
+
+    The CLI otherwise starts a sub-agent in the background: the call returns
+    at once, the parent ends its turn before the answer arrives, and the
+    answer reaches it as a notification rather than as the call's result.
+    """
     shell: bool = False
     """Whether a session may run a command, which a shell form needs.
 
@@ -206,11 +214,12 @@ class Claude:
     what the CLI alone could spend before that guard sees a result.
     """
     usage: tuple[str, str, str, str] = (
-        "input_tokens",
-        "output_tokens",
-        "cache_creation_input_tokens",
-        "cache_read_input_tokens",
+        "inputTokens",
+        "outputTokens",
+        "cacheCreationInputTokens",
+        "cacheReadInputTokens",
     )
+    """The token kinds each model's entry in a result's `modelUsage` counts."""
 
     def argv(
         self, agent: list[str], model: str, budget: int, workspace: Path | None = None
@@ -242,13 +251,17 @@ class Claude:
         ]
 
     def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
-        """The caller's environment without its agent variables, naming `config`."""
+        """The caller's environment without its agent variables, naming `config`.
+
+        Sub-agents run in the foreground, so each start's result is its answer.
+        """
         kept = {
             name: value
             for name, value in held.items()
             if not name.startswith(self.scrubbed)
         }
-        return {**kept, self.config_variable: str(config)}
+        variable, value = self.foreground
+        return {**kept, self.config_variable: str(config), variable: value}
 
     def preflight(
         self, config: Path, workspaces: Path, sources: tuple[Path, ...]
@@ -415,24 +428,29 @@ class Claude:
     def starts(self, transcript: Path) -> tuple[Start, ...]:
         """The sub-agents a session started, in order.
 
-        A `tool_use` block naming `Task` is one start; two such blocks in one
-        assistant message started together. A start's target is the
-        `description` its input carries, naming the section handed over.
+        A `tool_use` block naming `Agent` is one start; two such blocks in one
+        assistant message started together. The CLI prints each block of a
+        message as an event of its own carrying the message's `id`, so a
+        start is together with the one before it when both carry one id. A
+        start's target is the `description` its input carries, naming the
+        section handed over.
         """
         found: dict[str, tuple[str, bool]] = {}
         returned: dict[str, str] = {}
-        for held in messages(transcript):
+        last: object = None
+        for index, held in enumerate(messages(transcript)):
             kind = held.get("type")
             carried = held.get(MESSAGE)
             content = carried.get("content") if isinstance(carried, dict) else None
-            if not isinstance(content, list):
+            if not isinstance(content, list) or not isinstance(carried, dict):
                 continue
             if kind == ASSISTANT:
-                first = None
+                named = carried.get("id")
+                message: object = named if isinstance(named, str) else index
                 for block in content:
                     if not isinstance(block, dict) or block.get("type") != TOOL_USE:
                         continue
-                    if block.get("name") != TASK:
+                    if block.get("name") != AGENT:
                         continue
                     held_input = block.get("input")
                     target = (
@@ -443,9 +461,8 @@ class Claude:
                     key = block.get("id")
                     if not isinstance(key, str) or not isinstance(target, str):
                         continue
-                    found[key] = (target, first is not None)
-                    if first is None:
-                        first = key
+                    found[key] = (target, message == last)
+                    last = message
             elif kind == USER:
                 for block in content:
                     if not isinstance(block, dict) or block.get("type") != TOOL_RESULT:
@@ -463,8 +480,26 @@ class Claude:
         return None
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
-        """The tokens one session processed, from the usage it reported."""
-        return _tokens(result, self.usage)
+        """The tokens one session processed, its sub-agents' among them.
+
+        The last `result` message's `modelUsage` counts each model's tokens
+        over the whole session, every turn and every sub-agent included,
+        while its `usage` counts the parent's own turns. A result carrying no
+        `modelUsage` reports nothing.
+        """
+        if result is None:
+            return None
+        models = result.get(MODEL_USAGE)
+        if not isinstance(models, dict):
+            return None
+        counts = [
+            count
+            for model in models.values()
+            if isinstance(model, dict)
+            for name in self.usage
+            if isinstance(count := model.get(name), int | float)
+        ]
+        return int(sum(counts)) if counts else None
 
     def cost(self, result: dict[str, object] | None) -> float | None:
         """The cost the session reported, in USD."""

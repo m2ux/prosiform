@@ -286,7 +286,7 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     assert found == sorted(sorted(material(session)) for session in sessions)
     for entry in entries:
         argv = entry["argv"]
-        assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task"
+        assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent"
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
         assert "--allowedTools" not in argv and "Bash" not in " ".join(argv)
@@ -296,8 +296,10 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
         assert entry["config"] == str(tmp_path / "eval" / "config")
         variables = set(entry["variables"])
         assert not variables & (set(CALLER_VARIABLES) - {"CLAUDE_CONFIG_DIR"})
+        assert "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS" in variables
         assert not any(
-            name.startswith(("CLAUDE_CODE_", "ANTHROPIC_")) for name in variables
+            name.startswith(("CLAUDE_CODE_", "ANTHROPIC_"))
+            for name in variables - {"CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"}
         )
     assert not workspaces.exists()
 
@@ -1442,13 +1444,13 @@ def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
 
 
 def handed_prompts(directory: Path) -> list[str]:
-    """The prompt each `Task` call in a session's transcript gave its sub-agent."""
+    """The prompt each `Agent` call in a session's transcript gave its sub-agent."""
     return [
         block["input"]["prompt"]
         for line in (directory / TRANSCRIPT).read_text().splitlines()
         if (said := json.loads(line)).get("type") == "assistant"
         for block in said["message"]["content"]
-        if isinstance(block, dict) and block.get("name") == "Task"
+        if isinstance(block, dict) and block.get("name") == "Agent"
     ]
 
 

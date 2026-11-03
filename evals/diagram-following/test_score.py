@@ -456,11 +456,11 @@ def transcript(tmp_path: Path, messages: list[dict[str, object]]) -> Path:
 
 
 def call(identifier: str, target: str) -> dict[str, object]:
-    """One `Task` call naming the section it hands over."""
+    """One `Agent` call naming the section it hands over."""
     return {
         "type": "tool_use",
         "id": identifier,
-        "name": "Task",
+        "name": "Agent",
         "input": {"description": target, "prompt": f"Follow {target}."},
     }
 

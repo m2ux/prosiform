@@ -25,9 +25,11 @@ Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
 eval's own Claude configuration directory, holding its login, settings and
 memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
-`ANTHROPIC_*` variable. A run whose configuration directory holds no login
-fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin at a scope other than managed
+`ANTHROPIC_*` variable but `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, which runs
+each sub-agent within the call that starts it. A run whose configuration
+directory holds no login fails before it starts a session, naming the
+one-time login command, and so does one whose directory installs a plugin
+at a scope other than managed
 or whose unsigned remote settings enable one, naming the file that says so:
 a plugin's hooks reach a session before its first turn and no flag the
 runner passes suppresses them. So does a settings file declaring a hook:

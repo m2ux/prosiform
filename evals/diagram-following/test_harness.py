@@ -25,7 +25,7 @@ def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
 
 
 def claude_call(identifier: str, target: str) -> dict[str, object]:
-    """One Claude `Task` call, its description naming the section handed over."""
+    """One Claude `Agent` call, its description naming the section handed over."""
     return {
         "type": "assistant",
         "message": {
@@ -33,7 +33,7 @@ def claude_call(identifier: str, target: str) -> dict[str, object]:
                 {
                     "type": "tool_use",
                     "id": identifier,
-                    "name": "Task",
+                    "name": "Agent",
                     "input": {"description": target},
                 }
             ]
@@ -135,13 +135,13 @@ def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
                         {
                             "type": "tool_use",
                             "id": "b",
-                            "name": "Task",
+                            "name": "Agent",
                             "input": {"description": "review#source"},
                         },
                         {
                             "type": "tool_use",
                             "id": "c",
-                            "name": "Task",
+                            "name": "Agent",
                             "input": {"description": "review#tests"},
                         },
                     ]
@@ -174,6 +174,31 @@ def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
         Start("review#source", "question", False),
         Start("review#tests", "done", True),
     )
+
+
+def test_claude_reads_blocks_of_one_message_as_together(tmp_path: Path) -> None:
+    """The CLI prints each block of a message as its own event, carrying its id."""
+
+    def event(message: str, identifier: str, target: str) -> dict[str, object]:
+        held = claude_call(identifier, target)
+        held["message"]["id"] = message  # type: ignore[index]
+        return held
+
+    held = transcript(
+        tmp_path,
+        [
+            event("m1", "a", "plan#work"),
+            event("m2", "b", "review#source"),
+            event("m2", "c", "review#tests"),
+            event("m3", "d", "review#docs"),
+        ],
+    )
+    assert [start.together for start in Claude().starts(held)] == [
+        False,
+        False,
+        True,
+        False,
+    ]
 
 
 def test_cursor_reads_starts_from_task_calls(tmp_path: Path) -> None:
@@ -237,7 +262,14 @@ def test_cursor_ignores_a_call_that_is_not_a_task(tmp_path: Path) -> None:
     assert Cursor().starts(held) == (Start("plan#work", "done", False),)
 
 
-def test_each_harness_reads_the_usage_it_reports(tmp_path: Path) -> None:
+def test_claude_counts_every_model_and_sub_agent_a_session_ran(
+    tmp_path: Path,
+) -> None:
+    """The last result's `modelUsage` counts the whole session, sub-agents included.
+
+    Its `usage` counts the parent's own turns, so a session that dispatched
+    reports more under `modelUsage` than under `usage`.
+    """
     held = transcript(
         tmp_path,
         [
@@ -245,18 +277,60 @@ def test_each_harness_reads_the_usage_it_reports(tmp_path: Path) -> None:
                 "type": "result",
                 "subtype": "success",
                 "is_error": False,
-                "usage": {
-                    "input_tokens": 10,
-                    "output_tokens": 5,
-                    "cache_creation_input_tokens": 3,
-                    "cache_read_input_tokens": 2,
+                "usage": {"input_tokens": 10, "output_tokens": 5},
+                "modelUsage": {
+                    "claude-haiku-5-5": {"inputTokens": 10, "outputTokens": 5},
                 },
-            }
+            },
+            {
+                "type": "result",
+                "subtype": "success",
+                "is_error": False,
+                "usage": {
+                    "input_tokens": 1,
+                    "output_tokens": 2,
+                    "cache_creation_input_tokens": 3,
+                    "cache_read_input_tokens": 4,
+                },
+                "modelUsage": {
+                    "claude-haiku-5-5": {
+                        "inputTokens": 20,
+                        "outputTokens": 10,
+                        "cacheCreationInputTokens": 30,
+                        "cacheReadInputTokens": 40,
+                        "costUSD": 0.5,
+                    },
+                    "claude-sonnet-5-5": {"inputTokens": 7, "outputTokens": 3},
+                },
+            },
         ],
     )
     result = Claude().result(held)
-    assert Claude().tokens(result) == 20
+    assert Claude().tokens(result) == 110
     assert Cursor().tokens(result) is None
+
+
+def test_claude_reports_no_tokens_where_the_result_counts_no_model(
+    tmp_path: Path,
+) -> None:
+    held = transcript(
+        tmp_path,
+        [{"type": "result", "is_error": False, "usage": {"input_tokens": 10}}],
+    )
+    assert Claude().tokens(Claude().result(held)) is None
+
+
+def test_a_claude_task_call_is_no_start(tmp_path: Path) -> None:
+    """The CLI dispatches through `Agent`; a block naming another tool is none."""
+    call = claude_call("a", "plan#work")
+    call["message"]["content"][0]["name"] = "Task"  # type: ignore[index]
+    assert Claude().starts(transcript(tmp_path, [call])) == ()
+
+
+def test_claude_sessions_dispatch_in_the_foreground(tmp_path: Path) -> None:
+    """A sub-agent runs within the call that starts it, so its answer is the result."""
+    env = Claude().environment(tmp_path, {"CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "0"})
+    assert env["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"] == "1"
 
 
 def test_cursor_reads_its_own_usage_and_reports_no_cost(tmp_path: Path) -> None:

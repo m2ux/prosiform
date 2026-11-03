@@ -154,10 +154,10 @@ A session receives one form of one workflow and the instruction, so a pass measu
 
 | Mechanism | What it keeps out |
 | --- | --- |
-| `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is the only one set. |
+| `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is set beside `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, which runs each sub-agent within the call that starts it, so the call's result is the sub-agent's answer. |
 | `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
 | `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
-| `--tools Read,Write,Edit,Glob,Grep,Task` | Every other tool, `Bash` included, so a session cannot reach past its workspace, and `Task` is the one tool a dispatch protocol needs. |
+| `--tools Read,Write,Edit,Glob,Grep,Agent` | Every other tool, `Bash` included, so a session cannot reach past its workspace, and `Agent` is the one tool a dispatch protocol needs. |
 | `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
@@ -217,7 +217,7 @@ A run is held to tokens, the one measure every harness reports, and `--budget-to
 
 The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 
-The run's guard reads each session's reported tokens when it settles: a session starts only when the recorded tokens, plus the cap reserved for each session in flight, plus its own cap, fit the budget, and a run that cannot fit another lists the rest as not started. A session can record more than its cap, since its own CLI checks between calls, and the guard holds the budget against that by reserving caps in flight.
+The run's guard reads each session's reported tokens when it settles: a session starts only when the recorded tokens, plus the cap reserved for each session in flight, plus its own cap, fit the budget, and a run that cannot fit another lists the rest as not started. A session's tokens are every model's its CLI reports, its sub-agents' among them. A session can record more than its cap, since its own CLI checks between calls, and the guard holds the budget against that by reserving caps in flight.
 
 ## Reading the report
 

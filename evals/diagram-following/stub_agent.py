@@ -6,9 +6,10 @@ headings its workspace's documents hold, at whatever level a group placed
 them, walks that workflow's diagram for
 the inputs under `inputs/`, and writes the walk to `trace.log` with every
 state's action, as a correct agent would. It then prints a stream-json
-transcript ending in a `result` message carrying usage and a cost.
+transcript ending in a `result` message carrying usage, each model's usage
+and a cost.
 
-A workflow that dispatches takes a `Task` call per sub-agent start the
+A workflow that dispatches takes an `Agent` call per sub-agent start the
 scenario states, each naming its section as `<document>#<heading>`, with
 the outcome the scenario gives it. The entries a scenario marks `together`
 share one assistant message, so they read as started at once, and each
@@ -61,7 +62,7 @@ STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
 """The sub-agent trace as an instruction states it."""
 
 HANDED_TRACE = re.compile(re.escape(SUB_AGENT_TRACE).replace(r"\{section\}", r"(\S+?)"))
-"""The sub-agent trace a `Task` prompt names, the section's name its group."""
+"""The sub-agent trace an `Agent` prompt names, the section's name its group."""
 
 HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 
@@ -94,6 +95,14 @@ def usage(path: tuple[str, ...]) -> dict[str, int]:
     )
 
 
+def model_usage(counted: dict[str, int]) -> dict[str, int]:
+    """One model's entry in `modelUsage`, counting what `usage` counts."""
+    return {
+        "inputTokens": counted["input_tokens"],
+        "outputTokens": counted["output_tokens"],
+    }
+
+
 def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
     """The sub-agent starts a session makes: a section, its return and a set flag.
 
@@ -117,7 +126,7 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
 
 
 def handed(section: str, instruction: str) -> str:
-    """The prompt a session's `Task` call gives the sub-agent following a section.
+    """The prompt a session's `Agent` call gives the sub-agent following a section.
 
     A sub-agent reads only this prompt, so it learns its trace's name only
     where the session's instruction stated that name for the session to hand on.
@@ -145,12 +154,12 @@ def write_sub_agent_traces(workspace: Path, prompts: list[str]) -> None:
 def message(
     identifier: str, start: tuple[str, str, bool], instruction: str
 ) -> dict[str, object]:
-    """One `Task` call, its description naming the section it hands over."""
+    """One `Agent` call, its description naming the section it hands over."""
     section, _, _ = start
     return {
         "type": "tool_use",
         "id": identifier,
-        "name": "Task",
+        "name": "Agent",
         "input": {"description": section, "prompt": handed(section, instruction)},
     }
 
@@ -272,6 +281,7 @@ def main() -> int:
             "num_turns": len(path),
             "total_cost_usd": float(os.environ.get("STUB_AGENT_COST", "0.01")),
             "usage": usage(path),
+            "modelUsage": {"stub-model": model_usage(usage(path))},
         }
         print(json.dumps(result))
     return 0
