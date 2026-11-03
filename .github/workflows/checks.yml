@@ -1,4 +1,5 @@
-# The repository's checks, run on every change that can break what they read.
+# The repository's checks, run on every change that can break what they read
+# and reported as not run on every other pull request.
 # The job calls the named command a developer calls, so one configuration
 # governs a local run and a remote one: `make check` runs the checks in the
 # order the Makefile declares, stops at the first failure, and names the
@@ -7,28 +8,15 @@
 name: Checks
 
 on:
-  # A pull request is where a change is accepted, so the changed paths decide
-  # whether it runs the checks and its branch name decides nothing. Its base is
-  # a branch that carries the build: main, or an initiative's branch, which
-  # targets main. The workspace branch carries the tooling and the engineering
-  # branch the planning records; neither holds a build to check.
+  # A pull request is where a change is accepted. Its base is a branch that
+  # carries the build: main, or an initiative's branch, which targets main.
+  # The workspace branch carries the tooling and the engineering branch the
+  # planning records; neither holds a build to check. Every such pull request
+  # starts the workflow, so the job reports whether its change was checked.
   pull_request:
     branches:
       - main
       - "i[0-9][0-9]/**"
-    # Every path a check reads: the build, the corpus, the checks, the evals
-    # and scripts they run, the documents they read, the Makefile that names
-    # them and this workflow.
-    paths:
-      - src/**
-      - fixtures/**
-      - checks/**
-      - evals/**
-      - scripts/**
-      - docs/**
-      - "*.md"
-      - Makefile
-      - .github/workflows/checks.yml
   # The merge commit on main is checked whatever it changed.
   push:
     branches:
@@ -50,7 +38,49 @@ jobs:
           # checkout carries every branch and the README names which one.
           fetch-depth: 0
 
+      - name: Decide whether the change is checked
+        id: scope
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          # Every path a check reads: the build, the corpus, the checks, the
+          # evals and scripts they run, the documents they read, the Makefile
+          # that names them and this workflow. A pull request changing any of
+          # them runs the checks; a pull request changing none reports that
+          # they did not run.
+          CHECKED_PATHS: |
+            :(glob)src/**
+            :(glob)fixtures/**
+            :(glob)checks/**
+            :(glob)evals/**
+            :(glob)scripts/**
+            :(glob)docs/**
+            :(glob)*.md
+            Makefile
+            .github/workflows/checks.yml
+        run: |
+          set -f
+          if [ "$EVENT" = push ]; then
+            echo "checked=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          changed=$(git diff --name-only "$BASE...$HEAD" -- $CHECKED_PATHS)
+          if [ -n "$changed" ]; then
+            echo "checked=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "checked=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report that the checks did not run
+        if: steps.scope.outputs.checked != 'true'
+        run: |
+          message="The checks did not run: this change touches no path they read."
+          echo "::notice title=Checks did not run::$message"
+          echo "$message" >> "$GITHUB_STEP_SUMMARY"
+
       - name: Install uv
+        if: steps.scope.outputs.checked == 'true'
         uses: astral-sh/setup-uv@v10.3.0
         with:
           # The version the planning records document a local run under. The
@@ -59,6 +89,7 @@ jobs:
           version: "0.11.14"
 
       - name: Run the checks
+        if: steps.scope.outputs.checked == 'true'
         run: make check
         env:
           # The link check reads four issues and a user-level project board
