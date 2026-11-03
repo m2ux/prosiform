@@ -1,6 +1,6 @@
 # Validation
 
-The checks W09's work item names, run against task branch `i10/e06/w09-the-composition-page-stating` at `18192a67`, with `origin/i10/e06/main` at `1e1bdc42` merged.
+The checks W09's work item names, run against task branch `i10/e06/w09-the-composition-page-stating` at `0b7c2e4b`, with W07 merged into `origin/i10/e06/main`.
 
 ## T1 Pages Read Against The Composition Fixtures
 
