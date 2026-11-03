@@ -23,3 +23,5 @@ This record holds its delivery of `AC27`: the work item, the validation evidence
 | Epic | [I10:E04 Composition Following](https://github.com/m2ux/prosiform/issues/579) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
+| Pull request | [#651](https://github.com/m2ux/prosiform/pull/651) |
+| Review pull request | [#622](https://github.com/m2ux/prosiform/pull/622) |
