@@ -398,7 +398,8 @@ def names(target: str, section: str) -> bool:
     """Whether a start's target names a section, as a section or as its bundle.
 
     A compiled form hands over `pf`'s bundle for the section, named
-    `<document>__<heading>` and written beside the entry; an authored form
+    `<document>__<heading>` with each `/` of the document's path written as
+    `_`, and written beside the entry; an authored form
     hands over the section itself, named `<document>#<heading>`. Both spell
     one section, since the bundle's name is compiled from it.
 
@@ -410,7 +411,7 @@ def names(target: str, section: str) -> bool:
     document, _, heading = section.partition("#")
     for spelled in (
         f"{document}#{heading}",
-        f"{document}{BUNDLE_JOIN}{heading}{BUNDLE_SUFFIX}",
+        f"{document.replace('/', '_')}{BUNDLE_JOIN}{heading}{BUNDLE_SUFFIX}",
     ):
         if re.search(rf"{re.escape(spelled)}(?![\w#-])", target):
             return True

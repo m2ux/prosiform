@@ -159,7 +159,7 @@ def bundle_faults(workflow: Workflow, form: str, output: Path) -> list[str]:
     }
     if form in MARKED_FORMS:
         targets = {
-            target.partition("#")[0].split("/")[-1]
+            target.partition("#")[0].replace("/", "_")
             for section in workflow.sections[form].values()
             for _, targets in dispatched(
                 section.body, section.path.parent, workflow.form(form), form
