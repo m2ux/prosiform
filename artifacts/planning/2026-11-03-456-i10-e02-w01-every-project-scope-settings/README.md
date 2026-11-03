@@ -13,7 +13,7 @@ This record holds its delivery of `AC1,AC2,AC3`: the work item, the validation e
 | Artifact | What it holds |
 | --- | --- |
 
-## Test Evidence
+## Validation
 
 Each check is a stub-agent test in `evals/diagram-following/test_run.py`, run by `make check` in the row worktree at commit `b0bc6bca`. No live session or paid run is made.
 
