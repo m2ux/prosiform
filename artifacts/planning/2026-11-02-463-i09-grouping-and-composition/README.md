@@ -65,11 +65,13 @@ The initiative was split out of I05 with its epics raised as standalone issues a
 | [E05 W32 work item](e05/w32.md) | The design's option table declaring the code listing |
 | [E05 W33 work item](e05/w33.md) | The harness compiling each workflow from the entry its scenarios name |
 | [E05 W34 work item](e05/w34.md) | Each group a document joins placed where its own reference stands |
+| [E05 W35 work item](e05/w35.md) | The eval page's scenario keys and `undeclared/` directory as separate paragraphs |
 | [E05 review](e05/review.md) | Every clause changed since `contract/v0.15.0` read against the merged build, and the three departures |
 | [Joins](joins.md) | The candidate unit that ships as separate pull requests, and why |
 | [Change list](change-list.md) | The plan changes this run applied and held |
 | [A: agent review of #541](agent-review-541.json) | The agent review record of the I09:E02 integration pull request, by reviewed head and target |
 | [A: agent review of #556](agent-review-556.json) | The agent review record of the I09:E04 integration pull request, by reviewed head and target |
+| [A: agent review of #585](agent-review-585.json) | The agent review record of the I09:E05 integration pull request, by reviewed head and target |
 
 ## Goal
 
@@ -78,7 +80,7 @@ The goal is the initiative's Overview: every document arrives under a heading a 
 - **G1.** A reference reaches the document it named.
 - **G2.** A file's `group` pair places its own sections, composed from the leaves up.
 - **G3.** A referenced section sits where it is named.
-- **G4.** The MVP is proven: an agent follows each merged feature from its compiled bundle on a live run.
+- **G4.** The MVP is reviewed whole: the merged surface agrees with its design and documentation, and each merged feature has a workflow stating the path an agent walks.
 
 ## Goal Trace
 
@@ -86,9 +88,9 @@ The goal is the initiative's Overview: every document arrives under a heading a 
 | --- | --- | --- | --- | --- |
 | G2 | AC1 | E02 | E02 AC1–AC7 | No marked source |
 | G3 | AC2 | E04 | E04 AC1–AC19 | No marked source |
-| G4 | AC3 | E05 | E05 AC1–AC33 | No marked source |
+| G4 | AC3 | E05 | E05 AC1–AC28, AC34–AC39 | No marked source |
 
-Each initiative criterion states one clause's outcome and is made true by the one epic citing it: E02 AC1–AC4 compose each file under its own pairs before its parent merges it, E04 AC3 with AC4 places a composed section beneath its containing heading, and E05 AC23–AC30 run a workflow per feature live, after AC1–AC22 bring the build and every page to the pinned design.
+Each initiative criterion states one clause's outcome and is made true by the one epic citing it: E02 AC1–AC4 compose each file under its own pairs before its parent merges it, E04 AC3 with AC4 places a composed section beneath its containing heading, and E05 AC23–AC28, AC37 and AC38 give each feature a workflow whose bundle states its path, after AC1–AC22 and AC39 bring every page to the build and AC34–AC36 the design.
 
 ### Gaps, Ranked
 
@@ -177,7 +179,7 @@ What remains is enforcement: *A heading for every member* concludes that no two 
 E05 proves the MVP: the I08 and I09 work merged into `main` since `contract/v0.15.0`.
 
 - **Review, then documentation, then scenarios, then the run.** W01 reviews against the pinned design and raises each departure as a row here; W02–W21 bring each page to the build, one page per row since a row extends one component; W22–W27 write one workflow per feature, which I10:E05 runs live.
-- **Dependency check.** No problems. W21 and W29 both extend the eval page and are split by rule, since W29 needs W22, which needs W21. E02 W03 and E05 W03 contend on `invocation.md`, and E02 W04 and E05 W13 on `docs/hierarchy.md`; E05 depends on E02, so the priority map separates them. Longest chain: fourteen steps, E04:W00 through E04:W10, then E05 W01, a page row, a scenario row, W28 and W29.
+- **Dependency check.** No problems. E02 W03 and E05 W03 contend on `invocation.md`, and E02 W04 and E05 W13 on `docs/hierarchy.md`; E05 depends on E02, so the priority map separates them. Longest chain: E04:W00 through E04:W10, then E05 W01, a page row, W23 and W34.
 - **Proposed epic priority.** E02 3, E04 2, E05 1, derived from E05's edges to E02 and E04.
 
 ## Links

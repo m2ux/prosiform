@@ -34,8 +34,8 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w01.md) | Scenarios stating the `pf` runs a session makes | AC1 | | W02, W03, W04 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w02.md) | The `staged` form for shell harnesses | AC2, AC3, AC22 | | W01, W03, W04 | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w03.md) | A session held to its stated runs | AC4 | | W01, W02, W04 | |
-| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w04.md) | Sub-agent starts and commands at every depth | AC5 | | W01, W02, W03 | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w03.md) | A session held to its stated runs | AC4, AC23 | | W01, W02, W04 | |
+| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w04.md) | Sub-agent starts and commands at every depth | AC5 | [I10:E02:W02](https://github.com/m2ux/prosiform/issues/456) | W01, W02, W03 | |
 | [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w05.md) | A scenario bootstrapping a skill's `↳` link | AC6 | W01 | W06, W07 | |
 | [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w06.md) | Scenarios activating conditional and nested deferrals | AC7, AC8 | W01, W02 | W05, W07 | |
 | [W07](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w07.md) | A scenario deferring under matched presets | AC9 | W01, W02, [I09:E04:W11](https://github.com/m2ux/prosiform/issues/460) | W05, W06 | |
@@ -44,8 +44,9 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 | [W10](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w10.md) | A scenario compiling a deferred dispatch | AC13 | W01, W02 | W11, W12 | |
 | [W11](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w11.md) | Scenarios dispatching three hops deep | AC14, AC15, AC16 | W01, W02, W04 | W10, W12 | |
 | [W12](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w12.md) | Scenarios of a sub-agent's first `pf` run | AC17, AC18 | W01, W02, W04, [I09:E04:W12](https://github.com/m2ux/prosiform/issues/460) | W10, W11 | |
-| [W14](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md) | Live run of the edge workflows | AC20 | W03, W05, W06, W07, W08, W09, W10, W11, W12 | | |
+| [W14](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md) | Live run of the edge workflows | AC20, AC24 | W03, W05, W06, W07, W08, W09, W10, W11, W12, W16 | | |
 | [W15](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w15.md) | The eval page stating the edge workflows | AC21 | W14 | | |
+| [W16](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w16.md) | Shake down the edge-run runbook | AC25 | W03, W05, W06, W07, W08, W09, W10, W11, W12, [I10:E05:W00](https://github.com/m2ux/prosiform/issues/594) | | |
 
 ## Acceptance Criteria
 
@@ -70,6 +71,9 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 - [ ] **AC20.** The committed edge-case record carries a cell for every model of the default matrix, harness carrying a shell, form and scenario of the edge workflows, as a comparison of the record against those workflows shows.
 - [ ] **AC21.** The eval's README states the `staged` form, each edge workflow and scenario, and the pass rates the edge-case record holds, as an inspection of the README against the corpus and the record shows.
 - [ ] **AC22.** A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's `pf` run, as a harness test `make harness` runs shows.
+- [ ] **AC23.** Every class the scorer gains for a session's `pf` runs has an entry in `RUNBOOK.md`'s triage rubric, as a read of the rubric against the scorer shows.
+- [ ] **AC24.** The edge-case record gives every failing session the triage rubric's disposition, as the record shows.
+- [ ] **AC25.** `RUNBOOK.md`'s edge-run runbook carries a shakedown over the edge workflows on each harness carrying a shell, whose measured cost sets its budget, and each rubric entry for a `pf`-run class decides a shakedown session or is recorded as produced by none, as the file shows.
 
 ## References
 

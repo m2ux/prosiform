@@ -39,7 +39,7 @@ The MVP is the argument surface and the grouping and composition work merged tog
 - [ ] **AC5.** The eval page states what `mvp-proof.json` proves and the run's measured cost, matching the cost the file records, as the page and the file show.
 - [ ] **AC6.** `evals/diagram-following/RUNBOOK.md`'s triage rubric gives, for each class the scorer defines and `errored`, the evidence that marks a failing session an agent miss, a scenario or harness defect, or unclear, and the action a run takes for each, as a read of the rubric against the scorer shows.
 - [ ] **AC7.** `RUNBOOK.md` gives the MVP proof, the baseline and the edge run each a runbook stating its command and arguments, model, harnesses, forms, token budget, cost cap, stop rules and committed files, each argument one `run.py` accepts, as a read of the runbooks against `run.py --help` shows.
-- [ ] **AC8.** `RUNBOOK.md` records the low-cost model the user chose for the default matrix, and the proof's and the baseline's runbooks each carry a shakedown whose measured cost sets its budget, as the file shows.
+- [ ] **AC8.** `RUNBOOK.md` records the low-cost model the user chose for the default matrix, and the proof's runbook carries a shakedown whose measured cost sets its budget, as the file shows.
 
 ## References
 
