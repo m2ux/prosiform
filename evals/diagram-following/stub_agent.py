@@ -79,6 +79,19 @@ def held(workspace: Path) -> list[str]:
     )
 
 
+def recognised(headings: set[str], corpus: list[Workflow]) -> Workflow:
+    """The workflow a workspace holds, from the headings its documents carry.
+
+    It is the workflow with the most states, each heading a section there,
+    since one whose states are a subset of another's is headed in that one's
+    workspace too.
+    """
+    return max(
+        (item for item in corpus if item.diagram.states <= headings),
+        key=lambda item: len(item.diagram.states),
+    )
+
+
 def scenario_of(workflow: Workflow, inputs: dict[str, str]) -> Scenario | None:
     """The scenario whose inputs a session's workspace holds, when one does."""
     wanted = {name: value.strip() for name, value in inputs.items()}
@@ -227,7 +240,7 @@ def main() -> int:
         if name.endswith(".md")
         for heading in HEADING.findall((workspace / name).read_text())
     }
-    workflow = next(item for item in workflows() if item.diagram.states <= headings)
+    workflow = recognised(headings, workflows())
     inputs = {path.name: path.read_text() for path in (workspace / "inputs").iterdir()}
     item = scenario_of(workflow, inputs)
     path = item.path if item else walk(workflow, workflow.forms[0], inputs)
