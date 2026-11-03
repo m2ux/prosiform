@@ -16,5 +16,24 @@
         "disposition": "open"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/616",
+    "head": "2136ccf7698d3f47d8eef8445e922d5ae0e8c307",
+    "base": "0584426ed5260323a6364be0e824584a2705e246",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/agent-review-616.json",
+    "reviewer": "Claude Opus 5.5 (agent review, work-planner Produce Agent Review)",
+    "reviewed_at": "2026-11-03T11:00:00Z",
+    "scope": "Complete integration diff main...i10/e05/main, base 0584426e (origin/main, unchanged since the first review and contained in the head) to head 2136ccf7, the merge of review fix #629 (W04) into 2780aea5; the first record's scope stands for the rest of the diff. Re-read for #629: counted, Claude._plugins (a dict-shaped install entry now read as the preflight reads it), Claude.hooked, Claude.managed(config, hooks), Cursor/Opencode hooked and managed, run.hook_events_seen, run (hooked read after the preflight and before any session, so an unreadable managed settings file is still refused first; managed counted after the carried-context check from every session's transcript), carried_context and injected docstrings, the eval README Isolation section, checks.md, RUNBOOK.md's shakedown row, and the regenerated mvp-proof.json and mvp-proof.md. The proof record was recounted with the harness code from the W01 run's own 150 transcripts and the harness's read of the eval config: plugins 1 and environment 6 match the committed record, hooks 1 (SessionStart), and the regenerated report differs from the committed one only in the managed hooks and fingerprint; no paid rerun. Design pin: README names 2921f91a19b24b16598d7fea617fa6c1e7be3d29, unchanged. A search of every changed file for organisation identifiers finds none.",
+    "criteria": "AC1-AC10 of #594, all ticked. AC1-AC9 as the first record states, re-verified at this head by make check. AC10 by test_a_managed_configuration_is_recorded_by_count_and_fingerprint (a managed plugin with no hooks file counts the hook its session shows), test_a_managed_settings_hook_is_counted_and_its_sessions_start (one event seen, though the file declares two), test_hook_events_are_read_from_every_transcript_once_each and test_a_fingerprint_tells_two_managed_configurations_apart, and by mvp-proof.json recording 1 managed hook as its transcripts show.",
+    "validation": "make check (lock-check, lint, format-check, typecheck, test 1663 passed, harness 1283 passed, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence) passed locally at the head 2136ccf7 with PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf'. CI workflow Checks passed on #629's head 7caf3ed9 (https://github.com/m2ux/prosiform/actions/runs/41621349066/job/125867560235) and on the head 2136ccf7 (https://github.com/m2ux/prosiform/actions/runs/41621767375/job/125868985945).",
+    "findings": [
+      {
+        "description": "The managed record undercounted the hooks the sessions carried: every proof session carried a SessionStart hook response while mvp-proof.json recorded 0 managed hooks, because Claude.managed read hooks only from files its reads reach. Per the user's decision the run now counts managed hooks from the hook events the session transcripts show, and the proof record was recounted from its transcripts to 1 hook with its fingerprint.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/629"
+      }
+    ]
   }
 ]
