@@ -1,0 +1,1218 @@
+{
+  "run_id": "mvp-proof",
+  "date": "2026-11-03T07:15:02+00:00",
+  "state": "completed",
+  "reason": null,
+  "models": [
+    "claude-haiku-5-5"
+  ],
+  "repetitions": 5,
+  "sessions": 150,
+  "started": 150,
+  "harness": "claude",
+  "managed": {
+    "plugins": 1,
+    "environment": 6,
+    "hooks": 0,
+    "fingerprint": "db6a4542c5d7f6daeda51be1bedc91539e54f7de913369ba82375e8f4e8d3529"
+  },
+  "tokens": 19268512,
+  "cost_usd": 0.67671,
+  "not_started": [],
+  "failing": [
+    {
+      "session": "claude-haiku-5-5/section-composition/nested-composition/tree/2",
+      "failure": "missing_action",
+      "disposition": "miss",
+      "evidence": "states/assess.md names actions/assess.txt and assessed, the file and value the scorer reads; the transcript writes lodge.txt, amend.txt and close.txt but never assess.txt, though its result message claims it did"
+    },
+    {
+      "session": "claude-haiku-5-5/section-composition/nested-composition/tree/3",
+      "failure": "unfinished",
+      "disposition": "miss",
+      "evidence": "exit status 0, not timeout; the session ended on its own at Amend after writing lodge.txt and assess.txt, and its result message asks the user how to proceed rather than writing amend.txt, though states/amend.md says to write amended"
+    }
+  ],
+  "baseline": {
+    "run_id": "20261028T165414Z",
+    "date": "2026-10-28T16:54:14+00:00"
+  },
+  "baseline_only": {
+    "cells": [
+      {
+        "model": "claude-haiku-5-5",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "bundle",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "prose",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "tree",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "claude-haiku-5-5",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "bundle",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "prose",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "tree",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      }
+    ],
+    "by_form": [
+      {
+        "model": "claude-haiku-5-5",
+        "form": "prose"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "bundle"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "prose"
+      },
+      {
+        "model": "claude-sonnet-5-5",
+        "form": "tree"
+      }
+    ],
+    "by_model": [
+      {
+        "model": "claude-sonnet-5-5"
+      }
+    ]
+  },
+  "cells": [
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "declared-inclusion",
+      "scenario": "declared-link-followed",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 125479.2,
+      "cost_usd": 0.004087,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "declared-inclusion",
+      "scenario": "undeclared-link-as-text",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 87409.6,
+      "cost_usd": 0.003376,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "group-placement",
+      "scenario": "leaf-group",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 119330.6,
+      "cost_usd": 0.00405,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "group-placement",
+      "scenario": "nested-intermediate",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 185652.8,
+      "cost_usd": 0.005491,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "group-placement",
+      "scenario": "two-presets-one-document",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 155518.4,
+      "cost_usd": 0.005138,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "preset-selection",
+      "scenario": "default-alone",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 109350.6,
+      "cost_usd": 0.004089,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "preset-selection",
+      "scenario": "title-selected",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 131473.2,
+      "cost_usd": 0.004454,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "preset-selection",
+      "scenario": "two-presets-one-title",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 145081.6,
+      "cost_usd": 0.005113,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "section-composition",
+      "scenario": "deferred-occurrence",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 110087.4,
+      "cost_usd": 0.004173,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "section-composition",
+      "scenario": "merged-sources",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 108165.4,
+      "cost_usd": 0.003745,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "section-composition",
+      "scenario": "nested-composition",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 109186.8,
+      "cost_usd": 0.004085,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "section-entry",
+      "scenario": "document-fragment",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 83561.8,
+      "cost_usd": 0.00296,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "subst-redirect",
+      "scenario": "document-redirect",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 63509.0,
+      "cost_usd": 0.00296,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "subst-redirect",
+      "scenario": "preset-over-default",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 155718.2,
+      "cost_usd": 0.005235,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "workflow": "subst-redirect",
+      "scenario": "section-redirect",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 127114.2,
+      "cost_usd": 0.004233,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "declared-inclusion",
+      "scenario": "declared-link-followed",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 131232.4,
+      "cost_usd": 0.004367,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "declared-inclusion",
+      "scenario": "undeclared-link-as-text",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 85848.8,
+      "cost_usd": 0.003645,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "group-placement",
+      "scenario": "leaf-group",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 129009.8,
+      "cost_usd": 0.004252,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "group-placement",
+      "scenario": "nested-intermediate",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 179957.8,
+      "cost_usd": 0.005821,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "group-placement",
+      "scenario": "two-presets-one-document",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 134545.0,
+      "cost_usd": 0.004911,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "preset-selection",
+      "scenario": "default-alone",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 120505.2,
+      "cost_usd": 0.004404,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "preset-selection",
+      "scenario": "title-selected",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 137883.6,
+      "cost_usd": 0.00485,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "preset-selection",
+      "scenario": "two-presets-one-title",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 150473.0,
+      "cost_usd": 0.005742,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "section-composition",
+      "scenario": "deferred-occurrence",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 158453.6,
+      "cost_usd": 0.005009,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "section-composition",
+      "scenario": "merged-sources",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 120599.0,
+      "cost_usd": 0.003913,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "section-composition",
+      "scenario": "nested-composition",
+      "sessions": 5,
+      "passed": 3,
+      "pass_rate": 0.6,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 1,
+        "unfinished": 1,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 144448.2,
+      "cost_usd": 0.005034,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "section-entry",
+      "scenario": "document-fragment",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 93821.0,
+      "cost_usd": 0.003457,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "subst-redirect",
+      "scenario": "document-redirect",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 99581.6,
+      "cost_usd": 0.003832,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "subst-redirect",
+      "scenario": "preset-over-default",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 216419.2,
+      "cost_usd": 0.007727,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "workflow": "subst-redirect",
+      "scenario": "section-redirect",
+      "sessions": 5,
+      "passed": 5,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 134285.4,
+      "cost_usd": 0.005188,
+      "in_baseline": false,
+      "difference": null
+    }
+  ],
+  "by_form": [
+    {
+      "model": "claude-haiku-5-5",
+      "form": "bundle",
+      "sessions": 75,
+      "passed": 75,
+      "pass_rate": 1.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 121109.3,
+      "cost_usd": 0.004213,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": 0.0,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 0,
+          "unfinished": 0,
+          "undispatched": 0,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "unbootstrapped": 0,
+          "errored": 0
+        }
+      }
+    },
+    {
+      "model": "claude-haiku-5-5",
+      "form": "tree",
+      "sessions": 75,
+      "passed": 73,
+      "pass_rate": 0.9733,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 1,
+        "unfinished": 1,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 135804.2,
+      "cost_usd": 0.00481,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": -0.0267,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 1,
+          "unfinished": 1,
+          "undispatched": 0,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "unbootstrapped": 0,
+          "errored": 0
+        }
+      }
+    }
+  ],
+  "by_model": [
+    {
+      "model": "claude-haiku-5-5",
+      "sessions": 150,
+      "passed": 148,
+      "pass_rate": 0.9867,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 1,
+        "unfinished": 1,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "unbootstrapped": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 128456.7,
+      "cost_usd": 0.004511,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": -0.0133,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 1,
+          "unfinished": 1,
+          "undispatched": 0,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "unbootstrapped": 0,
+          "errored": 0
+        }
+      }
+    }
+  ]
+}
