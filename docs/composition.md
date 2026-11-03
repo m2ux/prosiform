@@ -2,7 +2,7 @@
 
 A procedure step often needs material stated elsewhere: the contract of a call it makes, the shape of what it reads. Linking that material bundles it as a division of its own, away from the step. A **composition directive** places it beneath the step instead.
 
-A directive is a link whose label is one arrow, as in `[→](read.md#inputs)`. The label requests placement and nothing else. Every arrow means the same, and the run reads no meaning into a label or into the title of the section it places.
+A directive is a link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`. The mark requests placement and nothing else. The link's text is the author's, and the run reads no meaning into it or into the title of the section it places.
 
 The design's [Section composition](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
 
@@ -13,9 +13,9 @@ One step writes three directives, naming sections of two documents. Both documen
 ```markdown
 ## Prepare
 
-Read the path [→](read.md#inputs), then write the text [→](write.md#inputs).
+Read the path [↳ Inputs](read.md#inputs), then write the text [↳ Inputs](write.md#inputs).
 
-Keep what was read [→](read.md#outputs).
+Keep what was read [↳ Outputs](read.md#outputs).
 ```
 
 The bundle places the targets beneath the step that wrote them:
@@ -23,9 +23,9 @@ The bundle places the targets beneath the step that wrote them:
 ```markdown
 ## Prepare
 
-Read the path [→](#read), then write the text [→](#write).
+Read the path [Inputs](#read), then write the text [Inputs](#write).
 
-Keep what was read [→](#read-1).
+Keep what was read [Outputs](#read-1).
 
 ### Inputs
 
@@ -44,47 +44,55 @@ The text to write.
 The text read.
 ```
 
-*From [titles-from-several-sources-share-one-destination-section](../fixtures/composition/titles-from-several-sources-share-one-destination-section). Each directive keeps its label and points at the heading naming its target's parent.*
+*From [titles-from-several-sources-share-one-destination-section](../fixtures/composition/titles-from-several-sources-share-one-destination-section). Each directive keeps its text without the mark and points at the heading naming its target's parent.*
 
 ## Recognition
 
-A link is a directive where its label is plain text of exactly one arrow once entities are decoded, so `[&rarr;](a.md#out)` qualifies and a supplementary-plane `[🡒](a.md#out)` does too. An arrow is a scalar of the four Arrows blocks, or a Dingbats or Miscellaneous Symbols and Arrows scalar whose Unicode name holds `ARROW`, as the [glossary](glossary.md) defines it.
-
-Anything else is an ordinary link: a footnote mark, a superscript, a letter, a label with a blank, emphasis or code around the arrow, two arrows, and a multi-scalar sequence. Reference-style links qualify like inline ones; an arrow inside code or unresolved brackets is text.
+A link is a directive where its text opens with `↳` followed by at least one space, so `[↳ Inputs](a.md#in)` qualifies and so does a reference-style link written the same way. A `↳` followed directly by other text opens no directive: `[↳Inputs](a.md#in)` and `[↳](a.md#in)` are ordinary links, the mark kept as text. An image, an autolink, a link inside code and bracketed text the parser leaves unresolved are no directive.
 
 Design rule: *Recognition*. Fixtures:
 
-- [a-supplementary-arrow-label-is-a-directive](../fixtures/composition/a-supplementary-arrow-label-is-a-directive)
-- [an-entity-decoding-to-one-arrow-is-a-directive](../fixtures/composition/an-entity-decoding-to-one-arrow-is-a-directive)
-- [a-reference-style-glyph-label-is-a-directive](../fixtures/composition/a-reference-style-glyph-label-is-a-directive)
-- [non-arrow-labels-are-ordinary-links](../fixtures/composition/non-arrow-labels-are-ordinary-links)
-- [ascii-and-spaced-labels-are-ordinary-links](../fixtures/composition/ascii-and-spaced-labels-are-ordinary-links)
-- [formatted-labels-are-ordinary-links](../fixtures/composition/formatted-labels-are-ordinary-links)
-- [multi-scalar-labels-are-ordinary-links](../fixtures/composition/multi-scalar-labels-are-ordinary-links)
-- [a-glyph-in-code-or-unresolved-brackets-is-text](../fixtures/composition/a-glyph-in-code-or-unresolved-brackets-is-text)
+- [a-reference-style-directive-is-a-directive](../fixtures/composition/a-reference-style-directive-is-a-directive)
+- [a-composition-mark-with-no-space-after-it-opens-an-ordinary-link](../fixtures/composition/a-composition-mark-with-no-space-after-it-opens-an-ordinary-link)
+- [a-mark-in-code-or-unresolved-brackets-is-text](../fixtures/composition/a-mark-in-code-or-unresolved-brackets-is-text)
 
 ## Operator marks
 
-The [operators](references.md#operators) and a directive's label share one rule: symbols are written together, with no blank between them, and the one blank stands between the last symbol and the link's text. A directive's label is its whole text, so a mark written against it takes no blank at all.
+Composition has one mark. A link whose label is plain text of exactly one arrow, once the operator marks and blanks before it are set aside, is refused with `E_UNSUPPORTED_CONSTRUCT`, naming the link and pointing at `[↳ …]`: `[→](a.md#out)`, `[¬→](a.md#out)`, `[&rarr;](a.md#out)` and a supplementary-plane `[🡒](a.md#out)` alike. An arrow is a scalar of the four Arrows blocks, or a Dingbats or Miscellaneous Symbols and Arrows scalar whose Unicode name holds `ARROW`, as the [glossary](glossary.md) defines it. Any other label is an ordinary link: a footnote mark, a superscript, a letter, a label with a blank, emphasis or code around the arrow, two arrows, and a multi-scalar sequence.
+
+The [operators](references.md#operators) and the composition mark share one rule: symbols are written together, with no blank between them, and the one blank stands between the last symbol and the link's text.
 
 | Written | Read as |
 | --- | --- |
-| `[→](a.md#out)` | a directive |
-| `[¬→](a.md#out)` | a deferred directive, published with the label `→` |
-| `[⇉](a.md)`, `[↳](a.md)` | ordinary links: `⇉` opens a dispatch and `↳` names an inline target, so neither labels a directive |
-| `[¬ →](a.md#out)`, `[⇉ →](a.md#out)` | refused: a blank between two symbols states no one operation |
-| `[⇉→](a.md#out)`, `[⫽→](a.md#out)`, `[¬⇉→](a.md#out)` | refused: a dispatch sends material to a sub-agent and a directive places it inline, so the two contradict |
-| `[¬⇉ the rules](rules.md)` | a deferred dispatch, as [Operators](references.md#operators) states |
+| `[↳ Inputs](a.md#in)` | a directive |
+| `[¬↳ Inputs](a.md#in)` | a deferred directive, published as `[Inputs](#…)` |
+| `[⇉](a.md)`, `[↳](a.md)` | ordinary links: `⇉` and `↳` open an operator only before a blank |
+| `[→](a.md#in)`, `[¬→](a.md#in)` | refused: an arrow label states no operation |
+| `[¬ ↳ Inputs](a.md#in)` | refused: a blank between two symbols states no one operation |
+| `[⇉↳ Inputs](a.md#in)`, `[⫽↳ Inputs](a.md#in)` | refused: a dispatch sends material to a sub-agent and a directive places it inline, so the two contradict |
+| `[¬⇉ the rules](rules.md)` | refused: a dispatch is compiled up front, so no bundle publishes a deferred one |
 | `[¬ the rules](rules.md)` | a deferral, which withholds its target from this bundle |
 
 Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
 
-- [a-glyph-written-against-the-deferral-mark-is-a-deferred-directive](../fixtures/composition/a-glyph-written-against-the-deferral-mark-is-a-deferred-directive)
+- [an-arrow-label-is-refused](../fixtures/composition/an-arrow-label-is-refused)
+- [a-deferred-arrow-label-is-refused](../fixtures/composition/a-deferred-arrow-label-is-refused)
+- [a-supplementary-arrow-label-is-refused](../fixtures/composition/a-supplementary-arrow-label-is-refused)
+- [an-entity-decoding-to-one-arrow-is-refused](../fixtures/composition/an-entity-decoding-to-one-arrow-is-refused)
+- [a-blank-between-the-deferral-mark-and-an-arrow-label-is-refused](../fixtures/composition/a-blank-between-the-deferral-mark-and-an-arrow-label-is-refused)
+- [a-blank-between-the-dispatch-mark-and-an-arrow-label-is-refused](../fixtures/composition/a-blank-between-the-dispatch-mark-and-an-arrow-label-is-refused)
+- [a-dispatch-mark-written-against-an-arrow-label-is-refused](../fixtures/composition/a-dispatch-mark-written-against-an-arrow-label-is-refused)
+- [a-parallel-mark-written-against-an-arrow-label-is-refused](../fixtures/composition/a-parallel-mark-written-against-an-arrow-label-is-refused)
+- [a-dispatch-mark-written-against-the-composition-mark-is-refused](../fixtures/composition/a-dispatch-mark-written-against-the-composition-mark-is-refused)
+- [a-parallel-mark-written-against-the-composition-mark-is-refused](../fixtures/composition/a-parallel-mark-written-against-the-composition-mark-is-refused)
+- [a-blank-between-the-deferral-mark-and-the-composition-mark-is-refused](../fixtures/composition/a-blank-between-the-deferral-mark-and-the-composition-mark-is-refused)
+- [the-composition-mark-written-against-the-deferral-mark-is-a-deferred-directive](../fixtures/composition/the-composition-mark-written-against-the-deferral-mark-is-a-deferred-directive)
 - [operator-marks-are-no-directive-label](../fixtures/composition/operator-marks-are-no-directive-label)
 - [an-ordinary-deferred-label-is-a-deferral](../fixtures/composition/an-ordinary-deferred-label-is-a-deferral)
-- [a-blank-between-the-deferral-mark-and-a-glyph-is-refused](../fixtures/composition/a-blank-between-the-deferral-mark-and-a-glyph-is-refused)
-- [a-blank-between-the-dispatch-mark-and-a-glyph-is-refused](../fixtures/composition/a-blank-between-the-dispatch-mark-and-a-glyph-is-refused)
-- [a-dispatch-mark-written-against-a-glyph-is-refused](../fixtures/composition/a-dispatch-mark-written-against-a-glyph-is-refused)
+- [non-arrow-labels-are-ordinary-links](../fixtures/composition/non-arrow-labels-are-ordinary-links)
+- [ascii-and-spaced-labels-are-ordinary-links](../fixtures/composition/ascii-and-spaced-labels-are-ordinary-links)
+- [formatted-labels-are-ordinary-links](../fixtures/composition/formatted-labels-are-ordinary-links)
+- [multi-scalar-labels-are-ordinary-links](../fixtures/composition/multi-scalar-labels-are-ordinary-links)
 
 ## The target
 
@@ -122,7 +130,7 @@ Destination sections stand in the order their first directive is written, and co
 
 Design rules: *The destination scope*, *Destination sections*, *Contributions*, *Heading depth*, *Generated heading collisions*, *Order*, *Matching* and *The directive's link*. Fixtures:
 
-- [a-glyph-label-in-a-preamble-has-no-scope](../fixtures/composition/a-glyph-label-in-a-preamble-has-no-scope)
+- [a-directive-in-a-preamble-has-no-scope](../fixtures/composition/a-directive-in-a-preamble-has-no-scope)
 - [a-directive-in-an-absorbed-title-has-no-scope](../fixtures/composition/a-directive-in-an-absorbed-title-has-no-scope)
 - [a-directive-in-a-title-above-the-selection-has-no-scope](../fixtures/composition/a-directive-in-a-title-above-the-selection-has-no-scope)
 - [sibling-steps-each-carry-their-own-destination-section](../fixtures/composition/sibling-steps-each-carry-their-own-destination-section)
@@ -205,7 +213,7 @@ A deferred directive contributes no content, but keeps its place: the run emits 
 ```markdown
 ## Fetch the page
 
-Call the fetcher [→](fetch.md#contract); its body is composed by a later run [¬→](fetch.md#implementation).
+Call the fetcher [↳ Contract](fetch.md#contract); its body is composed by a later run [¬↳ Implementation](fetch.md#implementation).
 ```
 
 compiles to
@@ -213,7 +221,7 @@ compiles to
 ```markdown
 ## Fetch the page
 
-Call the fetcher [→](#fetch); its body is composed by a later run [→](#fetch-1).
+Call the fetcher [Contract](#fetch); its body is composed by a later run [Implementation](#fetch-1).
 
 ### Contract
 
@@ -234,7 +242,7 @@ A scope composes a section or defers it: one scope holding an immediate and a de
 
 The `↳` line names the run that activates the target: `pf fetch.md#implementation` compiles it as an entry under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
 
-Design rules: *Deferred composition* and *Activation*, and *The Prosiform section*. Fixtures:
+Design rules: *Deferred composition* and *Activation*, and *The run-pf line*. Fixtures:
 
 - [a-composed-contract-leaves-its-deferred-implementation-absent](../fixtures/composition/a-composed-contract-leaves-its-deferred-implementation-absent)
 - [a-section-composed-and-deferred-in-one-step-is-refused](../fixtures/composition/a-section-composed-and-deferred-in-one-step-is-refused)

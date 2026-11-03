@@ -1,4 +1,4 @@
-description = "A label of an ASCII character, an entity decoding to one, or an arrow between spaces is no composition directive, since nothing is trimmed to make a label qualify, so each is an ordinary link in the preamble: its target is bundled and its destination rewritten, and the bundle carries its text as written."
+description = "A label of an ASCII character, an entity decoding to one, or an arrow between spaces is no arrow label, since nothing is trimmed to make a label qualify, so each is an ordinary link in the preamble: its target is bundled and its destination rewritten, and the bundle carries its text as written."
 
 clauses = [
   "Section composition — Recognition",

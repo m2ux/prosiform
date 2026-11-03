@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Inputs
 
-The path to read, as [→](paths.md#source) states.
+The path to read, as [↳ Source](paths.md#source) states.

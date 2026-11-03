@@ -4,7 +4,7 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 ## Prepare
 
-Read the path [→](#read).
+Read the path [Inputs](#read).
 
 ### Inputs
 
@@ -16,7 +16,7 @@ The path to read.
 
 The [inputs as stated](#inputs-2) and [the whole call](#write-1) stand on their own as well.
 
-Write the text [→](#write).
+Write the text [Inputs](#write).
 
 ### Inputs
 

@@ -2,8 +2,8 @@ description = "A run of two entries that each dispatch writes one bundle whose n
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
-  "Link classification and resource handling — Dispatch sub-sections",
-  "Link classification and resource handling — The Prosiform section",
+  "Link classification and resource handling — Dispatch links",
+  "Link classification and resource handling — The run-pf line",
 ]
 
 [invocation]

@@ -146,7 +146,6 @@ from prosiform.source import (
     level,
     lines,
     opening_text,
-    plain_label,
     section,
 )
 
@@ -300,7 +299,7 @@ class Composing:
                     continue
                 here = position
                 position += 1
-                if not directive(plain_label(children, at)):
+                if not directive(opening_text(children, at)):
                     continue
                 written = str(child.attrGet(HREF) or "")
                 found = resolvable(path, written, self.declarations, self.substitution)

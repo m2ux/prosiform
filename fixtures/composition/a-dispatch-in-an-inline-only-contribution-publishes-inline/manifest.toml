@@ -2,7 +2,7 @@ description = "A dispatch inside a contribution whose document no group carries 
 
 clauses = [
   "Section composition — Inline-only targets",
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Adversarial acceptance fixtures — Composition",
 ]
 

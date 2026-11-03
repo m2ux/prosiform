@@ -7,9 +7,9 @@ Each call is stated whole in its own document: [read](read.md) and [write](write
 
 ## Prepare
 
-Read the path [→](read.md#inputs), then write the text [→](write.md#inputs).
+Read the path [↳ Inputs](read.md#inputs), then write the text [↳ Inputs](write.md#inputs).
 
-Keep what was read [→](read.md#outputs).
+Keep what was read [↳ Outputs](read.md#outputs).
 
 ## Run
 

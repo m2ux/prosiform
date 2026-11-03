@@ -4,13 +4,13 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 ## Fetch the page offline
 
-Its body is composed here [→](#fetch).
+Its body is composed here [Implementation](#fetch).
 
 ### Implementation
 
 #### Fetch
 
-Open the connection [→](#cache), then read the response.
+Open the connection [Open](#cache), then read the response.
 
 ##### Open
 

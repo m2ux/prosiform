@@ -7,7 +7,7 @@ Each call is stated whole in its own document: [read](steps/read.md). The guide 
 
 ## Prepare
 
-Read the path [→](steps/read.md#inputs).
+Read the path [↳ Inputs](steps/read.md#inputs).
 
 ## Outputs
 

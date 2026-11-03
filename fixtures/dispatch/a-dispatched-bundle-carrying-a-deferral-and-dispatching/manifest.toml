@@ -1,0 +1,16 @@
+description = "A dispatched bundle carrying a deferral and dispatching a target itself opens with the run-pf line and keeps its own dispatch link inline, with no protocol paragraph."
+
+clauses = [
+  "Link classification and resource handling — The run-pf line",
+  "Link classification and resource handling — Dispatch links",
+  "Adversarial acceptance fixtures — Run-pf line",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/steps.bundle.md", "expected/checks.bundle.md"]
+diagnostics = []

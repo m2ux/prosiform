@@ -7,4 +7,4 @@ prosiform: {}
 
 1. Apply the rules.
 
-   [¬→](rules.md#body)
+   [¬↳ Body](rules.md#body)

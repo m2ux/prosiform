@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Checks
 
-The unit tests pass, and the change meets the lint rules [→](lint.md#rules).
+The unit tests pass, and the change meets the lint rules [↳ Lint rules](lint.md#rules).

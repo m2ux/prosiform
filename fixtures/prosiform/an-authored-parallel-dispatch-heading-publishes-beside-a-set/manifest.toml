@@ -2,7 +2,7 @@ description = "A bundle carrying a parallel set emits no heading reading Paralle
 
 clauses = [
   "Link classification and resource handling — Generated heading collisions",
-  "Adversarial acceptance fixtures — Prosiform section",
+  "Adversarial acceptance fixtures — Run-pf line",
 ]
 
 [invocation]

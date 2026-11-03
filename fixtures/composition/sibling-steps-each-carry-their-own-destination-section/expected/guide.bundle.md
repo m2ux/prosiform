@@ -6,7 +6,7 @@ Each call is stated whole in its own document: [read](#read-2).
 
 ## First step
 
-Read the path [→](#read).
+Read the path [Inputs](#read).
 
 ### Inputs
 
@@ -16,7 +16,7 @@ The path to read.
 
 ## Second step
 
-Read it again [→](#read-1).
+Read it again [Inputs](#read-1).
 
 ### Inputs
 

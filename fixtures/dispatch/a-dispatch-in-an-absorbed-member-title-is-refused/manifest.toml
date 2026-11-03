@@ -2,7 +2,7 @@ description = "A merged group's member whose title its subsection absorbs is emi
 
 clauses = [
   "Presets — default always applies",
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Adversarial acceptance fixtures — Dispatch",
   "Validation and failure contract — Publication",
 ]

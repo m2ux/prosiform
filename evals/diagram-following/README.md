@@ -12,7 +12,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `tree` | The diagram form's source tree, unbundled. | Against `bundle`, what bundling adds. |
 | `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
 | `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
-| `compiled` | The compiled form's bundle set: the entry's bundle, every dispatched target's beside it, and the Prosiform section `pf` emits around each. | Whether an agent follows the dispatch protocol `pf` compiles. |
+| `compiled` | The compiled form's bundle set: the entry's bundle, every dispatched target's beside it, and the run-pf line `pf` opens each with. | Whether an agent follows the dispatch protocol `pf` compiles. |
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 

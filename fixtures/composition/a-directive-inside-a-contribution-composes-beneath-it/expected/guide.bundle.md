@@ -4,13 +4,13 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 Each call is stated whole in its own document: [read](#read-1) and [paths](#paths-4).
 
-Read the file [→](#read).
+Read the file [Inputs](#read).
 
 ## Inputs
 
 ### Read
 
-The path to read, as [→](#paths) states.
+The path to read, as [Source](#paths) states.
 
 #### Source
 
@@ -20,7 +20,7 @@ A path relative to the working directory.
 
 #### Encoding
 
-The encoding the file declares, as [→](#paths-1) states.
+The encoding the file declares, as [Encoding](#paths-1) states.
 
 ##### Encoding
 
@@ -36,7 +36,7 @@ Act on what was read.
 
 ## Inputs
 
-The path to read, as [→](#paths-2) states.
+The path to read, as [Source](#paths-2) states.
 
 ### Source
 
@@ -46,7 +46,7 @@ A path relative to the working directory.
 
 ### Encoding
 
-The encoding the file declares, as [→](#paths-3) states.
+The encoding the file declares, as [Encoding](#paths-3) states.
 
 #### Encoding
 

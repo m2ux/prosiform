@@ -2,7 +2,7 @@ description = "A dispatched target's bundle is named by the target's path from t
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
 ]
 
 [invocation]

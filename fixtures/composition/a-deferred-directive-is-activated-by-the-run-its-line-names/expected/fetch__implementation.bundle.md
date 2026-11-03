@@ -4,8 +4,8 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 ### Implementation
 
-Open the connection [→](#net), then read the response.
-Retrying is left to its own run [→](#net-1).
+Open the connection [Open](#net), then read the response.
+Retrying is left to its own run [Retry](#net-1).
 
 #### Open
 

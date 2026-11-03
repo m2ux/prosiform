@@ -46,7 +46,7 @@ flowchart LR
 
 ## Reference
 
-The links inside a source are what the run follows. Each is a [**reference**](references.md). Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together. A link labelled with one arrow is a **composition directive**, which places the section it names beneath the section that writes it.
+The links inside a source are what the run follows. Each is a [**reference**](references.md). Most become **dependencies** and are pulled into the bundle. An **operator** on the link withholds it instead: a **deferral** leaves it to another run, a **dispatch** hands it to a sub-agent, and a **parallel dispatch** hands several over together. A link whose text opens with `↳` is a **composition directive**, which places the section it names beneath the section that writes it.
 
 ```mermaid
 flowchart LR
@@ -94,13 +94,13 @@ flowchart TB
 
 ## Composition
 
-A step can need a section stated in another document, such as the contract of a call it makes, beneath the step itself rather than in a division of its own. A [**composition directive**](composition.md), a link labelled with one arrow, places it there: the target's section becomes a **destination section** one level below the step, and each directive adds a **contribution** beneath it. The label requests placement and carries no other meaning.
+A step can need a section stated in another document, such as the contract of a call it makes, beneath the step itself rather than in a division of its own. A [**composition directive**](composition.md), a link whose text opens with `↳`, places it there: the target's section becomes a **destination section** one level below the step, and each directive adds a **contribution** beneath it. The mark requests placement and carries no other meaning.
 
 ```mermaid
 flowchart LR
-  Link["[→](read.md#inputs)<br/><i>in ## Prepare</i>"] -- "places" --> Dest["### Inputs<br/><i>a destination section</i>"]
+  Link["[↳ Inputs](read.md#inputs)<br/><i>in ## Prepare</i>"] -- "places" --> Dest["### Inputs<br/><i>a destination section</i>"]
   Dest --> Contrib["#### Read<br/><i>a contribution:<br/>the target's content</i>"]
-  Deferred["[¬→](read.md#inputs)"] -. "deferred" .-> Line["[↳ Inputs](read.md#inputs)<br/><i>compiled by a later run</i>"]
+  Deferred["[¬↳ Inputs](read.md#inputs)"] -. "deferred" .-> Line["[↳ Inputs](read.md#inputs)<br/><i>compiled by a later run</i>"]
 ```
 
 *Figure 6. A Directive Places Its Target Beneath the Section That Writes It.*

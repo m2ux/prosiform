@@ -1,7 +1,7 @@
 description = "A dispatch in a level-3 section publishes in place with its mark, and the target compiles to a bundle of its own."
 
 clauses = [
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Link classification and resource handling — Dispatched bundles",
 ]
 

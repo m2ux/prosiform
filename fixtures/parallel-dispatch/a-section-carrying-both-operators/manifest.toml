@@ -2,7 +2,7 @@ description = "A section carrying a dispatch and a parallel set keeps the dispat
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
 ]
 
 [invocation]
