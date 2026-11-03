@@ -16,6 +16,15 @@ make check
 
 Three commands sit outside it, because each needs a tool or a budget the others do not. See [Outside `make check`](#outside-make-check).
 
+## When Continuous Integration Runs
+
+The [`Checks` workflow](.github/workflows/checks.yml) starts on two events.
+
+- **Pull request.** One into `main`, or into an initiative or epic branch, runs `make check` when its change touches a path in the workflow's `CHECKED_PATHS`, the one place the path set is stated.
+- **Push to `main`.** The merge commit is checked whatever it changed.
+
+A pull request that touches none of those paths is reported as not checked: the job passes without running `make check`, raises a notice titled `Checks did not run`, and states the same in its run summary. A reader of a merge record reads that notice as an unchecked change, not a passing one.
+
 ## What Each Check Asserts
 
 ### Python
