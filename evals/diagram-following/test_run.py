@@ -16,12 +16,13 @@ import re
 import shutil
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
 import pytest
 import workflow as source
-from harness import DONE, HARNESSES, Opencode
+from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -770,7 +771,7 @@ def test_the_context_read_finds_each_form_of_injected_context(
     )
     for kind, message in cases:
         transcript.write_text(json.dumps(message) + "\n")
-        carried = injected(transcript)
+        carried = injected(transcript, False)
         assert carried is not None and carried.startswith(kind), (kind, carried)
 
     transcript.write_text(
@@ -783,8 +784,8 @@ def test_the_context_read_finds_each_form_of_injected_context(
             )
         )
     )
-    assert injected(transcript) is None
-    assert injected(tmp_path / "absent.jsonl") is None
+    assert injected(transcript, False) is None
+    assert injected(tmp_path / "absent.jsonl", False) is None
 
 
 def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
@@ -1001,6 +1002,110 @@ def test_a_claude_directory_above_the_workspaces_without_a_hook_starts_its_sessi
     )
     assert record["started"] == 1
     assert len(seen(log)) == 1
+
+
+@pytest.fixture(autouse=True)
+def managed_settings(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """The managed settings path a run reads, planted under tmp_path.
+
+    The host's own file is never read: the Claude harness holds this path in
+    its `managed_settings` field, absent until a test writes the file.
+    """
+    path = tmp_path / "managed" / "managed-settings.json"
+    held = replace(Claude(), managed_settings=str(path))
+    monkeypatch.setattr("run.harness_named", lambda name: held)
+    return path
+
+
+def test_a_managed_settings_hook_is_recorded_and_its_sessions_start(
+    tmp_path: Path, log: Path, managed_settings: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The host's managed hook reaches every session, so the run names it.
+
+    The administrator owns the file and Claude Code reads it wherever the
+    configuration directory points, so the run starts its sessions and
+    records the file with each event it declares. The hook's response is the
+    managed hook's, so it is no context the run failed to account for.
+    """
+    managed_settings.parent.mkdir()
+    managed_settings.write_text(
+        json.dumps(
+            {
+                "hooks": {
+                    "SessionStart": [
+                        {"hooks": [{"type": "command", "command": "cat rules.md"}]}
+                    ],
+                    "Stop": [],
+                    "PreToolUse": [
+                        {"hooks": [{"type": "command", "command": "audit.sh"}]}
+                    ],
+                }
+            }
+        )
+    )
+    monkeypatch.setenv("STUB_AGENT_INJECT", "apply the host's rules")
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    assert len(seen(log)) == 1
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert written["managed"] == {
+        "hooks": [
+            {"file": str(managed_settings), "events": ["PreToolUse", "SessionStart"]}
+        ]
+    }
+
+
+def test_an_absent_managed_settings_file_records_no_hook(
+    tmp_path: Path, log: Path, managed_settings: Path
+) -> None:
+    """A host with no managed settings file records nothing and starts its sessions."""
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert written["managed"] == {"hooks": []}
+
+
+def test_a_managed_settings_file_declaring_no_hook_records_none(
+    tmp_path: Path, log: Path, managed_settings: Path
+) -> None:
+    """Managed preferences are no hook, so nothing is recorded."""
+    managed_settings.parent.mkdir()
+    managed_settings.write_text(json.dumps({"permissions": {"deny": ["WebFetch"]}}))
+    eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert written["managed"] == {"hooks": []}
+
+
+def test_a_managed_settings_file_that_is_not_json_is_refused(
+    tmp_path: Path, log: Path, managed_settings: Path
+) -> None:
+    """An unreadable managed file is refused rather than read as declaring nothing."""
+    managed_settings.parent.mkdir()
+    managed_settings.write_text("{not json")
+    with pytest.raises(CorpusError, match=r"managed-settings\.json is not JSON"):
+        eval_run(
+            tmp_path,
+            *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+            *("--budget-tokens", "1000"),
+        )
+    assert seen(log) == [] and not (tmp_path / "results").exists()
+
+
+def test_the_claude_harness_defaults_its_managed_settings_to_the_hosts_path() -> None:
+    """The unplanted harness reads the platform's system path."""
+    assert Claude().managed_settings in MANAGED_SETTINGS.values()
 
 
 def test_a_session_carrying_injected_context_fails_the_run(

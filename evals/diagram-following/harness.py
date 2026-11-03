@@ -27,13 +27,22 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import Any
 
 from workflow import CorpusError
 
 QUESTION = "question"
 DONE = "done"
+
+MANAGED_SETTINGS = {
+    "linux": "/etc/claude-code/managed-settings.json",
+    "darwin": "/Library/Application Support/ClaudeCode/managed-settings.json",
+    "win32": "C:/Program Files/ClaudeCode/managed-settings.json",
+}
+"""The file Claude Code reads the host's managed settings from, by platform."""
 
 MESSAGE = "message"
 ASSISTANT = "assistant"
@@ -136,6 +145,10 @@ class Claude:
     remote: str = "remote-settings.json"
     enabled: str = "enabledPlugins"
     settings: str = "settings.json"
+    managed_settings: str = MANAGED_SETTINGS.get(
+        sys.platform, MANAGED_SETTINGS["linux"]
+    )
+    """The host's managed settings file, whose hooks reach every session."""
     project: str = ".claude"
     """The directory holding a project's own settings, in a workspace or above it."""
     project_settings: tuple[str, ...] = ("settings.json", "settings.local.json")
@@ -268,15 +281,32 @@ class Claude:
                     return refused
         return None
 
-    def hook_refusal(self, path: Path, consequence: str) -> str | None:
-        """Why a settings file declaring a hook is refused, or nothing if none is."""
+    def hook_events(self, path: Path) -> list[str]:
+        """The events a settings file declares a hook for, in name order."""
         hooks = _record(path).get(self.hooks)
         if not isinstance(hooks, dict):
-            return None
-        events = sorted(str(event) for event, commands in hooks.items() if commands)
+            return []
+        return sorted(str(event) for event, commands in hooks.items() if commands)
+
+    def hook_refusal(self, path: Path, consequence: str) -> str | None:
+        """Why a settings file declaring a hook is refused, or nothing if none is."""
+        events = self.hook_events(path)
         if not events:
             return None
         return f"{path} declares a hook for {', '.join(events)}, which {consequence}"
+
+    def managed(self, config: Path) -> dict[str, list[Any]]:
+        """The hooks the host's managed settings deliver to every session.
+
+        The administrator owns the managed settings file, and Claude Code reads
+        it wherever the configuration directory points, so the run records it
+        rather than refusing it: the file and each event it declares a hook
+        for. A host with no such file, or none declaring a hook, records
+        nothing.
+        """
+        path = Path(self.managed_settings)
+        events = self.hook_events(path)
+        return {"hooks": [{"file": str(path), "events": events}] if events else []}
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -436,6 +466,10 @@ class Cursor:
                 f"whose config records that boundary"
             )
         return None
+
+    def managed(self, config: Path) -> dict[str, list[Any]]:
+        """No managed hook is read: the CLI keeps no managed settings file."""
+        return {"hooks": []}
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -640,6 +674,10 @@ class Opencode:
                 f"configuration, so name an eval root whose config records that"
             )
         return None
+
+    def managed(self, config: Path) -> dict[str, list[Any]]:
+        """No managed hook is read: the CLI keeps no managed settings file."""
+        return {"hooks": []}
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's spend, one `step_finish` record summing every step.
