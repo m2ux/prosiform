@@ -15,7 +15,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-message_contains = ["remote address"]
+message_contains = ["no Markdown document or section"]
 reference = "https://example.com/step.md#output"
 source = "guide.md:8"
 chain = ["guide.md", "https://example.com/step.md#output"]

@@ -1,6 +1,6 @@
 ---
 prosiform: {}
 ---
-# Step [→](read.md#inputs)
+# Step [↳ Inputs](read.md#inputs)
 
 Read the path.

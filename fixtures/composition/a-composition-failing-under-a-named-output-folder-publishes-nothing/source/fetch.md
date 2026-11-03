@@ -13,4 +13,4 @@ prosiform: {}
 
 ###### Wait
 
-Wait before retrying [→](read.md#inputs).
+Wait before retrying [↳ Inputs](read.md#inputs).

@@ -1,0 +1,22 @@
+description = "A dispatch mark written against the composition mark sends the step's output to a sub-agent and places it inline at once, two operations that contradict, so the run refuses the link, naming it, and publishes no bundle."
+
+clauses = [
+  "Link classification and resource handling — Operators that combine",
+  "Section composition — Operator marks",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["composition mark", "inline"]
+reference = "⇉↳ Output"
+source = "guide.md:8"
+chain = ["guide.md", "step.md#output"]

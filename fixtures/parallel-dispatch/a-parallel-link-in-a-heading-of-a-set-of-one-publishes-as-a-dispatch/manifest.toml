@@ -1,0 +1,15 @@
+description = "A section whose heading carries the only parallel link of its set publishes the heading with the dispatch mark in place of the parallel mark, as the set of one is published, so the heading's destination is the one a link to it names."
+
+clauses = [
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/review__code.bundle.md"]
+diagnostics = []

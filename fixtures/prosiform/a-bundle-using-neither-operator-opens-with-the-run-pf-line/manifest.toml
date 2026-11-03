@@ -1,8 +1,8 @@
 description = "A bundle whose links carry no dispatch operator and no parallel dispatch mark opens with the run-pf line, ahead of its own first section."
 
 clauses = [
-  "Link classification and resource handling — The Prosiform section",
-  "Adversarial acceptance fixtures — Prosiform section",
+  "Link classification and resource handling — The run-pf line",
+  "Adversarial acceptance fixtures — Run-pf line",
 ]
 
 [invocation]

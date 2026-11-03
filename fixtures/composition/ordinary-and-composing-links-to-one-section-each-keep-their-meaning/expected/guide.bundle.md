@@ -6,7 +6,7 @@ Each call is stated whole in its own document.
 
 ## Prepare
 
-The [inputs](#inputs-1) of a read are these [→](#read); the [same inputs](#inputs-1) bind every later read.
+The [inputs](#inputs-1) of a read are these [Inputs](#read); the [same inputs](#inputs-1) bind every later read.
 
 ### Inputs
 

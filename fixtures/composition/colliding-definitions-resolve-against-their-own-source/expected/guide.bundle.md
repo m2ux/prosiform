@@ -6,7 +6,7 @@ Each call is stated whole in its own document: [read](#read-1). The guide follow
 
 ## Prepare
 
-Read the path [→](#read), keeping to the [spec](#style).
+Read the path [Inputs](#read), keeping to the [spec](#style).
 
 ### Inputs
 

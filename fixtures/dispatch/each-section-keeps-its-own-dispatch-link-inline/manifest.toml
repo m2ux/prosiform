@@ -1,7 +1,7 @@
 description = "Each section dispatching a target keeps its link inline where it is written, with its mark, and two sections dispatching one target link its one bundle file; no section gains a sub-section."
 
 clauses = [
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Link classification and resource handling — Dispatched bundles",
 ]
 

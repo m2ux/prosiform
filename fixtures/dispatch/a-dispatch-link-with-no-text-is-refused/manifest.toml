@@ -1,7 +1,7 @@
 description = "A dispatched link with no text after its mark shows its reader nothing, so the run publishes nothing and fails, naming the link."
 
 clauses = [
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Adversarial acceptance fixtures — Dispatch",
   "Validation and failure contract — Publication",
 ]

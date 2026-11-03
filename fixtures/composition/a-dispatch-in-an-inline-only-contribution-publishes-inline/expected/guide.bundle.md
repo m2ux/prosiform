@@ -4,7 +4,7 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 ## Prepare
 
-Read the path [→](#read), and [⇉ log the step](log.bundle.md).
+Read the path [Inputs](#read), and [⇉ log the step](log.bundle.md).
 
 ### Inputs
 

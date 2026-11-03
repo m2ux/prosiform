@@ -2,7 +2,7 @@ description = "A chain of three dispatches — the entry dispatching a target wh
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
 ]
 
 [invocation]

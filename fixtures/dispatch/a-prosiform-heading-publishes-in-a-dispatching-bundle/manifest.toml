@@ -1,4 +1,4 @@
-description = "A bundle carries no Prosiform section, so an authored heading reading Prosiform publishes in a bundle that dispatches, with no diagnostic."
+description = "A bundle emits no heading reading Prosiform, so an authored one publishes in a bundle that dispatches, with no diagnostic."
 
 clauses = [
   "Link classification and resource handling — Generated heading collisions",

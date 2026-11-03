@@ -1,7 +1,7 @@
 description = "A dispatch in a level-6 section publishes in place with its mark, because a dispatch link needs no sub-section; only a set takes one."
 
 clauses = [
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Adversarial acceptance fixtures — Dispatch",
 ]
 

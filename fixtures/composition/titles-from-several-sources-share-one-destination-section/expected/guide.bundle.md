@@ -6,9 +6,9 @@ Each call is stated whole in its own document: [read](#read-2) and [write](#writ
 
 ## Prepare
 
-Read the path [→](#read), then write the text [→](#write).
+Read the path [Inputs](#read), then write the text [Inputs](#write).
 
-Keep what was read [→](#read-1).
+Keep what was read [Outputs](#read-1).
 
 ### Inputs
 

@@ -5,10 +5,10 @@ prosiform: {}
 
 ## Prepare
 
-Read the path [→](read.md#inputs).
+Read the path [↳ Inputs](read.md#inputs).
 
 ## Check
 
 The [inputs as stated](read.md#inputs) and [the whole call](write.md) stand on their own as well.
 
-Write the text [→](write.md#inputs).
+Write the text [↳ Inputs](write.md#inputs).
