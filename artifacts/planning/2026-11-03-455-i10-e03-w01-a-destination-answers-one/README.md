@@ -12,6 +12,8 @@ This record holds its delivery of `AC2`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W01 work item](w01.md) | The plan for the check: component, problem, design and the checks that observe `AC2`. |
+| [Validation](validation.md) | The evidence for each check the work item names. |
 
 ## Links
 
