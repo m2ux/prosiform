@@ -27,26 +27,33 @@ memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
 `ANTHROPIC_*` variable. A run whose configuration directory holds no login
 fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin or whose remote settings enable
-one, naming the file that says so: a plugin's hooks reach a session before
-its first turn and no flag the runner passes suppresses them. So does a
-settings file declaring a hook: the configuration directory's, a `.claude`
-settings file in a workflow's form tree, and one in the `.claude` directory of
-any ancestor of the workspaces, for which `--eval-root` names the remedy.
+does one whose directory installs a plugin at a scope other than managed
+or whose unsigned remote settings enable one, naming the file that says so:
+a plugin's hooks reach a session before its first turn and no flag the
+runner passes suppresses them. So does a settings file declaring a hook:
+the configuration directory's, a `.claude` settings file in a workflow's
+form tree, and one in the `.claude` directory of any ancestor of the
+workspaces, for which `--eval-root` names the remedy.
 
-The host's managed settings file belongs to its administrator and reaches
-every session wherever the configuration directory points, so the run
-records it rather than refusing it: `run.json` names the file and each event
-it declares a hook for under `managed`, and a host with no such file records
-none.
+A managed configuration reaches every session wherever the configuration
+directory points, so the run records it rather than refusing it: a plugin
+installed at managed scope or enabled by the signed remote settings, the
+environment those settings add, and the hooks it delivers, from its plugins
+or from the host's managed settings file, a file its administrator owns.
+`run.json` records it under `managed`: how many managed plugins,
+environment settings and hooks there are, and a fingerprint telling two
+configurations apart, naming none of them. The hooks are counted from the
+transcripts once the sessions finish, as each hook event a session's
+transcript shows a hook responding to, since no file the harness reads
+states every hook a managed plugin brings.
 
 What a session's agent did carry is read back from its transcript, so the
 boundary is observed rather than assumed. An appended system prompt or a
 memory file is context the run did not supply, and so is a hook's response
-where no managed hook is recorded; a run one of whose sessions carries one
-fails, naming the session and what it carried. Where a managed hook is
-recorded, a hook's response is that hook's, since the preflight admits no
-other.
+where no managed plugin is present and the host's managed settings declare
+no hook; a run one of whose sessions carries one fails, naming the session
+and what it carried. Otherwise a hook's response is the managed
+configuration's, since the preflight admits no other hook.
 `<root>/workspaces/<run-id>/` holds the run's workspaces, each at its
 session's place in the matrix and removed once its records are kept.
 
@@ -58,9 +65,10 @@ the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
 `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, managed hooks, recorded cost, the sessions it
-did not start and the run's state. Once `run.json` is written, `report.py` writes
-the run's report beside it, compared with the committed baseline.
+holds the run's date, options, managed configuration, recorded tokens,
+the sessions it did not start and the run's state. Once `run.json` is
+written, `report.py` writes the run's report beside it, compared with the
+committed baseline.
 
 A run every session of which took the `errored` verdict is `refused`: no
 session entered a state, so the matrix is no result and its pass rates
@@ -77,17 +85,18 @@ process group, the agent and every process it started, is killed; its exit
 status is recorded as `timeout`, and what its workspace holds by then is
 kept and scored like any other session's.
 
-The spending cap holds a run's recorded cost within `--budget-usd`. A run
-whose budget does not cover every session of its matrix at the session cap,
-`--session-budget-usd`, is refused before it starts a session, naming both.
-The agent checks its session cap between calls, so a session can record
-more than its cap, and the run guards its budget against that: a
-session starts only when the recorded cost, plus the session cap reserved
+The token budget holds a run's recorded tokens within `--budget-tokens`. A
+run whose budget does not cover every session of its matrix at the session
+cap, `--session-budget-tokens`, is refused before it starts a session,
+naming both. The agent checks its own cap between calls, so a session can
+record more than its cap, and the run guards its budget against that: a
+session starts only when the recorded tokens, plus the session cap reserved
 for each session in flight, plus its own session cap, is within the
 budget; while it is not and a session is in flight, the next one waits for
 it to settle. When it is not and none is in flight, the run starts no more
-sessions and lists the rest as not started. A session settles at the cost
-its `result` message reports, or at its session cap when it reports none.
+sessions and lists the rest as not started. A session settles at the tokens
+its `result` message reports, or holds its session cap against the budget
+when it reports none.
 """
 
 import argparse
@@ -459,8 +468,8 @@ def keep(workspace: Path, records: Path) -> None:
 def carried_context(message: dict[str, object], hooked: bool) -> str | None:
     """The context one transcript message adds that the run did not supply.
 
-    `hooked` says whether the run records a managed hook, whose response is
-    context the run accounts for.
+    `hooked` says whether a managed configuration can deliver a hook, whose
+    response is context the run accounts for.
     """
     if message.get("type") == HOOK_RESPONSE or message.get("subtype") == HOOK_RESPONSE:
         if hooked:
@@ -496,8 +505,8 @@ def injected(transcript: Path, hooked: bool) -> str | None:
 
     The form and the instruction are all a session is given, so a hook's
     response, an appended system prompt or a memory file is another
-    instruction set arriving beside them. `hooked` says whether the run
-    records a managed hook, whose response it accounts for.
+    instruction set arriving beside them. `hooked` says whether a managed
+    configuration can deliver a hook, whose response it accounts for.
     """
     if not transcript.is_file():
         return None
@@ -512,6 +521,28 @@ def injected(transcript: Path, hooked: bool) -> str | None:
         if carried is not None:
             return carried
     return None
+
+
+def hook_events_seen(transcripts: list[Path]) -> list[str]:
+    """Each hook event the transcripts show a hook responding to, in name order.
+
+    A hook response names its event and carries the hook's output; only the
+    event is read. A response naming no event counts as `unnamed`.
+    """
+    events: set[str] = set()
+    for transcript in transcripts:
+        if not transcript.is_file():
+            continue
+        for line in transcript.read_text().splitlines():
+            try:
+                message = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(message, dict):
+                continue
+            if HOOK_RESPONSE in (message.get("type"), message.get("subtype")):
+                events.add(str(message.get("hook_event") or "unnamed"))
+    return sorted(events)
 
 
 def converse(
@@ -753,7 +784,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     refused = harness.preflight(config, eval_root / WORKSPACES, sources)
     if refused is not None:
         raise CorpusError(refused)
-    managed = harness.managed(config)
+    hooked = harness.hooked(config)
     unobservable = [
         f"{workflow.name}/{scenario.name}/{form}"
         for workflow in corpus
@@ -818,7 +849,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         if (
             what := injected(
                 session.directory(run_directory) / TRANSCRIPT,
-                bool(managed["hooks"]),
+                hooked,
             )
         )
         is not None
@@ -829,6 +860,10 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             f"so they measure nothing about how the agent read its form: "
             f"{'; '.join(carried)}"
         )
+    transcripts = [
+        session.directory(run_directory) / TRANSCRIPT for session in sessions
+    ]
+    managed = harness.managed(config, hook_events_seen(transcripts) if hooked else [])
     record = {
         "run_id": run_id,
         "date": began.isoformat(timespec="seconds"),

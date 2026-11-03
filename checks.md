@@ -58,12 +58,12 @@ A pull request that touches none of those paths is reported as not checked: the 
 - **Scorer.** The [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done. It classifies each failing run by how it departs from the path.
 - **Eval runner.** The [runner](evals/diagram-following/run.py) is driven by a stub agent, and:
   - starts each session in a fresh workspace holding its form and inputs;
-  - refuses a run, before its first session, when the config directory installs or enables a plugin or declares a hook in its settings file, or when a form tree's or a workspace ancestor's `.claude` settings declare a hook, and records each hook the host's managed settings file declares;
+  - refuses a run, before its first session, when the config directory installs a plugin at a scope other than managed, enables one through unsigned remote settings, or declares a hook in its settings file, or when a form tree's or a workspace ancestor's `.claude` settings declare a hook, and records the managed configuration as counts and a fingerprint, naming none of it, its hooks counted from the hook events the transcripts show;
   - fails a run when a session carried context the runner did not supply;
   - records each session's transcript, usage, cost and verdict;
   - records a run whose every started session errored as refused, with the agent's own reason, whether or not its budget stopped it;
-  - stops before the recorded cost would pass the spending cap.
-- **Report.** The [report](evals/diagram-following/report.py) reads recorded results. It gives the pass rate and failure classes per model, form and scenario, and each one's difference from a baseline. For a refused run it names the run's state and reason in place of a pass rate, and it writes a baseline only from a run that measured a cell.
+  - stops before the recorded tokens would pass the token budget.
+- **Report.** The [report](evals/diagram-following/report.py) reads recorded results. It gives the pass rate and failure classes per model, form and scenario, and each one's difference from a baseline, the run's summed cost, and each failing session with the disposition its triage gave it. For a refused run it names the run's state and reason in place of a pass rate, and it writes a baseline only from a run that measured a cell.
 
 #### Corpus and Smoke Details
 
