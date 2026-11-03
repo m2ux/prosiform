@@ -40,7 +40,7 @@ A measurement that cannot fail measures nothing.
 - **The MVP is proven.**
   One live run of the feature workflows is committed beside the baseline, and the eval page states what it proves and what it cost.
 - **One guide states every mark.**
-  Bare `pf` prints plain text giving an instruction for every mark an agent meets and the returned-question marker, and every bundle opens by telling its reader to run it.
+  Bare `pf` prints plain text giving an instruction for every mark and dispatch section a bundle carries and the returned-question marker, and every bundle opens by telling its reader to run it.
 
 ## Work Breakdown
 
@@ -71,7 +71,7 @@ A measurement that cannot fail measures nothing.
 - [ ] **AC13.** Every scenario the eval states for deferral, composition and dispatch has a committed live-run result on each harness carrying a shell, as the committed edge-case records show.
 - [x] **AC14.** An agent follows every feature the merged bundling surface delivers from the bundle `pf` compiles, on a live run of the feature workflows, as the committed proof run shows.
 - [ ] **AC15.** Every live run the eval commits follows its runbook in `RUNBOOK.md`, and gives each failing session the triage rubric's disposition, as each committed run record shows.
-- [ ] **AC16.** Bare `pf` prints plain text giving an instruction for every mark an agent can meet in a skill's sources or a bundle, and the line a dispatched run opens a returned question with, as the guide fixture `make check` runs shows.
+- [ ] **AC16.** Bare `pf` prints plain text giving an instruction for every mark and dispatch section a bundle carries, and the line a dispatched run opens a returned question with, as the guide fixture `make check` runs shows.
 - [ ] **AC17.** Every bundle `pf` writes opens with a line telling its reader to run bare `pf` and follow the guide, and carries no dispatch protocol of its own, as the conformance fixtures `make check` runs show.
 
 ## Non-Goals

@@ -43,9 +43,18 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E05 W03 work item](e05/w03.md) | A run's managed configuration recorded by count and fingerprint |
 | [E05 W01 work item](e05/w01.md) | The live run of the feature workflows, committed as `mvp-proof.json` |
 | [E05 W02 work item](e05/w02.md) | The eval page stating the feature workflows and the proof |
+| [E04 W19 work item](e04/w19.md) | The edge corpus test reading E06's bundles |
+| [E06 W00 work item](e06/w00.md) | The design clause: the guide, the marker, the run-pf line and the published dispatch forms |
+| [E06 W01 work item](e06/w01.md) | A plain-text guide stating what a bundle carries |
+| [E06 W02 work item](e06/w02.md) | Every bundle opening with the run-pf line |
+| [E06 W03 work item](e06/w03.md) | Dispatch sections without protocols, a set listing deferred members, a set of one as a dispatch |
+| [E06 W04 work item](e06/w04.md) | A deferred dispatch published with its `⇉` mark |
+| [E06 W05 work item](e06/w05.md) | The pages stating the guide and the run-pf line |
+| [E06 W06 work item](e06/w06.md) | The compiled form following the run-pf line, waiting on its open question |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
 | [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
 | [E05 draft](e05-body.md) | The E05 epic body as saved, the source of its next edit |
+| [E06 draft](e06-body.md) | The E06 epic body as saved, the source of its next edit |
 | [Joins](joins.md) | Each independent pair, and each same-component pair, that ships as two pull requests |
 | [A: agent review of #600](agent-review-600.json) | The agent review record of the I10:E02 integration pull request, by reviewed head and target |
 | [A: agent review of #618](agent-review-618.json) | The agent review record of the I10:E01 integration pull request, by reviewed head and target |
@@ -62,6 +71,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 - **G4.** Validation refuses a bundle whose reference lands on a destination two documents share.
 - **G5.** The eval measures how an agent follows a bundle that defers, composes or dispatches.
 - **G6.** One live run proves the MVP's features followed.
+- **G7.** An agent is told every mark it meets, by one guide, before it meets one.
 
 ## Goal Trace
 
@@ -73,6 +83,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
 | G5 | AC13 | E04 | E04 AC1–AC22 | No marked source |
 | G6 | AC14 | E05 | E05 AC1–AC5 | No marked source |
+| G7 | AC16, AC17 | E06 | E06 AC1–AC12 | User decisions, 2026-11-03 |
 
 | Initiative criterion | Epic criteria that make it true |
 | --- | --- |
@@ -89,6 +100,8 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | AC11 | E00 AC6 |
 | AC12 | E00 AC7 |
 | AC13 | E04 AC20, resting on AC1–AC19 and AC22 |
+| AC16 | E06 AC2, AC3, AC4, resting on AC1 and AC7 |
+| AC17 | E06 AC5, AC6, resting on AC1, AC11 and AC12 |
 
 Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. E04 AC20 makes AC13 true only through the scenarios AC6–AC19 state and the form, scoring and harness AC1–AC5 and AC22 build; AC21 states the result on the eval page. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
 
@@ -127,11 +140,12 @@ Two sessions deliver I10 at once (user, 2026-11-03), one per lane. Each work ite
 
 | Lane | Rows, in the order they come free |
 | --- | --- |
-| 1 | E05 W00 · E00 W01 · E00 W04 · E04 W01, W02, W03, W04 · E04 W05–W12 · E04 W18 · E04 W16 |
-| 2 | E02 W01–W03 · E01 W01–W04 · E03 W00–W02 (filler, taken while no run is free) · E05 W01, W02 · E00 W00 · E00 W02, W03 · E04 W14, W15 |
+| 1 | E05 W00 · E00 W01 · E06 W00 · E00 W04 · E04 W01, W02, W03, W04 · E04 W05–W12 · E04 W18 · E04 W16 |
+| 2 | E02 W01–W03 · E01 W01–W04 · E03 W00–W02 (filler, taken while no run is free) · E05 W01, W02 · E06 W01 · E06 W02–W04 (one pull request) · E06 W05 · E04 W19 · E06 W06 (once its open question is answered) · E00 W00 · E00 W02, W03 · E04 W14, W15 |
 
 - **Lane 1 never waits on lane 2.** E00 W01 depends on E05 W00 for the model, not on E00 W00's code change.
 - **Each run is fed by one lane 1 row.** The proof by E05 W00 (and the user's merge of I09:E05), the baseline by E00 W04, the edge run by E04 W16.
+- **E06 goes first in each lane.** It carries `priority: 5`, the highest of I10's open epics: its design clause, W00, is the next lane 1 row, and its build rows lead lane 2 once W00 lands. The baseline shakedown (E00 W04) waits on E06 W01 and W06, and the edge-run shakedown (E04 W16) on E04 W19, E06 W01 and W06.
 - **Filler covers lane 2's waits.** At the start, while E05 W00 runs, and in the long stretch while lane 1 designs E04. E02 goes first so its `harness.py` rows land before E04 W04, which depends on E02 W02.
 
 ## Dependency Check
@@ -144,6 +158,28 @@ Two sessions deliver I10 at once (user, 2026-11-03), one per lane. Each work ite
 - **Proposed epic priority.** E00 2, E01 2, E02 2, E03 2, E04 1: the contention puts E04 after E02, and no epic depends on another.
 - **Not checked.** E00 W03 has no work item, so its component is unread.
 - **Numbering.** Rows follow start order; E04's criteria follow its rows, with AC22 split from AC3 at the end.
+
+### E06, 2026-11-03
+
+`deps.py` over the initiative, E00, E04, E06, E04 W19 and E06's work items, after E06 was planned:
+
+- **Problems.** None new. E04 W16 names W19, a later number, as it already names W17 and W18; its W10 and W12 now follow through W19.
+- **Joins.** E06 W02, W03 and W04 extend `bundle.py`, `dispatch.py` and `rewrite.py`, and are joined: they regenerate one set of conformance fixtures, five criteria in one pull request.
+- **Longest chain.** Five chains of six steps, each ending E04:W19 → E04:W16 → E04:W14 → E04:W15.
+- **Contention within the initiative.** E06 W06 with E02 W01 and W02, E04 W04 and W18, and E05 W03 on `evals/diagram-following/harness.py`; E06 W00 with E03 W00 on the design. E00 W04 fixes the harness's return reading (#637) in a pull request whose declared component is `RUNBOOK.md`, so it also meets E06 W06 on `harness.py`, which the check cannot see.
+- **Proposed epic priority.** The map gives E06 the lowest number, as it has the deepest dependants; the user's `priority: 5` stands, since every edge runs from E06 to E00 and E04.
+
+Each eval row these rows feed:
+
+| Eval row | Depends on | Why |
+| --- | --- | --- |
+| E00:W04 | [E06:W01](https://github.com/m2ux/prosiform/issues/639), [E06:W06](https://github.com/m2ux/prosiform/issues/639) | The shakedown reads a returned question by the marker the guide states (#637, decision 3), over compiled sessions that can follow the new bundles |
+| E00:W02 | through E00:W04 | The baseline measures the new guide and bundles |
+| E04:W19 | [E06:W02](https://github.com/m2ux/prosiform/issues/639), [E06:W03](https://github.com/m2ux/prosiform/issues/639), [E06:W04](https://github.com/m2ux/prosiform/issues/639) | W12's corpus test asserts the retired `Run pf first` section, and W10's scenario a mark-stripped deferred dispatch |
+| E04:W16 | E04:W19, [E06:W01](https://github.com/m2ux/prosiform/issues/639), [E06:W06](https://github.com/m2ux/prosiform/issues/639) | The edge-run shakedown runs the new guide and bundles |
+| E04:W14 | through E04:W16 | The edge run measures the new guide |
+
+E05 takes no edge: its proof run is committed, and no E05 test reads the Prosiform section's text.
 
 ## Contention Outside the Initiative
 
@@ -213,6 +249,19 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **The baseline shakedown fixes the sub-agent reading it found.** (User, 2026-11-03.) The shakedown found the claude harness reading no sub-agent start, stopping at the first state while sub-agents ran in the background, and counting one turn's tokens (#632); E00 W04 fixes it in its own pull request and reruns, as its work item states.
 - **A staged Claude session carries a shell.** (User, 2026-11-03.) The nested-dispatch scenarios E04 W10–W12 add are written in the `staged` form, which no harness both runs and reports sub-agent starts for (#635); E04 W18 gives a `staged` Claude session the CLI's shell, so Claude measures them, and W16 depends on it.
 - **A session is held to what pf instructs, and eval content is measurable.** (User, 2026-11-03.) pf compiles whatever an author writes; the eval scores a dispatch scenario on the dispatch shape and the parent's handling of each actual return as the compiled protocol states, and each dispatched section states a file to write as evidence. A returned question is answered from the scenario's workspace and recognised by the protocol's marker inside the CLI's hand-back frame (#637); E00 W04 applies it.
+- **An agent guide, E06.** (User, 2026-11-03.) Six decisions, as settled on 2026-11-03, raise [E06](https://github.com/m2ux/prosiform/issues/639):
+  1. **The guide states what a bundle carries.** Bare `pf` prints a guide giving a succinct instruction for what an agent meets in a bundle: `[↳ x](path)` is compiled and kept in context, followed inline; `[⇉ x](path)` is compiled and dispatched to a sub-agent; the Dispatch and `Dispatch in parallel` sections; and a returned question. `⫽` and `¬` never reach a bundle, so the guide does not teach them. This supersedes the brief's "every source mark".
+  2. **Plain command-line text.** The guide carries no Markdown heading, emphasis, link or code fence.
+  3. **The guide is the one home of the rules.** Bundles drop the Prosiform section's protocol paragraphs and keep only their own dispatch sections.
+  4. **Every bundle opens with a run-pf line.** Whatever it holds, a bundle's preamble opens with an instruction to run bare `pf` and follow the guide.
+  5. **Returned-question marker.** The guide states the fixed line a dispatched run opens a returned question with, which the eval reads (#637, decision 3); W00 fixes it as a first line reading `Question:`.
+  6. **Placement.** A new I10 epic, E06, on theme board 18.
+- **E06 carries `priority: 5` and stands Ready.** (User, 2026-11-03.) The highest of I10's open epics, so its design clause goes first in lane 1. Priorities: E06 `5`, E00 `3`, E04 and E02 `2`, E01 and E03 `1`.
+- **A deferred dispatch keeps its mark.** (User, 2026-11-03.) `[¬⇉ four](four.md#do)` publishes as `[⇉ four](four.md#do)`, its path rebased so it resolves from where the agent runs `pf`. The design had removed every operator mark from a deferred link, so a deferred dispatch read like a citation; the planning check found that only an arrow directive's label and the `↳` line reached a bundle. E06 W04.
+- **A parallel set holds its deferred members.** (User, 2026-11-03.) A deferred `⫽` member keeps no `⫽`; the set is built as an immediate set is, its prose links pointing at `#dispatch-in-parallel`. The section lists a compiled member as its bundle file and a deferred member as `- [⇉ five](five.md#do)`, and its rule is to compile each `⇉` item, then dispatch the whole set together, dispatching none if a compile fails. A mixed set is admitted; this supersedes the same day's refusal of one. E06 W03, AC11.
+- **A set of one is a plain dispatch.** (User, 2026-11-03.) Deferred or immediate, a one-member set publishes as a Dispatch sub-section or a deferred `[⇉ x]` link, never a parallel list of one. E06 W03, AC12.
+- **The compiled form is held for the user.** (Planning, 2026-11-03.) Once every bundle says to run `pf`, the `compiled` form, which gives a session no build and, on Claude, no shell (E04 AC26), cannot reach the guide. The options are: give a `compiled` session the build and a shell; fold `staged` into `compiled`; or hand a `compiled` session the guide's text with its bundle. It is an Open Question on E06, and W06 waits on it.
+- **E04 reconciles its own test.** (Planning.) E04 W19 updates the edge corpus test W12 added and W10's scenario to E06's bundles, on E04's base, rather than an E06 row editing E04's files.
 - **Components name their branch.** (Planning.) Every I10 work item declares `main:<path>`, so `deps.py` compares E04's rows with its siblings'.
 
 ## Links
@@ -225,6 +274,8 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 | Epic | [I10:E02 Session Isolation](https://github.com/m2ux/prosiform/issues/456) |
 | Epic | [I10:E03 Grouping Targets](https://github.com/m2ux/prosiform/issues/455) |
 | Epic | [I10:E04 Composition Following](https://github.com/m2ux/prosiform/issues/579) |
+| Epic | [I10:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/594) |
+| Epic | [I10:E06 Agent Guide](https://github.com/m2ux/prosiform/issues/639) |
 | Prerequisite | [I09:E04 Section Composition](https://github.com/m2ux/prosiform/issues/460) — W11 and W12 |
 | Overlap | [I09:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/523) |
 | Folded issue | [Contract Reading](https://github.com/m2ux/prosiform/issues/204) — closed as a duplicate of E01's revision row |
