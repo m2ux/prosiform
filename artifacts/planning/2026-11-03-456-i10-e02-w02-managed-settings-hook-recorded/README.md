@@ -12,6 +12,7 @@ This record holds its delivery of `AC4`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [changes.md](changes.md) | The plan changes this session applied and held |
 | [w02.md](w02.md) | The work item, its validation of every check, and the analysis of the managed settings paths and the run-record shape |
 
 ## Links
