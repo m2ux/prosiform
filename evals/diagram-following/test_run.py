@@ -769,7 +769,7 @@ def test_the_context_read_finds_each_form_of_injected_context(
     )
     for kind, message in cases:
         transcript.write_text(json.dumps(message) + "\n")
-        carried = injected(transcript)
+        carried = injected(transcript, False)
         assert carried is not None and carried.startswith(kind), (kind, carried)
 
     transcript.write_text(
@@ -782,18 +782,18 @@ def test_the_context_read_finds_each_form_of_injected_context(
             )
         )
     )
-    assert injected(transcript) is None
-    assert injected(tmp_path / "absent.jsonl") is None
+    assert injected(transcript, False) is None
+    assert injected(tmp_path / "absent.jsonl", False) is None
 
 
-def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
+def test_a_run_whose_config_installs_an_unmanaged_plugin_starts_no_session(
     tmp_path: Path, log: Path
 ) -> None:
-    """The config directory's plugin is refused before the first session.
+    """A plugin installed at a scope the organisation does not manage is refused.
 
     A plugin's `SessionStart` hook reaches a session before its first turn,
-    and no flag the runner passes suppresses it, so a directory holding one
-    is a run the eval cannot measure a form in.
+    and no flag the runner passes suppresses it, so a plugin the run cannot
+    attribute to the organisation is a run the eval cannot measure a form in.
     """
     installed = tmp_path / "eval" / "config" / "plugins" / "installed_plugins.json"
     installed.parent.mkdir(parents=True)
@@ -802,12 +802,14 @@ def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
             {
                 "version": 2,
                 "plugins": {
-                    "other-rules@elsewhere": [{"scope": "managed", "version": "0.1.0"}]
+                    "other-rules@elsewhere": [{"scope": "user", "version": "0.1.0"}]
                 },
             }
         )
     )
-    with pytest.raises(CorpusError, match="installs a plugin.*remove .*installed"):
+    with pytest.raises(
+        CorpusError, match="installs other-rules@elsewhere at user scope.*remove"
+    ):
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
@@ -818,10 +820,10 @@ def test_a_run_whose_config_installs_a_plugin_hook_starts_no_session(
     assert not (tmp_path / "results").exists()
 
 
-def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
+def test_a_run_whose_unsigned_remote_settings_enable_a_plugin_starts_no_session(
     tmp_path: Path, log: Path
 ) -> None:
-    """The plugin need not be installed here for its settings to be refused."""
+    """Remote settings with no signature beside them are not the organisation's."""
     remote = tmp_path / "eval" / "config" / "remote-settings.json"
     remote.write_text(
         json.dumps(
@@ -831,7 +833,9 @@ def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
             }
         )
     )
-    with pytest.raises(CorpusError, match="enables a plugin.*remove .*remote-settings"):
+    with pytest.raises(
+        CorpusError, match="enables a plugin.*without a signature.*remove .*remote"
+    ):
         eval_run(
             tmp_path,
             *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
@@ -840,6 +844,51 @@ def test_a_run_whose_remote_settings_enable_a_plugin_starts_no_session(
         )
     assert seen(log) == []
     assert not (tmp_path / "results").exists()
+
+
+def test_a_managed_plugin_is_recorded_and_its_hook_carried(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A plugin the organisation manages reaches every session and is named.
+
+    It is installed at managed scope and enabled by signed remote settings,
+    so the run starts, records the plugin's version and the environment the
+    settings add, and reads its `SessionStart` hook response as accounted for.
+    """
+    config = tmp_path / "eval" / "config"
+    installed = config / "plugins" / "installed_plugins.json"
+    installed.parent.mkdir(parents=True)
+    installed.write_text(
+        json.dumps(
+            {
+                "version": 2,
+                "plugins": {
+                    "core-rules@org": [{"scope": "managed", "version": "0.7.3"}]
+                },
+            }
+        )
+    )
+    (config / "remote-settings.json").write_text(
+        json.dumps(
+            {
+                "enabledPlugins": {"core-rules@org": True},
+                "env": {"OTEL_METRICS_EXPORTER": "otlp", "CLAUDE_CODE_X": "1"},
+            }
+        )
+    )
+    (config / "remote-settings.json.signature.json").write_text("{}")
+    monkeypatch.setenv("STUB_AGENT_INJECT", "apply the organisation's rules")
+    record = eval_run(
+        tmp_path,
+        *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
+        *("--budget-tokens", "1000"),
+    )
+    assert record["started"] == 1
+    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
+    assert written["managed"] == {
+        "plugins": [{"plugin": "core-rules@org", "version": "0.7.3"}],
+        "environment": ["CLAUDE_CODE_X", "OTEL_METRICS_EXPORTER"],
+    }
 
 
 def test_a_config_with_no_plugin_starts_every_session(

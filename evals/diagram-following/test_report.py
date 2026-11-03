@@ -37,6 +37,12 @@ USAGE = {
     "cache_read_input_tokens": 400,
 }
 
+MANAGED = {
+    "plugins": [{"plugin": "core-rules@org", "version": "0.7.3"}],
+    "environment": ["CLAUDE_CODE_ENABLE_TELEMETRY", "OTEL_METRICS_EXPORTER"],
+}
+UNMANAGED: dict[str, list[Any]] = {"plugins": [], "environment": []}
+
 # Each session: model, workflow, scenario, form, failure, exit status, cost.
 RECORDED: list[tuple[str, str, str, str, str | None, int | str, float | None]] = [
     (HAIKU, "linear", "straight-through", "bundle", None, 0, 0.10),
@@ -139,6 +145,7 @@ def recorded(tmp_path: Path) -> Path:
         "sessions": len(RECORDED) + len(NOT_STARTED),
         "started": len(RECORDED),
         "tokens": 2750,
+        "managed": MANAGED,
         "not_started": NOT_STARTED,
     }
     (directory / RUN).write_text(json.dumps(run))
@@ -212,6 +219,25 @@ def test_the_report_gives_the_run_cost_and_the_sessions_not_started(
     assert (built["sessions"], built["started"]) == (12, 10)
     assert built["tokens"] == 2750
     assert built["not_started"] == NOT_STARTED
+
+
+def test_the_report_names_the_managed_plugins_every_session_carried(
+    recorded: Path, tmp_path: Path
+) -> None:
+    """A run on a managed login states the rules its sessions were injected with."""
+    built = report(recorded, tmp_path / "absent.json")
+    assert built["managed"] == MANAGED
+    assert (
+        "- **Managed plugins:** `core-rules@org` 0.7.3, whose injected rules every "
+        "session carried; environment added: `CLAUDE_CODE_ENABLE_TELEMETRY`, "
+        "`OTEL_METRICS_EXPORTER`."
+    ) in markdown(built)
+    run = json.loads((recorded / RUN).read_text())
+    run["managed"] = UNMANAGED
+    (recorded / RUN).write_text(json.dumps(run))
+    assert "- **Managed plugins:** none." in markdown(
+        report(recorded, tmp_path / "absent.json")
+    )
 
 
 def test_the_report_sums_every_session_cost(recorded: Path, tmp_path: Path) -> None:
@@ -398,6 +424,7 @@ def test_a_refused_run_gives_its_state_and_reason_and_no_row(
         "sessions": 1,
         "started": 1,
         "tokens": 0,
+        "managed": UNMANAGED,
         "not_started": [],
     }
     (directory / RUN).write_text(json.dumps(run))
@@ -457,6 +484,7 @@ def test_a_run_that_measured_no_cell_writes_no_baseline(
         "sessions": 0,
         "started": 0,
         "tokens": 0,
+        "managed": UNMANAGED,
         "not_started": [],
     }
     (directory / RUN).write_text(json.dumps(run))
