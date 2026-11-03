@@ -802,13 +802,13 @@ def test_a_run_whose_config_installs_an_unmanaged_plugin_starts_no_session(
             {
                 "version": 2,
                 "plugins": {
-                    "other-rules@elsewhere": [{"scope": "user", "version": "0.1.0"}]
+                    "plugin-b@example": [{"scope": "user", "version": "0.1.0"}]
                 },
             }
         )
     )
     with pytest.raises(
-        CorpusError, match="installs other-rules@elsewhere at user scope.*remove"
+        CorpusError, match="installs plugin-b@example at user scope.*remove"
     ):
         eval_run(
             tmp_path,
@@ -828,8 +828,8 @@ def test_a_run_whose_unsigned_remote_settings_enable_a_plugin_starts_no_session(
     remote.write_text(
         json.dumps(
             {
-                "enabledPlugins": {"other-rules@elsewhere": True},
-                "env": {"CLAUDE_CODE_ENABLE_TELEMETRY": "1"},
+                "enabledPlugins": {"plugin-b@example": True},
+                "env": {"EXAMPLE_SETTING": "1"},
             }
         )
     )
@@ -846,48 +846,121 @@ def test_a_run_whose_unsigned_remote_settings_enable_a_plugin_starts_no_session(
     assert not (tmp_path / "results").exists()
 
 
-def test_a_managed_plugin_is_recorded_and_its_hook_carried(
-    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+def manage(
+    config: Path,
+    plugins: dict[str, str],
+    environment: dict[str, str],
+    events: list[str],
 ) -> None:
-    """A plugin the organisation manages reaches every session and is named.
+    """Install each plugin at managed scope, declaring `events`, and sign `environment`.
 
-    It is installed at managed scope and enabled by signed remote settings,
-    so the run starts, records the plugin's version and the environment the
-    settings add, and reads its `SessionStart` hook response as accounted for.
+    Each plugin's hooks file sits under its own install path, as Claude Code
+    keeps one, and the remote settings enable every plugin with a signature
+    beside them.
     """
-    config = tmp_path / "eval" / "config"
     installed = config / "plugins" / "installed_plugins.json"
-    installed.parent.mkdir(parents=True)
-    installed.write_text(
-        json.dumps(
-            {
-                "version": 2,
-                "plugins": {
-                    "core-rules@org": [{"scope": "managed", "version": "0.7.3"}]
-                },
-            }
+    installed.parent.mkdir(parents=True, exist_ok=True)
+    installs: dict[str, list[dict[str, str]]] = {}
+    for plugin, version in plugins.items():
+        place = config / "plugins" / "cache" / plugin / version
+        (place / "hooks").mkdir(parents=True, exist_ok=True)
+        (place / "hooks" / "hooks.json").write_text(
+            json.dumps(
+                {
+                    "hooks": {
+                        event: [{"hooks": [{"type": "command", "command": "x"}]}]
+                        for event in events
+                    }
+                }
+            )
         )
-    )
+        installs[plugin] = [
+            {"scope": "managed", "version": version, "installPath": str(place)}
+        ]
+    installed.write_text(json.dumps({"version": 2, "plugins": installs}))
     (config / "remote-settings.json").write_text(
         json.dumps(
             {
-                "enabledPlugins": {"core-rules@org": True},
-                "env": {"OTEL_METRICS_EXPORTER": "otlp", "CLAUDE_CODE_X": "1"},
+                "enabledPlugins": {plugin: True for plugin in plugins},
+                "env": environment,
             }
         )
     )
     (config / "remote-settings.json.signature.json").write_text("{}")
-    monkeypatch.setenv("STUB_AGENT_INJECT", "apply the organisation's rules")
+
+
+def test_a_managed_configuration_is_recorded_by_count_and_fingerprint(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A managed configuration reaches every session and is counted, not named.
+
+    A plugin installed at managed scope and enabled by signed remote settings
+    starts its session; `run.json` and the report give how many managed
+    plugins, environment settings and hooks there are and a fingerprint, and
+    neither names a plugin, version, key or event. The plugin's hook response
+    is accounted for.
+    """
+    config = tmp_path / "eval" / "config"
+    manage(
+        config,
+        {"plugin-a@example": "1.0.0"},
+        {"EXAMPLE_SETTING": "1", "EXAMPLE_OTHER_SETTING": "on"},
+        ["EXAMPLE_EVENT"],
+    )
+    monkeypatch.setenv("STUB_AGENT_INJECT", "apply the managed rules")
     record = eval_run(
         tmp_path,
         *("--workflows", "linear", "--forms", BUNDLE, "--repetitions", "1"),
         *("--budget-tokens", "1000"),
     )
     assert record["started"] == 1
-    written = json.loads((tmp_path / "results" / "test" / RUN).read_text())
-    assert written["managed"] == {
-        "plugins": [{"plugin": "core-rules@org", "version": "0.7.3"}],
-        "environment": ["CLAUDE_CODE_X", "OTEL_METRICS_EXPORTER"],
+    directory = tmp_path / "results" / "test"
+    written = json.loads((directory / RUN).read_text())
+    fingerprint = written["managed"].pop("fingerprint")
+    assert written["managed"] == {"plugins": 1, "environment": 2, "hooks": 1}
+    assert re.fullmatch(r"[0-9a-f]{64}", fingerprint)
+    shown = (directory / RUN).read_text() + (directory / REPORT_MD).read_text()
+    assert fingerprint in (directory / REPORT_MD).read_text()
+    for named in (
+        "plugin-a",
+        "1.0.0",
+        "EXAMPLE_SETTING",
+        "EXAMPLE_OTHER_SETTING",
+        "EXAMPLE_EVENT",
+    ):
+        assert named not in shown, named
+
+
+def test_a_fingerprint_tells_two_managed_configurations_apart(
+    tmp_path: Path,
+) -> None:
+    """One configuration gives one fingerprint; a changed one gives another.
+
+    A changed version, environment key or hook event each changes the
+    fingerprint, while the counts alone could not tell them apart, and a
+    configuration with nothing managed has none.
+    """
+    claude = HARNESSES["claude"]
+
+    def fingerprint(name: str, version: str, environment: str, event: str) -> object:
+        config = tmp_path / name
+        manage(config, {"plugin-a@example": version}, {environment: "1"}, [event])
+        return claude.managed(config)["fingerprint"]
+
+    first = fingerprint("first", "1.0.0", "EXAMPLE_SETTING", "EXAMPLE_EVENT")
+    assert first == fingerprint("again", "1.0.0", "EXAMPLE_SETTING", "EXAMPLE_EVENT")
+    others = {
+        fingerprint("version", "1.0.1", "EXAMPLE_SETTING", "EXAMPLE_EVENT"),
+        fingerprint("setting", "1.0.0", "EXAMPLE_OTHER", "EXAMPLE_EVENT"),
+        fingerprint("event", "1.0.0", "EXAMPLE_SETTING", "EXAMPLE_OTHER_EVENT"),
+    }
+    assert first not in others and len(others) == 3
+    (tmp_path / "none").mkdir()
+    assert claude.managed(tmp_path / "none") == {
+        "plugins": 0,
+        "environment": 0,
+        "hooks": 0,
+        "fingerprint": None,
     }
 
 

@@ -32,19 +32,20 @@ whose unsigned remote settings enable one, or whose settings file declares a
 hook, naming the file that says so: a plugin's hooks reach a session before
 its first turn and no flag the runner passes suppresses them.
 
-A plugin the organisation manages, installed at managed scope or enabled by
-the signed remote settings, reaches every session, and the run records it:
-`run.json` names each such plugin with its version, and each environment
-variable the remote settings add, so every recorded session is read as
-carrying the organisation's injected rules.
+A managed configuration, a plugin installed at managed scope or enabled
+by the signed remote settings with the environment those settings add and
+the hooks its plugins declare, reaches every session, and the run records
+it under `managed` in `run.json`: how many managed plugins, environment
+settings and hooks there are, and a fingerprint telling two configurations
+apart, naming none of them.
 
 What a session's agent did carry is read back from its transcript, so the
 boundary is observed rather than assumed. An appended system prompt or a
 memory file is context the run did not supply, and so is a hook's response
-where no managed plugin is recorded; a run one of whose sessions carries
-one fails, naming the session and what it carried. Where a managed plugin
-is recorded, a hook's response is that plugin's, since the preflight admits
-no other hook.
+where no managed plugin or hook is counted; a run one of whose sessions
+carries one fails, naming the session and what it carried. Where one is
+counted, a hook's response is the managed configuration's, since the
+preflight admits no other hook.
 `<root>/workspaces/<run-id>/` holds the run's workspaces, each at its
 session's place in the matrix and removed once its records are kept.
 
@@ -56,9 +57,10 @@ the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
 `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, recorded tokens, the sessions it did not
-start and the run's state. Once `run.json` is written, `report.py` writes
-the run's report beside it, compared with the committed baseline.
+holds the run's date, options, managed configuration, recorded tokens,
+the sessions it did not start and the run's state. Once `run.json` is
+written, `report.py` writes the run's report beside it, compared with the
+committed baseline.
 
 A run every session of which took the `errored` verdict is `refused`: no
 session entered a state, so the matrix is no result and its pass rates
@@ -458,8 +460,8 @@ def keep(workspace: Path, records: Path) -> None:
 def carried_context(message: dict[str, object], hooked: bool) -> str | None:
     """The context one transcript message adds that the run did not supply.
 
-    `hooked` says whether the run records a managed plugin, whose hook
-    response is context the run accounts for.
+    `hooked` says whether the run counts a managed plugin or hook, whose
+    hook response is context the run accounts for.
     """
     if message.get("type") == HOOK_RESPONSE or message.get("subtype") == HOOK_RESPONSE:
         if hooked:
@@ -496,7 +498,7 @@ def injected(transcript: Path, hooked: bool) -> str | None:
     The form and the instruction are all a session is given, so a hook's
     response, an appended system prompt or a memory file is another
     instruction set arriving beside them. `hooked` says whether the run
-    records a managed plugin, whose hook response it accounts for.
+    counts a managed plugin or hook, whose hook response it accounts for.
     """
     if not transcript.is_file():
         return None
@@ -809,7 +811,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         if (
             what := injected(
                 session.directory(run_directory) / TRANSCRIPT,
-                bool(managed["plugins"]),
+                bool(managed["plugins"] or managed["hooks"]),
             )
         )
         is not None

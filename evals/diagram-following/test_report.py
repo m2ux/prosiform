@@ -37,11 +37,9 @@ USAGE = {
     "cache_read_input_tokens": 400,
 }
 
-MANAGED = {
-    "plugins": [{"plugin": "core-rules@org", "version": "0.7.3"}],
-    "environment": ["CLAUDE_CODE_ENABLE_TELEMETRY", "OTEL_METRICS_EXPORTER"],
-}
-UNMANAGED: dict[str, list[Any]] = {"plugins": [], "environment": []}
+FINGERPRINT = "0" * 64
+MANAGED = {"plugins": 1, "environment": 2, "hooks": 1, "fingerprint": FINGERPRINT}
+UNMANAGED = {"plugins": 0, "environment": 0, "hooks": 0, "fingerprint": None}
 
 # Each session: model, workflow, scenario, form, failure, exit status, cost.
 RECORDED: list[tuple[str, str, str, str, str | None, int | str, float | None]] = [
@@ -221,21 +219,20 @@ def test_the_report_gives_the_run_cost_and_the_sessions_not_started(
     assert built["not_started"] == NOT_STARTED
 
 
-def test_the_report_names_the_managed_plugins_every_session_carried(
+def test_the_report_counts_the_managed_configuration_every_session_carried(
     recorded: Path, tmp_path: Path
 ) -> None:
-    """A run on a managed login states the rules its sessions were injected with."""
+    """A run on a managed login states how much it carried, and its fingerprint."""
     built = report(recorded, tmp_path / "absent.json")
     assert built["managed"] == MANAGED
     assert (
-        "- **Managed plugins:** `core-rules@org` 0.7.3, whose injected rules every "
-        "session carried; environment added: `CLAUDE_CODE_ENABLE_TELEMETRY`, "
-        "`OTEL_METRICS_EXPORTER`."
+        "- **Managed configuration:** 1 plugin(s), 2 environment setting(s) and "
+        f"1 hook(s), carried by every session; fingerprint `{FINGERPRINT}`."
     ) in markdown(built)
     run = json.loads((recorded / RUN).read_text())
     run["managed"] = UNMANAGED
     (recorded / RUN).write_text(json.dumps(run))
-    assert "- **Managed plugins:** none." in markdown(
+    assert "- **Managed configuration:** none." in markdown(
         report(recorded, tmp_path / "absent.json")
     )
 

@@ -25,11 +25,11 @@ them.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
 
 from workflow import CorpusError
 
@@ -125,6 +125,35 @@ def said(text: object) -> str:
     return QUESTION if held.startswith(QUESTION) else DONE
 
 
+def counted(
+    plugins: dict[str, str | None], environment: list[str], hooks: list[str]
+) -> dict[str, int | str | None]:
+    """A managed configuration as `run.json` records it, naming none of it.
+
+    `plugins` maps each managed plugin to its version, `environment` holds
+    each key the managed settings add, and `hooks` each event a managed hook
+    is declared for, once per declaration. The record gives how many of each
+    there are and a `fingerprint`: the SHA-256 hex digest of the three
+    sorted, as canonical JSON, so two runs on one configuration give one
+    fingerprint and a changed plugin, version, key or event gives another.
+    A configuration with nothing managed has a null fingerprint.
+    """
+    held = {
+        "plugins": sorted([plugin, version] for plugin, version in plugins.items()),
+        "environment": sorted(environment),
+        "hooks": sorted(hooks),
+    }
+    canonical = json.dumps(held, sort_keys=True, separators=(",", ":"))
+    return {
+        "plugins": len(plugins),
+        "environment": len(environment),
+        "hooks": len(hooks),
+        "fingerprint": hashlib.sha256(canonical.encode()).hexdigest()
+        if plugins or environment or hooks
+        else None,
+    }
+
+
 @dataclass(frozen=True)
 class Claude:
     """The Claude Code CLI: `-p` with a stream-json session stream."""
@@ -138,6 +167,8 @@ class Claude:
     signature: str = "remote-settings.json.signature.json"
     enabled: str = "enabledPlugins"
     managed_scope: str = "managed"
+    plugin_hooks: str = "hooks/hooks.json"
+    """The file under a plugin's install path declaring its hooks."""
     settings: str = "settings.json"
     hooks: str = "hooks"
     default_agent: str = "claude"
@@ -243,15 +274,13 @@ class Claude:
                 f"{enabling}"
             )
         declared = config / self.settings
-        hooks = _record(declared).get(self.hooks)
-        if isinstance(hooks, dict):
-            events = sorted(str(event) for event, commands in hooks.items() if commands)
-            if events:
-                return (
-                    f"{declared} declares a hook for {', '.join(events)}, which "
-                    f"reaches every session before its first turn; remove "
-                    f"{declared} before this run"
-                )
+        events = self.hook_events(declared)
+        if events:
+            return (
+                f"{declared} declares a hook for {', '.join(events)}, which "
+                f"reaches every session before its first turn; remove "
+                f"{declared} before this run"
+            )
         return None
 
     def _enabled(self, config: Path) -> list[str]:
@@ -261,17 +290,19 @@ class Claude:
             return []
         return sorted(name for name, value in enabled.items() if value is True)
 
-    def managed(self, config: Path) -> dict[str, list[Any]]:
-        """The organisation's plugins a session carries, and the environment added.
+    def managed(self, config: Path) -> dict[str, int | str | None]:
+        """The managed configuration every session carries, counted.
 
-        Each plugin installed at managed scope or enabled by the signed remote
-        settings is named with its installed version, null where it is enabled
-        but not installed here. `environment` names each variable the remote
-        settings add over the scrubbed environment. A run records both, so its
-        sessions are read as carrying the organisation's injected rules.
+        A managed plugin is one installed at managed scope or enabled by the
+        signed remote settings, its version null where it is enabled but not
+        installed here. A managed environment setting is a key the signed
+        remote settings' `env` adds over the scrubbed environment. A managed
+        hook is an event a managed plugin's hooks file, under its install
+        path, declares a hook for. The run records them through `counted()`.
         """
         installed = _record(config / self.plugins).get("plugins")
         versions: dict[str, str | None] = {}
+        hooks: list[str] = []
         if isinstance(installed, dict):
             for plugin, installs in installed.items():
                 for entry in installs if isinstance(installs, list) else []:
@@ -280,17 +311,22 @@ class Claude:
                         and entry.get("scope") == self.managed_scope
                     ):
                         versions[plugin] = entry.get("version")
+                        place = entry.get("installPath")
+                        if isinstance(place, str):
+                            declared = Path(place) / self.plugin_hooks
+                            hooks.extend(self.hook_events(declared))
         signed = (config / self.signature).is_file()
         for plugin in self._enabled(config) if signed else []:
             versions.setdefault(plugin, None)
         env = _record(config / self.remote).get("env") if signed else None
-        return {
-            "plugins": [
-                {"plugin": plugin, "version": version}
-                for plugin, version in sorted(versions.items())
-            ],
-            "environment": sorted(env) if isinstance(env, dict) else [],
-        }
+        return counted(versions, sorted(env) if isinstance(env, dict) else [], hooks)
+
+    def hook_events(self, path: Path) -> list[str]:
+        """The events a settings or hooks file declares a hook for, in name order."""
+        hooks = _record(path).get(self.hooks)
+        if not isinstance(hooks, dict):
+            return []
+        return sorted(str(event) for event, commands in hooks.items() if commands)
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -449,9 +485,9 @@ class Cursor:
             )
         return None
 
-    def managed(self, config: Path) -> dict[str, list[Any]]:
-        """No managed plugin is read: the CLI keeps no configuration directory."""
-        return {"plugins": [], "environment": []}
+    def managed(self, config: Path) -> dict[str, int | str | None]:
+        """Nothing managed is read: the CLI keeps no configuration directory."""
+        return counted({}, [], [])
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's last `result` message, if it printed one."""
@@ -655,9 +691,9 @@ class Opencode:
             )
         return None
 
-    def managed(self, config: Path) -> dict[str, list[Any]]:
-        """No managed plugin is read: the CLI keeps no configuration directory."""
-        return {"plugins": [], "environment": []}
+    def managed(self, config: Path) -> dict[str, int | str | None]:
+        """Nothing managed is read: the CLI keeps no configuration directory."""
+        return counted({}, [], [])
 
     def result(self, transcript: Path) -> dict[str, object] | None:
         """The session's spend, one `step_finish` record summing every step.
