@@ -25,4 +25,5 @@ This record holds its delivery of `AC1,AC2,AC5`: the work item, the validation e
 | --- | --- |
 | Epic | [I10:E00 Corpus Separability](https://github.com/m2ux/prosiform/issues/403) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
+| Pull request | [I10:E00 Provoke every failure class from a scenario](https://github.com/m2ux/prosiform/pull/609) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
