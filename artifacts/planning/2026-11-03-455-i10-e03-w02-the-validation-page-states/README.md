@@ -12,6 +12,8 @@ This record holds its delivery of `AC3`: the work item, the validation evidence 
 
 | Artifact | What it holds |
 | --- | --- |
+| [W02 work item](w02.md) | The plan for the row: component, problem, proposal and the checks that observe `AC3`. |
+| [Validation](validation.md) | The evidence for each check the work item names. |
 
 ## Links
 
