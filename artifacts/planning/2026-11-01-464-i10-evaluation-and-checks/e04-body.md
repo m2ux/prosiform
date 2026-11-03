@@ -49,7 +49,7 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 | [W16](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w16.md) | Shake down the edge-run runbook | AC25 | W05, W06, W07, W08, W09, W11, W17, W18, W19, [I10:E06:W01](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W06](https://github.com/m2ux/prosiform/issues/639) | | |
 | [W17](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w17.md) | Triage rubric entries for the run classes | AC23 | W03, [I10:E05:W00](https://github.com/m2ux/prosiform/issues/594) | | |
 | [W18](https://github.com/m2ux/prosiform/pull/638) | A staged Claude session carrying a shell | AC26 | W02, W04 | | ✓ |
-| [W19](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w19.md) | The edge corpus test reading E06's bundles | AC27 | W10, W12, [I10:E06:W02](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W03](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W04](https://github.com/m2ux/prosiform/issues/639) | | |
+| [W19](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w19.md) | The edge corpus test reading the new bundles | AC27 | W10, W12, [I10:E06:W02](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W03](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W04](https://github.com/m2ux/prosiform/issues/639) | | |
 
 ## Acceptance Criteria
 
