@@ -5,7 +5,7 @@ Every check ran in the unit's worktree, at the task branch's head, with the stub
 | Item | Value |
 | --- | --- |
 | Branch | `i10/e04/w05-a-scenario-bootstrapping-a` |
-| Tested revision | `29e0dfd7` |
+| Tested revision | `52b302e1` |
 | Command | `PROSIFORM_BUILD='uv run --project <worktree>/src --frozen pf' make check` |
 
 ## Checks
@@ -38,5 +38,7 @@ The whole repository check, at the tested revision, exits 0. Passed.
 
 - **A deferred transition needs a labelled sentence.**
   The diagram form's transitions name a label only beside a condition, so the material a deferral activates states its one edge as "Take the transition labelled `<label>`.", which the walk of a bundle reads; a state document's own transition is held to the existing sentences.
+- **The design pin was unreachable in CI.**
+  The first CI run, at `29e0dfd7`, failed `test_catalogue.py` because the README's badge named `682cdf7e`, a commit the rewritten engineering history holds on no branch; the base's own head fails the same way. The branch repins it to `2921f91a`, whose `design.md` is identical, and `make check` passes at `52b302e1`.
 - **The triage rubric is not on this base.**
   `RUNBOOK.md` arrives with I10:E05 W00, so the removal of `unbootstrapped` from its rubric is W17's to make.
