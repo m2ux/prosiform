@@ -2,7 +2,7 @@
 
 A procedure step often needs material stated elsewhere: the contract of a call it makes, the shape of what it reads. Linking that material bundles it as a division of its own, away from the step. A **composition directive** places it beneath the step instead.
 
-A directive is a link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`. The mark requests placement and nothing else. The link's text is the author's, and the run reads no meaning into it or into the title of the section it places.
+A directive is a link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`. The mark requests placement and nothing else. Written `¬↳`, as in `[¬↳ Inputs](read.md#inputs)`, the directive is deferred: a later run composes the section, and the bundle publishes the link with its text unmarked. The link's text is the author's, and the run reads no meaning into it or into the title of the section it places.
 
 The design's [Section composition](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
 
