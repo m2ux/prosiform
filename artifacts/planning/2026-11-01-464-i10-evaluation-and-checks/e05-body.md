@@ -14,7 +14,7 @@ The MVP is the argument surface and the grouping and composition work merged tog
 ## Proposal
 
 - **Design before the run.**
-  `RUNBOOK.md` is written first: a triage rubric for failing sessions and a runbook for each of I10's live runs, proven by a shakedown, with the model the user chooses for the default matrix. The run follows its runbook and escalates what the rubric marks a defect.
+  `RUNBOOK.md` is written first: a triage rubric for failing sessions and a runbook for each of I10's live runs, proven by a shakedown, and the proof's shakedown on the model and harness the user names for it. The run follows its runbook and escalates what the rubric marks a defect.
 - **Harness and model are chosen at the start.**
   The run's session asks which harness and which model it uses, and passes both explicitly.
 - **A file of its own.**
@@ -26,7 +26,7 @@ The MVP is the argument surface and the grouping and composition work merged tog
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e05/w00.md) | Write the runbook and triage rubric | AC6, AC7, AC8 | | | |
+| [W00](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-03-594-i10-e05-w00-write-the-runbook-and/) | Write the runbook and triage rubric | AC6, AC7, AC8 | | | |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e05/w01.md) | Run the live default-matrix proof | AC1, AC2, AC3 | [I09:E05](https://github.com/m2ux/prosiform/issues/523), W00 | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e05/w02.md) | State the proof on the eval page | AC4, AC5 | W01 | | |
 
@@ -39,7 +39,7 @@ The MVP is the argument surface and the grouping and composition work merged tog
 - [ ] **AC5.** The eval page states what `mvp-proof.json` proves and the run's measured cost, matching the cost the file records, as the page and the file show.
 - [ ] **AC6.** `evals/diagram-following/RUNBOOK.md`'s triage rubric gives, for each class the scorer defines and `errored`, the evidence that marks a failing session an agent miss, a scenario or harness defect, or unclear, and the action a run takes for each, as a read of the rubric against the scorer shows.
 - [ ] **AC7.** `RUNBOOK.md` gives the MVP proof, the baseline and the edge run each a runbook stating its command and arguments, model, harnesses, forms, token budget, cost cap, stop rules and committed files, each argument one `run.py` accepts, as a read of the runbooks against `run.py --help` shows.
-- [ ] **AC8.** `RUNBOOK.md` records the model the user chose for the default matrix, and the proof's runbook carries a shakedown whose measured cost sets its budget, as the file shows.
+- [ ] **AC8.** The proof's runbook carries a shakedown on the model and harness the user named for it, recorded with them, whose measured cost sets its budget, as `RUNBOOK.md` shows.
 
 ## References
 
