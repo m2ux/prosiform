@@ -80,23 +80,22 @@ beyond the warning codes the workflow's `scenarios.toml` declares under
 
 The diagram form's bundle states a path of its own: a state's section is
 the heading the previous section's link or the bundle's diagram names, a
-link naming the state by its text or, labelled with one symbol as a
-directive or a footnote mark is, by the heading it links, and what `pf`
-placed into a group or redirected through `subst` is what that
-section holds. A scenario's path is held to that walk as well as to the
-sources', so a workflow built on a feature states the path its bundle
-states.
+link naming the state by its text or by the heading it links, as a `↳`
+composition or a footnote mark does, and what `pf` placed into a group or
+redirected through `subst` is what that section holds. A scenario's path
+is held to that walk as well as to the sources', so a workflow built on a
+feature states the path its bundle states.
 
 A compiled form's bundle states a path and runs of its own: a deferred
-directive is published as a `↳` line beneath the step writing it, a step
-opening with a condition reaches its lines only where the condition holds,
-and the walk runs `pf` on each line a step it takes reaches, reading what
-the run writes as part of that state. A deferred dispatch is published as a
-plain link to the path it names, which the walk compiles where a step reaches
-it as it does a `↳` line, and the bundle that run writes dispatches its
-target's own targets. A state may defer its transition, so its document
-writes no transition paragraph and the material its deferral compiles states
-the edge taken.
+composition, `[¬↳ <title>](<path>#<section>)`, is published as a link to a
+sub-section holding the `[↳ <title>](<path>#<section>)` line, a step opening
+with a condition reaches its lines only where the condition holds, and the
+walk runs `pf` on each line a step it takes reaches, reading what the run
+writes as part of that state. Material a line compiles may dispatch, and the
+bundle that run writes links the bundles of its targets, so the agent that
+ran it starts them. A state may defer its transition, so its document writes
+no transition paragraph and the material its deferral compiles states the
+edge taken.
 
 A document under an `undeclared/` directory declares no `prosiform`, so a
 link to it is left as written rather than followed; a skill's `SKILL.md`,
@@ -326,34 +325,15 @@ FRAGMENT_LINK = re.compile(r"\[([^\]]+)\]\(#([^)]+)\)")
 NEXT_PARAGRAPH = re.compile(rf"^{re.escape(NEXT)}(.+)$", re.MULTILINE)
 """A section's transition paragraph as a bundle carries it."""
 
-DEFERRAL_MARK = "[¬→]("
-"""A deferred directive as a source writes it, which `pf` publishes as a `↳` line."""
+DEFERRED_COMPOSITION = re.compile(r"\[¬↳ [^\]]*\]\(([^)#]*)(?:#([^)]*))?\)")
+"""A deferred composition as a source writes it, with its document and heading.
+
+`pf` publishes it as a link to a sub-section holding a `↳` line, which a run
+of `pf` on the line's reference compiles.
+"""
 
 INLINE_LINE = re.compile(r"^\[↳ ([^\]]+)\]\(([^)]+)\)$", re.MULTILINE)
-"""A `↳` line: the heading it names and the reference a run of `pf` compiles."""
-
-DEFERRED_DISPATCH = re.compile(
-    rf"\[¬(?:{DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) [^\]]*\]\(([^)#]*)(?:#([^)]*))?\)"
-)
-"""A deferred dispatch as a source writes it, with its document and heading.
-
-`pf` publishes it as a plain link to the path it names, and the run on that
-path writes a bundle dispatching the target's own targets.
-"""
-
-PUBLISHED_DEFERRAL = re.compile(
-    r"\[(?!↳ )[^\]]+\]\(([^)#:\s][^):\s]*\.md(?:#[^)\s]*)?)\)"
-)
-"""A link a bundle publishes to a source path rather than a heading of its own.
-
-`pf` rewrites every link it follows to a heading the bundle carries, so a link
-naming a Markdown path is one it deferred, a deferred dispatch among them, and
-a run of `pf` on that path compiles it. A `↳` line names its path too, and is
-read through the directive linking it.
-"""
-
-DIRECTIVE_FRAGMENT = re.compile(r"\[[^\]\s]\]\(#([^)]+)\)")
-"""A directive as a bundle carries it: a one-symbol label linking its own heading."""
+"""A `↳` line: the title it carries and the reference a run of `pf` compiles."""
 
 CONDITIONAL_STEP = re.compile(r"^If (`inputs/[^`]+` reads `[^`]*`), ")
 """A step that holds only under a condition, which its opening clause states."""
@@ -787,7 +767,7 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
         body,
         actions[0],
         parse_transition(form, transition.strip(), path.parent) if marker else None,
-        not marker and DEFERRAL_MARK in body,
+        not marker and DEFERRED_COMPOSITION.search(body) is not None,
     )
 
 
@@ -1143,35 +1123,27 @@ def reached_lines(
 ) -> list[str]:
     """The references of the deferred lines a scope's steps reach, in step order.
 
-    A deferred directive is published linking the heading its `↳` line sits
-    under, so a step reaches each line its directives link; a deferred
-    dispatch is published as a plain link to its path, which the step
-    reaches where it stands. A step opening with a condition reaches its
-    lines only where the condition holds.
+    A deferred composition is published as a link to the heading its `↳` line
+    sits under, so a step reaches each line the headings it links hold. A
+    step opening with a condition reaches its lines only where the condition
+    holds.
     """
     sections = bundled_sections(bundle_text)
     found: list[str] = []
     for line in scope.splitlines():
-        marks = sorted(
-            [*DIRECTIVE_FRAGMENT.finditer(line), *PUBLISHED_DEFERRAL.finditer(line)],
-            key=lambda mark: mark.start(),
-        )
-        if not marks:
+        linked = [
+            sections[fragment]
+            for _, fragment in FRAGMENT_LINK.findall(line)
+            if fragment in sections
+        ]
+        if not linked:
             continue
         if (step := CONDITIONAL_STEP.match(line)) and not holds(
             step.group(1), inputs, trace
         ):
             continue
-        for mark in marks:
-            if mark.re is PUBLISHED_DEFERRAL:
-                found.append(mark.group(1))
-            elif mark.group(1) in sections:
-                found += [
-                    reference
-                    for _, reference in INLINE_LINE.findall(
-                        sections[mark.group(1)].text
-                    )
-                ]
+        for section in linked:
+            found += [reference for _, reference in INLINE_LINE.findall(section.text)]
     return found
 
 
@@ -1209,10 +1181,9 @@ def bundle_walk(
     bundle's diagram names each edge, its clicks name the first state's
     section, and each state is entered at the section the previous state's
     own link names, or else at the one the diagram clicks. A link names a
-    state by its text, or by the heading it links where a directive or a
-    footnote mark labels it with one symbol, so a state composed beneath a
-    step, or published as a document a footnote opens, is entered where the
-    link leads. Each section states its action and its transition, so what
+    state by its text, or by the heading it links, so a state composed under
+    a `↳` title, or published as a document a footnote opens, is entered
+    where the link leads. Each section states its action and its transition, so what
     `pf` placed, redirected or substituted is what the walk follows. A state
     whose bundled action is not the one its source states is a fault, since
     the scorer holds a session to the source's.
@@ -1273,12 +1244,7 @@ def bundle_walk(
         linked = [
             target
             for text, target in FRAGMENT_LINK.findall(section.text)
-            if text == state
-            or (
-                len(text.strip()) == 1
-                and target in sections
-                and sections[target].title == state
-            )
+            if text == state or (target in sections and sections[target].title == state)
         ]
         fragment = (
             linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
@@ -1291,8 +1257,8 @@ def compiled_walk(
     """The path and the session's runs the compiled form's bundles state, and faults.
 
     The walk reads the entry's bundle `pf` compiles from the compiled sources,
-    and runs `pf` from them on each `↳` line and deferred dispatch a state's
-    steps reach, as a session does, so the runs are the ones a correct
+    and runs `pf` from them on each `↳` line a state's steps reach, as a
+    session does, so the runs are the ones a correct
     session makes and the path is the one the bundles they write state. Each
     run writes under `output`, and one failing is a fault.
     """
@@ -1325,15 +1291,22 @@ def section_body(directory: Path, document: str, heading: str) -> str:
     """One heading's content within a document, and nothing beside it.
 
     `directory` is that of the section writing the link, which is where the
-    document resolves from. A heading is matched without regard to case,
-    since a section names it lower case and the document heads it as a
-    title.
+    document resolves from. A heading is matched by the fragment a link names
+    it by, the slug of its title, since a section names it lower case and the
+    document heads it as a title.
     """
     path = (directory / document).resolve()
     if not path.is_file():
         raise CorpusError(f"a dispatch names {document}, which is no document")
     text = path.read_text()
-    start = re.search(rf"^#+ {re.escape(heading)}$", text, re.MULTILINE | re.IGNORECASE)
+    start = next(
+        (
+            match
+            for match in BUNDLE_HEADING.finditer(text)
+            if slug(match.group(2)) == heading.lower()
+        ),
+        None,
+    )
     if start is None:
         raise CorpusError(f"{document} holds no {heading} section")
     rest = text[start.end() :]
@@ -1471,10 +1444,10 @@ def dispatch_starts(
     Each state on the path dispatches the targets its section's steps name,
     and a dispatched section dispatches its own targets in turn, so the walk
     is the source's statement of which sub-agents start, in what order, and
-    which of them start together. A deferred dispatch a step reaches, where
-    its condition holds, is compiled by the agent following that step, and
-    the bundle that run writes dispatches the target's own targets, so they
-    start from that agent. Each start carries its depth: 0 for one the session
+    which of them start together. A deferred composition a step reaches,
+    where its condition holds, is compiled by the agent following that step,
+    and the bundle that run writes dispatches the target's own targets, so
+    they start from that agent. Each start carries its depth: 0 for one the session
     makes itself, one more for each sub-agent between. What each returned is
     the scenario's to state, since it is the sub-agent's to give.
     """
@@ -1487,7 +1460,7 @@ def dispatch_starts(
                 step.group(1), inputs, walked
             ):
                 continue
-            for document, heading in DEFERRED_DISPATCH.findall(line):
+            for document, heading in DEFERRED_COMPOSITION.findall(line):
                 written = (directory / document).resolve()
                 follow(
                     section_body(written.parent, written.name, heading)
@@ -1571,8 +1544,7 @@ def deferral_inputs(workflow: Workflow, form: str) -> set[str]:
         input_read(step.group(1))
         for path in sorted(workflow.form(form).rglob("*.md"))
         for line in authored(path).splitlines()
-        if (DEFERRAL_MARK in line or DEFERRED_DISPATCH.search(line))
-        and (step := CONDITIONAL_STEP.match(line))
+        if DEFERRED_COMPOSITION.search(line) and (step := CONDITIONAL_STEP.match(line))
     }
 
 

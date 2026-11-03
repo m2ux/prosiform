@@ -411,7 +411,7 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
 
 
 def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> None:
-    """A deferred dispatch's targets start from the session, so a shell harness
+    """A deferred section's targets start from the session, so a shell harness
     reporting only the session's own starts observes them; a start a sub-agent
     makes, at any depth, it does not, nor a run a sub-agent makes.
     """
@@ -465,7 +465,7 @@ def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
         ("hop/review#scan", ("pf steps/weighing.md#weigh",)),
         ("steps/ruling#rule", ("pf steps/recording.md#file",)),
     ]
-    assert json.loads((deep / SUBAGENTS).read_text())["commands"] == []
+    assert json.loads((deep / SUBAGENTS).read_text())["commands"] == ["pf"]
 
 
 def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
@@ -492,7 +492,10 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
         shell = entry["pf"]
         assert ("--allowedTools" in argv) is shell
         assert ("Bash" in " ".join(argv)) is shell
-        assert (ENTRY in entry["prompt"]) is (ENTRY in entry["files"])
+        compiled = "workflow.bundles/workflow.bundle.md"
+        named = compiled if compiled in entry["files"] else ENTRY
+        described = f"{named} describes a workflow" in entry["prompt"]
+        assert described is (named in entry["files"])
         assert Path(entry["workspace"]).is_relative_to(workspaces)
         assert not Path(entry["workspace"]).exists()
         assert entry["config"] == str(tmp_path / "eval" / "config")
@@ -627,7 +630,10 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
         assert trace == verdict["actual"]
         action_files = {path.name for path in (directory / ACTIONS).iterdir()}
         workflow = CORPUS[session.workflow]
-        assert action_files == {workflow.walked[state].action[0] for state in trace}
+        [scenario] = [i for i in workflow.scenarios if i.name == session.scenario]
+        assert action_files == {workflow.walked[state].action[0] for state in trace} | {
+            name for start in scenario.trace for name, _ in start.actions
+        }
 
 
 def test_a_failing_session_is_recorded_with_its_failure(
