@@ -19,6 +19,7 @@ This record holds its delivery of `AC4`: the work item, the validation evidence 
 
 | Resource | Link |
 | --- | --- |
+| Pull request | [I10:E01 State the trigger rule on the checks page](https://github.com/m2ux/prosiform/pull/617) |
 | Epic | [I10:E01 Check Coverage](https://github.com/m2ux/prosiform/issues/454) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
