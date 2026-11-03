@@ -9,13 +9,16 @@ state's action, as a correct agent would. It then prints a stream-json
 transcript ending in a `result` message carrying usage, each model's usage
 and a cost.
 
+A session whose workspace holds `bin/pf` opens with a `Bash` call running
+`pf`, as its bundle's first line asks.
+
 A workflow that dispatches takes an `Agent` call per sub-agent start the
 scenario states, each naming its section as `<document>#<heading>`. The
 entries a scenario marks `together` share one assistant message, printed as
 the CLI prints it, one event per call carrying the message's id, so they
 read as started at once. Each call is answered by a `tool_result` carrying
-the sub-agent's report inside the CLI's hand-back frame, opening `Question`
-or `Done`. A scenario stating answers has each sub-agent return a question,
+the sub-agent's report inside the CLI's hand-back frame, opening `Question:`
+or `Done:`. A scenario stating answers has each sub-agent return a question,
 then starts it again, and that start returns done; a sub-agent that returned
 done writes its section's action. Where its
 instruction names the sub-agent trace, each call's prompt hands that name on,
@@ -63,6 +66,20 @@ from score import ACTIONS, SUB_AGENT_TRACE, TRACE
 from workflow import Scenario, Workflow, walk, workflows
 
 STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
+RAN_PF = {
+    "type": "assistant",
+    "message": {
+        "content": [
+            {
+                "type": "tool_use",
+                "id": "toolu_pf",
+                "name": "Bash",
+                "input": {"command": "pf"},
+            }
+        ]
+    },
+}
+"""The shell call a session given `pf` opens with, as the run-pf line asks."""
 """The sub-agent trace as an instruction states it."""
 
 HANDED_TRACE = re.compile(re.escape(SUB_AGENT_TRACE).replace(r"\{section\}", r"(\S+?)"))
@@ -248,6 +265,7 @@ def main() -> int:
     if log := os.environ.get("STUB_AGENT_LOG"):
         entry: dict[str, object] = {"workspace": str(workspace), "files": files}
         entry["argv"] = sys.argv[1:]
+        entry["pf"] = (workspace / "bin" / "pf").is_file()
         entry["prompt"] = prompt
         entry["variables"] = sorted(os.environ)
         entry["config"] = os.environ.get("CLAUDE_CONFIG_DIR")
@@ -290,6 +308,8 @@ def main() -> int:
                 }
             )
         )
+    if (workspace / "bin" / "pf").is_file():
+        print(json.dumps(RAN_PF))
     if dispatch:
         for said in transcript_of(dispatch, prompt):
             print(json.dumps(said))

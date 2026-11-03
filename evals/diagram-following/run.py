@@ -12,16 +12,18 @@ forms are:
 - `prose`: the prose form bundled by `pf`, as one file;
 - `linked`: the linked form's source tree as it is, entered at `workflow.md`;
 - `compiled`: the compiled form's bundle set, the entry's bundle as
-  `workflow.md` and every dispatched target's beside it;
+  `workflow.md` and every dispatched target's beside it, with the build
+  under test as `pf` on the session's path;
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
-  it compiles, with the build under test on the session's path; a harness
-  with no shell gives no session in it.
+  it compiles, with the build under test on the session's path.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
-searching files and to starting a sub-agent, with no MCP server and no
-shell. `acceptEdits` lets it change files only within its workspace.
+searching files and to starting a sub-agent, with no MCP server. A form given
+`pf` also carries a shell, which the Claude harness limits to `pf`; a Claude
+session in any other form carries none. `acceptEdits` lets it change files
+only within its workspace.
 
 Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
 eval's own Claude configuration directory, holding its login, settings and
@@ -195,6 +197,8 @@ FORMS = {
     BOOTSTRAP_SET: BOOTSTRAP,
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
+PF_SETS = {COMPILED_SET, BOOTSTRAP_SET}
+"""The forms whose session runs the build under test as `pf`."""
 BUILD = "build"
 """The existing folder a bootstrapping session compiles into."""
 BIN = "bin"
@@ -359,20 +363,9 @@ def matrix(
         for scenario in workflow.scenarios
         for form in forms
         if FORMS[form] in workflow.forms
-        if runnable(form, harness)
         if observable(workflow, scenario, form, harness)
         for repetition in range(1, repetitions + 1)
     ]
-
-
-def runnable(form: str, harness: Harness) -> bool:
-    """Whether a harness can read this form at all.
-
-    A form whose material a session must compile needs a command to run, so a
-    harness without a shell cannot measure it: the cell would record a
-    refusal as the agent's failure.
-    """
-    return harness.shell or FORMS[form] not in SHELL_FORMS
 
 
 def observable(
@@ -443,6 +436,8 @@ def prepare(
         for name, content in sets[(workflow.name, form)].items():
             written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
+        if form in PF_SETS:
+            place_pf(workspace)
     elif form == BOOTSTRAP_SET:
         placed = workspace / SKILL_HOME / workflow.name
         placed.mkdir(parents=True)
@@ -597,7 +592,7 @@ def start(
     workspace.mkdir(parents=True)
     try:
         prepare(workspace, workflow, scenario, session.form, sets)
-        if session.form == BOOTSTRAP_SET:
+        if session.form in PF_SETS:
             env = {**env, "PATH": f"{workspace / BIN}:{env.get('PATH', '')}"}
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
@@ -644,7 +639,7 @@ def start(
 
 
 def place_pf(workspace: Path) -> Path:
-    """Put the build under test where a bootstrapping session's shell finds it.
+    """Put the build under test where a session's shell finds it.
 
     A session runs its own shell, whose path is the caller's and not this
     run's, so the build is copied into a folder of the workspace's own and
@@ -769,7 +764,10 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             raise CorpusError(f"the corpus holds no workflow among {chosen}")
     forms = names(arguments.forms)
     if not set(forms) <= set(FORMS):
-        raise CorpusError(f"the forms are {', '.join(FORMS)}, not {forms}")
+        unknown = [form for form in forms if form not in FORMS]
+        raise CorpusError(
+            f"unknown form {', '.join(unknown)}; the forms are {', '.join(FORMS)}"
+        )
     by_name = {workflow.name: workflow for workflow in corpus}
     sets = {
         (workflow.name, form): bundles_of(workflow, form)
@@ -833,6 +831,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                     session.model,
                     ledger.session_cap,
                     session.directory(workspaces),
+                    session.form in PF_SETS,
                 ),
                 prompts[session.form],
                 sets,

@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Article
 
 An opening paragraph, above the headings the fixture measures.

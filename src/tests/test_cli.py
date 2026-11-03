@@ -23,6 +23,7 @@ in the folder the run does not produce is left as it was.
 
 import json
 import os
+import re
 import shutil
 from collections.abc import Callable, Mapping, Sequence
 from contextlib import chdir
@@ -99,12 +100,8 @@ from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
     DISPATCH_CYCLE,
     DISPATCH_DEPTH,
-    DISPATCH_PROTOCOL,
     DISPATCH_SELF,
-    FIRST_RUN_LINE,
-    FIRST_RUN_PROTOCOL,
     HEADING_COLLISION,
-    PARALLEL_PROTOCOL,
     TOGETHER,
 )
 from prosiform.limits import (
@@ -150,16 +147,11 @@ DECLARED = "---\nprosiform: {}\n---\n"
 """The frontmatter block that makes a document a link's compiled target."""
 
 
-def instructed(bundle_file: str) -> str:
-    """The line a dispatch sub-section carries for one bundle file."""
-    return f"[Dispatch](#dispatch) `{bundle_file}` to a sub-agent."
+RUN_PF = "Before reading on, run `pf` with no arguments and follow the guide it prints."
+"""The line every bundle opens with."""
 
-
-DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"
-"""The Prosiform section a bundle using only the dispatch operator opens with."""
-
-DISPATCHING_TOGETHER = f"{DISPATCHING}## Parallel dispatch\n\n{PARALLEL_PROTOCOL}\n\n"
-"""The Prosiform section a bundle carrying a parallel set opens with."""
+OPENING = f"{RUN_PF}\n\n"
+"""The line and the blank line after it, ahead of every bundle's content."""
 
 
 @dataclass(frozen=True)
@@ -248,14 +240,29 @@ def test_a_bare_command_prints_the_guide(tmp_path: Path) -> None:
     assert list(tmp_path.iterdir()) == []
 
 
-def test_the_guide_states_the_compile_step_the_inline_rule_and_the_section() -> None:
-    assert "pf -o <folder> <destination>" in GUIDE
-    assert "`SKILL.md`" in GUIDE
-    assert "A non-zero exit stops the run" in GUIDE
-    assert "`↳` names an inline target" in GUIDE
-    assert "A bundle that opens with a Prosiform section is followed from there" in (
-        GUIDE
-    )
+def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
+    for rule in (
+        "pf -o <folder> <destination>",
+        "SKILL.md",
+        "A non-zero exit stops the run",
+        "A link whose text opens with \u21b3",
+        "keep it in context",
+        "A link whose text opens with \u21c9",
+        "An In parallel section lists several \u21c9 links",
+        "each with the inputs of the step that led there",
+        "Continue when all have answered",
+        "all failures return together",
+        "in an answer whose first line reads Question:",
+    ):
+        assert rule in " ".join(GUIDE.split())
+
+
+def test_the_guide_is_plain_text() -> None:
+    assert not re.search(r"^#", GUIDE, re.MULTILINE)
+    assert "`" not in GUIDE
+    assert "*" not in GUIDE
+    assert "_" not in GUIDE
+    assert not re.search(r"\[[^\]]*\]\([^)]*\)", GUIDE)
 
 
 def test_the_help_response_names_the_bare_command() -> None:
@@ -485,7 +492,7 @@ def test_an_entry_naming_a_member_of_one_heading_opens_on_its_title(
     written(root, "notes/bare.md", conversion("notes", 2) + "# Bare\n")
     run = invoke("notes/bare.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.bundle == "# Bare\n"
+    assert run.bundle == f"{OPENING}# Bare\n"
 
 
 def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_that_title(
@@ -498,7 +505,7 @@ def test_an_entry_naming_the_absorbed_title_of_a_member_opens_on_that_title(
     )
     run = invoke("notes/second.md#second", cwd=root)
     assert run.status == SUCCESS
-    assert run.bundle.startswith("# Second\n\n## Outcomes\n")
+    assert run.bundle.startswith(f"{OPENING}# Second\n\n## Outcomes\n")
 
 
 def test_a_reference_into_a_member_of_one_heading_reaches_its_subsection(
@@ -601,7 +608,9 @@ def test_a_bundle_is_written_into_the_folder_o_names(
     assert [path.name for path in (folder / "guide.bundles").iterdir()] == [
         "guide.bundle.md"
     ]
-    assert (folder / "guide.bundles" / "guide.bundle.md").read_text() == "# Guide\n"
+    assert (
+        folder / "guide.bundles" / "guide.bundle.md"
+    ).read_text() == f"{OPENING}# Guide\n"
 
 
 def test_a_bundle_is_written_into_the_working_directory_without_o(
@@ -612,7 +621,9 @@ def test_a_bundle_is_written_into_the_working_directory_without_o(
         status = main(["guide.md"], out, err)
     assert status == SUCCESS
     assert out.getvalue() == "" and err.getvalue() == ""
-    assert (root / "guide.bundles" / "guide.bundle.md").read_text() == "# Guide\n"
+    assert (
+        root / "guide.bundles" / "guide.bundle.md"
+    ).read_text() == f"{OPENING}# Guide\n"
 
 
 def test_several_entries_write_one_bundle_joining_their_names(
@@ -727,7 +738,7 @@ def test_an_entry_is_compiled_as_named_whatever_its_presets_state(root: Path) ->
     run = invoke("-d", "json", "entry.md", cwd=root)
     assert run.status == 0
     assert list(run.bundles) == ["entry.bundle.md"]
-    assert run.bundle.startswith("# Entry\n")
+    assert run.bundle.startswith(f"{OPENING}# Entry\n")
     assert "Stand-in" not in run.bundle
     assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
         ("W_SUBST_UNUSED", "entry.md")
@@ -1070,7 +1081,7 @@ def test_a_successful_run_publishes_the_bundle_and_nothing_else(root: Path) -> N
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.diagnostics() == []
-    assert run.bundle == ("# Guide\n\n## Run\n\nDo it.\n")
+    assert run.bundle == (f"{OPENING}# Guide\n\n## Run\n\nDo it.\n")
 
 
 def test_a_run_that_cannot_publish_reports_the_publication_failure_alone(
@@ -1163,7 +1174,7 @@ def test_two_paths_differing_only_by_suffix_are_two_groups(root: Path) -> None:
     written(root, "guide.markdown", DECLARED + "Two.\n")
     run = invoke("-d", "json", "guide.md", "guide.markdown", cwd=root)
     assert run.status == SUCCESS
-    assert run.bundle == "# Guide\n\nOne.\n\n# Guide\n\nTwo.\n"
+    assert run.bundle == f"{OPENING}# Guide\n\nOne.\n\n# Guide\n\nTwo.\n"
     assert [one["code"] for one in run.diagnostics()] == [COINCIDENT_HEADING]
 
 
@@ -1780,7 +1791,7 @@ def test_a_whole_document_entry_selects_by_its_title(root: Path) -> None:
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert run.bundle == "# Reviews\n\n## Release Checks\n\nEvery check.\n"
+    assert run.bundle == (f"{OPENING}# Reviews\n\n## Release Checks\n\nEvery check.\n")
 
 
 def test_an_untitled_whole_document_entry_selects_no_preset(root: Path) -> None:
@@ -1861,7 +1872,7 @@ def test_members_whose_names_coincide_publish_and_warn(root: Path) -> None:
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        "# Guide\n\nRead [one](#note) and [two](#note-1).\n\n"
+        f"{OPENING}# Guide\n\nRead [one](#note) and [two](#note-1).\n\n"
         "## Notes\n\n### Note\n\nOne.\n\n### Note\n\nTwo.\n"
     )
     assert run.diagnostics() == [
@@ -1974,7 +1985,7 @@ def test_a_fragment_selects_the_section_its_heading_roots(root: Path) -> None:
     )
     run = invoke("guide.md#run", cwd=root)
     assert run.status == SUCCESS
-    assert run.bundle == ("# Guide\n\n### Run\n\nDo it.\n")
+    assert run.bundle == (f"{OPENING}# Guide\n\n### Run\n\nDo it.\n")
 
 
 def test_a_fragment_naming_a_container_nested_heading_is_refused(root: Path) -> None:
@@ -1995,7 +2006,7 @@ def test_a_fragment_naming_no_heading_is_a_missing_target(root: Path) -> None:
 
 def test_an_empty_fragment_is_a_whole_document_reference(root: Path) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\nBody.\n")
-    assert invoke("guide.md#", cwd=root).bundle == "# Guide\n\nBody.\n"
+    assert invoke("guide.md#", cwd=root).bundle == f"{OPENING}# Guide\n\nBody.\n"
     assert invoke("guide.md#", cwd=root).bundle == (invoke("guide.md", cwd=root).bundle)
 
 
@@ -2028,7 +2039,7 @@ def test_a_run_folder_replaces_the_earlier_one_whole(
     (earlier / "guide.bundle.md").write_text("earlier bytes\n")
     (earlier / "plan.bundle.md").write_text("an earlier run's dispatched bundle\n")
     assert invoke("-o", str(folder), "guide.md", cwd=root).status == SUCCESS
-    assert contents(earlier) == {"guide.bundle.md": b"# Guide\n"}
+    assert contents(earlier) == {"guide.bundle.md": f"{OPENING}# Guide\n".encode()}
     assert [path.name for path in folder.iterdir()] == ["guide.bundles"]
 
 
@@ -2413,7 +2424,8 @@ def test_a_link_naming_no_document_is_text(
     assert run.status == SUCCESS
     assert run.diagnostics() == []
     assert run.bundle == (
-        "# Guide\n\nSee [the rules](rules.md) and [the steps](procedure.md).\n"
+        f"{OPENING}# Guide\n\n"
+        "See [the rules](rules.md) and [the steps](procedure.md).\n"
     )
 
 
@@ -2483,16 +2495,75 @@ def test_a_mark_with_no_space_after_it_opens_an_ordinary_link(
     assert run.diagnostics() == []
 
 
-def test_the_marks_of_a_compound_operator_are_written_together(root: Path) -> None:
+def test_a_deferred_composition_is_written_with_its_marks_together(
+    root: Path,
+) -> None:
     written(
-        root, "guide.md", DECLARED + "# Guide\n\nSee [\u00ac\u21c9 Rules](rules.md).\n"
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\nSee [\u00ac\u21b3 Rules](rules.md#detail).\n",
     )
-    written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
+    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [Rules](rules.md)." in run.bundle
+    assert "See [Rules](#rules)." in run.bundle
+    assert "[\u21b3 Detail](rules.md#detail)" in run.bundle
+    assert "Every rule." not in run.bundle
     assert run.diagnostics() == []
-    assert sorted(run.bundles) == ["guide.bundle.md"]
+
+
+@pytest.mark.parametrize(
+    ("label", "contains"),
+    [
+        ("\u00ac\u21c9 Rules", "dispatch mark"),
+        ("\u00ac\u2afd Rules", "dispatch mark"),
+        ("\u21c9\u21b3 Rules", "composition mark"),
+        ("\u2afd\u21b3 Rules", "composition mark"),
+        ("\u2192", "arrow"),
+        ("\u00ac\u2192", "arrow"),
+        ("\u00ac \u21b3 Rules", "written together"),
+    ],
+    ids=[
+        "a deferred dispatch",
+        "a deferred parallel dispatch",
+        "a dispatch written against the composition mark",
+        "a parallel dispatch written against the composition mark",
+        "an arrow label",
+        "a deferred arrow label",
+        "a blank between the deferral and composition marks",
+    ],
+)
+def test_a_link_stating_no_one_operation_is_refused_and_publishes_nothing(
+    root: Path, label: str, contains: str
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + f"# Guide\n\n## Run\n\nSee [{label}](rules.md#detail).\n",
+    )
+    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert contains in reported["message"]
+
+
+def test_an_arrow_label_names_the_link_and_points_at_the_composition_mark(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Run\n\nSee [\u2192](rules.md#detail).\n",
+    )
+    written(root, "rules.md", DECLARED + "# Rules\n\n## Detail\n\nEvery rule.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    [reported] = run.diagnostics()
+    assert reported["reference"] == "\u2192"
+    assert reported["source"] == "guide.md:8"
+    assert "\u21b3" in reported["remedy"]
 
 
 def test_a_deferral_stands_where_another_reference_carried_its_target(
@@ -2528,7 +2599,7 @@ def test_a_dispatched_reference_under_the_root_is_not_compiled(root: Path) -> No
     assert "Every rule the sub-agent requires." not in run.bundle
 
 
-def test_a_dispatched_link_points_at_its_sub_section_without_its_mark(
+def test_a_dispatched_link_stays_inline_pointing_at_its_bundle_file(
     root: Path,
 ) -> None:
     written(
@@ -2538,8 +2609,7 @@ def test_a_dispatched_link_points_at_its_sub_section_without_its_mark(
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{DISPATCHING}# Guide\n\nSee [the rules](#dispatch-the-rules).\n\n"
-        f"## Dispatch the rules\n\n{instructed('rules.bundle.md')}\n"
+        f"{OPENING}# Guide\n\nSee [\u21c9 the rules](rules.bundle.md).\n"
     )
 
 
@@ -2564,12 +2634,12 @@ def test_a_run_publishes_a_bundle_for_each_target_its_dispatches_reach(
         "plan__steps.bundle.md",
         "review.bundle.md",
     ]
-    assert instructed("plan__steps.bundle.md") in run.bundle
+    assert "[\u21c9 plan](plan__steps.bundle.md)" in run.bundle
     assert run.bundles["plan__steps.bundle.md"] == (
-        f"{DISPATCHING}# Plan\n\n### Steps\n\n1. Review [review](#dispatch-review).\n\n"
-        f"#### Dispatch review\n\n{instructed('review.bundle.md')}\n"
+        f"{OPENING}# Plan\n\n### Steps\n\n"
+        "1. Review [\u21c9 review](review.bundle.md).\n"
     )
-    assert run.bundles["review.bundle.md"] == "# Review\n\n1. Read.\n"
+    assert run.bundles["review.bundle.md"] == f"{OPENING}# Review\n\n1. Read.\n"
 
 
 def test_one_target_dispatched_from_two_sections_is_one_bundle(root: Path) -> None:
@@ -2584,42 +2654,49 @@ def test_one_target_dispatched_from_two_sections_is_one_bundle(root: Path) -> No
     assert run.status == SUCCESS
     assert sorted(run.bundles) == ["guide.bundle.md", "plan.bundle.md"]
     assert run.bundle == (
-        f"{DISPATCHING}# Guide\n\n## One\n\nRun [plan](#dispatch-plan).\n\n"
-        f"### Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
+        f"{OPENING}# Guide\n\n## One\n\nRun [\u21c9 plan](plan.bundle.md).\n\n"
         "## Two\n\n"
-        "Run [plan](#dispatch-plan-1) and [the plan](#dispatch-plan-1).\n\n"
-        f"### Dispatch plan\n\n{instructed('plan.bundle.md')}\n"
+        "Run [\u21c9 plan](plan.bundle.md) and [\u21c9 the plan](plan.bundle.md).\n"
     )
 
 
-def test_a_sub_section_precedes_the_child_sections_of_its_section(
+def test_an_in_parallel_sub_section_precedes_the_child_sections_of_its_section(
     root: Path,
 ) -> None:
     written(
         root,
         "guide.md",
-        DECLARED
-        + "# Guide\n\n## Run\n\nRun [\u21c9 plan](plan.md).\n\n### Detail\n\nMore.\n",
+        DECLARED + "# Guide\n\n## Run\n\n"
+        "Run [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
+        "### Detail\n\nMore.\n",
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
     run = invoke("guide.md", cwd=root)
     assert run.bundle == (
-        f"{DISPATCHING}# Guide\n\n## Run\n\nRun [plan](#dispatch-plan).\n\n"
-        f"### Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
+        f"{OPENING}# Guide\n\n## Run\n\n"
+        "Run [plan](#in-parallel) and [check](#in-parallel).\n\n"
+        f"### In parallel\n\n{TOGETHER}\n\n"
+        "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n\n"
         "### Detail\n\nMore.\n"
     )
 
 
-def test_a_dispatch_above_the_first_heading_takes_its_level(root: Path) -> None:
+def test_a_set_above_the_first_heading_takes_its_level(root: Path) -> None:
     written(
-        root, "guide.md", DECLARED + "Run [\u21c9 plan](plan.md).\n\n# Guide\n\nBody.\n"
+        root,
+        "guide.md",
+        DECLARED + "Run [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
+        "# Guide\n\nBody.\n",
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"Run [plan](#dispatch-plan).\n\n{DISPATCHING}"
-        f"# Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
+        f"{OPENING}Run [plan](#in-parallel) and [check](#in-parallel).\n\n"
+        f"# In parallel\n\n{TOGETHER}\n\n"
+        "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n\n"
         "# Guide\n\nBody.\n"
     )
 
@@ -2632,13 +2709,10 @@ def test_a_dispatch_in_a_linked_document_sits_under_its_shifted_section(
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.bundle.endswith(
-        "# Notes\n\nRun [plan](#dispatch-plan).\n\n"
-        f"## Dispatch plan\n\n{instructed('plan.bundle.md')}\n"
-    )
+    assert run.bundle.endswith("# Notes\n\nRun [\u21c9 plan](plan.bundle.md).\n")
 
 
-def test_a_dispatch_in_a_level_six_section_is_refused(root: Path) -> None:
+def test_a_dispatch_in_a_level_six_section_publishes_inline(root: Path) -> None:
     written(
         root,
         "guide.md",
@@ -2647,34 +2721,29 @@ def test_a_dispatch_in_a_level_six_section_is_refused(root: Path) -> None:
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == INPUT_FAILURE
-    assert run.bundles == {}
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == HEADING_DEPTH_OVERFLOW
-    assert diagnostic["reference"] == "plan.md"
-    assert diagnostic["location"] == {"file": "guide.md", "line": 16, "column": 1}
+    assert run.status == SUCCESS
+    assert run.diagnostics() == []
+    assert run.bundle.endswith("Run [\u21c9 plan](plan.bundle.md).\n")
 
 
-@pytest.mark.parametrize(
-    "heading", ["Prosiform", "Dispatch in parallel", "Dispatch plan"]
-)
-def test_an_authored_heading_equal_to_one_pf_emits_is_refused(
-    root: Path, heading: str
+def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
+    root: Path,
 ) -> None:
     written(
         root,
         "guide.md",
         DECLARED
-        + f"# Guide\n\nRun [\u21c9 plan](plan.md) and [\u2afd plan](plan.md).\n\n"
-        f"## {heading}\n\nText.\n",
+        + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
+        "## In parallel\n\nText.\n",
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_COLLISION
-    assert heading in diagnostic["message"]
+    assert "In parallel" in diagnostic["message"]
     assert diagnostic["location"] == {"file": "guide.md", "line": 8, "column": 1}
 
 
@@ -2682,8 +2751,10 @@ def test_an_authored_heading_equal_to_one_pf_emits_is_refused(
     ("link", "heading"),
     [
         ("", "Prosiform"),
-        ("", "Dispatch in parallel"),
-        ("Run [\u21c9 plan](plan.md).", "Dispatch in parallel"),
+        ("", "In parallel"),
+        ("Run [\u21c9 plan](plan.md).", "In parallel"),
+        ("Run [\u21c9 plan](plan.md).", "Prosiform"),
+        ("Run [\u21c9 plan](plan.md).", "Dispatch plan"),
     ],
 )
 def test_a_heading_pf_does_not_emit_in_the_bundle_publishes(
@@ -2781,15 +2852,14 @@ def test_a_dispatch_in_a_title_above_the_selection_is_refused(root: Path) -> Non
 
 
 def test_a_dispatch_in_the_entry_s_own_title_still_publishes(root: Path) -> None:
-    """The entry's title heads the bundle, so its sub-section stands beneath it."""
+    """The entry's title heads the bundle, so its link publishes in the heading."""
     written(root, "guide.md", DECLARED + "# Guide [\u21c9 Plan](plan.md)\n\nBody.\n")
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.diagnostics() == []
-    assert run.bundle.startswith(DISPATCHING)
-    assert "[Plan](#dispatch-plan)" in run.bundle
-    assert run.bundles["plan.bundle.md"] == "# Plan\n\n1. Go.\n"
+    assert run.bundle.startswith(f"{OPENING}# Guide [\u21c9 Plan](plan.bundle.md)\n")
+    assert run.bundles["plan.bundle.md"] == f"{OPENING}# Plan\n\n1. Go.\n"
 
 
 def test_a_link_opening_with_two_dispatch_marks_is_refused_where_it_names_nothing(
@@ -3538,7 +3608,7 @@ def test_a_fourth_dispatch_warns_naming_the_chain(root: Path) -> None:
     dispatching(root, ["guide.md", "a.md", "b.md", "c.md", "d.md"])
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "Run [next](#dispatch-next)." in run.bundle
+    assert "Run [\u21c9 next](a.bundle.md)." in run.bundle
     assert len(run.bundles) == 5
     [warning] = run.diagnostics()
     assert warning["code"] == DISPATCH_DEPTH
@@ -3647,7 +3717,9 @@ def test_a_section_dispatched_from_its_own_document_warns_once(root: Path) -> No
     assert warning["code"] == DISPATCH_SELF
     assert warning["resolved"] == "guide.md#steps"
     assert warning["location"] == {"file": "guide.md", "line": 6, "column": 1}
-    assert run.bundles["guide__steps.bundle.md"] == ("# Guide\n\n### Steps\n\n1. Go.\n")
+    assert run.bundles["guide__steps.bundle.md"] == (
+        f"{OPENING}# Guide\n\n### Steps\n\n1. Go.\n"
+    )
 
 
 def test_a_fragment_only_dispatch_names_its_own_document(root: Path) -> None:
@@ -3668,7 +3740,7 @@ def test_a_directive_composing_a_section_of_its_own_document_warns(
     written(
         root,
         "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [→](#rules)\n\n"
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [↳ Rules](#rules)\n\n"
         "## Reference\n\n### Rules\n\nEvery rule.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -3686,7 +3758,7 @@ def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
     written(
         root,
         "guide.md",
-        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [¬→](#rules)\n\n"
+        DECLARED + "# Guide\n\n## Run\n\n1. Read.\n\n   [¬↳ Rules](#rules)\n\n"
         "## Reference\n\n### Rules\n\nEvery rule.\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
@@ -3694,29 +3766,16 @@ def test_a_deferred_directive_composing_its_own_document_raises_no_warning(
     assert run.diagnostics() == []
 
 
-def test_a_dispatched_bundle_carrying_a_deferred_dispatch_runs_pf_first(
+def test_a_dispatched_bundle_carrying_a_deferral_opens_with_the_run_pf_line(
     root: Path,
 ) -> None:
     written(root, "guide.md", DECLARED + "# Guide\n\n1. Run [⇉ a](a.md).\n")
-    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬⇉ b](b.md).\n")
+    written(root, "a.md", DECLARED + "# A\n\n1. Defer [¬ b](b.md).\n")
     written(root, "b.md", DECLARED + "# B\n\nBody.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert run.bundles["a.bundle.md"].startswith(
-        f"{FIRST_RUN_LINE}\n\n# Prosiform\n\n## Run pf first\n\n"
-        f"{FIRST_RUN_PROTOCOL}\n\n# A\n"
-    )
-    assert "Run pf first" not in run.bundles["guide.bundle.md"]
-
-
-def test_an_entry_carrying_a_deferred_dispatch_needs_no_first_run(
-    root: Path,
-) -> None:
-    written(root, "guide.md", DECLARED + "# Guide\n\n1. Defer [¬⇉ b](b.md).\n")
-    written(root, "b.md", DECLARED + "# B\n\nBody.\n")
-    run = invoke("-d", "json", "guide.md", cwd=root)
-    assert run.status == SUCCESS
-    assert run.bundles["guide.bundle.md"].startswith("# Guide\n")
+    assert run.bundles["a.bundle.md"].startswith(f"{OPENING}# A\n")
+    assert run.bundles["guide.bundle.md"].startswith(f"{OPENING}# Guide\n")
 
 
 def test_a_dispatched_target_whose_compilation_fails_publishes_nothing(
@@ -3831,7 +3890,7 @@ def test_a_dispatched_section_of_fields_raises_nothing(root: Path) -> None:
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "Read [the fields](#dispatch-the-fields)." in run.bundle
+    assert "Read [\u21c9 the fields](plan__fields.bundle.md)." in run.bundle
     assert run.diagnostics() == []
 
 
@@ -3859,12 +3918,11 @@ def test_a_sections_parallel_links_point_at_one_sub_section_listing_each_bundle(
         "review__tests.bundle.md",
     ]
     assert run.bundle == (
-        f"{DISPATCHING_TOGETHER}# Guide\n\n## Review\n\n"
-        "1. Review [Code Review](#dispatch-in-parallel) and "
-        "[Test Review](#dispatch-in-parallel).\n\n"
-        f"### Dispatch in parallel\n\n{TOGETHER}\n\n"
-        "- `review__code.bundle.md` (Code Review)\n"
-        "- `review__tests.bundle.md` (Test Review)\n"
+        f"{OPENING}# Guide\n\n## Review\n\n"
+        "1. Review [Code Review](#in-parallel) and [Test Review](#in-parallel).\n\n"
+        f"### In parallel\n\n{TOGETHER}\n\n"
+        "- [⇉ Code Review](review__code.bundle.md)\n"
+        "- [⇉ Test Review](review__tests.bundle.md)\n"
     )
 
 
@@ -3879,11 +3937,10 @@ def test_a_target_named_twice_in_one_set_is_listed_once(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{DISPATCHING_TOGETHER}# Guide\n\n"
-        "Run [a](#dispatch-in-parallel), [b](#dispatch-in-parallel) "
-        "and [a again](#dispatch-in-parallel).\n\n"
-        f"## Dispatch in parallel\n\n{TOGETHER}\n\n"
-        "- `a.bundle.md` (a)\n- `b.bundle.md` (b)\n"
+        f"{OPENING}# Guide\n\n"
+        "Run [a](#in-parallel), [b](#in-parallel) and [a again](#in-parallel).\n\n"
+        f"## In parallel\n\n{TOGETHER}\n\n"
+        "- [⇉ a](a.bundle.md)\n- [⇉ b](b.bundle.md)\n"
     )
 
 
@@ -3891,23 +3948,25 @@ def test_a_child_sections_parallel_links_form_its_own_set(root: Path) -> None:
     written(
         root,
         "guide.md",
-        DECLARED
-        + "# Guide\n\n## Run\n\nRun [⫽ a](a.md).\n\n### Detail\n\nRun [⫽ b](b.md).\n",
+        DECLARED + "# Guide\n\n## Run\n\nRun [⫽ a](a.md) and [⫽ b](b.md).\n\n"
+        "### Detail\n\nRun [⫽ b](b.md) and [⫽ c](c.md).\n",
     )
-    written(root, "a.md", DECLARED + "# A\n\nA.\n")
-    written(root, "b.md", DECLARED + "# B\n\nB.\n")
+    for name in "abc":
+        written(root, f"{name}.md", f"{DECLARED}# {name.upper()}\n\nBody.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{DISPATCHING_TOGETHER}# Guide\n\n## Run\n\n"
-        "Run [a](#dispatch-in-parallel).\n\n"
-        f"### Dispatch in parallel\n\n{TOGETHER}\n\n- `a.bundle.md` (a)\n\n"
-        "### Detail\n\nRun [b](#dispatch-in-parallel-1).\n\n"
-        f"#### Dispatch in parallel\n\n{TOGETHER}\n\n- `b.bundle.md` (b)\n"
+        f"{OPENING}# Guide\n\n## Run\n\n"
+        "Run [a](#in-parallel) and [b](#in-parallel).\n\n"
+        f"### In parallel\n\n{TOGETHER}\n\n"
+        "- [⇉ a](a.bundle.md)\n- [⇉ b](b.bundle.md)\n\n"
+        "### Detail\n\nRun [b](#in-parallel-1) and [c](#in-parallel-1).\n\n"
+        f"#### In parallel\n\n{TOGETHER}\n\n"
+        "- [⇉ b](b.bundle.md)\n- [⇉ c](c.bundle.md)\n"
     )
 
 
-def test_a_section_carrying_both_operators_has_a_sub_section_for_each(
+def test_a_section_carrying_both_operators_keeps_its_dispatches_inline(
     root: Path,
 ) -> None:
     written(
@@ -3929,15 +3988,13 @@ def test_a_section_carrying_both_operators_has_a_sub_section_for_each(
         "tests.bundle.md",
     ]
     assert run.bundle == (
-        f"{DISPATCHING_TOGETHER}# Guide\n\n1. Plan [plan](#dispatch-plan).\n"
-        "2. Review [code](#dispatch-in-parallel) and "
-        "[tests](#dispatch-in-parallel).\n"
-        "3. Plan again [plan](#dispatch-plan) and also "
-        "[plan](#dispatch-in-parallel).\n\n"
-        f"## Dispatch plan\n\n{instructed('plan.bundle.md')}\n\n"
-        f"## Dispatch in parallel\n\n{TOGETHER}\n\n"
-        "- `code.bundle.md` (code)\n- `tests.bundle.md` (tests)\n"
-        "- `plan.bundle.md` (plan)\n"
+        f"{OPENING}# Guide\n\n1. Plan [⇉ plan](plan.bundle.md).\n"
+        "2. Review [code](#in-parallel) and [tests](#in-parallel).\n"
+        "3. Plan again [⇉ plan](plan.bundle.md) and also "
+        "[plan](#in-parallel).\n\n"
+        f"## In parallel\n\n{TOGETHER}\n\n"
+        "- [⇉ code](code.bundle.md)\n- [⇉ tests](tests.bundle.md)\n"
+        "- [⇉ plan](plan.bundle.md)\n"
     )
 
 
@@ -3963,7 +4020,7 @@ def test_a_parallel_target_of_any_shape_publishes_with_no_diagnostic(
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.diagnostics() == []
-    assert "Run [the reviews](#dispatch-in-parallel)." in run.bundle
+    assert "Run [\u21c9 the reviews](plan__reviews.bundle.md)." in run.bundle
     assert "Reviews" not in run.bundle
     assert sorted(run.bundles) == ["guide.bundle.md", "plan__reviews.bundle.md"]
 
@@ -4029,14 +4086,15 @@ def test_a_parallel_dispatch_closing_a_cycle_is_refused(root: Path) -> None:
     assert diagnostic["code"] == DISPATCH_CYCLE
 
 
-def test_a_parallel_dispatch_in_a_level_six_section_is_refused(root: Path) -> None:
+def test_a_set_in_a_level_six_section_is_refused(root: Path) -> None:
     written(
         root,
         "guide.md",
         DECLARED + "# Guide\n\n## A\n\n### B\n\n#### C\n\n##### D\n\n###### E\n\n"
-        "Run [⫽ plan](plan.md).\n",
+        "Run [⫽ plan](plan.md) and [⫽ check](check.md).\n",
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
+    written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundles == {}
@@ -4224,15 +4282,19 @@ def test_a_cycle_of_directives_names_each_earlier_directive_as_related(
 ) -> None:
     """The closing directive is the location; each earlier one is related."""
     written(
-        root, "guide.md", DECLARED + "# Guide\n\n## Prepare\n\nDo [→](plan.md#steps).\n"
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Prepare\n\nDo [↳ Steps](plan.md#steps).\n",
     )
     written(
-        root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nDo [→](review.md#checks).\n"
+        root,
+        "plan.md",
+        DECLARED + "# Plan\n\n## Steps\n\nDo [↳ Checks](review.md#checks).\n",
     )
     written(
         root,
         "review.md",
-        DECLARED + "# Review\n\n## Checks\n\nDo [→](plan.md#steps).\n",
+        DECLARED + "# Review\n\n## Checks\n\nDo [↳ Steps](plan.md#steps).\n",
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
@@ -4252,8 +4314,8 @@ def test_a_multiplying_composition_fails_before_it_is_whole(root: Path) -> None:
     The figure the crossing reports stands below the bytes the whole
     bundle carries, so the run stopped at the first emission crossing it.
     """
-    many = ", ".join(["[→](call.md#steps)"] * 4)
-    calls = ", ".join(["[→](read.md#inputs)"] * 4)
+    many = ", ".join(["[↳ Steps](call.md#steps)"] * 4)
+    calls = ", ".join(["[↳ Inputs](read.md#inputs)"] * 4)
     written(root, "guide.md", DECLARED + f"# Guide\n\nRun {many}.\n")
     written(root, "call.md", DECLARED + f"# Call\n\n## Steps\n\nRead {calls}.\n")
     written(

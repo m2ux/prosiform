@@ -60,12 +60,12 @@ from a session that dispatches nothing names no start.
 
 A start is an `Agent` tool call in the transcript, which names the section
 it hands over in the call's `description` as `<document>#<heading>`; its
-return is the sub-agent's report, read as `question` when that report opens
-with the word and as `done` otherwise. Two starts in one message are
-together, since they were dispatched at once. Which message and answer a
-harness's stream records that in, and what frame its CLI puts around a
-report, is the harness's to read, as `harness.py` states: the scorer reads
-only the record either harness writes.
+return is the sub-agent's report, read as `question` when its first line opens
+`Question:`, as `pf`'s guide prescribes, and as `done` otherwise. Two starts
+in one message are together, since they were dispatched at once. Which
+message and answer a harness's stream records that in, and what frame its
+CLI puts around a report, is the harness's to read, as `harness.py`
+states: the scorer reads only the record either harness writes.
 
 The verdict's `record` is the form the runner writes and the report reads.
 """

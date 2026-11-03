@@ -12,7 +12,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `tree` | The diagram form's source tree, unbundled. | Against `bundle`, what bundling adds. |
 | `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
 | `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
-| `compiled` | The compiled form's bundle set: the entry's bundle, every dispatched target's beside it, and the Prosiform section `pf` emits around each. | Whether an agent follows the dispatch protocol `pf` compiles. |
+| `compiled` | The compiled form's bundle set: the entry's bundle and every dispatched target's beside it, each opening with the run-pf line, with the build under test as `pf` on the session's path and a shell limited to `pf`. | Whether an agent runs `pf`, follows the guide it prints and the dispatch sections of each bundle. |
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 
@@ -66,7 +66,7 @@ The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each sta
 
 The `bootstrap-audit` workflow says whether an agent handed a skill, rather than an entry document, compiles the workflow the skill names before following it. Its session finds the skill under `.claude/skills/bootstrap-audit/` in its workspace, where the agent CLI discovers skills; the skill's `SKILL.md` says to run `pf` over the sources beside it, and the bundle that run writes is the document stating the workflow. The run puts the build under test on the session's path, so the `pf` a session compiles with is the one the run was configured with.
 
-Compiling runs a command, so only a harness carrying a shell gives a session in this form: `cursor` and `opencode` do, and `claude`, whose tool list names no shell, is given no `bootstrap` session. The sources dispatch sub-agents, so each scenario names the trace a correct run produces as a dispatch scenario does, and a harness that reports no sub-agent's own dispatch is given only the scenarios whose trace it can observe.
+Compiling runs a command, so the session is given `pf` and a shell as a `compiled` session is. The sources dispatch sub-agents, so each scenario names the trace a correct run produces as a dispatch scenario does, and a harness that reports no sub-agent's own dispatch is given only the scenarios whose trace it can observe.
 
 | Workflow | Scenario | What it walks |
 | --- | --- | --- |
@@ -126,7 +126,7 @@ Each failure class the scorer defines is produced by some scenario, and the corp
 
 ### Dispatch checks
 
-A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. Each entry names the section a sub-agent followed, what it returned and whether it started beside the entry above it. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when the report opens with the word and `done` otherwise.
+A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. Each entry names the section a sub-agent followed, what it returned and whether it started beside the entry above it. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when its first line opens `Question:`, as `pf`'s guide has a sub-agent write one, and `done` otherwise.
 
 The checks hold the dispatch's shape, then the session's handling of each return as the dispatch protocol states it: a start returning `done` moves the session on, and one returning a question is started again with the answers. Each sub-agent's action is then held as a state's is.
 
@@ -160,7 +160,8 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is set beside `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, which runs each sub-agent within the call that starts it, so the call's result is the sub-agent's answer. |
 | `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
 | `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
-| `--tools Read,Write,Edit,Glob,Grep,Agent` | Every other tool, `Bash` included, so a session cannot reach past its workspace, and `Agent` is the one tool a dispatch protocol needs. |
+| `--tools Read,Write,Edit,Glob,Grep,Agent` | Every other tool, so a session cannot reach past its workspace, and `Agent` is the one tool a dispatch protocol needs. |
+| `--tools ...,Bash` with `--allowedTools Bash(pf:*)`, for a session given `pf` | Every command but `pf`: the `compiled` and `bootstrap` forms add the shell tool and admit `pf` commands alone. |
 | `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
@@ -197,7 +198,7 @@ Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also hold
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
-| `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in, and a harness only in the forms it can run. |
+| `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
@@ -214,9 +215,9 @@ make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetiti
 
 ### Default matrix and budget
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the twenty-eight scenarios of the fifteen workflows the Claude harness can run, in the forms each is written in, 74 cells in all; and five repetitions: 740 sessions. The `bootstrap` form adds none, since the Claude harness carries no shell. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
+The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the thirty scenarios of the sixteen workflows, in the forms each is written in, 76 cells in all; and five repetitions: 760 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
 
-A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 740 sessions at the 60 000-token session cap need 44 400 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
+A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 760 sessions at the 60 000-token session cap need 45 600 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
 
 The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 

@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Fetch the page offline
 
-Its body is composed here [→](fetch.md#implementation).
+Its body is composed here [↳ Implementation](fetch.md#implementation).

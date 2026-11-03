@@ -531,7 +531,7 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
             {"type": "user", "message": {"content": [answer("a", "done: complete")]}},
             {
                 "type": "user",
-                "message": {"content": [answer("b", "question: which source?")]},
+                "message": {"content": [answer("b", "Question: which source?")]},
             },
             {"type": "user", "message": {"content": [answer("c", "done: read")]}},
         ],

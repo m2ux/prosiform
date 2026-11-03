@@ -117,4 +117,4 @@ The same applies to two member headings of one merged group whose complete paths
 
 Headings the run generates are written in **title case**: each word capitalized, the name's separators kept. A path keeps its slashes and hyphens, and each part of a hyphenated word is capitalized.
 
-The convention covers what the run writes and nothing else. A heading an author wrote, a document title carried by a file heading, a dispatch sub-section's link text and a filesystem path a diagnostic names all keep their own spelling.
+The convention covers what the run writes and nothing else. A heading an author wrote, a document title carried by a file heading, an `In parallel` item's link text and a filesystem path a diagnostic names all keep their own spelling.

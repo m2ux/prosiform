@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Prepare
 
-Read the step's result [→](https://example.com/step.md#output).
+Read the step's result [↳ Output](https://example.com/step.md#output).

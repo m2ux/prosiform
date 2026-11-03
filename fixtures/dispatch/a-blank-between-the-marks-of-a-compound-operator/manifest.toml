@@ -1,4 +1,4 @@
-description = "A link whose text opens with the deferral mark and then the dispatch mark, with a blank between them, is refused with a diagnostic naming the link, because the marks of the one operator that defers a dispatch are written together."
+description = "A link whose text opens with the deferral mark and then the dispatch mark, with a blank between them, is refused with a diagnostic naming the link, because the marks of a compound operator are written together."
 
 clauses = [
   "Link classification and resource handling — Operators that combine",

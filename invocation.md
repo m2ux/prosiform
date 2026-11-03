@@ -9,7 +9,7 @@ pf
 
 ## Guide
 
-`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; and that a bundle opening with a Prosiform section is followed from there. A skill's bootstrap is therefore one instruction: run `pf` and follow it. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
+`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a file given to a sub-agent, and an `In parallel` section lists several given to their own sub-agents at once; and that a sub-agent returns each question unanswered, in an answer whose first line reads `Question:`. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A skill's bootstrap is therefore one instruction: run `pf` and follow it. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
 
 ## Options
 
@@ -82,7 +82,7 @@ A named group nests inside the division of the document whose link placed its fi
 
 ## Bundling
 
-Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section. A link labelled with one arrow, as in `[→](read.md#inputs)`, is a composition directive: it places the section it names beneath the section that writes it, and `[¬→](read.md#inputs)` defers that placement to a run of its own.
+Entry references select whole documents or named sections, a section written as `document#fragment`, and each names a document that declares `prosiform`. A fragment alone names no document and is invalid usage. Each local Markdown link resolves from the file that writes it and is followed when its target declares, wherever that target sits, until nothing new is reachable; everything else stays as authored. The working directory bounds entry references and the paths diagnostics name. Operators on a link's text withhold it instead: `¬` defers it to another run, `⇉` dispatches it to a sub-agent, and `⫽` dispatches it alongside the other `⫽` links of its section. A link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`, is a composition directive: it places the section it names beneath the section that writes it, and `[¬↳ Inputs](read.md#inputs)` defers that placement to a run of its own.
 
 A substitution is stated in a document, never on the command line: a preset's `subst` entry pairs a reference with the document or section the run reads in its place, as [Sources](docs/sources.md) states. A pair belongs to the document that declares it and redirects only the links that document writes, under the presets every reference reaching that document selects, and each side resolves from the declaring file. The [substitution mapping](docs/selection.md#the-substitution-mapping) states the lookup and the warnings a run reports.
 
@@ -93,7 +93,7 @@ The bundle is arranged in file headings and groups, composed sections stand bene
 - [Hierarchy](docs/hierarchy.md) — file headings, groups and depth
 - [Composition](docs/composition.md) — directives, destination sections, contributions and deferral
 - [Destinations](docs/destinations.md) — slugs, ordinals and rewriting
-- [Dispatch](docs/dispatch.md) — sub-sections, the Prosiform section and cycles
+- [Dispatch](docs/dispatch.md) — dispatch links, `In parallel` sub-sections, the run-pf line and cycles
 - [Validation](docs/validation.md) — invariants, codes and budgets
 
 ## Output

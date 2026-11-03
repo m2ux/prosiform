@@ -1,0 +1,17 @@
+description = "A composition mark followed directly by text opens no directive, so the link is an ordinary one in the preamble, its target bundled, its destination rewritten and its text carried as written."
+
+clauses = [
+  "Section composition — Recognition",
+  "Explicitly linked source structure — Explicit dependencies",
+  "Bundle destinations — Internal links",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

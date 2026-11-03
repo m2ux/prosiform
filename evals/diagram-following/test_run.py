@@ -14,6 +14,7 @@ wrong reason fails where it fires.
 import json
 import re
 import shutil
+import subprocess
 import sys
 import time
 from dataclasses import replace
@@ -26,11 +27,13 @@ from harness import HARNESSES, MANAGED_SETTINGS, Claude, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
+    BOOTSTRAP_SET,
     BUNDLE,
     BUNDLED,
     COMPILED_SET,
     FORMS,
     LINKED_TREE,
+    PF_SETS,
     PROSE_BUNDLE,
     TRANSCRIPT,
     TREE,
@@ -43,6 +46,7 @@ from run import (
     matrix,
     observable,
     options,
+    prepare,
     run,
 )
 from score import (
@@ -217,15 +221,28 @@ def material(session: Session) -> set[str]:
     inputs = {f"inputs/{name}" for name in scenario.inputs}
     if scenario.answers:
         inputs.add("answers.txt")
+    build = {"bin/pf"} if session.form in PF_SETS else set()
     if session.form in BUNDLED:
         return (
             {ENTRY}
             | inputs
+            | build
             | {
                 name
                 for name in bundles_of(workflow, session.form)
                 if name != workflow.entry_bundle.name
             }
+        )
+    if session.form == BOOTSTRAP_SET:
+        skill = workflow.directory / source.BOOTSTRAP_DIR
+        return (
+            {
+                f".claude/skills/{workflow.name}/{path.relative_to(skill)}"
+                for path in skill.rglob("*")
+                if path.is_file()
+            }
+            | inputs
+            | build
         )
     tree = workflow.form(FORMS[session.form])
     return {
@@ -238,7 +255,7 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 74
+    assert len(sessions) == 2 * 5 * 76
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -289,11 +306,14 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     assert found == sorted(sorted(material(session)) for session in sessions)
     for entry in entries:
         argv = entry["argv"]
-        assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent"
+        tools = "Read,Write,Edit,Glob,Grep,Agent"
+        assert argv[argv.index("--tools") + 1] == tools + (",Bash" * entry["pf"])
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
-        assert "--allowedTools" not in argv and "Bash" not in " ".join(argv)
-        assert ENTRY in entry["prompt"]
+        shell = entry["pf"]
+        assert ("--allowedTools" in argv) is shell
+        assert ("Bash" in " ".join(argv)) is shell
+        assert (ENTRY in entry["prompt"]) is (ENTRY in entry["files"])
         assert Path(entry["workspace"]).is_relative_to(workspaces)
         assert not Path(entry["workspace"]).exists()
         assert entry["config"] == str(tmp_path / "eval" / "config")
@@ -1663,3 +1683,70 @@ def test_a_clean_run_passes_every_dispatch_cell(tmp_path: Path, log: Path) -> No
         assert verdict["passed"] is True, f"{scenario}/{form}: {verdict}"
         assert verdict["failure"] is None
         assert verdict["actual"] == verdict["expected"]
+
+
+def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
+    tmp_path: Path,
+) -> None:
+    """AC12: the build under test is `pf` on a compiled session's path.
+
+    The shell the session gets runs bare `pf` for the guide and compiles a
+    `↳` line, which a bundle set alone cannot do.
+    """
+    workflow = CORPUS["dispatch-chain"]
+    scenario = workflow.scenarios[0]
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    sets = {(workflow.name, COMPILED_SET): bundles_of(workflow, COMPILED_SET)}
+    prepare(workspace, workflow, scenario, COMPILED_SET, sets)
+    pf = str(workspace / "bin" / "pf")
+    guide = subprocess.run([pf], capture_output=True, text=True, check=False)
+    assert guide.stdout.startswith("pf compiles"), guide.stdout
+    (workspace / "guide.md").write_text(
+        "---\nprosiform: {}\n---\n# Guide\n\n## Run\n\nDo [↳ Steps](plan.md#steps).\n"
+    )
+    (workspace / "plan.md").write_text(
+        "---\nprosiform: {}\n---\n# Plan\n\n## Steps\n\nCount the files.\n"
+    )
+    compiled = subprocess.run(
+        [pf, "guide.md", "-o", str(tmp_path / "out")],
+        cwd=workspace,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert compiled.returncode == 0, compiled.stderr
+    [written] = (tmp_path / "out").glob("*.bundles/guide.bundle.md")
+    assert "Count the files." in written.read_text()
+
+
+def test_a_compiled_session_is_given_pf_and_a_shell_limited_to_it(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC12: every compiled session has `pf` and the pf-only shell."""
+    eval_run(
+        tmp_path,
+        *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
+        *("--repetitions", "1", "--budget-tokens", "4000"),
+    )
+    entries = seen(log)
+    assert entries
+    for entry in entries:
+        argv = entry["argv"]
+        assert "bin/pf" in entry["files"]
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf:*)"
+        assert argv[argv.index("--tools") + 1].endswith(",Bash")
+    transcripts = [
+        path.read_text() for path in (tmp_path / "results" / "test").rglob(TRANSCRIPT)
+    ]
+    assert all('"command": "pf"' in text for text in transcripts)
+
+
+def test_a_run_naming_the_staged_form_is_refused_as_an_unknown_form(
+    tmp_path: Path, log: Path
+) -> None:
+    """AC18: one `compiled` form, and `staged` names none."""
+    assert "staged" not in FORMS
+    with pytest.raises(CorpusError, match="unknown form staged"):
+        eval_run(tmp_path, "--forms", "staged", "--budget-tokens", "4000")
+    assert not list(log.iterdir())

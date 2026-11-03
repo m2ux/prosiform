@@ -1,9 +1,8 @@
-description = "A dispatch in a level-3 section takes its sub-section one level below, at level 4, after the section's own content and before its child section, and the target compiles to a bundle of its own."
+description = "A dispatch in a level-3 section publishes in place with its mark, and the target compiles to a bundle of its own."
 
 clauses = [
-  "Link classification and resource handling — Dispatch sub-sections",
+  "Link classification and resource handling — Dispatch links",
   "Link classification and resource handling — Dispatched bundles",
-  "Adversarial acceptance fixtures — Dispatch",
 ]
 
 [invocation]

@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 A code span naming `[[page]]` is prose about a wiki link rather than one.

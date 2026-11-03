@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Checks
 
-Each check is planned [→](plan.md#steps).
+Each check is planned [↳ Steps](plan.md#steps).

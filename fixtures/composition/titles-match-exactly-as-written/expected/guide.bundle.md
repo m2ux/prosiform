@@ -1,10 +1,12 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Each menu is stated whole: [read](#read-1), [write](#write-1) and [list](#list-1).
 
 ## Prepare
 
-Read [→](#read), write [→](#write) and list [→](#list).
+Read [Café](#read), write [Café](#write) and list [Café](#list).
 
 ### Café
 

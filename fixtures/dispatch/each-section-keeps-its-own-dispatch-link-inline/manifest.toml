@@ -1,0 +1,15 @@
+description = "Each section dispatching a target keeps its link inline where it is written, with its mark, and two sections dispatching one target link its one bundle file; no section gains a sub-section."
+
+clauses = [
+  "Link classification and resource handling — Dispatch links",
+  "Link classification and resource handling — Dispatched bundles",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md", "expected/review.bundle.md"]
+diagnostics = []

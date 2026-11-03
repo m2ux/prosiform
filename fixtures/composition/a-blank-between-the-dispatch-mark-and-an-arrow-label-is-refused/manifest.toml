@@ -1,0 +1,21 @@
+description = "A dispatch mark and a blank before an arrow label leave an arrow label, which the run refuses, naming the link and pointing at the composition mark, before its place is read; no bundle is published."
+
+clauses = [
+  "Section composition — Operator marks",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["arrow"]
+reference = "⇉ →"
+source = "guide.md:8"
+chain = ["guide.md", "step.md#output"]

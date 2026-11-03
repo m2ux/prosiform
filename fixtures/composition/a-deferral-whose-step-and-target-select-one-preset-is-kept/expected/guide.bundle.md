@@ -1,8 +1,10 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 ## Fetch the page offline
 
-Its body is composed by a later run [→](#fetch).
+Its body is composed by a later run [Implementation offline](#fetch).
 
 ### Implementation offline
 

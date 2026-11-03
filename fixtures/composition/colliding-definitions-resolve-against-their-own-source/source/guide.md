@@ -7,6 +7,6 @@ Each call is stated whole in its own document: [read](read.md). The guide follow
 
 ## Prepare
 
-Read the path [→](read.md#inputs), keeping to the [spec].
+Read the path [↳ Inputs](read.md#inputs), keeping to the [spec].
 
 [spec]: style.md

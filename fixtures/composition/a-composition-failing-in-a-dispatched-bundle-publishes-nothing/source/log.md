@@ -5,7 +5,7 @@ prosiform: {}
 
 ## Record
 
-Record the path [→](read.md#inputs).
+Record the path [↳ Inputs](read.md#inputs).
 
 ### Inputs
 

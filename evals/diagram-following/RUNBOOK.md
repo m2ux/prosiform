@@ -150,27 +150,27 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Harness | `claude` |
 | Model | `claude-haiku-5-5`, named by the user on 2026-11-03. |
 | Spending cap | USD 5 for every live run of the shakedown together. |
-| Sessions | 74: the default matrix's 74 cells, one repetition. |
+| Sessions | 76: the default matrix's 76 cells, one repetition. |
 | Session cap | 1 130 000 tokens: the first run's largest session, 560 936 tokens, doubled and rounded up to the next 10 000. |
-| Token budget | 83 620 000 tokens: 74 times the session cap. |
-| Estimate | USD 0.41: 74 sessions at the first run's mean of USD 0.005429 a session. |
+| Token budget | 85 880 000 tokens: 76 times the session cap. |
+| Estimate | USD 0.41: 76 sessions at the first run's mean of USD 0.005429 a session. |
 | Run | `baseline-shakedown`, 2026-11-03: at a 400 000-token session cap, stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap. |
 | Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). The shakedown is repeated once I10:E06's guide states the marker a returned question opens with. |
 
 ```bash
-make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 83620000 --run-id baseline-shakedown'
+make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 85880000 --run-id baseline-shakedown'
 ```
 
 ## Edge Run
 
-The edge workflows on every harness carrying a shell, run by [I10:E04](https://github.com/m2ux/prosiform/issues/579) W14 and shaken down by E04 W16. The edge workflows and the `staged` form arrive with E04's earlier rows.
+The edge workflows on every harness carrying a shell, run by [I10:E04](https://github.com/m2ux/prosiform/issues/579) W14 and shaken down by E04 W16. The edge workflows arrive with E04's earlier rows.
 
 | Item | Value |
 | --- | --- |
 | Harnesses | `cursor` and `opencode`: one run each. |
 | Model | The model this runbook records for the baseline, as each harness names it. |
 | Workflows | The edge workflows E04 adds. |
-| Forms | The forms the edge workflows are written in: `staged`, and `bootstrap` for a bootstrapping skill. |
+| Forms | The forms the edge workflows are written in: `compiled`, and `bootstrap` for a bootstrapping skill. |
 | Repetitions | 5 |
 | Sessions | Per harness, the cells the run prints times 5. |
 | Session cap | Set by E04 W16's shakedown, by the proof's rule. |
@@ -179,5 +179,5 @@ The edge workflows on every harness carrying a shell, run by [I10:E04](https://g
 | Committed | Each harness's `report.json` as `evals/diagram-following/composition-edges-<harness>.json` and its `report.md` beside it. `baseline.json` and `mvp-proof.json` are untouched. |
 
 ```bash
-make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms staged,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'
+make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms compiled,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'
 ```

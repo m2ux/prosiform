@@ -1,0 +1,15 @@
+description = "A dispatch in a level-6 section publishes in place with its mark, because a dispatch link needs no sub-section; only a set takes one."
+
+clauses = [
+  "Link classification and resource handling — Dispatch links",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/publish.bundle.md"]
+diagnostics = []

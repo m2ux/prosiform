@@ -1,0 +1,16 @@
+description = "A dispatched bundle carrying a deferred directive's generated inline-target line opens with the run-pf line, as the entry's bundle does."
+
+clauses = [
+  "Link classification and resource handling — The run-pf line",
+  "Section composition — Deferred composition",
+  "Adversarial acceptance fixtures — Run-pf line",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/steps.bundle.md"]
+diagnostics = []
