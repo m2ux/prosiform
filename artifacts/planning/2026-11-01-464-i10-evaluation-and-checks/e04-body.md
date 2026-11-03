@@ -32,10 +32,10 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 
 | Task | Description | Coverage | Depends on | Joins | Done |
 | --- | --- | --- | --- | --- | --- |
-| [W01](https://github.com/m2ux/prosiform/pull/621) | Scenarios stating the `pf` runs a session makes | AC1 | | W02, W03, W04 | |
-| [W02](https://github.com/m2ux/prosiform/pull/621) | The `staged` form for shell harnesses | AC2, AC3, AC22 | | W01, W03, W04 | |
-| [W03](https://github.com/m2ux/prosiform/pull/621) | A session held to its stated runs | AC4 | | W01, W02, W04 | |
-| [W04](https://github.com/m2ux/prosiform/pull/621) | Sub-agent starts and commands at every depth | AC5 | [I10:E02:W02](https://github.com/m2ux/prosiform/issues/456) | W01, W02, W03 | |
+| [W01](https://github.com/m2ux/prosiform/pull/621) | Scenarios stating the `pf` runs a session makes | AC1 | | W02, W03, W04 | ✓ |
+| [W02](https://github.com/m2ux/prosiform/pull/621) | The `staged` form for shell harnesses | AC2, AC3, AC22 | | W01, W03, W04 | ✓ |
+| [W03](https://github.com/m2ux/prosiform/pull/621) | A session held to its stated runs | AC4 | | W01, W02, W04 | ✓ |
+| [W04](https://github.com/m2ux/prosiform/pull/621) | Sub-agent starts and commands at every depth | AC5 | [I10:E02:W02](https://github.com/m2ux/prosiform/issues/456) | W01, W02, W03 | ✓ |
 | [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w05.md) | A scenario bootstrapping a skill's `↳` link | AC6 | W01 | W06, W07 | |
 | [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w06.md) | Scenarios activating conditional and nested deferrals | AC7, AC8 | W01, W02 | W05, W07 | |
 | [W07](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w07.md) | A scenario deferring under matched presets | AC9 | W01, W02, [I09:E04:W11](https://github.com/m2ux/prosiform/issues/460) | W05, W06 | |
@@ -51,11 +51,11 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** A scenario's `scenarios.toml` states each `pf` run a correct session and each of its sub-agents makes, in order and with its arguments, and the corpus test refuses a stated run naming no document of the workflow's sources, as the corpus test `make harness` runs shows.
-- [ ] **AC2.** A `staged` session receives the workflow's compiled bundle set with the build under test as `pf` on its path, as a harness test `make harness` runs shows.
-- [ ] **AC3.** A run gives a `staged` session only where its `--forms` names `staged` and its harness carries a shell, as a harness test `make harness` runs shows.
-- [ ] **AC4.** A session whose trace is its path with every action done fails with a class the scorer names where its `pf` runs omit one its scenario states, add one on a deferred line its path did not reach, or come in another order, as a scorer test `make harness` runs shows.
-- [ ] **AC5.** The session record lists each sub-agent's starts and shell commands under the section it followed, at every dispatch depth the harness's stream reports, as a harness test over a recorded transcript `make harness` runs shows.
+- [x] **AC1.** A scenario's `scenarios.toml` states each `pf` run a correct session and each of its sub-agents makes, in order and with its arguments, and the corpus test refuses a stated run naming no document of the workflow's sources, as the corpus test `make harness` runs shows.
+- [x] **AC2.** A `staged` session receives the workflow's compiled bundle set with the build under test as `pf` on its path, as a harness test `make harness` runs shows.
+- [x] **AC3.** A run gives a `staged` session only where its `--forms` names `staged` and its harness carries a shell, as a harness test `make harness` runs shows.
+- [x] **AC4.** A session whose trace is its path with every action done fails with a class the scorer names where its `pf` runs omit one its scenario states, add one on a deferred line its path did not reach, or come in another order, as a scorer test `make harness` runs shows.
+- [x] **AC5.** The session record lists each sub-agent's starts and shell commands under the section it followed, at every dispatch depth the harness's stream reports, as a harness test over a recorded transcript `make harness` runs shows.
 - [ ] **AC6.** A `bootstrap` scenario whose skill entry declares no `prosiform` and holds a hand-written `[↳ <title>](<path>)` link states bare `pf`, then `pf` on that link's path, then the path the compiled target walks, as the corpus test `make harness` runs shows.
 - [ ] **AC7.** A workflow whose bundle holds a `↳` line generated from `[¬→]` under a conditional step carries a scenario whose input reaches the line and states `pf` on its path, and one whose input does not and states no such run, as the corpus test `make harness` runs shows.
 - [ ] **AC8.** A workflow whose activated bundle holds a further `↳` line carries a scenario whose path needs the nested content and states `pf` on that line, and one whose path does not and states no such run, as the corpus test `make harness` runs shows.
@@ -71,7 +71,7 @@ The diagram-following eval measures how an agent follows a bundle, but no workfl
 - [ ] **AC18.** A scenario whose bundles at the second and third hop carry a deferred dispatch or a `↳` line states each such sub-agent's bare `pf` run before its `pf` run on that line, as the corpus test `make harness` runs shows.
 - [ ] **AC20.** Each harness carrying a shell has a committed edge-case record, `composition-edges-<harness>.json`, carrying a cell for every model of the default matrix, form and scenario of the edge workflows, as a comparison of the records against those workflows shows.
 - [ ] **AC21.** The eval's README states the `staged` form, each edge workflow and scenario, and the pass rates each edge-case record holds, as an inspection of the README against the corpus and the records show.
-- [ ] **AC22.** A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's `pf` run, as a harness test `make harness` runs shows.
+- [x] **AC22.** A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's `pf` run, as a harness test `make harness` runs shows.
 - [ ] **AC23.** Every class the scorer gains for a session's `pf` runs has an entry in `RUNBOOK.md`'s triage rubric, as a read of the rubric against the scorer shows.
 - [ ] **AC24.** Each edge-case record gives every failing session the triage rubric's disposition, as the records show.
 - [ ] **AC25.** `RUNBOOK.md`'s edge-run runbook carries a shakedown over the edge workflows on each harness carrying a shell, whose measured cost sets its budget, and each rubric entry for a `pf`-run class decides a shakedown session or is recorded as produced by none, as the file shows.

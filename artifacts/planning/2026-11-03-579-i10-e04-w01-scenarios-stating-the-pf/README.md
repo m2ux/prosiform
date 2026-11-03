@@ -17,6 +17,7 @@ This record holds its delivery of `AC1,AC2,AC3,AC4,AC5,AC22`: the work item, the
 | [W03](w03.md) | The check holding a session to its stated runs, and its three classes |
 | [W04](w04.md) | Each sub-agent's starts and commands attributed in the session record, and each harness's declared depth |
 | [Validation](validation.md) | Each check the work items name, the revision it ran at and what it showed, and the findings it raised |
+| [Change list](change-list.md) | The plan changes the session applied and those it held |
 
 ## Links
 
@@ -25,3 +26,6 @@ This record holds its delivery of `AC1,AC2,AC3,AC4,AC5,AC22`: the work item, the
 | Epic | [I10:E04 Composition Following](https://github.com/m2ux/prosiform/issues/579) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
+| Pull request | [#621](https://github.com/m2ux/prosiform/pull/621) |
+| Review pull request | [#622](https://github.com/m2ux/prosiform/pull/622) |
+| Arising issue | [#623](https://github.com/m2ux/prosiform/issues/623) |
