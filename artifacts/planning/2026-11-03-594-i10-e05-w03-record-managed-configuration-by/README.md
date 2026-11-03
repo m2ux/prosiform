@@ -13,11 +13,13 @@ This record holds its delivery of `AC9`: the work item, the validation evidence 
 | Artifact | What it holds |
 | --- | --- |
 | [w03.md](w03.md) | The work item and its validation of every check |
+| [change-list.md](change-list.md) | The plan changes this session applied and held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Epic | [I10:E05 MVP Proof](https://github.com/m2ux/prosiform/issues/594) |
+| Pull request | [#615](https://github.com/m2ux/prosiform/pull/615) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
