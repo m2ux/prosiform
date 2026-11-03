@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 Each call is stated whole in its own document: [read](#read-1). The guide follows its [style](#style).

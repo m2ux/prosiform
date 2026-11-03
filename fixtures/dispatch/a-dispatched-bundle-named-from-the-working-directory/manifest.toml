@@ -1,10 +1,8 @@
-description = "A dispatched target's bundle is named by the target's path from the invocation working directory and the fragment the link resolved, rather than the path its author wrote, so a target named through a parent segment and one whose path carries a space each publish under that name and the sub-section names it."
+description = "A dispatched target's bundle is named by the target's path from the invocation working directory and the fragment the link resolved, rather than the path its author wrote, so a target named through a parent segment and one whose path carries a space each publish under that name and the link points at that file."
 
 clauses = [
   "Link classification and resource handling — Dispatched bundles",
   "Link classification and resource handling — Dispatch sub-sections",
-  "Automatic output names, a dispatched target named by its own selection",
-  "Adversarial acceptance fixtures — Dispatch",
 ]
 
 [invocation]

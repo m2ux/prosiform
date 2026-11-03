@@ -4,12 +4,11 @@ The corpus declares what a run publishes. These are the cases beneath
 it: the heading one path generates, the escaping that keeps that heading
 literal, the regions a selection carries into a group, the headings a
 partial selection needs above it, and the two decisions a group makes
-about its own headings, and the Prosiform section a dispatching bundle
-opens with.
+about its own headings, and the run-pf line and dispatch links a bundle
+carries.
 """
 
 import json
-import re
 from collections.abc import Mapping
 from contextlib import chdir
 from io import StringIO
@@ -30,11 +29,7 @@ from prosiform.bundle import (
     rewrite,
 )
 from prosiform.cli import INPUT_FAILURE, SUCCESS, main
-from prosiform.dispatch import (
-    DISPATCH_PROTOCOL,
-    HEADING_COLLISION,
-    PARALLEL_PROTOCOL,
-)
+from prosiform.dispatch import HEADING_COLLISION
 from prosiform.heading import title_cased
 from prosiform.profile import parse
 from prosiform.provenance import STRUCTURAL_ANCESTOR, Origin
@@ -547,14 +542,13 @@ def test_a_diagram_click_outside_the_selection_keeps_its_source_path() -> None:
 
 
 DECLARED = "---\nprosiform: {}\n---\n"
-DISPATCHING = f"# Prosiform\n\n## Dispatch\n\n{DISPATCH_PROTOCOL}\n\n"
-TOGETHER = f"## Parallel dispatch\n\n{PARALLEL_PROTOCOL}\n\n"
-PLAN = "[Dispatch](#dispatch) `plan.bundle.md` to a sub-agent."
-SET = (
-    "Dispatch these bundles together, each to a sub-agent, per "
-    "[parallel dispatch](#parallel-dispatch):"
+RUN_PF = (
+    "Before reading on, run `pf` with no arguments and follow the guide it prints.\n\n"
 )
-PROTOCOL = re.compile(r"^## (?:Parallel d|D)ispatch\n\n[^\n]*\n", re.MULTILINE)
+IN_PARALLEL = (
+    "Give each of these to its own sub-agent at the same time, and continue "
+    "when all have answered:"
+)
 
 
 def compiled(
@@ -576,9 +570,7 @@ def compiled(
     return status, bundles, errors.getvalue()
 
 
-def test_a_bundle_using_the_dispatch_operator_opens_with_its_protocol(
-    tmp_path: Path,
-) -> None:
+def test_every_bundle_opens_with_the_run_pf_line(tmp_path: Path) -> None:
     status, bundles, _ = compiled(
         tmp_path,
         {
@@ -588,53 +580,13 @@ def test_a_bundle_using_the_dispatch_operator_opens_with_its_protocol(
         "guide.md",
     )
     assert status == SUCCESS
-    assert bundles["guide.bundle.md"] == (
-        f"{DISPATCHING}# Guide\n\nRun [plan](#dispatch-plan).\n\n"
-        f"## Dispatch plan\n\n{PLAN}\n"
-    )
-    assert bundles["plan.bundle.md"] == "# Plan\n"
+    assert bundles == {
+        "guide.bundle.md": f"{RUN_PF}# Guide\n\nRun [\u21c9 plan](plan.bundle.md).\n",
+        "plan.bundle.md": f"{RUN_PF}# Plan\n",
+    }
 
 
-def test_a_bundle_using_the_parallel_mark_states_both_protocols(
-    tmp_path: Path,
-) -> None:
-    status, bundles, _ = compiled(
-        tmp_path,
-        {
-            "guide.md": DECLARED + "# Guide\n\nRun [\u2afd plan](plan.md).\n",
-            "plan.md": DECLARED + "# Plan\n",
-        },
-        "guide.md",
-    )
-    assert status == SUCCESS
-    assert bundles["guide.bundle.md"] == (
-        f"{DISPATCHING}{TOGETHER}# Guide\n\nRun [plan](#dispatch-in-parallel).\n\n"
-        f"## Dispatch in parallel\n\n{SET}\n\n- `plan.bundle.md` (plan)\n"
-    )
-
-
-def test_a_bundle_using_both_operators_states_each_protocol_once(
-    tmp_path: Path,
-) -> None:
-    status, bundles, _ = compiled(
-        tmp_path,
-        {
-            "guide.md": DECLARED
-            + "# Guide\n\n## One\n\nRun [\u21c9 plan](plan.md).\n\n"
-            "## Two\n\nRun [\u2afd plan](plan.md).\n",
-            "plan.md": DECLARED + "# Plan\n",
-        },
-        "guide.md",
-    )
-    assert status == SUCCESS
-    bundle = bundles["guide.bundle.md"]
-    assert bundle.startswith(f"{DISPATCHING}{TOGETHER}# Guide\n")
-    assert bundle.count("# Prosiform") == 1
-    assert bundle.count(f"## Dispatch\n\n{DISPATCH_PROTOCOL}") == 1
-    assert bundle.count(f"## Parallel dispatch\n\n{PARALLEL_PROTOCOL}") == 1
-
-
-def test_a_bundle_using_neither_operator_carries_no_prosiform_section(
+def test_a_bundle_dispatching_nothing_opens_with_the_run_pf_line(
     tmp_path: Path,
 ) -> None:
     status, bundles, _ = compiled(
@@ -647,11 +599,11 @@ def test_a_bundle_using_neither_operator_carries_no_prosiform_section(
     )
     assert status == SUCCESS
     assert bundles["guide.bundle.md"] == (
-        "# Guide\n\nSee [plan](#plan).\n\n# Plan\n\nGo.\n"
+        f"{RUN_PF}# Guide\n\nSee [plan](#plan).\n\n# Plan\n\nGo.\n"
     )
 
 
-def test_the_prosiform_section_precedes_a_file_heading(tmp_path: Path) -> None:
+def test_the_run_pf_line_precedes_a_file_heading(tmp_path: Path) -> None:
     status, bundles, _ = compiled(
         tmp_path,
         {
@@ -662,14 +614,11 @@ def test_the_prosiform_section_precedes_a_file_heading(tmp_path: Path) -> None:
     )
     assert status == SUCCESS
     assert bundles["guide__run.bundle.md"] == (
-        f"{DISPATCHING}# Guide\n\n### Run\n\nRun [plan](#dispatch-plan).\n\n"
-        f"#### Dispatch plan\n\n{PLAN}\n"
+        f"{RUN_PF}# Guide\n\n### Run\n\nRun [\u21c9 plan](plan.bundle.md).\n"
     )
 
 
-def test_the_prosiform_section_follows_a_preamble_and_precedes_its_dispatch(
-    tmp_path: Path,
-) -> None:
+def test_the_run_pf_line_precedes_a_preamble(tmp_path: Path) -> None:
     status, bundles, _ = compiled(
         tmp_path,
         {
@@ -681,12 +630,11 @@ def test_the_prosiform_section_follows_a_preamble_and_precedes_its_dispatch(
     )
     assert status == SUCCESS
     assert bundles["guide.bundle.md"] == (
-        f"Intro [plan](#dispatch-plan).\n\n{DISPATCHING}"
-        f"# Dispatch plan\n\n{PLAN}\n\n# Guide\n\nBody.\n"
+        f"{RUN_PF}Intro [\u21c9 plan](plan.bundle.md).\n\n# Guide\n\nBody.\n"
     )
 
 
-def test_the_prosiform_section_precedes_a_titled_entry_members_title(
+def test_the_run_pf_line_precedes_a_titled_entry_members_title(
     tmp_path: Path,
 ) -> None:
     member = "---\nprosiform: {default: {group: {notes: 2}}}\n---\n"
@@ -702,50 +650,127 @@ def test_the_prosiform_section_precedes_a_titled_entry_members_title(
     )
     assert status == SUCCESS
     assert bundles["guide.bundle.md"].startswith(
-        f"Intro.\n\n{DISPATCHING}# Guide\n\nAbove.\n\n## Run\n"
+        f"{RUN_PF}Intro.\n\n# Guide\n\nAbove.\n\n## Run\n"
     )
 
 
-@pytest.mark.parametrize(
-    ("operator", "heading"),
-    [
-        ("\u21c9", "Dispatch"),
-        ("\u2afd", "Dispatch"),
-        ("\u2afd", "Parallel dispatch"),
-    ],
-)
-def test_an_authored_heading_equal_to_a_protocol_pf_emits_is_refused(
-    tmp_path: Path, operator: str, heading: str
-) -> None:
-    status, bundles, errors = compiled(
+def test_a_dispatch_in_a_nested_section_stays_inline(tmp_path: Path) -> None:
+    status, bundles, _ = compiled(
         tmp_path,
         {
-            "guide.md": DECLARED + f"# Guide\n\nRun [{operator} plan](plan.md).\n\n"
-            f"## {heading}\n\nMine.\n",
+            "guide.md": DECLARED
+            + "# Guide\n\n## One\n\nRun [\u21c9 plan](plan.md).\n\n"
+            "## Two\n\nRun [\u21c9 plan](plan.md).\n",
             "plan.md": DECLARED + "# Plan\n",
         },
         "guide.md",
     )
-    assert status == INPUT_FAILURE
-    assert bundles == {}
-    [diagnostic] = [json.loads(line) for line in errors.splitlines()]
-    assert diagnostic["code"] == HEADING_COLLISION
+    assert status == SUCCESS
+    assert bundles["guide.bundle.md"] == (
+        f"{RUN_PF}# Guide\n\n## One\n\nRun [\u21c9 plan](plan.bundle.md).\n\n"
+        "## Two\n\nRun [\u21c9 plan](plan.bundle.md).\n"
+    )
+
+
+def test_a_set_of_two_points_at_one_in_parallel_sub_section(
+    tmp_path: Path,
+) -> None:
+    status, bundles, _ = compiled(
+        tmp_path,
+        {
+            "guide.md": DECLARED
+            + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n",
+            "plan.md": DECLARED + "# Plan\n",
+            "check.md": DECLARED + "# Check\n",
+        },
+        "guide.md",
+    )
+    assert status == SUCCESS
+    assert bundles["guide.bundle.md"] == (
+        f"{RUN_PF}# Guide\n\nRun [plan](#in-parallel) and [check](#in-parallel).\n\n"
+        f"## In parallel\n\n{IN_PARALLEL}\n\n"
+        "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n"
+    )
+
+
+def test_a_set_of_one_target_publishes_as_an_inline_dispatch(
+    tmp_path: Path,
+) -> None:
+    status, bundles, _ = compiled(
+        tmp_path,
+        {
+            "guide.md": DECLARED
+            + "# Guide\n\nRun [\u2afd plan](plan.md) then "
+            "[\u2afd the plan again](plan.md).\n",
+            "plan.md": DECLARED + "# Plan\n",
+        },
+        "guide.md",
+    )
+    assert status == SUCCESS
+    assert bundles["guide.bundle.md"] == (
+        f"{RUN_PF}# Guide\n\n"
+        "Run [\u21c9 plan](plan.bundle.md) then "
+        "[\u21c9 the plan again](plan.bundle.md).\n"
+    )
+
+
+def test_a_dispatch_link_publishes_with_its_mark_and_one_blank(
+    tmp_path: Path,
+) -> None:
+    status, bundles, _ = compiled(
+        tmp_path,
+        {
+            "guide.md": DECLARED + "# Guide\n\nRun [ \u21c9   plan](plan.md).\n",
+            "plan.md": DECLARED + "# Plan\n",
+        },
+        "guide.md",
+    )
+    assert status == SUCCESS
+    assert bundles["guide.bundle.md"].endswith("Run [\u21c9 plan](plan.bundle.md).\n")
+
+
+def test_a_bundle_using_both_operators_carries_no_protocol(
+    tmp_path: Path,
+) -> None:
+    status, bundles, _ = compiled(
+        tmp_path,
+        {
+            "guide.md": DECLARED
+            + "# Guide\n\n## One\n\nRun [\u21c9 plan](plan.md).\n\n"
+            "## Two\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n",
+            "plan.md": DECLARED + "# Plan\n",
+            "check.md": DECLARED + "# Check\n",
+        },
+        "guide.md",
+    )
+    assert status == SUCCESS
+    bundle = bundles["guide.bundle.md"]
+    assert bundle.startswith(f"{RUN_PF}# Guide\n")
+    assert "# Prosiform" not in bundle
+    assert bundle.count("In parallel\n") == 1
+    assert "\u2afd" not in bundle
 
 
 @pytest.mark.parametrize(
     ("operator", "heading"),
     [
-        ("", "Dispatch"),
-        ("\u21c9 ", "Parallel dispatch"),
+        ("\u21c9", "Prosiform"),
+        ("\u21c9", "Dispatch"),
+        ("\u21c9", "Dispatch plan"),
+        ("\u2afd", "Prosiform"),
+        ("\u2afd", "Parallel dispatch"),
+        ("\u21c9", "In parallel"),
+        ("", "In parallel"),
     ],
 )
-def test_an_authored_protocol_heading_pf_does_not_emit_publishes(
+def test_an_authored_heading_pf_does_not_emit_publishes(
     tmp_path: Path, operator: str, heading: str
 ) -> None:
+    mark = f"{operator} " if operator else ""
     status, bundles, _ = compiled(
         tmp_path,
         {
-            "guide.md": DECLARED + f"# Guide\n\nRun [{operator}plan](plan.md).\n\n"
+            "guide.md": DECLARED + f"# Guide\n\nRun [{mark}plan](plan.md).\n\n"
             f"## {heading}\n\nMine.\n",
             "plan.md": DECLARED + "# Plan\n",
         },
@@ -755,41 +780,21 @@ def test_an_authored_protocol_heading_pf_does_not_emit_publishes(
     assert f"## {heading}\n\nMine.\n" in bundles["guide.bundle.md"]
 
 
-def test_each_protocol_is_the_same_bytes_in_two_corpora(tmp_path: Path) -> None:
-    first, second = tmp_path / "first", tmp_path / "second"
-    first.mkdir()
-    second.mkdir()
-    _, one, _ = compiled(
-        first,
+def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
+    tmp_path: Path,
+) -> None:
+    status, bundles, errors = compiled(
+        tmp_path,
         {
-            "skill/guide.md": DECLARED + "# Guide\n\n## Act\n\n"
-            "Run [\u21c9 plan](plan.md) and [\u2afd review](review.md#code).\n",
-            "skill/plan.md": DECLARED
-            + "# Plan\n\nRun [\u2afd review](review.md#tests).\n",
-            "skill/review.md": DECLARED
-            + "# Review\n\n## Code\n\nRead.\n\n## Tests\n\nRun.\n",
+            "guide.md": DECLARED
+            + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
+            "## In parallel\n\nMine.\n",
+            "plan.md": DECLARED + "# Plan\n",
+            "check.md": DECLARED + "# Check\n",
         },
-        "skill/guide.md",
+        "guide.md",
     )
-    _, other, _ = compiled(
-        second,
-        {
-            "mode.md": DECLARED + "Opening [\u2afd check](check.md).\n\n"
-            "# Mode\n\n### Deep\n\nThen [\u21c9 check](check.md).\n",
-            "check.md": DECLARED + "# Check\n\nDone.\n",
-        },
-        "mode.md",
-    )
-    stated = [
-        PROTOCOL.findall(bundle)
-        for bundle in (
-            one["skill_guide.bundle.md"],
-            one["skill_plan.bundle.md"],
-            other["mode.bundle.md"],
-        )
-    ]
-    expected = [
-        f"## Dispatch\n\n{DISPATCH_PROTOCOL}\n",
-        f"## Parallel dispatch\n\n{PARALLEL_PROTOCOL}\n",
-    ]
-    assert stated == [expected, expected, expected]
+    assert status == INPUT_FAILURE
+    assert bundles == {}
+    [diagnostic] = [json.loads(line) for line in errors.splitlines()]
+    assert diagnostic["code"] == HEADING_COLLISION

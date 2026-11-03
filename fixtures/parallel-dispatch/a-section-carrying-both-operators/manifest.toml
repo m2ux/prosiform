@@ -1,9 +1,8 @@
-description = "A section carrying a dispatch and a parallel set carries a Dispatch sub-section for the dispatched target and one Dispatch in parallel sub-section for its set, after it and before the section's child sections."
+description = "A section carrying a dispatch and a parallel set keeps the dispatch link inline and points its set at one In parallel sub-section after the section's content and before its child sections."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",
   "Link classification and resource handling — Dispatch sub-sections",
-  "Adversarial acceptance fixtures — Parallel dispatch",
 ]
 
 [invocation]

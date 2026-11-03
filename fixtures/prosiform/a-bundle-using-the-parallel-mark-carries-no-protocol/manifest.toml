@@ -1,0 +1,16 @@
+description = "A bundle whose only operator is the parallel dispatch mark opens with the run-pf line and points its set at one In parallel sub-section whose items link the dispatched files, with no Prosiform section and no protocol paragraph."
+
+clauses = [
+  "Link classification and resource handling — The Prosiform section",
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Prosiform section",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/review__source.bundle.md", "expected/review__tests.bundle.md"]
+diagnostics = []

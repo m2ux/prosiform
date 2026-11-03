@@ -1,0 +1,15 @@
+description = "A bundle carries no Prosiform section, so an authored heading reading Prosiform publishes in a bundle that dispatches, with no diagnostic."
+
+clauses = [
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/plan.bundle.md"]
+diagnostics = []

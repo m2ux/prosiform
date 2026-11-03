@@ -1,4 +1,4 @@
-description = "A dispatched link with no text after its mark leaves its sub-section nothing to be named by, so the run publishes nothing and fails, naming the link."
+description = "A dispatched link with no text after its mark shows its reader nothing, so the run publishes nothing and fails, naming the link."
 
 clauses = [
   "Link classification and resource handling — Dispatch sub-sections",

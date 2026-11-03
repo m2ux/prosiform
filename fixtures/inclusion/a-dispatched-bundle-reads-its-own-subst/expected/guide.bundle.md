@@ -1,16 +1,8 @@
-# Prosiform
-
-## Dispatch
-
-Hand the named bundle to one sub-agent with the invoking step's inputs, to follow from its start, and continue with its result. A dispatched run asks nothing: it returns each question, with its context and options, unanswered. The dispatching session puts that question to the user, or returns it in turn when itself dispatched, then dispatches again with the answers.
+Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 # Guide
 
-Follow [the rules](#stub), then apply [the task](#dispatch-the-task).
-
-## Dispatch the task
-
-[Dispatch](#dispatch) `task.bundle.md` to a sub-agent.
+Follow [the rules](#stub), then apply [⇉ the task](task.bundle.md).
 
 # Stub
 

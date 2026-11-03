@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 The guide names [the runner](#guide-runner) its own definition points at, and

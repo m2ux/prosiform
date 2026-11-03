@@ -50,7 +50,7 @@ from markdown_it.common.utils import unescapeAll
 from markdown_it.token import Token
 
 from prosiform.profile import is_markdown
-from prosiform.source import ENCODING, external, regions, uses
+from prosiform.source import ANCHOR, ENCODING, external, regions, uses
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
@@ -653,9 +653,9 @@ def withholding(opening: str) -> bool:
     recognize and a renderer knowing nothing of this tool shows the
     link.
 
-    No mark reaches the bundle: a deferral's destination states when
-    the material is compiled, and a dispatch's sub-section states who
-    compiles it.
+    A deferral's destination states when the material is compiled, and
+    a dispatch's file or `In parallel` sub-section states who compiles
+    it.
     """
     return deferred(opening) or dispatched(opening)
 
@@ -663,20 +663,46 @@ def withholding(opening: str) -> bool:
 def unmarked(text: str, raw: bool = False) -> str:
     """One link's text as the bundle publishes it, with its operator's marks taken off.
 
-    A deferral states when the material is compiled, and its destination
-    states that already; a dispatch states who compiles it, and the
-    sub-section its link points at states that. Every mark is authoring
-    syntax rather than content, so they go with the blanks that are their
-    spacing, and a deferred directive keeps its label alone.
+    Every mark is authoring syntax rather than content, so they go with
+    the blanks that are their spacing, and a deferred directive keeps
+    its label alone.
 
     Text opening with no operator is the author's prose and is returned
     as written. Raw text is the label as its source spelled it.
 
     The caller applies it where the bundle gave the link a destination
-    of its own, which is where that destination states the withholding.
+    of its own, which is where that destination states the withholding;
+    `published_text` decides the dispatches that keep their mark.
     """
     found = opened(text, raw)
     return text if found is None else text[found.after :]
+
+
+def filed(destination: str) -> bool:
+    """Whether a destination the bundle gave a dispatch names a file beside it."""
+    return not destination.startswith(ANCHOR)
+
+
+def published_text(text: str, file: bool, raw: bool = False) -> str:
+    """One link's text as the bundle publishes it, given whether it points at a file.
+
+    A dispatch pointing at a bundle file keeps its mark, written as the
+    dispatch mark and the one blank after it: that mark is what tells an
+    agent the file is handed to a sub-agent. A `⫽` link whose set holds
+    one target points at the file too, so it publishes as that dispatch.
+    Every other operator's marks go, with the blanks that are their
+    spacing, because the destination states what they stated: a path for
+    a deferral and the `In parallel` sub-section for a set.
+
+    Raw text is the label as its source spelled it.
+    """
+    found = opened(text, raw)
+    if found is None:
+        return text
+    rest = text[found.after :]
+    if file and found.marks in (DISPATCH_MARK, PARALLEL_MARK):
+        return f"{DISPATCH_MARK}{SPACE}{rest}"
+    return rest
 
 
 def directive(label: str | None) -> bool:

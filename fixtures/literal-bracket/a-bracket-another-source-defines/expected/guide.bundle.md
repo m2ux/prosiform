@@ -1,3 +1,5 @@
+Before reading on, run `pf` with no arguments and follow the guide it prints.
+
 # Guide
 
 A literal [runner] this source defines nothing for, beside the
