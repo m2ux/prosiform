@@ -13,14 +13,18 @@ finds, so the corpus is held to an empty list and a copy of it broken on
 purpose is held to a fault.
 """
 
+import itertools
+import json
 import re
 import shutil
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
+from harness import Start
 from ruamel.yaml import YAML
-from score import SUB_AGENT_TRACE
+from run import errored
+from score import ACTIONS, SUB_AGENT_TRACE, SUBAGENTS, TRACE, Failure, score
 from workflow import (
     AUTHORED_FORM,
     BOOTSTRAP,
@@ -31,6 +35,7 @@ from workflow import (
     EDGE,
     ENTRY,
     FENCE,
+    FEWER,
     FORMS,
     FRONTMATTER,
     LINKED_FORM,
@@ -66,6 +71,7 @@ BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 CORPUS = workflows()
 DISPATCHING = [workflow for workflow in CORPUS if COMPILED_FORM in workflow.forms]
 DRAWING = [workflow for workflow in CORPUS if DIAGRAM in workflow.forms]
+LINKING = [workflow for workflow in CORPUS if LINKED_FORM in workflow.forms]
 FEATURES = ["group-placement", "preset-selection", "subst-redirect"]
 """The workflows whose sources use a feature that changes what `pf` emits."""
 
@@ -479,6 +485,8 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
         "linear",
         "looping",
         "preset-selection",
+        "pricing",
+        "rework",
         "section-composition",
         "section-entry",
         "subst-redirect",
@@ -1046,10 +1054,11 @@ def test_a_linked_decision_resolves_its_branch_through_the_document(
     assert any("two-rounds" in fault for fault in faults)
 
 
-@pytest.mark.parametrize("workflow", ["branching", "looping"])
-def test_the_linked_bundle_draws_no_branch_label(workflow: str, tmp_path: Path) -> None:
+@pytest.mark.parametrize("form", LINKING, ids=lambda item: item.name)
+def test_the_linked_bundle_draws_no_branch_label(
+    form: Workflow, tmp_path: Path
+) -> None:
     """A bundle of the linked form carries its entry's flowchart unlabelled."""
-    form = read_workflow(WORKFLOWS / workflow)
     assert bundle(form, LINKED_FORM, tmp_path).returncode == 0
     drawn = [
         body
@@ -1263,4 +1272,206 @@ def test_a_document_declaring_under_the_undeclared_directory_is_a_fault(
     assert declaration_faults(tmp_path) == [
         f"declared-inclusion/{DIAGRAM}/{UNDECLARED}/handover.md declares prosiform"
         f" under {UNDECLARED}/"
+    ]
+
+
+UNHELD = "Unheld"
+"""A state name no diagram of the corpus holds, which an invented state enters."""
+
+
+def scored(
+    workflow: Workflow,
+    scenario: Scenario,
+    workspace: Path,
+    trace: tuple[str, ...],
+    starts: tuple[Start, ...],
+    undone: str = "",
+    compiled: bool | None = None,
+) -> Failure | None:
+    """The class a workspace holding one trace and its actions is scored."""
+    workspace.mkdir(parents=True)
+    (workspace / TRACE).write_text("".join(f"{state}\n" for state in trace))
+    (workspace / ACTIONS).mkdir()
+    for state in trace:
+        if state in workflow.walked and state != undone:
+            name, value = workflow.walked[state].action
+            (workspace / ACTIONS / name).write_text(f"{value}\n")
+    (workspace / SUBAGENTS).write_text(
+        json.dumps({"starts": [start.record() for start in starts]})
+    )
+    return score(workflow, scenario, workspace, compiled).failure
+
+
+def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]:
+    """Every class a session of one scenario can be scored.
+
+    A session is given the scenario's path with one departure each: an action
+    left undone, the last state left out, a state the diagram does not hold,
+    any diagram state entered at any index of the path or after its end, the
+    sources followed without compiling them in a form that must, and a
+    dispatch record missing, split or answered in a sub-agent's place. A
+    session whose agent reported an error is `errored` on any scenario.
+    """
+    path = scenario.path
+    correct = tuple(
+        Start(due.section, due.returned, due.together) for due in scenario.trace
+    )
+    workspaces = (root / str(index) for index in itertools.count())
+
+    def departing(
+        trace: tuple[str, ...],
+        starts: tuple[Start, ...] = correct,
+        undone: str = "",
+        compiled: bool | None = None,
+    ) -> Failure | None:
+        return scored(
+            workflow, scenario, next(workspaces), trace, starts, undone, compiled
+        )
+
+    found = {
+        errored(workflow, scenario).failure,
+        departing(path, undone=path[0]),
+        departing(path[:-1]),
+        departing((*path[:1], UNHELD)),
+    }
+    states = sorted(workflow.diagram.states)
+    for index in range(len(path) + 1):
+        due = path[index] if index < len(path) else None
+        found |= {departing((*path[:index], state)) for state in states if state != due}
+    if BOOTSTRAP in workflow.forms:
+        found.add(departing(path, compiled=False))
+    if correct:
+        found.add(departing(path, ()))
+        found.add(departing(path, tuple(replace(s, together=False) for s in correct)))
+        found.add(departing(path, tuple(replace(s, returned="done") for s in correct)))
+    return {failure for failure in found if failure is not None}
+
+
+def unreached(corpus: list[Workflow], root: Path) -> list[str]:
+    """Each failure class the scorer defines that no scenario of a corpus produces."""
+    reached: set[Failure] = set()
+    for workflow in corpus:
+        for scenario in workflow.scenarios:
+            reached |= produced(
+                workflow, scenario, root / workflow.name / scenario.name
+            )
+    return [
+        f"no scenario produces {failure}"
+        for failure in Failure
+        if failure not in reached
+    ]
+
+
+def test_every_failure_class_is_produced_by_some_scenario(tmp_path: Path) -> None:
+    """AC1: each class the scorer defines, and `errored`, has a scenario."""
+    assert unreached(CORPUS, tmp_path) == []
+
+
+def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
+    linear = [workflow for workflow in CORPUS if workflow.name == "linear"]
+    assert unreached(linear, tmp_path) == [
+        f"no scenario produces {failure}"
+        for failure in (
+            Failure.WRONG_BRANCH,
+            Failure.LOOP_MISCOUNT,
+            Failure.UNDISPATCHED,
+            Failure.SEQUENTIAL_SET,
+            Failure.UNRELAYED_QUESTION,
+            Failure.UNBOOTSTRAPPED,
+        )
+    ]
+
+
+def decided(workflow: Workflow, scenario: Scenario) -> list[str]:
+    """The states of a scenario's path whose section decides between two edges."""
+    return [
+        state
+        for state in dict.fromkeys(scenario.path)
+        if (transition := workflow.walked[state].transition) is not None
+        and transition.condition is not None
+    ]
+
+
+def test_a_path_meets_a_second_decision_after_its_first() -> None:
+    """Pricing reads each decision's own input, so a branch is not carried over."""
+    pricing = next(workflow for workflow in CORPUS if workflow.name == "pricing")
+    for scenario in pricing.scenarios:
+        assert decided(pricing, scenario) == ["Screen", "Price"], scenario.name
+    branches = {
+        tuple(
+            scenario.path[scenario.path.index(state) + 1]
+            for state in ("Screen", "Price")
+        )
+        for scenario in pricing.scenarios
+    }
+    assert branches == {("Hold", "Invoice"), ("Price", "Discount")}
+
+
+def test_a_loop_counts_four_rounds_of_a_state_reached_only_through_a_link() -> None:
+    """Rework's bound counts Retest, which no click names, over four rounds."""
+    rework = next(workflow for workflow in CORPUS if workflow.name == "rework")
+    transition = rework.walked["Measure"].transition
+    assert transition is not None and transition.condition is not None
+    counted = FEWER.match(transition.condition)
+    assert counted is not None and counted.group(1) == "Retest"
+    assert rework.diagram.states - set(rework.diagram.clicks) == {"Retest"}
+    linked = f"]({Path(document('Retest')).name})"
+    for form in rework.forms:
+        assert linked in rework.sections[form]["Rework"].body, form
+    assert max(scenario.path.count("Retest") for scenario in rework.scenarios) == 4
+
+
+def test_a_drawn_state_no_edge_leads_to_is_linked_from_a_terminal_section() -> None:
+    """Refund is drawn and linked from Invoice, and no edge leads to it."""
+    pricing = next(workflow for workflow in CORPUS if workflow.name == "pricing")
+    entered = {edge.target for edge in pricing.diagram.edges}
+    assert pricing.diagram.states - entered == {"Refund"}
+    linked = f"]({Path(document('Refund')).name})"
+    for form in pricing.forms:
+        assert linked in pricing.sections[form]["Invoice"].body, form
+    assert all("Refund" not in scenario.path for scenario in pricing.scenarios)
+
+
+LINK = re.compile(r"\[[^\]]*\]\(([^)]*)\)")
+"""A link a bundle carries, with its destination."""
+
+
+def link_faults(workflow: Workflow, output: Path) -> list[str]:
+    """Each link the linked form's bundle leaves naming a document.
+
+    `pf` follows a link into a document declaring `prosiform` and rewrites it
+    to the heading it carries, so a destination still naming a file is a link
+    into a document that declares nothing.
+    """
+    run = bundle(workflow, LINKED_FORM, output)
+    if run.returncode != 0:
+        return [f"pf exited {run.returncode}"]
+    text = (output / workflow.entry_bundle).read_text()
+    return [
+        f"the linked bundle leaves {destination} as written"
+        for destination in LINK.findall(text)
+        if not destination.startswith("#")
+    ]
+
+
+@pytest.mark.parametrize("workflow", LINKING, ids=lambda item: item.name)
+def test_every_link_the_linked_form_writes_compiles(
+    workflow: Workflow, tmp_path: Path
+) -> None:
+    """AC5: every document a linked form links declares `prosiform`."""
+    assert link_faults(workflow, tmp_path) == []
+
+
+def test_a_linked_rule_declaring_nothing_is_left_as_written(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "pricing",
+        f"{LINKED_FORM}/rules/c.md",
+        "---\nprosiform: {}\n---\n",
+        "",
+    )
+    output = tmp_path / "output"
+    output.mkdir()
+    assert link_faults(workflow, output) == [
+        "the linked bundle leaves ../rules/c.md as written"
     ]
