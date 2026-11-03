@@ -201,6 +201,41 @@ def test_claude_reads_blocks_of_one_message_as_together(tmp_path: Path) -> None:
     ]
 
 
+def test_claude_reads_the_report_inside_its_hand_back_frame(tmp_path: Path) -> None:
+    """The CLI frames each sub-agent's report; the return is read from the report."""
+
+    def framed(identifier: str, report: str) -> dict[str, object]:
+        text = (
+            "[Subagent hand-back] The text below is the final report of a "
+            "subagent. The report follows:\n"
+            + "".join(f"  {line}\n" for line in report.splitlines())
+            + "agentId: a1\n<usage>subagent_tokens: 9</usage>"
+        )
+        return {
+            "type": "user",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": identifier,
+                        "content": [{"type": "text", "text": text}],
+                    }
+                ]
+            },
+        }
+
+    held = transcript(
+        tmp_path,
+        [
+            claude_call("a", "draft#choose"),
+            framed("a", "Question: which provider?\nOptions: north, south."),
+            claude_call("b", "draft#choose"),
+            framed("b", "Wrote actions/draft.txt."),
+        ],
+    )
+    assert [start.returned for start in Claude().starts(held)] == ["question", "done"]
+
+
 def test_cursor_reads_starts_from_task_calls(tmp_path: Path) -> None:
     """A Cursor start is a `taskToolCall`, and its return is its steps' text."""
     held = transcript(

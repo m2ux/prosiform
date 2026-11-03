@@ -10,10 +10,14 @@ transcript ending in a `result` message carrying usage, each model's usage
 and a cost.
 
 A workflow that dispatches takes an `Agent` call per sub-agent start the
-scenario states, each naming its section as `<document>#<heading>`, with
-the outcome the scenario gives it. The entries a scenario marks `together`
-share one assistant message, so they read as started at once, and each
-call is answered by a `tool_result` carrying `question` or `done`. Where its
+scenario states, each naming its section as `<document>#<heading>`. The
+entries a scenario marks `together` share one assistant message, printed as
+the CLI prints it, one event per call carrying the message's id, so they
+read as started at once. Each call is answered by a `tool_result` carrying
+the sub-agent's report inside the CLI's hand-back frame, opening `Question`
+or `Done`. A scenario stating answers has each sub-agent return a question,
+then starts it again, and that start returns done; a sub-agent that returned
+done writes its section's action. Where its
 instruction names the sub-agent trace, each call's prompt hands that name on,
 and each sub-agent writes the trace its prompt names and no other.
 
@@ -27,8 +31,8 @@ The environment scripts it:
   that read the protocol and ignored it does;
 - `STUB_AGENT_SEQUENTIAL`: when set, it starts every sub-agent in a message
   of its own, as an agent running a set one after another does;
-- `STUB_AGENT_ANSWER`: when set, every sub-agent returns `done`, as one
-  whose question the session answered in the sub-agent's place does;
+- `STUB_AGENT_ANSWER`: when set, a sub-agent's returned question is not
+  started again, as a session answering it in the sub-agent's place does;
 - `STUB_AGENT_LOG`: a directory to which it writes, per session, the files
   its workspace held on starting, its arguments, its prompt, the names of
   its environment's variables and its `CLAUDE_CONFIG_DIR`;
@@ -54,7 +58,7 @@ import time
 import uuid
 from pathlib import Path
 
-from harness import QUESTION as RETURNED_QUESTION
+from harness import DONE, HANDBACK, QUESTION
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
 from workflow import Scenario, Workflow, walk, workflows
 
@@ -107,22 +111,43 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
     """The sub-agent starts a session makes: a section, its return and a set flag.
 
     The flag marks an entry the scenario states started beside the one above
-    it, which is where a set's members share one message. An agent that ran
-    the set in sequence or skipped every dispatch is scripted here, so the
-    scorer's checks have a trace to classify.
+    it, which is where a set's members share one message. A scenario stating
+    answers has each sub-agent ask first and the session start it again with
+    the answers. An agent that ran the set in sequence, skipped every
+    dispatch or answered a question in the sub-agent's place is scripted
+    here, so the scorer's checks have a trace to classify.
     """
     if item is None or os.environ.get("STUB_AGENT_NO_DISPATCH"):
         return []
-    answer = os.environ.get("STUB_AGENT_ANSWER")
+    answering = bool(os.environ.get("STUB_AGENT_ANSWER"))
     sequential = bool(os.environ.get("STUB_AGENT_SEQUENTIAL"))
-    return [
-        (
-            entry.section,
-            answer or entry.returned,
-            entry.together and not sequential,
-        )
-        for entry in item.trace
-    ]
+    made: list[tuple[str, str, bool]] = []
+    for entry in item.trace:
+        together = entry.together and not sequential
+        if not item.answers:
+            made.append((entry.section, DONE, together))
+            continue
+        made.append((entry.section, QUESTION, together))
+        if not answering:
+            made.append((entry.section, DONE, False))
+    return made
+
+
+def write_sub_agent_actions(
+    workspace: Path, item: Scenario | None, started: list[tuple[str, str, bool]]
+) -> None:
+    """Write each sub-agent's action, where a start of its section returned done."""
+    finished = {section for section, returned, _ in started if returned == DONE}
+    for entry in item.trace if item else ():
+        if entry.action is not None and entry.section in finished:
+            name, value = entry.action
+            (workspace / ACTIONS / name).write_text(f"{value}\n")
+
+
+def framed(report: str) -> str:
+    """A sub-agent's report inside the hand-back frame Claude Code prints."""
+    lines = "".join(f"  {line}\n" for line in report.splitlines())
+    return f"[Subagent hand-back] A subagent's final report. {HANDBACK}\n{lines}"
 
 
 def handed(section: str, instruction: str) -> str:
@@ -169,32 +194,34 @@ def transcript_of(
 ) -> list[dict[str, object]]:
     """The assistant and user messages a session's sub-agent starts print.
 
-    Two starts together share one assistant message, and each call is
-    answered on its own, so a reader recovers both the order and what each
-    sub-agent returned.
+    Two starts together share one assistant message, whose calls the CLI
+    prints one event each under the message's id, and each call is answered
+    on its own, so a reader recovers both the order and what each sub-agent
+    returned.
     """
     messages: list[dict[str, object]] = []
     made: list[tuple[str, str]] = []
-    group: list[dict[str, object]] = []
-
-    def flush() -> None:
-        if group:
-            messages.append({"type": "assistant", "message": {"content": list(group)}})
-            group.clear()
-
+    current = ""
     for start in started:
         _, returned, together = start
         identifier = f"toolu_{uuid.uuid4().hex[:12]}"
-        if not together:
-            flush()
-        group.append(message(identifier, start, instruction))
+        if not together or not current:
+            current = f"msg_{uuid.uuid4().hex[:12]}"
+        messages.append(
+            {
+                "type": "assistant",
+                "message": {
+                    "id": current,
+                    "content": [message(identifier, start, instruction)],
+                },
+            }
+        )
         made.append((identifier, returned))
-    flush()
     for identifier, returned in made:
-        text = (
-            "question: which provider should the draft name?"
-            if returned == RETURNED_QUESTION
-            else "done: the section is complete."
+        text = framed(
+            "Question: which provider should the draft name?"
+            if returned == QUESTION
+            else "Done: the section is complete."
         )
         messages.append(
             {
@@ -246,6 +273,7 @@ def main() -> int:
     write_sub_agent_traces(
         workspace, [handed(section, prompt) for section, _, _ in dispatch]
     )
+    write_sub_agent_actions(workspace, scenario_of(workflow, inputs), dispatch)
     hang = os.environ.get("STUB_AGENT_HANG")
     if hang and not Path(hang).exists():
         Path(hang).touch()

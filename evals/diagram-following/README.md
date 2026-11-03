@@ -50,15 +50,15 @@ The four dispatch scenarios say what a bundled workflow's dispatch protocol is f
 | `dispatch-chain` | `chain` | A section whose own step dispatches a second, so a run starts two sub-agents in order. |
 | `dispatch-set` | `parallel-set` | Two sections at once, so a run starts two sub-agents together. |
 | `dispatch-beside` | `set-beside-a-dispatch` | One section, then two more as a set of their own. |
-| `dispatch-question` | `returned-question` | A section returning a question, put to the user, then dispatched again with the answers. |
+| `dispatch-question` | `returned-question` | A section returning a question, answered from the scenario's `answers.txt`, then dispatched again with the answer. |
 
-A dispatch scenario's `scenarios.toml` names the trace a correct run produces beside the path it walks: one `[[scenario.trace]]` table per sub-agent start, in the order the walk dispatches it.
+Each dispatched section states an action, a file under `actions/` and the value it holds, as a state's section does, so a sub-agent's file is the evidence that it followed its section. A dispatch scenario's `scenarios.toml` names the trace a correct run produces beside the path it walks: one `[[scenario.trace]]` table per sub-agent start, in the order the walk dispatches it. A scenario whose sub-agent returns a question states its `answers`, which the run writes to `answers.txt` in the session's workspace; the instruction tells the session the user's answers are there, and the sub-agent's action holds the answer it was handed back.
 
 | Field | Meaning |
 | --- | --- |
 | `dispatch` | The section the sub-agent follows, as `<document>#<heading>`. Both forms name a section, so one trace is the trace of both. |
-| `returned` | What the sub-agent gave back: `done`, or `question` for one it returned unanswered. |
 | `together` | Whether it started beside the entry above it, which marks every member of a set but the one opening it. |
+| `action` | The `file` under `actions/` the section has the sub-agent write, and the `value` it holds. |
 
 The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: the operator states the dispatch and the `Dispatch` protocol `pf` publishes from it states what to do, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
 
@@ -101,7 +101,7 @@ A session records each state it enters as a line of `trace.log` and does each st
 
 | Class | The session |
 | --- | --- |
-| `missing_action` | walked the path and left a state's action undone or wrong. |
+| `missing_action` | walked the path and left a state's action undone or wrong, or, in a dispatch scenario, a sub-agent's. |
 | `unbootstrapped` | walked the path with every action done, in the `bootstrap` form, without running `pf`. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
@@ -126,15 +126,18 @@ Each failure class the scorer defines is produced by some scenario, and the corp
 
 ### Dispatch checks
 
-A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. Each entry names the section a sub-agent followed, what it returned and whether it started beside the entry above it.
+A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. Each entry names the section a sub-agent followed, what it returned and whether it started beside the entry above it. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when the report opens with the word and `done` otherwise.
+
+The checks hold the dispatch's shape, then the session's handling of each return as the dispatch protocol states it: a start returning `done` moves the session on, and one returning a question is started again with the answers. Each sub-agent's action is then held as a state's is.
 
 | Class | The session |
 | --- | --- |
 | `undispatched` | left a bundle the scenario dispatches without a sub-agent, or started them in another order. |
 | `sequential_set` | started a set's bundles across more than one message, rather than its opener first and every later member alongside it in that message. |
-| `unrelayed_question` | answered a sub-agent's returned question in its own place, returning `done` where the scenario states `question`. |
+| `unrelayed_question` | went on from a sub-agent's returned question without starting it again with the answers. |
+| `missing_action` | left a sub-agent's action unwritten or wrong, named in the verdict's `actions`. |
 
-The three are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier. A scenario that dispatches nothing passes all three.
+The four are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier. A scenario that dispatches nothing passes all four.
 
 A run in which every session it started took `errored` is **refused**. No session entered a state, so the matrix is no result, and its pass rates would read a spent login as a matrix of failing agents. `run.json` records `"state": "refused"` and a `reason`, and its report names both instead of giving tables or comparing pass rates. The reason is one session's own `result` text, so a reader sees the limit the agent reported. A run its budget stopped part way is refused on the same terms, since the sessions it never started add nothing its errored ones lack; one where some sessions errored on a genuine fault beside sessions that entered a state is a completed run whose failures are its result. The boundary is decided once the sessions settle, before `run.json` is written.
 

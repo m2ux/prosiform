@@ -62,6 +62,7 @@ from workflow import (
     instruction,
     read_workflow,
     reported,
+    section_body,
     stray,
     walk,
     workflows,
@@ -761,10 +762,7 @@ def test_the_dispatch_scenarios_are_the_chain_the_set_the_pair_and_the_question(
 def test_a_chain_dispatches_one_target_from_each_of_two_sections() -> None:
     chain = next(item for item in DISPATCHING if item.name == "dispatch-chain")
     [scenario] = chain.scenarios
-    assert [(entry.section, entry.returned) for entry in scenario.trace] == [
-        ("plan#work", "done"),
-        ("review#check", "done"),
-    ]
+    assert [entry.section for entry in scenario.trace] == ["plan#work", "review#check"]
 
 
 def test_a_parallel_set_starts_its_second_target_beside_its_first() -> None:
@@ -786,12 +784,33 @@ def test_a_set_beside_a_dispatch_states_the_dispatch_then_the_set() -> None:
     ]
 
 
-def test_a_returned_question_is_dispatched_again_with_the_answers() -> None:
+def test_a_returned_question_is_answered_from_the_scenarios_answers() -> None:
+    """The sub-agent asks, and its action shows the answer it was handed back."""
     question = next(item for item in DISPATCHING if item.name == "dispatch-question")
     [scenario] = question.scenarios
-    asked, answered = scenario.trace
-    assert asked.section == answered.section == "draft#choose"
-    assert (asked.returned, answered.returned) == ("question", "done")
+    [asked] = scenario.trace
+    assert asked.section == "draft#choose"
+    assert asked.action is not None
+    _, value = asked.action
+    assert f"`{value}`" in scenario.answers
+    for form in question.forms:
+        body = section_body(question.form(form), "draft.md", "choose")
+        assert f"`{value}`" in body and "return that question" in body
+
+
+def test_each_dispatched_section_states_the_action_its_trace_entry_holds() -> None:
+    """A sub-agent's evidence is a file it writes, as a state's is."""
+    for workflow in DISPATCHING:
+        [scenario] = workflow.scenarios
+        for entry in scenario.trace:
+            assert entry.action is not None, (workflow.name, entry.section)
+            name, value = entry.action
+            document, _, heading = entry.section.partition("#")
+            for form in workflow.forms:
+                body = section_body(workflow.form(form), f"{document}.md", heading)
+                assert f"`actions/{name}`" in body, (workflow.name, form, name)
+                if not scenario.answers:
+                    assert f"containing `{value}`" in body, (workflow.name, form)
 
 
 def test_the_compiled_form_publishes_a_bundle_per_target_and_the_authored_none(
@@ -914,8 +933,8 @@ def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
         tmp_path,
         "dispatch-set",
         "scenarios.toml",
-        'dispatch = "review#tests"\nreturned = "done"\ntogether = true\n',
-        'dispatch = "review#tests"\nreturned = "done"\n',
+        'dispatch = "review#tests"\ntogether = true\n',
+        'dispatch = "review#tests"\n',
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
     assert len(faults) == len(DISPATCH_FORMS) and all(
@@ -1313,9 +1332,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     session whose agent reported an error is `errored` on any scenario.
     """
     path = scenario.path
-    correct = tuple(
-        Start(due.section, due.returned, due.together) for due in scenario.trace
-    )
+    correct = tuple(Start(due.section, "done", due.together) for due in scenario.trace)
     workspaces = (root / str(index) for index in itertools.count())
 
     def departing(
@@ -1343,7 +1360,9 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     if correct:
         found.add(departing(path, ()))
         found.add(departing(path, tuple(replace(s, together=False) for s in correct)))
-        found.add(departing(path, tuple(replace(s, returned="done") for s in correct)))
+        found.add(
+            departing(path, tuple(replace(s, returned="question") for s in correct))
+        )
     return {failure for failure in found if failure is not None}
 
 

@@ -46,7 +46,10 @@ value, and the path a correct run walks. A dispatch form's scenario also
 lists the trace a correct run produces: one `[[scenario.trace]]` table per
 sub-agent start, in the order the walk dispatches them, naming the section
 the sub-agent follows as the document and heading it was compiled from,
-what it returned, and `together` on each entry of a set started at once.
+`together` on each entry of a set started at once, and the `action` its
+section states, as the `file` under `actions/` and the `value` it holds. A
+scenario whose sub-agent returns a question states its `answers`, the text
+a run writes to `answers.txt` for the session to hand back.
 A run writes each input to `inputs/<name>` as the value followed by a
 newline, and a condition reads the file with surrounding whitespace removed.
 
@@ -417,27 +420,33 @@ class Dispatch:
 
     `section` is the document and heading the sub-agent follows, as
     `<document>#<heading>`, since an author and the profile both name the
-    target's section rather than the bundle it compiles to. `returned` is
-    what it gave back, and `together` marks an entry of a set started
-    beside the entry above it.
+    target's section rather than the bundle it compiles to. `together` marks
+    an entry of a set started beside the entry above it. `action` is the
+    file under `actions/` the section has the sub-agent write and the value
+    it holds; a section stating no action carries none, and nothing is
+    checked for it.
     """
 
     section: str
-    returned: str
     together: bool
+    action: tuple[str, str] | None = None
 
 
 @dataclass(frozen=True)
 class Scenario:
     """One run's inputs, the path a correct run walks and its dispatch trace.
 
-    `trace` is empty for a form that dispatches nothing.
+    `trace` is empty for a form that dispatches nothing. `answers` is what a
+    run writes to `answers.txt`, the user's answers to a question a
+    sub-agent returns; it is empty where no sub-agent asks, and no file is
+    written.
     """
 
     name: str
     inputs: dict[str, str]
     path: tuple[str, ...]
     trace: tuple[Dispatch, ...] = ()
+    answers: str = ""
 
 
 @dataclass(frozen=True)
@@ -756,9 +765,16 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
             dict(entry["inputs"]),
             tuple(entry["path"]),
             tuple(
-                Dispatch(row["dispatch"], row["returned"], row.get("together", False))
+                Dispatch(
+                    row["dispatch"],
+                    row.get("together", False),
+                    (row["action"]["file"], row["action"]["value"])
+                    if "action" in row
+                    else None,
+                )
                 for row in entry.get("trace", ())
             ),
+            entry.get("answers", ""),
         )
         for entry in entries
     )
@@ -1165,8 +1181,9 @@ def dispatch_walk(
     Each state on the path dispatches the targets its section's steps name,
     and a dispatched section dispatches its own targets in turn, so the walk
     is the source's statement of which sub-agents start, in what order, and
-    which of them start together. What each returned is the scenario's to
-    state, since it is the sub-agent's to give.
+    which of them start together. What each returns is the sub-agent's to
+    give, and a returned question's second start is the session's answer to
+    it, so neither is part of the walk.
     """
     root = workflow.form(form)
     trace: list[tuple[str, bool]] = []

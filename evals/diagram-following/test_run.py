@@ -22,7 +22,7 @@ from typing import Any
 
 import pytest
 import workflow as source
-from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Opencode
+from harness import HARNESSES, MANAGED_SETTINGS, Claude, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -94,7 +94,7 @@ DEPARTURES: dict[str, tuple[str, dict[str, Failure | None]]] = {
         },
     ),
     "STUB_AGENT_ANSWER": (
-        DONE,
+        "1",
         {
             "chain": None,
             "parallel-set": None,
@@ -209,11 +209,14 @@ def material(session: Session) -> set[str]:
 
     A bundled form's entry bundle is `workflow.md`, and every other bundle
     of its set sits beside it under the name `pf` gave it. A form read as a
-    source tree gives its own files.
+    source tree gives its own files. A scenario stating answers adds
+    `answers.txt`.
     """
     workflow = CORPUS[session.workflow]
     scenario = next(i for i in workflow.scenarios if i.name == session.scenario)
     inputs = {f"inputs/{name}" for name in scenario.inputs}
+    if scenario.answers:
+        inputs.add("answers.txt")
     if session.form in BUNDLED:
         return (
             {ENTRY}
@@ -431,7 +434,10 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
         assert trace == verdict["actual"]
         action_files = {path.name for path in (directory / ACTIONS).iterdir()}
         workflow = CORPUS[session.workflow]
-        assert action_files == {workflow.walked[state].action[0] for state in trace}
+        [scenario] = (i for i in workflow.scenarios if i.name == session.scenario)
+        assert action_files == {workflow.walked[state].action[0] for state in trace} | {
+            entry.action[0] for entry in scenario.trace if entry.action
+        }
 
 
 def test_a_failing_session_is_recorded_with_its_failure(
@@ -1334,8 +1340,8 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
     assert record["trace"] == [
         {
             "section": entry.section,
-            "returned": entry.returned,
             "together": entry.together,
+            "action": None if entry.action is None else list(entry.action),
         }
         for entry in scenario.trace
     ]
@@ -1398,7 +1404,9 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
     and written to `subagents.json`, so the scorer reads the record rather
     than opening the transcript again. Each entry names the section the
     sub-agent followed, what it returned and whether it started beside the
-    entry above it, and the session passes on its path and its record.
+    entry above it. The scenario's sub-agent returns a question, the session
+    starts it again with the answers in `answers.txt`, and the session passes
+    on its path, its record and the sub-agent's action.
     """
     eval_run(
         tmp_path,
@@ -1412,12 +1420,12 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
         path.name for path in directory.iterdir()
     }
     [scenario] = CORPUS["dispatch-question"].scenarios
-    assert read_starts(directory) == tuple(
-        Start(entry.section, entry.returned, entry.together) for entry in scenario.trace
+    [entry] = scenario.trace
+    assert read_starts(directory) == (
+        Start(entry.section, "question", False),
+        Start(entry.section, "done", False),
     )
     assert record["verdict"]["passed"] is True
-    stated = json.loads((directory / SUBAGENTS).read_text())
-    assert stated["starts"][0]["returned"] == "question"
 
 
 def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
@@ -1560,8 +1568,8 @@ def test_a_run_that_ran_a_set_in_sequence_is_sequential_set(
 def test_a_question_the_session_answered_is_unrelayed_question(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A sub-agent's question returned as done is answered in its place."""
-    monkeypatch.setenv("STUB_AGENT_ANSWER", "done")
+    """A sub-agent's question not started again is answered in its place."""
+    monkeypatch.setenv("STUB_AGENT_ANSWER", "1")
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-question"),
@@ -1571,7 +1579,7 @@ def test_a_question_the_session_answered_is_unrelayed_question(
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "unrelayed_question"
     directory = session_of(record).directory(tmp_path / "results" / "test")
-    assert [start.returned for start in read_starts(directory)] == ["done", "done"]
+    assert [start.returned for start in read_starts(directory)] == ["question"]
 
 
 def test_a_dispatch_run_that_stopped_short_is_unfinished(

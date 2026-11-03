@@ -37,10 +37,19 @@ def scenario(workflow: str, name: str) -> Scenario:
 
 
 def starts_of(item: Scenario) -> list[Start]:
-    """The sub-agent starts a correct run of one scenario makes."""
-    return [
-        Start(entry.section, entry.returned, entry.together) for entry in item.trace
-    ]
+    """The sub-agent starts a correct run of one scenario makes.
+
+    A scenario stating answers has each sub-agent ask, and the session start
+    it again with the answers.
+    """
+    made: list[Start] = []
+    for entry in item.trace:
+        if item.answers:
+            made.append(Start(entry.section, "question", entry.together))
+            made.append(Start(entry.section, "done", False))
+        else:
+            made.append(Start(entry.section, "done", entry.together))
+    return made
 
 
 def record(held: Path, starts: list[Start]) -> Path:
@@ -58,7 +67,11 @@ def workspace(
     log: str | None = None,
     starts: list[Start] | None = None,
 ) -> Path:
-    """A workspace holding a trace, every action, and the sub-agent record."""
+    """A workspace holding a trace, every action, and the sub-agent record.
+
+    Every action is the path's states' and the sub-agents' the workflow's
+    scenarios state.
+    """
     if log is None:
         log = "".join(f"{state}\n" for state in trace)
     (tmp_path / TRACE).write_text(log)
@@ -66,6 +79,11 @@ def workspace(
     for state in set(trace) & workflow.diagram.states:
         name, value = workflow.walked[state].action
         (tmp_path / ACTIONS / name).write_text(f"{value}\n")
+    for item in workflow.scenarios:
+        for entry in item.trace:
+            if entry.action is not None:
+                name, value = entry.action
+                (tmp_path / ACTIONS / name).write_text(f"{value}\n")
     record(tmp_path, list(starts or []))
     return tmp_path
 
@@ -108,7 +126,7 @@ def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
     assert (verdict.passed, verdict.failure, len(read_starts(tmp_path))) == (
         True,
         None,
-        len(item.trace),
+        len(starts_of(item)),
     )
 
 
@@ -316,8 +334,8 @@ def test_a_bundle_dispatched_after_another_is_undispatched(
     verdict = dispatched(
         "dispatch-chain",
         [
-            Start(second.section, second.returned, False),
-            Start(first.section, first.returned, False),
+            Start(second.section, "done", False),
+            Start(first.section, "done", False),
         ],
         tmp_path,
     )
@@ -332,8 +350,8 @@ def test_a_set_started_one_after_another_is_sequential_set(
     verdict = dispatched(
         "dispatch-set",
         [
-            Start(first.section, first.returned, False),
-            Start(second.section, second.returned, False),
+            Start(first.section, "done", False),
+            Start(second.section, "done", False),
         ],
         tmp_path,
     )
@@ -350,14 +368,14 @@ def test_a_set_split_across_two_messages_is_sequential_set(tmp_path: Path) -> No
     [first, second] = CORPUS["dispatch-set"].scenarios[0].trace
     split = {
         "second message opened by another start": [
-            Start(first.section, first.returned, False),
+            Start(first.section, "done", False),
             Start("read the material", "done", False),
-            Start(second.section, second.returned, True),
+            Start(second.section, "done", True),
         ],
         "opener beside an earlier start": [
             Start("read the material", "done", False),
-            Start(first.section, first.returned, True),
-            Start(second.section, second.returned, False),
+            Start(first.section, "done", True),
+            Start(second.section, "done", False),
         ],
     }
     for name, starts in split.items():
@@ -372,8 +390,8 @@ def test_a_set_split_across_two_messages_is_sequential_set(tmp_path: Path) -> No
     together.mkdir()
     beside = [
         Start("read the material", "done", False),
-        Start(first.section, first.returned, True),
-        Start(second.section, second.returned, True),
+        Start(first.section, "done", True),
+        Start(second.section, "done", True),
     ]
     assert dispatched("dispatch-set", beside, together).passed
 
@@ -381,18 +399,40 @@ def test_a_set_split_across_two_messages_is_sequential_set(tmp_path: Path) -> No
 def test_a_question_answered_in_the_sub_agents_place_is_unrelayed(
     tmp_path: Path,
 ) -> None:
-    """AC3: a returned question the session answered takes `unrelayed_question`."""
-    [first, second] = CORPUS["dispatch-question"].scenarios[0].trace
-    assert first.returned != second.returned
+    """AC3: a returned question not started again takes `unrelayed_question`.
+
+    The protocol has the session put a returned question to the user and
+    start the sub-agent again with the answers; a session that went on
+    answered it in the sub-agent's place or left it unanswered.
+    """
+    [entry] = CORPUS["dispatch-question"].scenarios[0].trace
     verdict = dispatched(
-        "dispatch-question",
-        [
-            Start(first.section, second.returned, False),
-            Start(second.section, second.returned, False),
-        ],
-        tmp_path,
+        "dispatch-question", [Start(entry.section, "question", False)], tmp_path
     )
     assert (verdict.passed, verdict.failure) == (False, Failure.UNRELAYED_QUESTION)
+
+
+def test_a_start_returning_done_moves_the_session_on(tmp_path: Path) -> None:
+    """A sub-agent that returned done is not started again, whatever it was asked."""
+    [entry] = CORPUS["dispatch-question"].scenarios[0].trace
+    verdict = dispatched(
+        "dispatch-question", [Start(entry.section, "done", False)], tmp_path
+    )
+    assert verdict.passed is True
+
+
+def test_a_sub_agent_that_wrote_no_action_is_missing_action(tmp_path: Path) -> None:
+    """Each sub-agent's action is held as a state's is, named in the verdict."""
+    held = CORPUS["dispatch-set"]
+    [item] = held.scenarios
+    workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    (tmp_path / ACTIONS / "tests.txt").write_text("skimmed\n")
+    verdict = score(held, item, tmp_path)
+    assert (verdict.failure, verdict.divergence, verdict.actions) == (
+        Failure.MISSING_ACTION,
+        None,
+        ("tests.txt",),
+    )
 
 
 def test_a_run_that_stopped_short_is_unfinished_though_nothing_was_dispatched(
@@ -575,17 +615,17 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
     """AC17: a sub-agent's returned question reads as one when the run is scored.
 
     The session relayed the question rather than answering it, so its first
-    start returns `question` and the cell passes; read as `done`, the same
-    transcript would score as `unrelayed_question`.
+    start returns `question`, the second starts it again with the answers,
+    and the cell passes.
     """
     corpus = CORPUS["dispatch-question"]
     [item] = corpus.scenarios
-    [first, second] = item.trace
+    [entry] = item.trace
     held = transcript(
         tmp_path,
         [
-            opencode_task("a", "m1", first.section, "question: which option?"),
-            opencode_task("b", "m2", second.section, "done: chose the first"),
+            opencode_task("a", "m1", entry.section, "question: which option?"),
+            opencode_task("b", "m2", entry.section, "done: chose the first"),
         ],
     )
     records = tmp_path / "records"

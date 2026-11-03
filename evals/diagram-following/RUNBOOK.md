@@ -29,7 +29,7 @@ Each class the [scorer](score.py) defines, and `errored`:
 
 | Class | `miss` when | `defect` when | `unclear` when |
 | --- | --- | --- | --- |
-| `missing_action` | The state's section in the session's form names the file and value the scorer reads, and the transcript writes no such file or another value. | The form states another file or value than the scorer reads, or the transcript writes the right value and `actions/` lacks it. | The transcript's writes cannot be matched to the record. |
+| `missing_action` | The state's or dispatched section in the session's form names the file and value the scorer reads, and the transcript, the sub-agent's included, writes no such file or another value. | The form states another file or value than the scorer reads, `answers.txt` holds no answer the dispatched section can take, or the transcript writes the right value and `actions/` lacks it. | The transcript's writes cannot be matched to the record. |
 | `unbootstrapped` | The transcript runs no `pf` and the session read the sources directly. | The transcript runs `pf` and the verdict says it did not, or `stderr.log` shows no `pf` on the session's path. | The transcript's commands are absent or cut short. |
 | `unfinished` | The session ended on its own before the path's end: its `result` message claims completion, asks a question or gives up, and its exit status is not `timeout`. | The session was cut off while progressing: its exit status is `timeout` or its `result` names its session cap, with the transcript still walking states; or its trace went to a file other than `trace.log`. | The session timed out with no progress the transcript shows. |
 | `invented_state` | The name entered at `divergence` is no heading of the session's form, written though the form spells the state as the path does. | The session's form spells that state as the session wrote it, so the form and the path disagree. | The name is close to a heading in a way neither the form nor the instruction settles. |
@@ -39,7 +39,7 @@ Each class the [scorer](score.py) defines, and `errored`:
 | `invalid_transition` | The form draws no edge to the state entered, and the session stepped back, repeated a state or went on past a terminal one. | The form draws the edge the session took. | The transcript shows a retry the agent did not explain. |
 | `undispatched` | The transcript holds no `Agent` call for a dispatched section, or holds them in another order, while the form states the dispatch. | The transcript holds the `Agent` calls in the scenario's order and `subagents.json` omits or reorders them. | A `Agent` call names its section in a way the instruction does not settle. |
 | `sequential_set` | The transcript starts the set's members across more than one assistant message. | The transcript starts them in one message and `subagents.json` records them apart. | The stream's message boundaries are absent. |
-| `unrelayed_question` | The sub-agent's answer in the transcript opens with a question, and the session answered it in its own place. | The sub-agent returned no question where the scenario states one, or `subagents.json` reads the return otherwise than the transcript holds it. | The answer's text is cut off. |
+| `unrelayed_question` | The sub-agent's report in the transcript opens with a question, and the session went on without starting it again with the answers. | `subagents.json` reads the return otherwise than the report inside the transcript's hand-back frame holds it. | The report's text is cut off. |
 | `errored` | Never: the session entered no state. | The `result` text or `stderr.log` names the cause: a refusal, a spent or expired login, an unknown model or flag, a crash, a provider error. | Neither names a cause. |
 
 ### Dispositions File
@@ -155,7 +155,7 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Token budget | 83 620 000 tokens: 74 times the session cap. |
 | Estimate | USD 0.41: 74 sessions at the first run's mean of USD 0.005429 a session. |
 | Run | `baseline-shakedown`, 2026-11-03: at a 400 000-token session cap, stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap. |
-| Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). The shakedown is repeated once #637 is settled. |
+| Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). The shakedown is repeated once I10:E06's guide states the marker a returned question opens with. |
 
 ```bash
 make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 83620000 --run-id baseline-shakedown'

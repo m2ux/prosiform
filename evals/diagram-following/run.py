@@ -2,8 +2,10 @@
 
 A run starts one headless agent session per model, workflow, scenario, form
 and repetition. Each session works in a fresh temporary workspace holding
-only its form's material as `workflow.md`, and `inputs/` holding the
-scenario's inputs, each as the value followed by a newline. The forms are:
+only its form's material as `workflow.md`, `inputs/` holding the
+scenario's inputs, each as the value followed by a newline, and
+`answers.txt` holding the scenario's answers where it states any. The
+forms are:
 
 - `bundle`: the diagram form bundled by `pf`, as one file;
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
@@ -166,6 +168,7 @@ from workflow import (
 
 RESULTS = ROOT / "results"
 INPUTS = "inputs"
+ANSWERS = "answers.txt"
 TRANSCRIPT = "transcript.jsonl"
 STDERR = "stderr.log"
 EVAL_ROOT = Path("~/projects/eval/prosiform")
@@ -429,7 +432,7 @@ def prepare(
     form: str,
     sets: dict[tuple[str, str], dict[str, bytes]],
 ) -> None:
-    """Lay out a workspace with one form's material and a scenario's inputs.
+    """Lay out a workspace with one form's material, a scenario's inputs and answers.
 
     A bundled form's entry bundle is the document the instruction names, and
     every other bundle in its set is written beside it under the name `pf`
@@ -451,6 +454,8 @@ def prepare(
     (workspace / INPUTS).mkdir()
     for name, value in scenario.inputs.items():
         (workspace / INPUTS / name).write_text(f"{value}\n")
+    if scenario.answers:
+        (workspace / ANSWERS).write_text(f"{scenario.answers}\n")
 
 
 def keep(workspace: Path, records: Path) -> None:

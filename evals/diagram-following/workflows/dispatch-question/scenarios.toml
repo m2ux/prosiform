@@ -1,18 +1,17 @@
 # A scenario is the inputs a run is given, the path a correct run walks, and the
 # sub-agents a correct run starts. Each input is a file under inputs/ holding
 # the value written, then a newline. A trace entry names the section a
-# sub-agent follows, in the order the walk dispatches it, what it returned, and
-# whether it started beside the entry above it.
+# sub-agent follows, in the order the walk dispatches it, whether it started
+# beside the entry above it, and the action file and value its section states.
+# A scenario whose sub-agent returns a question states the answers a run
+# writes to answers.txt.
 
 [[scenario]]
 name = "returned-question"
 path = ["Enquire", "Confirm"]
 inputs = {}
+answers = "Use the provider `south`."
 
 [[scenario.trace]]
 dispatch = "draft#choose"
-returned = "question"
-
-[[scenario.trace]]
-dispatch = "draft#choose"
-returned = "done"
+action = { file = "draft.txt", value = "south" }

@@ -29,6 +29,7 @@ import hashlib
 import json
 import re
 import sys
+import textwrap
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
@@ -124,6 +125,28 @@ def messages(transcript: Path) -> list[dict[str, object]]:
         if isinstance(held, dict):
             found.append(held)
     return found
+
+
+HANDBACK = "The report follows:"
+"""The words closing the frame Claude Code puts around a sub-agent's report.
+
+The report follows them, each of its lines indented, and the frame's own
+text precedes them, so a return is read from what follows.
+"""
+
+
+def unframed(content: object) -> str:
+    """A sub-agent's report, taken from inside the CLI's hand-back frame.
+
+    A return carrying no frame is the report whole.
+    """
+    if isinstance(content, list):
+        content = " ".join(
+            part.get(TEXT, "") for part in content if isinstance(part, dict)
+        )
+    text = content if isinstance(content, str) else ""
+    _, framed, report = text.partition(HANDBACK)
+    return textwrap.dedent(report) if framed else text
 
 
 def said(text: object) -> str:
@@ -433,7 +456,8 @@ class Claude:
         message as an event of its own carrying the message's `id`, so a
         start is together with the one before it when both carry one id. A
         start's target is the `description` its input carries, naming the
-        section handed over.
+        section handed over, and its return is the report inside the CLI's
+        hand-back frame.
         """
         found: dict[str, tuple[str, bool]] = {}
         returned: dict[str, str] = {}
@@ -469,7 +493,7 @@ class Claude:
                         continue
                     key = block.get(CALL_ID)
                     if isinstance(key, str):
-                        returned[key] = said(block.get("content"))
+                        returned[key] = said(unframed(block.get("content")))
         return tuple(
             Start(target, returned.get(key, DONE), together)
             for key, (target, together) in found.items()
