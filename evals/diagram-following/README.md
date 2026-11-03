@@ -128,11 +128,16 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
 
-Neither flag suppresses a plugin's hooks, so the preflight refuses a run whose config directory would let one reach a session. It fails before the first session starts, naming the file to remove:
+Neither flag suppresses a plugin's hooks or a settings file's, so the preflight refuses a run whose settings would let one reach a session. It fails before the first session starts, naming the file to remove. Each file below is read from the scope shown, and a file holding only preferences is no refusal. Files in the eval's config directory are read under the user scope:
 
 - `plugins/installed_plugins.json` holding an installed plugin, whose `hooks/hooks.json` may declare a `SessionStart` hook;
 - `remote-settings.json` enabling a plugin in `enabledPlugins`, whose `env` the agent applies over the scrubbed environment, as the eval's own directory did with telemetry and an OTLP endpoint;
-- `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, and a settings file holding only preferences is no refusal, so the directory keeps its theme and model.
+- `settings.json` declaring a hook for any event in its `hooks` block, which delivers that command to a session with no plugin installed at all. The refusal names each event the block declares, so the directory keeps its theme and model.
+
+Files in a project's `.claude` directory are read under the project scope, `settings.local.json` being its untracked local variant. A file of either name declaring a hook for any event is refused, naming each event, from two places:
+
+- a workflow's form tree, the source a session's workspace is copied from, so the file reaches every session of that tree; remove the file from the tree;
+- the `.claude` directory of every ancestor of the workspaces, the workspace root `<eval-root>/workspaces` included, since Claude Code reads project settings from each directory on the path from a session's working directory to the filesystem root. Remove the file, or pass an `--eval-root` outside that ancestor, which moves the workspaces from under it.
 
 A run whose config directory holds no login fails the same way, naming the one-time login command.
 

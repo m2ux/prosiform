@@ -29,7 +29,10 @@ memory apart from the caller's; each session receives it as
 fails before it starts a session, naming the one-time login command, and so
 does one whose directory installs a plugin or whose remote settings enable
 one, naming the file that says so: a plugin's hooks reach a session before
-its first turn and no flag the runner passes suppresses them.
+its first turn and no flag the runner passes suppresses them. So does a
+settings file declaring a hook: the configuration directory's, a `.claude`
+settings file in a workflow's form tree, and one in the `.claude` directory of
+any ancestor of the workspaces, for which `--eval-root` names the remedy.
 
 The host's managed settings file belongs to its administrator and reaches
 every session wherever the configuration directory points, so the run
