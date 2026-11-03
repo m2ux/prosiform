@@ -1,0 +1,16 @@
+# A scenario is the inputs a run is given, the path a correct run walks and the
+# pf runs it makes. A compile entry names the reference one pf run compiles,
+# from the workspace, in the order the session makes them.
+#
+# Mirror's heading and the heading its deferral names, Read mirror, select
+# fetch.md's mirror preset, whose subst redirects the page the target opens to
+# the stored copy. The run on the line compiles the stand-in's content, which
+# states the transition out of Mirror, so the path is the stand-in's.
+
+[[scenario]]
+name = "stand-in-followed"
+path = ["Solicit", "Mirror", "Restore"]
+inputs = {}
+
+[[scenario.compile]]
+args = ["reference/fetch.md#read-mirror"]

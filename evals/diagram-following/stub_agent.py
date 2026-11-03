@@ -3,10 +3,12 @@
 It runs in a session's workspace and takes the agent's options, which it
 records and otherwise ignores. It recognises the workflow by the state
 headings its workspace's documents hold, at whatever level a group placed
-them, walks that workflow's diagram for
-the inputs under `inputs/`, and writes the walk to `trace.log` with every
-state's action, as a correct agent would. It then prints a stream-json
-transcript ending in a `result` message carrying usage and a cost.
+them, walks the path of the scenario whose inputs `inputs/` holds, or else
+that workflow's diagram for those inputs, and writes the walk to
+`trace.log` with every state's action, as a correct agent would. A state
+deferring its transition is followed only through the scenario's path. It
+then prints a stream-json transcript ending in a `result` message carrying
+usage and a cost.
 
 A workflow that dispatches takes a `Task` call per sub-agent start the
 scenario states, each naming its section as `<document>#<heading>`, with
@@ -227,7 +229,8 @@ def main() -> int:
     }
     workflow = next(item for item in workflows() if item.diagram.states <= headings)
     inputs = {path.name: path.read_text() for path in (workspace / "inputs").iterdir()}
-    path = walk(workflow, workflow.forms[0], inputs)
+    item = scenario_of(workflow, inputs)
+    path = item.path if item else walk(workflow, workflow.forms[0], inputs)
     if stop := os.environ.get("STUB_AGENT_STOP"):
         path = path[: int(stop)]
     (workspace / ACTIONS).mkdir()
@@ -236,7 +239,7 @@ def main() -> int:
             trace.write(f"{state}\n")
             name, value = workflow.walked[state].action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
-    dispatch = starts(scenario_of(workflow, inputs))
+    dispatch = starts(item)
     write_sub_agent_traces(
         workspace, [handed(section, prompt) for section, _, _ in dispatch]
     )

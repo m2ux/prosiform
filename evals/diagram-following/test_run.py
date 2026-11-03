@@ -328,7 +328,8 @@ def test_a_run_gives_staged_sessions_only_when_named_to_a_shell_harness() -> Non
     for harness in (Cursor(), Opencode()):
         staged = matrix(corpus, ["m"], [STAGED_SET], 1, harness)
         assert {(item.workflow, item.form) for item in staged} == {
-            ("dispatch-set", STAGED_SET)
+            (name, STAGED_SET)
+            for name in ("deferred-composition", "dispatch-set", "preset-deferral")
         }
     assert matrix(corpus, ["m"], [STAGED_SET], 1, Claude()) == []
 

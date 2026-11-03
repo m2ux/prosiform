@@ -17,7 +17,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 | `staged` | The staged form's sources, written as the compiled form is, with the entry's bundle set in the folder `pf` writes it to and the build under test as `pf` on the session's path. | Whether an agent compiles, as it follows a bundle, the material the bundle defers. |
 
-A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, `bootstrap-audit` takes `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, `dispatch-set` takes `staged` beside them, the two [deferral workflows](#deferral-scenarios) take `staged` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
@@ -37,7 +37,7 @@ A top-level `entry` key names the reference every form of the workflow is compil
 
 A `scenarios.toml` may also declare, above its tables, `warnings`: the warning codes `pf` reports bundling the workflow. A feature such as `subst` warns wherever it is used, so a workflow built on one declares each code it raises, and its bundle is held to raising those and no other diagnostic.
 
-Every workflow document declares `prosiform` save those under an `undeclared/` directory, which declare nothing, so a link to one is left as written; `declared-inclusion` links one beside a declared state document `pf` follows.
+Every workflow document declares `prosiform` save those under an `undeclared/` directory, which declare nothing, so a link to one is left as written; `declared-inclusion` links one beside a declared state document `pf` follows. A skill's `SKILL.md` is the entry the agent CLI reads rather than a source `pf` compiles, so it may declare nothing too.
 
 A diagram form's bundle states a path of its own, and a scenario's path is held to it beside the sources' walk. Each state is entered at the heading the previous state's link names, or else the one the bundle's diagram clicks, and its action and transition are read from what that heading holds. A state `pf` placed into a group or reached through a `subst` pair is followed where the bundle puts it, and the bundle must state the action the sources state, since the scorer reads the sources'. A feature workflow's substitutes therefore state the action and transition of the state they stand in for, so the `tree` form walks the same path the `bundle` form does.
 
@@ -75,20 +75,36 @@ A scenario names each `pf` run a correct session and each of its sub-agents make
 
 A reference resolves from the directory a shell form runs `pf` in: the skill's directory for `bootstrap`, as the guide states, and the workspace for `staged`, which holds the staged form's sources as they stand. The corpus test refuses a reference naming no document there, a `by` naming no section of the trace, and a run stated by a workflow written in no shell form.
 
-A `staged` session reads the bundle set `pf` compiled from the staged form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where its path reaches the line. `dispatch-set` is written in the form with nothing to compile, so its scenario states no run.
+A `staged` session reads the bundle set `pf` compiled from the staged form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. `dispatch-set` is written in the form with nothing to compile, so its scenario states no run.
 
 A stated run a sub-agent makes is read from that sub-agent's own commands, which a harness reports only where it carries a shell and its stream carries a sub-agent's own calls. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports.
 
-### Bootstrap scenario
+### Bootstrap scenarios
 
-The `bootstrap-audit` workflow says whether an agent handed a skill, rather than an entry document, compiles the workflow the skill names before following it. Its session finds the skill under `.claude/skills/bootstrap-audit/` in its workspace, where the agent CLI discovers skills; the skill's `SKILL.md` says to run `pf` over the sources beside it, and the bundle that run writes is the document stating the workflow. The run puts the build under test on the session's path, so the `pf` a session compiles with is the one the run was configured with.
+The two bootstrap workflows say whether an agent handed a skill, rather than an entry document, compiles the workflow the skill names before following it. A session finds the skill under `.claude/skills/<workflow>/` in its workspace, where the agent CLI discovers skills. The skill's `SKILL.md` says to run `pf`, then holds one hand-written `[↳ <title>](<path>)` line, titled as the document it names is headed, so the guide bare `pf` prints says to compile that document, read it whole and follow it, and the bundle that run writes is the document stating the workflow. The run puts the build under test on the session's path, so the `pf` a session compiles with is the one the run was configured with.
 
-Compiling runs a command, so only a harness carrying a shell gives a session in this form or in `staged`: `cursor` and `opencode` do, and `claude`, whose tool list names no shell, is given no `bootstrap` or `staged` session. The sources dispatch sub-agents, so each scenario names the trace a correct run produces as a dispatch scenario does, and a harness that reports no sub-agent's own dispatch is given only the scenarios whose trace it can observe. The skill says to run `pf`, then links the workflow it compiles, so each scenario states bare `pf`, then `pf sources/workflow.md`.
+Compiling runs a command, so only a harness carrying a shell gives a session in this form or in `staged`: `cursor` and `opencode` do, and `claude`, whose tool list names no shell, is given no `bootstrap` or `staged` session. Each scenario states bare `pf`, then `pf` on the line's path, and its path is the walk of the bundle that run writes, as the corpus test compiles it from the skill's directory. `bootstrap-audit`'s sources dispatch sub-agents, so each of its scenarios names the trace a correct run produces as a dispatch scenario does, and a harness that reports no sub-agent's own dispatch is given only the scenarios whose trace it can observe. `inline-bootstrap`'s `SKILL.md` declares no `prosiform`, so its line is held as written, and its sources dispatch nothing.
 
 | Workflow | Scenario | What it walks |
 | --- | --- | --- |
 | `bootstrap-audit` | `blocking-two-halves` | Source and tests gathered as a set, the appraisal, a blocking verdict, then the repair. |
 | `bootstrap-audit` | `clean-one-half` | Source and tests gathered as a set, the appraisal, then a clean verdict straight to publishing. |
+| `inline-bootstrap` | `feature-tagged` | The freeze, a feature tagged, then the broadcast. |
+| `inline-bootstrap` | `fix-backported` | The freeze, a fix backported, then the broadcast. |
+
+### Deferral scenarios
+
+The two deferral workflows say whether an agent following a `staged` bundle runs `pf` on each `↳` line its path needs, and on no other. A source writes a deferred directive, `[¬→](<path>#<section>)`, and `pf` publishes it as a `↳` line naming that section, beneath the step writing it. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the staged sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
+
+A state may also defer its transition: its document writes no `**Next.**` paragraph, and the material its deferral compiles states "Take the transition labelled `<label>`.", so only a session that ran `pf` on the line knows the edge to take.
+
+| Workflow | Scenario | What it runs |
+| --- | --- | --- |
+| `deferred-composition` | `deferral-reached` | `pf` on the migration's line, which Relocate's step reaches where `scope.txt` reads `large`. |
+| `deferred-composition` | `deferral-passed` | Nothing: Relocate's step does not hold, so its line is passed. |
+| `deferred-composition` | `nested-needed` | The migration's line, then the archive's line its bundle holds, whose step holds where `history.txt` reads `kept`. |
+| `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
+| `preset-deferral` | `stand-in-followed` | `pf` on `reference/fetch.md#read-mirror`. `Mirror` and `Read mirror` both select `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 
 ## Scoring
 
@@ -97,7 +113,6 @@ A session records each state it enters as a line of `trace.log` and does each st
 | Class | The session |
 | --- | --- |
 | `missing_action` | walked the path and left a state's action undone or wrong. |
-| `unbootstrapped` | walked the path with every action done, in the `bootstrap` form, without running `pf`. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
 | `loop_miscount` | repeated a loop more times than its input requires. |

@@ -132,8 +132,6 @@ from score import (
     TRACES,
     Failure,
     Verdict,
-    pf_runs,
-    read_commands,
     read_trace,
     record_calls,
     score,
@@ -618,12 +616,11 @@ def start(
         record_calls(records / TRANSCRIPT, records, harness)
         result = harness.result(records / TRANSCRIPT)
         ran = read_trace(records)
-        compiled = compiled_by(records, session.form)
         verdict = (
             errored(workflow, scenario)
             if (result is not None and result.get("is_error"))
             or (result is None and not ran)
-            else score(workflow, scenario, records, compiled)
+            else score(workflow, scenario, records)
         )
     finally:
         shutil.rmtree(workspace)
@@ -661,20 +658,6 @@ def place_pf(workspace: Path) -> Path:
     shutil.copy2(found, placed)
     placed.chmod(placed.stat().st_mode | 0o111)
     return workspace / BIN
-
-
-def compiled_by(records: Path, form: str) -> bool | None:
-    """Whether a session compiled its material, for a form that must.
-
-    A bootstrap session is handed sources and no bundle, so it is held to
-    having run `pf` at all, as its record's commands state. Every other form
-    is handed a bundle, so nothing is asked, and neither is it of a session
-    whose harness reports no command.
-    """
-    if FORMS[form] != BOOTSTRAP:
-        return None
-    commands = read_commands(records)
-    return None if commands is None else bool(pf_runs(commands))
 
 
 def entry_named(workflow: Workflow, form: str) -> str:

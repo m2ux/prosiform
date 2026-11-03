@@ -573,8 +573,8 @@ class Cursor:
     def commands(self, transcript: Path) -> tuple[str, ...]:
         """The shell commands a session ran, in order.
 
-        A `shellToolCall` carries the command line it ran. A session whose
-        material must be compiled with a command is held to having run it,
+        A `shellToolCall` carries the command line it ran. A session is held
+        to the `pf` runs its scenario states, read from these commands,
         so what the stream states about commands is read rather than assumed.
         """
         found: list[str] = []
