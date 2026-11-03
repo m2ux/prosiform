@@ -2635,7 +2635,7 @@ def placement(
     entries: Collection[Reference],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-) -> tuple[dict[str, list[Reference]], dict[str, str]]:
+) -> tuple[dict[str, list[Reference]], dict[tuple[str, str], str]]:
     """Each document the bundle includes, in the order a reference first names it.
 
     The entry references are read first, in the order the invocation
@@ -2655,13 +2655,25 @@ def placement(
 
     The first mapping holds the references including each document,
     as `included` keeps them. The second names, for each document a
-    link placed, the document whose group carries that link. An entry
-    is placed by the invocation rather than by a document, so it is
-    absent there.
+    link placed under a `group` pair and each group that pair names,
+    the document whose group carries the first link placing it there,
+    so a document two references place under different pairs is placed
+    in each group by the reference that put that group's pair in force.
+    The pair a link puts in force is the one its own section title
+    selects, as `joined` reads it. An entry is placed by the invocation
+    rather than by a document, so a group an entry places a document in
+    is absent there.
     """
     selected = contributing(included(found))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
-    placers: dict[str, str] = {}
+    placers: dict[tuple[str, str], str] = {}
+    entered: set[tuple[str, str]] = set()
+    for one in entries:
+        if one.path not in selected:
+            continue
+        held = pair(read[one.path].conversion, entry_title(parsed[one.path], one))
+        if held is not None:
+            entered.add((one.path, held.group))
     composed: set[tuple[str, str | None]] = set()
 
     def place(path: str, chosen: Selection | None, holder: str) -> None:
@@ -2674,9 +2686,13 @@ def placement(
                     section_of = selection(one.path, parsed[one.path], [one], entries)
                     place(one.path, section_of, holder)
                 continue
-            if one.path in selected and one.path not in order:
+            if one.path not in selected:
+                continue
+            if one.path not in order:
                 order.append(one.path)
-                placers[one.path] = holder
+            held = pair(read[one.path].conversion, one.title)
+            if held is not None and (one.path, held.group) not in entered:
+                placers.setdefault((one.path, held.group), holder)
 
     at = 0
     while at < len(order):
@@ -2714,20 +2730,25 @@ def divisions(
 def holders(
     order: Sequence[Division],
     merging: Mapping[str, Sequence[str]],
-    placers: Mapping[str, str],
+    placers: Mapping[tuple[str, str], str],
     joins: Mapping[str, Sequence[Membership]],
 ) -> dict[Division, Division]:
     """The division each nested group stands inside.
 
     A merged group stands inside the division holding the document whose
-    link placed its first member: that document's file group, or the
-    merged group it joins, the first of them the bundle places where it
-    joins several. A group whose first member is an entry is held by no
-    division and stands at the top level, as every file group does.
+    link placed its first member in that group: that document's file
+    group, or the merged group it joins, the first of them the bundle
+    places where it joins several. A group whose first member an entry
+    placed in it is held by no division and stands at the top level, as
+    every file group does.
 
-    The holding division carries a document placed before the group's
-    first member, so it precedes the group in placement order and no
-    group holds itself, directly or through another.
+    A document can place a group's first member while standing in that
+    group, directly or through the groups holding its own: a later
+    member's link placing the first member under a second pair. Such a
+    group would hold itself, so it is held by no division and stands at
+    the top level. Groups are weighed in placement order, so of two
+    groups that would hold each other, the later one stands at the top
+    level and holds the earlier.
     """
     rank = {one: at for at, one in enumerate(order)}
     held: dict[Division, Division] = {}
@@ -2735,15 +2756,26 @@ def holders(
         name, grouped = division
         if not grouped:
             continue
-        placer = placers.get(merging[name][0])
+        placer = placers.get((merging[name][0], name))
         if placer is None:
             continue
-        held[division] = (
+        holder = (
             (placer, False)
             if not joins[placer]
             else min(((one.group, True) for one in joins[placer]), key=rank.__getitem__)
         )
+        enclosing: Division | None = holder
+        while enclosing is not None and enclosing != division:
+            enclosing = held.get(enclosing)
+        if enclosing is None:
+            held[division] = holder
     return held
+
+
+def level(division: Division, held: Mapping[Division, Division]) -> int:
+    """The heading level a division opens at: one below each division enclosing it."""
+    holder = held.get(division)
+    return 1 if holder is None else level(holder, held) + 1
 
 
 def composed(
@@ -2775,7 +2807,7 @@ def assembled(
     entries: Collection[Reference],
     assigned: dict[tuple[str, str | None], str] | None,
     joins: Mapping[str, Sequence[Membership]],
-    placers: Mapping[str, str],
+    placers: Mapping[tuple[str, str], str],
     chains: Mapping[str, Sequence[str]],
     limits: Limits,
     dispatching: Anchors | None = None,
@@ -2821,13 +2853,9 @@ def assembled(
                 members.append(path)
     order = divisions(selected, joins)
     held = holders(order, merging, placers, joins)
-    levels: dict[Division, int] = {}
     nested: dict[Division, list[Division]] = {}
-    for division in order:
-        holder = held.get(division)
-        levels[division] = 1 if holder is None else levels[holder] + 1
-        if holder is not None:
-            nested.setdefault(holder, []).append(division)
+    for division, holder in held.items():
+        nested.setdefault(holder, []).append(division)
     built: dict[Division, Group] = {}
     authored = None if composing is None else composing.get((), {})
     with assembling(chains):
@@ -2874,7 +2902,7 @@ def assembled(
                     for path in paths
                 ],
                 parent,
-                levels[(named, True)],
+                level((named, True), held),
             )
         return compositions(
             [

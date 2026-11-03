@@ -1,0 +1,18 @@
+description = "Two documents reaching one document under different group pairs place each group inside the division of the document whose reference placed that group's first member: Alpha's link puts the notice's default pair in force, so Messages stands inside Alpha, and Beta's link from its Announce section puts the Announce pair in force, so Announcements stands inside Beta."
+
+clauses = [
+  "Presets — One document under several selections",
+  "Presets — Selection by keyword",
+  "Presets — A document in several groups",
+  "Grouping — Composition from the leaves up",
+  "Grouping — Nested groups",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
