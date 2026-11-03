@@ -20,7 +20,7 @@ This record holds its delivery of `AC11`: the work item, the validation evidence
 
 | Resource | Link |
 | --- | --- |
-| Pull request | [#645](https://github.com/m2ux/prosiform/pull/645), open against `i10/e06/main`, CI green at `71e7b16e` |
+| Pull request | [#645](https://github.com/m2ux/prosiform/pull/645), merged into `i10/e06/main` as `1e1bdc42`, CI green at `71e7b16e` |
 | Epic | [I10:E06 Agent Guide](https://github.com/m2ux/prosiform/issues/639) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Epic record | [Evaluation and Checks](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks) |
