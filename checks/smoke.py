@@ -51,7 +51,7 @@ PROJECT = ROOT / "src"
 PYTHON_VERSION = PROJECT / ".python-version"
 
 COMMAND = "pf"
-PROFILE = "skill-markdown-v4"
+PROFILE = "prosiform-markdown"
 
 OBSERVED = (
     "named on the path",
@@ -70,7 +70,8 @@ SOURCE = (
 )
 BUNDLE = (
     "# \u00a7 Instructions\n\n"
-    "Run `pf`, then follow the guidance it prints.\n\n"
+    "Run `pf`, then follow the guidance it prints. "
+    "Follow [Guide](#guide) next.\n\n"
     "# Guide\n\nThe installed command bundles this document.\n"
 )
 

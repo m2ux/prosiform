@@ -1,6 +1,6 @@
 # § Instructions
 
-Run `pf`, then follow the guidance it prints.
+Run `pf`, then follow the guidance it prints. Follow [The Standing Order](#the-standing-order) next.
 
 An opening paragraph, above the first eligible heading.
 

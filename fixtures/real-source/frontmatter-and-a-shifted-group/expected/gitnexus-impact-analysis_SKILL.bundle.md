@@ -1,6 +1,6 @@
 # § Instructions
 
-Run `pf`, then follow the guidance it prints.
+Run `pf`, then follow the guidance it prints. Follow [Impact Analysis with GitNexus](#impact-analysis-with-gitnexus) next.
 
 # Impact Analysis with GitNexus
 

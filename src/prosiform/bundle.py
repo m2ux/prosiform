@@ -1220,16 +1220,21 @@ def group(
     )
 
 
-def instruction_group() -> Group:
+def instruction_group(next_heading: str | None = None) -> Group:
     """The group every bundle opens with: the `§ Instructions` heading and the line.
 
     It answers to no source document, so its record names a path no source
     holds and carries no selected range. The heading is generated structure,
-    and the line is an instruction beneath it.
+    and the line is an instruction beneath it. `next_heading` is the title of
+    the first heading the bundle carries, which the line names so a reader
+    holding the line has somewhere to go.
     """
+    line = RUN_PF
+    if next_heading is not None:
+        line = f"{RUN_PF} Follow [{next_heading}](#{slug(next_heading)}) next."
     heading = Generated(INSTRUCTIONS, 1, FILENAME_WRAPPER)
-    record = Record(INSTRUCTIONS, None, (heading,), (Instruction(RUN_PF),))
-    return Group((f"# {INSTRUCTIONS}", RUN_PF), record)
+    record = Record(INSTRUCTIONS, None, (heading,), (Instruction(line),))
+    return Group((f"# {INSTRUCTIONS}", line), record)
 
 
 def assemble(groups: Sequence[Group]) -> str:
@@ -1259,9 +1264,18 @@ def opened(groups: Sequence[Group]) -> list[Group]:
     The heading and the run-pf line are the run's own structure, ahead of
     every document a bundle carries, so the line needs no placement against
     a document's own headings and the bundle opens the same way whatever
-    the documents hold.
+    the documents hold. The line names the first heading the bundle carries,
+    so its reader has somewhere to go once it has run `pf`.
     """
-    return [instruction_group(), *groups]
+    next_heading = None
+    for one in groups:
+        for heading in one.headings:
+            if heading and not heading.startswith("\u2afd"):
+                next_heading = heading
+                break
+        if next_heading is not None:
+            break
+    return [instruction_group(next_heading), *groups]
 
 
 def openings(groups: Sequence[Group]) -> list[int]:

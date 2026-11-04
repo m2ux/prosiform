@@ -70,9 +70,9 @@ exit statuses:
   2  invalid usage or option combination
 """
 
-VERSION = "tool 0.1.0 (skill-markdown-v4)\n"
+VERSION = "tool 0.1.0 (prosiform-markdown)\n"
 
-PROFILE = "skill-markdown-v4"
+PROFILE = "prosiform-markdown"
 
 
 def canned(directory: Path) -> str:

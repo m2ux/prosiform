@@ -1,6 +1,6 @@
 # § Instructions
 
-Run `pf`, then follow the guidance it prints.
+Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Read [A](#output), [&amp;](#output) and [ → ](#output) before the guide.
 

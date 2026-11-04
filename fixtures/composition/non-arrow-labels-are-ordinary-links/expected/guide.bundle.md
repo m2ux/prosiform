@@ -1,6 +1,6 @@
 # § Instructions
 
-Run `pf`, then follow the guidance it prints.
+Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Read [†](#output), [‡](#output), [&dagger;](#output), [¹](#output), [é](#output), [𝔸](#output), [★](#output), [ ](#output), [&nbsp;](#output), [​](#output) and [&#xAD;](#output) before the guide.
 

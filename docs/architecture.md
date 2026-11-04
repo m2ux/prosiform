@@ -176,7 +176,7 @@ The build in `src/prosiform` carries a run in sixteen modules beside the package
 | `access` | Reads a source, or its frontmatter alone, through a rooted, no-follow directory walk, never past the budget it is given. |
 | `source` | Holds one source: removes its byte-order mark and frontmatter, indexes its headings and their slugs, and lists its regions and the links it uses. |
 | `metadata` | Decodes a frontmatter block's YAML into conversion settings: presets, `group` pairs and `subst` pairs. |
-| `profile` | Configures the `skill-markdown-v4` parser, reads the diagram links in `mermaid` fences as uses, and refuses what the profile does not admit. |
+| `profile` | Configures the `prosiform-markdown` parser, reads the diagram links in `mermaid` fences as uses, and refuses what the profile does not admit. |
 | `closure` | Normalises each reference from the file that writes it, classifies it by its target's declaration, and reads its operators and any directive label. |
 | `bundle` | Builds one file group per contributing source from its selected regions, under a file heading and with any structural ancestors, and joins the groups into the candidate. |
 | `grouping` | Merges the members of a declared group under one heading, with their overview and variants. |
