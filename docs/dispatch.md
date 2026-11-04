@@ -28,12 +28,12 @@ Each bundle is compiled under every rule an entry's is. Budgets hold per bundle,
 
 A `⇉` link publishes in place with its mark and the one blank after it, pointing at its target's bundle file. A section gains no generated structure for it, and a dispatch in a level-6 section publishes like any other.
 
-The `⫽` links in a section's own content are one **set**, and a child section's links form its own. A set of two or more distinct targets gains one `In parallel` sub-section: one level below the section, after the section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The set's links are published without their marks and point at it. A set of one distinct target is a single dispatch: each of its links is published as a `⇉` link to the target's bundle file, and the section gains no sub-section.
+The `⫽` links in a section's own content are one **set**, and a child section's links form its own. A set of two or more distinct targets gains one dispatch-set sub-section, headed `⫽ <section title> dispatch set`, one level below the section, after the section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The set's links are published without their marks and point at it. A set of one distinct target is a single dispatch: each of its links is published as a `⇉` link to the target's bundle file, and the section gains no sub-section.
 
 ```mermaid
 flowchart TD
   Section["## Plan Mode"] --> Own["its own content"]
-  Section --> D2["### In parallel"]
+  Section --> D2["### ⫽ <title> dispatch set"]
   Section --> Child["### child sections"]
   D2 --> B2["modes_review.bundle.md"]
   D2 --> B3["modes_audit.bundle.md"]
@@ -45,7 +45,7 @@ The sub-section's body is one line, `Give each of these to its own sub-agent at 
 
 A run carrying both kinds shows them together. Two `⫽` links form one set and publish one bundle each; a `⇉` link on its own publishes a third and stays where it was written:
 
-![modes/review.md and three protocol files on the left. On the right, four panels: the entry's bundle with an inline dispatch link to publish and an In parallel sub-section listing two bundles, then code, tests and publish each as a bundle of their own.](images/parallel.svg)
+![modes/review.md and three protocol files on the left. On the right, four panels: the entry's bundle with an inline dispatch link to publish and a dispatch-set sub-section listing two bundles, then code, tests and publish each as a bundle of their own.](images/parallel.svg)
 
 *The entry's bundle links what to hand over; the three procedures are compiled as if each had been asked for on its own.*
 
@@ -55,11 +55,11 @@ A dispatch in a heading the bundle emits as text alone has no link to publish, s
 
 ## The guide
 
-The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and an `In parallel` section ask of an agent, the inputs a sub-agent is given, waiting for every sub-agent of a set, failures returned together, and the returned question. A sub-agent asks nothing itself; it returns each question unanswered in an answer whose first line reads `Question:`, and the file is given again with the answer.
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, and the inputs a sub-agent is given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
 
 ## The run-pf line
 
-Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Before reading on, run `pf` with no arguments and follow the guide it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds [the guide](#the-guide)'s rules before it meets a `↳` line, a `⇉` link or an `In parallel` sub-section.
+Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Before reading on, run `pf` with no arguments and follow the guide it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds [the guide](#the-guide)'s rules before it meets a `↳` line, a `⇉` link or a dispatch-set sub-section.
 
 ## Depth and cycles
 
@@ -82,11 +82,11 @@ A dispatched link naming the document that writes it warns where it closes no cy
 
 ## Generated headings
 
-An authored heading whose text equals `In parallel` in a bundle that emits an `In parallel` sub-section would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
+An authored heading whose text equals the dispatch-set heading pf emits in the same bundle would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
 
-The comparison is exact, and case-sensitive: `## in parallel` is not `## In parallel`, so it publishes and takes the ordinal the renderer gives a repeated slug.
+The comparison is exact, and case-sensitive: an authored heading differs from the derived one in any character publishes, and takes the ordinal the renderer gives a repeated slug.
 
-A heading the run does not emit in that bundle is the author's there: a bundle carrying no set may carry `In parallel`.
+A heading the run does not emit in that bundle is the author's there: a bundle carrying no set may carry any heading, `In parallel` among them.
 
 ## Target shape
 
