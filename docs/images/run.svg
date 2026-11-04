@@ -1,57 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="1550" viewBox="0 0 2142 1550" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="1550" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="277" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
-<path d="M32 134 H1032" stroke="#303b49"/>
-<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
-<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
-<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
-<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">│  └─ review.md</text>
-<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">└─ rules.md</text><rect x="32" y="379" width="1000" height="298" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="415" font-size="21" fill="#b1c6df" font-weight="400">SKILL.md</text>
-<path d="M32 433 H1032" stroke="#303b49"/>
-<text x="70" y="490" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="527" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
-<text x="70" y="564" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="611" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="611" font-size="30" fill="#e6edf3" font-weight="500">Work Planner</text>
-<text x="70" y="659" font-size="20" fill="#58a6ff" font-weight="400">Follow the Review procedure.</text><rect x="32" y="699" width="1000" height="437" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="735" font-size="21" fill="#b1c6df" font-weight="400">modes/review.md</text>
-<path d="M32 753 H1032" stroke="#303b49"/>
-<text x="70" y="810" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="847" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
-<text x="70" y="884" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="931" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="931" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
-<text x="70" y="979" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules.</text>
-<text x="44" y="1033" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1033" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="70" y="1081" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
-<text x="70" y="1118" font-size="20" fill="#e6edf3" font-weight="400">2. Report the findings.</text><rect x="32" y="1158" width="1000" height="352" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="1194" font-size="21" fill="#b1c6df" font-weight="400">rules.md</text>
-<path d="M32 1212 H1032" stroke="#303b49"/>
-<text x="70" y="1269" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="1306" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
-<text x="70" y="1343" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="1390" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="1390" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="44" y="1444" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1444" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
-<text x="70" y="1492" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="80" width="1000" height="674" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">SKILL.bundles/SKILL.bundle.md</text>
-<path d="M1110 134 H2110" stroke="#303b49"/>
-<text x="1148" y="191" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
-<text x="1148" y="228" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
-<text x="1122" y="286" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="286" font-size="30" fill="#e6edf3" font-weight="500">Work Planner</text>
-<text x="1148" y="334" font-size="20" fill="#58a6ff" font-weight="400">Follow the Review procedure.</text>
-<text x="1122" y="392" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="392" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
-<text x="1148" y="440" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules.</text>
-<text x="1122" y="494" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="494" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="542" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
-<text x="1148" y="579" font-size="20" fill="#e6edf3" font-weight="400">2. Report the findings.</text>
-<text x="1122" y="637" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="637" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="1122" y="688" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1184" y="688" font-size="23" fill="#e6edf3" font-weight="500">Tests</text>
-<text x="1148" y="736" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1347" viewBox="0 0 1800 1347" role="img" aria-labelledby="title desc"><title id="title">Linked Markdown compiles into one complete context</title><desc id="desc">SKILL.md selects Review Mode. Its two Rules links reach one Tests section. The compiled bundle contains the source content once, with arrows tracing each link to its heading inside the bundle.</desc><rect width="1800" height="1347" fill="#0d1117"/><g font-family="monospace" xml:space="preserve"><text x="32" y="64" font-size="40" fill="#e6edf3" font-weight="500">Linked Markdown. One complete context.</text>
+<text x="32" y="108" font-size="23" fill="#b1c6df" font-weight="400">Resolve the files. Keep the links. Include shared rules once.</text>
+<text x="32" y="166" font-size="21" fill="#b1c6df" font-weight="400">01  SELECT AN ENTRY</text>
+<text x="530" y="166" font-size="21" fill="#b1c6df" font-weight="400">02  FOLLOW ITS LINKS</text>
+<text x="1160" y="166" font-size="21" fill="#b1c6df" font-weight="400">03  ONE VALIDATED BUNDLE</text>
+<rect x="32" y="194" width="430" height="308" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 194 H450 Q462 194 462 206 V252 H32 V206 Q32 194 44 194" fill="#202a36"/><text x="60" y="232" font-size="23" fill="#b1c6df" font-weight="400">Source tree</text><text x="60" y="290" font-size="26" fill="#e6edf3">skill/</text>
+<text x="60" y="330" font-size="26" fill="#e6edf3">├─ SKILL.md</text>
+<text x="60" y="370" font-size="26" fill="#e6edf3">├─ modes/</text>
+<text x="60" y="410" font-size="26" fill="#e6edf3">│  └─ review.md</text>
+<text x="60" y="450" font-size="26" fill="#e6edf3">└─ rules.md</text>
+<rect x="32" y="526" width="430" height="320" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M44 526 H450 Q462 526 462 538 V584 H32 V538 Q32 526 44 526" fill="#202a36"/><text x="60" y="564" font-size="23" fill="#b1c6df" font-weight="400">SKILL.md</text><text x="60" y="622" font-size="21" fill="#b1c6df" font-weight="400">prosiform: {}</text>
+<text x="60" y="680" font-size="34" fill="#e6edf3" font-weight="500">Work Planner</text>
+<text x="60" y="754" font-size="26" fill="#e6edf3">Follow the <tspan fill="#58a6ff" text-decoration="underline">Review</tspan></text>
+<text x="60" y="794" font-size="26" fill="#e6edf3">procedure.</text>
+<rect x="530" y="194" width="510" height="501" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M542 194 H1028 Q1040 194 1040 206 V252 H530 V206 Q530 194 542 194" fill="#202a36"/><text x="558" y="232" font-size="23" fill="#b1c6df" font-weight="400">modes/review.md</text><text x="558" y="290" font-size="21" fill="#b1c6df" font-weight="400">prosiform: {}</text>
+<text x="558" y="348" font-size="34" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="558" y="422" font-size="26" fill="#e6edf3">Checks a change against</text>
+<text x="558" y="462" font-size="26" fill="#e6edf3">the <tspan fill="#58a6ff" text-decoration="underline">Rules</tspan>.</text>
+<text x="574" y="534" font-size="29" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="558" y="603" font-size="26" fill="#e6edf3">1. Read the <tspan fill="#58a6ff" text-decoration="underline">Rules</tspan>.</text>
+<text x="558" y="643" font-size="26" fill="#e6edf3">2. Report the findings.</text>
+<rect x="530" y="719" width="510" height="443" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M542 719 H1028 Q1040 719 1040 731 V777 H530 V731 Q530 719 542 719" fill="#202a36"/><text x="558" y="757" font-size="23" fill="#b1c6df" font-weight="400">rules.md</text><text x="558" y="815" font-size="21" fill="#b1c6df" font-weight="400">prosiform: {}</text>
+<text x="558" y="873" font-size="34" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="574" y="961" font-size="29" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="558" y="1030" font-size="26" fill="#e6edf3">A change lands with a</text>
+<text x="558" y="1070" font-size="26" fill="#e6edf3">test that fails without</text>
+<text x="558" y="1110" font-size="26" fill="#e6edf3">it.</text>
+<rect x="1160" y="194" width="608" height="1033" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/><path d="M1172 194 H1756 Q1768 194 1768 206 V252 H1160 V206 Q1160 194 1172 194" fill="#202a36"/><text x="1188" y="232" font-size="23" fill="#b1c6df" font-weight="400">SKILL.bundles/SKILL.bundle.md</text><text x="1188" y="290" font-size="26" fill="#e6edf3">Before reading on, run pf with</text>
+<text x="1188" y="330" font-size="26" fill="#e6edf3">no arguments and follow the</text>
+<text x="1188" y="370" font-size="26" fill="#e6edf3">guide it prints.</text>
+<text x="1188" y="428" font-size="34" fill="#e6edf3" font-weight="500">Work Planner</text>
+<text x="1188" y="502" font-size="26" fill="#e6edf3">Follow the <tspan fill="#58a6ff" text-decoration="underline">Review</tspan></text>
+<text x="1188" y="542" font-size="26" fill="#e6edf3">procedure.</text>
+<text x="1188" y="614" font-size="34" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="1188" y="688" font-size="26" fill="#e6edf3">Checks a change against the</text>
+<text x="1188" y="728" font-size="26" fill="#e6edf3"><tspan fill="#58a6ff" text-decoration="underline">Rules</tspan>.</text>
+<text x="1204" y="800" font-size="29" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1188" y="869" font-size="26" fill="#e6edf3">1. Read the <tspan fill="#58a6ff" text-decoration="underline">Rules</tspan>.</text>
+<text x="1188" y="909" font-size="26" fill="#e6edf3">2. Report the findings.</text>
+<text x="1188" y="981" font-size="34" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1220" y="1069" font-size="26" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="1188" y="1135" font-size="26" fill="#e6edf3">A change lands with a test that</text>
+<text x="1188" y="1175" font-size="26" fill="#e6edf3">fails without it.</text>
+<path d="M335.2 745 H480 Q496 745 496 729 V352.1 Q496 336.1 512 336.1 H518" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/><path d="M530 336.1 l-12 -7 v14 Z" fill="#58a6ff"/>
+<path d="M708.4 453 H1006 Q1022 453 1022 469 V934.85 Q1022 950.85 1006 950.85 H689" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/><path d="M677 950.85 l12 -7 v14 Z" fill="#58a6ff"/>
+<path d="M833.2 594 H988 Q1004 594 1004 610 V934.85 Q1004 950.85 988 950.85 H689" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/><path d="M677 950.85 l12 -7 v14 Z" fill="#58a6ff"/>
+<path d="M1463.2 493 H1734 Q1750 493 1750 509 V586.1 Q1750 602.1 1734 602.1 H1440.4" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/><path d="M1428.4 602.1 l12 -7 v14 Z" fill="#58a6ff"/>
+<path d="M1276 719 H1716 Q1732 719 1732 735 V1043.9 Q1732 1059.9 1716 1059.9 H1326" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/><path d="M1314 1059.9 l12 -7 v14 Z" fill="#58a6ff"/>
+<path d="M1463.2 860 H1698 Q1714 860 1714 876 V1043.9 Q1714 1059.9 1698 1059.9 H1326" fill="none" stroke="#58a6ff" stroke-width="3" stroke-linejoin="round"/><path d="M1314 1059.9 l12 -7 v14 Z" fill="#58a6ff"/>
+<path d="M1078 710 H1096 V698 L1124 726 L1096 754 V742 H1078Z" fill="#58a6ff"/>
+<text x="1058" y="790" font-size="21" fill="#b1c6df" font-weight="400">compile</text>
+<path d="M32 1267 H1768" stroke="#303b49" stroke-width="2"/>
+<text x="32" y="1313" font-size="28" fill="#58a6ff" font-weight="400">$ pf SKILL.md</text>
+<text x="530" y="1313" font-size="26" fill="#e6edf3" font-weight="400">3 source files → 1 validated bundle</text></g></svg>

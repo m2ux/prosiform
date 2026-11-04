@@ -6,9 +6,9 @@ That set is a **bundle set**: one bundle for the entry, and one for each target 
 
 ## The shape of a result
 
-Two files and one link between them are enough to show what a run does. `SKILL.md` links a procedure; the procedure links the rules it is held to.
+Three files show what a run does. `SKILL.md` links a procedure; the procedure links the rules it is held to.
 
-![SKILL.md, modes/review.md and rules.md on the left. On the right, one bundle: Work Planner, Review Mode with its Procedure, and Rules with Tests. Every link now points inside the bundle.](images/run.svg)
+![A source tree and SKILL.md select Review Mode. Arrows trace its two Rules links to one Tests section. The compiled bundle contains Work Planner, Review Mode and the test rules once, with every link pointing to its heading inside the bundle.](images/run.svg)
 
 *Three files read, one bundle written. The links that named other files now name headings in this one.*
 
