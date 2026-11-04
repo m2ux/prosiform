@@ -275,6 +275,7 @@ Each decision below is the user's (2026-11-01) unless marked as planning's.
 - **A start is matched by the bundle its prompt names.** (User, 2026-11-03.) The scorer ties a sub-agent start to its section by the compiled file named in the start's prompt, never by its description's wording. #650; E00 W04.
 - **A reused run id is refused up front.** (User, 2026-11-03.) A run refuses to start while results or workspaces exist for its id, and the runbook's rerun step removes both. #650; E00 W04.
 - **The edge workflows stay out of the default matrix.** (User, 2026-11-03.) The default matrix runs the baseline workflows alone, and the edge workflows run only in E04's edge run, so `EVAL_BUDGET_TOKENS` holds the baseline's figure; W16 restores it on E04's base and adds Claude to the Edge Run's harnesses.
+- **The baseline uses the Codex eval harness.** (User, 2026-11-04.) The user selects Codex for the resumed baseline shakedown. E00 W04 carries its native adapter and records the measured run; E00 W00 sets the defaults from that runbook. The eval's model and reasoning effort are chosen separately from the delivery lanes.
 
 ## Links
 
