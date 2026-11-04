@@ -45,7 +45,7 @@ pf -v
 
 Sources declare `prosiform` in [YAML frontmatter](docs/sources.md#frontmatter). Run `pf` with no arguments for the agent guide. Each run writes a `.bundles` folder containing the entry's bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.
 
-Start each example below from the repository root. Both use source trees from the [fixture corpus](fixtures/README.md).
+Start each example below from the repository root. Both use source trees from the [fixture corpus](fixtures/README.md). File and directory names use hyphens rather than underscores.
 
 ### Bundle a Source and its Dependencies
 
