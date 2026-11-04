@@ -14,6 +14,7 @@ import re
 from dataclasses import fields
 from pathlib import Path
 
+import pytest
 from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
 
 
@@ -25,7 +26,7 @@ def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
 
 
 def claude_call(identifier: str, target: str) -> dict[str, object]:
-    """One Claude `Agent` call, its description naming the section handed over."""
+    """One Claude `Agent` call, its prompt naming the section handed over."""
     return {
         "type": "assistant",
         "message": {
@@ -34,7 +35,7 @@ def claude_call(identifier: str, target: str) -> dict[str, object]:
                     "type": "tool_use",
                     "id": identifier,
                     "name": "Agent",
-                    "input": {"description": target},
+                    "input": {"description": "Follow the workflow", "prompt": target},
                 }
             ]
         },
@@ -49,7 +50,7 @@ def cursor_call(
     `result` sits beside `args` in the captured stream, not within it.
     """
     task: dict[str, object] = {
-        "args": {"description": target, "prompt": f"Follow {target}."},
+        "args": {"description": "Follow the workflow", "prompt": target},
         "toolCallId": f"{message}-call",
     }
     if not started:
@@ -110,14 +111,11 @@ def test_no_harness_declares_a_field_nothing_reads() -> None:
         assert not unread, f"{declared.name} declares {unread}, which nothing reads"
 
 
-def test_a_claude_session_given_pf_carries_a_shell_limited_to_pf() -> None:
-    """AC12: the shell reaches a session given `pf`, and admits `pf` alone."""
-    plain = Claude().argv(["claude"], "a-model", 60_000)
-    given = Claude().argv(["claude"], "a-model", 60_000, None, True)
-    assert plain[plain.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent"
-    assert "--allowedTools" not in plain
-    assert given[given.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent,Bash"
-    assert given[given.index("--allowedTools") + 1] == "Bash(pf:*)"
+def test_every_claude_session_carries_a_shell_limited_to_pf() -> None:
+    """Every form can follow the run-pf line, with arguments and redirects."""
+    argv = Claude().argv(["claude"], "a-model", 60_000)
+    assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent,Bash"
+    assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
 
 
 def test_claude_reads_the_shell_commands_a_session_ran(tmp_path: Path) -> None:
@@ -158,13 +156,19 @@ def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
                             "type": "tool_use",
                             "id": "b",
                             "name": "Agent",
-                            "input": {"description": "review#source"},
+                            "input": {
+                                "description": "Review",
+                                "prompt": "review#source",
+                            },
                         },
                         {
                             "type": "tool_use",
                             "id": "c",
                             "name": "Agent",
-                            "input": {"description": "review#tests"},
+                            "input": {
+                                "description": "Review",
+                                "prompt": "review#tests",
+                            },
                         },
                     ]
                 },
@@ -454,6 +458,26 @@ def test_an_absent_transcript_names_no_start(tmp_path: Path) -> None:
     assert Claude().result(tmp_path / "absent.jsonl") is None
 
 
+@pytest.mark.parametrize("name", HARNESSES)
+def test_a_start_reads_its_prompt_when_its_description_names_another_section(
+    name: str, tmp_path: Path
+) -> None:
+    """A call's compiled file determines its target, whatever its description."""
+    prompt = "Follow review__check.bundle.md and write actions/check.txt."
+    if name == "claude":
+        event = claude_call("a", prompt)
+        event["message"]["content"][0]["input"]["description"] = "plan#work"  # type: ignore[index]
+    elif name == "cursor":
+        event = cursor_call("m1", prompt)
+        event["tool_call"]["taskToolCall"]["args"]["description"] = "plan#work"  # type: ignore[index]
+    else:
+        event = opencode_part(tool="task", description=prompt)
+        event["part"]["state"]["input"]["description"] = "plan#work"  # type: ignore[index]
+    assert HARNESSES[name].starts(transcript(tmp_path, [event])) == (
+        Start(prompt, "done", False),
+    )
+
+
 def test_the_claude_cli_is_capped_in_dollars_not_tokens(tmp_path: Path) -> None:
     """A token budget is not a dollar cap, so the CLI is given a price."""
     argv = Claude().argv(["claude"], "a-model", 60_000)
@@ -480,7 +504,7 @@ def opencode_part(
     """One opencode `tool_use` part, as the CLI prints it."""
     state: dict[str, object] = {
         "status": "completed",
-        "input": {"description": description, "prompt": "follow it"},
+        "input": {"description": "Follow the workflow", "prompt": description},
     }
     if output is not None:
         state["output"] = output
@@ -528,7 +552,7 @@ def opencode_step(tokens: int, cost: float) -> dict[str, object]:
 
 
 def test_opencode_reads_a_task_part_as_a_start(tmp_path: Path) -> None:
-    """A `tool_use` naming `task` is a sub-agent start, named by its description."""
+    """A `tool_use` naming `task` is a sub-agent start, named by its prompt."""
     held = transcript(tmp_path, [opencode_part(tool="task", description="plan#work")])
     assert Opencode().starts(held) == (Start("plan#work", "done", False),)
 
@@ -561,13 +585,13 @@ def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
                     "callID": "c1",
                     "tool": "bash",
                     "state": {
-                        "input": {"command": "./bin/pf -o build sources/workflow.md"}
+                        "input": {"command": "pf -o build sources/workflow.md"}
                     },
                 },
             }
         ],
     )
-    assert Opencode().commands(held) == ("./bin/pf -o build sources/workflow.md",)
+    assert Opencode().commands(held) == ("pf -o build sources/workflow.md",)
 
 
 def test_opencode_reads_what_each_sub_agent_returned(tmp_path: Path) -> None:

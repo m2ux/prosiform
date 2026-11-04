@@ -58,8 +58,8 @@ sub-agents it started, and a record failing two checks takes the earlier.
 A scenario that dispatches nothing passes all four, and a record absent
 from a session that dispatches nothing names no start.
 
-A start is an `Agent` tool call in the transcript, which names the section
-it hands over in the call's `description` as `<document>#<heading>`; its
+A start is an `Agent` tool call in the transcript, whose prompt names the
+compiled file or authored section it hands over; its
 return is the sub-agent's report, read as `question` when its first line opens
 `Question:`, as `pf`'s guide prescribes, and as `done` otherwise. Two starts
 in one message are together, since they were dispatched at once. Which
@@ -264,26 +264,25 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
 
 
 def names(target: str, section: str) -> bool:
-    """Whether a start's target names a section, as a section or as its bundle.
+    """Whether a start's prompt names a section's compiled file or authored reference.
 
     A compiled form hands over `pf`'s bundle for the section, named
-    `<document>__<heading>` and written beside the entry; an authored form
+    `<document>__<heading>.bundle.md` and written beside the entry; an authored form
     hands over the section itself, named `<document>#<heading>`. Both spell
     one section, since the bundle's name is compiled from it.
 
-    A session's call text is its own wording, so the section may be named by
-    its heading alone: an agent handing over `plan#work` writes "the Plan
-    Work section" as readily as the path. The heading is therefore matched as
-    a word of the text, beside the two spellings that pin it exactly.
+    The file or reference identifies the section. Description wording and
+    headings alone carry no target identity.
     """
     document, _, heading = section.partition("#")
     for spelled in (
         f"{document}#{heading}",
+        f"{document}.md#{heading}",
         f"{document}{BUNDLE_JOIN}{heading}{BUNDLE_SUFFIX}",
     ):
-        if re.search(rf"{re.escape(spelled)}(?![\w#-])", target):
+        if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
             return True
-    return re.search(rf"\b{re.escape(heading)}\b", target, re.IGNORECASE) is not None
+    return False
 
 
 def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:

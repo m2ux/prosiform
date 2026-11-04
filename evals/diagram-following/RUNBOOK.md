@@ -37,7 +37,7 @@ Each class the [scorer](score.py) defines, and `errored`:
 | `wrong_branch` | `inputs/` holds the scenario's value and the deciding section, in the session's form, sends that value down the path's branch. A `linked` session that did not open the rule document is a miss. | The form, or a `linked` rule document, sends that value down the branch the session took. | The condition's wording admits both branches. |
 | `skipped_state` | The form links each omitted state from the one before it, and the session jumped past them. | The form gives no way to the omitted states from where the session stood, as a misplaced group or `subst` pair would. | The transcript shows the omitted states read but not traced. |
 | `invalid_transition` | The form draws no edge to the state entered, and the session stepped back, repeated a state or went on past a terminal one. | The form draws the edge the session took. | The transcript shows a retry the agent did not explain. |
-| `undispatched` | The transcript holds no `Agent` call for a dispatched section, or holds them in another order, while the form states the dispatch. | The transcript holds the `Agent` calls in the scenario's order and `subagents.json` omits or reorders them. | A `Agent` call names its section in a way the instruction does not settle. |
+| `undispatched` | The transcript holds no `Agent` prompt naming a dispatched section's compiled file or authored reference, or holds them in another order, while the form states the dispatch. | The transcript holds those prompt targets in the scenario's order and `subagents.json` omits or reorders them. | A prompt's target cannot be matched to the form's files or authored references. |
 | `sequential_set` | The transcript starts the set's members across more than one assistant message. | The transcript starts them in one message and `subagents.json` records them apart. | The stream's message boundaries are absent. |
 | `unrelayed_question` | The sub-agent's report in the transcript opens with a question, and the session went on without starting it again with the answers. | `subagents.json` reads the return otherwise than the report inside the transcript's hand-back frame holds it. | The report's text is cut off. |
 | `errored` | Never: the session entered no state. | The `result` text or `stderr.log` names the cause: a refusal, a spent or expired login, an unknown model or flag, a crash, a provider error. | Neither names a cause. |
@@ -76,6 +76,17 @@ Every runbook below holds these, beside its own:
 
   When it reaches the cost cap, the run's process is ended and nothing is committed. A harness reporting no cost is held to its token budget alone.
 - **After the run.** A `refused` run, a run failing on carried context, and a run whose triage gives any `defect` or `unclear` disposition commit nothing.
+
+### Repeating a Stopped Run
+
+A run id owns both `evals/diagram-following/results/<run-id>` and `<eval-root>/workspaces/<run-id>`. Either existing path refuses a run before bundling or starting a session. After its escalation is settled, inspect those two exact paths and remove both before repeating the whole run:
+
+```bash
+ls -ld evals/diagram-following/results/<run-id> <eval-root>/workspaces/<run-id>
+rm -rf evals/diagram-following/results/<run-id> <eval-root>/workspaces/<run-id>
+```
+
+Use the eval root the stopped run recorded; its default is `~/projects/eval/prosiform`. Keep the stopped attempt's spend in the shakedown's aggregate allowance when its directories are removed.
 
 ## MVP Proof
 

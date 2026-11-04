@@ -33,7 +33,6 @@ from run import (
     COMPILED_SET,
     FORMS,
     LINKED_TREE,
-    PF_SETS,
     PROSE_BUNDLE,
     TRANSCRIPT,
     TREE,
@@ -56,8 +55,10 @@ from score import (
     TRACE,
     TRACES,
     Failure,
-    Start,
     read_starts,
+)
+from score import (
+    names as names_section,
 )
 from workflow import (
     ENTRY,
@@ -221,12 +222,10 @@ def material(session: Session) -> set[str]:
     inputs = {f"inputs/{name}" for name in scenario.inputs}
     if scenario.answers:
         inputs.add("answers.txt")
-    build = {"bin/pf"} if session.form in PF_SETS else set()
     if session.form in BUNDLED:
         return (
             {ENTRY}
             | inputs
-            | build
             | {
                 name
                 for name in bundles_of(workflow, session.form)
@@ -235,15 +234,11 @@ def material(session: Session) -> set[str]:
         )
     if session.form == BOOTSTRAP_SET:
         skill = workflow.directory / source.BOOTSTRAP_DIR
-        return (
-            {
-                f".claude/skills/{workflow.name}/{path.relative_to(skill)}"
-                for path in skill.rglob("*")
-                if path.is_file()
-            }
-            | inputs
-            | build
-        )
+        return {
+            f".claude/skills/{workflow.name}/{path.relative_to(skill)}"
+            for path in skill.rglob("*")
+            if path.is_file()
+        } | inputs
     tree = workflow.form(FORMS[session.form])
     return {
         str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()
@@ -307,12 +302,12 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     for entry in entries:
         argv = entry["argv"]
         tools = "Read,Write,Edit,Glob,Grep,Agent"
-        assert argv[argv.index("--tools") + 1] == tools + (",Bash" * entry["pf"])
+        assert argv[argv.index("--tools") + 1] == tools + ",Bash"
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
-        shell = entry["pf"]
-        assert ("--allowedTools" in argv) is shell
-        assert ("Bash" in " ".join(argv)) is shell
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
+        assert Path(entry["pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
+        assert not Path(entry["pf"]).is_relative_to(entry["workspace"])
         assert (ENTRY in entry["prompt"]) is (ENTRY in entry["files"])
         assert Path(entry["workspace"]).is_relative_to(workspaces)
         assert not Path(entry["workspace"]).exists()
@@ -325,6 +320,29 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
             for name in variables - {"CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"}
         )
     assert not workspaces.exists()
+
+
+@pytest.mark.parametrize("held", ["results", "workspaces"])
+def test_a_reused_run_id_is_refused_before_bundling_or_starting_a_session(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, held: str
+) -> None:
+    """A stopped run's results or workspaces keep its id until both are removed."""
+    results = tmp_path / "results" / "test"
+    workspaces = tmp_path / "eval" / "workspaces" / "test"
+    residue = results if held == "results" else workspaces
+    residue.mkdir(parents=True)
+    sentinel = residue / "kept.txt"
+    sentinel.write_text("kept\n")
+
+    def unexpected_bundle(*args: object) -> None:
+        pytest.fail("a reused run id reached bundling")
+
+    monkeypatch.setattr("run.bundles_of", unexpected_bundle)
+    with pytest.raises(CorpusError, match="run id.*test.*exists"):
+        eval_run(tmp_path, "--budget-tokens", "100000")
+    assert sentinel.read_text() == "kept\n"
+    assert not list(log.iterdir())
+    assert not list(results.rglob(SESSION))
 
 
 def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
@@ -1441,10 +1459,12 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
     }
     [scenario] = CORPUS["dispatch-question"].scenarios
     [entry] = scenario.trace
-    assert read_starts(directory) == (
-        Start(entry.section, "question", False),
-        Start(entry.section, "done", False),
-    )
+    starts = read_starts(directory)
+    assert [(start.returned, start.together) for start in starts] == [
+        ("question", False),
+        ("done", False),
+    ]
+    assert all(names_section(start.target, entry.section) for start in starts)
     assert record["verdict"]["passed"] is True
 
 
@@ -1699,7 +1719,8 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
     workspace.mkdir()
     sets = {(workflow.name, COMPILED_SET): bundles_of(workflow, COMPILED_SET)}
     prepare(workspace, workflow, scenario, COMPILED_SET, sets)
-    pf = str(workspace / "bin" / "pf")
+    assert not (workspace / "bin" / "pf").exists()
+    pf = "pf"
     guide = subprocess.run([pf], capture_output=True, text=True, check=False)
     assert guide.stdout.startswith("pf compiles"), guide.stdout
     (workspace / "guide.md").write_text(
@@ -1720,21 +1741,21 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
     assert "Count the files." in written.read_text()
 
 
-def test_a_compiled_session_is_given_pf_and_a_shell_limited_to_it(
+def test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC12: every compiled session has `pf` and the pf-only shell."""
+    """Every form can run the build; workspace material contains no pf copy."""
     eval_run(
         tmp_path,
-        *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
-        *("--repetitions", "1", "--budget-tokens", "4000"),
+        *("--repetitions", "1", "--budget-tokens", "100000"),
     )
     entries = seen(log)
     assert entries
     for entry in entries:
         argv = entry["argv"]
-        assert "bin/pf" in entry["files"]
-        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf:*)"
+        assert "bin/pf" not in entry["files"]
+        assert Path(entry["pf"]).is_file()
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
         assert argv[argv.index("--tools") + 1].endswith(",Bash")
     transcripts = [
         path.read_text() for path in (tmp_path / "results" / "test").rglob(TRANSCRIPT)

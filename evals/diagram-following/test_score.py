@@ -501,7 +501,7 @@ def call(identifier: str, target: str) -> dict[str, object]:
         "type": "tool_use",
         "id": identifier,
         "name": "Agent",
-        "input": {"description": target, "prompt": f"Follow {target}."},
+        "input": {"description": "Follow the workflow", "prompt": target},
     }
 
 
@@ -551,11 +551,18 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
     )
 
 
-def test_a_start_naming_a_section_by_its_heading_is_that_section() -> None:
-    """A session writes its own wording, so the heading alone names the section."""
-    assert names("Follow Plan Work section", "plan#work") is True
-    assert names("Dispatch plan work bundle", "plan#work") is True
+def test_a_start_names_its_file_or_authored_section_exactly() -> None:
+    """Prompt filenames and authored references identify dispatch targets."""
     assert names("Dispatch plan__work.bundle.md", "plan#work") is True
+    assert names("Follow /work/plan__work.bundle.md.", "plan#work") is True
+    assert names("Follow plan.md#work.", "plan#work") is True
+    assert names("Follow plan#work.", "plan#work") is True
+    assert names("Follow Plan Work section", "plan#work") is False
+    assert names("Dispatch plan work bundle", "plan#work") is False
+    assert names("Follow review__work.bundle.md", "plan#work") is False
+    assert names("Follow otherplan__work.bundle.md", "plan#work") is False
+    assert names("Follow plan__work.bundle.md-copy", "plan#work") is False
+    assert names("Follow plan__work.bundle.md.backup", "plan#work") is False
     assert names("Follow the Review section", "plan#work") is False
 
 
@@ -594,7 +601,7 @@ def opencode_task(call: str, message: str, target: str, text: str) -> dict[str, 
             "tool": "task",
             "state": {
                 "status": "completed",
-                "input": {"description": target, "prompt": f"Follow {target}."},
+                "input": {"description": "Follow the workflow", "prompt": target},
                 "output": "\n".join(
                     [
                         f'<task id="ses_{call}" state="completed">',

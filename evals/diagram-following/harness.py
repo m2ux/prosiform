@@ -52,7 +52,7 @@ TOOL_USE = "tool_use"
 TOOL_RESULT = "tool_result"
 CALL_ID = "tool_use_id"
 AGENT = "Agent"
-DESCRIPTION = "description"
+PROMPT = "prompt"
 RESULT = "result"
 IS_ERROR = "is_error"
 USAGE = "usage"
@@ -98,8 +98,8 @@ TEXT = "text"
 class Start:
     """One sub-agent start a session's transcript records.
 
-    `target` is the text the dispatching call carried, naming the section it
-    handed over; `returned` is what the sub-agent gave back, and `together`
+    `target` is the prompt the dispatching call carried, naming the file or
+    section it handed over; `returned` is what the sub-agent gave back, and `together`
     says whether it started in the same message as the start above it.
     """
 
@@ -231,9 +231,9 @@ class Claude:
     answer reaches it as a notification rather than as the call's result.
     """
     shell_tool: str = "Bash"
-    """The tool a session given `pf` also carries."""
-    pf_only: str = "Bash(pf:*)"
-    """The allowlist rule confining that tool to the build under test."""
+    """The shell tool every session carries."""
+    pf_only: str = "Bash(pf *)"
+    """The allowlist rule admitting `pf` with arguments and output redirects."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
@@ -259,7 +259,6 @@ class Claude:
         model: str,
         budget: int,
         workspace: Path | None = None,
-        pf: bool = False,
     ) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
@@ -268,10 +267,9 @@ class Claude:
         CLI enforces dollars between calls, and the run's own guard holds the
         token budget from what each session reports.
 
-        A session given `pf` carries the shell tool and `--allowedTools`
-        admits `pf` commands alone, so every other command is refused.
+        Every session carries the shell tool, and `--allowedTools` admits
+        `pf` with any arguments and output redirects in its workspace.
         """
-        tools = [self.tools, self.shell_tool] if pf else [self.tools]
         return [
             *agent,
             "-p",
@@ -281,8 +279,9 @@ class Claude:
             "stream-json",
             "--verbose",
             "--tools",
-            ",".join(tools),
-            *(["--allowedTools", self.pf_only] if pf else []),
+            f"{self.tools},{self.shell_tool}",
+            "--allowedTools",
+            self.pf_only,
             "--permission-mode",
             "acceptEdits",
             "--no-session-persistence",
@@ -474,7 +473,7 @@ class Claude:
         assistant message started together. The CLI prints each block of a
         message as an event of its own carrying the message's `id`, so a
         start is together with the one before it when both carry one id. A
-        start's target is the `description` its input carries, naming the
+        start's target is the `prompt` its input carries, naming the file or
         section handed over, and its return is the report inside the CLI's
         hand-back frame.
         """
@@ -497,9 +496,7 @@ class Claude:
                         continue
                     held_input = block.get("input")
                     target = (
-                        held_input.get(DESCRIPTION)
-                        if isinstance(held_input, dict)
-                        else None
+                        held_input.get(PROMPT) if isinstance(held_input, dict) else None
                     )
                     key = block.get("id")
                     if not isinstance(key, str) or not isinstance(target, str):
@@ -601,15 +598,13 @@ class Cursor:
         model: str,
         budget: int,
         workspace: Path | None = None,
-        pf: bool = False,
     ) -> list[str]:
         """One session's command line, the workspace given as its argument.
 
         The CLI has no session spend cap and no tool allowlist, so the run's
         own token guard is the whole budget, and the workspace the run laid
         out is what a session is confined to. Its shell is there to every
-        session, so a session given `pf` is confined to the command by what
-        the instruction names alone; `pf` changes nothing on this command line.
+        session, so it is confined to `pf` by what the instruction names alone.
 
         A workspace must be trusted for the CLI to run in it at all, since
         it prompts otherwise and a prompt is no session. `--sandbox` is left
@@ -682,7 +677,7 @@ class Cursor:
 
         A `tool_call` whose `taskToolCall` started is one start, and two
         sharing a `model_call_id` were dispatched in one message. A start's
-        target is the `description` in its args; what it returned is the
+        target is the `prompt` in its args; what it returned is the
         text of the completed call's `conversationSteps`.
 
         Only the starts a session made itself are readable: a sub-agent's own
@@ -709,7 +704,7 @@ class Cursor:
             if held.get("subtype") == STARTED:
                 carried_args = task.get(ARGS)
                 args = carried_args if isinstance(carried_args, dict) else {}
-                target = args.get(DESCRIPTION)
+                target = args.get(PROMPT)
                 if not isinstance(target, str):
                     continue
                 carried_message = held.get(MODEL_CALL)
@@ -819,7 +814,6 @@ class Opencode:
         model: str,
         budget: int,
         workspace: Path | None = None,
-        pf: bool = False,
     ) -> list[str]:
         """One session's command line, its prompt given as its argument.
 
@@ -836,7 +830,7 @@ class Opencode:
         project from remembered state as readily as from its working
         directory, and a session that names no workspace of its own can run
         in the repository this file was written in. Its shell is there to every
-        session, so `pf` changes nothing on this command line.
+        session, so its instruction confines it to `pf`.
         """
         return [
             *agent,
@@ -918,7 +912,7 @@ class Opencode:
         """The sub-agents a session started, in order.
 
         A `tool_use` part naming `task` is one start; its input's
-        `description` is the text the dispatching call carried. Two starts
+        `prompt` is the text the dispatching call carried. Two starts
         sharing a `messageID` were dispatched in one message. What a start
         returned is what the sub-agent's text in the call's `output` states,
         and a call printing no output returned `done`.
@@ -934,9 +928,7 @@ class Opencode:
             state = part.get(STATE)
             carried_input = state.get(INPUT) if isinstance(state, dict) else None
             target = (
-                carried_input.get(DESCRIPTION)
-                if isinstance(carried_input, dict)
-                else None
+                carried_input.get(PROMPT) if isinstance(carried_input, dict) else None
             )
             key = part.get(OPENCODE_CALL_ID)
             message = part.get(OPENCODE_MESSAGE_ID)

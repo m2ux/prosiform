@@ -160,8 +160,8 @@ A session receives one form of one workflow and the instruction, so a pass measu
 | `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is set beside `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, which runs each sub-agent within the call that starts it, so the call's result is the sub-agent's answer. |
 | `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
 | `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
-| `--tools Read,Write,Edit,Glob,Grep,Agent` | Every other tool, so a session cannot reach past its workspace, and `Agent` is the one tool a dispatch protocol needs. |
-| `--tools ...,Bash` with `--allowedTools Bash(pf:*)`, for a session given `pf` | Every command but `pf`: the `compiled` and `bootstrap` forms add the shell tool and admit `pf` commands alone. |
+| `--tools Read,Write,Edit,Glob,Grep,Agent,Bash` | Every other tool; `Agent` dispatches sections and `Bash` runs the build every form receives. |
+| `--allowedTools Bash(pf *)` | Admits `pf` with any arguments and output redirects in the workspace. Every form finds the build under test on its path, with no workspace copy. |
 | `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
@@ -190,6 +190,8 @@ A session that still carries context the run did not supply fails the run after 
 | `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its token budget is `EVAL_BUDGET_TOKENS` and its harness `HARNESS`; `ARGS='...'` passes the runner's options through, a later `--budget-tokens` among them overriding the default. |
 
 Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
+
+A run id requires fresh results and workspaces. An existing `results/<run-id>` or `<eval-root>/workspaces/<run-id>` refuses the run before bundling or starting a session. The runbook's [rerun procedure](RUNBOOK.md#repeating-a-stopped-run) removes both.
 
 | Option | Default | Meaning |
 | --- | --- | --- |

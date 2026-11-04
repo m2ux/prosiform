@@ -9,8 +9,8 @@ state's action, as a correct agent would. It then prints a stream-json
 transcript ending in a `result` message carrying usage, each model's usage
 and a cost.
 
-A session whose workspace holds `bin/pf` opens with a `Bash` call running
-`pf`, as its bundle's first line asks.
+Every session finds `pf` on its path and opens with a `Bash` call running
+it, as its bundle's first line asks.
 
 A workflow that dispatches takes an `Agent` call per sub-agent start the
 scenario states, each naming its section as `<document>#<heading>`. The
@@ -56,6 +56,7 @@ The environment scripts it:
 import json
 import os
 import re
+import shutil
 import sys
 import time
 import uuid
@@ -196,7 +197,7 @@ def write_sub_agent_traces(workspace: Path, prompts: list[str]) -> None:
 def message(
     identifier: str, start: tuple[str, str, bool], instruction: str
 ) -> dict[str, object]:
-    """One `Agent` call, its description naming the section it hands over."""
+    """One `Agent` call, its prompt naming the section it hands over."""
     section, _, _ = start
     return {
         "type": "tool_use",
@@ -265,7 +266,7 @@ def main() -> int:
     if log := os.environ.get("STUB_AGENT_LOG"):
         entry: dict[str, object] = {"workspace": str(workspace), "files": files}
         entry["argv"] = sys.argv[1:]
-        entry["pf"] = (workspace / "bin" / "pf").is_file()
+        entry["pf"] = shutil.which("pf")
         entry["prompt"] = prompt
         entry["variables"] = sorted(os.environ)
         entry["config"] = os.environ.get("CLAUDE_CONFIG_DIR")
@@ -308,7 +309,7 @@ def main() -> int:
                 }
             )
         )
-    if (workspace / "bin" / "pf").is_file():
+    if shutil.which("pf"):
         print(json.dumps(RAN_PF))
     if dispatch:
         for said in transcript_of(dispatch, prompt):
