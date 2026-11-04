@@ -1,0 +1,4 @@
+dispatch/a-dispatched-target-is-a-bundle-of-its-own: pass
+corpus check: 1 fixture(s), 1 pass, 0 fail, 0 awaited, 0 unexpected pass
+extraction/section-to-the-next-sibling: pass
+corpus check: 1 fixture(s), 1 pass, 0 fail, 0 awaited, 0 unexpected pass

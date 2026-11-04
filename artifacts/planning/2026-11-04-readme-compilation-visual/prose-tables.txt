@@ -1,0 +1,49 @@
+ok   command     make layout — checks/README.md
+ok   command     make links — checks/README.md
+ok   command     make tables — checks/README.md
+ok   command     make vocabulary — checks/README.md
+ok   command     make harness — checks/README.md
+ok   command     make harness — checks/README.md
+ok   command     make corpus — checks/README.md
+ok   command     make conformance — checks/README.md
+ok   command     make independence — checks/README.md
+ok   command     make invocation — checks/README.md
+ok   command     make smoke — checks/README.md
+ok   command     make render — checks/README.md
+ok   command     make check — checks.md
+ok   command     make lock-check — checks.md
+ok   command     make lint — checks.md
+ok   command     make format-check — checks.md
+ok   command     make typecheck — checks.md
+ok   command     make test — checks.md
+ok   command     make harness — checks.md
+ok   command     make corpus — checks.md
+ok   command     make smoke — checks.md
+ok   command     make layout — checks.md
+ok   command     make tables — checks.md
+ok   command     make links — checks.md
+ok   command     make vocabulary — checks.md
+ok   command     make invocation — checks.md
+ok   command     make conformance — checks.md
+ok   command     make independence — checks.md
+ok   command     make render — checks.md
+ok   command     make examples — checks.md
+ok   command     make eval-diagrams — checks.md
+ok   command     make eval-diagrams — evals/diagram-following/README.md
+ok   declared    Python — src/README.md
+ok   declared    markdown-it-py — src/README.md
+ok   declared    ruamel-yaml — src/README.md
+ok   command     make test — src/README.md
+ok   command     make harness — src/README.md
+ok   command     make corpus — src/README.md
+ok   command     make lint — src/README.md
+ok   command     make format-check — src/README.md
+ok   command     make typecheck — src/README.md
+ok   command     make lock-check — src/README.md
+ok   declared    pytest — src/README.md
+ok   declared    ruff — src/README.md
+ok   declared    mypy — src/README.md
+ok   declared    jsonschema — src/README.md
+ok   declared    types-jsonschema — src/README.md
+
+table check: 19 command(s) and 8 declaration(s), each declared by the project and named by a table
