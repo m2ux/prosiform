@@ -1,0 +1,92 @@
+Checks	Run the checks	﻿2026-11-04T14:53:43.3446061Z ##[group]Run make check
+Checks	Run the checks	2026-11-04T14:53:43.3446383Z [36;1mmake check[0m
+Checks	Run the checks	2026-11-04T14:53:43.3479088Z shell: /usr/bin/bash -e {0}
+Checks	Run the checks	2026-11-04T14:53:43.3479379Z env:
+Checks	Run the checks	2026-11-04T14:53:43.3479670Z   UV_PYTHON_INSTALL_DIR: /home/runner/work/_temp/uv-python-dir
+Checks	Run the checks	2026-11-04T14:53:43.3480080Z   UV_CACHE_DIR: /home/runner/work/_temp/setup-uv-cache
+Checks	Run the checks	2026-11-04T14:53:43.3480681Z   GH_TOKEN: ***
+Checks	Run the checks	2026-11-04T14:53:43.3481074Z   PROSIFORM_BUILD: uv run --project /home/runner/work/prosiform/prosiform/src --frozen pf
+Checks	Run the checks	2026-11-04T14:53:43.3481532Z ##[endgroup]
+Checks	Run the checks	2026-11-04T14:53:43.3571277Z cd src && uv lock --check
+Checks	Run the checks	2026-11-04T14:53:43.4823881Z Downloading cpython-3.13.13-linux-x86_64-gnu (download) (33.2MiB)
+Checks	Run the checks	2026-11-04T14:53:44.2674568Z  Downloaded cpython-3.13.13-linux-x86_64-gnu (download)
+Checks	Run the checks	2026-11-04T14:53:44.4193414Z Using CPython 3.13.13
+Checks	Run the checks	2026-11-04T14:53:44.4218340Z Resolved 24 packages in 0.74ms
+Checks	Run the checks	2026-11-04T14:53:44.4249234Z uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
+Checks	Run the checks	2026-11-04T14:53:44.6116543Z Using CPython 3.13.13
+Checks	Run the checks	2026-11-04T14:53:44.6117275Z Creating virtual environment at: src/.venv
+Checks	Run the checks	2026-11-04T14:53:44.6164713Z    Building prosiform @ file:///home/runner/work/prosiform/prosiform/src
+Checks	Run the checks	2026-11-04T14:53:45.2550208Z       Built prosiform @ file:///home/runner/work/prosiform/prosiform/src
+Checks	Run the checks	2026-11-04T14:53:45.2950264Z Installed 23 packages in 38ms
+Checks	Run the checks	2026-11-04T14:53:45.3326294Z All checks passed!
+Checks	Run the checks	2026-11-04T14:53:45.3445809Z uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
+Checks	Run the checks	2026-11-04T14:53:45.4476929Z 265 files already formatted
+Checks	Run the checks	2026-11-04T14:53:45.4514733Z uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
+Checks	Run the checks	2026-11-04T14:53:49.5182855Z Success: no issues found in 82 source files
+Checks	Run the checks	2026-11-04T14:53:49.5366529Z cd src && uv run --frozen pytest
+Checks	Run the checks	2026-11-04T14:53:51.5046503Z ........................................................................ [  4%]
+Checks	Run the checks	2026-11-04T14:53:51.7029243Z ........................................................................ [  8%]
+Checks	Run the checks	2026-11-04T14:53:51.8242906Z ........................................................................ [ 12%]
+Checks	Run the checks	2026-11-04T14:53:51.9740710Z ........................................................................ [ 16%]
+Checks	Run the checks	2026-11-04T14:53:52.2720395Z ........................................................................ [ 20%]
+Checks	Run the checks	2026-11-04T14:53:52.5958886Z ........................................................................ [ 24%]
+Checks	Run the checks	2026-11-04T14:53:53.0302545Z ........................................................................ [ 29%]
+Checks	Run the checks	2026-11-04T14:53:53.5864585Z ........................................................................ [ 33%]
+Checks	Run the checks	2026-11-04T14:53:53.8107813Z ........................................................................ [ 37%]
+Checks	Run the checks	2026-11-04T14:53:53.8511962Z ........................................................................ [ 41%]
+Checks	Run the checks	2026-11-04T14:53:53.8983911Z ........................................................................ [ 45%]
+Checks	Run the checks	2026-11-04T14:53:53.9436860Z ........................................................................ [ 49%]
+Checks	Run the checks	2026-11-04T14:53:54.3527600Z ........................................................................ [ 54%]
+Checks	Run the checks	2026-11-04T14:53:54.5557905Z ........................................................................ [ 58%]
+Checks	Run the checks	2026-11-04T14:53:59.2409768Z ........................................................................ [ 62%]
+Checks	Run the checks	2026-11-04T14:53:59.3139020Z ........................................................................ [ 66%]
+Checks	Run the checks	2026-11-04T14:54:00.1044722Z ........................................................................ [ 70%]
+Checks	Run the checks	2026-11-04T14:54:00.8693753Z ........................................................................ [ 74%]
+Checks	Run the checks	2026-11-04T14:54:00.9182861Z ........................................................................ [ 79%]
+Checks	Run the checks	2026-11-04T14:54:00.9601486Z ........................................................................ [ 83%]
+Checks	Run the checks	2026-11-04T14:54:01.0027630Z ........................................................................ [ 87%]
+Checks	Run the checks	2026-11-04T14:54:01.0463765Z ........................................................................ [ 91%]
+Checks	Run the checks	2026-11-04T14:54:01.1428512Z ........................................................................ [ 95%]
+Checks	Run the checks	2026-11-04T14:54:01.4549127Z ........................................................................ [ 99%]
+Checks	Run the checks	2026-11-04T14:54:01.5376753Z ...                                                                      [100%]
+Checks	Run the checks	2026-11-04T14:54:01.5377456Z 1731 passed in 11.51s
+Checks	Run the checks	2026-11-04T14:54:01.6166472Z uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests evals/diagram-following
+Checks	Run the checks	2026-11-04T14:54:03.1946208Z .F...................................................................... [  5%]
+Checks	Run the checks	2026-11-04T14:54:03.2699095Z ........................................................................ [ 11%]
+Checks	Run the checks	2026-11-04T14:54:03.3422022Z ........................................................................ [ 16%]
+Checks	Run the checks	2026-11-04T14:54:03.4137358Z ........................................................................ [ 22%]
+Checks	Run the checks	2026-11-04T14:54:03.4870728Z ........................................................................ [ 27%]
+Checks	Run the checks	2026-11-04T14:54:03.5616231Z ........................................................................ [ 33%]
+Checks	Run the checks	2026-11-04T14:54:03.6334656Z ........................................................................ [ 38%]
+Checks	Run the checks	2026-11-04T14:54:03.8240910Z ........................................................................ [ 44%]
+Checks	Run the checks	2026-11-04T14:54:04.1647839Z ........................................................................ [ 49%]
+Checks	Run the checks	2026-11-04T14:54:13.3431866Z ........................................................................ [ 55%]
+Checks	Run the checks	2026-11-04T14:54:13.4031839Z ........................................................................ [ 60%]
+Checks	Run the checks	2026-11-04T14:54:13.6705313Z ........................................................................ [ 66%]
+Checks	Run the checks	2026-11-04T14:54:14.0637851Z ........................................................................ [ 72%]
+Checks	Run the checks	2026-11-04T14:54:52.2075834Z ........................................................................ [ 77%]
+Checks	Run the checks	2026-11-04T14:55:08.8457826Z ........................................................................ [ 83%]
+Checks	Run the checks	2026-11-04T14:55:12.5976645Z ........................................................................ [ 88%]
+Checks	Run the checks	2026-11-04T14:55:13.7662104Z ........................................................................ [ 94%]
+Checks	Run the checks	2026-11-04T14:55:19.7737230Z ........................................................................ [ 99%]
+Checks	Run the checks	2026-11-04T14:55:20.2879913Z ...                                                                      [100%]
+Checks	Run the checks	2026-11-04T14:55:20.2881191Z =================================== FAILURES ===================================
+Checks	Run the checks	2026-11-04T14:55:20.2884377Z _______ test_active_guidance_recommends_hyphens_rather_than_underscores ________
+Checks	Run the checks	2026-11-04T14:55:20.2885301Z
+Checks	Run the checks	2026-11-04T14:55:20.2885767Z     def test_active_guidance_recommends_hyphens_rather_than_underscores() -> None:
+Checks	Run the checks	2026-11-04T14:55:20.2886769Z         for path in SURFACES:
+Checks	Run the checks	2026-11-04T14:55:20.2887621Z >           assert HYPHENS in path.read_text(encoding="utf-8"), path.relative_to(ROOT)
+Checks	Run the checks	2026-11-04T14:55:20.2888654Z E           AssertionError: PosixPath('README.md')
+Checks	Run the checks	2026-11-04T14:55:20.2891594Z E           assert 'hyphens rather than underscores' in '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...e a Selected Section\n\n```bash\ncd fixtures/extraction/section-to-the-next-sibling/source\npf \'guide.md#run\'\n```\n'
+Checks	Run the checks	2026-11-04T14:55:20.2896191Z E            +  where '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...e a Selected Section\n\n```bash\ncd fixtures/extraction/section-to-the-next-sibling/source\npf \'guide.md#run\'\n```\n' = read_text(encoding='utf-8')
+Checks	Run the checks	2026-11-04T14:55:20.2898935Z E            +    where read_text = PosixPath('/home/runner/work/prosiform/prosiform/README.md').read_text
+Checks	Run the checks	2026-11-04T14:55:20.2899367Z
+Checks	Run the checks	2026-11-04T14:55:20.2899510Z checks/tests/test_authoring.py:107: AssertionError
+Checks	Run the checks	2026-11-04T14:55:20.2899916Z =========================== short test summary info ============================
+Checks	Run the checks	2026-11-04T14:55:20.2900703Z FAILED checks/tests/test_authoring.py::test_active_guidance_recommends_hyphens_rather_than_underscores - AssertionError: PosixPath('README.md')
+Checks	Run the checks	2026-11-04T14:55:20.2902216Z assert 'hyphens rather than underscores' in '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...e a Selected Section\n\n```bash\ncd fixtures/extraction/section-to-the-next-sibling/source\npf \'guide.md#run\'\n```\n'
+Checks	Run the checks	2026-11-04T14:55:20.2906206Z  +  where '# <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform\n\n[![License: Apache 2.0](https://img.shie...e a Selected Section\n\n```bash\ncd fixtures/extraction/section-to-the-next-sibling/source\npf \'guide.md#run\'\n```\n' = read_text(encoding='utf-8')
+Checks	Run the checks	2026-11-04T14:55:20.2908317Z  +    where read_text = PosixPath('/home/runner/work/prosiform/prosiform/README.md').read_text
+Checks	Run the checks	2026-11-04T14:55:20.2908827Z 1 failed, 1298 passed in 78.47s (0:01:18)
+Checks	Run the checks	2026-11-04T14:55:20.3816702Z make: *** [Makefile:74: harness] Error 1
+Checks	Run the checks	2026-11-04T14:55:20.3833691Z ##[error]Process completed with exit code 2.
