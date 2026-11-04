@@ -123,7 +123,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO, Any
 
-from harness import HARNESSES, Harness, harness_named
+from harness import HARNESSES, SKILL_HOME, Harness, harness_named
 from report import (
     BASELINE,
     COMPLETED,
@@ -200,13 +200,6 @@ BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
 BUILD = "build"
 """The existing folder a bootstrapping session compiles into."""
 SKILL = "SKILL.md"
-SKILL_HOME = Path(".claude") / "skills"
-"""Where an agent CLI discovers a skill, walked up from its workspace.
-
-A skill sits at `<root>/.claude/skills/<name>/SKILL.md`, and the session's
-workspace is the root it walks up from, so the skill is found without the
-instruction naming it.
-"""
 SKILL_FILES = (SKILL,)
 """The files a bootstrap skill carries beside the documents it compiles."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
@@ -422,14 +415,16 @@ def prepare(
     scenario: Scenario,
     form: str,
     sets: dict[tuple[str, str], dict[str, bytes]],
-    skill_home: Path = SKILL_HOME,
+    skill_home: Path = Path(SKILL_HOME),
 ) -> None:
     """Lay out a workspace with one form's material, a scenario's inputs and answers.
 
     A bundled form's entry bundle is the document the instruction names, and
     every other bundle in its set is written beside it under the name `pf`
     gave it, since a dispatching bundle names the bundles it hands to
-    sub-agents by that name.
+    sub-agents by that name. A bootstrap skill is placed where the run's
+    harness discovers one, and the session's workspace is the root it walks
+    up from.
     """
     if form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():

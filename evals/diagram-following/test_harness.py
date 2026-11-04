@@ -16,6 +16,8 @@ from pathlib import Path
 
 import pytest
 from harness import HARNESSES, Claude, Codex, Cursor, Opencode, Start, harness_named
+from run import BOOTSTRAP_SET, prepare
+from workflow import workflows
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -498,6 +500,71 @@ def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> Non
     assert Cursor().preflight(config, tmp_path, ()) is None
     refused = Cursor().preflight(tmp_path / "absent", tmp_path, ())
     assert refused is not None and "is no directory" in refused
+
+
+def test_an_opencode_session_reads_no_directory_of_the_callers(tmp_path: Path) -> None:
+    """Every directory the CLI shares with the caller is named under the eval root."""
+    config = tmp_path / "config"
+    held = Opencode().environment(config, {"PATH": "/bin", "OPENCODE_X": "caller"})
+    assert "OPENCODE_X" not in held
+    assert held["XDG_CONFIG_HOME"] == str(config / "config")
+    assert held["XDG_DATA_HOME"] == str(config / "data")
+    assert held["XDG_STATE_HOME"] == str(config / "state")
+    assert held["XDG_CACHE_HOME"] == str(config / "cache")
+    assert held["OPENCODE_CONFIG"] == str(config / "harness.json")
+
+
+def test_an_opencode_session_runs_no_plugin_a_caller_installed(tmp_path: Path) -> None:
+    """The flags that keep the caller's plugins and external skills out are set."""
+    held = Opencode().environment(tmp_path, {})
+    for name in (
+        "OPENCODE_PURE",
+        "OPENCODE_DISABLE_DEFAULT_PLUGINS",
+        "OPENCODE_DISABLE_EXTERNAL_SKILLS",
+        "OPENCODE_DISABLE_CLAUDE_CODE_SKILLS",
+        "OPENCODE_DISABLE_PROJECT_CONFIG",
+    ):
+        assert held.get(name) == "1", name
+
+
+def test_an_opencode_session_may_run_only_pf_and_read_its_workspace(
+    tmp_path: Path,
+) -> None:
+    """The run writes the permissions a session reads, and admits no other path."""
+    config = tmp_path / "config"
+    Opencode().prepare(config)
+    settings = json.loads((config / "harness.json").read_text())
+    assert settings["permission"] == Opencode().permission
+    assert settings["permission"]["bash"] == {"*": "deny", "pf *": "allow"}
+    assert settings["permission"]["external_directory"] == "deny"
+    assert settings["permission"]["webfetch"] == "deny"
+
+
+def test_an_opencode_run_without_the_evals_login_is_refused(tmp_path: Path) -> None:
+    """A run names its credential store under the eval root, and refuses without it."""
+    config = tmp_path / "config"
+    config.mkdir()
+    refused = Opencode().preflight(config, tmp_path, ())
+    assert refused is not None and "holds no login" in refused
+    (config / "data" / "opencode").mkdir(parents=True)
+    (config / "data" / "opencode" / "auth.json").write_text("{}")
+    assert Opencode().preflight(config, tmp_path, ()) is None
+
+
+def test_a_bootstrap_skill_sits_where_the_runs_harness_discovers_it(
+    tmp_path: Path,
+) -> None:
+    """A bootstrap workspace holds the skill under the harness's own root."""
+    workflow = next(item for item in workflows() if item.name == "bootstrap-audit")
+    scenario = workflow.scenarios[0]
+    for harness in HARNESSES.values():
+        workspace = tmp_path / harness.name
+        workspace.mkdir()
+        skill_home = Path(harness.skill_home)
+        prepare(workspace, workflow, scenario, BOOTSTRAP_SET, {}, skill_home)
+        assert (workspace / skill_home / workflow.name / "SKILL.md").is_file()
+    assert HARNESSES["claude"].skill_home == HARNESSES["cursor"].skill_home
+    assert HARNESSES["opencode"].skill_home == ".opencode/skills"
 
 
 def opencode_part(

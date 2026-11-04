@@ -32,13 +32,20 @@ import json
 import re
 import sys
 import textwrap
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from workflow import CorpusError
 
 QUESTION = "question"
 DONE = "done"
+
+SKILL_HOME = ".claude/skills"
+"""Where the Claude and Cursor CLIs discover a bootstrap skill.
+
+Each scans `<workspace>/.claude/skills/<name>/SKILL.md`; opencode's own root
+is `.opencode/skills`, which its harness names instead.
+"""
 
 MANAGED_SETTINGS = {
     "linux": "/etc/claude-code/managed-settings.json",
@@ -420,6 +427,9 @@ class Claude:
                 versions.setdefault(plugin, None)
         return versions
 
+    def prepare(self, config: Path) -> None:
+        """Nothing to write: the configuration directory is the CLI's own."""
+
     def hooked(self, config: Path) -> bool:
         """Whether a managed configuration can deliver a hook to a session.
 
@@ -665,6 +675,9 @@ class Cursor:
             )
         return None
 
+    def prepare(self, config: Path) -> None:
+        """Nothing to write: the CLI reads the caller's configuration."""
+
     def hooked(self, config: Path) -> bool:
         """No managed hook reaches a session: the CLI keeps no managed settings."""
         return False
@@ -801,10 +814,68 @@ class Opencode:
     """
 
     name: str = "opencode"
-    skill_home: str = ".claude/skills"
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
+    skill_home: str = ".opencode/skills"
+    """Where a bootstrap skill sits, which is the root this CLI discovers.
+
+    The CLI discovers `.claude/skills` too, but only through the scan of a
+    caller's Claude Code installation that isolation switches off.
+    """
+    config_variables: tuple[tuple[str, str], ...] = (
+        ("XDG_CONFIG_HOME", "config"),
+        ("XDG_DATA_HOME", "data"),
+        ("XDG_STATE_HOME", "state"),
+        ("XDG_CACHE_HOME", "cache"),
+    )
+    """The directories the CLI otherwise shares with the caller, and their name
+    under the eval root: the caller's plugins, remembered projects, credential
+    store and cache."""
+    settings: str = "harness.json"
+    """The configuration file the run writes, the whole of what a session reads."""
+    disabled: tuple[str, ...] = (
+        "OPENCODE_PURE",
+        "OPENCODE_DISABLE_DEFAULT_PLUGINS",
+        "OPENCODE_DISABLE_EXTERNAL_SKILLS",
+        "OPENCODE_DISABLE_CLAUDE_CODE_SKILLS",
+        "OPENCODE_DISABLE_CLAUDE_CODE",
+        "OPENCODE_DISABLE_PROJECT_CONFIG",
+        "OPENCODE_DISABLE_MODELS_FETCH",
+        "OPENCODE_DISABLE_LSP_DOWNLOAD",
+        "OPENCODE_DISABLE_AUTOUPDATE",
+    )
+    """What a session runs without: plugins, a caller's external skills, a
+    project's own configuration, the model catalogue and an update check.
+
+    `OPENCODE_PURE` and `OPENCODE_DISABLE_DEFAULT_PLUGINS` keep the caller's
+    installed plugins out. The two skill flags keep the caller's Claude Code
+    and `.agents` skills out, and `OPENCODE_DISABLE_PROJECT_CONFIG` keeps a
+    workflow's own `opencode.json` from adding permissions the run did not
+    state. Model-catalogue fetching and update checks reach the network, which
+    a session measures nothing by doing.
+    """
+    permission: dict[str, object] = field(
+        default_factory=lambda: {
+            "bash": {"*": "deny", "pf *": "allow"},
+            "edit": "allow",
+            "read": "allow",
+            "glob": "allow",
+            "grep": "allow",
+            "list": "allow",
+            "task": "allow",
+            "webfetch": "deny",
+            "websearch": "deny",
+            "external_directory": "deny",
+        }
+    )
+    """What a session may do: write its workspace, read it, dispatch sections,
+    and run `pf` with any arguments and output redirects.
+
+    The CLI has no allowlist of the tools a session carries, so every other
+    capability is refused here instead. `external_directory` is what confines
+    a read, a write and a shell command to the session's own workspace.
+    """
     prompt_on_argv: bool = True
     """Whether the task text is an argument rather than the session's input.
 
@@ -839,9 +910,10 @@ class Opencode:
 
         `--dir` names the workspace outright. The CLI otherwise takes its
         project from remembered state as readily as from its working
-        directory, and a session that names no workspace of its own can run
-        in the repository this file was written in. Its shell is there to every
-        session, so its instruction confines it to `pf`.
+        directory, and a session that names no workspace of its own ran in
+        the repository this file was written in. The permissions come from the
+        run's own settings file, which confines every command but `pf` and
+        every path but the workspace.
         """
         return [
             *agent,
@@ -856,11 +928,28 @@ class Opencode:
         ]
 
     def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
-        """The caller's environment without its agent variables."""
-        return {
+        """The caller's environment without its agent variables, confined to `config`.
+
+        Each directory the CLI otherwise shares with the caller is named under
+        the eval root, so no plugin, remembered project, credential store or
+        cache reaches a session. `OPENCODE_CONFIG` names the one file the run
+        writes, and every capability the run does not admit is switched off.
+        """
+        kept = {
             name: value
             for name, value in held.items()
             if not name.startswith(self.scrubbed)
+        }
+        named = {
+            variable: str(config / directory)
+            for variable, directory in self.config_variables
+        }
+        settings = config / self.settings
+        return {
+            **kept,
+            **named,
+            "OPENCODE_CONFIG": str(settings),
+            **{name: "1" for name in self.disabled},
         }
 
     def preflight(
@@ -868,19 +957,41 @@ class Opencode:
     ) -> str | None:
         """What this harness cannot guarantee, stated as a refusal.
 
-        The CLI has no configuration directory of its own and reads plugins
-        from the caller's installation, so a session is confined by its
-        working directory alone.
+        The CLI reaches a provider through the credential store under its data
+        directory, which the run names under the eval root, and reads its
+        permissions from the one file the run writes. A run without either
+        would reach the caller's own installation, so both are required
+        before a session starts.
         """
         if not config.is_dir():
             return (
-                f"{config} is no directory; this harness reads the caller's "
-                f"configuration, so name an eval root whose config records that"
+                f"{config} is no directory; this harness writes its settings "
+                f"and credential store there, so name an eval root"
+            )
+        credential = config / "data" / "opencode" / "auth.json"
+        if not credential.is_file():
+            return (
+                f"{credential} holds no login; run "
+                f"XDG_DATA_HOME={config / 'data'} opencode auth login once"
             )
         return None
 
+    def prepare(self, config: Path) -> None:
+        """Write the one settings file a session reads.
+
+        The file states the run's permissions alone, so a session's
+        capabilities are the run's rather than whatever the caller's
+        installation would offer.
+        """
+        config.mkdir(parents=True, exist_ok=True)
+        settings = {
+            "$schema": "https://opencode.ai/config.json",
+            "permission": self.permission,
+        }
+        (config / self.settings).write_text(json.dumps(settings, indent=2) + "\n")
+
     def hooked(self, config: Path) -> bool:
-        """No managed hook reaches a session: the CLI keeps no managed settings."""
+        """No managed hook reaches a session: the CLI reads no managed settings."""
         return False
 
     def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
