@@ -62,6 +62,7 @@ from workflow import (
     instruction,
     read_workflow,
     reported,
+    section_body,
     stray,
     walk,
     workflows,
@@ -184,11 +185,18 @@ def section_faults(workflow: Workflow) -> list[str]:
             if drawn[state].body != written.body:
                 faults.append(f"{state}: the {form} section differs from the diagram's")
             drawn_section, written_section = drawn[state], written
-            if (drawn_section.transition is None) != (
+            # A prose section is the only statement of its transition, so it
+            # states one wherever the diagram draws an edge. A diagram section
+            # may leave its single edge unstated, and a terminal state states
+            # no transition in either form.
+            if (
                 written_section.transition is None
+                and state not in workflow.diagram.terminals
+                and len(workflow.diagram.leaving(state)) != 1
             ):
                 faults.append(
-                    f"{state}: the {form} form and the diagram disagree on ending"
+                    f"{state}: the {form} section states no transition the "
+                    f"diagram draws"
                 )
             elif (
                 drawn_section.transition is not None
@@ -290,11 +298,14 @@ def transition_faults(workflow: Workflow) -> list[str]:
             labels = {edge.label for edge in leaving}
             drawn = workflow.sections[form][state].transition
             if drawn is None:
-                if leaving or state not in diagram.terminals:
-                    faults.append(
-                        f"{state}: the {form} section ends a workflow the diagram"
-                        f" does not"
-                    )
+                # A plain state states no transition: its one edge is the
+                # diagram's. A state that ends the workflow states completion.
+                if state not in diagram.terminals:
+                    if len(leaving) != 1:
+                        faults.append(
+                            f"{state}: the {form} section states no transition "
+                            f"and the diagram draws {len(leaving)} edges"
+                        )
                 continue
             if state in diagram.terminals:
                 faults.append(
@@ -696,8 +707,8 @@ def test_a_substitute_stating_another_branch_is_a_fault(tmp_path: Path) -> None:
     shipped = workflow.scenarios[2]
     assert scenario_faults(workflow, shipped) == []
     assert bundle_path_faults(workflow, shipped, output) == [
-        "preset-over-default: the bundle leads ('Outline', 'Amend', 'Inspect',"
-        " 'Approve')"
+        "preset-over-default: the bundle leads ('Entry', 'Outline', 'Amend',"
+        " 'Inspect', 'Approve', 'Exit')"
     ]
 
 
@@ -761,10 +772,7 @@ def test_the_dispatch_scenarios_are_the_chain_the_set_the_pair_and_the_question(
 def test_a_chain_dispatches_one_target_from_each_of_two_sections() -> None:
     chain = next(item for item in DISPATCHING if item.name == "dispatch-chain")
     [scenario] = chain.scenarios
-    assert [(entry.section, entry.returned) for entry in scenario.trace] == [
-        ("plan#work", "done"),
-        ("review#check", "done"),
-    ]
+    assert [entry.section for entry in scenario.trace] == ["plan#work", "review#check"]
 
 
 def test_a_parallel_set_starts_its_second_target_beside_its_first() -> None:
@@ -786,12 +794,33 @@ def test_a_set_beside_a_dispatch_states_the_dispatch_then_the_set() -> None:
     ]
 
 
-def test_a_returned_question_is_dispatched_again_with_the_answers() -> None:
+def test_a_returned_question_is_answered_from_the_scenarios_answers() -> None:
+    """The sub-agent asks, and its action shows the answer it was handed back."""
     question = next(item for item in DISPATCHING if item.name == "dispatch-question")
     [scenario] = question.scenarios
-    asked, answered = scenario.trace
-    assert asked.section == answered.section == "draft#choose"
-    assert (asked.returned, answered.returned) == ("question", "done")
+    [asked] = scenario.trace
+    assert asked.section == "draft#choose"
+    assert asked.action is not None
+    _, value = asked.action
+    assert f"`{value}`" in scenario.answers
+    for form in question.forms:
+        body = section_body(question.form(form), "draft.md", "choose")
+        assert f"`{value}`" in body and "return that question" in body
+
+
+def test_each_dispatched_section_states_the_action_its_trace_entry_holds() -> None:
+    """A sub-agent's evidence is a file it writes, as a state's is."""
+    for workflow in DISPATCHING:
+        [scenario] = workflow.scenarios
+        for entry in scenario.trace:
+            assert entry.action is not None, (workflow.name, entry.section)
+            name, value = entry.action
+            document, _, heading = entry.section.partition("#")
+            for form in workflow.forms:
+                body = section_body(workflow.form(form), f"{document}.md", heading)
+                assert f"`actions/{name}`" in body, (workflow.name, form, name)
+                if not scenario.answers:
+                    assert f"containing `{value}`" in body, (workflow.name, form)
 
 
 def test_the_compiled_form_publishes_a_bundle_per_target_and_the_authored_none(
@@ -850,7 +879,7 @@ def test_every_dispatching_form_names_the_sub_agent_trace() -> None:
     assert {*DISPATCH_FORMS, BOOTSTRAP} <= set(FORMS)
     for form in FORMS:
         text = " ".join(instruction(ENTRY, form).split())
-        assert f"tell it to append each state it enters as one line to {stated}" in text
+        assert f"append each state it enters as one line to {stated}" in text, form
 
 
 def test_a_state_the_bundle_does_not_reach_is_a_fault(tmp_path: Path) -> None:
@@ -914,8 +943,8 @@ def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
         tmp_path,
         "dispatch-set",
         "scenarios.toml",
-        'dispatch = "review#tests"\nreturned = "done"\ntogether = true\n',
-        'dispatch = "review#tests"\nreturned = "done"\n',
+        'dispatch = "review#tests"\ntogether = true\n',
+        'dispatch = "review#tests"\n',
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
     assert len(faults) == len(DISPATCH_FORMS) and all(
@@ -1115,8 +1144,8 @@ def test_a_scenario_path_with_a_step_the_diagram_does_not_draw_is_a_fault(
         tmp_path,
         "looping",
         "scenarios.toml",
-        '"Draft", "Review", "Publish"',
-        '"Draft", "Publish"',
+        '"Draft",\n    "Review",\n    "Publish",',
+        '"Draft",\n    "Publish",',
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
     assert "no-rework: the diagram reaches no Publish from Draft" in faults
@@ -1183,9 +1212,12 @@ def test_a_section_entry_compiles_its_section_alone(tmp_path: Path) -> None:
     assert scenario.name == "document-fragment"
     text = compiled_bundle(workflow, tmp_path / "section")
     for state in scenario.path:
-        name, value = workflow.walked[state].action
-        action = f"Write `actions/{name}` containing `{value}`."
-        assert action in bundled_state(text, state)
+        action = workflow.walked[state].action
+        if action is None:
+            continue
+        name, value = action
+        expected = f"Write `actions/{name}` containing `{value}`."
+        assert expected in bundled_state(text, state)
     assert "Upkeep" not in text and "# Notes" not in text
     whole = compiled_bundle(replace(workflow, entry=ENTRY), tmp_path / "whole")
     assert "# Notes" in whole
@@ -1294,7 +1326,10 @@ def scored(
     (workspace / ACTIONS).mkdir()
     for state in trace:
         if state in workflow.walked and state != undone:
-            name, value = workflow.walked[state].action
+            action = workflow.walked[state].action
+            if action is None:
+                continue
+            name, value = action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
     (workspace / SUBAGENTS).write_text(
         json.dumps({"starts": [start.record() for start in starts]})
@@ -1313,9 +1348,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     session whose agent reported an error is `errored` on any scenario.
     """
     path = scenario.path
-    correct = tuple(
-        Start(due.section, due.returned, due.together) for due in scenario.trace
-    )
+    correct = tuple(Start(due.section, "done", due.together) for due in scenario.trace)
     workspaces = (root / str(index) for index in itertools.count())
 
     def departing(
@@ -1343,7 +1376,9 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     if correct:
         found.add(departing(path, ()))
         found.add(departing(path, tuple(replace(s, together=False) for s in correct)))
-        found.add(departing(path, tuple(replace(s, returned="done") for s in correct)))
+        found.add(
+            departing(path, tuple(replace(s, returned="question") for s in correct))
+        )
     return {failure for failure in found if failure is not None}
 
 
@@ -1372,8 +1407,8 @@ def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
     assert unreached(linear, tmp_path) == [
         f"no scenario produces {failure}"
         for failure in (
-            Failure.WRONG_BRANCH,
             Failure.LOOP_MISCOUNT,
+            Failure.MISSING_ACTION,
             Failure.UNDISPATCHED,
             Failure.SEQUENTIAL_SET,
             Failure.UNRELAYED_QUESTION,
@@ -1425,7 +1460,7 @@ def test_a_drawn_state_no_edge_leads_to_is_linked_from_a_terminal_section() -> N
     """Refund is drawn and linked from Invoice, and no edge leads to it."""
     pricing = next(workflow for workflow in CORPUS if workflow.name == "pricing")
     entered = {edge.target for edge in pricing.diagram.edges}
-    assert pricing.diagram.states - entered == {"Refund"}
+    assert pricing.diagram.states - entered == {"Entry", "Refund"}
     linked = f"]({Path(document('Refund')).name})"
     for form in pricing.forms:
         assert linked in pricing.sections[form]["Invoice"].body, form

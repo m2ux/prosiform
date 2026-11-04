@@ -3,10 +3,25 @@
 
 [[scenario]]
 name = "high-severity"
-path = ["Intake", "Triage", "Escalate", "Notify", "Resolve"]
+path = [
+    "Entry",
+    "Intake",
+    "Triage",
+    "Escalate",
+    "Notify",
+    "Resolve",
+    "Exit",
+]
 inputs = { "severity.txt" = "high" }
 
 [[scenario]]
 name = "low-severity"
-path = ["Intake", "Triage", "Queue", "Resolve"]
+path = [
+    "Entry",
+    "Intake",
+    "Triage",
+    "Queue",
+    "Resolve",
+    "Exit",
+]
 inputs = { "severity.txt" = "low" }

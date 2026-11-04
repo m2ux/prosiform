@@ -198,7 +198,7 @@ ATX = "#"
 SPACE = " "
 HEADING_OPEN = "heading_open"
 
-RUN_PF = "Before reading on, run `pf` with no arguments and follow the guide it prints."
+RUN_PF = "Run `pf`, then follow the guidance it prints."
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -1220,43 +1220,62 @@ def group(
     )
 
 
+def instruction_group(next_heading: str | None = None) -> Group:
+    """The group every bundle opens with: the `§ Instructions` heading and the line.
+
+    It answers to no source document, so its record names a path no source
+    holds and carries no selected range. The heading is generated structure,
+    and the line is an instruction beneath it. `next_heading` is the title of
+    the first heading the bundle carries, which the line names so a reader
+    holding the line has somewhere to go.
+    """
+    line = RUN_PF
+    if next_heading is not None:
+        line = f"{RUN_PF} Follow [{next_heading}](#{slug(next_heading)}) next."
+    heading = Generated(INSTRUCTIONS, 1, FILENAME_WRAPPER)
+    record = Record(INSTRUCTIONS, None, (heading,), (Instruction(line),))
+    return Group((f"# {INSTRUCTIONS}", line), record)
+
+
 def assemble(groups: Sequence[Group]) -> str:
-    """The document: every group's parts in bundle order.
+    """The document: the instruction heading, then every group's parts in order.
 
     One blank line between two maximal emitted regions is the separation
     the contract requires, and it is written here and nowhere else, so
-    the geometry `openings` reads back is the geometry this writes. The
-    document opens on the first part of the first group, and each part
-    ends with the newline that ends its own last line, so the document
-    closes with the one its final part carries.
+    the geometry `openings` reads back is the geometry this writes. Each
+    part ends with the newline that ends its own last line, so the
+    document closes with the one its final part carries.
     """
     return joined([part for one in groups for part in one.parts])
 
 
-def opened(groups: Sequence[Group]) -> list[Group]:
-    """The groups with the run-pf line ahead of the first group's first part.
+INSTRUCTIONS = "\u00a7 Instructions"
+"""The heading every bundle opens on, holding the run-pf line.
 
-    The line is a part of its own, so a file heading it precedes is a
-    part of the group rather than the heading the group opens on.
+The section sign marks the heading as the run's own structure rather than a
+document's, and it survives slugging, so no author's heading can share the
+fragment it takes.
+"""
+
+
+def opened(groups: Sequence[Group]) -> list[Group]:
+    """The groups with the `§ Instructions` group ahead of them.
+
+    The heading and the run-pf line are the run's own structure, ahead of
+    every document a bundle carries, so the line needs no placement against
+    a document's own headings and the bundle opens the same way whatever
+    the documents hold. The line names the first heading the bundle carries,
+    so its reader has somewhere to go once it has run `pf`.
     """
-    if not groups:
-        return list(groups)
-    first, *rest = groups
-    line = Instruction(RUN_PF)
-    recorded: tuple[Part, ...] = (line, *first.record.parts)
-    if first.wrapped:
-        wrapper = first.record.headings[0]
-        assert isinstance(wrapper, Generated)
-        recorded = (line, wrapper, *first.record.parts)
-    return [
-        replace(
-            first,
-            parts=(RUN_PF, *first.parts),
-            record=replace(first.record, parts=recorded),
-            wrapped=False,
-        ),
-        *rest,
-    ]
+    next_heading = None
+    for one in groups:
+        for heading in one.headings:
+            if heading and not heading.startswith("\u2afd"):
+                next_heading = heading
+                break
+        if next_heading is not None:
+            break
+    return [instruction_group(next_heading), *groups]
 
 
 def openings(groups: Sequence[Group]) -> list[int]:

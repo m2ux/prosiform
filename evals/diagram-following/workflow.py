@@ -46,7 +46,10 @@ value, and the path a correct run walks. A dispatch form's scenario also
 lists the trace a correct run produces: one `[[scenario.trace]]` table per
 sub-agent start, in the order the walk dispatches them, naming the section
 the sub-agent follows as the document and heading it was compiled from,
-what it returned, and `together` on each entry of a set started at once.
+`together` on each entry of a set started at once, and the `action` its
+section states, as the `file` under `actions/` and the `value` it holds. A
+scenario whose sub-agent returns a question states its `answers`, the text
+a run writes to `answers.txt` for the session to hand back.
 A run writes each input to `inputs/<name>` as the value followed by a
 newline, and a condition reads the file with surrounding whitespace removed.
 
@@ -158,8 +161,14 @@ section's transition names the edge's label or takes the one edge out of
 its state, and only the step handing a section to a sub-agent is its own.
 """
 
-START = "start"
-STOP = "stop"
+START = "Entry"
+STOP = "Exit"
+"""The diagram's entry and exit nodes, which are states like any other.
+
+A diagram names them as it names every state, so a marker's id and the
+heading its section carries are one name and no layer translates between
+two.
+"""
 ENTRY_PLACEHOLDER = "ENTRY"
 SKILL_ENTRY = "SKILL.md"
 """The document a bootstrap session is told to read."""
@@ -195,7 +204,6 @@ FRONTMATTER = re.compile(r"\A---\n.*?^---\n", re.DOTALL | re.MULTILINE)
 NEXT = "**Next.** "
 ACTION = re.compile(r"^Write `actions/([^`]+)` containing `([^`]*)`\.$", re.MULTILINE)
 TERMINAL = "The workflow is complete."
-ONLY_EDGE = "Take the transition out of this state."
 LABEL = r"take the transition labelled `([^`]+)`"
 GO_TO = r"go to \[(\w+)\]\([^)]+\)"
 LINKED = r"take the transition \[([^\]]+)\]\(([^)]+)\) names"
@@ -256,7 +264,6 @@ OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
 """The operator a link's text opens with, where it opens with one."""
 RULE_STATEMENT = re.compile(r"^The transition into `(\w+)` applies\.$", re.MULTILINE)
 _DIAGRAM_DECISION = re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$")
-_DIAGRAM_ONLY_EDGE = re.compile(rf"^{re.escape(ONLY_EDGE)}$")
 DECISION = {
     DIAGRAM: _DIAGRAM_DECISION,
     PROSE: re.compile(rf"^If (.+), {GO_TO}\. Otherwise, {GO_TO}\.$"),
@@ -264,10 +271,7 @@ DECISION = {
     BOOTSTRAP: _DIAGRAM_DECISION,
 }
 UNCONDITIONAL = {
-    DIAGRAM: _DIAGRAM_ONLY_EDGE,
     PROSE: re.compile(r"^Go to \[(\w+)\]\([^)]+\)\.$"),
-    LINKED_FORM: _DIAGRAM_ONLY_EDGE,
-    BOOTSTRAP: _DIAGRAM_ONLY_EDGE,
 }
 READS = re.compile(r"^`inputs/([^`]+)` reads `([^`]*)`$")
 FEWER = re.compile(
@@ -362,21 +366,32 @@ class Diagram:
 
     @property
     def states(self) -> frozenset[str]:
-        """Every state of the diagram, its decisions and conditions excepted."""
+        """Every state of the diagram, its decisions and conditions excepted.
+
+        A clicked `start` or `stop` is a state too: it carries a section and
+        the walk opens or ends there. One an author does not click is a
+        marker, and the graph's own boundary rather than a state.
+        """
         nodes = {edge.source for edge in self.edges} | {
             edge.target for edge in self.edges
         }
-        return frozenset(nodes - {START, STOP} - self.transitions - self.decisions)
+        markers = {marker for marker in (START, STOP) if marker not in self.clicks}
+        return frozenset(nodes - markers - self.transitions - self.decisions)
 
     def leaving(self, state: str) -> tuple[Edge, ...]:
-        """The edges out of one node, the edge to the stop marker excepted.
+        """The edges out of one node, the edge to an unclicked stop excepted.
 
         A decision's edges reach its conditions, and each condition's own edge
         reaches the state its escape enters, so the diagram's edges are read as
-        drawn and the walker follows them node by node.
+        drawn and the walker follows them node by node. Where an author clicks
+        `stop`, its section is a state, so the edge into it is an edge like any
+        other and `stop` is where the workflow ends.
         """
         return tuple(
-            edge for edge in self.edges if edge.source == state and edge.target != STOP
+            edge
+            for edge in self.edges
+            if edge.source == state
+            and not (edge.target == STOP and STOP not in self.clicks)
         )
 
 
@@ -401,13 +416,15 @@ class Section:
     """One state's document: its action and its transition.
 
     `body` is the document up to the transition paragraph, which is the part
-    the two forms share. A terminal section carries no transition.
+    the two forms share. A terminal section carries no transition. A section
+    stating no action is the workflow's entry or exit, which the diagram
+    names and which neither does nor writes anything.
     """
 
     state: str
     path: Path
     body: str
-    action: tuple[str, str]
+    action: tuple[str, str] | None
     transition: Transition | None
 
 
@@ -417,27 +434,33 @@ class Dispatch:
 
     `section` is the document and heading the sub-agent follows, as
     `<document>#<heading>`, since an author and the profile both name the
-    target's section rather than the bundle it compiles to. `returned` is
-    what it gave back, and `together` marks an entry of a set started
-    beside the entry above it.
+    target's section rather than the bundle it compiles to. `together` marks
+    an entry of a set started beside the entry above it. `action` is the
+    file under `actions/` the section has the sub-agent write and the value
+    it holds; a section stating no action carries none, and nothing is
+    checked for it.
     """
 
     section: str
-    returned: str
     together: bool
+    action: tuple[str, str] | None = None
 
 
 @dataclass(frozen=True)
 class Scenario:
     """One run's inputs, the path a correct run walks and its dispatch trace.
 
-    `trace` is empty for a form that dispatches nothing.
+    `trace` is empty for a form that dispatches nothing. `answers` is what a
+    run writes to `answers.txt`, the user's answers to a question a
+    sub-agent returns; it is empty where no sub-agent asks, and no file is
+    written.
     """
 
     name: str
     inputs: dict[str, str]
     path: tuple[str, ...]
     trace: tuple[Dispatch, ...] = ()
+    answers: str = ""
 
 
 @dataclass(frozen=True)
@@ -564,7 +587,12 @@ def read_diagram_text(
     if len(starts) != 1:
         raise CorpusError(f"{named}: {START} points at {len(starts)} states, not one")
     terminals = frozenset(edge.source for edge in edges if edge.target == STOP)
-    return Diagram(starts[0], tuple(edges), terminals, clicks, shapes, labels)
+    # The entry and exit nodes are states like any other when an author
+    # clicks them: the walk opens at `Entry` and ends at `Exit`, and each
+    # carries a section stating what entering or leaving means.
+    opening = START if START in clicks else starts[0]
+    ending = frozenset({STOP}) if STOP in clicks else terminals
+    return Diagram(opening, tuple(edges), ending, clicks, shapes, labels)
 
 
 def ruled_state(directory: Path, destination: str) -> str:
@@ -608,7 +636,8 @@ def parse_transition(
         condition, then, otherwise = decision.groups()
         input_read(condition)
         return Transition(condition, then, otherwise)
-    if unconditional := UNCONDITIONAL[form].match(text):
+    plain = UNCONDITIONAL.get(form)
+    if plain is not None and (unconditional := plain.match(text)):
         target = unconditional.group(1) if unconditional.groups() else None
         return Transition(None, target, None)
     raise CorpusError(f"no {form} transition reads as {text!r}")
@@ -668,13 +697,15 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
     if not marker:
         body, transition = text, ""
     actions = ACTION.findall(body)
-    if len(actions) != 1:
+    if len(actions) > 1:
         raise CorpusError(f"{path} states {len(actions)} actions, not one")
+    # A section states no action where it is the workflow's own entry or
+    # exit: the diagram names both, and neither does anything itself.
     return Section(
         heading.group(1),
         path,
         body,
-        actions[0],
+        actions[0] if actions else None,
         parse_transition(form, transition.strip(), path.parent) if marker else None,
     )
 
@@ -756,9 +787,16 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
             dict(entry["inputs"]),
             tuple(entry["path"]),
             tuple(
-                Dispatch(row["dispatch"], row["returned"], row.get("together", False))
+                Dispatch(
+                    row["dispatch"],
+                    row.get("together", False),
+                    (row["action"]["file"], row["action"]["value"])
+                    if "action" in row
+                    else None,
+                )
                 for row in entry.get("trace", ())
             ),
+            entry.get("answers", ""),
         )
         for entry in entries
     )
@@ -985,24 +1023,63 @@ def bundle_walk(
         if len(path) == STEP_LIMIT:
             return tuple(path), [f"no terminal state in {STEP_LIMIT}"]
         path.append(state)
+        shown = state
         section = sections.get(fragment)
-        if section is None or section.title != state:
-            return tuple(path), [f"the bundle heads no {state} section at #{fragment}"]
+        if section is None or section.title != shown:
+            return tuple(path), [f"the bundle heads no {shown} section at #{fragment}"]
         actions = ACTION.findall(section.text)
-        if len(actions) != 1:
+        if len(actions) > 1:
             return tuple(path), [f"the bundle's {state} states {len(actions)} actions"]
         faults = []
-        if actions[0] != workflow.walked[state].action:
+        stated_action = workflow.walked[shown].action
+        chosen = actions[0] if actions else None
+        if stated_action is not None and chosen != stated_action:
             faults.append(
-                f"the bundle's {state} writes {actions[0]}, not"
-                f" {workflow.walked[state].action}"
+                f"the bundle's {shown} writes {chosen!r}, not {stated_action!r}"
             )
         stated = NEXT_PARAGRAPH.findall(section.text)
-        if len(stated) != 1:
+        # A decision is a node of the diagram in its own right, so the state
+        # before one states the branch to take. A plain state has one edge
+        # out, which the diagram already states, so its section states no
+        # transition. A terminal state has no edge, so it states completion.
+        if len(stated) > 1:
             return tuple(path), [
                 *faults,
                 f"the bundle's {state} states {len(stated)} transitions",
             ]
+        deciding = len(diagram.leaving(state)) > 1
+        if deciding and not stated:
+            return tuple(path), [
+                *faults,
+                f"the bundle's {state} decides and states no transition",
+            ]
+        if not stated:
+            edges = diagram.leaving(state)
+            if not edges:
+                # The state leads nowhere: it is terminal, and a terminal
+                # state states that the workflow is complete.
+                return tuple(path), [
+                    *faults,
+                    f"the bundle's {state} is terminal and states no completion",
+                ]
+            if len(edges) != 1:
+                return tuple(path), [
+                    *faults,
+                    f"the bundle's {state} states no transition and has "
+                    f"{len(edges)} edges",
+                ]
+            if faults:
+                return tuple(path), faults
+            state = edges[0].target
+            linked = [
+                target
+                for text, target in FRAGMENT_LINK.findall(section.text)
+                if text == state
+            ]
+            fragment = (
+                linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
+            )
+            continue
         transition = parse_transition(DIAGRAM, stated[0].strip())
         if transition is None:
             return tuple(path), faults
@@ -1165,8 +1242,9 @@ def dispatch_walk(
     Each state on the path dispatches the targets its section's steps name,
     and a dispatched section dispatches its own targets in turn, so the walk
     is the source's statement of which sub-agents start, in what order, and
-    which of them start together. What each returned is the scenario's to
-    state, since it is the sub-agent's to give.
+    which of them start together. What each returns is the sub-agent's to
+    give, and a returned question's second start is the session's answer to
+    it, so neither is part of the walk.
     """
     root = workflow.form(form)
     trace: list[tuple[str, bool]] = []
@@ -1244,7 +1322,13 @@ def successor(
         return drawn_successor(workflow, state, inputs, trace)
     transition = sections_of(workflow, form)[state].transition
     if transition is None:
-        return None
+        # A plain state states no transition: the diagram's one edge is its
+        # transition. A decision's section states the branch it takes, and a
+        # terminal state states no edge at all.
+        leaving = workflow.diagram.leaving(state)
+        if TRANSITION[form] == PROSE or len(leaving) != 1:
+            return None
+        return leaving[0].target
     chosen = transition.then
     if transition.condition is not None and not holds(
         transition.condition, inputs, trace

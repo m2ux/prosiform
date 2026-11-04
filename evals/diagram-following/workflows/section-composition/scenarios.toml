@@ -3,15 +3,35 @@
 
 [[scenario]]
 name = "merged-sources"
-path = ["Lodge", "Configure", "Close"]
+path = [
+    "Entry",
+    "Lodge",
+    "Configure",
+    "Close",
+    "Exit",
+]
 inputs = { "kind.txt" = "config", "scope.txt" = "small" }
 
 [[scenario]]
 name = "deferred-occurrence"
-path = ["Lodge", "Assess", "Migrate", "Close"]
+path = [
+    "Entry",
+    "Lodge",
+    "Assess",
+    "Migrate",
+    "Close",
+    "Exit",
+]
 inputs = { "kind.txt" = "code", "scope.txt" = "large" }
 
 [[scenario]]
 name = "nested-composition"
-path = ["Lodge", "Assess", "Amend", "Close"]
+path = [
+    "Entry",
+    "Lodge",
+    "Assess",
+    "Amend",
+    "Close",
+    "Exit",
+]
 inputs = { "kind.txt" = "code", "scope.txt" = "small" }

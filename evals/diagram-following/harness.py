@@ -16,7 +16,9 @@ the harness is the whole of what an agent CLI differs in.
   `model_call_id`, and which reports tokens but no cost;
 - `opencode`, the opencode CLI, whose stream is events each holding a
   `part`, a sub-agent start being a `tool` part naming `task`, and which
-  reports tokens and cost on each model step's `step_finish` part.
+  reports tokens and cost on each model step's `step_finish` part;
+- `codex`, the native app-server, whose bridge records response boundaries,
+  child-thread reports and cumulative tokens, with no reported dollar cost.
 
 A harness reads its own stream: `starts()` returns the same `Start` values
 from any of them, so the scorer above it is unaware of which CLI produced
@@ -29,13 +31,21 @@ import hashlib
 import json
 import re
 import sys
-from dataclasses import asdict, dataclass
+import textwrap
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
 from workflow import CorpusError
 
 QUESTION = "question"
 DONE = "done"
+
+SKILL_HOME = ".claude/skills"
+"""Where the Claude and Cursor CLIs discover a bootstrap skill.
+
+Each scans `<workspace>/.claude/skills/<name>/SKILL.md`; opencode's own root
+is `.opencode/skills`, which its harness names instead.
+"""
 
 MANAGED_SETTINGS = {
     "linux": "/etc/claude-code/managed-settings.json",
@@ -50,11 +60,12 @@ USER = "user"
 TOOL_USE = "tool_use"
 TOOL_RESULT = "tool_result"
 CALL_ID = "tool_use_id"
-TASK = "Task"
-DESCRIPTION = "description"
+AGENT = "Agent"
+PROMPT = "prompt"
 RESULT = "result"
 IS_ERROR = "is_error"
 USAGE = "usage"
+MODEL_USAGE = "modelUsage"
 
 TOOL_CALL = "tool_call"
 STARTED = "started"
@@ -96,14 +107,17 @@ TEXT = "text"
 class Start:
     """One sub-agent start a session's transcript records.
 
-    `target` is the text the dispatching call carried, naming the section it
-    handed over; `returned` is what the sub-agent gave back, and `together`
+    `target` is the prompt the dispatching call carried, naming the file or
+    section it handed over; `returned` is what the sub-agent gave back, and `together`
     says whether it started in the same message as the start above it.
     """
 
     target: str
     returned: str
     together: bool
+    """Whether this actor's preceding start shares its native response group."""
+    actor: str | None = None
+    group: str | None = None
 
     def record(self) -> dict[str, object]:
         """The start as plain values `json.dumps` writes unchanged."""
@@ -123,6 +137,39 @@ def messages(transcript: Path) -> list[dict[str, object]]:
         if isinstance(held, dict):
             found.append(held)
     return found
+
+
+HANDBACK = "The report follows:"
+"""The words closing the frame Claude Code puts around a sub-agent's report.
+
+The report follows them, each of its lines indented, and the frame's own
+text precedes them, so a return is read from what follows.
+"""
+
+
+def unframed(content: object) -> str:
+    """A sub-agent's report, taken from inside the CLI's hand-back frame.
+
+    A return carrying no frame is the report whole.
+    """
+    if isinstance(content, list):
+        content = " ".join(
+            part.get(TEXT, "") for part in content if isinstance(part, dict)
+        )
+    text = content if isinstance(content, str) else ""
+    _, framed, report = text.partition(HANDBACK)
+    return textwrap.dedent(report) if framed else text
+
+
+QUESTION_LINE = "Question:"
+"""How the first line of a returned question opens, as `pf`'s guide prescribes."""
+
+
+def asked(report: str) -> str:
+    """What a sub-agent's report states: `question` where its first line opens
+    with the guide's marker, and `done` otherwise."""
+    lines = [line.strip() for line in report.splitlines() if line.strip()]
+    return QUESTION if lines and lines[0].startswith(QUESTION_LINE) else DONE
 
 
 def said(text: object) -> str:
@@ -187,11 +234,19 @@ class Claude:
     project_settings: tuple[str, ...] = ("settings.json", "settings.local.json")
     hooks: str = "hooks"
     default_agent: str = "claude"
-    tools: str = "Read,Write,Edit,Glob,Grep,Task"
+    tools: str = "Read,Write,Edit,Glob,Grep,Agent"
+    foreground: tuple[str, str] = ("CLAUDE_CODE_DISABLE_BACKGROUND_TASKS", "1")
+    """The variable holding each sub-agent within the call that starts it.
+
+    The CLI otherwise starts a sub-agent in the background: the call returns
+    at once, the parent ends its turn before the answer arrives, and the
+    answer reaches it as a notification rather than as the call's result.
+    """
     shell_tool: str = "Bash"
-    """The tool a session given `pf` also carries."""
-    pf_only: str = "Bash(pf:*)"
-    """The allowlist rule confining that tool to the build under test."""
+    """The shell tool every session carries."""
+    skill_home: str = ".claude/skills"
+    pf_only: str = "Bash(pf *)"
+    """The allowlist rule admitting `pf` with arguments and output redirects."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
@@ -204,11 +259,12 @@ class Claude:
     what the CLI alone could spend before that guard sees a result.
     """
     usage: tuple[str, str, str, str] = (
-        "input_tokens",
-        "output_tokens",
-        "cache_creation_input_tokens",
-        "cache_read_input_tokens",
+        "inputTokens",
+        "outputTokens",
+        "cacheCreationInputTokens",
+        "cacheReadInputTokens",
     )
+    """The token kinds each model's entry in a result's `modelUsage` counts."""
 
     def argv(
         self,
@@ -216,7 +272,7 @@ class Claude:
         model: str,
         budget: int,
         workspace: Path | None = None,
-        pf: bool = False,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
@@ -225,10 +281,9 @@ class Claude:
         CLI enforces dollars between calls, and the run's own guard holds the
         token budget from what each session reports.
 
-        A session given `pf` carries the shell tool and `--allowedTools`
-        admits `pf` commands alone, so every other command is refused.
+        Every session carries the shell tool, and `--allowedTools` admits
+        `pf` with any arguments and output redirects in its workspace.
         """
-        tools = [self.tools, self.shell_tool] if pf else [self.tools]
         return [
             *agent,
             "-p",
@@ -238,8 +293,9 @@ class Claude:
             "stream-json",
             "--verbose",
             "--tools",
-            ",".join(tools),
-            *(["--allowedTools", self.pf_only] if pf else []),
+            f"{self.tools},{self.shell_tool}",
+            "--allowedTools",
+            self.pf_only,
             "--permission-mode",
             "acceptEdits",
             "--no-session-persistence",
@@ -250,13 +306,17 @@ class Claude:
         ]
 
     def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
-        """The caller's environment without its agent variables, naming `config`."""
+        """The caller's environment without its agent variables, naming `config`.
+
+        Sub-agents run in the foreground, so each start's result is its answer.
+        """
         kept = {
             name: value
             for name, value in held.items()
             if not name.startswith(self.scrubbed)
         }
-        return {**kept, self.config_variable: str(config)}
+        variable, value = self.foreground
+        return {**kept, self.config_variable: str(config), variable: value}
 
     def preflight(
         self, config: Path, workspaces: Path, sources: tuple[Path, ...]
@@ -367,6 +427,9 @@ class Claude:
                 versions.setdefault(plugin, None)
         return versions
 
+    def prepare(self, config: Path) -> None:
+        """Nothing to write: the configuration directory is the CLI's own."""
+
     def hooked(self, config: Path) -> bool:
         """Whether a managed configuration can deliver a hook to a session.
 
@@ -423,44 +486,47 @@ class Claude:
     def starts(self, transcript: Path) -> tuple[Start, ...]:
         """The sub-agents a session started, in order.
 
-        A `tool_use` block naming `Task` is one start; two such blocks in one
-        assistant message started together. A start's target is the
-        `description` its input carries, naming the section handed over.
+        A `tool_use` block naming `Agent` is one start; two such blocks in one
+        assistant message started together. The CLI prints each block of a
+        message as an event of its own carrying the message's `id`, so a
+        start is together with the one before it when both carry one id. A
+        start's target is the `prompt` its input carries, naming the file or
+        section handed over, and its return is the report inside the CLI's
+        hand-back frame.
         """
         found: dict[str, tuple[str, bool]] = {}
         returned: dict[str, str] = {}
-        for held in messages(transcript):
+        last: object = None
+        for index, held in enumerate(messages(transcript)):
             kind = held.get("type")
             carried = held.get(MESSAGE)
             content = carried.get("content") if isinstance(carried, dict) else None
-            if not isinstance(content, list):
+            if not isinstance(content, list) or not isinstance(carried, dict):
                 continue
             if kind == ASSISTANT:
-                first = None
+                named = carried.get("id")
+                message: object = named if isinstance(named, str) else index
                 for block in content:
                     if not isinstance(block, dict) or block.get("type") != TOOL_USE:
                         continue
-                    if block.get("name") != TASK:
+                    if block.get("name") != AGENT:
                         continue
                     held_input = block.get("input")
                     target = (
-                        held_input.get(DESCRIPTION)
-                        if isinstance(held_input, dict)
-                        else None
+                        held_input.get(PROMPT) if isinstance(held_input, dict) else None
                     )
                     key = block.get("id")
                     if not isinstance(key, str) or not isinstance(target, str):
                         continue
-                    found[key] = (target, first is not None)
-                    if first is None:
-                        first = key
+                    found[key] = (target, message == last)
+                    last = message
             elif kind == USER:
                 for block in content:
                     if not isinstance(block, dict) or block.get("type") != TOOL_RESULT:
                         continue
                     key = block.get(CALL_ID)
                     if isinstance(key, str):
-                        returned[key] = said(block.get("content"))
+                        returned[key] = asked(unframed(block.get("content")))
         return tuple(
             Start(target, returned.get(key, DONE), together)
             for key, (target, together) in found.items()
@@ -491,8 +557,26 @@ class Claude:
         return tuple(found)
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
-        """The tokens one session processed, from the usage it reported."""
-        return _tokens(result, self.usage)
+        """The tokens one session processed, its sub-agents' among them.
+
+        The last `result` message's `modelUsage` counts each model's tokens
+        over the whole session, every turn and every sub-agent included,
+        while its `usage` counts the parent's own turns. A result carrying no
+        `modelUsage` reports nothing.
+        """
+        if result is None:
+            return None
+        models = result.get(MODEL_USAGE)
+        if not isinstance(models, dict):
+            return None
+        counts = [
+            count
+            for model in models.values()
+            if isinstance(model, dict)
+            for name in self.usage
+            if isinstance(count := model.get(name), int | float)
+        ]
+        return int(sum(counts)) if counts else None
 
     def cost(self, result: dict[str, object] | None) -> float | None:
         """The cost the session reported, in USD."""
@@ -509,6 +593,7 @@ class Cursor:
     name: str = "cursor"
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
+    skill_home: str = ".claude/skills"
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = False
@@ -531,15 +616,14 @@ class Cursor:
         model: str,
         budget: int,
         workspace: Path | None = None,
-        pf: bool = False,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
         """One session's command line, the workspace given as its argument.
 
         The CLI has no session spend cap and no tool allowlist, so the run's
         own token guard is the whole budget, and the workspace the run laid
         out is what a session is confined to. Its shell is there to every
-        session, so a session given `pf` is confined to the command by what
-        the instruction names alone; `pf` changes nothing on this command line.
+        session, so it is confined to `pf` by what the instruction names alone.
 
         A workspace must be trusted for the CLI to run in it at all, since
         it prompts otherwise and a prompt is no session. `--sandbox` is left
@@ -591,6 +675,9 @@ class Cursor:
             )
         return None
 
+    def prepare(self, config: Path) -> None:
+        """Nothing to write: the CLI reads the caller's configuration."""
+
     def hooked(self, config: Path) -> bool:
         """No managed hook reaches a session: the CLI keeps no managed settings."""
         return False
@@ -612,7 +699,7 @@ class Cursor:
 
         A `tool_call` whose `taskToolCall` started is one start, and two
         sharing a `model_call_id` were dispatched in one message. A start's
-        target is the `description` in its args; what it returned is the
+        target is the `prompt` in its args; what it returned is the
         text of the completed call's `conversationSteps`.
 
         Only the starts a session made itself are readable: a sub-agent's own
@@ -639,7 +726,7 @@ class Cursor:
             if held.get("subtype") == STARTED:
                 carried_args = task.get(ARGS)
                 args = carried_args if isinstance(carried_args, dict) else {}
-                target = args.get(DESCRIPTION)
+                target = args.get(PROMPT)
                 if not isinstance(target, str):
                     continue
                 carried_message = held.get(MODEL_CALL)
@@ -730,17 +817,85 @@ class Opencode:
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
+    skill_home: str = ".opencode/skills"
+    """Where a bootstrap skill sits, which is the root this CLI discovers.
+
+    The CLI discovers `.claude/skills` too, but only through the scan of a
+    caller's Claude Code installation that isolation switches off.
+    """
+    config_variables: tuple[tuple[str, str], ...] = (
+        ("XDG_CONFIG_HOME", "config"),
+        ("XDG_DATA_HOME", "data"),
+        ("XDG_STATE_HOME", "state"),
+        ("XDG_CACHE_HOME", "cache"),
+    )
+    """The directories the CLI otherwise shares with the caller, and their name
+    under the eval root: the caller's plugins, remembered projects, credential
+    store and cache."""
+    settings: str = "harness.json"
+    """The configuration file the run writes, the whole of what a session reads."""
+    disabled: tuple[str, ...] = (
+        "OPENCODE_PURE",
+        "OPENCODE_DISABLE_DEFAULT_PLUGINS",
+        "OPENCODE_DISABLE_EXTERNAL_SKILLS",
+        "OPENCODE_DISABLE_CLAUDE_CODE_SKILLS",
+        "OPENCODE_DISABLE_CLAUDE_CODE",
+        "OPENCODE_DISABLE_PROJECT_CONFIG",
+        "OPENCODE_DISABLE_MODELS_FETCH",
+        "OPENCODE_DISABLE_LSP_DOWNLOAD",
+        "OPENCODE_DISABLE_AUTOUPDATE",
+    )
+    """What a session runs without: plugins, a caller's external skills, a
+    project's own configuration, the model catalogue and an update check.
+
+    `OPENCODE_PURE` and `OPENCODE_DISABLE_DEFAULT_PLUGINS` keep the caller's
+    installed plugins out. The two skill flags keep the caller's Claude Code
+    and `.agents` skills out, and `OPENCODE_DISABLE_PROJECT_CONFIG` keeps a
+    workflow's own `opencode.json` from adding permissions the run did not
+    state. Model-catalogue fetching and update checks reach the network, which
+    a session measures nothing by doing.
+    """
+    permission: dict[str, object] = field(
+        default_factory=lambda: {
+            "bash": {"*": "deny", "pf *": "allow"},
+            "edit": "allow",
+            "read": "allow",
+            "glob": "allow",
+            "grep": "allow",
+            "list": "allow",
+            "task": "allow",
+            "webfetch": "deny",
+            "websearch": "deny",
+            "external_directory": "deny",
+        }
+    )
+    """What a session may do: write its workspace, read it, dispatch sections,
+    and run `pf` with any arguments and output redirects.
+
+    The CLI has no allowlist of the tools a session carries, so every other
+    capability is refused here instead. `external_directory` is what confines
+    a read, a write and a shell command to the session's own workspace.
+    """
+    subagent_depth: int = 8
+    """How deep a sub-agent's own dispatch may go.
+
+    The CLI refuses a nested start at depth one by default, and a compiled
+    bundle dispatches at every hop the workflow states, so a session could
+    follow no chain. The figure matches the link depth `pf` compiles to.
+    """
     prompt_on_argv: bool = True
     """Whether the task text is an argument rather than the session's input.
 
     The CLI reads its prompt from its arguments, so a run appends it there.
     A prompt written to its input instead is read by nothing.
     """
-    nested_starts: bool = True
+    nested_starts: bool = False
     """Whether a sub-agent's own dispatch reaches the parent's stream.
 
-    It does: a session's `tool_use` parts include those its sub-agents made,
-    so a trace naming a nested start is observable here.
+    It does not: a `task` call's parts are its own, and a start either its
+    sub-agent made is a part of that sub-agent's session, which the parent's
+    stream never carries. A scenario whose trace names one is beyond this
+    harness's observation, so the runner leaves it out.
     """
 
     def argv(
@@ -749,7 +904,7 @@ class Opencode:
         model: str,
         budget: int,
         workspace: Path | None = None,
-        pf: bool = False,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
         """One session's command line, its prompt given as its argument.
 
@@ -764,9 +919,10 @@ class Opencode:
 
         `--dir` names the workspace outright. The CLI otherwise takes its
         project from remembered state as readily as from its working
-        directory, and a session that names no workspace of its own can run
-        in the repository this file was written in. Its shell is there to every
-        session, so `pf` changes nothing on this command line.
+        directory, and a session that names no workspace of its own ran in
+        the repository this file was written in. The permissions come from the
+        run's own settings file, which confines every command but `pf` and
+        every path but the workspace.
         """
         return [
             *agent,
@@ -781,11 +937,28 @@ class Opencode:
         ]
 
     def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
-        """The caller's environment without its agent variables."""
-        return {
+        """The caller's environment without its agent variables, confined to `config`.
+
+        Each directory the CLI otherwise shares with the caller is named under
+        the eval root, so no plugin, remembered project, credential store or
+        cache reaches a session. `OPENCODE_CONFIG` names the one file the run
+        writes, and every capability the run does not admit is switched off.
+        """
+        kept = {
             name: value
             for name, value in held.items()
             if not name.startswith(self.scrubbed)
+        }
+        named = {
+            variable: str(config / directory)
+            for variable, directory in self.config_variables
+        }
+        settings = config / self.settings
+        return {
+            **kept,
+            **named,
+            "OPENCODE_CONFIG": str(settings),
+            **{name: "1" for name in self.disabled},
         }
 
     def preflight(
@@ -793,19 +966,42 @@ class Opencode:
     ) -> str | None:
         """What this harness cannot guarantee, stated as a refusal.
 
-        The CLI has no configuration directory of its own and reads plugins
-        from the caller's installation, so a session is confined by its
-        working directory alone.
+        The CLI reaches a provider through the credential store under its data
+        directory, which the run names under the eval root, and reads its
+        permissions from the one file the run writes. A run without either
+        would reach the caller's own installation, so both are required
+        before a session starts.
         """
         if not config.is_dir():
             return (
-                f"{config} is no directory; this harness reads the caller's "
-                f"configuration, so name an eval root whose config records that"
+                f"{config} is no directory; this harness writes its settings "
+                f"and credential store there, so name an eval root"
+            )
+        credential = config / "data" / "opencode" / "auth.json"
+        if not credential.is_file():
+            return (
+                f"{credential} holds no login; run "
+                f"XDG_DATA_HOME={config / 'data'} opencode auth login once"
             )
         return None
 
+    def prepare(self, config: Path) -> None:
+        """Write the one settings file a session reads.
+
+        The file states the run's permissions alone, so a session's
+        capabilities are the run's rather than whatever the caller's
+        installation would offer.
+        """
+        config.mkdir(parents=True, exist_ok=True)
+        settings = {
+            "$schema": "https://opencode.ai/config.json",
+            "permission": self.permission,
+            "subagent_depth": self.subagent_depth,
+        }
+        (config / self.settings).write_text(json.dumps(settings, indent=2) + "\n")
+
     def hooked(self, config: Path) -> bool:
-        """No managed hook reaches a session: the CLI keeps no managed settings."""
+        """No managed hook reaches a session: the CLI reads no managed settings."""
         return False
 
     def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
@@ -848,7 +1044,7 @@ class Opencode:
         """The sub-agents a session started, in order.
 
         A `tool_use` part naming `task` is one start; its input's
-        `description` is the text the dispatching call carried. Two starts
+        `prompt` is the text the dispatching call carried. Two starts
         sharing a `messageID` were dispatched in one message. What a start
         returned is what the sub-agent's text in the call's `output` states,
         and a call printing no output returned `done`.
@@ -864,9 +1060,7 @@ class Opencode:
             state = part.get(STATE)
             carried_input = state.get(INPUT) if isinstance(state, dict) else None
             target = (
-                carried_input.get(DESCRIPTION)
-                if isinstance(carried_input, dict)
-                else None
+                carried_input.get(PROMPT) if isinstance(carried_input, dict) else None
             )
             key = part.get(OPENCODE_CALL_ID)
             message = part.get(OPENCODE_MESSAGE_ID)
@@ -959,10 +1153,141 @@ def _tokens(
     return int(sum(count for count in counts if isinstance(count, int | float)))
 
 
-Harness = Claude | Cursor | Opencode
+@dataclass(frozen=True)
+class Codex:
+    """Native Codex app-server with confined file tools and structured `pf`."""
+
+    name: str = "codex"
+    config_variable: str = "CODEX_HOME"
+    scrubbed: tuple[str, ...] = ("CODEX", "OPENAI_")
+    default_agent: str = "codex"
+    prompt_on_argv: bool = False
+    nested_starts: bool = True
+    skill_home: str = ".agents/skills"
+
+    def argv(
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        workspace: Path | None = None,
+        reasoning_effort: str | None = None,
+    ) -> list[str]:
+        """The native bridge, with explicit model, reasoning and token ceiling."""
+        if reasoning_effort is None:
+            raise CorpusError("the codex harness requires --reasoning-effort")
+        return [
+            sys.executable,
+            str(Path(__file__).with_name("codex_agent.py")),
+            "--command",
+            json.dumps(agent),
+            "--model",
+            model,
+            "--reasoning-effort",
+            reasoning_effort,
+            "--session-budget-tokens",
+            str(budget),
+        ]
+
+    def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
+        """An eval-owned home, without the caller's Codex or OpenAI variables."""
+        kept = {
+            name: value
+            for name, value in held.items()
+            if not name.startswith(self.scrubbed)
+        }
+        return {**kept, self.config_variable: str(config / self.name)}
+
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
+        """Require the eval's login and refuse caller configuration material."""
+        home = config / self.name
+        if not (home / "auth.json").is_file():
+            return f"{home} holds no login; run CODEX_HOME={home} codex login once"
+        for name in (
+            "config.toml",
+            "AGENTS.md",
+            "AGENTS.override.md",
+            "rules",
+            "skills",
+            "memories",
+        ):
+            if (home / name).exists():
+                return (
+                    f"{home / name} supplies context outside the eval; "
+                    "use an auth-only Codex home"
+                )
+        for source in sources:
+            if (source / ".codex").exists():
+                return f"{source / '.codex'} supplies project configuration to the eval"
+        return None
+
+    def hooked(self, config: Path) -> bool:
+        """Hooks are disabled and any native hook event refuses the session."""
+        return False
+
+    def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
+        """No managed hook or caller context is admitted by this adapter."""
+        return counted({}, [], [])
+
+    def result(self, transcript: Path) -> dict[str, object] | None:
+        """The bridge's final reading of native completion and usage evidence."""
+        return next(
+            (
+                held
+                for held in reversed(messages(transcript))
+                if held.get("type") == RESULT and held.get("harness") == self.name
+            ),
+            None,
+        )
+
+    def starts(self, transcript: Path) -> tuple[Start, ...]:
+        """Native dispatch prompts, response groups and completed child reports."""
+        result = self.result(transcript)
+        held = result.get("starts") if result else None
+        return (
+            tuple(
+                Start(
+                    str(row["target"]),
+                    str(row["returned"]),
+                    bool(row["together"]),
+                    row.get("actor"),
+                    row.get("group"),
+                )
+                for row in held
+                if isinstance(row, dict)
+            )
+            if isinstance(held, list)
+            else ()
+        )
+
+    def commands(self, transcript: Path) -> tuple[str, ...]:
+        """The `pf` invocations the native command service actually executed."""
+        result = self.result(transcript)
+        held = result.get("commands") if result else None
+        return (
+            tuple(command for command in held if isinstance(command, str))
+            if isinstance(held, list)
+            else ()
+        )
+
+    def tokens(self, result: dict[str, object] | None) -> int | None:
+        """Every observed thread's cumulative total, each thread counted once."""
+        held = result.get("tokens") if result else None
+        return int(held) if isinstance(held, int | float) else None
+
+    def cost(self, result: dict[str, object] | None) -> float | None:
+        """The native CLI reports no dollar cost."""
+        return None
+
+
+Harness = Claude | Cursor | Opencode | Codex
 """Any declared harness, as the runner and the scorer accept one."""
 
-HARNESSES = {harness.name: harness for harness in (Claude(), Cursor(), Opencode())}
+HARNESSES = {
+    harness.name: harness for harness in (Claude(), Cursor(), Opencode(), Codex())
+}
 
 
 def harness_named(name: str) -> Harness:

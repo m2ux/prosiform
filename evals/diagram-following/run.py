@@ -2,34 +2,38 @@
 
 A run starts one headless agent session per model, workflow, scenario, form
 and repetition. Each session works in a fresh temporary workspace holding
-only its form's material as `workflow.md`, and `inputs/` holding the
-scenario's inputs, each as the value followed by a newline. The forms are:
+only its form's material as `workflow.md`, `inputs/` holding the
+scenario's inputs, each as the value followed by a newline, and
+`answers.txt` holding the scenario's answers where it states any. The
+forms are:
 
 - `bundle`: the diagram form bundled by `pf`, as one file;
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
 - `prose`: the prose form bundled by `pf`, as one file;
 - `linked`: the linked form's source tree as it is, entered at `workflow.md`;
 - `compiled`: the compiled form's bundle set, the entry's bundle as
-  `workflow.md` and every dispatched target's beside it, with the build
-  under test as `pf` on the session's path;
+  `workflow.md` and every dispatched target's beside it;
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
-  it compiles, with the build under test on the session's path.
+  it compiles.
 
 The session is the agent command run in its workspace with the shared
 instruction on standard input, its tools limited to reading, writing and
-searching files and to starting a sub-agent, with no MCP server. A form given
-`pf` also carries a shell, which the Claude harness limits to `pf`; a Claude
-session in any other form carries none. `acceptEdits` lets it change files
-only within its workspace.
+searching files and to starting a sub-agent, with no MCP server. Every form
+receives the build under test as `pf` on its path and a shell, which the
+Claude harness admits with any arguments and workspace output redirects.
+The workspace contains no copy of the command. `acceptEdits` lets it change
+files only within its workspace.
 
 Sessions run under the eval root, `--eval-root`. `<root>/config/` is the
 eval's own Claude configuration directory, holding its login, settings and
 memory apart from the caller's; each session receives it as
 `CLAUDE_CONFIG_DIR`, in an environment holding no other `CLAUDE*` or
-`ANTHROPIC_*` variable. A run whose configuration directory holds no login
-fails before it starts a session, naming the one-time login command, and so
-does one whose directory installs a plugin at a scope other than managed
+`ANTHROPIC_*` variable but `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, which runs
+each sub-agent within the call that starts it. A run whose configuration
+directory holds no login fails before it starts a session, naming the
+one-time login command, and so does one whose directory installs a plugin
+at a scope other than managed
 or whose unsigned remote settings enable one, naming the file that says so:
 a plugin's hooks reach a session before its first turn and no flag the
 runner passes suppresses them. So does a settings file declaring a hook:
@@ -119,7 +123,7 @@ from pathlib import Path
 from subprocess import PIPE, Popen, TimeoutExpired
 from typing import IO, Any
 
-from harness import HARNESSES, Harness, harness_named
+from harness import HARNESSES, SKILL_HOME, Harness, harness_named
 from report import (
     BASELINE,
     COMPLETED,
@@ -166,6 +170,7 @@ from workflow import (
 
 RESULTS = ROOT / "results"
 INPUTS = "inputs"
+ANSWERS = "answers.txt"
 TRANSCRIPT = "transcript.jsonl"
 STDERR = "stderr.log"
 EVAL_ROOT = Path("~/projects/eval/prosiform")
@@ -192,19 +197,9 @@ FORMS = {
     BOOTSTRAP_SET: BOOTSTRAP,
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
-PF_SETS = {COMPILED_SET, BOOTSTRAP_SET}
-"""The forms whose session runs the build under test as `pf`."""
 BUILD = "build"
 """The existing folder a bootstrapping session compiles into."""
-BIN = "bin"
 SKILL = "SKILL.md"
-SKILL_HOME = Path(".claude") / "skills"
-"""Where an agent CLI discovers a skill, walked up from its workspace.
-
-A skill sits at `<root>/.claude/skills/<name>/SKILL.md`, and the session's
-workspace is the root it walks up from, so the skill is found without the
-instruction naming it.
-"""
 SKILL_FILES = (SKILL,)
 """The files a bootstrap skill carries beside the documents it compiles."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
@@ -212,7 +207,7 @@ SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_s
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
-DEFAULT_SESSION_BUDGET = 60_000
+DEFAULT_SESSION_BUDGET = 2_830_000
 DEFAULT_SESSION_TIMEOUT = 600.0
 
 
@@ -313,6 +308,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="how long a session runs before it is ended",
     )
     parser.add_argument("--models", default=",".join(DEFAULT_MODELS))
+    parser.add_argument("--reasoning-effort", help="the Codex model's reasoning effort")
     parser.add_argument("--repetitions", type=int, default=DEFAULT_REPETITIONS)
     parser.add_argument("--workflows", help="workflow names; every one by default")
     parser.add_argument("--forms", default=",".join(FORMS))
@@ -320,7 +316,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--harness",
         default="claude",
-        help="the agent CLI the run drives: claude, cursor or opencode",
+        help="the agent CLI the run drives: claude, cursor, opencode or codex",
     )
     parser.add_argument(
         "--agent-command", help="the agent's command line, overriding the harness"
@@ -419,31 +415,33 @@ def prepare(
     scenario: Scenario,
     form: str,
     sets: dict[tuple[str, str], dict[str, bytes]],
+    skill_home: Path = Path(SKILL_HOME),
 ) -> None:
-    """Lay out a workspace with one form's material and a scenario's inputs.
+    """Lay out a workspace with one form's material, a scenario's inputs and answers.
 
     A bundled form's entry bundle is the document the instruction names, and
     every other bundle in its set is written beside it under the name `pf`
     gave it, since a dispatching bundle names the bundles it hands to
-    sub-agents by that name.
+    sub-agents by that name. A bootstrap skill is placed where the run's
+    harness discovers one, and the session's workspace is the root it walks
+    up from.
     """
     if form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
             written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
-        if form in PF_SETS:
-            place_pf(workspace)
     elif form == BOOTSTRAP_SET:
-        placed = workspace / SKILL_HOME / workflow.name
+        placed = workspace / skill_home / workflow.name
         placed.mkdir(parents=True)
         shutil.copytree(workflow.directory / BOOTSTRAP_DIR, placed, dirs_exist_ok=True)
         (workspace / BUILD).mkdir()
-        place_pf(workspace)
     else:
         shutil.copytree(workflow.form(FORMS[form]), workspace, dirs_exist_ok=True)
     (workspace / INPUTS).mkdir()
     for name, value in scenario.inputs.items():
         (workspace / INPUTS / name).write_text(f"{value}\n")
+    if scenario.answers:
+        (workspace / ANSWERS).write_text(f"{scenario.answers}\n")
 
 
 def keep(workspace: Path, records: Path) -> None:
@@ -584,9 +582,9 @@ def start(
     records.mkdir(parents=True)
     workspace.mkdir(parents=True)
     try:
-        prepare(workspace, workflow, scenario, session.form, sets)
-        if session.form in PF_SETS:
-            env = {**env, "PATH": f"{workspace / BIN}:{env.get('PATH', '')}"}
+        prepare(
+            workspace, workflow, scenario, session.form, sets, Path(harness.skill_home)
+        )
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
             spoke = [*argv, prompt] if harness.prompt_on_argv else argv
@@ -629,25 +627,6 @@ def start(
     }
     (records / SESSION).write_text(json.dumps(record, indent=2) + "\n")
     return tokens
-
-
-def place_pf(workspace: Path) -> Path:
-    """Put the build under test where a session's shell finds it.
-
-    A session runs its own shell, whose path is the caller's and not this
-    run's, so the build is copied into a folder of the workspace's own and
-    that folder is named on the session's path. What a session compiles with
-    is therefore the build this run was configured with, not whatever `pf` the
-    host happens to hold.
-    """
-    found = shutil.which("pf")
-    if found is None:
-        raise CorpusError("no pf command is on the path to bundle a form with")
-    (workspace / BIN).mkdir()
-    placed = workspace / BIN / "pf"
-    shutil.copy2(found, placed)
-    placed.chmod(placed.stat().st_mode | 0o111)
-    return workspace / BIN
 
 
 def compiled_by(harness: Harness, transcript: Path, form: str) -> bool | None:
@@ -741,14 +720,34 @@ def outcome(
 
 def run(arguments: argparse.Namespace) -> dict[str, object]:
     """Run every session the budget allows and return the run's record."""
+    began = datetime.now(UTC)
+    run_id = arguments.run_id or began.strftime("%Y%m%dT%H%M%SZ")
+    run_directory = arguments.results / run_id
+    eval_root = arguments.eval_root.expanduser()
+    workspaces = eval_root / WORKSPACES / run_id
+    for path in (run_directory, workspaces):
+        if path.exists() or path.is_symlink():
+            raise CorpusError(
+                f"run id {run_id!r} already exists at {path}; remove both "
+                f"{run_directory} and {workspaces} before rerunning"
+            )
     harness = harness_named(arguments.harness)
     command = arguments.agent_command or harness.default_agent
     agent = [str(Path(shlex.split(command)[0]).expanduser()), *shlex.split(command)[1:]]
     if not agent or shutil.which(agent[0]) is None:
         raise CorpusError(f"no agent command {command!r} is found")
-    eval_root = arguments.eval_root.expanduser()
     config = eval_root / CONFIG
     env = harness.environment(config, dict(os.environ))
+    build = shutil.which("pf")
+    if build is None:
+        raise CorpusError("no pf command is on the path to bundle a form with")
+    env["PATH"] = f"{Path(build).parent}:{env.get('PATH', '')}"
+    command_template = harness.argv(
+        agent,
+        "<model>",
+        arguments.session_budget_tokens,
+        reasoning_effort=arguments.reasoning_effort,
+    )
     corpus = workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
@@ -798,11 +797,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             f"{len(sessions)} sessions at --session-budget-tokens "
             f"{arguments.session_budget_tokens}, which need {covered}"
         )
-    began = datetime.now(UTC)
-    run_id = arguments.run_id or began.strftime("%Y%m%dT%H%M%SZ")
-    run_directory = arguments.results / run_id
     run_directory.mkdir(parents=True)
-    workspaces = eval_root / WORKSPACES / run_id
     prompts = {form: instruction(ENTRY, FORMS[form]) for form in forms}
     ledger = Ledger(arguments.budget_tokens, arguments.session_budget_tokens)
 
@@ -824,7 +819,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                     session.model,
                     ledger.session_cap,
                     session.directory(workspaces),
-                    session.form in PF_SETS,
+                    arguments.reasoning_effort,
                 ),
                 prompts[session.form],
                 sets,
@@ -872,7 +867,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         },
         "harness": harness.name,
         "managed": managed,
-        "command": harness.argv(agent, "<model>", ledger.session_cap),
+        "command": command_template,
         STATE: state,
         REASON: reason,
         "sessions": len(sessions),

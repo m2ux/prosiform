@@ -5,5 +5,4 @@ prosiform: {}
 
 ## Work
 
-1. Write the plan.
-
+Write `actions/plan.txt` containing `planned`.

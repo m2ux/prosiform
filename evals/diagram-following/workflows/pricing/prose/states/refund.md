@@ -5,4 +5,4 @@ prosiform: {}
 
 Write `actions/refund.txt` containing `refunded`.
 
-**Next.** The workflow is complete.
+**Next.** Go to [Exit](exit.md).

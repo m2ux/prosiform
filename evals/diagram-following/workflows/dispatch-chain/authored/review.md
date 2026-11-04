@@ -5,5 +5,4 @@ prosiform: {}
 
 ## Check
 
-1. Review the plan.
-
+Write `actions/check.txt` containing `checked`.

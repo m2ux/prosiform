@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: skill-markdown-v4](https://img.shields.io/badge/profile-skill--markdown--v4-blue.svg)](https://github.com/m2ux/prosiform/blob/fa29043d1f9d56f9a4f4e4fdf107e311d15a1b93/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/6deca17d6b56c61f477c815da6eeecc3949d8ca1/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches as one validated bundle, and each target it dispatches as a bundle of its own.
@@ -91,7 +91,7 @@ A link whose text opens with `¬` is left for a run of its own: the document it 
 
 A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link stays where its author wrote it, with its mark, and points at the file its target was compiled to. The `⫽` links in one section's own content form a parallel set of two or more targets, pointing at one `In parallel` sub-section that lists each bundle as a `⇉` link to dispatch together; a set of one target is a single `⇉` link. A deferral mark written before either, as in `¬⇉`, is refused.
 
-Every bundle opens with one line, ``Before reading on, run `pf` with no arguments and follow the guide it prints.``, as [Dispatch](docs/dispatch.md#the-run-pf-line) states. A bundle carries no protocol paragraph.
+Every bundle opens with one line, ``Run `pf`, then follow the guidance it prints.``, as [Dispatch](docs/dispatch.md#the-run-pf-line) states. A bundle carries no protocol paragraph.
 
 ### Compose a Section
 

@@ -179,7 +179,7 @@ arguments = ["-v"]
 
 [expected]
 exit_status = 0
-stdout_contains = ["prosiform ", "(skill-markdown-v4)"]
+stdout_contains = ["prosiform ", "(prosiform-markdown)"]
 diagnostics = []
 ```
 

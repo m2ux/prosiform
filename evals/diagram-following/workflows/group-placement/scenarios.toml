@@ -7,14 +7,30 @@
 # Lint and Unit link nothing, and both join one group.
 [[scenario]]
 name = "leaf-group"
-path = ["Scope", "Lint", "Unit", "Release"]
+path = [
+    "Entry",
+    "Scope",
+    "Lint",
+    "Unit",
+    "Release",
+    "Exit",
+]
 inputs = { "work.txt" = "test", "stage.txt" = "build" }
 
 # Package, which Compile links, stands in a group inside Compile's division,
 # and Sign, which Package links, in a group composed inside Package's.
 [[scenario]]
 name = "nested-intermediate"
-path = ["Scope", "Stage", "Compile", "Package", "Sign", "Release"]
+path = [
+    "Entry",
+    "Scope",
+    "Stage",
+    "Compile",
+    "Package",
+    "Sign",
+    "Release",
+    "Exit",
+]
 inputs = { "work.txt" = "release", "stage.txt" = "build" }
 
 # notify.md is reached from the diagram under its default and from Announce
@@ -22,5 +38,13 @@ inputs = { "work.txt" = "release", "stage.txt" = "build" }
 # entry's division and Announcements inside Announce's.
 [[scenario]]
 name = "two-presets-one-document"
-path = ["Scope", "Stage", "Announce", "Notify", "Release"]
+path = [
+    "Entry",
+    "Scope",
+    "Stage",
+    "Announce",
+    "Notify",
+    "Release",
+    "Exit",
+]
 inputs = { "work.txt" = "release", "stage.txt" = "announce" }

@@ -7,14 +7,16 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Plan
+    Entry(( )) --> Plan
     Plan --> Build
     Build --> Test
     Test --> Ship
-    Ship --> stop((( )))
+    Ship --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Plan href "states/plan.md"
     click Build href "states/build.md"
     click Test href "states/test.md"
     click Ship href "states/ship.md"
+    click Exit href "states/exit.md"
 ```

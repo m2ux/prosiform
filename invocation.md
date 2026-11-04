@@ -9,12 +9,12 @@ pf
 
 ## Guide
 
-`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <destination>` run from the skill's directory, which holds `SKILL.md`, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a file given to a sub-agent, and an `In parallel` section lists several given to their own sub-agents at once; and that a sub-agent returns each question unanswered, in an answer whose first line reads `Question:`. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A skill's bootstrap is therefore one instruction: run `pf` and follow it. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
+`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <document>[#<section>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
 
 ## Options
 
 Flags are case-sensitive.
-`pf -h` and these tables agree; `make invocation` verifies them. The profile is `skill-markdown-v4`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
+`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
 | --- | --- |
@@ -93,7 +93,7 @@ The bundle is arranged in file headings and groups, composed sections stand bene
 - [Hierarchy](docs/hierarchy.md) — file headings, groups and depth
 - [Composition](docs/composition.md) — directives, destination sections, contributions and deferral
 - [Destinations](docs/destinations.md) — slugs, ordinals and rewriting
-- [Dispatch](docs/dispatch.md) — dispatch links, `In parallel` sub-sections, the run-pf line and cycles
+- [Dispatch](docs/dispatch.md) — dispatch links, dispatch-set sub-sections, the run-pf line and cycles
 - [Validation](docs/validation.md) — invariants, codes and budgets
 
 ## Output
