@@ -7,9 +7,9 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Survey
+    Entry(( )) --> Survey
     Survey --> Report
-    Report --> stop((( )))
+    Report --> Exit((( )))
 
     click Survey href "states/survey.md"
     click Report href "states/report.md"

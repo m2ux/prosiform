@@ -7,9 +7,9 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Enquire
+    Entry(( )) --> Enquire
     Enquire --> Confirm
-    Confirm --> stop((( )))
+    Confirm --> Exit((( )))
 
     click Enquire href "states/enquire.md"
     click Confirm href "states/confirm.md"

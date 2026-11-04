@@ -7,14 +7,14 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Intake
+    Entry(( )) --> Intake
     Intake --> Triage
     Triage --> Escalate
     Triage --> Queue
     Escalate --> Notify
     Notify --> Resolve
     Queue --> Resolve
-    Resolve --> stop((( )))
+    Resolve --> Exit((( )))
 
     click Intake href "states/intake.md"
     click Triage href "states/triage.md"

@@ -7,13 +7,13 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Load
+    Entry(( )) --> Load
     Load --> Measure
     Measure --> Rework
     Measure --> Accept
     Rework --> Retest
     Retest --> Measure
-    Accept --> stop((( )))
+    Accept --> Exit((( )))
 
     click Load href "states/load.md"
     click Measure href "states/measure.md"

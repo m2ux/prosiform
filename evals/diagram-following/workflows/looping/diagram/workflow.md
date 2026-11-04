@@ -7,13 +7,13 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Draft
+    Entry(( )) --> Draft
     Draft --> Review
     Review -->|revise| Revise
     Review -->|approve| Publish
     Revise --> Check
     Check --> Review
-    Publish --> stop((( )))
+    Publish --> Exit((( )))
 
     click Draft href "states/draft.md"
     click Review href "states/review.md"

@@ -161,14 +161,13 @@ section's transition names the edge's label or takes the one edge out of
 its state, and only the step handing a section to a sub-agent is its own.
 """
 
-START = "start"
-STOP = "stop"
-MARKER_HEADINGS = {START: "Entry", STOP: "Exit"}
-"""The heading each marker's section carries, where an author clicks it.
+START = "Entry"
+STOP = "Exit"
+"""The diagram's entry and exit nodes, which are states like any other.
 
-A diagram writes its entry and exit markers as `start` and `stop`, which are
-the graph's own ids. The sections they click are headed `Entry` and `Exit`,
-so a walk records the name its reader meets.
+A diagram names them as it names every state, so a marker's id and the
+heading its section carries are one name and no layer translates between
+two.
 """
 ENTRY_PLACEHOLDER = "ENTRY"
 SKILL_ENTRY = "SKILL.md"
@@ -320,17 +319,6 @@ class Diagram:
     """Each node's shape, as the group `SHAPE` captures its label in."""
     labels: dict[str, str] = field(default_factory=dict)
     """Each node's label, which states whether it is a condition."""
-    names: dict[str, str] = field(default_factory=dict)
-    """The heading each marker's section carries, where an author clicked it.
-
-    A diagram writes its entry and exit markers as `start` and `stop`, which
-    are the graph's own ids. The sections they click are headed `Entry` and
-    `Exit`, so a walk names a marker as the heading its reader meets.
-    """
-
-    def named(self, node: str) -> str:
-        """The heading a node's section carries, which is its own name unless mapped."""
-        return self.names.get(node, node)
 
     @property
     def transitions(self) -> frozenset[str]:
@@ -584,8 +572,6 @@ def read_diagram_text(
     clicks: dict[str, str] = {}
     shapes: dict[str, int] = {}
     labels: dict[str, str] = {}
-    names: dict[str, str] = {}
-    """The heading each marker's clicked section carries."""
     NODE_SHAPE = re.compile(rf"{NODE}")
     for line in body.splitlines():
         if edge := EDGE.match(line):
@@ -601,19 +587,12 @@ def read_diagram_text(
     if len(starts) != 1:
         raise CorpusError(f"{named}: {START} points at {len(starts)} states, not one")
     terminals = frozenset(edge.source for edge in edges if edge.target == STOP)
-    # The entry and exit markers are the workflow's own states when an
-    # author clicks them: the walk opens at `start` and ends at `stop`, and
-    # each carries a section stating what entering or leaving means.
+    # The entry and exit nodes are states like any other when an author
+    # clicks them: the walk opens at `Entry` and ends at `Exit`, and each
+    # carries a section stating what entering or leaving means.
     opening = START if START in clicks else starts[0]
     ending = frozenset({STOP}) if STOP in clicks else terminals
-    # A marker's section heading names it for a reader: `start` is headed
-    # `Entry` and `stop` `Exit`, so a walk records what the reader meets.
-    names = {
-        marker: heading
-        for marker, heading in MARKER_HEADINGS.items()
-        if marker in clicks
-    }
-    return Diagram(opening, tuple(edges), ending, clicks, shapes, labels, names)
+    return Diagram(opening, tuple(edges), ending, clicks, shapes, labels)
 
 
 def ruled_state(directory: Path, destination: str) -> str:
@@ -1043,8 +1022,8 @@ def bundle_walk(
     while True:
         if len(path) == STEP_LIMIT:
             return tuple(path), [f"no terminal state in {STEP_LIMIT}"]
-        path.append(diagram.named(state))
-        shown = diagram.named(state)
+        path.append(state)
+        shown = state
         section = sections.get(fragment)
         if section is None or section.title != shown:
             return tuple(path), [f"the bundle heads no {shown} section at #{fragment}"]

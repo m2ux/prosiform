@@ -7,7 +7,7 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Lodge
+    Entry(( )) --> Lodge
     Lodge -->|config| Configure
     Lodge -->|code| Assess
     Assess -->|large| Migrate
@@ -15,7 +15,7 @@ flowchart TD
     Configure --> Close
     Migrate --> Close
     Amend --> Close
-    Close --> stop((( )))
+    Close --> Exit((( )))
 
     click Lodge href "states/lodge.md"
     click Configure href "states/configure.md"

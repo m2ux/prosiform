@@ -11,10 +11,10 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Enrol
+    Entry(( )) --> Enrol
     Enrol --> Equip
     Equip --> Greet
-    Greet --> stop((( )))
+    Greet --> Exit((( )))
 
     click Enrol href "states/enrol.md"
     click Equip href "states/equip.md"

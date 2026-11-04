@@ -7,13 +7,13 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Receive
+    Entry(( )) --> Receive
     Receive -->|internal| Inspect
     Receive -->|vendor| Liaise
     Inspect --> Verify
     Verify --> Archive
     Liaise --> Archive
-    Archive --> stop((( )))
+    Archive --> Exit((( )))
 
     click Receive href "states/receive.md"
     click Inspect href "states/inspect.md"

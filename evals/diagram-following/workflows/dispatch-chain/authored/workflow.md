@@ -7,9 +7,9 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Request
+    Entry(( )) --> Request
     Request --> Handover
-    Handover --> stop((( )))
+    Handover --> Exit((( )))
 
     click Request href "states/request.md"
     click Handover href "states/handover.md"

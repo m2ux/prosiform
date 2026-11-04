@@ -7,7 +7,7 @@ The diagram is the workflow. Each state's section says what to do there, each de
 
 ```mermaid
 flowchart TD
-    start(( )) --> Scope
+    Entry(( )) --> Scope
     Scope --> Gather
     Gather --> halves{"which halves?"}
     halves --> two[two halves]
@@ -21,7 +21,7 @@ flowchart TD
     blocking --> Fix
     clean --> Publish
     Fix --> Publish
-    Publish --> stop((( )))
+    Publish --> Exit((( )))
 
     click Scope href "states/scope.md"
     click Gather href "states/gather.md"

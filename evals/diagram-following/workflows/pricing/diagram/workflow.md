@@ -7,7 +7,7 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Submit
+    Entry(( )) --> Submit
     Submit --> Screen
     Screen -->|flagged| Hold
     Screen -->|clear| Price
@@ -15,8 +15,8 @@ flowchart TD
     Price -->|discount| Discount
     Price -->|list| Invoice
     Discount --> Invoice
-    Invoice --> stop((( )))
-    Refund --> stop((( )))
+    Invoice --> Exit((( )))
+    Refund --> Exit((( )))
 
     click Submit href "states/submit.md"
     click Screen href "states/screen.md"
