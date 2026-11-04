@@ -55,6 +55,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E06 W08 work item](e06/w08.md) | `↳` composing, `¬↳` deferring, arrow labels refused |
 | [E06 W09 work item](e06/w09.md) | The composition page stating `↳` |
 | [E06 W10 work item](e06/w10.md) | The dispatch refusals stating no link to publish, found by the integration review |
+| [Handoff](handoff.md) | The current delivery checkpoint and lane assignments |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
 | [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
 | [E05 draft](e05-body.md) | The E05 epic body as saved, the source of its next edit |
@@ -142,6 +143,8 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 ## Delivery Lanes
 
 Two sessions deliver I10 at once (user, 2026-11-03), one per lane. Each work item states its lane as `**Lane:** <n>`, and a session takes the highest-priority row whose dependencies are met in its own lane, so neither waits while the other has work it can feed.
+
+Delivery models (user, 2026-11-04): lane 1 uses `gpt-6.1-sol` at `max` reasoning; lane 2 uses `gpt-6.1-sol` at `medium` reasoning. The user chooses the models used by eval runs separately.
 
 | Lane | Rows, in the order they come free |
 | --- | --- |
