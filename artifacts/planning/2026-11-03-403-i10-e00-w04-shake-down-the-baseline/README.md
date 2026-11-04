@@ -13,6 +13,9 @@ This record holds its delivery of `AC10`: the work item, the validation evidence
 | Artifact | What it holds |
 | --- | --- |
 | [w04.md](w04.md) | The W04 work item: the baseline shakedown's design, budget rule and tests, its Validation and change list. |
+| [ac10-tests.patch](ac10-tests.patch) | Regression tests for the baseline model, completed measurement, derived caps and default-matrix budget; applied once the shakedown completes. |
+| [codex-adapter.md](codex-adapter.md) | The native Codex adapter's protocol, isolation, dispatch evidence, usage and test design. |
+| [Evaluation request](evaluation-request.md) | The shakedown's material, destination, command, limits and execution approval |
 
 ## Links
 

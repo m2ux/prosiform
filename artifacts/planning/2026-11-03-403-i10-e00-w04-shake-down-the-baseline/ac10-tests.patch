@@ -1,0 +1,92 @@
+diff --git a/evals/diagram-following/test_runbook.py b/evals/diagram-following/test_runbook.py
+index b5713775..01dd6626 100644
+--- a/evals/diagram-following/test_runbook.py
++++ b/evals/diagram-following/test_runbook.py
+@@ -7,12 +7,15 @@ runner does not accept would stop a run at its first command.
+ """
+ 
+ import re
++import shlex
++from math import ceil
+ from pathlib import Path
+ 
+ import pytest
+ from report import DISPOSITION_NAMES
+-from run import options
++from run import DEFAULT_SESSION_BUDGET, FORMS, matrix, options
+ from score import Failure
++from workflow import workflows
+ 
+ RUNBOOK = Path(__file__).with_name("RUNBOOK.md")
+ ROW = re.compile(r"^\| `([a-z_]+)` \|", re.MULTILINE)
+@@ -61,3 +64,70 @@ def test_each_runbook_passes_only_options_the_runner_accepts(
+     }
+     assert passed
+     assert passed <= accepted(capsys)
++
++
++def runbook_rows(text: str) -> dict[str, str]:
++    """The item/value rows of one runbook table."""
++    return dict(re.findall(r"^\| ([^|]+) \| ([^|]+) \|$", text, re.MULTILINE))
++
++
++def amount(text: str) -> int:
++    """The first whole-number quantity, whose thousands are space-separated."""
++    found = re.search(r"\d[\d ]*", text)
++    assert found is not None, text
++    return int(found.group().replace(" ", ""))
++
++
++def test_the_baseline_caps_follow_its_completed_shakedown() -> None:
++    """AC10: the recorded run measures the cap, token budget and cost ceiling."""
++    baseline, shakedown = section("## Baseline").split("\n### Shakedown\n")
++    planned = runbook_rows(baseline)
++    measured = runbook_rows(shakedown)
++    assert planned["Harness"] == measured["Harness"] == "`claude`"
++    model = re.search(r"`([^`]+)`", planned["Model"])
++    assert model is not None and f"`{model.group(1)}`" in measured["Model"]
++    assert "`completed`" in measured["Completed run"]
++    assert "untriaged" not in measured["Failures"]
++    assert "`defect`" not in measured["Failures"]
++    assert "`unclear`" not in measured["Failures"]
++
++    cells = matrix(workflows(), [model.group(1)], list(FORMS), 1)
++    assert amount(measured["Sessions"]) == len(cells)
++    sessions = amount(planned["Sessions"])
++    assert sessions == len(cells) * amount(planned["Repetitions"])
++    recorded = measured["Measured"]
++    largest = re.search(r"largest ([\d ]+)", recorded)
++    total_cost = re.search(r"USD (\d+\.\d+) in all", recorded)
++    assert largest is not None and total_cost is not None, recorded
++    cap = ceil(amount(largest.group(1)) * 2 / 10_000) * 10_000
++    assert amount(planned["Session cap"]) == cap == DEFAULT_SESSION_BUDGET
++    assert amount(planned["Token budget"]) == sessions * cap
++    assert amount(planned["Cost cap"]) == ceil(
++        sessions * float(total_cost.group(1)) / len(cells) * 2
++    )
++    [command] = PASSED.findall(baseline)
++    arguments = options(["--budget-tokens", "1", *shlex.split(command)])
++    assert arguments.models == model.group(1)
++    assert arguments.session_budget_tokens == cap
++    assert arguments.budget_tokens == sessions * cap
++
++
++def test_the_default_budget_and_readme_cover_the_runners_actual_defaults() -> None:
++    """AC10: the Makefile and README cover every default session at its cap."""
++    arguments = options(["--budget-tokens", "1"])
++    sessions = matrix(
++        workflows(), arguments.models.split(","), list(FORMS), arguments.repetitions
++    )
++    expected = len(sessions) * DEFAULT_SESSION_BUDGET
++    makefile = RUNBOOK.parents[2] / "Makefile"
++    stated = re.search(
++        r"^EVAL_BUDGET_TOKENS := (\d+)$", makefile.read_text(), re.MULTILINE
++    )
++    assert stated is not None and int(stated.group(1)) == expected
++    readme = RUNBOOK.with_name("README.md").read_text()
++    assert (
++        f"| `--session-budget-tokens` | {DEFAULT_SESSION_BUDGET:,} |".replace(",", " ")
++        in readme
++    )
++    assert f"{len(sessions)} sessions" in readme
++    assert f"{expected:,}".replace(",", " ") in readme
