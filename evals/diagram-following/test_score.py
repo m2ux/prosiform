@@ -77,7 +77,10 @@ def workspace(
     (tmp_path / TRACE).write_text(log)
     (tmp_path / ACTIONS).mkdir(exist_ok=True)
     for state in set(trace) & workflow.diagram.states:
-        name, value = workflow.walked[state].action
+        action = workflow.walked[state].action
+        if action is None:
+            continue
+        name, value = action
         (tmp_path / ACTIONS / name).write_text(f"{value}\n")
     for item in workflow.scenarios:
         for entry in item.trace:

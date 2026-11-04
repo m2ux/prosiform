@@ -1212,9 +1212,12 @@ def test_a_section_entry_compiles_its_section_alone(tmp_path: Path) -> None:
     assert scenario.name == "document-fragment"
     text = compiled_bundle(workflow, tmp_path / "section")
     for state in scenario.path:
-        name, value = workflow.walked[state].action
-        action = f"Write `actions/{name}` containing `{value}`."
-        assert action in bundled_state(text, state)
+        action = workflow.walked[state].action
+        if action is None:
+            continue
+        name, value = action
+        expected = f"Write `actions/{name}` containing `{value}`."
+        assert expected in bundled_state(text, state)
     assert "Upkeep" not in text and "# Notes" not in text
     whole = compiled_bundle(replace(workflow, entry=ENTRY), tmp_path / "whole")
     assert "# Notes" in whole
@@ -1323,7 +1326,10 @@ def scored(
     (workspace / ACTIONS).mkdir()
     for state in trace:
         if state in workflow.walked and state != undone:
-            name, value = workflow.walked[state].action
+            action = workflow.walked[state].action
+            if action is None:
+                continue
+            name, value = action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
     (workspace / SUBAGENTS).write_text(
         json.dumps({"starts": [start.record() for start in starts]})

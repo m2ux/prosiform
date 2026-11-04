@@ -185,8 +185,12 @@ def written(action: tuple[str, str], workspace: Path) -> bool:
 
 
 def action_done(workflow: Workflow, state: str, workspace: Path) -> bool:
-    """Whether a state's action file exists and holds the stated value."""
-    return written(workflow.walked[state].action, workspace)
+    """Whether a state's action file exists and holds the stated value.
+
+    A state stating no action has nothing to do, so it is done.
+    """
+    action = workflow.walked[state].action
+    return True if action is None else written(action, workspace)
 
 
 def undone(workflow: Workflow, trace: tuple[str, ...], workspace: Path) -> list[int]:
@@ -414,7 +418,12 @@ def score(
     actual = read_trace(workspace)
     missing = undone(workflow, actual, workspace)
     actions = tuple(
-        dict.fromkeys(workflow.walked[actual[index]].action[0] for index in missing)
+        dict.fromkeys(
+            name
+            for index in missing
+            if (found := workflow.walked[actual[index]].action) is not None
+            for name in (found[0],)
+        )
     )
     divergence = next(
         (

@@ -473,9 +473,11 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
         action_files = {path.name for path in (directory / ACTIONS).iterdir()}
         workflow = CORPUS[session.workflow]
         [scenario] = (i for i in workflow.scenarios if i.name == session.scenario)
-        assert action_files == {workflow.walked[state].action[0] for state in trace} | {
-            entry.action[0] for entry in scenario.trace if entry.action
-        }
+        assert action_files == {
+            found[0]
+            for state in trace
+            if (found := workflow.walked[state].action) is not None
+        } | {entry.action[0] for entry in scenario.trace if entry.action}
 
 
 def test_a_failing_session_is_recorded_with_its_failure(

@@ -163,6 +163,13 @@ its state, and only the step handing a section to a sub-agent is its own.
 
 START = "start"
 STOP = "stop"
+MARKER_HEADINGS = {START: "Entry", STOP: "Exit"}
+"""The heading each marker's section carries, where an author clicks it.
+
+A diagram writes its entry and exit markers as `start` and `stop`, which are
+the graph's own ids. The sections they click are headed `Entry` and `Exit`,
+so a walk records the name its reader meets.
+"""
 ENTRY_PLACEHOLDER = "ENTRY"
 SKILL_ENTRY = "SKILL.md"
 """The document a bootstrap session is told to read."""
@@ -313,6 +320,17 @@ class Diagram:
     """Each node's shape, as the group `SHAPE` captures its label in."""
     labels: dict[str, str] = field(default_factory=dict)
     """Each node's label, which states whether it is a condition."""
+    names: dict[str, str] = field(default_factory=dict)
+    """The heading each marker's section carries, where an author clicked it.
+
+    A diagram writes its entry and exit markers as `start` and `stop`, which
+    are the graph's own ids. The sections they click are headed `Entry` and
+    `Exit`, so a walk names a marker as the heading its reader meets.
+    """
+
+    def named(self, node: str) -> str:
+        """The heading a node's section carries, which is its own name unless mapped."""
+        return self.names.get(node, node)
 
     @property
     def transitions(self) -> frozenset[str]:
@@ -360,21 +378,32 @@ class Diagram:
 
     @property
     def states(self) -> frozenset[str]:
-        """Every state of the diagram, its decisions and conditions excepted."""
+        """Every state of the diagram, its decisions and conditions excepted.
+
+        A clicked `start` or `stop` is a state too: it carries a section and
+        the walk opens or ends there. One an author does not click is a
+        marker, and the graph's own boundary rather than a state.
+        """
         nodes = {edge.source for edge in self.edges} | {
             edge.target for edge in self.edges
         }
-        return frozenset(nodes - {START, STOP} - self.transitions - self.decisions)
+        markers = {marker for marker in (START, STOP) if marker not in self.clicks}
+        return frozenset(nodes - markers - self.transitions - self.decisions)
 
     def leaving(self, state: str) -> tuple[Edge, ...]:
-        """The edges out of one node, the edge to the stop marker excepted.
+        """The edges out of one node, the edge to an unclicked stop excepted.
 
         A decision's edges reach its conditions, and each condition's own edge
         reaches the state its escape enters, so the diagram's edges are read as
-        drawn and the walker follows them node by node.
+        drawn and the walker follows them node by node. Where an author clicks
+        `stop`, its section is a state, so the edge into it is an edge like any
+        other and `stop` is where the workflow ends.
         """
         return tuple(
-            edge for edge in self.edges if edge.source == state and edge.target != STOP
+            edge
+            for edge in self.edges
+            if edge.source == state
+            and not (edge.target == STOP and STOP not in self.clicks)
         )
 
 
@@ -399,13 +428,15 @@ class Section:
     """One state's document: its action and its transition.
 
     `body` is the document up to the transition paragraph, which is the part
-    the two forms share. A terminal section carries no transition.
+    the two forms share. A terminal section carries no transition. A section
+    stating no action is the workflow's entry or exit, which the diagram
+    names and which neither does nor writes anything.
     """
 
     state: str
     path: Path
     body: str
-    action: tuple[str, str]
+    action: tuple[str, str] | None
     transition: Transition | None
 
 
@@ -553,6 +584,8 @@ def read_diagram_text(
     clicks: dict[str, str] = {}
     shapes: dict[str, int] = {}
     labels: dict[str, str] = {}
+    names: dict[str, str] = {}
+    """The heading each marker's clicked section carries."""
     NODE_SHAPE = re.compile(rf"{NODE}")
     for line in body.splitlines():
         if edge := EDGE.match(line):
@@ -568,7 +601,19 @@ def read_diagram_text(
     if len(starts) != 1:
         raise CorpusError(f"{named}: {START} points at {len(starts)} states, not one")
     terminals = frozenset(edge.source for edge in edges if edge.target == STOP)
-    return Diagram(starts[0], tuple(edges), terminals, clicks, shapes, labels)
+    # The entry and exit markers are the workflow's own states when an
+    # author clicks them: the walk opens at `start` and ends at `stop`, and
+    # each carries a section stating what entering or leaving means.
+    opening = START if START in clicks else starts[0]
+    ending = frozenset({STOP}) if STOP in clicks else terminals
+    # A marker's section heading names it for a reader: `start` is headed
+    # `Entry` and `stop` `Exit`, so a walk records what the reader meets.
+    names = {
+        marker: heading
+        for marker, heading in MARKER_HEADINGS.items()
+        if marker in clicks
+    }
+    return Diagram(opening, tuple(edges), ending, clicks, shapes, labels, names)
 
 
 def ruled_state(directory: Path, destination: str) -> str:
@@ -673,13 +718,15 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
     if not marker:
         body, transition = text, ""
     actions = ACTION.findall(body)
-    if len(actions) != 1:
+    if len(actions) > 1:
         raise CorpusError(f"{path} states {len(actions)} actions, not one")
+    # A section states no action where it is the workflow's own entry or
+    # exit: the diagram names both, and neither does anything itself.
     return Section(
         heading.group(1),
         path,
         body,
-        actions[0],
+        actions[0] if actions else None,
         parse_transition(form, transition.strip(), path.parent) if marker else None,
     )
 
@@ -996,18 +1043,20 @@ def bundle_walk(
     while True:
         if len(path) == STEP_LIMIT:
             return tuple(path), [f"no terminal state in {STEP_LIMIT}"]
-        path.append(state)
+        path.append(diagram.named(state))
+        shown = diagram.named(state)
         section = sections.get(fragment)
-        if section is None or section.title != state:
-            return tuple(path), [f"the bundle heads no {state} section at #{fragment}"]
+        if section is None or section.title != shown:
+            return tuple(path), [f"the bundle heads no {shown} section at #{fragment}"]
         actions = ACTION.findall(section.text)
-        if len(actions) != 1:
+        if len(actions) > 1:
             return tuple(path), [f"the bundle's {state} states {len(actions)} actions"]
         faults = []
-        if actions[0] != workflow.walked[state].action:
+        stated_action = workflow.walked[shown].action
+        chosen = actions[0] if actions else None
+        if stated_action is not None and chosen != stated_action:
             faults.append(
-                f"the bundle's {state} writes {actions[0]}, not"
-                f" {workflow.walked[state].action}"
+                f"the bundle's {shown} writes {chosen!r}, not {stated_action!r}"
             )
         stated = NEXT_PARAGRAPH.findall(section.text)
         # A decision is a node of the diagram in its own right, so the state

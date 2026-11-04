@@ -304,7 +304,10 @@ def main() -> int:
     with (workspace / TRACE).open("w") as trace:
         for state in path:
             trace.write(f"{state}\n")
-            name, value = workflow.walked[state].action
+            action = workflow.walked[state].action
+            if action is None:
+                continue
+            name, value = action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
     dispatch = starts(scenario_of(workflow, inputs))
     write_sub_agent_traces(
