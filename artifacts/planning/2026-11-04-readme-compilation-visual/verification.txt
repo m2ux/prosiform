@@ -1,0 +1,5 @@
+PASS: compiler publishes one bundle; all three links name its headings
+PASS: every source and bundle paragraph, heading and link is represented
+PASS: deterministic SVG; accessible description; portable monospace font; text within columns
+PASS: the other eight generated diagrams match the baseline byte for byte
+PASS: full-size and 900-pixel previews rendered at their native aspect ratio
