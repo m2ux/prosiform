@@ -117,7 +117,8 @@ The build names no requirement that a source document be a skill: any Markdown d
 - **The text:** The guide prints these bytes, each paragraph ending in a line feed and one blank line between paragraphs:
 
   ```text
-  pf compiles a compatible Markdown document into one or more bundles.
+  pf compiles a Markdown document that declares prosiform into one or more
+  bundles.
 
   Usage:
 
@@ -132,7 +133,7 @@ The build names no requirement that a source document be a skill: any Markdown d
 
     0  the bundles were written
     1  a failure stopped the run: report its diagnostics and go no further
-    2  invalid usage: this command spec is not one pf accepts
+    2  invalid usage or option combination
 
   Symbol grammar:
 
@@ -140,11 +141,11 @@ The build names no requirement that a source document be a skill: any Markdown d
        bundle whole, keep it in context, and follow it where the link stands
     ⇉  names a bundle to hand on: give it to a sub-agent with the inputs of
        the step that led there, and continue with its answer
-    ⫽  marks a dispatch set: the section it heads is no step of the workflow
-       but one set of bundles, written under the section its title names.
-       Give each bundle to its own sub-agent at once, with the inputs of the
-       step that led there, one per value where that step applies to several.
-       A failure cancels nothing; all failures return together.
+    ⫽  marks a dispatch set: its section holds one set of bundles, listed as
+       ⇉ items in the sub-section headed ⫽ <that section's title> dispatch
+       set. Give each bundle to its own sub-agent at once, with the inputs of
+       the step that led there, one per value where that step applies to
+       several. A failure cancels nothing; all failures return together.
   ```
 
 - **The returned question:** A returned question belongs to the agent conversation and not to the compiled form, so the guide states no marker and no protocol for it. What a run carries is the dispatched target's bundle, and what a sub-agent answers is the dispatching session's to read.
