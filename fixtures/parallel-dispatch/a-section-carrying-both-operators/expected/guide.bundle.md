@@ -5,9 +5,9 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 ## Change
 
 1. Apply: [⇉ Plan](plan.bundle.md).
-2. Apply: [Review the source](#in-parallel) and [Review the tests](#in-parallel).
+2. Apply: [Review the source](#⫽-change-dispatch-set) and [Review the tests](#⫽-change-dispatch-set).
 
-### In parallel
+### ⫽ Change dispatch set
 
 Give each of these to its own sub-agent at the same time, and continue when all have answered:
 

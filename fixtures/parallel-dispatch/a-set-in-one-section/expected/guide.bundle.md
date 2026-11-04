@@ -4,10 +4,10 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 ## Review
 
-1. Apply: [Review the source](#in-parallel) and [Review the tests](#in-parallel).
+1. Apply: [Review the source](#⫽-review-dispatch-set) and [Review the tests](#⫽-review-dispatch-set).
 2. Report what both found.
 
-### In parallel
+### ⫽ Review dispatch set
 
 Give each of these to its own sub-agent at the same time, and continue when all have answered:
 

@@ -305,34 +305,34 @@ EXIT_STATUSES = """exit statuses:
 """
 
 GUIDE = """\
-pf compiles a skill's linked Markdown into files you read whole.
+pf compiles a compatible Markdown document into one or more bundles.
 
-Run it from the skill's directory, the one holding SKILL.md:
+Usage:
 
-  pf -o <folder> <destination>
+  pf -o <folder> <document>[#<section>]
 
-A non-zero exit stops the run: report its diagnostics and go no further.
+  -o <folder>      folder the run's bundles are written into, made if absent;
+                   default: the working directory
+  <document>       a document named from the working directory
+  #<section>       one section of it, named by the slug of its heading
 
-A link whose text opens with \u21b3 names a section to inline. Compile its \
-destination with pf, read the file it writes whole, keep it in context, follow \
-it where the link stands, and continue.
+Exit status:
 
-A link whose text opens with \u21c9 names a file to hand on. Give the linked \
-file to a sub-agent with the inputs of the step that led there, and continue \
-with its answer.
+  0  the bundles were written
+  1  a failure stopped the run: report its diagnostics and go no further
+  2  invalid usage: this command spec is not one pf accepts
 
-An In parallel section lists several \u21c9 links. Give each linked file to its \
-own sub-agent at the same time, each with the inputs of the step that led \
-there; where that step applies to each of several values, give one per value. \
-Continue when all have answered. A failure cancels nothing, and all failures \
-return together.
+Symbol grammar:
 
-A sub-agent asks nothing itself. It returns each question unanswered, with its \
-context and options, in an answer whose first line reads Question:. Put the \
-question to the user, or return it the same way when you are a sub-agent \
-yourself, then give the file again with the answer. Questions from one In \
-parallel section return together once all have answered, and only the files \
-that asked are given again.
+  ↳  names a section to inline: compile its destination with pf, read that
+     bundle whole, keep it in context, and follow it where the link stands
+  ⇉  names a bundle to hand on: give it to a sub-agent with the inputs of
+     the step that led there, and continue with its answer
+  ⫽  marks a dispatch set: the section it heads is no step of the workflow
+     but one set of bundles, written under the section its title names.
+     Give each bundle to its own sub-agent at once, with the inputs of the
+     step that led there, one per value where that step applies to several.
+     A failure cancels nothing; all failures return together.
 """
 
 
@@ -852,7 +852,7 @@ def parser() -> Parser:
         description=(
             "Bundle the local Markdown closure of one or more entry references, "
             "and of each target they dispatch, into validated bundles. Run with "
-            "no arguments, pf prints the guide to following a compiled skill."
+            "no arguments, pf prints the guide to following a bundle."
         ),
         epilog=f"{BUDGET_TABLE}\n{EXIT_STATUSES}",
         formatter_class=argparse.RawDescriptionHelpFormatter,

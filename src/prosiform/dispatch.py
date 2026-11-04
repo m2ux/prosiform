@@ -120,6 +120,21 @@ CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 
 PARALLEL = "In parallel"
 
+MARKED = "\u2afd"
+"""The parallel dispatch mark, leading the sub-section a set is given."""
+
+TITLED = "{title} dispatch set"
+"""The words a set's sub-section takes after its mark, from its section's title."""
+
+DERIVED = "Parallel"
+"""The title a set's sub-section takes where its section states none of its own.
+
+A bundle's first heading may carry no title the run emitted, as content
+above the first heading does, so the sub-section names the structure it
+is rather than the section it sits under, and reads `⫽ Parallel dispatch
+set`.
+"""
+
 TOGETHER = (
     "Give each of these to its own sub-agent at the same time, and continue "
     "when all have answered:"
@@ -468,9 +483,21 @@ class Placing:
         self.pending: dict[Served, Link] = {}
         self.serving: list[tuple[tuple[str, int], Served]] = []
         self.level: int | None = None
+        self.title = ""
+        """The title of the heading whose section a set's sub-section sits under."""
         self.inner: dict[Served, Link] = {}
         self.inner_serving: list[tuple[tuple[str, int], Served]] = []
         self.inner_level = 0
+
+    def titled(self, title: str) -> str:
+        """The heading a set's sub-section takes under the section holding it.
+
+        The mark leads, so a reader meets the symbol before the words that
+        name the structure it builds, and the source section's own title
+        follows, so two sets in one bundle take two headings.
+        """
+        words = " ".join(title.split()) or DERIVED
+        return f"{MARKED} {TITLED.format(title=words)}"
 
     def heading(self, text: str, depth: int, body: Sequence[Instruction]) -> int:
         """Emit one generated section, returning its heading's bundle position."""
@@ -488,13 +515,15 @@ class Placing:
 
         The section's `⫽` set takes one where it holds two or more
         targets. Content above the bundle's first heading takes that
-        heading's level.
+        heading's level, and the heading's title is the one the
+        sub-section derives its own from.
         """
         self.close()
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
-        self.place(self.pending, self.serving, depth)
+        self.place(self.pending, self.serving, depth, self.title)
+        self.title = ""
         self.pending = {}
         self.serving = []
 
@@ -510,12 +539,14 @@ class Placing:
         pending: Mapping[Served, Link],
         links: Sequence[tuple[tuple[str, int], Served]],
         depth: int,
+        title: str = "",
     ) -> None:
         """Say where one section's dispatched links point, emitting its set's section.
 
         A `⇉` link, and the one `⫽` link of a set of one target, point at
         their target's bundle file. A set of two or more targets points
-        at the `In parallel` sub-section emitted here.
+        at the sub-section emitted here, which takes its title from the
+        section holding the set.
         """
         together = [link for link in pending.values() if link.parallel]
         serving: dict[Served, int | str] = {
@@ -541,7 +572,9 @@ class Placing:
                 [(self.bundle_file(link.target), link.text) for link in together]
             )
             at = self.heading(
-                PARALLEL, depth, [Instruction(TOGETHER), Instruction(listed, True)]
+                self.titled(title),
+                depth,
+                [Instruction(TOGETHER), Instruction(listed, True)],
             )
             serving.update((link.served, at) for link in together)
         for key, served in links:
@@ -554,11 +587,13 @@ class Placing:
         self.parts = []
         self.headings = []
         self.level = None
+        self.title = ""
         if one.wrapped:
             wrapper = one.record.headings[0]
             self.emitted.append(one.parts[0])
             self.headings.append(wrapper)
             self.level = wrapper.level
+            self.title = wrapper.text
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
             if isinstance(part, Generated) and part.kind in COMPOSED_HEADINGS:
@@ -593,6 +628,7 @@ class Placing:
             elif isinstance(part, Ancestor | Generated):
                 self.flush(part.level)
                 self.level = part.level
+                self.title = one.record.headings[at].text
                 self.headings.append(one.record.headings[at])
                 at += 1
             elif isinstance(part, Range):
@@ -602,6 +638,7 @@ class Placing:
                 if region.type == HEADING_OPEN:
                     self.flush(one.record.headings[at].level)
                     self.level = one.record.headings[at].level
+                    self.title = one.record.headings[at].text
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
                 key = (part.path, part.lines[0])

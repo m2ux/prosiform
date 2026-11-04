@@ -17,12 +17,12 @@ workflow it leads you to to completion, starting at its first state.
   workflow takes, never the diagram's start or stop marker, the diamond it
   weighs a decision in, the condition beside one of that decision's
   branches, a section heading, or any other name the entry document carries.
-- When a state dispatches a sub-agent, name in the sub-agent's prompt the
-  file or the section you hand it, as the entry document names it, and tell
-  it to append each state it enters as one line to trace-<section>.log in
-  this directory, named for the section it is handed, and never to
-  trace.log: the sub-agent follows a workflow of its own, and trace.log
-  records your path alone.
+- When a state dispatches a sub-agent, write the section's reference in the
+  sub-agent's prompt, spelled `<document>#<heading>` for the document that
+  holds it, such as `review.md#source`. Tell it to append each state it
+  enters as one line to trace-<section>.log in this directory, named for the
+  section it is handed, and never to trace.log: the sub-agent follows a
+  workflow of its own, and trace.log records your path alone.
 - In each state, do the action its section states, then choose the next
   state as its section says.
 - The files under inputs/ are what the workflow's decisions read. Do not

@@ -242,17 +242,22 @@ def test_a_bare_command_prints_the_guide(tmp_path: Path) -> None:
 
 def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
     for rule in (
-        "pf -o <folder> <destination>",
-        "SKILL.md",
-        "A non-zero exit stops the run",
-        "A link whose text opens with \u21b3",
+        "pf -o <folder> <document>[#<section>]",
+        "-o <folder> folder the run's bundles are written into",
+        "#<section> one section of it, named by the slug of its heading",
+        "<document> a document named from the working directory",
+        "1 a failure stopped the run: report its diagnostics and go no further",
+        "2 invalid usage: this command spec is not one pf accepts",
+        "\u21b3 names a section to inline",
         "keep it in context",
-        "A link whose text opens with \u21c9",
-        "An In parallel section lists several \u21c9 links",
-        "each with the inputs of the step that led there",
-        "Continue when all have answered",
-        "all failures return together",
-        "in an answer whose first line reads Question:",
+        "\u21c9 names a bundle to hand on",
+        "\u2afd marks a dispatch set",
+        "the section it heads is no step of the workflow",
+        "written under the section its title names",
+        "Give each bundle to its own sub-agent at once",
+        "one per value where that step applies to several",
+        "A failure cancels nothing; all",
+        "failures return together.",
     ):
         assert rule in " ".join(GUIDE.split())
 
@@ -2675,8 +2680,9 @@ def test_an_in_parallel_sub_section_precedes_the_child_sections_of_its_section(
     run = invoke("guide.md", cwd=root)
     assert run.bundle == (
         f"{OPENING}# Guide\n\n## Run\n\n"
-        "Run [plan](#in-parallel) and [check](#in-parallel).\n\n"
-        f"### In parallel\n\n{TOGETHER}\n\n"
+        "Run [plan](#\u2afd-run-dispatch-set) and "
+        "[check](#\u2afd-run-dispatch-set).\n\n"
+        f"### \u2afd Run dispatch set\n\n{TOGETHER}\n\n"
         "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n\n"
         "### Detail\n\nMore.\n"
     )
@@ -2694,8 +2700,9 @@ def test_a_set_above_the_first_heading_takes_its_level(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{OPENING}Run [plan](#in-parallel) and [check](#in-parallel).\n\n"
-        f"# In parallel\n\n{TOGETHER}\n\n"
+        f"{OPENING}Run [plan](#\u2afd-parallel-dispatch-set) and "
+        "[check](#\u2afd-parallel-dispatch-set).\n\n"
+        f"# \u2afd Parallel dispatch set\n\n{TOGETHER}\n\n"
         "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n\n"
         "# Guide\n\nBody.\n"
     )
@@ -2726,7 +2733,7 @@ def test_a_dispatch_in_a_level_six_section_publishes_inline(root: Path) -> None:
     assert run.bundle.endswith("Run [\u21c9 plan](plan.bundle.md).\n")
 
 
-def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
+def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
     root: Path,
 ) -> None:
     written(
@@ -2734,7 +2741,7 @@ def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
         "guide.md",
         DECLARED
         + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-        "## In parallel\n\nText.\n",
+        "## \u2afd Guide dispatch set\n\nText.\n",
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
     written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
@@ -2743,7 +2750,7 @@ def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_COLLISION
-    assert "In parallel" in diagnostic["message"]
+    assert "\u2afd Guide dispatch set" in diagnostic["message"]
     assert diagnostic["location"] == {"file": "guide.md", "line": 8, "column": 1}
 
 
@@ -3919,8 +3926,9 @@ def test_a_sections_parallel_links_point_at_one_sub_section_listing_each_bundle(
     ]
     assert run.bundle == (
         f"{OPENING}# Guide\n\n## Review\n\n"
-        "1. Review [Code Review](#in-parallel) and [Test Review](#in-parallel).\n\n"
-        f"### In parallel\n\n{TOGETHER}\n\n"
+        "1. Review [Code Review](#\u2afd-review-dispatch-set) and "
+        "[Test Review](#\u2afd-review-dispatch-set).\n\n"
+        f"### \u2afd Review dispatch set\n\n{TOGETHER}\n\n"
         "- [⇉ Code Review](review__code.bundle.md)\n"
         "- [⇉ Test Review](review__tests.bundle.md)\n"
     )
@@ -3938,8 +3946,9 @@ def test_a_target_named_twice_in_one_set_is_listed_once(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.bundle == (
         f"{OPENING}# Guide\n\n"
-        "Run [a](#in-parallel), [b](#in-parallel) and [a again](#in-parallel).\n\n"
-        f"## In parallel\n\n{TOGETHER}\n\n"
+        "Run [a](#\u2afd-guide-dispatch-set), [b](#\u2afd-guide-dispatch-set) "
+        "and [a again](#\u2afd-guide-dispatch-set).\n\n"
+        f"## \u2afd Guide dispatch set\n\n{TOGETHER}\n\n"
         "- [⇉ a](a.bundle.md)\n- [⇉ b](b.bundle.md)\n"
     )
 
@@ -3957,11 +3966,12 @@ def test_a_child_sections_parallel_links_form_its_own_set(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.bundle == (
         f"{OPENING}# Guide\n\n## Run\n\n"
-        "Run [a](#in-parallel) and [b](#in-parallel).\n\n"
-        f"### In parallel\n\n{TOGETHER}\n\n"
+        "Run [a](#\u2afd-run-dispatch-set) and [b](#\u2afd-run-dispatch-set).\n\n"
+        f"### \u2afd Run dispatch set\n\n{TOGETHER}\n\n"
         "- [⇉ a](a.bundle.md)\n- [⇉ b](b.bundle.md)\n\n"
-        "### Detail\n\nRun [b](#in-parallel-1) and [c](#in-parallel-1).\n\n"
-        f"#### In parallel\n\n{TOGETHER}\n\n"
+        "### Detail\n\nRun [b](#\u2afd-detail-dispatch-set) and "
+        "[c](#\u2afd-detail-dispatch-set).\n\n"
+        f"#### \u2afd Detail dispatch set\n\n{TOGETHER}\n\n"
         "- [⇉ b](b.bundle.md)\n- [⇉ c](c.bundle.md)\n"
     )
 
@@ -3989,10 +3999,11 @@ def test_a_section_carrying_both_operators_keeps_its_dispatches_inline(
     ]
     assert run.bundle == (
         f"{OPENING}# Guide\n\n1. Plan [⇉ plan](plan.bundle.md).\n"
-        "2. Review [code](#in-parallel) and [tests](#in-parallel).\n"
+        "2. Review [code](#\u2afd-guide-dispatch-set) and "
+        "[tests](#\u2afd-guide-dispatch-set).\n"
         "3. Plan again [⇉ plan](plan.bundle.md) and also "
-        "[plan](#in-parallel).\n\n"
-        f"## In parallel\n\n{TOGETHER}\n\n"
+        "[plan](#\u2afd-guide-dispatch-set).\n\n"
+        f"## \u2afd Guide dispatch set\n\n{TOGETHER}\n\n"
         "- [⇉ code](code.bundle.md)\n- [⇉ tests](tests.bundle.md)\n"
         "- [⇉ plan](plan.bundle.md)\n"
     )

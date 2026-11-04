@@ -687,8 +687,9 @@ def test_a_set_of_two_points_at_one_in_parallel_sub_section(
     )
     assert status == SUCCESS
     assert bundles["guide.bundle.md"] == (
-        f"{RUN_PF}# Guide\n\nRun [plan](#in-parallel) and [check](#in-parallel).\n\n"
-        f"## In parallel\n\n{IN_PARALLEL}\n\n"
+        f"{RUN_PF}# Guide\n\nRun [plan](#\u2afd-guide-dispatch-set) and "
+        f"[check](#\u2afd-guide-dispatch-set).\n\n"
+        f"## \u2afd Guide dispatch set\n\n{IN_PARALLEL}\n\n"
         "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n"
     )
 
@@ -746,8 +747,8 @@ def test_a_bundle_using_both_operators_carries_no_protocol(
     bundle = bundles["guide.bundle.md"]
     assert bundle.startswith(f"{RUN_PF}# Guide\n")
     assert "# Prosiform" not in bundle
-    assert bundle.count("In parallel\n") == 1
-    assert "\u2afd" not in bundle
+    assert bundle.count("\u2afd Two dispatch set\n") == 1
+    assert "\u2afd One dispatch set" not in bundle
 
 
 @pytest.mark.parametrize(
@@ -779,7 +780,7 @@ def test_an_authored_heading_pf_does_not_emit_publishes(
     assert f"## {heading}\n\nMine.\n" in bundles["guide.bundle.md"]
 
 
-def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
+def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
     tmp_path: Path,
 ) -> None:
     status, bundles, errors = compiled(
@@ -787,7 +788,7 @@ def test_an_authored_heading_equal_to_the_in_parallel_sub_section_is_refused(
         {
             "guide.md": DECLARED
             + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-            "## In parallel\n\nMine.\n",
+            "## \u2afd Guide dispatch set\n\nMine.\n",
             "plan.md": DECLARED + "# Plan\n",
             "check.md": DECLARED + "# Check\n",
         },

@@ -4,9 +4,9 @@ Before reading on, run `pf` with no arguments and follow the guide it prints.
 
 ## Review
 
-1. Apply: [Review the source](#in-parallel) and [Review the tests](#in-parallel).
+1. Apply: [Review the source](#⫽-review-dispatch-set) and [Review the tests](#⫽-review-dispatch-set).
 
-### In parallel
+### ⫽ Review dispatch set
 
 Give each of these to its own sub-agent at the same time, and continue when all have answered:
 
@@ -15,9 +15,9 @@ Give each of these to its own sub-agent at the same time, and continue when all 
 
 ### Recheck
 
-1. Apply: [Recheck the source](#in-parallel-1) and [Check the docs](#in-parallel-1).
+1. Apply: [Recheck the source](#⫽-recheck-dispatch-set) and [Check the docs](#⫽-recheck-dispatch-set).
 
-#### In parallel
+#### ⫽ Recheck dispatch set
 
 Give each of these to its own sub-agent at the same time, and continue when all have answered:
 
@@ -26,9 +26,9 @@ Give each of these to its own sub-agent at the same time, and continue when all 
 
 ## Release
 
-1. Apply: [Write the notes](#in-parallel-2) and [Tag the version](#in-parallel-2).
+1. Apply: [Write the notes](#⫽-release-dispatch-set) and [Tag the version](#⫽-release-dispatch-set).
 
-### In parallel
+### ⫽ Release dispatch set
 
 Give each of these to its own sub-agent at the same time, and continue when all have answered:
 

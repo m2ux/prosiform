@@ -8,9 +8,9 @@ Plan the change: [⇉ Plan](plan.bundle.md).
 
 ## Review
 
-Review it: [Review the source](#in-parallel) and [Review the tests](#in-parallel).
+Review it: [Review the source](#⫽-review-dispatch-set) and [Review the tests](#⫽-review-dispatch-set).
 
-### In parallel
+### ⫽ Review dispatch set
 
 Give each of these to its own sub-agent at the same time, and continue when all have answered:
 

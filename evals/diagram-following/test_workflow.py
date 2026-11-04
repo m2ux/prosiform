@@ -869,7 +869,7 @@ def test_every_dispatching_form_names_the_sub_agent_trace() -> None:
     assert {*DISPATCH_FORMS, BOOTSTRAP} <= set(FORMS)
     for form in FORMS:
         text = " ".join(instruction(ENTRY, form).split())
-        assert f"tell it to append each state it enters as one line to {stated}" in text
+        assert f"append each state it enters as one line to {stated}" in text, form
 
 
 def test_a_state_the_bundle_does_not_reach_is_a_fault(tmp_path: Path) -> None:
