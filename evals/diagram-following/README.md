@@ -151,6 +151,15 @@ CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude
 
 then `/login`.
 
+The opencode harness keeps its own login there too, in a credential store the run names under the eval root. Log in once:
+
+```bash
+cd ~/projects/eval/prosiform && \
+XDG_DATA_HOME=$PWD/config/data XDG_CONFIG_HOME=$PWD/config/config \
+XDG_STATE_HOME=$PWD/config/state XDG_CACHE_HOME=$PWD/config/cache \
+opencode auth login --provider <provider>
+```
+
 ## Isolation
 
 A session receives one form of one workflow and the instruction, so a pass measures the agent reading that form. Each mechanism below holds one part of that boundary for the Claude harness; the first two are refused before a session starts, and the last is read back from each session's own transcript.
@@ -182,6 +191,22 @@ A run whose config directory holds no login fails the same way, naming the one-t
 A managed configuration reaches every session wherever the config directory points: a plugin installed at `managed` scope or enabled by the signed `remote-settings.json`, the environment settings that file's `env` applies over the scrubbed environment, and the hooks a managed plugin or the host's managed settings file, `/etc/claude-code/managed-settings.json` on Linux, which belongs to the host's administrator, delivers. The run records it rather than refusing it, and names none of it: `run.json` and the report state how many managed plugins, environment settings and hooks the sessions carried, and a fingerprint, a SHA-256 digest over the plugin identifiers and versions, the environment keys and the hook events, so two runs on one configuration show one fingerprint and a changed configuration shows another. The hooks are counted from the transcripts once the sessions finish: each hook event a session's transcript shows a hook responding to counts once, its output never read, since no file the harness reads states every hook a managed plugin brings. A host with nothing managed records zero counts and a null fingerprint, and the sessions start either way.
 
 A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: an appended system prompt, a memory file, or a hook's `additionalContext` where no managed plugin is present and the host's managed settings file declares no hook is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Otherwise a hook's response is the managed configuration's, since the preflight admits no other hook. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
+
+### opencode
+
+The opencode harness keeps the same boundary by naming each directory the CLI would otherwise share with the caller under the eval root, and by writing the one settings file a session reads. A run whose credential store under that root holds no login is refused before its first session.
+
+| Mechanism | What it keeps out |
+| --- | --- |
+| `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_STATE_HOME` and `XDG_CACHE_HOME` name directories under the eval root | The caller's configuration, installed plugins, remembered projects, credential store and cache. Every `OPENCODE*` variable the caller holds is dropped from the session's environment. |
+| `OPENCODE_CONFIG` names `<eval-root>/config/harness.json` | Every other settings file, and the permissions a workflow's own `opencode.json` would add. |
+| `OPENCODE_PURE` and `OPENCODE_DISABLE_DEFAULT_PLUGINS` | Every plugin, the CLI's own among them, so no hook or tool they register reaches a session. |
+| `OPENCODE_DISABLE_EXTERNAL_SKILLS` and `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS` | Every skill of the caller's, under `.claude/skills` and `.agents/skills`, which the CLI would otherwise offer beside the form. |
+| `OPENCODE_DISABLE_PROJECT_CONFIG` | A project's own `opencode.json`, whose permissions or instructions would arrive beside the form. |
+| `OPENCODE_DISABLE_MODELS_FETCH` and `OPENCODE_DISABLE_AUTOUPDATE` | The network calls a catalogue fetch and an update check make. |
+| The written `permission` block | Every command but `pf`, and every path but the session's workspace: `bash` admits `pf *` and denies the rest, `external_directory` denies a read, a write and a shell command outside the workspace, and `webfetch` and `websearch` deny the network. `edit`, `read`, `glob`, `grep`, `list` and `task` admit the workspace and the dispatch a compiled bundle states. |
+
+A bootstrap skill is placed at `<workspace>/.opencode/skills/<name>`, which is the root this CLI discovers, rather than the `.claude/skills` root the other two read.
 
 ## Running
 

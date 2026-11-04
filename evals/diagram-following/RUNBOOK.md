@@ -136,10 +136,10 @@ The baseline over the hardened corpus, run by [I10:E00](https://github.com/m2ux/
 
 | Item | Value |
 | --- | --- |
-| Harness | `claude` |
-| Model | The default matrix's model, chosen at E00 W01 and still to be recorded here by E00 W04. |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
 | Workflows | Every workflow: the default `--workflows`. |
-| Forms | The default `--forms`: each workflow in every form it is written in that the Claude harness runs. |
+| Forms | The default `--forms`: each workflow in every form it is written in that the opencode harness runs. |
 | Repetitions | 5 |
 | Sessions | The matrix's cells times 5, as the run prints them before its first session. |
 | Session cap | Set by E00 W04's shakedown, by the proof's rule: its largest session tokens, doubled and rounded up to the next 10 000. |
@@ -158,8 +158,8 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 
 | Item | Value |
 | --- | --- |
-| Harness | `claude` |
-| Model | `claude-haiku-5-5`, named by the user on 2026-11-03. |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
 | Spending cap | USD 5 for every live run of the shakedown together. |
 | Sessions | 76: the default matrix's 76 cells, one repetition. |
 | Session cap | 1 130 000 tokens: the first run's largest session, 560 936 tokens, doubled and rounded up to the next 10 000. |
@@ -170,7 +170,7 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Second run | `baseline-shakedown`, 2026-11-03, on #632's and #637's fixes and I10:E06's guide: crashed at 65 of 76 sessions on the first run's leftover workspaces, USD 0.359917 spent, 56 passed; 8 failures `defect` (`pf` asked for where no shell is given, `pf` refused under `Bash(pf:*)`, starts the scorer cannot match to their sections) and 1 `miss`, escalated as [#650](https://github.com/m2ux/prosiform/issues/650). It sets no cap; the shakedown repeats once #650 is settled, with `workspaces/baseline-shakedown` removed beside `results/baseline-shakedown`. |
 
 ```bash
-make eval-diagrams HARNESS=claude ARGS='--models claude-haiku-5-5 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 85880000 --run-id baseline-shakedown'
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --repetitions 1 --session-budget-tokens 1130000 --budget-tokens 85880000 --run-id baseline-shakedown'
 ```
 
 ## Edge Run
