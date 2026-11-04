@@ -13,7 +13,7 @@ The selected direction uses the earlier illustration's connected panels, readabl
 - [x] Inspect the published README, earlier illustration and current example.
 - [x] Render the connected layout from a real compiler run.
 - [x] Inspect the image at README width and verify content and regeneration.
-- [ ] **In progress:** Publish the committed branch and its review handoff.
+- [x] Publish the committed branch and its review handoff.
 
 ## Artifacts
 
@@ -31,6 +31,7 @@ The selected direction uses the earlier illustration's connected panels, readabl
 | [Renderer checks](ruff.txt) | Ruff lint and formatting results. |
 | [Command-table checks](tables.txt) | Repository command and dependency table results. |
 | [Link checks](links.txt) | Online resolution of all documentation references. |
+| [CI result](ci.json) | Successful full repository check and its executed steps at the PR head. |
 
 ## Links
 
@@ -39,3 +40,5 @@ The selected direction uses the earlier illustration's connected panels, readabl
 | Published README | https://github.com/m2ux/prosiform/tree/main |
 | Earlier illustration | https://github.com/m2ux/prosiform/blob/dfa94f71b/docs/images/compilation.png |
 | Implementation | https://github.com/m2ux/prosiform/commit/fac70a9403370a12a84da473e379367d77b0a3e8 |
+| Pull request | https://github.com/m2ux/prosiform/pull/652 |
+| Full CI | https://github.com/m2ux/prosiform/actions/runs/41850363720 |

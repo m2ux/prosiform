@@ -55,3 +55,9 @@ The drawing uses the standard `monospace` font family. This preserves character 
 [Before](before.png) · [Full-size result](after.png)
 
 ![Illustration at README width](readme-width.png)
+
+## Full CI
+
+**Pass.** [Checks run 41850363720](https://github.com/m2ux/prosiform/actions/runs/41850363720) completes successfully at `fac70a9403370a12a84da473e379367d77b0a3e8`. Its `Run the checks` step executes the repository's complete `make check` target and succeeds; the check is executed rather than skipped by the workflow's scope decision.
+
+Evidence: [job and step results](ci.json). [PR #652](https://github.com/m2ux/prosiform/pull/652) targets `main` and is ready for review.
