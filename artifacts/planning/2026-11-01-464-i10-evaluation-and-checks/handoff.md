@@ -20,5 +20,6 @@ State for a fresh session resuming I10 delivery on board 18. Decisions live in [
 
 ## Notes
 
+- **Lanes.** Two delivery sessions run side by side, one sub-agent per unit, one unit per lane at a time; each row's lane is in its work item and in [Delivery Lanes](README.md#delivery-lanes). Lane 1 takes frontier design rows on the default model; lane 2 takes low-cost rows on a cheaper model, except where a row needs heavy merge or design judgement, which runs on the default model. When a lane frees, dispatch its next unblocked row by priority. Eval runs use the model the user chooses; never name it in plans.
 - A compiled workspace now holds the compiled sources beside the bundle set (W19), since a `↳` line compiles from sources.
 - The orchestrator merges task PRs into epic bases when the classifier refuses an agent's merge, after reviewing the diff, CI and an org-leak check.
