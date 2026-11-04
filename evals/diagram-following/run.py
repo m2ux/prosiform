@@ -207,7 +207,7 @@ SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_s
 DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
-DEFAULT_SESSION_BUDGET = 60_000
+DEFAULT_SESSION_BUDGET = 2_830_000
 DEFAULT_SESSION_TIMEOUT = 600.0
 
 
