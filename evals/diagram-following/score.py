@@ -92,7 +92,15 @@ __all__ = [
     "record_starts",
     "score",
 ]
-from workflow import FEWER, START, Dispatch, Scenario, Workflow
+from workflow import (
+    FEWER,
+    SOURCE_DIR,
+    START,
+    Dispatch,
+    Scenario,
+    Workflow,
+    entry_bundle,
+)
 
 TRACE = "trace.log"
 """The path a session writes its own states to."""
@@ -111,8 +119,6 @@ carries both and the run keeps them together.
 ACTIONS = "actions"
 SUBAGENTS = "subagents.json"
 TRANSCRIPT = "transcript.jsonl"
-BUNDLE_SUFFIX = ".bundle.md"
-BUNDLE_JOIN = "__"
 
 
 class Failure(StrEnum):
@@ -257,13 +263,15 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
             str(row.get("target", "")),
             str(row.get("returned", "")),
             bool(row.get("together")),
+            row.get("actor"),
+            row.get("group"),
         )
         for row in held.get("starts", [])
         if isinstance(row, dict)
     )
 
 
-def names(target: str, section: str) -> bool:
+def names(target: str, section: str, source_directory: str = "") -> bool:
     """Whether a start's prompt names a section's compiled file or authored reference.
 
     A compiled form hands over `pf`'s bundle for the section, named
@@ -274,18 +282,21 @@ def names(target: str, section: str) -> bool:
     The file or reference identifies the section. Description wording and
     headings alone carry no target identity.
     """
-    document, _, heading = section.partition("#")
+    reference = f"{source_directory}/{section}" if source_directory else section
+    document, _, heading = reference.partition("#")
     for spelled in (
         f"{document}#{heading}",
         f"{document}.md#{heading}",
-        f"{document}{BUNDLE_JOIN}{heading}{BUNDLE_SUFFIX}",
+        entry_bundle(reference).name,
     ):
         if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
             return True
     return False
 
 
-def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
+def dispatched(
+    scenario: Scenario, starts: tuple[Start, ...], source_directory: str = ""
+) -> Failure | None:
     """The first dispatch check a run's record fails, or nothing when it passes.
 
     A session may start a sub-agent for work of its own, as reading the
@@ -319,7 +330,7 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
                     position
                     for position in range(cursor, len(starts))
                     if position not in taken
-                    and names(starts[position].target, due.section)
+                    and names(starts[position].target, due.section, source_directory)
                 ),
                 None,
             )
@@ -331,6 +342,13 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
         for index, _, _ in found:
             taken.add(index)
         if len(found) > 1:
+            native = [(start.actor, start.group) for _, start, _ in found]
+            if any(group is not None for _, group in native):
+                if len(set(native)) != 1 or any(
+                    actor is None or group is None for actor, group in native
+                ):
+                    return Failure.SEQUENTIAL_SET
+                continue
             # A set states no order, so its opener is whichever member
             # started first. Starts in one message are contiguous, so every
             # later member started alongside it only where no start between
@@ -341,9 +359,14 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
                 return Failure.SEQUENTIAL_SET
         elif any(due.together for _, _, due in found):
             return Failure.SEQUENTIAL_SET
+    if any(start.returned == "unfinished" for _, start, _ in matched):
+        return Failure.UNFINISHED
     if any(
         start.returned == QUESTION
-        and not any(names(later.target, due.section) for later in starts[index + 1 :])
+        and not any(
+            names(later.target, due.section, source_directory)
+            for later in starts[index + 1 :]
+        )
         for index, start, due in matched
     ):
         return Failure.UNRELAYED_QUESTION
@@ -402,7 +425,9 @@ def score(
             )
         if compiled is False:
             return Verdict(False, Failure.UNBOOTSTRAPPED, 0, expected, actual, actions)
-        order = dispatched(scenario, read_starts(workspace))
+        order = dispatched(
+            scenario, read_starts(workspace), SOURCE_DIR if compiled is not None else ""
+        )
         if order is not None:
             return Verdict(False, order, None, expected, actual, actions)
         unwritten = tuple(

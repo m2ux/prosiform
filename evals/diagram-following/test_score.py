@@ -342,6 +342,56 @@ def test_a_bundle_dispatched_after_another_is_undispatched(
     assert verdict.failure == Failure.UNDISPATCHED
 
 
+def test_a_native_parallel_set_keeps_its_response_group_across_child_events(
+    tmp_path: Path,
+) -> None:
+    first, second = CORPUS["dispatch-set"].scenarios[0].trace
+    verdict = dispatched(
+        "dispatch-set",
+        [
+            Start(first.section, "done", False, "root", "response-1"),
+            Start(
+                "a child starts unrelated work",
+                "done",
+                False,
+                "child",
+                "child-response",
+            ),
+            Start(second.section, "done", True, "root", "response-1"),
+        ],
+        tmp_path,
+    )
+    assert verdict.passed
+
+
+def test_native_starts_from_separate_responses_are_sequential(tmp_path: Path) -> None:
+    first, second = CORPUS["dispatch-set"].scenarios[0].trace
+    verdict = dispatched(
+        "dispatch-set",
+        [
+            Start(first.section, "done", False, "root", "response-1"),
+            Start(second.section, "done", True, "root", "response-2"),
+        ],
+        tmp_path,
+    )
+    assert verdict.failure == Failure.SEQUENTIAL_SET
+
+
+def test_a_parent_ending_before_its_subagent_returns_is_unfinished(
+    tmp_path: Path,
+) -> None:
+    first, second = CORPUS["dispatch-chain"].scenarios[0].trace
+    verdict = dispatched(
+        "dispatch-chain",
+        [
+            Start(first.section, "done", False),
+            Start(second.section, "unfinished", False),
+        ],
+        tmp_path,
+    )
+    assert verdict.failure == Failure.UNFINISHED
+
+
 def test_a_set_started_one_after_another_is_sequential_set(
     tmp_path: Path,
 ) -> None:

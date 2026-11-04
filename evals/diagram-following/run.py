@@ -315,6 +315,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="how long a session runs before it is ended",
     )
     parser.add_argument("--models", default=",".join(DEFAULT_MODELS))
+    parser.add_argument("--reasoning-effort", help="the Codex model's reasoning effort")
     parser.add_argument("--repetitions", type=int, default=DEFAULT_REPETITIONS)
     parser.add_argument("--workflows", help="workflow names; every one by default")
     parser.add_argument("--forms", default=",".join(FORMS))
@@ -322,7 +323,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--harness",
         default="claude",
-        help="the agent CLI the run drives: claude, cursor or opencode",
+        help="the agent CLI the run drives: claude, cursor, opencode or codex",
     )
     parser.add_argument(
         "--agent-command", help="the agent's command line, overriding the harness"
@@ -421,6 +422,7 @@ def prepare(
     scenario: Scenario,
     form: str,
     sets: dict[tuple[str, str], dict[str, bytes]],
+    skill_home: Path = SKILL_HOME,
 ) -> None:
     """Lay out a workspace with one form's material, a scenario's inputs and answers.
 
@@ -434,7 +436,7 @@ def prepare(
             written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
     elif form == BOOTSTRAP_SET:
-        placed = workspace / SKILL_HOME / workflow.name
+        placed = workspace / skill_home / workflow.name
         placed.mkdir(parents=True)
         shutil.copytree(workflow.directory / BOOTSTRAP_DIR, placed, dirs_exist_ok=True)
         (workspace / BUILD).mkdir()
@@ -585,7 +587,9 @@ def start(
     records.mkdir(parents=True)
     workspace.mkdir(parents=True)
     try:
-        prepare(workspace, workflow, scenario, session.form, sets)
+        prepare(
+            workspace, workflow, scenario, session.form, sets, Path(harness.skill_home)
+        )
         began = time.monotonic()
         with (records / TRANSCRIPT).open("wb") as transcript:
             spoke = [*argv, prompt] if harness.prompt_on_argv else argv
@@ -743,6 +747,12 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
     if build is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     env["PATH"] = f"{Path(build).parent}:{env.get('PATH', '')}"
+    command_template = harness.argv(
+        agent,
+        "<model>",
+        arguments.session_budget_tokens,
+        reasoning_effort=arguments.reasoning_effort,
+    )
     corpus = workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
@@ -814,6 +824,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                     session.model,
                     ledger.session_cap,
                     session.directory(workspaces),
+                    arguments.reasoning_effort,
                 ),
                 prompts[session.form],
                 sets,
@@ -861,7 +872,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         },
         "harness": harness.name,
         "managed": managed,
-        "command": harness.argv(agent, "<model>", ledger.session_cap),
+        "command": command_template,
         STATE: state,
         REASON: reason,
         "sessions": len(sessions),

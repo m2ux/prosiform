@@ -64,7 +64,7 @@ from pathlib import Path
 
 from harness import DONE, HANDBACK, QUESTION
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
-from workflow import Scenario, Workflow, walk, workflows
+from workflow import SOURCE_DIR, Scenario, Workflow, entry_bundle, walk, workflows
 
 STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
 RAN_PF = {
@@ -174,11 +174,16 @@ def handed(section: str, instruction: str) -> str:
     A sub-agent reads only this prompt, so it learns its trace's name only
     where the session's instruction stated that name for the session to hand on.
     """
+    target = (
+        entry_bundle(f"{SOURCE_DIR}/{section}").name
+        if instruction.lstrip().startswith("A skill is available")
+        else section
+    )
     if STATED_TRACE not in instruction:
-        return f"Follow {section}."
+        return f"Follow {target}."
     document, _, heading = section.partition("#")
     trace = SUB_AGENT_TRACE.format(section=heading or document)
-    return f"Follow {section}. Append each state you enter to {trace}."
+    return f"Follow {target}. Append each state you enter to {trace}."
 
 
 def write_sub_agent_traces(workspace: Path, prompts: list[str]) -> None:

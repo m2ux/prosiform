@@ -15,7 +15,7 @@ from dataclasses import fields
 from pathlib import Path
 
 import pytest
-from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
+from harness import HARNESSES, Claude, Codex, Cursor, Opencode, Start, harness_named
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -69,9 +69,11 @@ def cursor_call(
 
 
 def test_the_declared_harnesses_are_named() -> None:
-    assert set(HARNESSES) == {"claude", "cursor", "opencode"}
+    assert set(HARNESSES) == {"claude", "cursor", "opencode", "codex"}
     assert harness_named("cursor") is HARNESSES["cursor"]
     assert harness_named("opencode") is HARNESSES["opencode"]
+    assert harness_named("codex") is HARNESSES["codex"]
+    assert Codex().name == "codex"
     assert (
         Claude().name == "claude"
         and Cursor().name == "cursor"
@@ -458,7 +460,7 @@ def test_an_absent_transcript_names_no_start(tmp_path: Path) -> None:
     assert Claude().result(tmp_path / "absent.jsonl") is None
 
 
-@pytest.mark.parametrize("name", HARNESSES)
+@pytest.mark.parametrize("name", ["claude", "cursor", "opencode"])
 def test_a_start_reads_its_prompt_when_its_description_names_another_section(
     name: str, tmp_path: Path
 ) -> None:

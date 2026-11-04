@@ -16,7 +16,9 @@ the harness is the whole of what an agent CLI differs in.
   `model_call_id`, and which reports tokens but no cost;
 - `opencode`, the opencode CLI, whose stream is events each holding a
   `part`, a sub-agent start being a `tool` part naming `task`, and which
-  reports tokens and cost on each model step's `step_finish` part.
+  reports tokens and cost on each model step's `step_finish` part;
+- `codex`, the native app-server, whose bridge records response boundaries,
+  child-thread reports and cumulative tokens, with no reported dollar cost.
 
 A harness reads its own stream: `starts()` returns the same `Start` values
 from any of them, so the scorer above it is unaware of which CLI produced
@@ -106,6 +108,9 @@ class Start:
     target: str
     returned: str
     together: bool
+    """Whether this actor's preceding start shares its native response group."""
+    actor: str | None = None
+    group: str | None = None
 
     def record(self) -> dict[str, object]:
         """The start as plain values `json.dumps` writes unchanged."""
@@ -232,6 +237,7 @@ class Claude:
     """
     shell_tool: str = "Bash"
     """The shell tool every session carries."""
+    skill_home: str = ".claude/skills"
     pf_only: str = "Bash(pf *)"
     """The allowlist rule admitting `pf` with arguments and output redirects."""
     prompt_on_argv: bool = False
@@ -259,6 +265,7 @@ class Claude:
         model: str,
         budget: int,
         workspace: Path | None = None,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
         """One session's command line, its prompt given on standard input.
 
@@ -576,6 +583,7 @@ class Cursor:
     name: str = "cursor"
     scrubbed: tuple[str, ...] = ("CURSOR",)
     default_agent: str = "cursor-agent"
+    skill_home: str = ".claude/skills"
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = False
@@ -598,6 +606,7 @@ class Cursor:
         model: str,
         budget: int,
         workspace: Path | None = None,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
         """One session's command line, the workspace given as its argument.
 
@@ -792,6 +801,7 @@ class Opencode:
     """
 
     name: str = "opencode"
+    skill_home: str = ".claude/skills"
     scrubbed: tuple[str, ...] = ("OPENCODE",)
     default_agent: str = "~/.opencode/bin/opencode"
     """Where the CLI installs itself, which is not on a login shell's path."""
@@ -814,6 +824,7 @@ class Opencode:
         model: str,
         budget: int,
         workspace: Path | None = None,
+        reasoning_effort: str | None = None,
     ) -> list[str]:
         """One session's command line, its prompt given as its argument.
 
@@ -1021,10 +1032,141 @@ def _tokens(
     return int(sum(count for count in counts if isinstance(count, int | float)))
 
 
-Harness = Claude | Cursor | Opencode
+@dataclass(frozen=True)
+class Codex:
+    """Native Codex app-server with confined file tools and structured `pf`."""
+
+    name: str = "codex"
+    config_variable: str = "CODEX_HOME"
+    scrubbed: tuple[str, ...] = ("CODEX", "OPENAI_")
+    default_agent: str = "codex"
+    prompt_on_argv: bool = False
+    nested_starts: bool = True
+    skill_home: str = ".agents/skills"
+
+    def argv(
+        self,
+        agent: list[str],
+        model: str,
+        budget: int,
+        workspace: Path | None = None,
+        reasoning_effort: str | None = None,
+    ) -> list[str]:
+        """The native bridge, with explicit model, reasoning and token ceiling."""
+        if reasoning_effort is None:
+            raise CorpusError("the codex harness requires --reasoning-effort")
+        return [
+            sys.executable,
+            str(Path(__file__).with_name("codex_agent.py")),
+            "--command",
+            json.dumps(agent),
+            "--model",
+            model,
+            "--reasoning-effort",
+            reasoning_effort,
+            "--session-budget-tokens",
+            str(budget),
+        ]
+
+    def environment(self, config: Path, held: dict[str, str]) -> dict[str, str]:
+        """An eval-owned home, without the caller's Codex or OpenAI variables."""
+        kept = {
+            name: value
+            for name, value in held.items()
+            if not name.startswith(self.scrubbed)
+        }
+        return {**kept, self.config_variable: str(config / self.name)}
+
+    def preflight(
+        self, config: Path, workspaces: Path, sources: tuple[Path, ...]
+    ) -> str | None:
+        """Require the eval's login and refuse caller configuration material."""
+        home = config / self.name
+        if not (home / "auth.json").is_file():
+            return f"{home} holds no login; run CODEX_HOME={home} codex login once"
+        for name in (
+            "config.toml",
+            "AGENTS.md",
+            "AGENTS.override.md",
+            "rules",
+            "skills",
+            "memories",
+        ):
+            if (home / name).exists():
+                return (
+                    f"{home / name} supplies context outside the eval; "
+                    "use an auth-only Codex home"
+                )
+        for source in sources:
+            if (source / ".codex").exists():
+                return f"{source / '.codex'} supplies project configuration to the eval"
+        return None
+
+    def hooked(self, config: Path) -> bool:
+        """Hooks are disabled and any native hook event refuses the session."""
+        return False
+
+    def managed(self, config: Path, hooks: list[str]) -> dict[str, int | str | None]:
+        """No managed hook or caller context is admitted by this adapter."""
+        return counted({}, [], [])
+
+    def result(self, transcript: Path) -> dict[str, object] | None:
+        """The bridge's final reading of native completion and usage evidence."""
+        return next(
+            (
+                held
+                for held in reversed(messages(transcript))
+                if held.get("type") == RESULT and held.get("harness") == self.name
+            ),
+            None,
+        )
+
+    def starts(self, transcript: Path) -> tuple[Start, ...]:
+        """Native dispatch prompts, response groups and completed child reports."""
+        result = self.result(transcript)
+        held = result.get("starts") if result else None
+        return (
+            tuple(
+                Start(
+                    str(row["target"]),
+                    str(row["returned"]),
+                    bool(row["together"]),
+                    row.get("actor"),
+                    row.get("group"),
+                )
+                for row in held
+                if isinstance(row, dict)
+            )
+            if isinstance(held, list)
+            else ()
+        )
+
+    def commands(self, transcript: Path) -> tuple[str, ...]:
+        """The `pf` invocations the native command service actually executed."""
+        result = self.result(transcript)
+        held = result.get("commands") if result else None
+        return (
+            tuple(command for command in held if isinstance(command, str))
+            if isinstance(held, list)
+            else ()
+        )
+
+    def tokens(self, result: dict[str, object] | None) -> int | None:
+        """Every observed thread's cumulative total, each thread counted once."""
+        held = result.get("tokens") if result else None
+        return int(held) if isinstance(held, int | float) else None
+
+    def cost(self, result: dict[str, object] | None) -> float | None:
+        """The native CLI reports no dollar cost."""
+        return None
+
+
+Harness = Claude | Cursor | Opencode | Codex
 """Any declared harness, as the runner and the scorer accept one."""
 
-HARNESSES = {harness.name: harness for harness in (Claude(), Cursor(), Opencode())}
+HARNESSES = {
+    harness.name: harness for harness in (Claude(), Cursor(), Opencode(), Codex())
+}
 
 
 def harness_named(name: str) -> Harness:
