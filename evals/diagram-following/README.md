@@ -97,7 +97,7 @@ The six feature workflows each build on one bundling feature, and each scenario 
 
 ## Scoring
 
-A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of eight classes that fits where its trace departs from the path:
+A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The same instruction tells it to name, in that prompt, the file or section it hands over, so a start is identified by what it was given rather than by prose. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of eight classes that fits where its trace departs from the path:
 
 | Class | The session |
 | --- | --- |
