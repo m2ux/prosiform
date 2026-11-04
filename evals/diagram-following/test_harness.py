@@ -584,9 +584,7 @@ def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
                     "type": "tool",
                     "callID": "c1",
                     "tool": "bash",
-                    "state": {
-                        "input": {"command": "pf -o build sources/workflow.md"}
-                    },
+                    "state": {"input": {"command": "pf -o build sources/workflow.md"}},
                 },
             }
         ],
