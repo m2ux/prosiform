@@ -492,7 +492,7 @@ def test_a_failing_session_is_recorded_with_its_failure(
     [record] = records(tmp_path)
     verdict = record["verdict"]
     assert verdict["failure"] == "unfinished"
-    assert verdict["actual"] == ["Plan"]
+    assert verdict["actual"] == ["Entry"]
 
 
 def test_a_run_ends_by_writing_its_report(
@@ -792,7 +792,7 @@ def test_a_session_past_its_timeout_is_ended_scored_and_charged(
     hung, finished = sorted(records(tmp_path), key=lambda item: item["repetition"])
     assert hung["exit_status"] == TIMEOUT and hung["tokens"] is None
     assert hung["verdict"]["failure"] == "unfinished"
-    assert hung["verdict"]["actual"] == ["Plan", "Build"]
+    assert hung["verdict"]["actual"] == ["Entry", "Plan"]
     assert finished["exit_status"] == 0 and finished["tokens"] == 125
 
 

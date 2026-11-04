@@ -1407,8 +1407,8 @@ def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
     assert unreached(linear, tmp_path) == [
         f"no scenario produces {failure}"
         for failure in (
-            Failure.WRONG_BRANCH,
             Failure.LOOP_MISCOUNT,
+            Failure.MISSING_ACTION,
             Failure.UNDISPATCHED,
             Failure.SEQUENTIAL_SET,
             Failure.UNRELAYED_QUESTION,

@@ -13,8 +13,10 @@ flowchart TD
     Test --> Ship
     Ship --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Plan href "states/plan.md"
     click Build href "states/build.md"
     click Test href "states/test.md"
     click Ship href "states/ship.md"
+    click Exit href "states/exit.md"
 ```

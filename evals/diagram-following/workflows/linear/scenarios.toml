@@ -3,5 +3,5 @@
 
 [[scenario]]
 name = "straight-through"
-path = ["Plan", "Build", "Test", "Ship"]
+path = ["Entry", "Plan", "Build", "Test", "Ship", "Exit"]
 inputs = {}

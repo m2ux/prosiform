@@ -146,23 +146,23 @@ def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
         (
             "linear",
             "straight-through",
-            ["Plan", "Test", "Ship"],
+            ["Entry", "Plan", "Test", "Ship", "Exit"],
             Failure.SKIPPED_STATE,
-            1,
+            2,
         ),
         (
             "linear",
             "straight-through",
-            ["Plan", "Build", "Deploy", "Ship"],
+            ["Entry", "Plan", "Build", "Deploy", "Ship", "Exit"],
             Failure.INVENTED_STATE,
-            2,
+            3,
         ),
         (
             "linear",
             "straight-through",
-            ["Plan", "Build", "Plan"],
+            ["Entry", "Plan", "Build", "Plan"],
             Failure.INVALID_TRANSITION,
-            2,
+            3,
         ),
         (
             "looping",
@@ -171,7 +171,13 @@ def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
             Failure.LOOP_MISCOUNT,
             5,
         ),
-        ("linear", "straight-through", ["Plan", "Build"], Failure.UNFINISHED, 2),
+        (
+            "linear",
+            "straight-through",
+            ["Entry", "Plan", "Build"],
+            Failure.UNFINISHED,
+            3,
+        ),
     ],
     ids=[
         "wrong-branch",
@@ -211,7 +217,7 @@ def test_a_right_path_with_an_action_absent_or_wrong_is_a_missing_action(
     verdict = score(linear, item, held)
     assert (verdict.failure, verdict.divergence, verdict.actions) == (
         Failure.MISSING_ACTION,
-        1,
+        2,
         ("build.txt", "ship.txt"),
     )
 
@@ -252,10 +258,20 @@ def test_a_linked_decision_passes_on_the_path_its_rules_state(
 @pytest.mark.parametrize(
     ("workflow", "name", "trace", "divergence"),
     [
-        ("linear", "straight-through", ["Plan", "Build", "Test", "Ship", "Plan"], 4),
+        (
+            "linear",
+            "straight-through",
+            ["Entry", "Plan", "Build", "Test", "Ship", "Exit", "Plan"],
+            6,
+        ),
         ("looping", "no-rework", ["Draft", "Review", "Publish", "Review"], 3),
         ("looping", "two-rounds", ["Draft", "Review", "Revise", "Check", "Draft"], 4),
-        ("linear", "straight-through", ["Plan", "Build", "Build", "Test", "Ship"], 2),
+        (
+            "linear",
+            "straight-through",
+            ["Entry", "Plan", "Build", "Build", "Test", "Ship", "Exit"],
+            3,
+        ),
         ("looping", "no-rework", ["Draft", "Review", "Review", "Publish"], 2),
     ],
     ids=[
@@ -289,27 +305,31 @@ def test_a_trace_is_read_stripped_of_blank_lines_and_surrounding_whitespace(
     tmp_path: Path,
 ) -> None:
     linear = CORPUS["linear"]
-    log = "\n  Plan \nBuild\n\n\tTest\nShip"
-    held = workspace(tmp_path, linear, ["Plan", "Build", "Test", "Ship"], log)
-    assert read_trace(held) == ("Plan", "Build", "Test", "Ship")
+    log = "\n  Entry \nPlan\n\n\tBuild\nTest\nShip\nExit"
+    held = workspace(
+        tmp_path, linear, ["Entry", "Plan", "Build", "Test", "Ship", "Exit"], log
+    )
+    assert read_trace(held) == ("Entry", "Plan", "Build", "Test", "Ship", "Exit")
     assert score(linear, scenario("linear", "straight-through"), held).passed
 
 
 def test_a_name_in_another_case_is_a_state_the_diagram_does_not_hold(
     tmp_path: Path,
 ) -> None:
-    verdict = run(tmp_path, "linear", "straight-through", ["Plan", "build"])
-    assert (verdict.failure, verdict.divergence) == (Failure.INVENTED_STATE, 1)
+    verdict = run(
+        tmp_path, "linear", "straight-through", ["Entry", "Plan", "Build", "build"]
+    )
+    assert (verdict.failure, verdict.divergence) == (Failure.INVENTED_STATE, 3)
 
 
 def test_the_record_is_plain_json_values(tmp_path: Path) -> None:
-    verdict = run(tmp_path, "linear", "straight-through", ["Plan", "Build"])
+    verdict = run(tmp_path, "linear", "straight-through", ["Entry", "Plan", "Build"])
     assert json.loads(json.dumps(verdict.record())) == {
         "passed": False,
         "failure": "unfinished",
-        "divergence": 2,
-        "expected": ["Plan", "Build", "Test", "Ship"],
-        "actual": ["Plan", "Build"],
+        "divergence": 3,
+        "expected": ["Entry", "Plan", "Build", "Test", "Ship", "Exit"],
+        "actual": ["Entry", "Plan", "Build"],
         "actions": [],
     }
 
