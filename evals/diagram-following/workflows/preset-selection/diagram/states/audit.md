@@ -11,5 +11,3 @@ prosiform:
 Write `actions/audit.txt` containing `audited`.
 
 Hold the change to the [policy](../notes/policy.md).
-
-**Next.** Take the transition out of this state.

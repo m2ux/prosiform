@@ -198,7 +198,6 @@ FRONTMATTER = re.compile(r"\A---\n.*?^---\n", re.DOTALL | re.MULTILINE)
 NEXT = "**Next.** "
 ACTION = re.compile(r"^Write `actions/([^`]+)` containing `([^`]*)`\.$", re.MULTILINE)
 TERMINAL = "The workflow is complete."
-ONLY_EDGE = "Take the transition out of this state."
 LABEL = r"take the transition labelled `([^`]+)`"
 GO_TO = r"go to \[(\w+)\]\([^)]+\)"
 LINKED = r"take the transition \[([^\]]+)\]\(([^)]+)\) names"
@@ -259,7 +258,6 @@ OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
 """The operator a link's text opens with, where it opens with one."""
 RULE_STATEMENT = re.compile(r"^The transition into `(\w+)` applies\.$", re.MULTILINE)
 _DIAGRAM_DECISION = re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$")
-_DIAGRAM_ONLY_EDGE = re.compile(rf"^{re.escape(ONLY_EDGE)}$")
 DECISION = {
     DIAGRAM: _DIAGRAM_DECISION,
     PROSE: re.compile(rf"^If (.+), {GO_TO}\. Otherwise, {GO_TO}\.$"),
@@ -267,10 +265,7 @@ DECISION = {
     BOOTSTRAP: _DIAGRAM_DECISION,
 }
 UNCONDITIONAL = {
-    DIAGRAM: _DIAGRAM_ONLY_EDGE,
     PROSE: re.compile(r"^Go to \[(\w+)\]\([^)]+\)\.$"),
-    LINKED_FORM: _DIAGRAM_ONLY_EDGE,
-    BOOTSTRAP: _DIAGRAM_ONLY_EDGE,
 }
 READS = re.compile(r"^`inputs/([^`]+)` reads `([^`]*)`$")
 FEWER = re.compile(
@@ -617,7 +612,8 @@ def parse_transition(
         condition, then, otherwise = decision.groups()
         input_read(condition)
         return Transition(condition, then, otherwise)
-    if unconditional := UNCONDITIONAL[form].match(text):
+    plain = UNCONDITIONAL.get(form)
+    if plain is not None and (unconditional := plain.match(text)):
         target = unconditional.group(1) if unconditional.groups() else None
         return Transition(None, target, None)
     raise CorpusError(f"no {form} transition reads as {text!r}")
@@ -1014,11 +1010,48 @@ def bundle_walk(
                 f" {workflow.walked[state].action}"
             )
         stated = NEXT_PARAGRAPH.findall(section.text)
-        if len(stated) != 1:
+        # A decision is a node of the diagram in its own right, so the state
+        # before one states the branch to take. A plain state has one edge
+        # out, which the diagram already states, so its section states no
+        # transition. A terminal state has no edge, so it states completion.
+        if len(stated) > 1:
             return tuple(path), [
                 *faults,
                 f"the bundle's {state} states {len(stated)} transitions",
             ]
+        deciding = len(diagram.leaving(state)) > 1
+        if deciding and not stated:
+            return tuple(path), [
+                *faults,
+                f"the bundle's {state} decides and states no transition",
+            ]
+        if not stated:
+            edges = diagram.leaving(state)
+            if not edges:
+                # The state leads nowhere: it is terminal, and a terminal
+                # state states that the workflow is complete.
+                return tuple(path), [
+                    *faults,
+                    f"the bundle's {state} is terminal and states no completion",
+                ]
+            if len(edges) != 1:
+                return tuple(path), [
+                    *faults,
+                    f"the bundle's {state} states no transition and has "
+                    f"{len(edges)} edges",
+                ]
+            if faults:
+                return tuple(path), faults
+            state = edges[0].target
+            linked = [
+                target
+                for text, target in FRAGMENT_LINK.findall(section.text)
+                if text == state
+            ]
+            fragment = (
+                linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
+            )
+            continue
         transition = parse_transition(DIAGRAM, stated[0].strip())
         if transition is None:
             return tuple(path), faults
@@ -1261,7 +1294,13 @@ def successor(
         return drawn_successor(workflow, state, inputs, trace)
     transition = sections_of(workflow, form)[state].transition
     if transition is None:
-        return None
+        # A plain state states no transition: the diagram's one edge is its
+        # transition. A decision's section states the branch it takes, and a
+        # terminal state states no edge at all.
+        leaving = workflow.diagram.leaving(state)
+        if TRANSITION[form] == PROSE or len(leaving) != 1:
+            return None
+        return leaving[0].target
     chosen = transition.then
     if transition.condition is not None and not holds(
         transition.condition, inputs, trace

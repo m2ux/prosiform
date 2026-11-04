@@ -185,11 +185,18 @@ def section_faults(workflow: Workflow) -> list[str]:
             if drawn[state].body != written.body:
                 faults.append(f"{state}: the {form} section differs from the diagram's")
             drawn_section, written_section = drawn[state], written
-            if (drawn_section.transition is None) != (
+            # A prose section is the only statement of its transition, so it
+            # states one wherever the diagram draws an edge. A diagram section
+            # may leave its single edge unstated, and a terminal state states
+            # no transition in either form.
+            if (
                 written_section.transition is None
+                and state not in workflow.diagram.terminals
+                and len(workflow.diagram.leaving(state)) != 1
             ):
                 faults.append(
-                    f"{state}: the {form} form and the diagram disagree on ending"
+                    f"{state}: the {form} section states no transition the "
+                    f"diagram draws"
                 )
             elif (
                 drawn_section.transition is not None
@@ -291,11 +298,14 @@ def transition_faults(workflow: Workflow) -> list[str]:
             labels = {edge.label for edge in leaving}
             drawn = workflow.sections[form][state].transition
             if drawn is None:
-                if leaving or state not in diagram.terminals:
-                    faults.append(
-                        f"{state}: the {form} section ends a workflow the diagram"
-                        f" does not"
-                    )
+                # A plain state states no transition: its one edge is the
+                # diagram's. A state that ends the workflow states completion.
+                if state not in diagram.terminals:
+                    if len(leaving) != 1:
+                        faults.append(
+                            f"{state}: the {form} section states no transition "
+                            f"and the diagram draws {len(leaving)} edges"
+                        )
                 continue
             if state in diagram.terminals:
                 faults.append(
