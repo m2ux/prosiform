@@ -542,13 +542,11 @@ def test_a_diagram_click_outside_the_selection_keeps_its_source_path() -> None:
 
 
 DECLARED = "---\nprosiform: {}\n---\n"
-RUN_PF = (
-    "Before reading on, run `pf` with no arguments and follow the guide it prints.\n\n"
-)
-IN_PARALLEL = (
-    "Give each of these to its own sub-agent at the same time, and continue "
-    "when all have answered:"
-)
+INSTRUCTIONS = "\u00a7 Instructions"
+"""The heading every bundle opens on."""
+RUN_PF = f"# {INSTRUCTIONS}\n\nRun `pf`, then follow the guidance it prints.\n\n"
+"""The instruction heading and the line beneath it, ahead of every bundle."""
+IN_PARALLEL = "\u2afd Dispatch Set"
 
 
 def compiled(
@@ -687,10 +685,10 @@ def test_a_set_of_two_points_at_one_in_parallel_sub_section(
     )
     assert status == SUCCESS
     assert bundles["guide.bundle.md"] == (
-        f"{RUN_PF}# Guide\n\nRun [plan](#\u2afd-guide-dispatch-set) and "
-        f"[check](#\u2afd-guide-dispatch-set).\n\n"
-        f"## \u2afd Guide dispatch set\n\n{IN_PARALLEL}\n\n"
-        "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n"
+        f"{RUN_PF}# Guide\n\nRun [plan](#\u2afd-dispatch-set) and "
+        f"[check](#\u2afd-dispatch-set).\n\n"
+        f"## {IN_PARALLEL}\n\n"
+        "[\u21c9 plan](plan.bundle.md)\n[\u21c9 check](check.bundle.md)\n"
     )
 
 
@@ -747,8 +745,7 @@ def test_a_bundle_using_both_operators_carries_no_protocol(
     bundle = bundles["guide.bundle.md"]
     assert bundle.startswith(f"{RUN_PF}# Guide\n")
     assert "# Prosiform" not in bundle
-    assert bundle.count("\u2afd Two dispatch set\n") == 1
-    assert "\u2afd One dispatch set" not in bundle
+    assert bundle.count("\u2afd Dispatch Set\n") == 1
 
 
 @pytest.mark.parametrize(
@@ -788,7 +785,7 @@ def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
         {
             "guide.md": DECLARED
             + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-            "## \u2afd Guide dispatch set\n\nMine.\n",
+            "## \u2afd Dispatch Set\n\nMine.\n",
             "plan.md": DECLARED + "# Plan\n",
             "check.md": DECLARED + "# Check\n",
         },

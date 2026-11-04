@@ -91,7 +91,7 @@ A link whose text opens with `¬` is left for a run of its own: the document it 
 
 A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link stays where its author wrote it, with its mark, and points at the file its target was compiled to. The `⫽` links in one section's own content form a parallel set of two or more targets, pointing at one `In parallel` sub-section that lists each bundle as a `⇉` link to dispatch together; a set of one target is a single `⇉` link. A deferral mark written before either, as in `¬⇉`, is refused.
 
-Every bundle opens with one line, ``Before reading on, run `pf` with no arguments and follow the guide it prints.``, as [Dispatch](docs/dispatch.md#the-run-pf-line) states. A bundle carries no protocol paragraph.
+Every bundle opens with one line, ``Run `pf`, then follow the guidance it prints.``, as [Dispatch](docs/dispatch.md#the-run-pf-line) states. A bundle carries no protocol paragraph.
 
 ### Compose a Section
 

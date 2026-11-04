@@ -472,7 +472,12 @@ class Stack:
         """
         for marker in markers:
             assert output.count(marker) == 1, marker
-        assert re.findall(r"^#+ .+$", output, re.M) == outline
+        carried = [
+            one
+            for one in re.findall(r"^#+ .+$", output, re.M)
+            if one != "# \u00a7 Instructions"
+        ]
+        assert carried == outline
 
 
 @pytest.fixture(scope="session")
@@ -714,7 +719,11 @@ def test_a_shared_source_is_captured_once(stack: Stack) -> None:
         "RUN_TAIL_MARKER",
     ):
         assert output.count(marker) == 1, marker
-    assert re.findall(r"^#+ .+$", output, re.M) == [
+    assert [
+        one
+        for one in re.findall(r"^#+ .+$", output, re.M)
+        if one != "# \u00a7 Instructions"
+    ] == [
         "# Join",
         "## Body",
         "## Alpha-Via",

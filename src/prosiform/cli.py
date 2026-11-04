@@ -2571,6 +2571,9 @@ def coincident(
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
+            if named not in read:
+                # The `§ Instructions` group names no source document.
+                continue
             heading = file_named(
                 named, read[named], parsed[named], one.filed, declarations, substitution
             )
@@ -3131,10 +3134,18 @@ def compose(
             declarations,
             substitution,
         )
-        headed = opened(headed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
+    # The instruction heading precedes every group, so each position the
+    # dispatch stage recorded moves down by the one heading it adds.
+    placed = {
+        key: {
+            link: at + 1 if isinstance(at, int) else at for link, at in served.items()
+        }
+        for key, served in placed.items()
+    }
+    headed = opened(headed)
     assigned = fragments([heading for one in headed for heading in one.headings])
     targets = destination_map(headed, assigned)
     dispatching = anchors(placed, assigned)

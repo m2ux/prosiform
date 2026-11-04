@@ -1,3 +1,5 @@
-Before reading on, run `pf` with no arguments and follow the guide it prints.
+# § Instructions
+
+Run `pf`, then follow the guidance it prints.
 
 # Guide

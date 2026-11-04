@@ -1,13 +1,13 @@
-Before reading on, run `pf` with no arguments and follow the guide it prints.
+# § Instructions
+
+Run `pf`, then follow the guidance it prints.
 
 # Guide
 
 Apply [the shared
-rules](#⫽-guide-dispatch-set) and [the review ](#⫽-guide-dispatch-set).
+rules](#⫽-dispatch-set) and [the review ](#⫽-dispatch-set).
 
-## ⫽ Guide dispatch set
+## ⫽ Dispatch Set
 
-Give each of these to its own sub-agent at the same time, and continue when all have answered:
-
-- [⇉ the shared rules](rules.bundle.md)
-- [⇉ the review](review.bundle.md)
+[⇉ the shared rules](rules.bundle.md)
+[⇉ the review](review.bundle.md)

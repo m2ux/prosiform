@@ -1,36 +1,32 @@
-Before reading on, run `pf` with no arguments and follow the guide it prints.
+# § Instructions
+
+Run `pf`, then follow the guidance it prints.
 
 # Guide
 
 ## Review
 
-1. Apply: [Review the source](#⫽-review-dispatch-set) and [Review the tests](#⫽-review-dispatch-set).
+1. Apply: [Review the source](#⫽-dispatch-set) and [Review the tests](#⫽-dispatch-set).
 
-### ⫽ Review dispatch set
+### ⫽ Dispatch Set
 
-Give each of these to its own sub-agent at the same time, and continue when all have answered:
-
-- [⇉ Review the source](review__source.bundle.md)
-- [⇉ Review the tests](review__tests.bundle.md)
+[⇉ Review the source](review__source.bundle.md)
+[⇉ Review the tests](review__tests.bundle.md)
 
 ### Recheck
 
-1. Apply: [Recheck the source](#⫽-recheck-dispatch-set) and [Check the docs](#⫽-recheck-dispatch-set).
+1. Apply: [Recheck the source](#⫽-dispatch-set-1) and [Check the docs](#⫽-dispatch-set-1).
 
-#### ⫽ Recheck dispatch set
+#### ⫽ Dispatch Set
 
-Give each of these to its own sub-agent at the same time, and continue when all have answered:
-
-- [⇉ Recheck the source](review__source.bundle.md)
-- [⇉ Check the docs](review__docs.bundle.md)
+[⇉ Recheck the source](review__source.bundle.md)
+[⇉ Check the docs](review__docs.bundle.md)
 
 ## Release
 
-1. Apply: [Write the notes](#⫽-release-dispatch-set) and [Tag the version](#⫽-release-dispatch-set).
+1. Apply: [Write the notes](#⫽-dispatch-set-2) and [Tag the version](#⫽-dispatch-set-2).
 
-### ⫽ Release dispatch set
+### ⫽ Dispatch Set
 
-Give each of these to its own sub-agent at the same time, and continue when all have answered:
-
-- [⇉ Write the notes](notes.bundle.md)
-- [⇉ Tag the version](tag.bundle.md)
+[⇉ Write the notes](notes.bundle.md)
+[⇉ Tag the version](tag.bundle.md)

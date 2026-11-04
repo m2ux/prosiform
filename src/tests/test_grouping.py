@@ -456,8 +456,14 @@ def composed(
 
 
 def outline(bundle: str) -> list[str]:
-    """Every heading line a bundle carries, in bundle order."""
-    return re.findall(r"^#+ .+$", bundle, re.MULTILINE)
+    """Every heading line a bundle carries, in bundle order.
+
+    The `§ Instructions` heading and the line beneath it are the run's own
+    structure rather than a document's, so an outline of what the documents
+    contribute leaves them out.
+    """
+    held = re.findall(r"^#+ .+$", bundle, re.MULTILINE)
+    return [one for one in held if one != "# \u00a7 Instructions"]
 
 
 def test_a_nested_group_moves_every_heading_down_one_level_per_division() -> None:

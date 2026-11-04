@@ -69,7 +69,8 @@ SOURCE = (
     + "# Guide\n\nThe installed command bundles this document.\n"
 )
 BUNDLE = (
-    "Before reading on, run `pf` with no arguments and follow the guide it prints.\n\n"
+    "# \u00a7 Instructions\n\n"
+    "Run `pf`, then follow the guidance it prints.\n\n"
     "# Guide\n\nThe installed command bundles this document.\n"
 )
 

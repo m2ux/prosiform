@@ -1,4 +1,4 @@
-description = "An authored heading reading ⫽ Guide dispatch set equals the sub-section pf emits for the set in the same bundle, so the run publishes nothing and fails, naming the authored heading."
+description = "An authored heading reading ⫽ Dispatch Set equals the sub-section pf emits for the set in the same bundle, so the run publishes nothing and fails, naming the authored heading."
 
 clauses = [
   "Link classification and resource handling — Generated heading collisions",
@@ -16,4 +16,4 @@ exit_status = 1
 severity = "error"
 code = "E_HEADING_COLLISION"
 source = "guide.md"
-message_contains = ["⫽ Guide dispatch set"]
+message_contains = ["⫽ Dispatch Set"]

@@ -118,27 +118,21 @@ HEADING_COLLISION = "E_HEADING_COLLISION"
 
 CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 
-PARALLEL = "In parallel"
+PARALLEL = "\u2afd Dispatch Set"
+"""The heading a set's sub-section takes.
 
-MARKED = "\u2afd"
-"""The parallel dispatch mark, leading the sub-section a set is given."""
-
-TITLED = "{title} dispatch set"
-"""The words a set's sub-section takes after its mark, from its section's title."""
-
-DERIVED = "Parallel"
-"""The title a set's sub-section takes where its section states none of its own.
-
-A bundle's first heading may carry no title the run emitted, as content
-above the first heading does, so the sub-section names the structure it
-is rather than the section it sits under, and reads `⫽ Parallel dispatch
-set`.
+The mark leads, so a reader meets the symbol before the words, and the
+words name the structure rather than repeating the section the sub-section
+already stands under. A bundle's sets share this heading, so the renderer's
+ordinals keep them apart as it keeps any repeated heading apart.
 """
 
-TOGETHER = (
-    "Give each of these to its own sub-agent at the same time, and continue "
-    "when all have answered:"
-)
+TOGETHER = ""
+"""A set's sub-section states no instruction of its own.
+
+The guide holds what a `⫽` link means and how its members are handed over,
+so a bundle that restated it would be a second home of the same rule.
+"""
 
 LINK_CLOSE = "link_close"
 
@@ -435,9 +429,14 @@ def file_destination(bundle_file: str) -> str:
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:
-    """The list an `In parallel` sub-section carries, one `⇉` link to a bundle each."""
+    """The lines a set's sub-section carries, one `⇉` link to a bundle each.
+
+    The mark stands where a bullet would: every line opens with `⇉`, so a
+    reader meets the dispatch symbol first and no second list marker is
+    needed to tell the members apart.
+    """
     return "\n".join(
-        f"- [{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
+        f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
         for file, text in entries
     )
 
@@ -489,16 +488,6 @@ class Placing:
         self.inner_serving: list[tuple[tuple[str, int], Served]] = []
         self.inner_level = 0
 
-    def titled(self, title: str) -> str:
-        """The heading a set's sub-section takes under the section holding it.
-
-        The mark leads, so a reader meets the symbol before the words that
-        name the structure it builds, and the source section's own title
-        follows, so two sets in one bundle take two headings.
-        """
-        words = " ".join(title.split()) or DERIVED
-        return f"{MARKED} {TITLED.format(title=words)}"
-
     def heading(self, text: str, depth: int, body: Sequence[Instruction]) -> int:
         """Emit one generated section, returning its heading's bundle position."""
         at = self.at + len(self.headings)
@@ -522,6 +511,10 @@ class Placing:
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
+        if self.level is None:
+            # Content above the bundle's first heading now stands inside the
+            # instruction heading, so its set belongs one level below that.
+            depth += 1
         self.place(self.pending, self.serving, depth, self.title)
         self.title = ""
         self.pending = {}
@@ -571,11 +564,8 @@ class Placing:
             listed = listing(
                 [(self.bundle_file(link.target), link.text) for link in together]
             )
-            at = self.heading(
-                self.titled(title),
-                depth,
-                [Instruction(TOGETHER), Instruction(listed, True)],
-            )
+            body: list[Instruction] = [Instruction(listed)]
+            at = self.heading(PARALLEL, depth, body)
             serving.update((link.served, at) for link in together)
         for key, served in links:
             self.placed.setdefault(key, {})[served] = serving[served]

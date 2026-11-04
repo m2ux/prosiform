@@ -280,20 +280,25 @@ def names(target: str, section: str, source_directory: str = "") -> bool:
     one section, since the bundle's name is compiled from it.
 
     A bootstrap skill compiles the documents it carries, so its sections sit
-    under `sources/` and their bundles are named from that path.
+    under `sources/` inside the skill, and a session reaches them by either
+    name: the reference the scenario states, or that reference as the skill
+    directory holds it.
 
     The file or reference identifies the section. Description wording and
     headings alone carry no target identity.
     """
-    reference = f"{source_directory}/{section}" if source_directory else section
-    document, _, heading = reference.partition("#")
-    for spelled in (
-        f"{document}#{heading}",
-        f"{document}.md#{heading}",
-        entry_bundle(reference).name,
-    ):
-        if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
-            return True
+    references = [section]
+    if source_directory:
+        references.insert(0, f"{source_directory}/{section}")
+    for reference in references:
+        document, _, heading = reference.partition("#")
+        for spelled in (
+            f"{document}#{heading}",
+            f"{document}.md#{heading}",
+            entry_bundle(reference).name,
+        ):
+            if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
+                return True
     return False
 
 

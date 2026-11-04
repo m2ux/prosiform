@@ -102,7 +102,7 @@ from prosiform.dispatch import (
     DISPATCH_DEPTH,
     DISPATCH_SELF,
     HEADING_COLLISION,
-    TOGETHER,
+    TOGETHER,  # noqa: F401 - re-exported for tests that assert the set heading
 )
 from prosiform.limits import (
     BUDGETS,
@@ -147,11 +147,14 @@ DECLARED = "---\nprosiform: {}\n---\n"
 """The frontmatter block that makes a document a link's compiled target."""
 
 
-RUN_PF = "Before reading on, run `pf` with no arguments and follow the guide it prints."
-"""The line every bundle opens with."""
+RUN_PF = "Run `pf`, then follow the guidance it prints."
+"""The line every bundle opens with, beneath the instruction heading."""
 
-OPENING = f"{RUN_PF}\n\n"
-"""The line and the blank line after it, ahead of every bundle's content."""
+INSTRUCTIONS = "\u00a7 Instructions"
+"""The heading every bundle opens on."""
+
+OPENING = f"# {INSTRUCTIONS}\n\n{RUN_PF}\n\n"
+"""The heading and the line, with the blank line that follows them."""
 
 
 @dataclass(frozen=True)
@@ -2680,10 +2683,10 @@ def test_an_in_parallel_sub_section_precedes_the_child_sections_of_its_section(
     run = invoke("guide.md", cwd=root)
     assert run.bundle == (
         f"{OPENING}# Guide\n\n## Run\n\n"
-        "Run [plan](#\u2afd-run-dispatch-set) and "
-        "[check](#\u2afd-run-dispatch-set).\n\n"
-        f"### \u2afd Run dispatch set\n\n{TOGETHER}\n\n"
-        "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n\n"
+        "Run [plan](#\u2afd-dispatch-set) and "
+        "[check](#\u2afd-dispatch-set).\n\n"
+        f"### \u2afd Dispatch Set\n\n"
+        "[\u21c9 plan](plan.bundle.md)\n[\u21c9 check](check.bundle.md)\n\n"
         "### Detail\n\nMore.\n"
     )
 
@@ -2700,10 +2703,10 @@ def test_a_set_above_the_first_heading_takes_its_level(root: Path) -> None:
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert run.bundle == (
-        f"{OPENING}Run [plan](#\u2afd-parallel-dispatch-set) and "
-        "[check](#\u2afd-parallel-dispatch-set).\n\n"
-        f"# \u2afd Parallel dispatch set\n\n{TOGETHER}\n\n"
-        "- [\u21c9 plan](plan.bundle.md)\n- [\u21c9 check](check.bundle.md)\n\n"
+        f"{OPENING}Run [plan](#\u2afd-dispatch-set) and "
+        "[check](#\u2afd-dispatch-set).\n\n"
+        f"## \u2afd Dispatch Set\n\n"
+        "[\u21c9 plan](plan.bundle.md)\n[\u21c9 check](check.bundle.md)\n\n"
         "# Guide\n\nBody.\n"
     )
 
@@ -2741,7 +2744,7 @@ def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
         "guide.md",
         DECLARED
         + "# Guide\n\nRun [\u2afd plan](plan.md) and [\u2afd check](check.md).\n\n"
-        "## \u2afd Guide dispatch set\n\nText.\n",
+        "## \u2afd Dispatch Set\n\nText.\n",
     )
     written(root, "plan.md", DECLARED + "# Plan\n\n1. Go.\n")
     written(root, "check.md", DECLARED + "# Check\n\n1. Go.\n")
@@ -2750,7 +2753,7 @@ def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
     assert run.bundles == {}
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == HEADING_COLLISION
-    assert "\u2afd Guide dispatch set" in diagnostic["message"]
+    assert "\u2afd Dispatch Set" in diagnostic["message"]
     assert diagnostic["location"] == {"file": "guide.md", "line": 8, "column": 1}
 
 
@@ -3926,11 +3929,11 @@ def test_a_sections_parallel_links_point_at_one_sub_section_listing_each_bundle(
     ]
     assert run.bundle == (
         f"{OPENING}# Guide\n\n## Review\n\n"
-        "1. Review [Code Review](#\u2afd-review-dispatch-set) and "
-        "[Test Review](#\u2afd-review-dispatch-set).\n\n"
-        f"### \u2afd Review dispatch set\n\n{TOGETHER}\n\n"
-        "- [⇉ Code Review](review__code.bundle.md)\n"
-        "- [⇉ Test Review](review__tests.bundle.md)\n"
+        "1. Review [Code Review](#\u2afd-dispatch-set) and "
+        "[Test Review](#\u2afd-dispatch-set).\n\n"
+        f"### \u2afd Dispatch Set\n\n"
+        "[⇉ Code Review](review__code.bundle.md)\n"
+        "[⇉ Test Review](review__tests.bundle.md)\n"
     )
 
 
@@ -3946,10 +3949,10 @@ def test_a_target_named_twice_in_one_set_is_listed_once(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.bundle == (
         f"{OPENING}# Guide\n\n"
-        "Run [a](#\u2afd-guide-dispatch-set), [b](#\u2afd-guide-dispatch-set) "
-        "and [a again](#\u2afd-guide-dispatch-set).\n\n"
-        f"## \u2afd Guide dispatch set\n\n{TOGETHER}\n\n"
-        "- [⇉ a](a.bundle.md)\n- [⇉ b](b.bundle.md)\n"
+        "Run [a](#\u2afd-dispatch-set), [b](#\u2afd-dispatch-set) "
+        "and [a again](#\u2afd-dispatch-set).\n\n"
+        f"## \u2afd Dispatch Set\n\n"
+        "[⇉ a](a.bundle.md)\n[\u21c9 b](b.bundle.md)\n"
     )
 
 
@@ -3966,13 +3969,13 @@ def test_a_child_sections_parallel_links_form_its_own_set(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.bundle == (
         f"{OPENING}# Guide\n\n## Run\n\n"
-        "Run [a](#\u2afd-run-dispatch-set) and [b](#\u2afd-run-dispatch-set).\n\n"
-        f"### \u2afd Run dispatch set\n\n{TOGETHER}\n\n"
-        "- [⇉ a](a.bundle.md)\n- [⇉ b](b.bundle.md)\n\n"
-        "### Detail\n\nRun [b](#\u2afd-detail-dispatch-set) and "
-        "[c](#\u2afd-detail-dispatch-set).\n\n"
-        f"#### \u2afd Detail dispatch set\n\n{TOGETHER}\n\n"
-        "- [⇉ b](b.bundle.md)\n- [⇉ c](c.bundle.md)\n"
+        "Run [a](#\u2afd-dispatch-set) and [b](#\u2afd-dispatch-set).\n\n"
+        f"### \u2afd Dispatch Set\n\n"
+        "[⇉ a](a.bundle.md)\n[\u21c9 b](b.bundle.md)\n\n"
+        "### Detail\n\nRun [b](#\u2afd-dispatch-set-1) and "
+        "[c](#\u2afd-dispatch-set-1).\n\n"
+        f"#### \u2afd Dispatch Set\n\n"
+        "[⇉ b](b.bundle.md)\n[\u21c9 c](c.bundle.md)\n"
     )
 
 
@@ -3999,13 +4002,13 @@ def test_a_section_carrying_both_operators_keeps_its_dispatches_inline(
     ]
     assert run.bundle == (
         f"{OPENING}# Guide\n\n1. Plan [⇉ plan](plan.bundle.md).\n"
-        "2. Review [code](#\u2afd-guide-dispatch-set) and "
-        "[tests](#\u2afd-guide-dispatch-set).\n"
+        "2. Review [code](#\u2afd-dispatch-set) and "
+        "[tests](#\u2afd-dispatch-set).\n"
         "3. Plan again [⇉ plan](plan.bundle.md) and also "
-        "[plan](#\u2afd-guide-dispatch-set).\n\n"
-        f"## \u2afd Guide dispatch set\n\n{TOGETHER}\n\n"
-        "- [⇉ code](code.bundle.md)\n- [⇉ tests](tests.bundle.md)\n"
-        "- [⇉ plan](plan.bundle.md)\n"
+        "[plan](#\u2afd-dispatch-set).\n\n"
+        f"## \u2afd Dispatch Set\n\n"
+        "[⇉ code](code.bundle.md)\n[\u21c9 tests](tests.bundle.md)\n"
+        "[⇉ plan](plan.bundle.md)\n"
     )
 
 

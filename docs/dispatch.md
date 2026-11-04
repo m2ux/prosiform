@@ -59,7 +59,7 @@ The rules for following a bundle live in the guide `pf` prints with no arguments
 
 ## The run-pf line
 
-Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Before reading on, run `pf` with no arguments and follow the guide it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds [the guide](#the-guide)'s rules before it meets a `↳` line, a `⇉` link or a dispatch-set sub-section.
+Every bundle a run writes opens with one line, whatever it holds, followed by one blank line: ``Run `pf`, then follow the guidance it prints.`` It is the bundle's first bytes, ahead of any preamble content and every heading, in wording the profile fixes. A bundle carries no protocol paragraph and no section that restates the guide, so a reader holds [the guide](#the-guide)'s rules before it meets a `↳` line, a `⇉` link or a dispatch-set sub-section.
 
 ## Depth and cycles
 
