@@ -148,7 +148,7 @@ The baseline over the hardened corpus, run by [I10:E00](https://github.com/m2ux/
 | Committed | `baseline.json`, written by `report.py --write-baseline`; the run's `report.md` as `evals/diagram-following/report.md`; and the run's measured cost in the README. |
 
 ```bash
-make eval-diagrams ARGS='--models <model> --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id baseline'
+make eval-diagrams ARGS='--session-budget-tokens <session cap> --budget-tokens <token budget> --run-id baseline'
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/baseline --write-baseline
 ```
 
@@ -161,9 +161,9 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Harness | `opencode` |
 | Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
 | Spending cap | USD 5 for every live run of the shakedown together. |
-| Sessions | 76: the default matrix's 76 cells, one repetition. |
+| Sessions | 74: the default matrix's 74 cells on this harness, one repetition. |
 | Session cap | 2 830 000 tokens: the fifth run's largest session, 1 414 151 tokens, doubled and rounded up to the next 10 000. |
-| Token budget | 215 080 000 tokens: 76 times the session cap. |
+| Token budget | 209 420 000 tokens: 74 times the session cap. |
 | Estimate | USD 0.57: 76 sessions at the fifth run's mean of USD 0.007449 a session. |
 | Run | `baseline-shakedown`, 2026-11-03: at a 400 000-token session cap, stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap. |
 | Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). |
