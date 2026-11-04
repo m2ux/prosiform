@@ -8,9 +8,11 @@ completion, starting at its first state.
 
 - On entering a state, before anything else, append the state's name as one
   line to trace.log in this directory. Append only a state: a step the
-  workflow takes, never the diagram's start or stop marker, the diamond it
-  weighs a decision in, the condition beside one of that decision's
-  branches, a section heading, or any other name the entry document carries.
+  workflow takes, never the diamond it weighs a decision in, the condition
+  beside one of that decision's branches, a section heading, or any other
+  name the entry document carries. A marker the diagram clicks is a state
+  like any other: entering the one it opens with and the one it closes on
+  is a step, and each is appended.
 - When a state dispatches a sub-agent, write the section's reference in the
   sub-agent's prompt, spelled `<document>#<heading>` for the document that
   holds it, such as `review.md#source`. Tell it to append each state it
