@@ -11,6 +11,8 @@ flowchart TD
     Enquire --> Confirm
     Confirm --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Enquire href "states/enquire.md"
     click Confirm href "states/confirm.md"
+    click Exit href "states/exit.md"
 ```

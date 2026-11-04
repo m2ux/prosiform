@@ -16,9 +16,11 @@ flowchart TD
     Equip --> Greet
     Greet --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Enrol href "states/enrol.md"
     click Equip href "states/equip.md"
     click Greet href "states/greet.md"
+    click Exit href "states/exit.md"
 ```
 
 ## Upkeep

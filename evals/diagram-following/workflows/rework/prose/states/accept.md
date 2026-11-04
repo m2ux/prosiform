@@ -5,4 +5,4 @@ prosiform: {}
 
 Write `actions/accept.txt` containing `accepted`.
 
-**Next.** The workflow is complete.
+**Next.** Go to [Exit](exit.md).

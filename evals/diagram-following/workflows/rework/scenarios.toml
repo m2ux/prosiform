@@ -6,20 +6,36 @@
 [[scenario]]
 name = "four-rounds"
 path = [
-  "Load", "Measure",
-  "Rework", "Retest", "Measure",
-  "Rework", "Retest", "Measure",
-  "Rework", "Retest", "Measure",
-  "Rework", "Retest", "Measure",
-  "Accept",
+    "Entry",
+    "Load",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Accept",
+    "Exit",
 ]
 inputs = { "rounds.txt" = "4" }
 
 [[scenario]]
 name = "one-round"
 path = [
-  "Load", "Measure",
-  "Rework", "Retest", "Measure",
-  "Accept",
+    "Entry",
+    "Load",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Accept",
+    "Exit",
 ]
 inputs = { "rounds.txt" = "1" }

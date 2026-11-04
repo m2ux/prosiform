@@ -139,9 +139,9 @@ def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
         (
             "branching",
             "high-severity",
-            ["Intake", "Triage", "Queue", "Resolve"],
+            ["Entry", "Intake", "Triage", "Queue", "Resolve", "Exit"],
             Failure.WRONG_BRANCH,
-            2,
+            3,
         ),
         (
             "linear",
@@ -167,9 +167,18 @@ def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
         (
             "looping",
             "two-rounds",
-            ["Draft", "Review", "Revise", "Check", "Review", "Publish"],
+            [
+                "Entry",
+                "Draft",
+                "Review",
+                "Revise",
+                "Check",
+                "Review",
+                "Publish",
+                "Exit",
+            ],
             Failure.LOOP_MISCOUNT,
-            5,
+            6,
         ),
         (
             "linear",
@@ -229,9 +238,9 @@ def test_a_loop_taken_once_more_than_its_input_requires_is_a_loop_miscount(
         tmp_path,
         "looping",
         "no-rework",
-        ["Draft", "Review", "Revise", "Check", "Review", "Publish"],
+        ["Entry", "Draft", "Review", "Revise", "Check", "Review", "Publish", "Exit"],
     )
-    assert (verdict.failure, verdict.divergence) == (Failure.LOOP_MISCOUNT, 2)
+    assert (verdict.failure, verdict.divergence) == (Failure.LOOP_MISCOUNT, 3)
 
 
 def test_an_empty_or_absent_trace_is_unfinished(tmp_path: Path) -> None:
@@ -264,15 +273,25 @@ def test_a_linked_decision_passes_on_the_path_its_rules_state(
             ["Entry", "Plan", "Build", "Test", "Ship", "Exit", "Plan"],
             6,
         ),
-        ("looping", "no-rework", ["Draft", "Review", "Publish", "Review"], 3),
-        ("looping", "two-rounds", ["Draft", "Review", "Revise", "Check", "Draft"], 4),
+        ("looping", "no-rework", ["Entry", "Draft", "Review", "Publish", "Review"], 4),
+        (
+            "looping",
+            "two-rounds",
+            ["Entry", "Draft", "Review", "Revise", "Check", "Draft"],
+            5,
+        ),
         (
             "linear",
             "straight-through",
             ["Entry", "Plan", "Build", "Build", "Test", "Ship", "Exit"],
             3,
         ),
-        ("looping", "no-rework", ["Draft", "Review", "Review", "Publish"], 2),
+        (
+            "looping",
+            "no-rework",
+            ["Entry", "Draft", "Review", "Review", "Publish", "Exit"],
+            3,
+        ),
     ],
     ids=[
         "past-the-terminal",
@@ -296,9 +315,12 @@ def test_a_state_further_along_a_cycle_with_one_omitted_is_skipped(
     tmp_path: Path,
 ) -> None:
     verdict = run(
-        tmp_path, "looping", "two-rounds", ["Draft", "Review", "Check", "Review"]
+        tmp_path,
+        "looping",
+        "two-rounds",
+        ["Entry", "Draft", "Review", "Check", "Review"],
     )
-    assert (verdict.failure, verdict.divergence) == (Failure.SKIPPED_STATE, 2)
+    assert (verdict.failure, verdict.divergence) == (Failure.SKIPPED_STATE, 3)
 
 
 def test_a_trace_is_read_stripped_of_blank_lines_and_surrounding_whitespace(
@@ -515,7 +537,7 @@ def test_a_run_that_stopped_short_is_unfinished_though_nothing_was_dispatched(
     held = CORPUS["dispatch-chain"]
     [item] = held.scenarios
     verdict = score(held, item, workspace(tmp_path, held, list(item.path[:-1])))
-    assert (verdict.failure, verdict.divergence) == (Failure.UNFINISHED, 1)
+    assert (verdict.failure, verdict.divergence) == (Failure.UNFINISHED, 3)
 
 
 def test_the_dispatch_checks_are_read_in_order(tmp_path: Path) -> None:

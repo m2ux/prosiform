@@ -20,10 +20,12 @@ flowchart TD
     Audit --> Merge
     Merge --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Receive href "states/receive.md"
     click Assess href "states/assess.md"
     click Edit href "states/edit.md"
     click Patch href "states/patch.md"
     click Harden href "states/harden.md"
     click Merge href "states/merge.md"
+    click Exit href "states/exit.md"
 ```

@@ -17,10 +17,12 @@ flowchart TD
     Amend --> Close
     Close --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Lodge href "states/lodge.md"
     click Configure href "states/configure.md"
     click Assess href "states/assess.md"
     click Migrate href "states/migrate.md"
     click Amend href "states/amend.md"
     click Close href "states/close.md"
+    click Exit href "states/exit.md"
 ```

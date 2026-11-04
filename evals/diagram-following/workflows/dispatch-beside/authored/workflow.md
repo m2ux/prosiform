@@ -11,6 +11,8 @@ flowchart TD
     Prepare --> Deliver
     Deliver --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Prepare href "states/prepare.md"
     click Deliver href "states/deliver.md"
+    click Exit href "states/exit.md"
 ```

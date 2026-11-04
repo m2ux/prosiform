@@ -288,7 +288,7 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     tmp_path: Path, log: Path
 ) -> None:
     record = eval_run(
-        tmp_path, "--repetitions", "2", "--budget-tokens", "100000", "--parallel", "3"
+        tmp_path, "--repetitions", "2", "--budget-tokens", "200000", "--parallel", "3"
     )
     sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
@@ -339,7 +339,7 @@ def test_a_reused_run_id_is_refused_before_bundling_or_starting_a_session(
 
     monkeypatch.setattr("run.bundles_of", unexpected_bundle)
     with pytest.raises(CorpusError, match="run id.*test.*exists"):
-        eval_run(tmp_path, "--budget-tokens", "100000")
+        eval_run(tmp_path, "--budget-tokens", "200000")
     assert sentinel.read_text() == "kept\n"
     assert not list(log.iterdir())
     assert not list(results.rglob(SESSION))
@@ -449,7 +449,7 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
-    eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "100000")
+    eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "200000")
     written = records(tmp_path)
     assert len(written) == every_session(["stub-model"], list(FORMS), 1)
     for record in written:
@@ -1638,7 +1638,7 @@ def test_a_dispatch_run_that_stopped_short_is_unfinished(
     )
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "unfinished"
-    assert record["verdict"]["actual"] == ["Request"]
+    assert record["verdict"]["actual"] == ["Entry"]
 
 
 def test_a_scenario_dispatching_nothing_records_no_start(

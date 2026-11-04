@@ -15,8 +15,10 @@ flowchart TD
     Retest --> Measure
     Accept --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Load href "states/load.md"
     click Measure href "states/measure.md"
     click Rework href "states/rework.md"
     click Accept href "states/accept.md"
+    click Exit href "states/exit.md"
 ```

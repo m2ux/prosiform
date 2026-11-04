@@ -6,7 +6,16 @@
 
 [[scenario]]
 name = "blocking-two-halves"
-path = ["Scope", "Gather", "Weigh", "Record", "Fix", "Publish"]
+path = [
+    "Entry",
+    "Scope",
+    "Gather",
+    "Weigh",
+    "Record",
+    "Fix",
+    "Publish",
+    "Exit",
+]
 inputs = { "halves.txt" = "two", "severity.txt" = "blocking", "known.txt" = "no", "fatal.txt" = "yes" }
 
 [[scenario.trace]]
@@ -24,7 +33,15 @@ dispatch = "review#repair"
 
 [[scenario]]
 name = "clean-one-half"
-path = ["Scope", "Gather", "Weigh", "Record", "Publish"]
+path = [
+    "Entry",
+    "Scope",
+    "Gather",
+    "Weigh",
+    "Record",
+    "Publish",
+    "Exit",
+]
 inputs = { "halves.txt" = "one", "severity.txt" = "clean", "known.txt" = "yes", "fatal.txt" = "no" }
 
 [[scenario.trace]]

@@ -7,13 +7,25 @@
 [[scenario]]
 name = "flagged-list-price"
 path = [
-  "Submit", "Screen", "Hold", "Price", "Invoice",
+    "Entry",
+    "Submit",
+    "Screen",
+    "Hold",
+    "Price",
+    "Invoice",
+    "Exit",
 ]
 inputs = { "risk.txt" = "high", "tier.txt" = "silver" }
 
 [[scenario]]
 name = "clear-discount"
 path = [
-  "Submit", "Screen", "Price", "Discount", "Invoice",
+    "Entry",
+    "Submit",
+    "Screen",
+    "Price",
+    "Discount",
+    "Invoice",
+    "Exit",
 ]
 inputs = { "risk.txt" = "low", "tier.txt" = "gold" }

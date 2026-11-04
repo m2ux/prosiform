@@ -20,8 +20,10 @@ flowchart TD
     Gate --> Approve
     Approve --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Outline href "states/outline.md"
     click Approve href "states/approve.md"
     click Amend href "states/amend.md"
     click Stage href "states/stage.md"
+    click Exit href "states/exit.md"
 ```

@@ -707,8 +707,8 @@ def test_a_substitute_stating_another_branch_is_a_fault(tmp_path: Path) -> None:
     shipped = workflow.scenarios[2]
     assert scenario_faults(workflow, shipped) == []
     assert bundle_path_faults(workflow, shipped, output) == [
-        "preset-over-default: the bundle leads ('Outline', 'Amend', 'Inspect',"
-        " 'Approve')"
+        "preset-over-default: the bundle leads ('Entry', 'Outline', 'Amend',"
+        " 'Inspect', 'Approve', 'Exit')"
     ]
 
 
@@ -1144,8 +1144,8 @@ def test_a_scenario_path_with_a_step_the_diagram_does_not_draw_is_a_fault(
         tmp_path,
         "looping",
         "scenarios.toml",
-        '"Draft", "Review", "Publish"',
-        '"Draft", "Publish"',
+        '"Draft",\n    "Review",\n    "Publish",',
+        '"Draft",\n    "Publish",',
     )
     faults = scenario_faults(workflow, workflow.scenarios[0])
     assert "no-rework: the diagram reaches no Publish from Draft" in faults
@@ -1460,7 +1460,7 @@ def test_a_drawn_state_no_edge_leads_to_is_linked_from_a_terminal_section() -> N
     """Refund is drawn and linked from Invoice, and no edge leads to it."""
     pricing = next(workflow for workflow in CORPUS if workflow.name == "pricing")
     entered = {edge.target for edge in pricing.diagram.edges}
-    assert pricing.diagram.states - entered == {"Refund"}
+    assert pricing.diagram.states - entered == {"Entry", "Refund"}
     linked = f"]({Path(document('Refund')).name})"
     for form in pricing.forms:
         assert linked in pricing.sections[form]["Invoice"].body, form

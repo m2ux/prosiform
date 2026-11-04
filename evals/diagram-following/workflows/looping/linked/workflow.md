@@ -15,8 +15,10 @@ flowchart TD
     Check --> Review
     Publish --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Draft href "states/draft.md"
     click Review href "states/review.md"
     click Revise href "states/revise.md"
     click Publish href "states/publish.md"
+    click Exit href "states/exit.md"
 ```

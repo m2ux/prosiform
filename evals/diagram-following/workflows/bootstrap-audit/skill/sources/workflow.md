@@ -23,6 +23,7 @@ flowchart TD
     Fix --> Publish
     Publish --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Scope href "states/scope.md"
     click Gather href "states/gather.md"
     click halves href "decisions/halves.md"
@@ -35,4 +36,5 @@ flowchart TD
     click clean href "conditions/clean.md"
     click Fix href "states/fix.md"
     click Publish href "states/publish.md"
+    click Exit href "states/exit.md"
 ```

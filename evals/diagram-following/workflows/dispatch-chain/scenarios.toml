@@ -6,7 +6,7 @@
 
 [[scenario]]
 name = "chain"
-path = ["Request", "Handover"]
+path = ["Entry", "Request", "Handover", "Exit"]
 inputs = {}
 
 [[scenario.trace]]

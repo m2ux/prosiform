@@ -16,10 +16,12 @@ flowchart TD
     Queue --> Resolve
     Resolve --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Intake href "states/intake.md"
     click Triage href "states/triage.md"
     click Escalate href "states/escalate.md"
     click Notify href "states/notify.md"
     click Queue href "states/queue.md"
     click Resolve href "states/resolve.md"
+    click Exit href "states/exit.md"
 ```

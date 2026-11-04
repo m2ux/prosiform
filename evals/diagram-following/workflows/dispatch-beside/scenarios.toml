@@ -6,7 +6,7 @@
 
 [[scenario]]
 name = "set-beside-a-dispatch"
-path = ["Prepare", "Deliver"]
+path = ["Entry", "Prepare", "Deliver", "Exit"]
 inputs = {}
 
 [[scenario.trace]]

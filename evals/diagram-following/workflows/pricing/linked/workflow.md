@@ -18,6 +18,7 @@ flowchart TD
     Invoice --> Exit((( )))
     Refund --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Submit href "states/submit.md"
     click Screen href "states/screen.md"
     click Hold href "states/hold.md"
@@ -25,4 +26,5 @@ flowchart TD
     click Discount href "states/discount.md"
     click Invoice href "states/invoice.md"
     click Refund href "states/refund.md"
+    click Exit href "states/exit.md"
 ```

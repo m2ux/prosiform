@@ -15,8 +15,10 @@ flowchart TD
     Liaise --> Archive
     Archive --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Receive href "states/receive.md"
     click Inspect href "states/inspect.md"
     click Liaise href "states/liaise.md"
     click Archive href "states/archive.md"
+    click Exit href "states/exit.md"
 ```

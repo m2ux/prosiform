@@ -8,7 +8,7 @@
 
 [[scenario]]
 name = "returned-question"
-path = ["Enquire", "Confirm"]
+path = ["Entry", "Enquire", "Confirm", "Exit"]
 inputs = {}
 answers = "Use the provider `south`."
 

@@ -10,17 +10,40 @@ warnings = ["W_SUBST_USED"]
 # Edit's title selects nothing of proof.md, so its default alone places Proof.
 [[scenario]]
 name = "default-alone"
-path = ["Receive", "Edit", "Proof", "Merge"]
+path = [
+    "Entry",
+    "Receive",
+    "Edit",
+    "Proof",
+    "Merge",
+    "Exit",
+]
 inputs = { "change.txt" = "docs", "risk.txt" = "low" }
 
 # Patch's title selects verify.md's patch preset, which places Verify.
 [[scenario]]
 name = "title-selected"
-path = ["Receive", "Assess", "Patch", "Verify", "Merge"]
+path = [
+    "Entry",
+    "Receive",
+    "Assess",
+    "Patch",
+    "Verify",
+    "Merge",
+    "Exit",
+]
 inputs = { "change.txt" = "code", "risk.txt" = "low" }
 
 # Security Review selects audit.md's security and review presets together.
 [[scenario]]
 name = "two-presets-one-title"
-path = ["Receive", "Assess", "Harden", "Audit", "Merge"]
+path = [
+    "Entry",
+    "Receive",
+    "Assess",
+    "Harden",
+    "Audit",
+    "Merge",
+    "Exit",
+]
 inputs = { "change.txt" = "code", "risk.txt" = "high" }

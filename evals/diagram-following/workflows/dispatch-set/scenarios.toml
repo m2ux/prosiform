@@ -6,7 +6,7 @@
 
 [[scenario]]
 name = "parallel-set"
-path = ["Survey", "Report"]
+path = ["Entry", "Survey", "Report", "Exit"]
 inputs = {}
 
 [[scenario.trace]]

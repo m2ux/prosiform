@@ -11,6 +11,8 @@ flowchart TD
     Survey --> Report
     Report --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Survey href "states/survey.md"
     click Report href "states/report.md"
+    click Exit href "states/exit.md"
 ```

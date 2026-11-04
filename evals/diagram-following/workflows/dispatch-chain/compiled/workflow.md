@@ -11,6 +11,8 @@ flowchart TD
     Request --> Handover
     Handover --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Request href "states/request.md"
     click Handover href "states/handover.md"
+    click Exit href "states/exit.md"
 ```
