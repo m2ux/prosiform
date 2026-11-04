@@ -30,7 +30,7 @@ Leaving retrieval to the agent costs:
 
 `SKILL.md` links a procedure, and the procedure links the rules it is held to. One run over `SKILL.md` reads all three files and writes one bundle, in which each link that named another file names a heading inside it. [Bundles](docs/bundles.md) walks through the run.
 
-![SKILL.md, modes/review.md and rules.md on the left. On the right, one bundle: Work Planner, Review Mode with its Procedure, and Rules with Tests. Every link now points inside the bundle.](docs/images/run.svg)
+![A source tree and SKILL.md select Review Mode. Arrows trace its two Rules links to one Tests section. The compiled bundle contains Work Planner, Review Mode and the test rules once, with every link pointing to its heading inside the bundle.](docs/images/run.svg)
 
 ## Installation
 
