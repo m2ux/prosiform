@@ -18,7 +18,7 @@ The README pairs connected panels, readable type and clear visual hierarchy with
 - [x] Restore the concise README body with current commands and behavior.
 - [x] Verify the README examples and documentation checks.
 - [x] Commit, push and update the review PR.
-- [ ] **In progress:** Confirm CI at the updated head and publish the results.
+- [x] Confirm CI at the updated head and publish the results.
 
 ## Artifacts
 
@@ -44,6 +44,7 @@ The README pairs connected panels, readable type and clear visual hierarchy with
 | [README link checks](prose-links.txt) | Online documentation reference results after the prose restoration. |
 | [README authoring checks](prose-authoring.txt) | Three passing authoring tests, including the source-naming guideline. |
 | [Initial prose CI](prose-ci-failed.txt) | The initial CI result identifying the missing naming sentence. |
+| [Final README CI](prose-ci.json) | Successful full repository check at the final README head. |
 
 ## Links
 
@@ -54,4 +55,5 @@ The README pairs connected panels, readable type and clear visual hierarchy with
 | Illustration implementation | https://github.com/m2ux/prosiform/commit/fac70a9403370a12a84da473e379367d77b0a3e8 |
 | README implementation | https://github.com/m2ux/prosiform/commit/c6bd34e9eb3cef13fd7cb6f70c3fdff7a37f7e6a |
 | Pull request | https://github.com/m2ux/prosiform/pull/652 |
-| Full CI | https://github.com/m2ux/prosiform/actions/runs/41850363720 |
+| Illustration CI | https://github.com/m2ux/prosiform/actions/runs/41850363720 |
+| Final README CI | https://github.com/m2ux/prosiform/actions/runs/41852658564 |

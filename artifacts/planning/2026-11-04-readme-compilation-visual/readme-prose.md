@@ -55,4 +55,4 @@ Evidence: [authoring test results](prose-authoring.txt).
 
 The [initial prose CI run](https://github.com/m2ux/prosiform/actions/runs/41852104690) caught the naming sentence omitted from the condensed Usage section. That sentence is present at the tested implementation; the [initial log](prose-ci-failed.txt) preserves the finding.
 
-[Run 41852658564](https://github.com/m2ux/prosiform/actions/runs/41852658564) checks the final commit.
+**Pass.** [Run 41852658564](https://github.com/m2ux/prosiform/actions/runs/41852658564) succeeds at `c6bd34e9eb3cef13fd7cb6f70c3fdff7a37f7e6a`. Its `Run the checks` step executes the full `make check` target and succeeds. [Job and step results](prose-ci.json) identify the tested head and confirm the checks ran.
