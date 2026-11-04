@@ -279,6 +279,9 @@ def names(target: str, section: str, source_directory: str = "") -> bool:
     hands over the section itself, named `<document>#<heading>`. Both spell
     one section, since the bundle's name is compiled from it.
 
+    A bootstrap skill compiles the documents it carries, so its sections sit
+    under `sources/` and their bundles are named from that path.
+
     The file or reference identifies the section. Description wording and
     headings alone carry no target identity.
     """

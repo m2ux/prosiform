@@ -876,17 +876,26 @@ class Opencode:
     capability is refused here instead. `external_directory` is what confines
     a read, a write and a shell command to the session's own workspace.
     """
+    subagent_depth: int = 8
+    """How deep a sub-agent's own dispatch may go.
+
+    The CLI refuses a nested start at depth one by default, and a compiled
+    bundle dispatches at every hop the workflow states, so a session could
+    follow no chain. The figure matches the link depth `pf` compiles to.
+    """
     prompt_on_argv: bool = True
     """Whether the task text is an argument rather than the session's input.
 
     The CLI reads its prompt from its arguments, so a run appends it there.
     A prompt written to its input instead is read by nothing.
     """
-    nested_starts: bool = True
+    nested_starts: bool = False
     """Whether a sub-agent's own dispatch reaches the parent's stream.
 
-    It does: a session's `tool_use` parts include those its sub-agents made,
-    so a trace naming a nested start is observable here.
+    It does not: a `task` call's parts are its own, and a start either its
+    sub-agent made is a part of that sub-agent's session, which the parent's
+    stream never carries. A scenario whose trace names one is beyond this
+    harness's observation, so the runner leaves it out.
     """
 
     def argv(
@@ -987,6 +996,7 @@ class Opencode:
         settings = {
             "$schema": "https://opencode.ai/config.json",
             "permission": self.permission,
+            "subagent_depth": self.subagent_depth,
         }
         (config / self.settings).write_text(json.dumps(settings, indent=2) + "\n")
 

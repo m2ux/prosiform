@@ -64,7 +64,17 @@ from pathlib import Path
 
 from harness import DONE, HANDBACK, QUESTION
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
-from workflow import SOURCE_DIR, Scenario, Workflow, entry_bundle, walk, workflows
+from workflow import (
+    SOURCE_DIR,
+    Scenario,
+    Workflow,
+    entry_bundle,
+    walk,
+    workflows,
+)
+
+BOOTSTRAP_INSTRUCTION = "A skill is available"
+"""How a `bootstrap` session's instruction opens, which no other form's does."""
 
 STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
 RAN_PF = {
@@ -173,10 +183,13 @@ def handed(section: str, instruction: str) -> str:
 
     A sub-agent reads only this prompt, so it learns its trace's name only
     where the session's instruction stated that name for the session to hand on.
+    A bootstrap skill compiles the documents it carries, so its sections sit
+    under `sources/` and the sub-agent is handed the bundle compiled from that
+    path.
     """
     target = (
         entry_bundle(f"{SOURCE_DIR}/{section}").name
-        if instruction.lstrip().startswith("A skill is available")
+        if instruction.lstrip().startswith(BOOTSTRAP_INSTRUCTION)
         else section
     )
     if STATED_TRACE not in instruction:

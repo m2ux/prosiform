@@ -540,6 +540,22 @@ def test_an_opencode_session_may_run_only_pf_and_read_its_workspace(
     assert settings["permission"]["webfetch"] == "deny"
 
 
+def test_an_opencode_session_may_dispatch_at_every_hop_a_bundle_states(
+    tmp_path: Path,
+) -> None:
+    """A nested start is refused at the CLI's depth of one, so the run raises it."""
+    config = tmp_path / "config"
+    Opencode().prepare(config)
+    settings = json.loads((config / "harness.json").read_text())
+    assert settings["subagent_depth"] == Opencode().subagent_depth
+    assert settings["subagent_depth"] >= 3
+
+
+def test_opencode_reports_no_nested_dispatch_the_parent_stream_lacks() -> None:
+    """A `task` call's parts are its own, so a sub-agent's start is unobservable."""
+    assert Opencode().nested_starts is False
+
+
 def test_an_opencode_run_without_the_evals_login_is_refused(tmp_path: Path) -> None:
     """A run names its credential store under the eval root, and refuses without it."""
     config = tmp_path / "config"
