@@ -13,6 +13,7 @@ A caller names a release by its tags, and a production build names the contract 
 | Artifact | What it holds |
 | --- | --- |
 | [Initiative body](initiative-body.md) | The saved release scope and measurement boundary |
+| [Epic body](e00-body.md) | The release tasks and separate pull-request and check criteria |
 | [E00 W01 work item](e00/w01.md) | The previous corpus run and the version it selects |
 | [E00 W02 work item](e00/w02.md) | The release branch and its version commit |
 | [E00 W03 work item](e00/w03.md) | The `contract/` and `python/` tag pair |
@@ -30,7 +31,7 @@ The goal is the initiative's Overview: a released MVP a caller can name by its t
 | Goal clause | Initiative criteria | Epics | Epic criteria | Source requirement |
 | --- | --- | --- | --- | --- |
 | G1 | AC1 | E00 | E00 AC1 | `docs/versioning.md`: the bump is settled by running the previous revision's corpus |
-| G2 | AC2 | E00 | E00 AC2–AC5 | `docs/versioning.md`: a contract and a build each carry a tag |
+| G2 | AC2, AC3, AC4 | E00 | E00 AC2–AC6 | `docs/versioning.md`: a contract and a build each carry a tag |
 
 ### Gaps, Ranked
 
@@ -54,6 +55,7 @@ None. Every clause has a criterion, each criterion is delivered by the one epic,
 
 ## Decisions
 
+- **The release conditions are independent.** (User, 2026-11-05.) Initiative AC2 states the annotated tag pair, AC3 the open pull request and AC4 its passing checks. E00 AC5 states the open pull request and AC6 its checks. W04 covers both; its ID and the existing joined unit are preserved. All criteria remain unticked until observed.
 - **Deferred edge measurements do not gate release preparation.** (User, 2026-11-05.) I10 E04 W14–W16 are held by [I14 Evaluation Refinement #660](https://github.com/m2ux/prosiform/issues/660). The current queue selects I11 after its completed MVP prerequisites; E04 integration remains separate.
 
 - **I10 precedes I11.** (User, 2026-11-02.) I11 takes `priority: 1` and I10 [#464](https://github.com/m2ux/prosiform/issues/464) `priority: 2`, so the measurement work is delivered before the release is cut.

@@ -29,7 +29,7 @@ The release cut for the MVP: the version the previous contract's corpus selects,
 | W01 | The version the previous corpus selects | AC1 | #462, #463 | | | |
 | W02 | The release branch and its version commit | AC2 | W01 | W03, W04 | | |
 | W03 | The `contract/` and `python/` tag pair | AC3, AC4 | W01 | W02, W04 | | |
-| W04 | The release pull request into `main` | AC5 | W01 | W02, W03 | | |
+| W04 | The release pull request into `main` | AC5, AC6 | W01 | W02, W03 | | |
 
 ## Acceptance Criteria
 
@@ -37,7 +37,8 @@ The release cut for the MVP: the version the previous contract's corpus selects,
 - [ ] **AC2.** `release/vX.Y.Z`, cut from `main`, holds one commit setting the selected version in `src/pyproject.toml` and the prosiform entry in `src/uv.lock`, as `git log main..release/vX.Y.Z` and `make lock-check` show.
 - [ ] **AC3.** An annotated `contract/vX.Y.Z` tag names the version commit, its message stating the revision's subject, its profile, its corpus count and the previous corpus's result as `contract/v0.15.0`'s does, as `git tag -n` shows.
 - [ ] **AC4.** An annotated `python/vX.Y.Z` tag names the same commit, its message stating the contract it implements, its profile, its package version and its validation counts as `python/v0.15.0`'s does, as `git tag -n` shows.
-- [ ] **AC5.** A pull request from `release/vX.Y.Z` into `main` is open with every check passing, as the pull request's checks show.
+- [ ] **AC5.** A pull request from `release/vX.Y.Z` into `main` is open, as its head, base and state show.
+- [ ] **AC6.** Every check on the release pull request passes, as its check conclusions show.
 
 ## References
 

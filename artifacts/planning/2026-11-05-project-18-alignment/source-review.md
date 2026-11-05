@@ -58,7 +58,8 @@ Every currently marked source has been read. The current-contract binding and it
 ### Criteria — medium
 
 - **Resolved for I01:** AC11 states member headings, with distinct destinations in AC16 and derived heading casing in AC17. E02's Coverage includes all three; existing tests verify each condition.
-- **Problem:** I11 AC2 joins the tag pair, an open pull request and passing checks. I12 AC2 joins template section order and successful compilation. These are independently falsifiable conditions.
+- **Resolved for I11:** The user approves separate conditions for the annotated tag pair (AC2), open release pull request (AC3) and passing checks (AC4). E00 separates the open pull request (AC5) from its checks (AC6), updating W04's Coverage while preserving task IDs and the joined unit. Every criterion remains unticked until observed.
+- **Problem:** I12 AC2 joins template section order and successful compilation. These are independently falsifiable conditions.
   **Proposed resolution:** Split the conditions, preserve their existing labels where referenced, and update Coverage after confirmation.
 - **Problem:** #187 AC13 combines CI triggering, collection of failed checks and crash-versus-drift verdicts. #255's CI conditions overlap the delivered #454 work. #243's AC2 says `--only` restricts a rewrite while its scope says triage reports and restatement is separate.
   **Proposed resolution:** Reconcile current delivery and separate verdict, execution and restatement requirements before planning implementation.

@@ -29,12 +29,14 @@ The MVP's work lands on `main` with no release naming it.
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/525) | Release Cut | AC1, AC2 | | |
+| [E00](https://github.com/m2ux/prosiform/issues/525) | Release Cut | AC1, AC2, AC3, AC4 | | |
 
 ## Acceptance Criteria
 
 - [ ] **AC1.** The release version is the one the `contract/v0.15.0` corpus run against the release build selects under the versioning rules, as the release record shows.
-- [ ] **AC2.** An annotated `contract/` and `python/` tag pair names the release's version commit, and a pull request raises that commit into `main` with every check passing, as the tags and the pull request show.
+- [ ] **AC2.** An annotated contract and Python tag pair names the release's version commit, as the tags show.
+- [ ] **AC3.** The release's version commit is the head of an open pull request into main, as the pull request's head, base and state show.
+- [ ] **AC4.** Every check on the release pull request passes, as its check conclusions show.
 
 ## Non-Goals
 
