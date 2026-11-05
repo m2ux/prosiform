@@ -24,14 +24,14 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 
 ## Marked requirement sources
 
-- **I01 R1:** The entire v1 design at commit `3ff368936aa577ef57bd43b7a2fae63c264a99dc` was read from the project repository. It describes an explicit global source root, run-wide grouping and deferral emission that subsequent initiatives changed.
-- **I01 R5:** Proposal #216 was read in full. Its goal requires Agent Skills metadata compatibility and its Non-Goals exclude source roots in metadata. The initiative also marks later file-owned-root requirements as a source, so their scopes and precedence need an explicit reconciliation.
-- **I01 R6:** The file-owned invocation design on `engineering` was read in full. It specifies `prosiform.root`, direct group/depth fields and derived bundle filenames; current main's preset schema admits `group` and `subst` within presets.
-- **I01 R7:** The dispatch record's README and design were read. They specify `»` and `prosiform.dispatch`; current code and documentation describe `⇉`, dispatch sets and one guide.
+- **I01 R1:** The full current contract at `6deca17d6b56c61f477c815da6eeecc3949d8ca1` was read. Main revision `ba93ca60860f0dc46722f27acd471740465279da` names that exact design revision in its README profile link. The approved draft binds I01 to that contract.
+- **I01 R5, historical background:** Proposal #216 was read in full. It describes the first metadata design, including Agent Skills compatibility. It is not a requirement source for remaining refinement work.
+- **I01 R6, historical background:** The file-owned invocation design was read in full. It describes historical `prosiform.root` and direct group/depth fields; current presets admit `group` and `subst`.
+- **I01 R7, historical background:** The dispatch record's README and design were read. They describe historical `»` and `prosiform.dispatch`; current dispatch and guide requirements come from R1.
 - **I11 R2:** Current main's `docs/versioning.md` was read in full. It specifies measured version selection, annotated tags and a persistent release branch merged back into main.
 - **I10 and I12:** Neither initiative marks a requirement source. Their background references are not treated as requirements.
 
-No unread marked source is claimed as checked. The source departures above remain unresolved; historical delivery is not a claim of current conformance.
+Every currently marked source has been read. The current-contract binding is confirmed; criterion and exposure reconciliation remain open. Historical delivery is not a claim of current conformance.
 
 ## Ranked open findings
 
@@ -42,7 +42,7 @@ No unread marked source is claimed as checked. The source departures above remai
 - **Resolved:** #177 AC1 required `--fault`, which the compiler retires. Its code-listing requirement is already stated in the current design as `-C`, `--codes`.
   **User decision, 2026-11-05:** Retire the superseded issue as not planned, remove W05, AC5 and AC6 from #187, and remove its board entry. Its historical body is preserved. [Readback evidence](retirement-177.json).
 - **Problem:** #20 AC7 and #21's exposure-set criteria require the worked example's mode entries. #22 R2 points to `main/example/work-planner/bootstrap.md`, which the current main tree does not hold.
-  **Proposed resolution:** Choose a current exposure set and an accessible bootstrap exemplar; retain the historical demonstration only as measured history.
+  **Resolution in progress:** #22's approved draft cites the invocation guide pinned to merged main and its workspace-skill work item uses the current source declarations and guide. The exposure-set question offers maintained evaluation workflows plus real workspace skills, or workspace skills alone; it remains unanswered.
 - **Problem:** #20 AC13 and AC14 describe file-owned invocation and dispatch metadata that the current contract does not admit. The marked sources specify several different schema generations.
   **User decision, 2026-11-05:** The current contract governs the remaining refinement work. The ledger, real-use evidence and specification-freeze goals stand; earlier root and dispatch metadata specifications are historical background. Source and criterion reconciliation against that boundary is in progress.
 
@@ -88,4 +88,4 @@ No unread marked source is claimed as checked. The source departures above remai
 
 ## Interview queue
 
-The I10 reconciliation and retirements of #161 and #177 are approved and applied. The current contract is the confirmed basis for I01. Remaining questions cover its exposure set, criterion boundaries and splits, component declarations and branch configuration. Each is asked separately.
+The I10 reconciliation and retirements of #161 and #177 are approved and applied. The current contract is the confirmed basis for I01. The pending question is whether its exposure set combines maintained evaluation workflows with real workspace skills, or uses workspace skills alone. Subsequent questions cover criterion boundaries and splits, component declarations and branch configuration.

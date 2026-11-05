@@ -26,6 +26,7 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [PR 622 draft](drafts/pr-622.md) | The current compiled form in the draft epic review |
 | [Issue 21 draft](drafts/issue-21.md) | The exact published body after mechanical alignment |
 | [Issue 22 draft](drafts/issue-22.md) | The exact published body after mechanical alignment |
+| [Issue 20 draft](drafts/issue-20.md) | The approved current-contract binding and historical metadata references |
 | [Issue 23 draft](drafts/issue-23.md) | The exact published body after mechanical alignment |
 | [Issue 187 draft](drafts/issue-187.md) | The exact published body after mechanical alignment |
 | [Issue 525 draft](drafts/issue-525.md) | The exact published body after mechanical alignment |
