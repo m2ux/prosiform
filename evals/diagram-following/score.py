@@ -300,6 +300,7 @@ def names(target: str, section: str, source_directory: str = "") -> bool:
             f"{document}#{heading}",
             f"{document}.md#{heading}",
             entry_bundle(reference).name,
+            f"{entry_bundle(reference).name}#{heading}",
         ):
             if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
                 return True
