@@ -19,10 +19,11 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [Issue 161 retirement](retirement-161.json) | Confirmed not-planned closure, preserved body and board removal |
 | [Issue 177 retirement](retirement-177.json) | Confirmed superseded-requirement closure, preserved body and board removal |
 | [Source and goal review](source-review.md) | Goal trace, source departures and criterion findings |
-| [Criterion verification](verification.md) | Exact tested revisions, instruments and results for the approved I10 reconciliation |
+| [Criterion verification](verification.md) | Exact tested revisions, instruments and results for the approved I01 and I10 reconciliation |
 | [E04 test output](test-e04.txt) | The detached-revision harness run's console output |
 | [Guide test output](test-guide.txt) | The current merged guide's three existing checks |
 | [Bundle-opening output](test-opening.txt) | The current merged build's three existing entry and dispatched-bundle checks |
+| [I01 contract output](test-i01.txt) | The current merged build's 649 grouping, candidate, bundle and CLI checks |
 | [PR 651 draft](drafts/pr-651.md) | Test coverage for the separated source, form and dispatched-bundle criteria |
 | [PR 622 draft](drafts/pr-622.md) | The current compiled form in the draft epic review |
 | [Issue 21 draft](drafts/issue-21.md) | The exact published body after mechanical alignment |

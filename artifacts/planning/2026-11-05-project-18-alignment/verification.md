@@ -1,6 +1,18 @@
-# I10 criterion verification
+# Criterion verification
 
-## Decision
+## I01 current contract
+
+On 2026-11-05 the user selected the current contract for I01's remaining refinement work, keeping its ledger, real-use evidence and specification-freeze goals. The criterion reconciliation preserves existing IDs and separates the independently testable parts of AC11.
+
+- Revision: `ba93ca60860f0dc46722f27acd471740465279da`, merged `main`, whose README pins the governing design at `6deca17d6b56c61f477c815da6eeecc3949d8ca1`.
+- Instrument: the existing `src/tests/test_grouping.py`, `src/tests/test_candidate.py`, `src/tests/test_bundle.py` and `src/tests/test_cli.py` suites, using the locked-environment interpreter with the detached checkout's source on `PYTHONPATH`.
+- Result: **649 passed**, exit 0, in 3.48 seconds. [Console output](test-i01.txt).
+- Criteria: AC11 (member headings), AC12 (selected source presets), AC13 (declaring entry invocation), AC14 (compiled dispatch targets), AC16 (distinct member destinations) and AC17 (derived heading casing).
+- Completion gate: all six criteria pass initiative readiness against completed E02 (#195), E06 (#218) and E09 (#242). Their ticks record verified conformance at the stated main revision; historical epic bodies are context, not a claim that each originally delivered today's wording.
+
+AC16 and AC17 isolate parts of AC11; E02's Coverage includes all three. Exposure-dependent AC7 and the exposure task coverage await the pending user choice and are preserved.
+
+## I10 decision
 
 On 2026-11-05 the user selected: "Reconcile with delivered behavior" for I10 and its open Composition Following epic, preserving task IDs and checking affected completion ticks.
 

@@ -156,5 +156,19 @@
     "url": "https://github.com/m2ux/prosiform/issues/22",
     "updated_at": "2026-11-05T10:58:19Z",
     "change": "User-approved current-contract source and invocation alignment"
+  },
+  {
+    "kind": "issues",
+    "issue": 464,
+    "url": "https://github.com/m2ux/prosiform/issues/464",
+    "updated_at": "2026-11-05T11:03:08Z",
+    "change": "Precise verified instruction-opening and dispatch-protocol criteria"
+  },
+  {
+    "kind": "issues",
+    "issue": 579,
+    "url": "https://github.com/m2ux/prosiform/issues/579",
+    "updated_at": "2026-11-05T11:03:10Z",
+    "change": "Precise verified instruction-opening and dispatch-protocol criteria"
   }
 ]

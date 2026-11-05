@@ -1,13 +1,13 @@
 ## Overview
 
-The prototype is used as the tool agents in this workspace invoke, and what that use reveals changes the specification until it stops changing. Every surprise becomes a ledger entry reducible to a fixture; an accepted finding changes the design first, then the corpus, then the build. Per-file conversion metadata and the dispatch operator are explicit contract extensions within this refinement. The initiative ends when every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision, which is the target the production build names.
+The prototype is used as the tool agents in this workspace invoke, and what that use reveals changes the specification until it stops changing. Every surprise becomes a ledger entry reducible to a fixture; an accepted finding changes the design first, then the corpus, then the build. Declared sources, selected presets and compiled dispatch targets form the contract baseline for this refinement. The initiative ends when every entry is resolved or explicitly deferred and the design and corpus carry one tagged revision, which is the target the production build names.
 
 ## Problem
 
-The worked example bundles a full copy of a real skill on a tagged revision, and nothing yet records what bundling does when agents rely on it for work.
+The build has conformance fixtures and measured evaluation runs, while ordinary skill use lacks an integrated ledger connecting exposure, findings and revisions.
 
-- **A specification proven on one tree is still a hypothesis.**
-  The example's mode bundles pass on the demonstrated revision, and the design still names its residual items as needing measured real-skill data before their defaults are revisited ([residual policy](https://github.com/m2ux/prosiform/blob/3ff368936aa577ef57bd43b7a2fae63c264a99dc/artifacts/planning/2026-10-17-prosiform-v1/design.md#L532-L537)).
+- **Fixture conformance does not measure ordinary use.**
+  The contract requires measured fixture and real-skill data before numerical defaults are recalibrated ([residual policy](https://github.com/m2ux/prosiform/blob/6deca17d6b56c61f477c815da6eeecc3949d8ca1/artifacts/planning/2026-10-17-prosiform-v1/design.md#L794-L799)).
 
 - **Findings from the demonstration sit in planning prose.**
   The dispatch saving and the route that pushed a mode past the output budget were measured once and recorded beside the work that met them, so neither can be re-run or counted.
@@ -51,7 +51,7 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
   An entry not resolved before the freeze names what is deferred and why, and stays in the ledger for the stage that takes it.
 
 - **A prerequisite list goes when bundling replaces it.**
-  The example removed its prerequisite sections and states its compile command in its bootstrap. A workspace skill follows that pattern once a recorded bundling supplies what its list named, and a shortfall is a ledger entry rather than a silent loss.
+  A workspace skill states its declared entry invocation and sends its reader to bare `pf` for the guide. A prerequisite list is removed only after a recorded bundle supplies its required sources; a shortfall is a ledger entry.
 
 - **Each run is measured against what it replaces.**
   A run record carries the bundled output size and the whole-file size of the sources it bundled, so the retrieval cost the proposal measured can be compared with the cost of bundling instead.
@@ -60,13 +60,13 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
   Design and corpus take one tagged revision, and the production build names that revision as its target. The demonstration's tag names a demonstrated revision and is not the freeze.
 
 - **Source files own structural conversion settings.**
-  Each contributing file supplies its settings through skill-compatible metadata, independent of the caller that selects it.
+  Each contributing document declares its own presets, and the reference selecting it determines which of those presets govern its content.
 
 - **Entry files define their invocation.**
-  A file declares its root and determines its bundle filename, so ordinary compilation needs only `pf <file>`.
+  An entry names a declaring document with `pf <file>`. The invocation working directory supplies the entry base and the current CLI derives the run and bundle names.
 
 - **A link states who compiles it.**
-  A second operator marks the material a sub-agent compiles, and the entry document's metadata states what that mark means, so a dispatching skill says so in the bundle rather than in prose beside it.
+  A dispatch link names a separately compiled target bundle. The guide printed by bare `pf` states how its reader hands that bundle to a sub-agent.
 
 ## Work Breakdown
 
@@ -74,7 +74,7 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/21) | Findings Ledger | AC1, AC2, AC9 | | |
 | [E01](https://github.com/m2ux/prosiform/issues/22) | Specification Revision | AC3, AC4, AC8 | | |
-| [E02](https://github.com/m2ux/prosiform/issues/195) | Merged Groups | AC11 | | ✓ |
+| [E02](https://github.com/m2ux/prosiform/issues/195) | Merged Groups | AC11, AC16, AC17 | | ✓ |
 | [E03](https://github.com/m2ux/prosiform/issues/187) | Repository Checks | AC10 | | |
 | [E06](https://github.com/m2ux/prosiform/issues/218) | Document Metadata | AC12, AC13 | | ✓ |
 | [E09](https://github.com/m2ux/prosiform/issues/242) | Dispatch Operator | AC14 | | ✓ |
@@ -94,14 +94,17 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 - [ ] **AC9.** Each exposure-set source carries a bundled size recorded against the size of the same sources read whole, as the run records show.
 - [ ] **AC10.** Each item the prototype initiative deferred and its product did not need is delivered or carries a recorded deferral, as the carried-debt epic rows show.
 
-- [x] **AC11.** A merged group emits a heading for every member it carries, one destination per member, and one title-casing convention for every heading it generates, as the grouping fixtures and the corpus show.
-- [x] **AC12.** Linked sources retain their declared structural intent across supported entry and dependency selections, as the metadata conformance corpus demonstrates.
+- [x] **AC11.** Each selected member of a merged group has an emitted heading recorded for that source, as grouping tests run by `make check` show.
+- [x] **AC12.** A linked source is converted under its own selected presets, as entry and dependency CLI tests run by `make check` show.
 
-- [x] **AC13.** File-owned metadata supports file-only invocation, as the root-resolution and output-identity conformance suite demonstrates.
+- [x] **AC13.** No structural command-line setting is needed to compile a declaring entry, as invocation tests run by `make check` show.
 
-- [x] **AC14.** The refined contract supports a link whose material the reading agent compiles for a sub-agent, and an entry document declaring what that mark means, as the dispatch conformance suite demonstrates.
+- [x] **AC14.** A dispatch link names its target's compiled bundle in the published set, as dispatch CLI tests run by `make check` show.
 
 - [x] **AC15.** The repository holds the branch shape its delivery procedure assumes, with merge and deletion on its long-lived branches governed by the platform rather than by convention, as the protection settings show.
+
+- [x] **AC16.** Distinct members of one merged group resolve to distinct bundle destinations, as candidate-validation tests run by `make check` show.
+- [x] **AC17.** Headings derived from paths or group slugs follow the profile's title-casing convention, as heading-rendering tests run by `make check` show.
 
 ## Non-Goals
 
@@ -119,11 +122,11 @@ The worked example bundles a full copy of a real skill on a tagged revision, and
 - **R2.** [Planning decisions](https://github.com/m2ux/prosiform/blob/3ff368936aa577ef57bd43b7a2fae63c264a99dc/artifacts/planning/2026-10-17-prosiform-v1/decisions.md) — why the prototype is used before a production build is committed to, and what marks the specification settled.
 - **R3.** [[P00] Markdown Bundling: One Validated Document From Linked Sources](https://github.com/m2ux/prosiform/issues/1) — the originating proposal and its goal of a contract settled through real use.
 
-- **R4.** [Section Composition: Unicode Links Compose Content Within the Containing Section](https://github.com/m2ux/prosiform/issues/214) — the requirements for inline section composition, which this stage leaves to a later one.
+- **R4.** [Section Composition: Unicode Links Compose Content Within the Containing Section](https://github.com/m2ux/prosiform/issues/214) — the historical proposal for section composition.
 
 - **R5.** [Document Metadata: Per-File Settings Govern Linked Compilation](https://github.com/m2ux/prosiform/issues/216) — historical requirements for the first per-file metadata design.
 - **R6.** [File-owned invocation decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-23-218-derived-bundle-names/design.md) — historical root metadata and entry-derived output decisions.
 - **R7.** [Dispatch operator planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-24-242-i01-e09-dispatch-operator) — historical dispatch operator, metadata and emission decisions.
-- **R8.** [Parent Merge: Each File Groups the Links It Writes](https://github.com/m2ux/prosiform/issues/234) — grouping owned by the file that writes the link, a candidate finding the ledger accepts only where real use shows a need.
+- **R8.** [Parent Merge: Each File Groups the Links It Writes](https://github.com/m2ux/prosiform/issues/234) — the historical proposal for parent-owned grouping.
 - **R9.** [Refinement scope record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-26-20-i01-replan) — the exposure set, the epics this stage does not take, and the Parent Merge epic, with the evidence behind each.
 - **R10.** [Current-contract alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/source-review.md) — the confirmed contract basis and remaining criterion and exposure-set decisions.

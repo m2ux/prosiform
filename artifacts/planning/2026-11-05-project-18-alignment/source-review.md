@@ -7,11 +7,11 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 | Goal clause | Initiative criteria | Delivering epics | Evidence and finding |
 | --- | --- | --- | --- |
 | Reproducible findings from use | I01 AC1, AC2 | E00 | Ledger format is delivered; capture and run records remain open. |
-| Design-first revisions and visible unsettled work | I01 AC3, AC4, AC8 | E01 | The row coverage exists; bootstrap guidance names the removed example tree. |
+| Design-first revisions and visible unsettled work | I01 AC3, AC4, AC8 | E01 | The row coverage exists; workspace-skill guidance cites the pinned current invocation guide. |
 | Exposure before a tagged freeze | I01 AC5, AC6, AC7, AC9 | E00, E13 | The exposure goal includes example modes absent from current main. |
 | Accounted-for carried debt | I01 AC10 | E03 | Superseded diagnostic and fault-option rows are retired by confirmed decisions. |
-| Structural grouping and file-owned settings | I01 AC11, AC12, AC13 | E02, E06 | Closed delivery is recorded; current presets differ from the marked historical sources. |
-| Dispatch declaration and repository branch shape | I01 AC14, AC15 | E09, E10 | Closed delivery is recorded; dispatch metadata is superseded by the guide, and configuration is absent from current code bases. |
+| Structural grouping and file-owned settings | I01 AC11, AC12, AC13, AC16, AC17 | E02, E06 | Atomic current-contract criteria pass 649 existing merged-main tests and the initiative readiness gate. |
+| Dispatch declaration and repository branch shape | I01 AC14, AC15 | E09, E10 | Compiled dispatch targets pass merged-main verification; branch configuration is absent from current code bases. |
 | A baseline that distinguishes forms | I10 AC1, AC2, AC9, AC11, AC12 | E00 | The epic is closed as completed. The initiative criteria are ready to verify, not automatically ticked. |
 | Checks describing their execution and revisions | I10 AC3, AC4, AC5, AC7 | E01 | Closed delivery and ticked initiative criteria. |
 | Settings isolation | I10 AC6, AC8 | E02 | Closed delivery and ticked initiative criteria. |
@@ -31,7 +31,7 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 - **I11 R2:** Current main's `docs/versioning.md` was read in full. It specifies measured version selection, annotated tags and a persistent release branch merged back into main.
 - **I10 and I12:** Neither initiative marks a requirement source. Their background references are not treated as requirements.
 
-Every currently marked source has been read. The current-contract binding is confirmed; criterion and exposure reconciliation remain open. Historical delivery is not a claim of current conformance.
+Every currently marked source has been read. The current-contract binding and its grouping, presets, invocation and dispatch criteria are reconciled; exposure reconciliation remains open. Historical delivery is not a claim of current conformance.
 
 ## Ranked open findings
 
@@ -43,8 +43,7 @@ Every currently marked source has been read. The current-contract binding is con
   **User decision, 2026-11-05:** Retire the superseded issue as not planned, remove W05, AC5 and AC6 from #187, and remove its board entry. Its historical body is preserved. [Readback evidence](retirement-177.json).
 - **Problem:** #20 AC7 and #21's exposure-set criteria require the worked example's mode entries. #22 R2 points to `main/example/work-planner/bootstrap.md`, which the current main tree does not hold.
   **Resolution in progress:** #22 cites the invocation guide pinned to merged main and its workspace-skill work item uses the current source declarations and guide. The exposure-set question offers maintained evaluation workflows plus real workspace skills, or workspace skills alone; it remains unanswered.
-- **Problem:** #20 AC13 and AC14 describe file-owned invocation and dispatch metadata that the current contract does not admit. The marked sources specify several different schema generations.
-  **User decision, 2026-11-05:** The current contract governs the remaining refinement work. The ledger, real-use evidence and specification-freeze goals stand; earlier root and dispatch metadata specifications are historical background. Source and criterion reconciliation against that boundary is in progress.
+- **Resolved decision:** The current contract governs I01's remaining refinement work. The ledger, real-use evidence and specification-freeze goals stand; earlier root and dispatch metadata specifications are historical background. AC11–AC14, AC16 and AC17 state current grouping, presets, invocation and compiled dispatch behavior. Their ticks have passing merged-main [verification](verification.md) and initiative readiness evidence.
 
 ### I10 integration — high
 
@@ -58,7 +57,8 @@ Every currently marked source has been read. The current-contract binding is con
 
 ### Criteria — medium
 
-- **Problem:** I01 AC11 joins member headings, destination identity and casing. I11 AC2 joins the tag pair, an open pull request and passing checks. I12 AC2 joins template section order and successful compilation. These are independently falsifiable conditions.
+- **Resolved for I01:** AC11 states member headings, with distinct destinations in AC16 and derived heading casing in AC17. E02's Coverage includes all three; existing tests verify each condition.
+- **Problem:** I11 AC2 joins the tag pair, an open pull request and passing checks. I12 AC2 joins template section order and successful compilation. These are independently falsifiable conditions.
   **Proposed resolution:** Split the conditions, preserve their existing labels where referenced, and update Coverage after confirmation.
 - **Problem:** #187 AC13 combines CI triggering, collection of failed checks and crash-versus-drift verdicts. #255's CI conditions overlap the delivered #454 work. #243's AC2 says `--only` restricts a rewrite while its scope says triage reports and restatement is separate.
   **Proposed resolution:** Reconcile current delivery and separate verdict, execution and restatement requirements before planning implementation.
