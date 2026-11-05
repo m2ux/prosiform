@@ -30,7 +30,7 @@ The build has conformance fixtures and measured evaluation runs, while ordinary 
   It is invoked from this workspace's skills, so the contract meets real sources and real agents rather than constructed examples.
 
 - **The exposure set covers the example and the skills in use.**
-  The example's mode entries and the workspace skills agents invoke are declared together, so the freeze needs both the demonstrated tree and real use.
+  The declared entry points of the example skill planned for `prosiform-skills` and the workspace skills agents invoke form the exposure set. Example deployment is deferred and user-owned; its entry paths, revision and invocation are recorded once available. Both parts require bundling evidence before the freeze.
 
 - **The ledger records every run.**
   A bundling run is recorded with the source identities it bundled and its outcome, so how much the tool was used is a fact the ledger holds rather than an impression.
@@ -89,7 +89,7 @@ The build has conformance fixtures and measured evaluation runs, while ordinary 
 - [ ] **AC4.** What remains unsettled is visible without reading the ledger whole, as the open-finding summary shows.
 - [ ] **AC5.** Each ledger entry is resolved or carries a recorded deferral naming what is deferred and why, as the ledger's status summary shows.
 - [ ] **AC6.** The design and the corpus carry one tagged revision that a production build can name as its target, as the tag shows.
-- [ ] **AC7.** The specification is settled only after the tool has bundled each source in a declared exposure set holding both the worked example's mode entries and the skills this workspace's agents invoke, as the freeze check shows.
+- [ ] **AC7.** The specification is settled only after the tool has bundled every entry in a declared exposure set containing both the example skill in `prosiform-skills` and the skills this workspace's agents invoke, as the freeze check shows.
 - [ ] **AC8.** A prerequisite section is removed only where a recorded bundling supplies what it named, and any shortfall is a ledger entry, as the removal records show.
 - [ ] **AC9.** Each exposure-set source carries a bundled size recorded against the size of the same sources read whole, as the run records show.
 - [ ] **AC10.** Each item the prototype initiative deferred and its product did not need is delivered or carries a recorded deferral, as the carried-debt epic rows show.

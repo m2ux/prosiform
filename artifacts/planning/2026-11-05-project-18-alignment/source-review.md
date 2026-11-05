@@ -8,7 +8,7 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 | --- | --- | --- | --- |
 | Reproducible findings from use | I01 AC1, AC2 | E00 | Ledger format is delivered; capture and run records remain open. |
 | Design-first revisions and visible unsettled work | I01 AC3, AC4, AC8 | E01 | The row coverage exists; workspace-skill guidance cites the pinned current invocation guide. |
-| Exposure before a tagged freeze | I01 AC5, AC6, AC7, AC9 | E00, E13 | The exposure goal includes example modes absent from current main. |
+| Exposure before a tagged freeze | I01 AC5, AC6, AC7, AC9 | E00, E13 | The user will deploy an example skill in prosiform-skills; deployment and its declaration are deferred, and workspace skills remain required. |
 | Accounted-for carried debt | I01 AC10 | E03 | Superseded diagnostic and fault-option rows are retired by confirmed decisions. |
 | Structural grouping and file-owned settings | I01 AC11, AC12, AC13, AC16, AC17 | E02, E06 | Atomic current-contract criteria pass 649 existing merged-main tests and the initiative readiness gate. |
 | Dispatch declaration and repository branch shape | I01 AC14, AC15 | E09, E10 | Compiled dispatch targets pass merged-main verification; branch configuration is absent from current code bases. |
@@ -31,7 +31,7 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 - **I11 R2:** Current main's `docs/versioning.md` was read in full. It specifies measured version selection, annotated tags and a persistent release branch merged back into main.
 - **I10 and I12:** Neither initiative marks a requirement source. Their background references are not treated as requirements.
 
-Every currently marked source has been read. The current-contract binding and its grouping, presets, invocation and dispatch criteria are reconciled; exposure reconciliation remains open. Historical delivery is not a claim of current conformance.
+Every currently marked source has been read. The current-contract binding and its grouping, presets, invocation and dispatch criteria are reconciled. The exposure source set is confirmed; the external example's deployment and declaration remain pending. Historical delivery is not a claim of current conformance.
 
 ## Ranked open findings
 
@@ -41,8 +41,7 @@ Every currently marked source has been read. The current-contract binding and it
   **User decision, 2026-11-05:** Retire it as not planned, remove W03 and AC3 from #187, and remove its board entry. The issue's body is preserved and its retirement comment records the reason. [Readback evidence](retirement-161.json).
 - **Resolved:** #177 AC1 required `--fault`, which the compiler retires. Its code-listing requirement is already stated in the current design as `-C`, `--codes`.
   **User decision, 2026-11-05:** Retire the superseded issue as not planned, remove W05, AC5 and AC6 from #187, and remove its board entry. Its historical body is preserved. [Readback evidence](retirement-177.json).
-- **Problem:** #20 AC7 and #21's exposure-set criteria require the worked example's mode entries. #22 R2 points to `main/example/work-planner/bootstrap.md`, which the current main tree does not hold.
-  **Resolution in progress:** #22 cites the invocation guide pinned to merged main and its workspace-skill work item uses the current source declarations and guide. The exposure-set question offers maintained evaluation workflows plus real workspace skills, or workspace skills alone; it remains unanswered.
+- **Confirmed exposure source set:** The user will deploy an example skill in `prosiform-skills`; deployment is deferred. I01 requires that example and workspace skills before the freeze. The example's exact source identity, entry points and invocation await deployment. #21 AC6 is unticked because its delivered local-example declaration does not establish the external source. The declaration follow-up remains a gap-task decision. [Decision and evidence](external-example.md).
 - **Resolved decision:** The current contract governs I01's remaining refinement work. The ledger, real-use evidence and specification-freeze goals stand; earlier root and dispatch metadata specifications are historical background. AC11–AC14, AC16 and AC17 state current grouping, presets, invocation and compiled dispatch behavior. Their ticks have passing merged-main [verification](verification.md) and initiative readiness evidence.
 
 ### I10 integration — high
@@ -90,4 +89,4 @@ Every currently marked source has been read. The current-contract binding and it
 
 ## Interview queue
 
-The I10 reconciliation and retirements of #161 and #177 are approved and applied. The current contract is the confirmed basis for I01. The pending question is whether its exposure set combines maintained evaluation workflows with real workspace skills, or uses workspace skills alone. Subsequent questions cover criterion boundaries and splits, component declarations and branch configuration.
+The I10 reconciliation and retirements of #161 and #177 are approved and applied. The current contract is the confirmed basis for I01. Its exposure set requires the forthcoming example in `prosiform-skills` and real workspace skills; deployment is deferred. Remaining questions cover the declaration gap task, criterion boundaries and splits, component declarations and branch configuration. The user also defers I10 E04 W14–W16 into the new I14 Evaluation Refinement initiative, preserving I13 Production Build.

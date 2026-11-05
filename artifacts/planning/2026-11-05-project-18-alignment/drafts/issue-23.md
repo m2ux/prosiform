@@ -30,7 +30,7 @@ A specification still accumulating changes cannot be implemented against, and a 
   The freeze is refused while any entry is neither resolved nor deferred, so the tag cannot be applied over an unexamined ledger.
 
 - **An empty ledger is not a settled contract.**
-  The freeze is also refused until every source in the declared exposure set has a recorded bundling run, so a specification cannot be called settled because nobody exercised it.
+  The freeze is also refused until every source in the declared exposure set has a recorded bundling run. The example skill planned for `prosiform-skills` and the workspace skills are both required; deferred example deployment leaves the exposure gate unmet.
 
 - **One tagged revision covers design and corpus.**
   Both take the same revision, so the contract and the fixtures that bind it cannot be targeted separately.

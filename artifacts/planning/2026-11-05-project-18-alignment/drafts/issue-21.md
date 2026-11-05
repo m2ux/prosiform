@@ -39,7 +39,7 @@ A finding met mid-task competes with the task, and a finding stated in words can
   Each run record carries the bundled output size and the total size of the same sources read whole, so the retrieval cost the proposal measured has a bundled figure to sit beside.
 
 - **The exposure set is declared once.**
-  It names the real sources the tool must have bundled before the specification can be called settled, and it is written down at the start of the stage rather than chosen at its end. It holds the worked example's mode entries and the workspace skills agents invoke, so neither the demonstrated tree nor real use settles the specification alone.
+  It names the sources the tool must have bundled before the specification can be called settled: the example skill planned for `prosiform-skills` and the workspace skills agents invoke. Example deployment is deferred and user-owned. The example's repository identity, revision, entry paths and invocation are recorded when available; missing example deployment or bundling evidence leaves exposure incomplete.
 
 - **The demonstration's measurements are the first entries.**
   The example's mode bundles, the dispatch saving and the route that exceeded the output budget were measured before the ledger existed. Each becomes a run or an entry citing the tagged revision it was taken on.
@@ -63,7 +63,7 @@ A finding met mid-task competes with the task, and a finding stated in words can
 - [ ] **AC3.** The capture tool reduces an entry's sources and invocation to a fixture that reproduces the observed result, as its reduction tests show.
 - [ ] **AC4.** A reduced fixture carries no source the observed result does not need, as the reduction tests show.
 - [ ] **AC5.** Each bundling run is recorded with the source identities it bundled and its outcome, as the schema check shows.
-- [x] **AC6.** The exposure set names the worked example's mode entries and the workspace skills agents invoke as the sources that must be bundled before a freeze, as its declaration shows.
+- [ ] **AC6.** The exposure declaration identifies the example skill's entry points in `prosiform-skills` and the workspace skills agents invoke, as its declaration check shows.
 - [ ] **AC7.** Each run record carries the bundled output size and the total size of the sources it bundled read whole, as the schema check shows.
 - [ ] **AC8.** Each run record states whether the entry reference's content was acted on from the bundle alone, as the schema check shows.
 - [ ] **AC9.** Each mode bundle the demonstration published carries a run record, and each measurement the demonstration recorded outside the ledger is an entry citing the revision it was taken on, as the ledger read against the demonstration's planning record shows.
@@ -71,3 +71,5 @@ A finding met mid-task competes with the task, and a finding stated in words can
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-17-prosiform-v1) — the design this epic settles, the planning decisions, and the work item for each row above.
+
+- **R2.** [Exposure decision](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/external-example.md) — the deferred external example and the pending declaration follow-up.

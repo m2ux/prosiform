@@ -20,6 +20,7 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [Issue 161 retirement](retirement-161.json) | Confirmed not-planned closure, preserved body and board removal |
 | [Issue 177 retirement](retirement-177.json) | Confirmed superseded-requirement closure, preserved body and board removal |
 | [Source and goal review](source-review.md) | Goal trace, source departures and criterion findings |
+| [External example](external-example.md) | The confirmed prosiform-skills source, deferred deployment and pending declaration work |
 | [Criterion verification](verification.md) | Exact tested revisions, instruments and results for the approved I01 and I10 reconciliation |
 | [E04 test output](test-e04.txt) | The detached-revision harness run's console output |
 | [Guide test output](test-guide.txt) | The current merged guide's three existing checks |
