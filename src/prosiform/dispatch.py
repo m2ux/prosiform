@@ -118,12 +118,21 @@ HEADING_COLLISION = "E_HEADING_COLLISION"
 
 CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 
-PARALLEL = "In parallel"
+PARALLEL = "\u2afd Dispatch Set"
+"""The heading a set's sub-section takes.
 
-TOGETHER = (
-    "Give each of these to its own sub-agent at the same time, and continue "
-    "when all have answered:"
-)
+The mark leads, so a reader meets the symbol before the words, and the
+words name the structure rather than repeating the section the sub-section
+already stands under. A bundle's sets share this heading, so the renderer's
+ordinals keep them apart as it keeps any repeated heading apart.
+"""
+
+TOGETHER = ""
+"""A set's sub-section states no instruction of its own.
+
+The guide holds what a `⫽` link means and how its members are handed over,
+so a bundle that restated it would be a second home of the same rule.
+"""
 
 LINK_CLOSE = "link_close"
 
@@ -420,9 +429,14 @@ def file_destination(bundle_file: str) -> str:
 
 
 def listing(entries: Sequence[tuple[str, str]]) -> str:
-    """The list an `In parallel` sub-section carries, one `⇉` link to a bundle each."""
+    """The lines a set's sub-section carries, one `⇉` link to a bundle each.
+
+    The mark stands where a bullet would: every line opens with `⇉`, so a
+    reader meets the dispatch symbol first and no second list marker is
+    needed to tell the members apart.
+    """
     return "\n".join(
-        f"- [{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
+        f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
         for file, text in entries
     )
 
@@ -468,6 +482,8 @@ class Placing:
         self.pending: dict[Served, Link] = {}
         self.serving: list[tuple[tuple[str, int], Served]] = []
         self.level: int | None = None
+        self.title = ""
+        """The title of the heading whose section a set's sub-section sits under."""
         self.inner: dict[Served, Link] = {}
         self.inner_serving: list[tuple[tuple[str, int], Served]] = []
         self.inner_level = 0
@@ -488,13 +504,19 @@ class Placing:
 
         The section's `⫽` set takes one where it holds two or more
         targets. Content above the bundle's first heading takes that
-        heading's level.
+        heading's level, and the heading's title is the one the
+        sub-section derives its own from.
         """
         self.close()
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
-        self.place(self.pending, self.serving, depth)
+        if self.level is None:
+            # Content above the bundle's first heading now stands inside the
+            # instruction heading, so its set belongs one level below that.
+            depth += 1
+        self.place(self.pending, self.serving, depth, self.title)
+        self.title = ""
         self.pending = {}
         self.serving = []
 
@@ -510,12 +532,14 @@ class Placing:
         pending: Mapping[Served, Link],
         links: Sequence[tuple[tuple[str, int], Served]],
         depth: int,
+        title: str = "",
     ) -> None:
         """Say where one section's dispatched links point, emitting its set's section.
 
         A `⇉` link, and the one `⫽` link of a set of one target, point at
         their target's bundle file. A set of two or more targets points
-        at the `In parallel` sub-section emitted here.
+        at the sub-section emitted here, which takes its title from the
+        section holding the set.
         """
         together = [link for link in pending.values() if link.parallel]
         serving: dict[Served, int | str] = {
@@ -540,9 +564,8 @@ class Placing:
             listed = listing(
                 [(self.bundle_file(link.target), link.text) for link in together]
             )
-            at = self.heading(
-                PARALLEL, depth, [Instruction(TOGETHER), Instruction(listed, True)]
-            )
+            body: list[Instruction] = [Instruction(listed)]
+            at = self.heading(PARALLEL, depth, body)
             serving.update((link.served, at) for link in together)
         for key, served in links:
             self.placed.setdefault(key, {})[served] = serving[served]
@@ -554,11 +577,13 @@ class Placing:
         self.parts = []
         self.headings = []
         self.level = None
+        self.title = ""
         if one.wrapped:
             wrapper = one.record.headings[0]
             self.emitted.append(one.parts[0])
             self.headings.append(wrapper)
             self.level = wrapper.level
+            self.title = wrapper.text
         at = offset
         for part, text in zip(one.record.parts, one.parts[offset:], strict=True):
             if isinstance(part, Generated) and part.kind in COMPOSED_HEADINGS:
@@ -593,6 +618,7 @@ class Placing:
             elif isinstance(part, Ancestor | Generated):
                 self.flush(part.level)
                 self.level = part.level
+                self.title = one.record.headings[at].text
                 self.headings.append(one.record.headings[at])
                 at += 1
             elif isinstance(part, Range):
@@ -602,6 +628,7 @@ class Placing:
                 if region.type == HEADING_OPEN:
                     self.flush(one.record.headings[at].level)
                     self.level = one.record.headings[at].level
+                    self.title = one.record.headings[at].text
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
                 key = (part.path, part.lines[0])

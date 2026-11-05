@@ -5,4 +5,4 @@ prosiform: {}
 
 Write `actions/publish.txt` containing `published`.
 
-**Next.** The workflow is complete.
+**Next.** Go to [Exit](exit.md).

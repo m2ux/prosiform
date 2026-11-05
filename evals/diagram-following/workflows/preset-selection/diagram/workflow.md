@@ -7,7 +7,7 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Receive
+    Entry(( )) --> Receive
     Receive -->|docs| Edit
     Receive -->|code| Assess
     Assess -->|low| Patch
@@ -18,12 +18,14 @@ flowchart TD
     Proof --> Merge
     Verify --> Merge
     Audit --> Merge
-    Merge --> stop((( )))
+    Merge --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Receive href "states/receive.md"
     click Assess href "states/assess.md"
     click Edit href "states/edit.md"
     click Patch href "states/patch.md"
     click Harden href "states/harden.md"
     click Merge href "states/merge.md"
+    click Exit href "states/exit.md"
 ```

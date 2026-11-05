@@ -10,7 +10,7 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Outline
+    Entry(( )) --> Outline
     Outline -->|minor| Approve
     Outline -->|major| Amend
     Amend --> Inspect
@@ -18,10 +18,12 @@ flowchart TD
     Inspect -->|hold| Approve
     Stage --> Gate
     Gate --> Approve
-    Approve --> stop((( )))
+    Approve --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Outline href "states/outline.md"
     click Approve href "states/approve.md"
     click Amend href "states/amend.md"
     click Stage href "states/stage.md"
+    click Exit href "states/exit.md"
 ```

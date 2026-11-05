@@ -7,5 +7,11 @@ entry = "workflow.md#onboarding"
 
 [[scenario]]
 name = "document-fragment"
-path = ["Enrol", "Equip", "Greet"]
+path = [
+    "Entry",
+    "Enrol",
+    "Equip",
+    "Greet",
+    "Exit",
+]
 inputs = {}

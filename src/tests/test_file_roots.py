@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_cli import OPENING, invoke, written
+from test_cli import invoke, opening, written
 
 from prosiform import cli
 from prosiform.access import read_source
@@ -80,7 +80,9 @@ def test_files_in_distinct_directories_are_headed_by_working_directory_paths(
         written(tmp_path, f"{name}/same.md", declared("Body.\n"))
     run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
     assert run.status == 0
-    assert run.bundle == (f"{OPENING}# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n")
+    assert run.bundle == (
+        f"{opening('One/Same')}# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
+    )
 
 
 def test_a_shared_target_cycle_is_captured_once(tmp_path: Path) -> None:

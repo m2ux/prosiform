@@ -5,4 +5,4 @@ prosiform: {}
 
 Write `actions/resolve.txt` containing `resolved`.
 
-**Next.** The workflow is complete.
+**Next.** Go to [Exit](exit.md).

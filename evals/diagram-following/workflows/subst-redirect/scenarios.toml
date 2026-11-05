@@ -10,18 +10,34 @@ warnings = ["W_SUBST_USED"]
 # The entry's default redirects the diagram's Approve to another document.
 [[scenario]]
 name = "document-redirect"
-path = ["Outline", "Approve"]
+path = ["Entry", "Outline", "Approve", "Exit"]
 inputs = { "change.txt" = "minor", "release.txt" = "hold" }
 
 # Amend's default redirects its link to one section of the handbook.
 [[scenario]]
 name = "section-redirect"
-path = ["Outline", "Amend", "Inspect", "Approve"]
+path = [
+    "Entry",
+    "Outline",
+    "Amend",
+    "Inspect",
+    "Approve",
+    "Exit",
+]
 inputs = { "change.txt" = "major", "release.txt" = "hold" }
 
 # The entry's title selects stage.md's release preset, whose pair for gate.md
 # holds over its default's.
 [[scenario]]
 name = "preset-over-default"
-path = ["Outline", "Amend", "Inspect", "Stage", "Gate", "Approve"]
+path = [
+    "Entry",
+    "Outline",
+    "Amend",
+    "Inspect",
+    "Stage",
+    "Gate",
+    "Approve",
+    "Exit",
+]
 inputs = { "change.txt" = "major", "release.txt" = "ship" }

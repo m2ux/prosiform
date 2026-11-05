@@ -1,0 +1,31 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+# A second decision follows the first on every path, so a branch is read
+# from its own input rather than carried from the first. Refund is drawn
+# and linked from Invoice, but no edge leads to it.
+
+[[scenario]]
+name = "flagged-list-price"
+path = [
+    "Entry",
+    "Submit",
+    "Screen",
+    "Hold",
+    "Price",
+    "Invoice",
+    "Exit",
+]
+inputs = { "risk.txt" = "high", "tier.txt" = "silver" }
+
+[[scenario]]
+name = "clear-discount"
+path = [
+    "Entry",
+    "Submit",
+    "Screen",
+    "Price",
+    "Discount",
+    "Invoice",
+    "Exit",
+]
+inputs = { "risk.txt" = "low", "tier.txt" = "gold" }

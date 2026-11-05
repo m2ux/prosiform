@@ -11,7 +11,7 @@ This repository holds a contract and the builds that implement it. They change a
 
 The contract is the product and a build answers to it. A production build names a contract revision as the target it implements, so that revision is tagged in its own right rather than read off whichever build shipped beside it.
 
-The Python build declares its version in `src/pyproject.toml`, and `pf -v` reports that version beside the [profile identifier](#the-profile-identifier), as `pf 0.16.0 (skill-markdown-v4)`. A change the contract's numbers move may declare the build's next version there as it lands, so `main` can report a version no tag carries yet.
+The Python build declares its version in `src/pyproject.toml`, and `pf -v` reports that version beside the [profile identifier](#the-profile-identifier), as `pf 0.16.0 (prosiform-markdown)`. A change the contract's numbers move may declare the build's next version there as it lands, so `main` can report a version no tag carries yet.
 
 ## What the numbers mean
 
@@ -45,7 +45,7 @@ A published tag never moves. Work that merges after a release is tagged ships in
 
 ## The profile identifier
 
-`skill-markdown-v4` names the Markdown grammar the parser accepts, and `-v` reports it beside the version. It is an opaque identifier rather than a semantic version: it changes when the accepted grammar changes, which is itself a change of contract major. What Markdown is read and what contract is implemented are separate statements, and one identifier states each.
+`prosiform-markdown` names the Markdown grammar the parser accepts, and `-v` reports it beside the version. It carries no version of its own: a change to the accepted grammar is a change of contract major, and the contract's number is what states it. What Markdown is read and what contract is implemented are separate statements, and one identifier states each.
 
 ## Below 1.0.0
 

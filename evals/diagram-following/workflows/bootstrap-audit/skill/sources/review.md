@@ -23,7 +23,7 @@ Background for a later run.
 
 ```mermaid
 flowchart TD
-    start(( )) --> Read
+    Entry(( )) --> Read
     Read --> known{"is the finding known?"}
     known --> prior[already recorded]
     known --> fresh[new]
@@ -34,7 +34,7 @@ flowchart TD
     weigh --> minor[minor]
     fatal --> Conclude
     minor --> Conclude
-    Conclude --> stop((( )))
+    Conclude --> Exit((( )))
 
     click Read href "appraise/read.md"
     click known href "appraise/known.md"

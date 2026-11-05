@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_cli import OPENING
+from test_cli import opening
 
 from prosiform.bundle import shown_text
 from prosiform.candidate import carried, intended
@@ -534,7 +534,7 @@ def test_a_substitute_declaring_a_group_joins_it_under_its_own_member_heading(
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
     status, published, _said = grouped(tree, "guide.md")
     assert status == 0
-    assert published.startswith(f"{OPENING}# Rules\n")
+    assert published.startswith(f"{opening('Rules')}# Rules\n")
     assert "### Stand-In" in published
     assert published.count("The stand-in preamble.") == 1
     assert "Every rule the tree under test holds." not in published
@@ -563,7 +563,7 @@ def test_the_group_a_substitute_declares_is_the_one_the_bundle_merges(
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
     status, published, _said = grouped(tree, "guide.md")
     assert status == 0
-    assert published.startswith(f"{OPENING}# Rules\n")
+    assert published.startswith(f"{opening('Rules')}# Rules\n")
     assert "# Authored" not in published
 
 
@@ -650,7 +650,7 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tree / "out" / "guide.bundles"
     published = (folder / "guide.bundle.md").read_text()
-    assert published.startswith(f"{OPENING}# Rules\n")
+    assert published.startswith(f"{opening('Rules')}# Rules\n")
     assert "### Entry" in published
     assert "[its detail](detail.md)" in published
     assert "Beside the stand-in." not in published
@@ -753,7 +753,9 @@ def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
     published = (folder / "guide.bundle.md").read_text()
     assert "(stand-in.bundle.md)" in published
     assert (
-        (folder / "stand-in.bundle.md").read_text().startswith(f"{OPENING}# Stand-in\n")
+        (folder / "stand-in.bundle.md")
+        .read_text()
+        .startswith(f"{opening('Stand-in')}# Stand-in\n")
     )
 
 

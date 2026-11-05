@@ -6,5 +6,3 @@ prosiform:
 # Proof
 
 Write `actions/proof.txt` containing `proofread`.
-
-**Next.** Take the transition out of this state.

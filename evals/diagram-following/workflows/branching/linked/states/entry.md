@@ -1,0 +1,6 @@
+---
+prosiform: {}
+---
+# Entry
+
+Begin.

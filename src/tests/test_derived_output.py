@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_cli import OPENING, Run, written
+from test_cli import Run, opening, written
 from test_file_roots import declared
 
 from prosiform import cli
@@ -238,7 +238,7 @@ def test_a_run_folder_name_the_filesystem_accepts_publishes(tmp_path: Path) -> N
     written(tmp_path, f"{name}.md", DECLARED + "# Long\n")
     run = invoke(tmp_path, f"{name}.md")
     assert run.status == 0 and run.stdout == ""
-    assert bundle(tmp_path, name).read_text() == f"{OPENING}# Long\n"
+    assert bundle(tmp_path, name).read_text() == f"{opening('Long')}# Long\n"
     assert sorted(path.name for path in tmp_path.iterdir()) == [
         f"{name}.bundles",
         f"{name}.md",

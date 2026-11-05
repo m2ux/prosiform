@@ -5,9 +5,8 @@ prosiform: {}
 
 ## Source
 
-Read the source.
+Write `actions/source.txt` containing `reviewed`.
 
 ## Tests
 
-Read the tests.
-
+Write `actions/tests.txt` containing `tested`.

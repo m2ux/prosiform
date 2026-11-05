@@ -3,15 +3,28 @@
 
 [[scenario]]
 name = "no-rework"
-path = ["Draft", "Review", "Publish"]
+path = [
+    "Entry",
+    "Draft",
+    "Review",
+    "Publish",
+    "Exit",
+]
 inputs = { "rounds.txt" = "0" }
 
 [[scenario]]
 name = "two-rounds"
 path = [
-  "Draft", "Review",
-  "Revise", "Check", "Review",
-  "Revise", "Check", "Review",
-  "Publish",
+    "Entry",
+    "Draft",
+    "Review",
+    "Revise",
+    "Check",
+    "Review",
+    "Revise",
+    "Check",
+    "Review",
+    "Publish",
+    "Exit",
 ]
 inputs = { "rounds.txt" = "2" }

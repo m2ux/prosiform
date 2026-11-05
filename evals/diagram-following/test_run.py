@@ -23,7 +23,7 @@ from typing import Any
 
 import pytest
 import workflow as source
-from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Opencode
+from harness import HARNESSES, MANAGED_SETTINGS, Claude, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -33,7 +33,6 @@ from run import (
     COMPILED_SET,
     FORMS,
     LINKED_TREE,
-    PF_SETS,
     PROSE_BUNDLE,
     TRANSCRIPT,
     TREE,
@@ -56,8 +55,10 @@ from score import (
     TRACE,
     TRACES,
     Failure,
-    Start,
     read_starts,
+)
+from score import (
+    names as names_section,
 )
 from workflow import (
     ENTRY,
@@ -98,7 +99,7 @@ DEPARTURES: dict[str, tuple[str, dict[str, Failure | None]]] = {
         },
     ),
     "STUB_AGENT_ANSWER": (
-        DONE,
+        "1",
         {
             "chain": None,
             "parallel-set": None,
@@ -118,8 +119,10 @@ absent fails here as surely as one that does not fire where it is present.
 
 
 def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
-    """The sessions a run of the whole corpus starts."""
-    return len(matrix(list(CORPUS.values()), models, forms, repetitions))
+    """The sessions a run of the whole corpus starts on the stub's harness."""
+    return len(
+        matrix(list(CORPUS.values()), models, forms, repetitions, HARNESSES["claude"])
+    )
 
 
 def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
@@ -175,12 +178,19 @@ def log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 def eval_run(tmp_path: Path, *extra: str) -> dict[str, Any]:
-    """A run of one model through the stub agent, its records under tmp_path."""
+    """A run of one model through the stub agent, its records under tmp_path.
+
+    The stub stands in for any harness, so the run names `claude`, whose
+    stream carries every scenario's trace, rather than the default harness
+    whose observability the corpus is sized by.
+    """
     return run(
         options(
             [
                 "--agent-command",
                 f"{sys.executable} {STUB}",
+                "--harness",
+                "claude",
                 "--models",
                 "stub-model",
                 "--results",
@@ -213,17 +223,18 @@ def material(session: Session) -> set[str]:
 
     A bundled form's entry bundle is `workflow.md`, and every other bundle
     of its set sits beside it under the name `pf` gave it. A form read as a
-    source tree gives its own files.
+    source tree gives its own files. A scenario stating answers adds
+    `answers.txt`.
     """
     workflow = CORPUS[session.workflow]
     scenario = next(i for i in workflow.scenarios if i.name == session.scenario)
     inputs = {f"inputs/{name}" for name in scenario.inputs}
-    build = {"bin/pf"} if session.form in PF_SETS else set()
+    if scenario.answers:
+        inputs.add("answers.txt")
     if session.form in BUNDLED:
         return (
             {ENTRY}
             | inputs
-            | build
             | {
                 name
                 for name in bundles_of(workflow, session.form)
@@ -232,15 +243,11 @@ def material(session: Session) -> set[str]:
         )
     if session.form == BOOTSTRAP_SET:
         skill = workflow.directory / source.BOOTSTRAP_DIR
-        return (
-            {
-                f".claude/skills/{workflow.name}/{path.relative_to(skill)}"
-                for path in skill.rglob("*")
-                if path.is_file()
-            }
-            | inputs
-            | build
-        )
+        return {
+            f".claude/skills/{workflow.name}/{path.relative_to(skill)}"
+            for path in skill.rglob("*")
+            if path.is_file()
+        } | inputs
     tree = workflow.form(FORMS[session.form])
     return {
         str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()
@@ -248,11 +255,13 @@ def material(session: Session) -> set[str]:
 
 
 def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -> None:
-    sessions = matrix(list(CORPUS.values()), ["a", "b"], list(FORMS), 5)
+    sessions = matrix(
+        list(CORPUS.values()), ["a", "b"], list(FORMS), 5, HARNESSES["claude"]
+    )
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 60
+    assert len(sessions) == 2 * 5 * every_session(["a"], list(FORMS), 1)
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -290,9 +299,11 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     tmp_path: Path, log: Path
 ) -> None:
     record = eval_run(
-        tmp_path, "--repetitions", "2", "--budget-tokens", "100000", "--parallel", "3"
+        tmp_path, "--repetitions", "2", "--budget-tokens", "200000", "--parallel", "3"
     )
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
+    sessions = matrix(
+        list(CORPUS.values()), ["stub-model"], list(FORMS), 2, HARNESSES["claude"]
+    )
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
     expected = every_session(["stub-model"], list(FORMS), 2)
     assert record["started"] == len(sessions) == expected
@@ -303,23 +314,48 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     assert found == sorted(sorted(material(session)) for session in sessions)
     for entry in entries:
         argv = entry["argv"]
-        tools = "Read,Write,Edit,Glob,Grep,Task"
-        assert argv[argv.index("--tools") + 1] == tools + (",Bash" * entry["pf"])
+        tools = "Read,Write,Edit,Glob,Grep,Agent"
+        assert argv[argv.index("--tools") + 1] == tools + ",Bash"
         assert "--strict-mcp-config" in argv and "--disable-slash-commands" in argv
         assert "--mcp-config" not in argv and "--bare" not in argv
-        shell = entry["pf"]
-        assert ("--allowedTools" in argv) is shell
-        assert ("Bash" in " ".join(argv)) is shell
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
+        assert Path(entry["pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
+        assert not Path(entry["pf"]).is_relative_to(entry["workspace"])
         assert (ENTRY in entry["prompt"]) is (ENTRY in entry["files"])
         assert Path(entry["workspace"]).is_relative_to(workspaces)
         assert not Path(entry["workspace"]).exists()
         assert entry["config"] == str(tmp_path / "eval" / "config")
         variables = set(entry["variables"])
         assert not variables & (set(CALLER_VARIABLES) - {"CLAUDE_CONFIG_DIR"})
+        assert "CLAUDE_CODE_DISABLE_BACKGROUND_TASKS" in variables
         assert not any(
-            name.startswith(("CLAUDE_CODE_", "ANTHROPIC_")) for name in variables
+            name.startswith(("CLAUDE_CODE_", "ANTHROPIC_"))
+            for name in variables - {"CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"}
         )
     assert not workspaces.exists()
+
+
+@pytest.mark.parametrize("held", ["results", "workspaces"])
+def test_a_reused_run_id_is_refused_before_bundling_or_starting_a_session(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, held: str
+) -> None:
+    """A stopped run's results or workspaces keep its id until both are removed."""
+    results = tmp_path / "results" / "test"
+    workspaces = tmp_path / "eval" / "workspaces" / "test"
+    residue = results if held == "results" else workspaces
+    residue.mkdir(parents=True)
+    sentinel = residue / "kept.txt"
+    sentinel.write_text("kept\n")
+
+    def unexpected_bundle(*args: object) -> None:
+        pytest.fail("a reused run id reached bundling")
+
+    monkeypatch.setattr("run.bundles_of", unexpected_bundle)
+    with pytest.raises(CorpusError, match="run id.*test.*exists"):
+        eval_run(tmp_path, "--budget-tokens", "200000")
+    assert sentinel.read_text() == "kept\n"
+    assert not list(log.iterdir())
+    assert not list(results.rglob(SESSION))
 
 
 def test_a_bundled_form_is_one_file_and_the_tree_its_sources(
@@ -426,7 +462,7 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("STUB_AGENT_TOKENS", "125")
-    eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "100000")
+    eval_run(tmp_path, "--repetitions", "1", "--budget-tokens", "200000")
     written = records(tmp_path)
     assert len(written) == every_session(["stub-model"], list(FORMS), 1)
     for record in written:
@@ -449,7 +485,12 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
         assert trace == verdict["actual"]
         action_files = {path.name for path in (directory / ACTIONS).iterdir()}
         workflow = CORPUS[session.workflow]
-        assert action_files == {workflow.walked[state].action[0] for state in trace}
+        [scenario] = (i for i in workflow.scenarios if i.name == session.scenario)
+        assert action_files == {
+            found[0]
+            for state in trace
+            if (found := workflow.walked[state].action) is not None
+        } | {entry.action[0] for entry in scenario.trace if entry.action}
 
 
 def test_a_failing_session_is_recorded_with_its_failure(
@@ -464,7 +505,7 @@ def test_a_failing_session_is_recorded_with_its_failure(
     [record] = records(tmp_path)
     verdict = record["verdict"]
     assert verdict["failure"] == "unfinished"
-    assert verdict["actual"] == ["Plan"]
+    assert verdict["actual"] == ["Entry"]
 
 
 def test_a_run_ends_by_writing_its_report(
@@ -515,7 +556,9 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tokens each records.
     """
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
+    sessions = matrix(
+        list(CORPUS.values()), ["stub-model"], list(FORMS), 1, HARNESSES["claude"]
+    )
     budget = 250 * len(sessions)
     record = eval_run(
         tmp_path,
@@ -598,7 +641,8 @@ def test_a_session_reporting_no_cost_is_charged_its_cap(
     monkeypatch.setenv("STUB_AGENT_SILENT", "1")
     record = eval_run(
         tmp_path,
-        *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
+        *("--workflows", "linear,branching,looping", "--forms", PROSE_BUNDLE),
+        *("--repetitions", "1", "--parallel", "1"),
         *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 5
@@ -722,7 +766,8 @@ def test_a_run_the_budget_stopped_whose_sessions_all_errored_is_refused(
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
     record = eval_run(
         tmp_path,
-        *("--repetitions", "1", "--parallel", "1", "--forms", PROSE_BUNDLE),
+        *("--workflows", "linear,branching,looping", "--forms", PROSE_BUNDLE),
+        *("--repetitions", "1", "--parallel", "1"),
         *("--budget-tokens", "1250", "--session-budget-tokens", "250"),
     )
     assert record["started"] == 3 and record["sessions"] == 5
@@ -762,7 +807,7 @@ def test_a_session_past_its_timeout_is_ended_scored_and_charged(
     hung, finished = sorted(records(tmp_path), key=lambda item: item["repetition"])
     assert hung["exit_status"] == TIMEOUT and hung["tokens"] is None
     assert hung["verdict"]["failure"] == "unfinished"
-    assert hung["verdict"]["actual"] == ["Plan", "Build"]
+    assert hung["verdict"]["actual"] == ["Entry", "Plan"]
     assert finished["exit_status"] == 0 and finished["tokens"] == 125
 
 
@@ -1350,8 +1395,8 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
     assert record["trace"] == [
         {
             "section": entry.section,
-            "returned": entry.returned,
             "together": entry.together,
+            "action": None if entry.action is None else list(entry.action),
         }
         for entry in scenario.trace
     ]
@@ -1414,7 +1459,9 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
     and written to `subagents.json`, so the scorer reads the record rather
     than opening the transcript again. Each entry names the section the
     sub-agent followed, what it returned and whether it started beside the
-    entry above it, and the session passes on its path and its record.
+    entry above it. The scenario's sub-agent returns a question, the session
+    starts it again with the answers in `answers.txt`, and the session passes
+    on its path, its record and the sub-agent's action.
     """
     eval_run(
         tmp_path,
@@ -1428,12 +1475,14 @@ def test_a_dispatch_session_records_its_sub_agents_beside_its_trace(
         path.name for path in directory.iterdir()
     }
     [scenario] = CORPUS["dispatch-question"].scenarios
-    assert read_starts(directory) == tuple(
-        Start(entry.section, entry.returned, entry.together) for entry in scenario.trace
-    )
+    [entry] = scenario.trace
+    starts = read_starts(directory)
+    assert [(start.returned, start.together) for start in starts] == [
+        ("question", False),
+        ("done", False),
+    ]
+    assert all(names_section(start.target, entry.section) for start in starts)
     assert record["verdict"]["passed"] is True
-    stated = json.loads((directory / SUBAGENTS).read_text())
-    assert stated["starts"][0]["returned"] == "question"
 
 
 def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
@@ -1460,13 +1509,13 @@ def test_a_sub_agents_trace_is_kept_beside_the_dispatching_sessions(
 
 
 def handed_prompts(directory: Path) -> list[str]:
-    """The prompt each `Task` call in a session's transcript gave its sub-agent."""
+    """The prompt each `Agent` call in a session's transcript gave its sub-agent."""
     return [
         block["input"]["prompt"]
         for line in (directory / TRANSCRIPT).read_text().splitlines()
         if (said := json.loads(line)).get("type") == "assistant"
         for block in said["message"]["content"]
-        if isinstance(block, dict) and block.get("name") == "Task"
+        if isinstance(block, dict) and block.get("name") == "Agent"
     ]
 
 
@@ -1576,8 +1625,8 @@ def test_a_run_that_ran_a_set_in_sequence_is_sequential_set(
 def test_a_question_the_session_answered_is_unrelayed_question(
     tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A sub-agent's question returned as done is answered in its place."""
-    monkeypatch.setenv("STUB_AGENT_ANSWER", "done")
+    """A sub-agent's question not started again is answered in its place."""
+    monkeypatch.setenv("STUB_AGENT_ANSWER", "1")
     eval_run(
         tmp_path,
         *("--workflows", "dispatch-question"),
@@ -1587,7 +1636,7 @@ def test_a_question_the_session_answered_is_unrelayed_question(
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "unrelayed_question"
     directory = session_of(record).directory(tmp_path / "results" / "test")
-    assert [start.returned for start in read_starts(directory)] == ["done", "done"]
+    assert [start.returned for start in read_starts(directory)] == ["question"]
 
 
 def test_a_dispatch_run_that_stopped_short_is_unfinished(
@@ -1604,7 +1653,7 @@ def test_a_dispatch_run_that_stopped_short_is_unfinished(
     )
     [record] = records(tmp_path)
     assert record["verdict"]["failure"] == "unfinished"
-    assert record["verdict"]["actual"] == ["Request"]
+    assert record["verdict"]["actual"] == ["Entry"]
 
 
 def test_a_scenario_dispatching_nothing_records_no_start(
@@ -1687,7 +1736,8 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
     workspace.mkdir()
     sets = {(workflow.name, COMPILED_SET): bundles_of(workflow, COMPILED_SET)}
     prepare(workspace, workflow, scenario, COMPILED_SET, sets)
-    pf = str(workspace / "bin" / "pf")
+    assert not (workspace / "bin" / "pf").exists()
+    pf = "pf"
     guide = subprocess.run([pf], capture_output=True, text=True, check=False)
     assert guide.stdout.startswith("pf compiles"), guide.stdout
     (workspace / "guide.md").write_text(
@@ -1708,21 +1758,21 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
     assert "Count the files." in written.read_text()
 
 
-def test_a_compiled_session_is_given_pf_and_a_shell_limited_to_it(
+def test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC12: every compiled session has `pf` and the pf-only shell."""
+    """Every form can run the build; workspace material contains no pf copy."""
     eval_run(
         tmp_path,
-        *("--workflows", "dispatch-chain", "--forms", COMPILED_SET),
-        *("--repetitions", "1", "--budget-tokens", "4000"),
+        *("--repetitions", "1", "--budget-tokens", "100000"),
     )
     entries = seen(log)
     assert entries
     for entry in entries:
         argv = entry["argv"]
-        assert "bin/pf" in entry["files"]
-        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf:*)"
+        assert "bin/pf" not in entry["files"]
+        assert Path(entry["pf"]).is_file()
+        assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
         assert argv[argv.index("--tools") + 1].endswith(",Bash")
     transcripts = [
         path.read_text() for path in (tmp_path / "results" / "test").rglob(TRANSCRIPT)

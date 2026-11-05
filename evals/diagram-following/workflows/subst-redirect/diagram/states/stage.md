@@ -12,5 +12,3 @@ prosiform:
 Write `actions/stage.txt` containing `staged`.
 
 The [Gate](gate.md) state gates the release.
-
-**Next.** Take the transition out of this state.

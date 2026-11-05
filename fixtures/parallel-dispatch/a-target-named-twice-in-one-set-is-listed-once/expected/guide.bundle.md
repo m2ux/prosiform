@@ -1,13 +1,13 @@
-Before reading on, run `pf` with no arguments and follow the guide it prints.
+# § Instructions
+
+Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 # Guide
 
-1. Apply: [the source review](#in-parallel) and [the test review](#in-parallel).
-2. Where the source changed, apply [the source review again](#in-parallel).
+1. Apply: [the source review](#⫽-dispatch-set) and [the test review](#⫽-dispatch-set).
+2. Where the source changed, apply [the source review again](#⫽-dispatch-set).
 
-## In parallel
+## ⫽ Dispatch Set
 
-Give each of these to its own sub-agent at the same time, and continue when all have answered:
-
-- [⇉ the source review](review__source.bundle.md)
-- [⇉ the test review](review__tests.bundle.md)
+[⇉ the source review](review__source.bundle.md)
+[⇉ the test review](review__tests.bundle.md)

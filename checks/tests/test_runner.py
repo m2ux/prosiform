@@ -552,11 +552,11 @@ def test_an_output_carrying_the_declared_text_passes(
     fixture = write_fixture(
         tmp_path / "fixture",
         arguments=("-v",),
-        stdout_contains=("prosiform ", "(skill-markdown-v4)"),
+        stdout_contains=("prosiform ", "(prosiform-markdown)"),
     )
     configure(
         monkeypatch,
-        replaying(tmp_path, b"prosiform 9.4.1 (skill-markdown-v4)\n", b"", 0),
+        replaying(tmp_path, b"prosiform 9.4.1 (prosiform-markdown)\n", b"", 0),
     )
     result = run_fixture(fixture)
     assert result.passed, result.report()
@@ -569,7 +569,7 @@ def test_an_output_missing_the_declared_text_names_what_is_absent(
     fixture = write_fixture(
         tmp_path / "fixture",
         arguments=("-v",),
-        stdout_contains=("prosiform ", "(skill-markdown-v4)"),
+        stdout_contains=("prosiform ", "(prosiform-markdown)"),
     )
     configure(
         monkeypatch,
@@ -577,7 +577,7 @@ def test_an_output_missing_the_declared_text_names_what_is_absent(
     )
     detail = detail_of(run_fixture(fixture), STDOUT_TEXT)
     assert "the output does not carry 1 declared text" in detail
-    assert "'(skill-markdown-v4)' is absent" in detail
+    assert "'(prosiform-markdown)' is absent" in detail
     assert "skill-markdown-v2" in detail
 
 
