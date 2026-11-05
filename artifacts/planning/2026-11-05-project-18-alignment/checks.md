@@ -2,7 +2,7 @@
 
 These checks use the saved issue bodies after the approved corrections. A passing delivery script can still report incomplete delivery or unevaluated branch checks. Closed epic bodies supply context and are outside the body-edit scope. The source review distinguishes genuine findings from wording-check false positives.
 
-Current scope: 25 open issues. #161 and #177 are retired as not planned and absent from the board.
+Current scope: 27 open issues. #161 and #177 are retired as not planned and absent from the board.
 
 ## Format checks
 
@@ -181,6 +181,19 @@ Current scope: 25 open issues. #161 and #177 are retired as not planned and abse
   decide: References: names W12, #244; the References section does not link issues or pull requests on the same board
 ```
 
+### Issue 660
+
+```text
+#660 initiative (open): 0 fixed, 0 to apply, 0 to decide
+```
+
+### Issue 661
+
+```text
+#661 epic (open): 0 fixed, 0 to apply, 0 to decide
+  source: config/required-criteria.json at 543e1a830c64d7bccd6a541e6c7db268b19ed842 in /home/mike1/projects/dev/md-composer/.git
+```
+
 ## Reference visibility
 
 The visibility checks pass for the remaining open issues. Their References cite public repositories. The source review separately checks same-board membership and obsolete requirement sources.
@@ -333,10 +346,6 @@ missing Lane data: E06:W02, E06:W03, E06:W04
 missing Lane data: E06:W05, E06:W08
 E00:W00: depends on E00:W04, not an earlier task in its epic
 E00:W02: depends on E00:W04, not an earlier task in its epic
-E04:W14: depends on E04:W16, not an earlier task in its epic
-E04:W16: depends on E04:W17, not an earlier task in its epic
-E04:W16: depends on E04:W18, not an earlier task in its epic
-E04:W16: depends on E04:W19, not an earlier task in its epic
 E05:W01: depends on E05:W03, not an earlier task in its epic
 E00:W02: E00:W01 is already implied by E00:W00
 E00:W02: E00:W04 is already implied by E00:W00
@@ -350,8 +359,6 @@ none
 E00:W01 (level 0) is numbered after E00:W00 (level 2)
 E00:W04 (level 1) is numbered after E00:W03 (level 4)
 E01:W05 (level 1) is numbered after E01:W04 (level 2)
-E04:W16 (level 3) is numbered after E04:W15 (level 5)
-E04:W17 (level 1) is numbered after E04:W16 (level 3)
 E05:W03 (level 1) is numbered after E05:W02 (level 3)
 E06:W08 (level 2) is numbered after E06:W07 (level 3)
 
@@ -398,22 +405,17 @@ E06:W08 (level 2) is numbered after E06:W07 (level 3)
 2 E06:W08 - `↳` composing, arrow labels refused
 3 E00:W02 - Every-form baseline over the hardened corpus
 3 E02:W04 - The check catalogue states every refused scope
-3 E04:W16 - Shake down the edge-run runbook
 3 E05:W02 - State the proof on the eval page
 3 E06:W06 - The pages stating the guide and `⇉`
 3 E06:W07 - One compiled form carrying `pf`
 3 E06:W09 - The composition page stating `↳`
 3 E06:W10 - Dispatch refusals stating no link to publish
 4 E00:W03 - Harness criteria read from the baseline
-4 E04:W14 - Live run of the edge workflows
-5 E04:W15 - The eval page stating the edge workflows
 
 --- component contention: rows of different epics extending one component
 E00:W00 and E04:W02 both extend main:evals/diagram-following/run.py
 E00:W03 and E02:W03 both extend main:evals/diagram-following/README.md
-E00:W03 and E04:W15 both extend main:evals/diagram-following/README.md
 E00:W03 and E05:W02 both extend main:evals/diagram-following/README.md
-E00:W04 and E04:W16 both extend main:evals/diagram-following/RUNBOOK.md
 E00:W04 and E04:W17 both extend main:evals/diagram-following/RUNBOOK.md
 E00:W04 and E05:W00 both extend main:evals/diagram-following/RUNBOOK.md
 E02:W01 and E04:W04 both extend main:evals/diagram-following/harness.py
@@ -424,13 +426,10 @@ E02:W02 and E04:W04 both extend main:evals/diagram-following/harness.py
 E02:W02 and E04:W18 both extend main:evals/diagram-following/harness.py
 E02:W02 and E05:W03 both extend main:evals/diagram-following/harness.py
 E02:W02 and E06:W07 both extend main:evals/diagram-following/harness.py
-E02:W03 and E04:W15 both extend main:evals/diagram-following/README.md
 E02:W03 and E05:W02 both extend main:evals/diagram-following/README.md
 E03:W00 and E06:W00 both extend engineering:artifacts/planning/2026-10-17-prosiform-v1/design.md
 E04:W04 and E05:W03 both extend main:evals/diagram-following/harness.py
 E04:W04 and E06:W07 both extend main:evals/diagram-following/harness.py
-E04:W15 and E05:W02 both extend main:evals/diagram-following/README.md
-E04:W16 and E05:W00 both extend main:evals/diagram-following/RUNBOOK.md
 E04:W17 and E05:W00 both extend main:evals/diagram-following/RUNBOOK.md
 E04:W18 and E05:W03 both extend main:evals/diagram-following/harness.py
 E04:W18 and E06:W07 both extend main:evals/diagram-following/harness.py
@@ -446,19 +445,9 @@ not checked, no component read: E01:W05, E02:W04, E05:W04
 2 E05
 1 E06
 
---- longest chains: 17, each of 6 steps
-on every chain: E04:W14, E04:W15, E04:W16, E04:W19
-E04:W01 -> E04:W05 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W01 -> E04:W06 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W02 -> E04:W06 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W01 -> E04:W07 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W02 -> E04:W07 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W01 -> E04:W08 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W02 -> E04:W08 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W01 -> E04:W09 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W02 -> E04:W09 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-E04:W01 -> E04:W10 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
-... 7 more
+--- longest chains: 1, each of 5 steps
+on every chain: E00:W00, E00:W01, E00:W02, E00:W03, E00:W04
+E00:W01 -> E00:W04 -> E00:W00 -> E00:W02 -> E00:W03
 ```
 
 ### Work-item evidence
@@ -495,9 +484,6 @@ E04:W09: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w09.md
 E04:W10: artifacts/planning/2026-11-03-579-i10-e04-w10-a-scenario-compiling-a/w10.md
 E04:W11: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w11.md
 E04:W12: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w12.md
-E04:W14: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md
-E04:W15: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w15.md
-E04:W16: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w16.md
 E04:W17: artifacts/planning/2026-11-03-579-i10-e04-w17-triage-rubric-entries-for/w17.md
 E04:W18: artifacts/planning/2026-11-03-579-i10-e04-w18-a-staged-claude-session/w18.md
 E04:W19: artifacts/planning/2026-11-03-579-i10-e04-w19-the-edge-corpus-test/w19.md
@@ -676,6 +662,44 @@ E04:W05: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w05.md
 E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
 ```
 
+## Dependencies for issue 660
+
+```text
+--- problems
+none
+
+--- joins: candidate units, rows of one epic extending one component
+none
+
+--- advisory: numbering against start order
+none
+
+--- levels (0 = can start now)
+0 E00:W01 - Shake down the edge-run runbook
+1 E00:W02 - Record the live edge workflow run
+2 E00:W03 - Publish the measured edge workflow results
+
+--- component contention: rows of different epics extending one component
+none
+
+--- epic priority (epics sharing a number start together)
+1 E00
+
+--- longest chains: 1, each of 3 steps
+on every chain: E00:W01, E00:W02, E00:W03
+E00:W01 -> E00:W02 -> E00:W03
+```
+
+### Work-item evidence
+
+A missing entry means this review did not locate the registered file, rather than proving none exists.
+
+```text
+E00:W01: artifacts/planning/2026-11-05-i14-evaluation-refinement/e00/w01.md
+E00:W02: artifacts/planning/2026-11-05-i14-evaluation-refinement/e00/w02.md
+E00:W03: artifacts/planning/2026-11-05-i14-evaluation-refinement/e00/w03.md
+```
+
 ## Delivery reconciliation
 
 ### Issue 20
@@ -694,6 +718,7 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
   ready to verify: AC9 (E00)
   ready to verify: AC11 (E00)
   ready to verify: AC12 (E00)
+  ready to verify: AC15 (E00, E05)
   closable: no (undelivered E04, unticked AC1, AC2, AC9, AC11, AC12, AC13, AC15)
 ```
 
@@ -701,6 +726,7 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
 
 ```text
 #21 epic (open)
+  ticked: AC6
   unevaluable: config/branches at 41f307490fca501469007fb903e52eb602d9163a in /home/mike1/projects/dev/md-composer/.git is absent
   not checked: epic-base pull requests set apart from task deliveries
   not checked: unmerged epic bases
@@ -884,7 +910,29 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
   not checked: review pull request Changes paths
   not checked: review pull request issue links
   not checked: pull request targets
-  closable: no (undelivered W14, W15, W16, unticked AC20, AC21, AC24, AC25)
+  closable: no (long-lived branches unevaluable)
+```
+
+### Issue 660
+
+```text
+#660 initiative (open)
+  closable: no (undelivered E00, unticked AC1)
+```
+
+### Issue 661
+
+```text
+#661 epic (open)
+  unevaluable: long-lived branches not given
+  not checked: epic-base pull requests set apart from task deliveries
+  not checked: unmerged epic bases
+  not checked: draft epic bases
+  not checked: review pull request References
+  not checked: review pull request Changes paths
+  not checked: review pull request issue links
+  not checked: pull request targets
+  closable: no (undelivered W01, W02, W03, unticked AC1, AC2, AC3, AC4, AC5, AC6)
 ```
 
 ## Linked task PR plans

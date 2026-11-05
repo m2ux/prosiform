@@ -92,4 +92,4 @@ A measurement that cannot fail measures nothing.
 - **R4.** [Grouping and composition record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) — where the grouping-targets work and the feature workflows were planned, and the proof's earlier decisions.
 - **R5.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed criterion reconciliation, lane evidence and verification results.
 
-- **R6.** [Evaluation Refinement](INITIATIVE_URL) — the deferred edge shakedown, live measurements and results publication.
+- **R6.** [Evaluation Refinement](https://github.com/m2ux/prosiform/issues/660) — the deferred edge shakedown, live measurements and results publication.

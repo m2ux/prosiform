@@ -79,4 +79,4 @@ The diagram-following eval supplies ordered pf-run scoring and workflows for fol
 - **R3.** [Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) — *Link classification and resource handling*, *Section composition* and *Guide*.
 - **R4.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed criterion reconciliation, lane evidence and verification results.
 
-- **R5.** [Evaluation Refinement](INITIATIVE_URL) — the deferred shakedown, live edge run and publication, with their source criteria and work-item mapping.
+- **R5.** [Evaluation Refinement](https://github.com/m2ux/prosiform/issues/660) — the deferred shakedown, live edge run and publication, with their source criteria and work-item mapping.

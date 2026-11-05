@@ -16,11 +16,12 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 | Checks describing their execution and revisions | I10 AC3, AC4, AC5, AC7 | E01 | Closed delivery and ticked initiative criteria. |
 | Settings isolation | I10 AC6, AC8 | E02 | Closed delivery and ticked initiative criteria. |
 | References reaching the named grouped document | I10 AC10 | E03 | Closed delivery and ticked initiative criterion. |
-| Measured composition and dispatch edges | I10 AC13 | E04 | Live records and shakedown remain open; completed structural criteria have passing verification. |
-| Feature proof and runbook-governed measurements | I10 AC14, AC15 | E00, E04, E05 | Feature proof is delivered. The edge measurement still prevents AC15 from being complete. |
+| Checked composition and dispatch paths | I10 AC13 | E04 | Retained corpus and harness criteria have passing branch-level verification; integration remains open. Live measurement is held by I14. |
+| Feature proof and runbook-governed measurements | I10 AC14, AC15 | E00, E05 | Feature proof and baseline delivery are recorded; parent verification remains separate. |
 | One guide before the marks it explains | I10 AC16, AC17 | E06 | The approved AC16 describes current merged guide wording and passes its existing tests. |
 | A named MVP release | I11 AC1, AC2 | E00 | Versioning source was read; no release work is recorded as delivered. |
 | A checked pattern catalogue | I12 AC1, AC2, AC3, AC4, AC5, AC6 | E00–E04 | Every criterion has epic coverage. Template compliance and compilation in AC2 need distinct conditions. |
+| Auditable edge measurements | I14 AC1 | E00 | Shakedown, live records and publication are deferred in Backlog, with no lanes and epic priority 1. |
 
 ## Marked requirement sources
 
@@ -48,11 +49,11 @@ Every currently marked source has been read. The current-contract binding and it
 
 - **Resolved decision:** The user authorized reconciliation with the delivered guide and `compiled` form, preserving task IDs. The saved issue bodies, W14–W16, W19's coverage and the PR test table state that design. [Verification](verification.md) establishes the affected ticks.
 - **Problem:** E04's base predates current main's guide and dispatch-set heading. Passing the old base's suite does not establish integration with main's later grammar and harness changes.
-  **Proposed resolution:** W16 reads the current merged guide and validates the integrated base before its shakedown. No base merge or implementation repair is performed in this alignment.
+  **Disposition:** E04's integration PR #622 remains open and conflicted. The shakedown's guide and integration checks are held by I14 E00 W01; no base merge or implementation repair is performed in this alignment.
 - **Problem:** At merged main `ba93ca60860f0dc46722f27acd471740465279da`, the guide in `src/prosiform/cli.py` names `⫽ <that section's title> dispatch set`, while `src/prosiform/dispatch.py` declares `⫽ Dispatch Set`. The existing guide tests assert its printed text and do not compare the two.
-  **Proposed resolution:** The integration review needs a corrected guide and a check comparing its stated dispatch-set form with emitted bundles. Passing the printed-text checks alone does not settle this finding.
+  **Disposition:** The integration review needs a corrected guide and a check comparing its stated dispatch-set form with emitted bundles. I14's shakedown reads that integrated result before a paid measurement. Passing the printed-text checks alone does not settle this finding.
 - **Problem:** PR #651's Open Questions hold the expanded default workflow matrix. Its merged implementation admits edge workflows through the existing `compiled` form; the planning record also carries the earlier decision to keep the baseline and edge workflow selections separate.
-  **Proposed resolution:** Reconcile the runbook's workflow selections and the runner's default inventory before another paid run or declaring the combined baseline current.
+  **Disposition:** I14 E00 W01 reconciles the runbook's workflow selections and the runner's default inventory before another paid edge run. No combined baseline is declared current by this transfer.
 
 ### Criteria — medium
 

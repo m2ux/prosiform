@@ -1,15 +1,13 @@
 ## Overview
 
-The diagram-following eval measures how an agent follows compiled bundles, activates deferred sections and hands dispatched bundles to sub-agents. This epic holds ordered `pf`-run scoring, workflows for the edges of composition and dispatch, and a committed live measurement on each harness carrying a shell. The workflows use the delivered guide, the `compiled` form and the build's composition and dispatch grammar.
+The diagram-following eval supplies ordered pf-run scoring and workflows for following compiled bundles, activating deferred sections and handing dispatched bundles to sub-agents. Its corpus and harness tests cover the delivered compiled form and composition and dispatch grammar. Live edge measurements are held by the evaluation-refinement initiative.
 
 ## Problem
 
-- **The edge workflows have no committed live measurement.**
-  Build fixtures and corpus tests establish what the sources compile to; a live run must establish what an agent follows.
-- **A run needs a measured budget.**
-  The edge runbook's shakedown must establish its session cap, token budget and cost cap on each selected harness before the recorded run starts.
-- **A result needs its revision and disposition.**
-  Each committed record must identify the workflows it measured and give every failing session the triage rubric's disposition.
+- **A path alone does not show which compilation occurred.**
+  The scorer needs ordered pf runs for each agent, together with the source and bundle set the session received.
+- **Composition and dispatch need explicit edge scenarios.**
+  Conditional and nested deferral, self-composition and deep dispatch require corpus evidence of the expected path and sub-agent starts.
 
 ## Proposal
 
@@ -20,11 +18,9 @@ The diagram-following eval measures how an agent follows compiled bundles, activ
 - **Composition uses the declared grammar.**
   Immediate composition uses `↳`; deferred composition uses `¬↳`. A deferred section may contain a dispatch, which its later compilation publishes as an inline link or dispatch set.
 - **One guide governs the reader.**
-  Every bundle opens with the run-pf line; the guide describes inline `⇉` links and dispatch-set subsections. Questions return through the agent conversation.
+  Every bundle directs its reader to run bare `pf` before its source content; the guide describes inline `⇉` links and dispatch-set subsections. Questions return through the agent conversation.
 - **One workflow per edge.**
   The corpus covers conditional, nested and preset-selected deferral; conditional and self-composition; a deferred section containing a dispatch; deep dispatch; and each sub-agent's first required compile.
-- **Each shell harness has a recorded run.**
-  The run follows its measured runbook and commits its report beside the baseline. Every failing session receives the rubric's disposition.
 - **Invalid source forms belong to conformance checks.**
   Retired arrow labels and deferred-dispatch operators are refused by the build; live workflows carry admitted forms alone.
 
@@ -44,9 +40,6 @@ The diagram-following eval measures how an agent follows compiled bundles, activ
 | [W10](https://github.com/m2ux/prosiform/pull/634) | Deferred composition reaching a dispatch | AC13 | W01, W02 | W11, W12 | 1 | ✓ |
 | [W11](https://github.com/m2ux/prosiform/pull/634) | Scenarios dispatching three hops deep | AC14, AC15, AC16 | W01, W02, W04 | W10, W12 | 1 | ✓ |
 | [W12](https://github.com/m2ux/prosiform/pull/634) | Scenarios of a sub-agent's first `pf` run | AC17, AC18 | W01, W02, W04, [I09:E04:W12](https://github.com/m2ux/prosiform/issues/460) | W10, W11 | 1 | ✓ |
-| [W14](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w14.md) | Live run of the edge workflows | AC20, AC24 | W16 |  | 2 |  |
-| [W15](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w15.md) | The eval page stating the edge workflows | AC21 | W14 |  | 2 |  |
-| [W16](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e04/w16.md) | Shake down the edge-run runbook | AC25 | W17, W18, W19, [I10:E06:W01](https://github.com/m2ux/prosiform/issues/639) |  | 1 |  |
 | [W17](https://github.com/m2ux/prosiform/pull/640) | Triage rubric entries for the run classes | AC23 | W03, [I10:E05:W00](https://github.com/m2ux/prosiform/issues/594) |  | 1 | ✓ |
 | [W18](https://github.com/m2ux/prosiform/pull/638) | Compiled Claude per-agent command evidence | AC26 | W02, W04 |  | 1 | ✓ |
 | [W19](https://github.com/m2ux/prosiform/pull/651) | Edge corpus using the declared bundle grammar | AC27, AC28, AC29 | W05, W06, W07, W08, W09, W10, W11, W12, [I10:E06:W02](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W03](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W04](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W05](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W07](https://github.com/m2ux/prosiform/issues/639), [I10:E06:W08](https://github.com/m2ux/prosiform/issues/639) |  | 2 | ✓ |
@@ -71,12 +64,8 @@ The diagram-following eval measures how an agent follows compiled bundles, activ
 - [x] **AC16.** A scenario whose third-hop sub-agent returns a question states that question relayed up each level to the user and the chain dispatched again with the answers, as the corpus test `make harness` runs shows.
 - [x] **AC17.** A scenario whose first-hop dispatched bundle carries a `↳` line states actions that require the content that sub-agent compiles after reading the run-pf line, so omitting the required compile fails with a named class, as the corpus test `make harness` runs shows.
 - [x] **AC18.** A scenario whose second- and third-hop bundles carry deferred content states actions at each hop that require that sub-agent to compile the reached line, so omitting a required compile fails with a named class, as the corpus test `make harness` runs shows.
-- [ ] **AC20.** Each harness carrying a shell has a committed edge-case record, `composition-edges-<harness>.json`, carrying a cell for every model of the default matrix, form and scenario of the edge workflows, as a comparison of the records against those workflows shows.
-- [ ] **AC21.** The eval README states the `compiled` form, each edge workflow and scenario, and the pass rates each edge-case record holds, as inspection against the corpus and records shows.
 - [x] **AC22.** A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's `pf` run, as a harness test `make harness` runs shows.
 - [x] **AC23.** Every class the scorer gains for a session's `pf` runs has an entry in `RUNBOOK.md`'s triage rubric, as a read of the rubric against the scorer shows.
-- [ ] **AC24.** Each edge-case record gives every failing session the triage rubric's disposition, as the records show.
-- [ ] **AC25.** `RUNBOOK.md`'s edge-run runbook carries a shakedown over the edge workflows on each harness carrying a shell, whose measured cost sets its budget, and each rubric entry for a `pf`-run class decides a shakedown session or is recorded as produced by none, as the file shows.
 - [x] **AC26.** A compiled Claude session exposes each nested sub-agent's `pf` runs to the scorer, as the nested-scenario harness test `make harness` runs shows.
 - [x] **AC27.** Each edge workflow uses admitted operator forms: composition is written `↳` or `¬↳`, and no source writes `¬⇉`, `¬⫽` or an arrow-labelled link, as the corpus tests `make harness` runs show.
 
@@ -89,3 +78,5 @@ The diagram-following eval measures how an agent follows compiled bundles, activ
 - **R2.** [Grouping and composition record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) — the composition decisions these scenarios measure.
 - **R3.** [Design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md) — *Link classification and resource handling*, *Section composition* and *Guide*.
 - **R4.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed criterion reconciliation, lane evidence and verification results.
+
+- **R5.** [Evaluation Refinement](https://github.com/m2ux/prosiform/issues/660) — the deferred shakedown, live edge run and publication, with their source criteria and work-item mapping.

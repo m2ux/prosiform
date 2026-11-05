@@ -32,7 +32,7 @@ The composition edge workflows have a measured shakedown, committed live records
 
 - [ ] **AC1.** The edge-run runbook records a shakedown on each shell harness whose measured cost determines the run budget, as the runbook and shakedown records show.
 - [ ] **AC2.** Every rubric entry for a pf-run failure class decides a shakedown session or is recorded as produced by none, as the shakedown record shows.
-- [ ] **AC3.** Each shell harness has a committed edge-case record carrying a cell for every model, form and scenario of the declared edge matrix, as a comparison of the records against that matrix and the workflow corpus shows.
+- [ ] **AC3.** Each shell harness has a committed edge-case record carrying a cell for every default-matrix model and every form and scenario of the edge workflows, as a comparison of the records against that matrix and the workflow corpus shows.
 - [ ] **AC4.** Each edge-case record gives every failing session the triage rubric's disposition, as the committed records show.
 - [ ] **AC5.** The evaluation README describes the compiled form and every edge workflow and scenario, as a comparison against the corpus shows.
 - [ ] **AC6.** The evaluation README's pass rates match each committed edge-case record, as a comparison against the records shows.

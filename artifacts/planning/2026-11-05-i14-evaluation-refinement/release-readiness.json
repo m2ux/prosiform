@@ -1,0 +1,29 @@
+{
+  "prerequisites": {
+    "462": "completed",
+    "463": "completed"
+  },
+  "queue": "users/m2ux/projectsV2/18: Status field 428166189\n  set #524 [I11] MVP Release: The Merged Surface Cut and Tagged: Backlog \u2192 Ready: gh api --method PATCH users/m2ux/projectsV2/18/items/290809566 --input /tmp/project18-align/queue-i14/status-ready.json\n  assign #524 [I11] MVP Release: The Merged Surface Cut and Tagged (Ready): gh api --method POST repos/m2ux/prosiform/issues/524/assignees -f 'assignees[]=m2ux'\n  set #525 [I11:E00] Release Cut: The Bump, Branch, Tags and Pull Request: Backlog \u2192 Ready: gh api --method PATCH users/m2ux/projectsV2/18/items/290809580 --input /tmp/project18-align/queue-i14/status-ready.json\n  assign #525 [I11:E00] Release Cut: The Bump, Branch, Tags and Pull Request (Ready): gh api --method POST repos/m2ux/prosiform/issues/525/assignees -f 'assignees[]=m2ux'\n  next #524 [I11] MVP Release: The Merged Surface Cut and Tagged: E00\n  unit I11:E00:W01: unlaned\n  current: 32, to do: 2\n",
+  "status_readbacks": {
+    "524": {
+      "Status": "Ready",
+      "Initiative": "I11 MVP Release",
+      "Epic": "I11 Initiative"
+    },
+    "525": {
+      "Status": "Ready",
+      "Initiative": "I11 MVP Release",
+      "Epic": "I11:E00 Release Cut"
+    },
+    "660": {
+      "Status": "Backlog",
+      "Initiative": "I14 Evaluation Refinement",
+      "Epic": "I14 Initiative"
+    },
+    "661": {
+      "Status": "Backlog",
+      "Initiative": "I14 Evaluation Refinement",
+      "Epic": "I14:E00 Composition Measurements"
+    }
+  }
+}

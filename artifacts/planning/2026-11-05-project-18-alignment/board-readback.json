@@ -1,11 +1,33 @@
 {
   "project": "https://github.com/users/m2ux/projects/18",
-  "items": 89,
-  "open_issues": 25,
+  "items": 91,
+  "open_issues": 27,
   "pagination_complete": true,
   "retired_issues_absent": [
     161,
     177
   ],
-  "missing_open_grouping": []
+  "missing_open_grouping": [],
+  "selected_status_readbacks": {
+    "524": {
+      "Status": "Ready",
+      "Initiative": "I11 MVP Release",
+      "Epic": "I11 Initiative"
+    },
+    "525": {
+      "Status": "Ready",
+      "Initiative": "I11 MVP Release",
+      "Epic": "I11:E00 Release Cut"
+    },
+    "660": {
+      "Status": "Backlog",
+      "Initiative": "I14 Evaluation Refinement",
+      "Epic": "I14 Initiative"
+    },
+    "661": {
+      "Status": "Backlog",
+      "Initiative": "I14 Evaluation Refinement",
+      "Epic": "I14:E00 Composition Measurements"
+    }
+  }
 }

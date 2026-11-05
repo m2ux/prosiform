@@ -12,6 +12,7 @@ A caller names a release by its tags, and a production build names the contract 
 
 | Artifact | What it holds |
 | --- | --- |
+| [Initiative body](initiative-body.md) | The saved release scope and measurement boundary |
 | [E00 W01 work item](e00/w01.md) | The previous corpus run and the version it selects |
 | [E00 W02 work item](e00/w02.md) | The release branch and its version commit |
 | [E00 W03 work item](e00/w03.md) | The `contract/` and `python/` tag pair |
@@ -52,6 +53,8 @@ None. Every clause has a criterion, each criterion is delivered by the one epic,
 `deps.py` over the initiative, the epic and its four work items: no problems; W02, W03 and W04 joined; longest chain two steps, W01 then the joined unit; epic priority E00 1.
 
 ## Decisions
+
+- **Deferred edge measurements do not gate release preparation.** (User, 2026-11-05.) I10 E04 W14–W16 are held by [I14 Evaluation Refinement #660](https://github.com/m2ux/prosiform/issues/660). The current queue selects I11 after its completed MVP prerequisites; E04 integration remains separate.
 
 - **I10 precedes I11.** (User, 2026-11-02.) I11 takes `priority: 1` and I10 [#464](https://github.com/m2ux/prosiform/issues/464) `priority: 2`, so the measurement work is delivered before the release is cut.
 - **The release is its own initiative.** (User, 2026-11-02.) I11 MVP Release follows I08 and I09 and precedes I10.

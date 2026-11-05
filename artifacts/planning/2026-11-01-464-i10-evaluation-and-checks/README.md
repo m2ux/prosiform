@@ -35,9 +35,9 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E04 W10 work item](e04/w10.md) | A deferred dispatch in the entry bundle, compiled then dispatched |
 | [E04 W11 work item](e04/w11.md) | Dispatch three hops deep: a chain, a set, and a question from the deepest level |
 | [E04 W12 work item](e04/w12.md) | A sub-agent's first `pf` run at the first, second and third hop |
-| [E04 W14 work item](e04/w14.md) | The live run of the edge workflows, committed as one `composition-edges-<harness>.json` per shell harness |
-| [E04 W15 work item](e04/w15.md) | The eval's README stating the edge workflows and their run |
-| [E04 W16 work item](e04/w16.md) | The edge-run runbook's shakedown over the edge workflows |
+| [E04 W14 deferral](e04/w14.md) | The live measurement held by I14 E00 W02 |
+| [E04 W15 deferral](e04/w15.md) | The results publication held by I14 E00 W03 |
+| [E04 W16 deferral](e04/w16.md) | The shakedown held by I14 E00 W01 |
 | [E04 W17 work item](e04/w17.md) | The triage rubric's entries for the scorer's `pf`-run classes |
 | [E05 W00 work item](e05/w00.md) | The triage rubric, a runbook per live run, and the user's model, in `RUNBOOK.md` |
 | [E05 W03 work item](e05/w03.md) | A run's managed configuration recorded by count and fingerprint |
@@ -75,7 +75,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 - **G2.** A check runs where a change can break the build, states whether it ran, and states the revision it read.
 - **G3.** An eval session reads only what the run gave it.
 - **G4.** Validation refuses a bundle whose reference lands on a destination two documents share.
-- **G5.** The eval measures how an agent follows a bundle that defers, composes or dispatches.
+- **G5.** The eval scores ordered compilation and agent paths through deferral, composition and dispatch.
 - **G6.** One live run proves the MVP's features followed.
 - **G7.** An agent is told every mark it meets, by one guide, before it meets one.
 
@@ -87,7 +87,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G2 | AC3, AC4, AC5, AC7 | E01 | E01 AC1–AC4 | No marked source |
 | G3 | AC6, AC8 | E02 | E02 AC1–AC6 | No marked source |
 | G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
-| G5 | AC13 | E04 | E04 AC1–AC18, AC20–AC29 | No marked source |
+| G5 | AC13 | E04 | E04 AC1–AC18, AC22, AC23, AC26–AC29 | No marked source |
 | G6 | AC14 | E05 | E05 AC1–AC5 | No marked source |
 | G7 | AC16, AC17, AC18 | E06 | E06 AC1–AC18 | User decisions, 2026-11-03 and 2026-11-05 |
 
@@ -105,12 +105,12 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | AC10 | E03 AC2 |
 | AC11 | E00 AC6 |
 | AC12 | E00 AC7 |
-| AC13 | E04 AC20, resting on AC1–AC19 and AC22 |
+| AC13 | E04 AC1–AC18, AC22, AC23, AC26–AC29 |
 | AC16 | E06 AC2, AC3, AC4, resting on AC1 |
 | AC17 | E06 AC5, resting on AC1, AC7–AC10 and AC14–AC16 |
 | AC18 | E06 AC6 |
 
-Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. E04 AC20 makes AC13 true only through the scenarios AC6–AC19 state and the form, scoring and harness AC1–AC5 and AC22 build; AC21 states the result on the eval page. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
+Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. E04 AC1–AC18, AC22, AC23 and AC26–AC29 bind the scenarios, scoring, harness evidence and admitted grammar. Live measurements and results publication are held by I14. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
 
 ## Design
 
@@ -127,15 +127,9 @@ Every initiative criterion traces to a clause, every clause has a criterion, eve
 
 ## Composition Following
 
-The agent-behaviour evals of composition, deferral and dispatch are their own epic, E04 ([#579](https://github.com/m2ux/prosiform/issues/579)), rather than rows of E00.
+E04 (#579) supplies the corpus and harness capability for following compiled bundles, conditional and nested deferral, composition and deep dispatch. Scenarios state ordered pf runs for every agent, and the scorer checks those runs with the action path. Live edge measurements, their shakedown and publication are held by [I14 Evaluation Refinement](../2026-11-05-i14-evaluation-refinement/README.md).
 
-- **Placement.** E00 is the default matrix's separability and its one baseline. The edge evals run only on harnesses with a shell, outside the default matrix, wait on I09:E04 W11 and W12, and end in a live run of their own; as E00 rows they would gate E00's baseline on I09 and on a second paid run. A new epic keeps E00's closure as planned and gives the work its own goal clause, G5.
-- **One compiled form.** A `compiled` session receives its sources, the bundle set and the build as `pf`, with a shell limited to it. The bootstrap edge uses `bootstrap`. The baseline and the edge run have separate workflow selections; the edge-run shakedown checks those selections against the merged runner before spending.
-- **A scenario states the `pf` runs.** A pass is the agent's path matching the one its bundle states. Where an edge is whether `pf` runs (condition false, nested deferral not needed, a sub-agent's first run), the path alone cannot fail, so a scenario also states each `pf` run and the scorer fails a session whose runs differ.
-- **Refusals are not agent evals.** A gap between symbols, `[⇉→]`, a preset mismatch on deferral and an immediate-plus-deferred pair are build refusals I09:E04's corpus fixtures hold.
-- **The MVP proof boundary.** I09:E05 W26 writes one section-composition workflow activating an unconditional deferral; E04 measures the conditional, nested, preset-matched and dispatched edges, in workflows of their own, so no component is shared.
-- **Its own record.** Each shell harness's live run is committed as `composition-edges-<harness>.json` with its report (user, 2026-11-03, as one `run.py` run takes one harness); `baseline.json` (E00 W02) and `mvp-proof.json` (I09:E05 W28) are untouched. Failing sessions are recorded by class; no pass bar gates the run.
-- **Units by area.** The form, scenario field, scorer and harness rows are one unit (W01–W04); the deferral scenarios another (W05–W07); immediate composition and directive labels a third (W08–W09); deferred and nested dispatch and the sub-agent's first run a fourth (W10–W12). W14 and W15 follow the scenarios.
+The default baseline and feature-proof records retain their own scope. E04's integration into main remains subject to review and conflict resolution; completed branch-level tests do not establish that integration.
 
 ## Measurement of the Name-Based Trigger
 
@@ -143,19 +137,11 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 
 ## Delivery Lanes
 
-Two sessions deliver I10 at once (user, 2026-11-03), one per lane. The epic table's Lane cell carries each assignment; the work items retain its planning evidence. A session takes the highest-priority available unit in its lane.
-
-Delivery models (user, 2026-11-04): lane 1 uses `gpt-6.1-sol` at `max` reasoning; lane 2 uses `gpt-6.1-sol` at `medium` reasoning. The user chooses the models used by eval runs separately.
-
-| Lane | Rows, in the order they come free |
-| --- | --- |
-| 1 | E04 W16 |
-| 2 | E04 W14, W15 |
-
-- **The shakedown supplies the recorded run.** E04 W16 in lane 1 establishes the edge runbook and budget before lane 2 takes W14; W15 documents its results.
-- **The task table carries prerequisite order.** Dependencies apply across lanes, and a lane takes another available unit while one of its rows waits.
+All retained I10 task rows are delivered to their epic bases. No row is currently assigned for dispatch. Integration review and the initiative's outstanding criterion verification remain separate completion conditions. The deferred measurement work is held by I14, with one sequential epic and no lanes (user, 2026-11-05).
 
 ## Dependency Check
+
+The subsections below preserve the historical planning checks. The [current alignment checks](../2026-11-05-project-18-alignment/checks.md) use the retained task tables after the I14 transfer.
 
 `deps.py` over the initiative, the five epics, every work item (E03's from the [I09 record](../2026-11-02-463-i09-grouping-and-composition/e01/)) and [joins.md](joins.md), on 2026-11-02:
 
@@ -203,6 +189,8 @@ E05 takes no edge: its proof run is committed, and no E05 test reads the Prosifo
 E00 W02 and E02 W03 both edit `evals/diagram-following/README.md`, in different sections, from epics that start together.
 
 ## Decisions
+
+- **Edge measurements are deferred.** (User, 2026-11-05.) E04 W14–W16 and AC20, AC21, AC24 and AC25 are held by [I14 #660](https://github.com/m2ux/prosiform/issues/660), with the mapping in its [record](../2026-11-05-i14-evaluation-refinement/decisions.md). I10 retains the corpus and harness implementation. I11 release preparation does not wait for those measurements.
 
 Each decision below is the user's (2026-11-01) unless marked as planning's.
 

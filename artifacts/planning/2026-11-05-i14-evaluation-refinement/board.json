@@ -1,0 +1,22 @@
+{
+  "items": [
+    {
+      "issue": 660,
+      "fields": {
+        "Initiative": "I14 Evaluation Refinement",
+        "Epic": "I14 Initiative",
+        "Status": "Backlog"
+      }
+    },
+    {
+      "issue": 661,
+      "fields": {
+        "Initiative": "I14 Evaluation Refinement",
+        "Epic": "I14:E00 Composition Measurements",
+        "Status": "Backlog"
+      }
+    }
+  ],
+  "existing_options_and_assignments_preserved": true,
+  "readback_verified": true
+}

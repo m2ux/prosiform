@@ -60,4 +60,4 @@ E04's base still carries the guide wording and `In parallel` heading from its in
 
 The guide's description still names a section-derived dispatch-set heading, while `src/prosiform/dispatch.py` declares the fixed heading. The three guide tests check its printed text, so their pass does not prove agreement with the emitter. This integration finding remains in the source review.
 
-No live edge run, shakedown or new baseline is claimed by this verification.
+No live edge run, shakedown or new baseline is claimed by this verification. The user subsequently transfers those measurements and their documentation to [I14](../2026-11-05-i14-evaluation-refinement/decisions.md). The former E04 AC20, AC21, AC24 and AC25 are removed from its current scope, with the source IDs retained in that transfer record.

@@ -9,9 +9,9 @@
 
 ## Scope
 
-The user selected all open board work. The initial Project 18 inventory held 90 items, including 27 open issues: four initiatives, eleven epics and twelve task issues. The final complete [board readback](board-readback.json) holds 89 items and 25 open issues, with both approved retirements absent and every open issue grouped. View 4 has no filter. The issues belong to `m2ux/prosiform`; the workspace checkout's `origin` identifies that repository. The nested `.project/main` checkout's remote uses `m2ux/md-composer`, which GitHub redirects to `m2ux/prosiform`. Git reads in this review use the workspace project checkout and refreshed origin refs.
+The user selected all open board work. The initial Project 18 inventory held 90 items, including 27 open issues: four initiatives, eleven epics and twelve task issues. After the retirements and creation of I14, the complete [board readback](board-readback.json) holds 91 items and 27 open issues: five initiatives, twelve epics and ten task issues. Both retired issues are absent and every open issue is grouped. View 4 has no filter. The issues belong to `m2ux/prosiform`; the workspace checkout's `origin` identifies that repository. The nested `.project/main` checkout's remote uses `m2ux/md-composer`, which GitHub redirects to `m2ux/prosiform`. Git reads in this review use the workspace project checkout and refreshed origin refs.
 
-Open initiatives: I01 (#20), I10 (#464), I11 (#524), I12 (#526).
+Open initiatives after the approved transfer: I01 (#20), I10 (#464), I11 (#524), I12 (#526), I14 (#660). I13 Production Build (#532) retains its identity outside this board's selected inventory.
 
 Closed issues are context only. The eleven closed epics linked by the open initiatives are not selected for body changes.
 
@@ -44,3 +44,11 @@ The saved source binding on #20 names design revision `6deca17d6b56c61f477c815da
 The saved I10 follow-up criteria state the run-pf instruction before source content without claiming it is a bundle's first bytes. The instruction and absence of a generated dispatch protocol have separate criteria, AC17 and AC18. Three existing bundle-publication checks pass at merged main, and both criteria pass the initiative readiness gate against completed E06.
 
 The saved I01 criteria and canonical initiative body state current grouping, selected presets, declaring entry invocation and compiled dispatch behavior. AC11's independent destination and casing conditions have AC16 and AC17, with E02's Coverage updated. All six affected criteria pass 649 existing merged-main tests and the initiative readiness gate. The exposure set is confirmed, with the external example's deployment and declaration pending as [recorded](external-example.md).
+
+## Deferred edge measurements
+
+The user moves I10 E04 W14–W16 into [I14 Evaluation Refinement #660](https://github.com/m2ux/prosiform/issues/660), preserving I13 Production Build. [Composition Measurements #661](https://github.com/m2ux/prosiform/issues/661) holds the shakedown, live run and results publication as W01–W03, with one sequential epic at priority 1 and no lanes. The [transfer record](../2026-11-05-i14-evaluation-refinement/decisions.md) maps the four source criteria to the destination's separately observable conditions.
+
+The three rows and AC20, AC21, AC24 and AC25 leave #579 without being marked complete. Its retained task IDs, delivery links and ticks stand. I10 AC13 describes the retained corpus and harness capability; E04 no longer covers the live-run condition AC15. The source work items point to I14, and the canonical plans and handoff record the same boundary.
+
+I14 and its epic remain Backlog. The queue computes I11 and Release Cut as Ready after the completed MVP prerequisites; its status readback is recorded with the transfer. E04 remains open: PR #622 is draft and conflicted, and branch-configuration checks remain unevaluable. This alignment performs no integration merge or paid measurement.

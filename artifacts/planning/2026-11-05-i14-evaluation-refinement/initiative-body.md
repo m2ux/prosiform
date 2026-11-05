@@ -28,7 +28,7 @@ The edge workflows have corpus and harness tests but no committed live measureme
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](EPIC_URL) | Composition Measurements | AC1 | | |
+| [E00](https://github.com/m2ux/prosiform/issues/661) | Composition Measurements | AC1 | | |
 
 ## Acceptance Criteria
 
