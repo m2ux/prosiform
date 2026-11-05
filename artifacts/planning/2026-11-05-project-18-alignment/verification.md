@@ -36,8 +36,16 @@ The changed completed criteria retain their ticks after this passing verificatio
 - Result: **3 passed**, exit 0.
 - I10 AC16 states the marks and dispatch-set subsection the guide currently describes; it requires no returned-question marker. Its tick retains verified evidence.
 
+## Merged bundle opening
+
+At the same merged main revision, the existing tests `test_every_bundle_opens_with_the_run_pf_line`, `test_a_bundle_dispatching_nothing_opens_with_the_run_pf_line` and `test_a_dispatched_bundle_carrying_a_deferral_opens_with_the_run_pf_line` all pass in a detached checkout: **3 passed**, exit 0. [Console output](test-opening.txt).
+
+Their expected complete outputs place the generated `§ Instructions` heading before the run-pf instruction and selected source content, with no generated per-bundle dispatch protocol. I10 AC17 states the instruction before source content; AC18 separately states the absence of a generated dispatch protocol. Both have verified evidence and pass the initiative readiness gate against completed E06. E04 AC29 states the run-pf instruction before source content without requiring it to be the bundle's first bytes; its delivered corpus tests also observe that condition.
+
 ## Revision boundary
 
-E04's base still carries the guide wording and `In parallel` heading from its integration of E06. Merged `main` carries a dispatch-set heading derived from the owning section and a guide with no question marker. Passing E04's tests does not establish that its base includes these later changes. W16's analysis reads the merged guide before the shakedown, and base integration and new test results remain necessary before epic completion.
+E04's base still carries the guide wording and `In parallel` heading from its integration of E06. Merged `main` carries the fixed `⫽ Dispatch Set` heading, the `§ Instructions` opening and a guide with no question marker. Passing E04's tests does not establish that its base includes these later changes. W16's analysis reads the merged guide before the shakedown, and base integration and new test results remain necessary before epic completion.
+
+The guide's description still names a section-derived dispatch-set heading, while `src/prosiform/dispatch.py` declares the fixed heading. The three guide tests check its printed text, so their pass does not prove agreement with the emitter. This integration finding remains in the source review.
 
 No live edge run, shakedown or new baseline is claimed by this verification.

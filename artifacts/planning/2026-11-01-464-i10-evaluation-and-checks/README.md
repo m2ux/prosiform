@@ -89,7 +89,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
 | G5 | AC13 | E04 | E04 AC1–AC18, AC20–AC29 | No marked source |
 | G6 | AC14 | E05 | E05 AC1–AC5 | No marked source |
-| G7 | AC16, AC17 | E06 | E06 AC1–AC18 | User decisions, 2026-11-03 |
+| G7 | AC16, AC17, AC18 | E06 | E06 AC1–AC18 | User decisions, 2026-11-03 and 2026-11-05 |
 
 | Initiative criterion | Epic criteria that make it true |
 | --- | --- |
@@ -107,7 +107,8 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | AC12 | E00 AC7 |
 | AC13 | E04 AC20, resting on AC1–AC19 and AC22 |
 | AC16 | E06 AC2, AC3, AC4, resting on AC1 |
-| AC17 | E06 AC5, AC6, resting on AC1, AC7–AC10 and AC14–AC16 |
+| AC17 | E06 AC5, resting on AC1, AC7–AC10 and AC14–AC16 |
+| AC18 | E06 AC6 |
 
 Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. E04 AC20 makes AC13 true only through the scenarios AC6–AC19 state and the form, scoring and harness AC1–AC5 and AC22 build; AC21 states the result on the eval page. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
 

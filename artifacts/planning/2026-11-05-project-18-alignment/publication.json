@@ -142,5 +142,19 @@
       "AC6"
     ],
     "readback": "complete board inventory, no further page"
+  },
+  {
+    "kind": "issues",
+    "issue": 20,
+    "url": "https://github.com/m2ux/prosiform/issues/20",
+    "updated_at": "2026-11-05T10:58:17Z",
+    "change": "User-approved current-contract source and invocation alignment"
+  },
+  {
+    "kind": "issues",
+    "issue": 22,
+    "url": "https://github.com/m2ux/prosiform/issues/22",
+    "updated_at": "2026-11-05T10:58:19Z",
+    "change": "User-approved current-contract source and invocation alignment"
   }
 ]

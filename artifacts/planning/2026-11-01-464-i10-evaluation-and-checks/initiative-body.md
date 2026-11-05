@@ -52,7 +52,7 @@ A measurement that cannot fail measures nothing.
 | [E03](https://github.com/m2ux/prosiform/issues/455) | Grouping Targets | AC10 | | ✓ |
 | [E04](https://github.com/m2ux/prosiform/issues/579) | Composition Following | AC13, AC15 | | |
 | [E05](https://github.com/m2ux/prosiform/issues/594) | MVP Proof | AC14, AC15 | [I09:E05](https://github.com/m2ux/prosiform/issues/523) | ✓ |
-| [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17 | | ✓ |
+| [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17, AC18 | | ✓ |
 
 ## Acceptance Criteria
 
@@ -72,7 +72,9 @@ A measurement that cannot fail measures nothing.
 - [x] **AC14.** An agent follows every feature the merged bundling surface delivers from the bundle `pf` compiles, on a live run of the feature workflows, as the committed proof run shows.
 - [ ] **AC15.** Every live run the eval commits follows its runbook in `RUNBOOK.md`, and gives each failing session the triage rubric's disposition, as each committed run record shows.
 - [x] **AC16.** Bare `pf` prints plain text giving an instruction for every mark and dispatch-set subsection a bundle carries, as the guide fixture `make check` runs shows.
-- [x] **AC17.** Every bundle `pf` writes opens with a line telling its reader to run bare `pf` and follow the guide, and carries no dispatch protocol of its own, as the conformance fixtures `make check` runs show.
+- [x] **AC17.** Every published bundle directs its reader to run bare `pf` before its selected source content, as the bundle-publication tests `make check` runs show.
+
+- [x] **AC18.** A published bundle carries no generated dispatch protocol of its own, as the dispatch bundle-publication tests `make check` runs show.
 
 ## Non-Goals
 

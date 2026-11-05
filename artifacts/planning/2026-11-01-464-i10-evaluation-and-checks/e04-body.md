@@ -81,7 +81,7 @@ The diagram-following eval measures how an agent follows compiled bundles, activ
 - [x] **AC27.** Each edge workflow uses admitted operator forms: composition is written `↳` or `¬↳`, and no source writes `¬⇉`, `¬⫽` or an arrow-labelled link, as the corpus tests `make harness` runs show.
 
 - [x] **AC28.** Every non-bootstrap edge scenario supplies a `compiled` form and no `staged` form, as the corpus and runner tests `make harness` runs show.
-- [x] **AC29.** Each dispatched target an edge scenario follows is a written bundle opening with the run-pf line, as the dispatch-bundle corpus tests `make harness` runs show.
+- [x] **AC29.** Each dispatched target an edge scenario follows is a written bundle carrying the run-pf instruction before its source content, as the dispatch-bundle corpus tests `make harness` runs show.
 
 ## References
 

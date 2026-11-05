@@ -24,7 +24,7 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 
 ## Marked requirement sources
 
-- **I01 R1:** The full current contract at `6deca17d6b56c61f477c815da6eeecc3949d8ca1` was read. Main revision `ba93ca60860f0dc46722f27acd471740465279da` names that exact design revision in its README profile link. The approved draft binds I01 to that contract.
+- **I01 R1:** The full current contract at `6deca17d6b56c61f477c815da6eeecc3949d8ca1` was read. Main revision `ba93ca60860f0dc46722f27acd471740465279da` names that exact design revision in its README profile link. The saved initiative binds I01 to that contract.
 - **I01 R5, historical background:** Proposal #216 was read in full. It describes the first metadata design, including Agent Skills compatibility. It is not a requirement source for remaining refinement work.
 - **I01 R6, historical background:** The file-owned invocation design was read in full. It describes historical `prosiform.root` and direct group/depth fields; current presets admit `group` and `subst`.
 - **I01 R7, historical background:** The dispatch record's README and design were read. They describe historical `»` and `prosiform.dispatch`; current dispatch and guide requirements come from R1.
@@ -42,7 +42,7 @@ Every currently marked source has been read. The current-contract binding is con
 - **Resolved:** #177 AC1 required `--fault`, which the compiler retires. Its code-listing requirement is already stated in the current design as `-C`, `--codes`.
   **User decision, 2026-11-05:** Retire the superseded issue as not planned, remove W05, AC5 and AC6 from #187, and remove its board entry. Its historical body is preserved. [Readback evidence](retirement-177.json).
 - **Problem:** #20 AC7 and #21's exposure-set criteria require the worked example's mode entries. #22 R2 points to `main/example/work-planner/bootstrap.md`, which the current main tree does not hold.
-  **Resolution in progress:** #22's approved draft cites the invocation guide pinned to merged main and its workspace-skill work item uses the current source declarations and guide. The exposure-set question offers maintained evaluation workflows plus real workspace skills, or workspace skills alone; it remains unanswered.
+  **Resolution in progress:** #22 cites the invocation guide pinned to merged main and its workspace-skill work item uses the current source declarations and guide. The exposure-set question offers maintained evaluation workflows plus real workspace skills, or workspace skills alone; it remains unanswered.
 - **Problem:** #20 AC13 and AC14 describe file-owned invocation and dispatch metadata that the current contract does not admit. The marked sources specify several different schema generations.
   **User decision, 2026-11-05:** The current contract governs the remaining refinement work. The ledger, real-use evidence and specification-freeze goals stand; earlier root and dispatch metadata specifications are historical background. Source and criterion reconciliation against that boundary is in progress.
 
@@ -51,6 +51,8 @@ Every currently marked source has been read. The current-contract binding is con
 - **Resolved decision:** The user authorized reconciliation with the delivered guide and `compiled` form, preserving task IDs. The saved issue bodies, W14–W16, W19's coverage and the PR test table state that design. [Verification](verification.md) establishes the affected ticks.
 - **Problem:** E04's base predates current main's guide and dispatch-set heading. Passing the old base's suite does not establish integration with main's later grammar and harness changes.
   **Proposed resolution:** W16 reads the current merged guide and validates the integrated base before its shakedown. No base merge or implementation repair is performed in this alignment.
+- **Problem:** At merged main `ba93ca60860f0dc46722f27acd471740465279da`, the guide in `src/prosiform/cli.py` names `⫽ <that section's title> dispatch set`, while `src/prosiform/dispatch.py` declares `⫽ Dispatch Set`. The existing guide tests assert its printed text and do not compare the two.
+  **Proposed resolution:** The integration review needs a corrected guide and a check comparing its stated dispatch-set form with emitted bundles. Passing the printed-text checks alone does not settle this finding.
 - **Problem:** PR #651's Open Questions hold the expanded default workflow matrix. Its merged implementation admits edge workflows through the existing `compiled` form; the planning record also carries the earlier decision to keep the baseline and edge workflow selections separate.
   **Proposed resolution:** Reconcile the runbook's workflow selections and the runner's default inventory before another paid run or declaring the combined baseline current.
 

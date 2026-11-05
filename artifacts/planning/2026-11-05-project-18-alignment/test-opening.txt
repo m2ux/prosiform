@@ -1,0 +1,2 @@
+{"revision": "ba93ca60860f0dc46722f27acd471740465279da", "checkout": "/tmp/revision-check-qglf4usa/ba93ca60860f"}
+...                                                                      [100%]
