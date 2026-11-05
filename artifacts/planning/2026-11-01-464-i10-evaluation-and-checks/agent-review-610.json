@@ -1,0 +1,33 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/610",
+    "head": "c7858f5688cee84b86b3b88a32862e4eb450f518",
+    "base": "11a872918669362260cf16b875694342f262d2c2",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/agent-review-610.json",
+    "reviewer": "claude-opus-4-5",
+    "reviewed_at": "2026-11-05T08:10:00Z",
+    "scope": "The whole 711-file diff from main to i10/e00/main: the guide pf prints, the bundle shape it compiles, the eval corpus and its scenarios, the scorer, the runner, the runbook and the committed baseline. Inspected every caller of dispatch.listing and bundle.instruction_group, the scorer's names() and dispatch checks, and the runner's matrix and observability filter.",
+    "criteria": "AC1-AC10 read against their named instruments: the corpus test for every failure class, test_runbook.py for the baseline caps and the default model, and make check for the whole repository.",
+    "validation": "make check at c7858f568 passes in full: 1402 tests, 516 fixtures, 3185 vocabulary terms, the conformance report and the independence check. The baseline's 360 sessions are committed with their dispositions, and no failing session is untriaged.",
+    "findings": [
+      {
+        "description": "names() rejected a start whose prompt named a compiled bundle with the fragment it heads, such as review__tests.bundle.md#tests, so two sessions read undispatched although their sub-agents ran and wrote their actions.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/657"
+      },
+      {
+        "description": "The bootstrap form's dispatched sections state no states, so a sub-agent traces nothing and the parent waits until its session cap ends it; two of five repetitions timed out while three passed, making the cells a coin-flip.",
+        "severity": "nonblocking",
+        "disposition": "deferred",
+        "ticket": "https://github.com/m2ux/prosiform/issues/656"
+      },
+      {
+        "description": "AC6 is stated over each harness the matrix runs, and only opencode has a committed baseline of this matrix, so claude and cursor have no evidence for it.",
+        "severity": "nonblocking",
+        "disposition": "deferred",
+        "ticket": "https://github.com/m2ux/prosiform/issues/658"
+      }
+    ]
+  }
+]
