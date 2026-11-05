@@ -219,5 +219,19 @@
     "url": "https://github.com/m2ux/prosiform/issues/526",
     "updated_at": "2026-11-05T14:11:56Z",
     "change": "Separate template section order (AC2) from page compilation (AC7); foundation row covers both; task IDs preserved"
+  },
+  {
+    "kind": "issue",
+    "issue": 243,
+    "url": "https://github.com/m2ux/prosiform/issues/243",
+    "updated_at": "2026-11-05T15:25:13Z",
+    "change": "Triage selection filters reports; writes remain in the restatement task; completion ticks preserved"
+  },
+  {
+    "kind": "issue",
+    "issue": 187,
+    "url": "https://github.com/m2ux/prosiform/issues/187",
+    "updated_at": "2026-11-05T15:25:14Z",
+    "change": "Triage selection filters reports; writes remain in the restatement task; completion ticks preserved"
   }
 ]
