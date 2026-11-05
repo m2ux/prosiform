@@ -4,7 +4,7 @@
 [![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/6deca17d6b56c61f477c815da6eeecc3949d8ca1/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
-A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and every local Markdown dependency it reaches as one validated bundle, and each target it dispatches as a bundle of its own.
+A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and the linked sources it reaches as validated bundles.
 
 ---
 **[Invocation](invocation.md)** • **[Architecture](docs/architecture.md)** • **[Glossary](docs/glossary.md)** • **[Fixtures](fixtures/README.md)** • **[Docs](docs/README.md)** • **[Examples](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-22-work-planner-compact-diagram/work-planner-compact.review.md)**
@@ -15,7 +15,7 @@ A deterministic compiler for instruction sets written as linked Markdown. Give i
 
 Agent skills are authored as collections of linked documents: an entry point links to procedures, and procedures link to the sections that govern them. Reaching the complete context for one operation means resolving that graph at read time. prosiform moves that work into a compilation step, so retrieval stops being part of the reasoning task.
 
-Authors can maintain shared rules in one place and reuse them across procedures. The agent receives the selected material in one continuous document, with repeated content included once and links pointing to the relevant sections. Each bundle is validated before delivery; a link naming a missing section, an operator naming no document, or invalid content produces an explicit failure. Completeness follows the links authors provide to the documents that declare `prosiform`.
+Authors can maintain shared rules in one place and reuse them across procedures. The agent receives the selected material in one continuous document, with repeated content included once and links pointing to the relevant sections. Each bundle is validated before publication; invalid content produces an explicit failure. Completeness follows the links to declared sources.
 
 ### Why?
 
@@ -28,9 +28,9 @@ Leaving retrieval to the agent costs:
 
 ### How It Works
 
-`SKILL.md` links a procedure, and the procedure links the rules it is held to. One run over `SKILL.md` reads all three files and writes one bundle, in which each link that named another file names a heading inside it. [Bundles](docs/bundles.md) walks through the run.
+One run turns `SKILL.md` and its linked procedure and rules into one bundle. [Bundles](docs/bundles.md) walks through the example.
 
-![SKILL.md, modes/review.md and rules.md on the left. On the right, one bundle: Work Planner, Review Mode with its Procedure, and Rules with Tests. Every link now points inside the bundle.](docs/images/run.svg)
+![A source tree and SKILL.md select Review Mode. Arrows trace its two Rules links to one Tests section. The compiled bundle contains Work Planner, Review Mode and the test rules once, with every link pointing to its heading inside the bundle.](docs/images/run.svg)
 
 ## Installation
 
@@ -40,29 +40,12 @@ Requires Python 3.13+ on Linux or macOS. From the repository root:
 pip install ./src
 pf -v
 ```
+
 ## Usage
 
-Each example below runs over a [corpus fixture](fixtures/README.md)'s source tree from the repository root, and the fixture records the bundles the run writes. A run writes its bundles into a folder of its own, named for its entry with the `.bundles` suffix, in the working directory or in the folder `-o` names, made if absent: the entry's bundle under its derived name, and a bundle for each target its dispatches reach. Several entries join their names with `+`. The folder is written whole and swapped in, so a reader sees one run's bundle set and never a mixture of two. File and directory names use hyphens rather than underscores. [Invocation](invocation.md) states every option, budget and exit status.
+Sources declare `prosiform` in [YAML frontmatter](docs/sources.md#frontmatter). Run `pf` with no arguments for the agent guide. Each run writes a `.bundles` folder containing the entry's bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.
 
-### Print the Guide
-
-```bash
-pf
-```
-
-With no arguments, `pf` prints the guide an agent follows a skill by: the compile step, the rule that a link whose text opens with `↳` names an inline target to compile, read whole and follow, that a link whose text opens with `⇉` names a file to give to a sub-agent, and that an `In parallel` section lists several to give to their own sub-agents at once, with the failures of a set returned together and each sub-agent's question returned unanswered in an answer whose first line reads `Question:`. Every bundle opens with a line telling its reader to run `pf` first. A skill's bootstrap is one instruction: run `pf` and follow it.
-
-### Declare a Source
-
-A document is compiled when its leading YAML frontmatter declares `prosiform`; a link to a document that declares nothing is left as written. Each key under `prosiform` is a preset: `default` is in force wherever the document is compiled, and another is in force where the title of the section linking the document names it. A preset's `group` pair places the document's sections in a shared group at a depth, and its `subst` pairs redirect the links the document writes. [Sources](docs/sources.md#frontmatter) states the declaration and its presets, and [Selection](docs/selection.md#presets-in-force) which presets a link puts in force.
-
-```yaml
----
-prosiform:
-  default:
-    group: {rules: 2}
----
-```
+Start each example below from the repository root. Both use source trees from the [fixture corpus](fixtures/README.md). File and directory names use hyphens rather than underscores.
 
 ### Bundle a Source and its Dependencies
 
@@ -77,27 +60,3 @@ pf guide.md
 cd fixtures/extraction/section-to-the-next-sibling/source
 pf 'guide.md#run'
 ```
-
-### Defer a Link
-
-```bash
-cd fixtures/deferral/a-marked-reference-is-not-compiled/source
-pf guide.md
-```
-
-A link whose text opens with `¬` is left for a run of its own: the document it names is not opened, and the bundle carries the link with the mark removed. [References](docs/references.md#operators) states the operators.
-
-### Dispatch to Sub-agents
-
-A link whose text opens with `⇉` dispatches its target, as the guide's link to its shared rules does in the first run above. The run compiles that target, and each target it dispatches in turn, as a bundle of its own in the same folder. The link stays where its author wrote it, with its mark, and points at the file its target was compiled to. The `⫽` links in one section's own content form a parallel set of two or more targets, pointing at one `In parallel` sub-section that lists each bundle as a `⇉` link to dispatch together; a set of one target is a single `⇉` link. A deferral mark written before either, as in `¬⇉`, is refused.
-
-Every bundle opens with one line, ``Run `pf`, then follow the guidance it prints.``, as [Dispatch](docs/dispatch.md#the-run-pf-line) states. A bundle carries no protocol paragraph.
-
-### Compose a Section
-
-```bash
-cd fixtures/composition/titles-from-several-sources-share-one-destination-section/source
-pf guide.md
-```
-
-A link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`, is a composition directive. It places the section it names beneath the section that writes it, and `[¬↳ Inputs](read.md#inputs)` defers that placement to a later run. [Composition](docs/composition.md) states the grammar.
