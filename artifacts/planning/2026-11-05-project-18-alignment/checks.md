@@ -819,7 +819,7 @@ E00:W03: artifacts/planning/2026-11-05-i14-evaluation-refinement/e00/w03.md
 
 ```text
 #526 initiative (open)
-  closable: no (undelivered E00, E01, E02, E03, E04, unticked AC1, AC2, AC3, AC4, AC5, AC6)
+  closable: no (undelivered E00, E01, E02, E03, E04, unticked AC1, AC2, AC3, AC4, AC5, AC6, AC7)
 ```
 
 ### Issue 527

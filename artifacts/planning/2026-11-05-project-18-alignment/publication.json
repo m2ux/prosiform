@@ -212,5 +212,12 @@
     "url": "https://github.com/m2ux/prosiform/issues/525",
     "updated_at": "2026-11-05T13:16:51Z",
     "change": "Separate tag, open-PR and passing-check conditions with preserved task IDs and updated coverage"
+  },
+  {
+    "kind": "issue",
+    "issue": 526,
+    "url": "https://github.com/m2ux/prosiform/issues/526",
+    "updated_at": "2026-11-05T14:11:56Z",
+    "change": "Separate template section order (AC2) from page compilation (AC7); foundation row covers both; task IDs preserved"
   }
 ]
