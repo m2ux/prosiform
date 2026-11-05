@@ -8,12 +8,13 @@ caps are the shakedown's own measurement, so a cap that does not follow its
 largest session is a budget nothing measured.
 """
 
+import json
 import re
 from pathlib import Path
 
 import pytest
 from harness import HARNESSES
-from report import DISPOSITION_NAMES
+from report import BASELINE, DISPOSITION_NAMES
 from run import (
     DEFAULT_HARNESS,
     DEFAULT_MODELS,
@@ -102,6 +103,13 @@ def test_the_default_model_is_the_one_the_runbook_records() -> None:
 def test_the_default_harness_reaches_that_model() -> None:
     """AC8: the harness `--harness` defaults to is the one the runbook records."""
     assert DEFAULT_HARNESS == recorded("Harness").strip("`")
+
+
+def test_the_baseline_records_the_harness_whose_run_it_is() -> None:
+    """AC6: a harness crash is read per harness, so the baseline names its own."""
+    baseline = json.loads(BASELINE.read_text())
+    assert baseline["harness"] == DEFAULT_HARNESS
+    assert baseline["run_id"] and baseline["date"] and baseline["repetitions"]
 
 
 def test_the_session_cap_is_the_measured_largest_doubled() -> None:
