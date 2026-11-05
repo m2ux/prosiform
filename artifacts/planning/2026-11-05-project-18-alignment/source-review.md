@@ -19,7 +19,7 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 | Checked composition and dispatch paths | I10 AC13 | E04 | Retained corpus and harness criteria have passing branch-level verification; integration remains open. Live measurement is held by I14. |
 | Feature proof and runbook-governed measurements | I10 AC14, AC15 | E00, E05 | Feature proof and baseline delivery are recorded; parent verification remains separate. |
 | One guide before the marks it explains | I10 AC16, AC17 | E06 | The approved AC16 describes current merged guide wording and passes its existing tests. |
-| A named MVP release | I11 AC1, AC2 | E00 | Versioning source was read; no release work is recorded as delivered. |
+| A named MVP release | I11 AC1, AC2, AC3, AC4 | E00 | The tag pair, open pull request and passing checks have separate conditions. The release is Ready; no release work is recorded as delivered. |
 | A checked pattern catalogue | I12 AC1, AC2, AC3, AC4, AC5, AC6 | E00–E04 | Every criterion has epic coverage. Template compliance and compilation in AC2 need distinct conditions. |
 | Auditable edge measurements | I14 AC1 | E00 | Shakedown, live records and publication are deferred in Backlog, with no lanes and epic priority 1. |
 

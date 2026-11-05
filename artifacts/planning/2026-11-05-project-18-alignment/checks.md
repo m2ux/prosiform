@@ -797,7 +797,7 @@ E00:W03: artifacts/planning/2026-11-05-i14-evaluation-refinement/e00/w03.md
 
 ```text
 #524 initiative (open)
-  closable: no (undelivered E00, unticked AC1, AC2)
+  closable: no (undelivered E00, unticked AC1, AC2, AC3, AC4)
 ```
 
 ### Issue 525
@@ -812,7 +812,7 @@ E00:W03: artifacts/planning/2026-11-05-i14-evaluation-refinement/e00/w03.md
   not checked: review pull request Changes paths
   not checked: review pull request issue links
   not checked: pull request targets
-  closable: no (undelivered W01, W02, W03, W04, unticked AC1, AC2, AC3, AC4, AC5)
+  closable: no (undelivered W01, W02, W03, W04, unticked AC1, AC2, AC3, AC4, AC5, AC6)
 ```
 
 ### Issue 526

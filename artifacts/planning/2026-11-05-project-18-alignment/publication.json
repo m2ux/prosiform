@@ -198,5 +198,19 @@
     "url": "https://github.com/m2ux/prosiform/issues/23",
     "updated_at": "2026-11-05T13:05:01Z",
     "change": "Deferred external example remains part of the required exposure set"
+  },
+  {
+    "kind": "issue",
+    "issue": 524,
+    "url": "https://github.com/m2ux/prosiform/issues/524",
+    "updated_at": "2026-11-05T13:16:49Z",
+    "change": "Separate tag, open-PR and passing-check conditions with preserved task IDs and updated coverage"
+  },
+  {
+    "kind": "issue",
+    "issue": 525,
+    "url": "https://github.com/m2ux/prosiform/issues/525",
+    "updated_at": "2026-11-05T13:16:51Z",
+    "change": "Separate tag, open-PR and passing-check conditions with preserved task IDs and updated coverage"
   }
 ]

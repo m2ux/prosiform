@@ -52,3 +52,5 @@ The user moves I10 E04 W14–W16 into [I14 Evaluation Refinement #660](https://g
 The three rows and AC20, AC21, AC24 and AC25 leave #579 without being marked complete. Its retained task IDs, delivery links and ticks stand. I10 AC13 describes the retained corpus and harness capability; E04 no longer covers the live-run condition AC15. The source work items point to I14, and the canonical plans and handoff record the same boundary.
 
 I14 and its epic remain Backlog. The queue computes I11 and Release Cut as Ready after the completed MVP prerequisites; its status readback is recorded with the transfer. E04 remains open: PR #622 is draft and conflicted, and branch-configuration checks remain unevaluable. This alignment performs no integration merge or paid measurement.
+
+The user approves independent release conditions. I11 AC2 states the tag pair, AC3 the open pull request and AC4 its passing checks. Release Cut AC5 and AC6 separately state the open pull request and its checks, both covered by W04. Task IDs, dependencies and joins are preserved; format and dependency checks pass. All release criteria remain unticked until observed.
