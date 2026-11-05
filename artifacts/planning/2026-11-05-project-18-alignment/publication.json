@@ -177,5 +177,26 @@
     "url": "https://github.com/m2ux/prosiform/issues/20",
     "updated_at": "2026-11-05T11:11:02Z",
     "change": "Atomic verified criteria for current grouping, presets, invocation and dispatch"
+  },
+  {
+    "kind": "issues",
+    "issue": 20,
+    "url": "https://github.com/m2ux/prosiform/issues/20",
+    "updated_at": "2026-11-05T13:04:57Z",
+    "change": "Deferred external example remains part of the required exposure set"
+  },
+  {
+    "kind": "issues",
+    "issue": 21,
+    "url": "https://github.com/m2ux/prosiform/issues/21",
+    "updated_at": "2026-11-05T13:04:59Z",
+    "change": "Deferred external example in prosiform-skills remains required alongside workspace skills; incomplete declaration criterion is unticked"
+  },
+  {
+    "kind": "issues",
+    "issue": 23,
+    "url": "https://github.com/m2ux/prosiform/issues/23",
+    "updated_at": "2026-11-05T13:05:01Z",
+    "change": "Deferred external example remains part of the required exposure set"
   }
 ]
