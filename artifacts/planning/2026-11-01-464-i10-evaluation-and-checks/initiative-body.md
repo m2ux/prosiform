@@ -40,19 +40,19 @@ A measurement that cannot fail measures nothing.
 - **The MVP is proven.**
   One live run of the feature workflows is committed beside the baseline, and the eval page states what it proves and what it cost.
 - **One guide states every mark.**
-  Bare `pf` prints plain text giving an instruction for every mark and dispatch section a bundle carries and the returned-question marker, and every bundle opens by telling its reader to run it.
+  Bare `pf` prints plain text giving an instruction for every mark and dispatch-set subsection a bundle carries, and every bundle opens by telling its reader to run it.
 
 ## Work Breakdown
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/403) | Corpus Separability | AC1, AC2, AC9, AC11, AC12, AC15 | | |
+| [E00](https://github.com/m2ux/prosiform/issues/403) | Corpus Separability | AC1, AC2, AC9, AC11, AC12, AC15 | | ✓ |
 | [E01](https://github.com/m2ux/prosiform/issues/454) | Check Coverage | AC3, AC4, AC5, AC7 | | ✓ |
 | [E02](https://github.com/m2ux/prosiform/issues/456) | Session Isolation | AC6, AC8 | | ✓ |
-| [E03](https://github.com/m2ux/prosiform/issues/455) | Grouping Targets | AC10 | | |
+| [E03](https://github.com/m2ux/prosiform/issues/455) | Grouping Targets | AC10 | | ✓ |
 | [E04](https://github.com/m2ux/prosiform/issues/579) | Composition Following | AC13, AC15 | | |
 | [E05](https://github.com/m2ux/prosiform/issues/594) | MVP Proof | AC14, AC15 | [I09:E05](https://github.com/m2ux/prosiform/issues/523) | ✓ |
-| [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17 | | |
+| [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17 | | ✓ |
 
 ## Acceptance Criteria
 
@@ -65,14 +65,14 @@ A measurement that cannot fail measures nothing.
 - [x] **AC7.** The checks page states which changes run the checks, as an inspection of the page against the workflow shows.
 - [x] **AC8.** The eval's README states each settings file a run refuses, and `--eval-root` as the remedy for one above the workspaces, as an inspection of the README against the preflight shows.
 - [ ] **AC9.** Every failure class the eval's scorer defines is produced by at least one scenario of the corpus, as the corpus test `make check` runs shows.
-- [ ] **AC10.** A reference into a group reaches the document it named and no other member of that group, as the candidate-validation tests show.
+- [x] **AC10.** A reference into a group reaches the document it named and no other member of that group, as the candidate-validation tests show.
 - [ ] **AC11.** A diagram-following harness crashes on no form the matrix runs, as the committed default-matrix run, against each harness, shows.
 - [ ] **AC12.** A dispatched question counts as answered only where the session produced an answer, as the committed default-matrix run, against each harness, shows.
 - [ ] **AC13.** Every scenario the eval states for deferral, composition and dispatch has a committed live-run result on each harness carrying a shell, as the committed edge-case records show.
 - [x] **AC14.** An agent follows every feature the merged bundling surface delivers from the bundle `pf` compiles, on a live run of the feature workflows, as the committed proof run shows.
 - [ ] **AC15.** Every live run the eval commits follows its runbook in `RUNBOOK.md`, and gives each failing session the triage rubric's disposition, as each committed run record shows.
-- [ ] **AC16.** Bare `pf` prints plain text giving an instruction for every mark and dispatch section a bundle carries, and the line a dispatched run opens a returned question with, as the guide fixture `make check` runs shows.
-- [ ] **AC17.** Every bundle `pf` writes opens with a line telling its reader to run bare `pf` and follow the guide, and carries no dispatch protocol of its own, as the conformance fixtures `make check` runs show.
+- [x] **AC16.** Bare `pf` prints plain text giving an instruction for every mark and dispatch-set subsection a bundle carries, as the guide fixture `make check` runs shows.
+- [x] **AC17.** Every bundle `pf` writes opens with a line telling its reader to run bare `pf` and follow the guide, and carries no dispatch protocol of its own, as the conformance fixtures `make check` runs show.
 
 ## Non-Goals
 
@@ -86,4 +86,4 @@ A measurement that cannot fail measures nothing.
 - **R2.** [Inclusion profiles record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i05-inclusion-profiles-and-folders) — the split that raised this initiative and the decisions for the epics it was split from.
 - **R3.** [I07 review remediation record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-31-i07-review-remediation) — the overlap: I07:E00 corrects the eval's harness, scorer and corpus forms that the baseline measures.
 - **R4.** [Grouping and composition record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) — where the grouping-targets work and the feature workflows were planned, and the proof's earlier decisions.
-
+- **R5.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed criterion reconciliation, lane evidence and verification results.

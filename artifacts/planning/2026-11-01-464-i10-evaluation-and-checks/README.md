@@ -129,7 +129,7 @@ Every initiative criterion traces to a clause, every clause has a criterion, eve
 The agent-behaviour evals of composition, deferral and dispatch are their own epic, E04 ([#579](https://github.com/m2ux/prosiform/issues/579)), rather than rows of E00.
 
 - **Placement.** E00 is the default matrix's separability and its one baseline. The edge evals run only on harnesses with a shell, outside the default matrix, wait on I09:E04 W11 and W12, and end in a live run of their own; as E00 rows they would gate E00's baseline on I09 and on a second paid run. A new epic keeps E00's closure as planned and gives the work its own goal clause, G5.
-- **A shell form outside the default matrix.** Every edge needs `pf` at run time or a bundle set only `pf` builds, so the edges are written in one `staged` form: the compiled bundle set with the build under test on the session's path. It is outside the default `--forms`, and the Claude harness carries no shell, so the default matrix, `baseline.json` and the Non-Goal against adding a form to it are unchanged. The bootstrap edge uses the existing `bootstrap` form.
+- **One compiled form.** A `compiled` session receives its sources, the bundle set and the build as `pf`, with a shell limited to it. The bootstrap edge uses `bootstrap`. The baseline and the edge run have separate workflow selections; the edge-run shakedown checks those selections against the merged runner before spending.
 - **A scenario states the `pf` runs.** A pass is the agent's path matching the one its bundle states. Where an edge is whether `pf` runs (condition false, nested deferral not needed, a sub-agent's first run), the path alone cannot fail, so a scenario also states each `pf` run and the scorer fails a session whose runs differ.
 - **Refusals are not agent evals.** A gap between symbols, `[⇉→]`, a preset mismatch on deferral and an immediate-plus-deferred pair are build refusals I09:E04's corpus fixtures hold.
 - **The MVP proof boundary.** I09:E05 W26 writes one section-composition workflow activating an unconditional deferral; E04 measures the conditional, nested, preset-matched and dispatched edges, in workflows of their own, so no component is shared.
@@ -142,7 +142,7 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 
 ## Delivery Lanes
 
-Two sessions deliver I10 at once (user, 2026-11-03), one per lane. Each work item states its lane as `**Lane:** <n>`, and a session takes the highest-priority row whose dependencies are met in its own lane, so neither waits while the other has work it can feed.
+Two sessions deliver I10 at once (user, 2026-11-03), one per lane. The epic table's Lane cell carries each assignment; the work items retain its planning evidence. A session takes the highest-priority available unit in its lane.
 
 Delivery models (user, 2026-11-04): lane 1 uses `gpt-6.1-sol` at `max` reasoning; lane 2 uses `gpt-6.1-sol` at `medium` reasoning. The user chooses the models used by eval runs separately.
 
