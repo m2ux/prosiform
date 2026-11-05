@@ -62,7 +62,7 @@ Frontmatter counts toward the byte budgets and obeys the nesting budget independ
 
 ## The profile
 
-Sources are parsed under one versioned grammar, `skill-markdown-v4`, reported by `-v`. It is CommonMark with pipe tables and double-tilde strikethrough, and task-list markers are preserved as written rather than rendered as checkboxes.
+Sources are parsed under one versioned grammar, `prosiform-markdown`, reported by `-v`. It is CommonMark with pipe tables and double-tilde strikethrough, and task-list markers are preserved as written rather than rendered as checkboxes.
 
 Sources must be valid UTF-8 — a byte sequence that is not fails with `E_INVALID_ENCODING` rather than being decoded with replacement characters. One leading byte-order mark is tolerated and removed. `.md` and `.markdown` are recognized case-insensitively, and an entry naming any other suffix fails with `E_UNSUPPORTED_ENTRY_SUFFIX`.
 

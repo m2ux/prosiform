@@ -7,7 +7,7 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Scope
+    Entry(( )) --> Scope
     Scope -->|test| Lint
     Scope -->|release| Stage
     Lint --> Unit
@@ -19,8 +19,9 @@ flowchart TD
     Sign --> Release
     Announce --> Notify
     Notify --> Release
-    Release --> stop((( )))
+    Release --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Scope href "states/scope.md"
     click Lint href "states/lint.md"
     click Unit href "states/unit.md"
@@ -29,4 +30,5 @@ flowchart TD
     click Announce href "states/announce.md"
     click Notify href "states/notify.md"
     click Release href "states/release.md"
+    click Exit href "states/exit.md"
 ```

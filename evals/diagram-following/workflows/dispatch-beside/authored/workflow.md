@@ -7,10 +7,12 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Prepare
+    Entry(( )) --> Prepare
     Prepare --> Deliver
-    Deliver --> stop((( )))
+    Deliver --> Exit((( )))
 
+    click Entry href "states/entry.md"
     click Prepare href "states/prepare.md"
     click Deliver href "states/deliver.md"
+    click Exit href "states/exit.md"
 ```

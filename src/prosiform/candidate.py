@@ -1324,6 +1324,9 @@ def validate(
     """
     coverage(groups)
     for one in groups:
+        if one.record.path not in read:
+            # The `§ Instructions` group answers to no source document.
+            continue
         levels(one.record)
         placement(one.record, parsed)
     environment: dict[str, Any] = {}

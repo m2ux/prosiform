@@ -14,8 +14,10 @@ import re
 from dataclasses import fields
 from pathlib import Path
 
-from harness import HARNESSES, Claude, Cursor, Opencode, Start, harness_named
-from workflow import AUTHORED_FORM, COMPILED_FORM
+import pytest
+from harness import HARNESSES, Claude, Codex, Cursor, Opencode, Start, harness_named
+from run import BOOTSTRAP_SET, prepare
+from workflow import AUTHORED_FORM, COMPILED_FORM, workflows
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -26,7 +28,7 @@ def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
 
 
 def claude_call(identifier: str, target: str) -> dict[str, object]:
-    """One Claude `Task` call, its description naming the section handed over."""
+    """One Claude `Agent` call, its prompt naming the section handed over."""
     return {
         "type": "assistant",
         "message": {
@@ -34,8 +36,8 @@ def claude_call(identifier: str, target: str) -> dict[str, object]:
                 {
                     "type": "tool_use",
                     "id": identifier,
-                    "name": "Task",
-                    "input": {"description": target},
+                    "name": "Agent",
+                    "input": {"description": "Follow the workflow", "prompt": target},
                 }
             ]
         },
@@ -50,7 +52,7 @@ def cursor_call(
     `result` sits beside `args` in the captured stream, not within it.
     """
     task: dict[str, object] = {
-        "args": {"description": target, "prompt": f"Follow {target}."},
+        "args": {"description": "Follow the workflow", "prompt": target},
         "toolCallId": f"{message}-call",
     }
     if not started:
@@ -69,9 +71,11 @@ def cursor_call(
 
 
 def test_the_declared_harnesses_are_named() -> None:
-    assert set(HARNESSES) == {"claude", "cursor", "opencode"}
+    assert set(HARNESSES) == {"claude", "cursor", "opencode", "codex"}
     assert harness_named("cursor") is HARNESSES["cursor"]
     assert harness_named("opencode") is HARNESSES["opencode"]
+    assert harness_named("codex") is HARNESSES["codex"]
+    assert Codex().name == "codex"
     assert (
         Claude().name == "claude"
         and Cursor().name == "cursor"
@@ -111,14 +115,11 @@ def test_no_harness_declares_a_field_nothing_reads() -> None:
         assert not unread, f"{declared.name} declares {unread}, which nothing reads"
 
 
-def test_a_claude_session_given_pf_carries_a_shell_limited_to_pf() -> None:
-    """AC12: the shell reaches a session given `pf`, and admits `pf` alone."""
-    plain = Claude().argv(["claude"], "a-model", 60_000)
-    given = Claude().argv(["claude"], "a-model", 60_000, None, True)
-    assert plain[plain.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task"
-    assert "--allowedTools" not in plain
-    assert given[given.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Task,Bash"
-    assert given[given.index("--allowedTools") + 1] == "Bash(pf:*)"
+def test_every_claude_session_carries_a_shell_limited_to_pf() -> None:
+    """Every form can follow the run-pf line, with arguments and redirects."""
+    argv = Claude().argv(["claude"], "a-model", 60_000)
+    assert argv[argv.index("--tools") + 1] == "Read,Write,Edit,Glob,Grep,Agent,Bash"
+    assert argv[argv.index("--allowedTools") + 1] == "Bash(pf *)"
 
 
 def test_claude_reads_the_shell_commands_a_session_ran(tmp_path: Path) -> None:
@@ -158,14 +159,20 @@ def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
                         {
                             "type": "tool_use",
                             "id": "b",
-                            "name": "Task",
-                            "input": {"description": "review#source"},
+                            "name": "Agent",
+                            "input": {
+                                "description": "Review",
+                                "prompt": "review#source",
+                            },
                         },
                         {
                             "type": "tool_use",
                             "id": "c",
-                            "name": "Task",
-                            "input": {"description": "review#tests"},
+                            "name": "Agent",
+                            "input": {
+                                "description": "Review",
+                                "prompt": "review#tests",
+                            },
                         },
                     ]
                 },
@@ -185,7 +192,7 @@ def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
                         {
                             "type": "tool_result",
                             "tool_use_id": "b",
-                            "content": "question: which?",
+                            "content": "Question: which?",
                         }
                     ]
                 },
@@ -197,6 +204,102 @@ def test_claude_reads_starts_from_tool_use_blocks(tmp_path: Path) -> None:
         Start("review#source", "question", False),
         Start("review#tests", "done", True),
     )
+
+
+def test_claude_reads_blocks_of_one_message_as_together(tmp_path: Path) -> None:
+    """The CLI prints each block of a message as its own event, carrying its id."""
+
+    def event(message: str, identifier: str, target: str) -> dict[str, object]:
+        held = claude_call(identifier, target)
+        held["message"]["id"] = message  # type: ignore[index]
+        return held
+
+    held = transcript(
+        tmp_path,
+        [
+            event("m1", "a", "plan#work"),
+            event("m2", "b", "review#source"),
+            event("m2", "c", "review#tests"),
+            event("m3", "d", "review#docs"),
+        ],
+    )
+    assert [start.together for start in Claude().starts(held)] == [
+        False,
+        False,
+        True,
+        False,
+    ]
+
+
+def test_claude_reads_the_report_inside_its_hand_back_frame(tmp_path: Path) -> None:
+    """The CLI frames each sub-agent's report; the return is read from the report."""
+
+    def framed(identifier: str, report: str) -> dict[str, object]:
+        text = (
+            "[Subagent hand-back] The text below is the final report of a "
+            "subagent. The report follows:\n"
+            + "".join(f"  {line}\n" for line in report.splitlines())
+            + "agentId: a1\n<usage>subagent_tokens: 9</usage>"
+        )
+        return {
+            "type": "user",
+            "message": {
+                "content": [
+                    {
+                        "type": "tool_result",
+                        "tool_use_id": identifier,
+                        "content": [{"type": "text", "text": text}],
+                    }
+                ]
+            },
+        }
+
+    held = transcript(
+        tmp_path,
+        [
+            claude_call("a", "draft#choose"),
+            framed("a", "Question: which provider?\nOptions: north, south."),
+            claude_call("b", "draft#choose"),
+            framed("b", "Wrote actions/draft.txt."),
+        ],
+    )
+    assert [start.returned for start in Claude().starts(held)] == ["question", "done"]
+
+
+def test_claude_reads_a_question_only_from_its_marker_line(tmp_path: Path) -> None:
+    """The guide has a returned question's first line read `Question:`."""
+    held = transcript(
+        tmp_path,
+        [
+            claude_call("a", "draft#choose"),
+            {
+                "type": "user",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": "a",
+                            "content": "Questions remain.\nQuestion: which?",
+                        }
+                    ]
+                },
+            },
+            claude_call("b", "draft#choose"),
+            {
+                "type": "user",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": "b",
+                            "content": "\nQuestion: which provider?\nOptions: north.",
+                        }
+                    ]
+                },
+            },
+        ],
+    )
+    assert [start.returned for start in Claude().starts(held)] == ["done", "question"]
 
 
 def test_cursor_reads_starts_from_task_calls(tmp_path: Path) -> None:
@@ -260,7 +363,14 @@ def test_cursor_ignores_a_call_that_is_not_a_task(tmp_path: Path) -> None:
     assert Cursor().starts(held) == (Start("plan#work", "done", False),)
 
 
-def test_each_harness_reads_the_usage_it_reports(tmp_path: Path) -> None:
+def test_claude_counts_every_model_and_sub_agent_a_session_ran(
+    tmp_path: Path,
+) -> None:
+    """The last result's `modelUsage` counts the whole session, sub-agents included.
+
+    Its `usage` counts the parent's own turns, so a session that dispatched
+    reports more under `modelUsage` than under `usage`.
+    """
     held = transcript(
         tmp_path,
         [
@@ -268,18 +378,60 @@ def test_each_harness_reads_the_usage_it_reports(tmp_path: Path) -> None:
                 "type": "result",
                 "subtype": "success",
                 "is_error": False,
-                "usage": {
-                    "input_tokens": 10,
-                    "output_tokens": 5,
-                    "cache_creation_input_tokens": 3,
-                    "cache_read_input_tokens": 2,
+                "usage": {"input_tokens": 10, "output_tokens": 5},
+                "modelUsage": {
+                    "claude-haiku-5-5": {"inputTokens": 10, "outputTokens": 5},
                 },
-            }
+            },
+            {
+                "type": "result",
+                "subtype": "success",
+                "is_error": False,
+                "usage": {
+                    "input_tokens": 1,
+                    "output_tokens": 2,
+                    "cache_creation_input_tokens": 3,
+                    "cache_read_input_tokens": 4,
+                },
+                "modelUsage": {
+                    "claude-haiku-5-5": {
+                        "inputTokens": 20,
+                        "outputTokens": 10,
+                        "cacheCreationInputTokens": 30,
+                        "cacheReadInputTokens": 40,
+                        "costUSD": 0.5,
+                    },
+                    "claude-sonnet-5-5": {"inputTokens": 7, "outputTokens": 3},
+                },
+            },
         ],
     )
     result = Claude().result(held)
-    assert Claude().tokens(result) == 20
+    assert Claude().tokens(result) == 110
     assert Cursor().tokens(result) is None
+
+
+def test_claude_reports_no_tokens_where_the_result_counts_no_model(
+    tmp_path: Path,
+) -> None:
+    held = transcript(
+        tmp_path,
+        [{"type": "result", "is_error": False, "usage": {"input_tokens": 10}}],
+    )
+    assert Claude().tokens(Claude().result(held)) is None
+
+
+def test_a_claude_task_call_is_no_start(tmp_path: Path) -> None:
+    """The CLI dispatches through `Agent`; a block naming another tool is none."""
+    call = claude_call("a", "plan#work")
+    call["message"]["content"][0]["name"] = "Task"  # type: ignore[index]
+    assert Claude().starts(transcript(tmp_path, [call])) == ()
+
+
+def test_claude_sessions_dispatch_in_the_foreground(tmp_path: Path) -> None:
+    """A sub-agent runs within the call that starts it, so its answer is the result."""
+    env = Claude().environment(tmp_path, {"CLAUDE_CODE_DISABLE_BACKGROUND_TASKS": "0"})
+    assert env["CLAUDE_CODE_DISABLE_BACKGROUND_TASKS"] == "1"
 
 
 def test_cursor_reads_its_own_usage_and_reports_no_cost(tmp_path: Path) -> None:
@@ -308,6 +460,26 @@ def test_an_absent_transcript_names_no_start(tmp_path: Path) -> None:
     assert Claude().starts(tmp_path / "absent.jsonl") == ()
     assert Cursor().starts(tmp_path / "absent.jsonl") == ()
     assert Claude().result(tmp_path / "absent.jsonl") is None
+
+
+@pytest.mark.parametrize("name", ["claude", "cursor", "opencode"])
+def test_a_start_reads_its_prompt_when_its_description_names_another_section(
+    name: str, tmp_path: Path
+) -> None:
+    """A call's compiled file determines its target, whatever its description."""
+    prompt = "Follow review__check.bundle.md and write actions/check.txt."
+    if name == "claude":
+        event = claude_call("a", prompt)
+        event["message"]["content"][0]["input"]["description"] = "plan#work"  # type: ignore[index]
+    elif name == "cursor":
+        event = cursor_call("m1", prompt)
+        event["tool_call"]["taskToolCall"]["args"]["description"] = "plan#work"  # type: ignore[index]
+    else:
+        event = opencode_part(tool="task", description=prompt)
+        event["part"]["state"]["input"]["description"] = "plan#work"  # type: ignore[index]
+    assert HARNESSES[name].starts(transcript(tmp_path, [event])) == (
+        Start(prompt, "done", False),
+    )
 
 
 def test_the_claude_cli_is_capped_in_dollars_not_tokens(tmp_path: Path) -> None:
@@ -391,13 +563,94 @@ def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> Non
     assert refused is not None and "is no directory" in refused
 
 
+def test_an_opencode_session_reads_no_directory_of_the_callers(tmp_path: Path) -> None:
+    """Every directory the CLI shares with the caller is named under the eval root."""
+    config = tmp_path / "config"
+    held = Opencode().environment(config, {"PATH": "/bin", "OPENCODE_X": "caller"})
+    assert "OPENCODE_X" not in held
+    assert held["XDG_CONFIG_HOME"] == str(config / "config")
+    assert held["XDG_DATA_HOME"] == str(config / "data")
+    assert held["XDG_STATE_HOME"] == str(config / "state")
+    assert held["XDG_CACHE_HOME"] == str(config / "cache")
+    assert held["OPENCODE_CONFIG"] == str(config / "harness.json")
+
+
+def test_an_opencode_session_runs_no_plugin_a_caller_installed(tmp_path: Path) -> None:
+    """The flags that keep the caller's plugins and external skills out are set."""
+    held = Opencode().environment(tmp_path, {})
+    for name in (
+        "OPENCODE_PURE",
+        "OPENCODE_DISABLE_DEFAULT_PLUGINS",
+        "OPENCODE_DISABLE_EXTERNAL_SKILLS",
+        "OPENCODE_DISABLE_CLAUDE_CODE_SKILLS",
+        "OPENCODE_DISABLE_PROJECT_CONFIG",
+    ):
+        assert held.get(name) == "1", name
+
+
+def test_an_opencode_session_may_run_only_pf_and_read_its_workspace(
+    tmp_path: Path,
+) -> None:
+    """The run writes the permissions a session reads, and admits no other path."""
+    config = tmp_path / "config"
+    Opencode().prepare(config)
+    settings = json.loads((config / "harness.json").read_text())
+    assert settings["permission"] == Opencode().permission
+    assert settings["permission"]["bash"] == {"*": "deny", "pf *": "allow"}
+    assert settings["permission"]["external_directory"] == "deny"
+    assert settings["permission"]["webfetch"] == "deny"
+
+
+def test_an_opencode_session_may_dispatch_at_every_hop_a_bundle_states(
+    tmp_path: Path,
+) -> None:
+    """A nested start is refused at the CLI's depth of one, so the run raises it."""
+    config = tmp_path / "config"
+    Opencode().prepare(config)
+    settings = json.loads((config / "harness.json").read_text())
+    assert settings["subagent_depth"] == Opencode().subagent_depth
+    assert settings["subagent_depth"] >= 3
+
+
+def test_opencode_reports_no_nested_dispatch_the_parent_stream_lacks() -> None:
+    """A `task` call's parts are its own, so a sub-agent's start is unobservable."""
+    assert Opencode().nested_starts is False
+
+
+def test_an_opencode_run_without_the_evals_login_is_refused(tmp_path: Path) -> None:
+    """A run names its credential store under the eval root, and refuses without it."""
+    config = tmp_path / "config"
+    config.mkdir()
+    refused = Opencode().preflight(config, tmp_path, ())
+    assert refused is not None and "holds no login" in refused
+    (config / "data" / "opencode").mkdir(parents=True)
+    (config / "data" / "opencode" / "auth.json").write_text("{}")
+    assert Opencode().preflight(config, tmp_path, ()) is None
+
+
+def test_a_bootstrap_skill_sits_where_the_runs_harness_discovers_it(
+    tmp_path: Path,
+) -> None:
+    """A bootstrap workspace holds the skill under the harness's own root."""
+    workflow = next(item for item in workflows() if item.name == "bootstrap-audit")
+    scenario = workflow.scenarios[0]
+    for harness in HARNESSES.values():
+        workspace = tmp_path / harness.name
+        workspace.mkdir()
+        skill_home = Path(harness.skill_home)
+        prepare(workspace, workflow, scenario, BOOTSTRAP_SET, {}, skill_home)
+        assert (workspace / skill_home / workflow.name / "SKILL.md").is_file()
+    assert HARNESSES["claude"].skill_home == HARNESSES["cursor"].skill_home
+    assert HARNESSES["opencode"].skill_home == ".opencode/skills"
+
+
 def opencode_part(
     *, tool: str, description: str, message: str = "m1", output: str | None = None
 ) -> dict[str, object]:
     """One opencode `tool_use` part, as the CLI prints it."""
     state: dict[str, object] = {
         "status": "completed",
-        "input": {"description": description, "prompt": "follow it"},
+        "input": {"description": "Follow the workflow", "prompt": description},
     }
     if output is not None:
         state["output"] = output
@@ -445,7 +698,7 @@ def opencode_step(tokens: int, cost: float) -> dict[str, object]:
 
 
 def test_opencode_reads_a_task_part_as_a_start(tmp_path: Path) -> None:
-    """A `tool_use` naming `task` is a sub-agent start, named by its description."""
+    """A `tool_use` naming `task` is a sub-agent start, named by its prompt."""
     held = transcript(tmp_path, [opencode_part(tool="task", description="plan#work")])
     assert Opencode().starts(held) == (Start("plan#work", "done", False),)
 
@@ -477,14 +730,12 @@ def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
                     "type": "tool",
                     "callID": "c1",
                     "tool": "bash",
-                    "state": {
-                        "input": {"command": "./bin/pf -o build sources/workflow.md"}
-                    },
+                    "state": {"input": {"command": "pf -o build sources/workflow.md"}},
                 },
             }
         ],
     )
-    assert Opencode().commands(held) == ("./bin/pf -o build sources/workflow.md",)
+    assert Opencode().commands(held) == ("pf -o build sources/workflow.md",)
 
 
 def test_opencode_reads_what_each_sub_agent_returned(tmp_path: Path) -> None:

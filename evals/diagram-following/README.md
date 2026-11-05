@@ -16,7 +16,7 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 
-A workflow gives a session only the forms it is written in: the three workflows walking a decision to a terminal state take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the three [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: `linear`, `branching`, `looping`, `pricing` and `rework` take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the three [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
@@ -51,16 +51,15 @@ The four dispatch scenarios say what a bundled workflow's dispatch protocol is f
 | `dispatch-chain` | `chain` | A section whose own step dispatches a second, so a run starts two sub-agents in order. |
 | `dispatch-set` | `parallel-set` | Two sections at once, so a run starts two sub-agents together. |
 | `dispatch-beside` | `set-beside-a-dispatch` | One section, then two more as a set of their own. |
-| `dispatch-question` | `returned-question` | A section returning a question, put to the user, then dispatched again with the answers. |
+| `dispatch-question` | `returned-question` | A section returning a question, answered from the scenario's `answers.txt`, then dispatched again with the answer. |
 
-A dispatch scenario's `scenarios.toml` names the trace a correct run produces beside the path it walks: one `[[scenario.trace]]` table per sub-agent start, in the order the walk dispatches it.
+Each dispatched section states an action, a file under `actions/` and the value it holds, as a state's section does, so a sub-agent's file is the evidence that it followed its section. A dispatch scenario's `scenarios.toml` names the trace a correct run produces beside the path it walks: one `[[scenario.trace]]` table per sub-agent start, in the order the walk dispatches it. A scenario whose sub-agent returns a question states its `answers`, which the run writes to `answers.txt` in the session's workspace; the instruction tells the session the user's answers are there, and the sub-agent's action holds the answer it was handed back.
 
 | Field | Meaning |
 | --- | --- |
 | `dispatch` | The section the sub-agent follows, as `<document>#<heading>`. Both forms name a section, so one trace is the trace of both. |
-| `returned` | What the sub-agent gave back: `done`, or `question` for one it returned unanswered. |
 | `together` | Whether it started beside the entry above it, which marks every member of a set but the one opening it. |
-| `actions` | Optional. Each file under `actions/` the sub-agent writes, by file name and value, which only the material a `pf` run on a deferred line of its bundle compiles states, as [Sub-agent runs](#sub-agent-runs) states. |
+| `action` | The `file` under `actions/` the section has the sub-agent write, and the `value` it holds. A deferred composition's activated material states the action too, as [Sub-agent runs](#sub-agent-runs) states. |
 
 The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps and the dispatches of the material each deferred composition a step reaches compiles, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: `pf` publishes a `⇉` link to the target's bundle where it stands and a set as an `In parallel` sub-section of `⇉` items, and the guide bare `pf` prints states what to do with each, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
 
@@ -162,11 +161,12 @@ The six feature workflows each build on one bundling feature, and each scenario 
 
 ## Scoring
 
-A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of these classes that fits where its trace departs from the path:
+A session records each state it enters as a line of `trace.log` and does each state's action by writing a file under `actions/`. Every instruction tells it to hand each sub-agent it dispatches the name `trace-<section>.log`, since a sub-agent reads only the prompt its session writes, and the run keeps each such trace beside the session's own. The same instruction tells it to name, in that prompt, the file or section it hands over, so a start is identified by what it was given rather than by prose. The [scorer](score.py) passes a session whose trace is its scenario's path with every state's action done. A failing session takes the first of these classes that fits where its trace departs from the path:
 
 | Class | The session |
 | --- | --- |
-| `missing_action` | walked the path and left a state's action, or a sub-agent's stated action, undone or wrong. |
+| `missing_action` | walked the path and left a state's action undone or wrong, or, in a dispatch scenario, a sub-agent's. |
+| `unbootstrapped` | walked the path with every action done, in the `bootstrap` form, without running `pf`. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
 | `loop_miscount` | repeated a loop more times than its input requires. |
@@ -176,19 +176,34 @@ A session records each state it enters as a line of `trace.log` and does each st
 
 A session whose agent reports an error, or prints no `result` message, takes `errored` instead of any of these. It entered no state, so its trace says nothing about how it followed the workflow: a refusal, an expired quota or a crashed command fails `errored` rather than as an `unfinished` run.
 
+### Misreadings the scenarios provoke
+
+Each failure class the scorer defines is produced by some scenario, and the corpus test names any class none produces: it scores each scenario's path departed from once at every point, and a session whose agent reported an error is `errored` on any scenario. Each workflow is written so a plausible misreading departs in a class of its own, so a run's failures say which way an agent departed.
+
+| Workflow | What it makes possible to misread |
+| --- | --- |
+| `linear` | A state skipped or repeated on a path with no decision. |
+| `branching` | One decision's branch. |
+| `looping` | A two-round loop, and `Check`, a state no click names, reached only through the link in `Revise`'s section. |
+| `pricing` | A second decision after the first, read from its own input, and `Refund`, a state drawn and linked from the terminal `Invoice` that no edge leads to. |
+| `rework` | A four-round loop whose bound counts `Retest`, a state no click names, reached only through the link in `Rework`'s section. |
+
 ### Dispatch checks
 
-A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. It holds the session's own shell `commands`, null where its harness gives it no shell, and its `starts`. Each start names the section a sub-agent followed, what it returned, whether it started beside the entry above it, `parent`, the index of the start whose sub-agent made it, null for the session's own, and `commands`, the shell commands its sub-agent ran, so each sub-agent's starts and commands sit under the section it followed at every depth the harness's stream reports.
+A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. It holds the session's own shell `commands`, null where its harness gives it no shell, and its `starts`. Each start names the section a sub-agent followed, what it returned, whether it started beside the entry above it, `parent`, the index of the start whose sub-agent made it, null for the session's own, and `commands`, the shell commands its sub-agent ran, so each sub-agent's starts and commands sit under the section it followed at every depth the harness's stream reports. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when its first line opens `Question:`, as `pf`'s guide has a sub-agent write one, and `done` otherwise.
+
+The checks hold the dispatch's shape, then the session's handling of each return as the dispatch protocol states it: a start returning `done` moves the session on, and one returning a question is started again with the answers. Each sub-agent's action is then held as a state's is.
 
 | Class | The session |
 | --- | --- |
 | `undispatched` | left a bundle the scenario dispatches without a sub-agent, or started them in another order. |
 | `sequential_set` | started a set's bundles across more than one message, rather than its opener first and every later member alongside it in that message. |
-| `unrelayed_question` | answered a sub-agent's returned question in its own place, returning `done` where the scenario states `question`. |
+| `unrelayed_question` | went on from a sub-agent's returned question without starting it again with the answers. |
+| `missing_action` | left a sub-agent's action unwritten or wrong, named in the verdict's `actions`. |
 
-The three are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier. A scenario that dispatches nothing passes all three.
+The four are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier. A scenario that dispatches nothing passes all four.
 
-A run passing them is then held to each sub-agent's stated `actions`, whatever its harness reports: one absent or wrong is `missing_action`, so a sub-agent that ran no `pf` on its line fails though no stream carries what it ran.
+A run passing them is then held to each sub-agent's stated `action`, whatever its harness reports: one absent or wrong is `missing_action`, so a sub-agent that ran no `pf` on its line fails though no stream carries what it ran.
 
 ### Run checks
 
@@ -196,9 +211,9 @@ A run that passes the dispatch checks and its sub-agents' actions is held to the
 
 | Class | The session |
 | --- | --- |
-| `uncompiled` | or a sub-agent left a stated run unmade. |
-| `overcompiled` | or a sub-agent made a run naming a reference no stated run names, as one on a deferred line its path did not reach does. A bare `pf` beyond those stated prints the guide and compiles nothing, so it is no departure. |
-| `misordered_compile` | or a sub-agent made its stated runs in another order. |
+| `uncompiled` | left a stated run unmade, or a sub-agent did. |
+| `overcompiled` | made a run naming a reference no stated run names, as one on a deferred line its path did not reach does, or a sub-agent did. A bare `pf` beyond those stated prints the guide and compiles nothing, so it is no departure. |
+| `misordered_compile` | made its stated runs in another order, or a sub-agent did. |
 
 The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade. A harness reporting no command, as the Claude harness does in every form but `compiled` and `bootstrap`, holds a session to none of them.
 
@@ -214,17 +229,26 @@ CLAUDE_CONFIG_DIR=~/projects/eval/prosiform/config claude
 
 then `/login`.
 
+The opencode harness keeps its own login there too, in a credential store the run names under the eval root. Log in once:
+
+```bash
+cd ~/projects/eval/prosiform && \
+XDG_DATA_HOME=$PWD/config/data XDG_CONFIG_HOME=$PWD/config/config \
+XDG_STATE_HOME=$PWD/config/state XDG_CACHE_HOME=$PWD/config/cache \
+opencode auth login --provider <provider>
+```
+
 ## Isolation
 
 A session receives one form of one workflow and the instruction, so a pass measures the agent reading that form. Each mechanism below holds one part of that boundary for the Claude harness; the first two are refused before a session starts, and the last is read back from each session's own transcript.
 
 | Mechanism | What it keeps out |
 | --- | --- |
-| `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is the only one set. |
+| `CLAUDE_CONFIG_DIR` names the eval's config directory | The caller's own configuration, memory and settings, which no session reads. Every `CLAUDE*` and `ANTHROPIC_*` variable the caller holds is dropped from the session's environment, and `CLAUDE_CONFIG_DIR` is set beside `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS`, which runs each sub-agent within the call that starts it, so the call's result is the sub-agent's answer. |
 | `--strict-mcp-config` | Every MCP server, since the session is given no server list. |
 | `--disable-slash-commands` | Every slash command and skill the configuration directory would offer. |
-| `--tools Read,Write,Edit,Glob,Grep,Task` | Every other tool, so a session cannot reach past its workspace, and `Task` is the one tool a dispatch protocol needs. |
-| `--tools ...,Bash` with `--allowedTools Bash(pf:*)`, for a session given `pf` | Every command but `pf`: the `compiled` and `bootstrap` forms add the shell tool and admit `pf` commands alone. |
+| `--tools Read,Write,Edit,Glob,Grep,Agent,Bash` | Every other tool; `Agent` dispatches sections and `Bash` runs the build every form receives. |
+| `--allowedTools Bash(pf *)` | Admits `pf` with any arguments and output redirects in the workspace. Every form finds the build under test on its path, with no workspace copy. |
 | `--permission-mode acceptEdits` | Writes outside the session's fresh workspace. |
 | `--no-session-persistence` | A transcript surviving the run beyond the record the eval keeps. |
 | The injected-context read | Context the agent added that the run did not supply. |
@@ -246,6 +270,22 @@ A managed configuration reaches every session wherever the config directory poin
 
 A session that still carries context the run did not supply fails the run after its sessions finish, naming each one and what it carried. The context read is what makes the boundary observable rather than assumed: an appended system prompt, a memory file, or a hook's `additionalContext` where no managed plugin is present and the host's managed settings file declares no hook is another instruction set beside the form, and a session carrying one is no evidence of how the agent followed the form. Otherwise a hook's response is the managed configuration's, since the preflight admits no other hook. The run raises before it writes `run.json`, so a refused run is never reported as a completed one.
 
+### opencode
+
+The opencode harness keeps the same boundary by naming each directory the CLI would otherwise share with the caller under the eval root, and by writing the one settings file a session reads. A run whose credential store under that root holds no login is refused before its first session.
+
+| Mechanism | What it keeps out |
+| --- | --- |
+| `XDG_CONFIG_HOME`, `XDG_DATA_HOME`, `XDG_STATE_HOME` and `XDG_CACHE_HOME` name directories under the eval root | The caller's configuration, installed plugins, remembered projects, credential store and cache. Every `OPENCODE*` variable the caller holds is dropped from the session's environment. |
+| `OPENCODE_CONFIG` names `<eval-root>/config/harness.json` | Every other settings file, and the permissions a workflow's own `opencode.json` would add. |
+| `OPENCODE_PURE` and `OPENCODE_DISABLE_DEFAULT_PLUGINS` | Every plugin, the CLI's own among them, so no hook or tool they register reaches a session. |
+| `OPENCODE_DISABLE_EXTERNAL_SKILLS` and `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS` | Every skill of the caller's, under `.claude/skills` and `.agents/skills`, which the CLI would otherwise offer beside the form. |
+| `OPENCODE_DISABLE_PROJECT_CONFIG` | A project's own `opencode.json`, whose permissions or instructions would arrive beside the form. |
+| `OPENCODE_DISABLE_MODELS_FETCH` and `OPENCODE_DISABLE_AUTOUPDATE` | The network calls a catalogue fetch and an update check make. |
+| The written `permission` block | Every command but `pf`, and every path but the session's workspace: `bash` admits `pf *` and denies the rest, `external_directory` denies a read, a write and a shell command outside the workspace, and `webfetch` and `websearch` deny the network. `edit`, `read`, `glob`, `grep`, `list` and `task` admit the workspace and the dispatch a compiled bundle states. |
+
+A bootstrap skill is placed at `<workspace>/.opencode/skills/<name>`, which is the root this CLI discovers, rather than the `.claude/skills` root the other two read.
+
 ## Running
 
 | Command | Runs |
@@ -254,18 +294,20 @@ A session that still carries context the run did not supply fails the run after 
 
 Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
 
+A run id requires fresh results and workspaces. An existing `results/<run-id>` or `<eval-root>/workspaces/<run-id>` refuses the run before bundling or starting a session. The runbook's [rerun procedure](RUNBOOK.md#repeating-a-stopped-run) removes both.
+
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `--budget-tokens` | required | The run's token cap, at least the sessions times `--session-budget-tokens`. A later value in `ARGS` overrides the default. |
-| `--session-budget-tokens` | 60 000 | Each session's token cap. |
+| `--session-budget-tokens` | 2 830 000 | Each session's token cap. |
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
-| `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
+| `--models` | `openrouter/deepseek/deepseek-v4.1-flash-1017` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
 | `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
-| `--harness` | `claude` | The agent CLI the run drives: `claude`, `cursor` or `opencode`. |
+| `--harness` | `opencode` | The agent CLI the run drives: `claude`, `cursor`, `opencode` or `codex`. |
 | `--agent-command` | the harness's own command | The agent's command line, overriding the harness. |
 | `--results` | `results/` beside this file | Where runs are recorded. |
 | `--run-id` | the start time, as `YYYYMMDDTHHMMSSZ` | The run's directory name. |
@@ -273,7 +315,7 @@ Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also hold
 For example, one model over one workflow:
 
 ```bash
-make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-tokens 100000 --session-budget-tokens 20000'
+make eval-diagrams ARGS='--workflows linear --repetitions 1 --budget-tokens 100000 --session-budget-tokens 20000'
 ```
 
 The nested-dispatch scenarios, `dispatch-depth`'s and `subagent-first-run`'s, are written in `compiled` alone, whose Claude session carries the shell limited to `pf`:
@@ -284,13 +326,15 @@ make eval-diagrams ARGS='--forms compiled --workflows dispatch-depth,subagent-fi
 
 ### Default matrix and budget
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the forty-four scenarios of the twenty-two workflows, in the forms each is written in, 78 cells in all; and five repetitions: 780 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
+The default matrix is one model, `openrouter/deepseek/deepseek-v4.1-flash-1017` on the `opencode` harness, which the [runbook](RUNBOOK.md#shakedown-1) records as the user's choice; the thirty scenarios of the sixteen workflows, in the forms each is written in, 74 cells in all; and five repetitions: 370 sessions. The committed baseline covers six forms, every one but `bootstrap`, whose dispatched sections state no states to trace: 360 sessions.
 
-A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 780 sessions at the 60 000-token session cap need 46 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
+A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 370 sessions at the 2 830 000-token session cap need 1 047 100 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
+
+The committed baseline measured USD 2.50148 over 92 601 825 tokens for its 360 sessions, so a rerun spends about the same. It is one harness's run: its sessions all record exit status 0, so `opencode` crashed on no form the run covers. A harness with no committed baseline has no such evidence of its own.
 
 The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 
-The run's guard reads each session's reported tokens when it settles: a session starts only when the recorded tokens, plus the cap reserved for each session in flight, plus its own cap, fit the budget, and a run that cannot fit another lists the rest as not started. A session can record more than its cap, since its own CLI checks between calls, and the guard holds the budget against that by reserving caps in flight.
+The run's guard reads each session's reported tokens when it settles: a session starts only when the recorded tokens, plus the cap reserved for each session in flight, plus its own cap, fit the budget, and a run that cannot fit another lists the rest as not started. A session's tokens are every model's its CLI reports, its sub-agents' among them. A session can record more than its cap, since its own CLI checks between calls, and the guard holds the budget against that by reserving caps in flight.
 
 ## Reading the report
 

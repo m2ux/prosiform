@@ -1,0 +1,41 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+# The loop counts Retest, a state no click names and Rework's section
+# links, and runs four rounds, so the count is kept across a long trace.
+
+[[scenario]]
+name = "four-rounds"
+path = [
+    "Entry",
+    "Load",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Accept",
+    "Exit",
+]
+inputs = { "rounds.txt" = "4" }
+
+[[scenario]]
+name = "one-round"
+path = [
+    "Entry",
+    "Load",
+    "Measure",
+    "Rework",
+    "Retest",
+    "Measure",
+    "Accept",
+    "Exit",
+]
+inputs = { "rounds.txt" = "1" }

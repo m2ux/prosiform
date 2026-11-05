@@ -5,6 +5,7 @@ prosiform: {}
 
 ## Work
 
-1. Write the plan.
-2. [⇉ review](review.md#check).
+Write `actions/plan.txt` containing `planned`.
+
+1. [⇉ review](review.md#check).
 

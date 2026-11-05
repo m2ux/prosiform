@@ -5,4 +5,4 @@ prosiform: {}
 
 Write `actions/ship.txt` containing `shipped`.
 
-**Next.** The workflow is complete.
+**Next.** Go to [Exit](exit.md).

@@ -2,7 +2,7 @@
 
 Two scripts draw a bundle. `render-diagram.py` takes any entry document and draws the files it opened beside the bundle. `render-example.py` draws the fixed cases the architecture pages carry, from the cases declared in `scripts/examples.json`.
 
-Both use the same drawing: one panel per file, heading levels marked at the left margin, links in blue, operator marks in amber.
+Both use dark file panels, blue link labels and amber operator marks. The README's `run` example uses three columns: the source tree and entry, the linked documents, and the complete bundle. Arrows trace each link to its destination; repeated rules links converge on one bundled section. The other drawings mark heading levels at the left margin.
 
 The scripts draw bundles for a reader of these pages. How a Mermaid diagram's own links are read is stated at [Diagram links](references.md#diagram-links), and `make render` holds them to rendering as links a reader can follow, as [Rendering](../checks.md#rendering) states.
 

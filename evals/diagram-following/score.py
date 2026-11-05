@@ -31,33 +31,32 @@ the classes taken in this order:
   one before it: a step back, a state entered after a terminal one, or the
   one before it repeated: *invalid transition*.
 
-A dispatch scenario also states the sub-agents a correct run starts, so a
-run whose trace is the path and whose actions are done is held to that
-record before it passes. The record is `subagents.json` beside the trace,
-written from the session's transcript when the session settles, so the
-scorer reads no transcript and takes no second read:
+A dispatch scenario also states the sub-agents a correct run starts and
+the action each one's section states, so a run whose trace is the path and
+whose actions are done is held to that record before it passes. The
+record is `subagents.json` beside the trace, written from the session's
+transcript when the session settles, so the scorer reads no transcript and
+takes no second read. The dispatch's shape is held first, then the
+session's handling of each return as the dispatch protocol states it, then
+what the sub-agents wrote:
 
 - the sections the record names, in order, are the scenario's: otherwise
   *undispatched*, since a bundle the scenario dispatches reached no
   sub-agent or reached one in another order;
 - every set the scenario states started in one message, its opener first
   and each later member alongside it: otherwise *sequential_set*;
-- each start's return is the scenario's: otherwise *unrelayed_question*,
-  which is a question the sub-agent returned and the session answered in
-  its place.
+- each start that returned a question is started again later, with the
+  answers: otherwise *unrelayed_question*, which is a question the session
+  answered in the sub-agent's place or left unanswered. A start that
+  returned `done` moves the session on, and asks nothing further;
+- each sub-agent's action file holds the value its trace entry states:
+  otherwise *missing_action*, named in the verdict's `actions`.
 
 The checks are read in that order, after the run is held to its path and
 its actions, so a trace that stopped short is *unfinished* however few
 sub-agents it started, and a record failing two checks takes the earlier.
-A scenario that dispatches nothing passes all three, and a record absent
+A scenario that dispatches nothing passes all four, and a record absent
 from a session that dispatches nothing names no start.
-
-A start the scenario states may also name the actions its sub-agent does,
-which only the material a `pf` run on a deferred line of its bundle
-compiles states. A run passing the dispatch checks is held to those files
-as a state's action is, whatever its harness reports of the sub-agent's
-commands: one absent or wrong is *missing action*, so a sub-agent that ran
-no `pf` on its line fails though no stream carries what it ran.
 
 A scenario also states the `pf` runs a correct run makes, so a run that
 passes the dispatch checks and its sub-agents' actions is held to them
@@ -80,13 +79,14 @@ sub-agent's, are held to the runs stated for it:
 The checks are read in that order, after the dispatch checks, so a sub-agent
 that never started fails *undispatched* rather than leaving its runs unmade.
 
-A start is a `Task` tool call in the transcript, which names the section
-it hands over in the call's `description` as `<document>#<heading>`; its
-return is the text of the answer to that call, read as `question` when
-that text opens with the word and as `done` otherwise. Two starts in one
-message are together, since they were dispatched at once. Which message
-and answer a harness's stream records that in is the harness's to read, as
-`harness.py` states: the scorer reads only the record either harness writes.
+A start is an `Agent` tool call in the transcript, whose prompt names the
+compiled file or authored section it hands over; its
+return is the sub-agent's report, read as `question` when its first line opens
+`Question:`, as `pf`'s guide prescribes, and as `done` otherwise. Two starts
+in one message are together, since they were dispatched at once. Which
+message and answer a harness's stream records that in, and what frame its
+CLI puts around a report, is the harness's to read, as `harness.py`
+states: the scorer reads only the record either harness writes.
 
 The verdict's `record` is the form the runner writes and the report reads.
 """
@@ -98,7 +98,7 @@ from dataclasses import asdict, dataclass
 from enum import StrEnum
 from pathlib import Path
 
-from harness import Harness, Start
+from harness import QUESTION, Harness, Start
 
 __all__ = [
     "ACTIONS",
@@ -116,7 +116,16 @@ __all__ = [
     "record_calls",
     "score",
 ]
-from workflow import FEWER, SHELL_FORMS, START, Dispatch, Scenario, Workflow
+from workflow import (
+    FEWER,
+    SHELL_FORMS,
+    SOURCE_DIR,
+    START,
+    Dispatch,
+    Scenario,
+    Workflow,
+    entry_bundle,
+)
 
 PF = "pf"
 SEPARATORS = re.compile(r"&&|\|\||[;|\n]")
@@ -141,8 +150,6 @@ carries both and the run keeps them together.
 ACTIONS = "actions"
 SUBAGENTS = "subagents.json"
 TRANSCRIPT = "transcript.jsonl"
-BUNDLE_SUFFIX = ".bundle.md"
-BUNDLE_JOIN = "__"
 
 
 class Failure(StrEnum):
@@ -170,11 +177,11 @@ class Verdict:
 
     `divergence` is the first index at which the trace and the expected path
     differ; for a missing action, the first index whose state has not done
-    its action, or none where a sub-agent's is the one undone; for an
-    unfinished run, the trace's length. A pass carries no failure and no
+    its action, or none where a sub-agent's action is the one missing; for
+    an unfinished run, the trace's length. A pass carries no failure and no
     divergence. `actions` names the action files absent or wrong among the
-    diagram states the trace entered, in trace order, or, where those are
-    done, among the sub-agents' actions the scenario states.
+    diagram states the trace entered, in trace order, and, for a sub-agent's
+    missing action, its file.
     """
 
     passed: bool
@@ -203,11 +210,20 @@ def read_trace(workspace: Path) -> tuple[str, ...]:
     return tuple(line for line in lines if line)
 
 
+def written(action: tuple[str, str], workspace: Path) -> bool:
+    """Whether an action file exists and holds the stated value."""
+    name, value = action
+    path = workspace / ACTIONS / name
+    return path.is_file() and path.read_text().strip() == value
+
+
 def action_done(workflow: Workflow, state: str, workspace: Path) -> bool:
-    """Whether a state's action file exists and holds the stated value."""
-    name, value = workflow.walked[state].action
-    written = workspace / ACTIONS / name
-    return written.is_file() and written.read_text().strip() == value
+    """Whether a state's action file exists and holds the stated value.
+
+    A state stating no action has nothing to do, so it is done.
+    """
+    action = workflow.walked[state].action
+    return True if action is None else written(action, workspace)
 
 
 def undone(workflow: Workflow, trace: tuple[str, ...], workspace: Path) -> list[int]:
@@ -251,13 +267,9 @@ def sub_agent_undone(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
     """The action files a scenario's sub-agents leave undone, in trace order."""
     return tuple(
         dict.fromkeys(
-            name
-            for entry in scenario.trace
-            for name, value in entry.actions
-            if not (
-                (written := workspace / ACTIONS / name).is_file()
-                and written.read_text().strip() == value
-            )
+            due.action[0]
+            for due in scenario.trace
+            if due.action is not None and not written(due.action, workspace)
         )
     )
 
@@ -328,6 +340,8 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
             bool(row.get("together")),
             row["parent"] if isinstance(row.get("parent"), int) else None,
             _texts(row.get("commands")),
+            row.get("actor"),
+            row.get("group"),
         )
         for row in (rows if isinstance(rows, list) else [])
         if isinstance(row, dict)
@@ -420,38 +434,50 @@ def compiles(
     return next((failure for failure in order if failure in found), None)
 
 
-def names(target: str, section: str) -> bool:
-    """Whether a start's target names a section, as a section or as its bundle.
+def names(target: str, section: str, source_directory: str = "") -> bool:
+    """Whether a start's prompt names a section's compiled file or authored reference.
 
     A compiled form hands over `pf`'s bundle for the section, named
-    `<document>__<heading>` with each `/` of the document's path written as
-    `_`, and written beside the entry; an authored form
+    `<document>__<heading>.bundle.md` and written beside the entry; an authored form
     hands over the section itself, named `<document>#<heading>`. Both spell
     one section, since the bundle's name is compiled from it.
 
-    A session's call text is its own wording, so the section may be named by
-    its heading alone: an agent handing over `plan#work` writes "the Plan
-    Work section" as readily as the path. The heading is therefore matched as
-    a word of the text, beside the two spellings that pin it exactly.
+    A bootstrap skill compiles the documents it carries, so its sections sit
+    under `sources/` inside the skill, and a session reaches them by either
+    name: the reference the scenario states, or that reference as the skill
+    directory holds it.
+
+    The file or reference identifies the section. Description wording and
+    headings alone carry no target identity.
     """
-    document, _, heading = section.partition("#")
-    for spelled in (
-        f"{document}#{heading}",
-        f"{document.replace('/', '_')}{BUNDLE_JOIN}{heading}{BUNDLE_SUFFIX}",
-    ):
-        if re.search(rf"{re.escape(spelled)}(?![\w#-])", target):
-            return True
-    return re.search(rf"\b{re.escape(heading)}\b", target, re.IGNORECASE) is not None
+    references = [section]
+    if source_directory:
+        references.insert(0, f"{source_directory}/{section}")
+    for reference in references:
+        document, _, heading = reference.partition("#")
+        for spelled in (
+            f"{document}#{heading}",
+            f"{document}.md#{heading}",
+            entry_bundle(reference).name,
+            f"{entry_bundle(reference).name}#{heading}",
+        ):
+            if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
+                return True
+    return False
 
 
-def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
+def dispatched(
+    scenario: Scenario, starts: tuple[Start, ...], source_directory: str = ""
+) -> Failure | None:
     """The first dispatch check a run's record fails, or nothing when it passes.
 
     A session may start a sub-agent for work of its own, as reading the
-    material before dispatching is, so a start naming no section the scenario
-    expects is not a dispatch and is passed over. What is held is that every
-    dispatch the scenario states happened, in its order, each together or
-    returning as the scenario says.
+    material before dispatching is, or start one again with the answers to
+    its question, so a start naming no section the scenario expects at that
+    point is not a dispatch and is passed over. What is held is that every
+    dispatch the scenario states happened, in its order, each together as
+    the scenario says, and that each start returning a question was started
+    again later with its answers.
 
     A set states no order among its members: the scenario lists them in the
     order it reads them, and a run may start them in any order so long as they
@@ -466,7 +492,7 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
     if not expected:
         return None
     taken: set[int] = set()
-    matched: list[tuple[Start, Dispatch]] = []
+    matched: list[tuple[int, Start, Dispatch]] = []
     cursor = 0
     for unit in units(expected):
         found: list[tuple[int, Start, Dispatch]] = []
@@ -476,18 +502,25 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
                     position
                     for position in range(cursor, len(starts))
                     if position not in taken
-                    and names(starts[position].target, due.section)
+                    and names(starts[position].target, due.section, source_directory)
                 ),
                 None,
             )
             if index is None:
                 return Failure.UNDISPATCHED
             found.append((index, starts[index], due))
-        matched.extend((start, due) for _, start, due in found)
+        matched.extend(found)
         cursor = max(index for index, _, _ in found) + 1
         for index, _, _ in found:
             taken.add(index)
         if len(found) > 1:
+            native = [(start.actor, start.group) for _, start, _ in found]
+            if any(group is not None for _, group in native):
+                if len(set(native)) != 1 or any(
+                    actor is None or group is None for actor, group in native
+                ):
+                    return Failure.SEQUENTIAL_SET
+                continue
             # A set states no order, so its opener is whichever member
             # started first. Starts in one message are contiguous, so every
             # later member started alongside it only where no start between
@@ -498,7 +531,16 @@ def dispatched(scenario: Scenario, starts: tuple[Start, ...]) -> Failure | None:
                 return Failure.SEQUENTIAL_SET
         elif any(due.together for _, _, due in found):
             return Failure.SEQUENTIAL_SET
-    if any(start.returned != due.returned for start, due in matched):
+    if any(start.returned == "unfinished" for _, start, _ in matched):
+        return Failure.UNFINISHED
+    if any(
+        start.returned == QUESTION
+        and not any(
+            names(later.target, due.section, source_directory)
+            for later in starts[index + 1 :]
+        )
+        for index, start, due in matched
+    ):
         return Failure.UNRELAYED_QUESTION
     return None
 
@@ -529,7 +571,12 @@ def score(
     actual = read_trace(workspace)
     missing = undone(workflow, actual, workspace)
     actions = tuple(
-        dict.fromkeys(workflow.walked[actual[index]].action[0] for index in missing)
+        dict.fromkeys(
+            name
+            for index in missing
+            if (found := workflow.walked[actual[index]].action) is not None
+            for name in (found[0],)
+        )
     )
     divergence = next(
         (
@@ -548,16 +595,22 @@ def score(
             )
         starts = read_starts(workspace)
         commands = read_commands(workspace)
-        order = dispatched(scenario, starts)
-        if order is None and (undone_by := sub_agent_undone(scenario, workspace)):
+        order = dispatched(
+            scenario, starts, SOURCE_DIR if compiled is not None else ""
+        )
+        if order is not None:
+            return Verdict(False, order, None, expected, actual, actions)
+        if (undone_by := sub_agent_undone(scenario, workspace)) is not None:
             return Verdict(
                 False, Failure.MISSING_ACTION, None, expected, actual, undone_by
             )
-        if order is None and commands is not None:
+        if compiled is False:
+            return Verdict(False, Failure.UNBOOTSTRAPPED, 0, expected, actual, actions)
+        if commands is not None:
             order = compiles(scenario, commands, starts)
-        if order is None:
-            return Verdict(True, None, None, expected, actual, actions)
-        failure, at = order, None
+            if order is not None:
+                return Verdict(False, order, None, expected, actual, actions)
+        return Verdict(True, None, None, expected, actual, actions)
     elif divergence == len(actual):
         failure, at = Failure.UNFINISHED, divergence
     else:

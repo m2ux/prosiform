@@ -1,4 +1,4 @@
-description = "A command line holding no argument prints the guide: how to run pf, what a ↳ link and a ⇉ link mean, how an In parallel section is followed, the inputs a dispatch carries, that a set is waited on until every member answers, that failures return together, and that a returned question opens with a first line reading Question:. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
+description = "A command line holding no argument prints the guide: how to run pf, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, the inputs a dispatch carries, that failures return together, and how a sub-agent's question is answered. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
 
 clauses = [
   "Guide",
@@ -12,16 +12,20 @@ arguments = []
 [expected]
 exit_status = 0
 stdout_contains = [
-  "pf -o <folder> <destination>",
-  "SKILL.md",
-  "non-zero exit stops the run",
-  "A link whose text opens with ↳ names a section to inline",
+  "pf -o <folder> <document>[#<section>]",
+  "-o <folder>      folder the run's bundles are written into",
+  "#<section>       one section of it, named by the slug of its heading",
+  "<document>       a document named from the working directory",
+  "1  a failure stopped the run: report its diagnostics and go no further",
+  "2  invalid usage or option combination",
+  "↳  names a section to inline",
   "keep it in context",
-  "A link whose text opens with ⇉ names a file to hand on",
-  "An In parallel section lists several ⇉ links",
-  "each with the inputs of the step that led there",
-  "Continue when all have answered",
-  "all failures return together",
-  "whose first line reads Question:",
+  "⇉  names a bundle to hand on",
+  "⫽  marks a dispatch set",
+  "its section holds one set of bundles, listed as",
+  "⇉ items in the sub-section headed ⫽ <that section's title> dispatch",
+  "Give each bundle to its own sub-agent at once",
+  "step that led there, one per value where that step applies to",
+  "A failure cancels nothing; all failures return together.",
 ]
 diagnostics = []

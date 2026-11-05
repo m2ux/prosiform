@@ -3,10 +3,23 @@
 
 [[scenario]]
 name = "declared-link-followed"
-path = ["Receive", "Inspect", "Verify", "Archive"]
+path = [
+    "Entry",
+    "Receive",
+    "Inspect",
+    "Verify",
+    "Archive",
+    "Exit",
+]
 inputs = { "supplier.txt" = "internal" }
 
 [[scenario]]
 name = "undeclared-link-as-text"
-path = ["Receive", "Liaise", "Archive"]
+path = [
+    "Entry",
+    "Receive",
+    "Liaise",
+    "Archive",
+    "Exit",
+]
 inputs = { "supplier.txt" = "vendor" }
