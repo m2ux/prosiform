@@ -652,6 +652,7 @@ def test_a_start_names_its_file_or_authored_section_exactly() -> None:
     assert names("Follow /work/plan__work.bundle.md.", "plan#work") is True
     assert names("Follow plan.md#work.", "plan#work") is True
     assert names("Follow plan#work.", "plan#work") is True
+    assert names("Follow plan__work.bundle.md#work.", "plan#work") is True
     assert names("Follow Plan Work section", "plan#work") is False
     assert names("Dispatch plan work bundle", "plan#work") is False
     assert names("Follow review__work.bundle.md", "plan#work") is False
