@@ -118,5 +118,29 @@
     "parent_row_removed": "W03",
     "parent_criterion_removed": "AC3",
     "readback": "complete board inventory, no further page"
+  },
+  {
+    "kind": "issues",
+    "issue": 187,
+    "url": "https://github.com/m2ux/prosiform/issues/187",
+    "updated_at": "2026-11-05T10:49:26Z",
+    "change": "User-approved retirement of W05, AC5 and AC6, preserving remaining IDs"
+  },
+  {
+    "kind": "retirement",
+    "issue": 177,
+    "state": "closed",
+    "state_reason": "not_planned",
+    "url": "https://github.com/m2ux/prosiform/issues/177",
+    "body_preserved": true,
+    "board_item_removed": true,
+    "comment_url": "https://github.com/m2ux/prosiform/issues/177#issuecomment-6656075887",
+    "parent_issue": 187,
+    "parent_row_removed": "W05",
+    "parent_criteria_removed": [
+      "AC5",
+      "AC6"
+    ],
+    "readback": "complete board inventory, no further page"
   }
 ]

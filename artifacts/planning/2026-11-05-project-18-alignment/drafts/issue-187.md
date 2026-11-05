@@ -36,7 +36,6 @@ Debt that impairs nothing still has to be somewhere, and the epic that collected
 | [W01](https://github.com/m2ux/prosiform/issues/158) | A code block indented inside a list item | AC1 | | | | |
 | [W02](https://github.com/m2ux/prosiform/issues/160) | Uncalled functions named only by a check | AC2 | | | | |
 | [W04](https://github.com/m2ux/prosiform/issues/162) | Tracker route exercised by the repository check | AC4 | | | | |
-| [W05](https://github.com/m2ux/prosiform/issues/177) | The options the design does not state | AC5, AC6 | [I00:E11:W24](https://github.com/m2ux/prosiform/issues/39) | | | |
 | [W06](https://github.com/m2ux/prosiform/issues/185) | Lowercase build words in the design | AC7 | [I00:E11:W34](https://github.com/m2ux/prosiform/issues/39) | W07 | | |
 | [W07](https://github.com/m2ux/prosiform/issues/186) | An avoided term in a corpus declaration | AC8 | [I00:E11:W34](https://github.com/m2ux/prosiform/issues/39) | W06 | | |
 | [W08](https://github.com/m2ux/prosiform/issues/189) | One fixture run by its identity | AC9 | | | | |
@@ -51,8 +50,6 @@ Debt that impairs nothing still has to be somewhere, and the epic that collected
 - [ ] **AC1.** A code block indented inside a list item is passed over by the link check while that item's own content, a nested bullet included, is read, as the shared reading's own tests show.
 - [ ] **AC2.** Every function and method `src/prosiform` defines is named by the package itself or by a stated reason it is reached from outside it, as a repository check run by `make check` shows.
 - [ ] **AC4.** An online run of the link check over the repository's own documents makes at least one tracker call and resolves it, as the check's own output naming that reference shows.
-- [ ] **AC5.** The design record's CLI contract states the fault option and each fault name it declares, as the vocabulary check over the design and the repository's documented invocation table read together show.
-- [ ] **AC6.** The design record's CLI contract states the option a build reports its codes on, as the vocabulary check over the design and the repository's documented invocation table read together show.
 - [ ] **AC7.** A fixture declaration or a report entry naming a word that only a section of the design stating no behaviour carries is reported, as the independence check over a corpus declaring one shows.
 - [ ] **AC8.** A fixture declaration stating a term `docs/glossary.md` names as deliberately not used is reported with the reason that table gives, as the independence check shows.
 - [ ] **AC9.** The corpus runner asked for one fixture by its identity reports that fixture's verdict under that identity, by the comparison the corpus run performs, and refuses an identity no fixture carries, as the corpus harness shows.
@@ -81,4 +78,4 @@ Debt that impairs nothing still has to be somewhere, and the epic that collected
 - **R4.** [Row joins](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-10-21-187-i01-e03-carried-debt-joins) — the component each row changes, the pair that shares a pull request, and the reason each other pair keeps its own.
 - **R5.** [Versioning policy](https://github.com/m2ux/prosiform/blob/main/docs/versioning.md) — what the contract tag and each build tag assert.
 - **R6.** [I10:E01 Check Coverage](https://github.com/m2ux/prosiform/issues/454) — holds the check that reads a moving contract branch.
-- **R7.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed retirement of a requirement for a diagnostic outside the current contract.
+- **R7.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed boundaries of the current diagnostic scope.

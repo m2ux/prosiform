@@ -35,4 +35,6 @@ The user approved retirement of #161. It is closed as not planned, with its hist
 
 Twenty open items have their Initiative and Epic grouping saved and read back. Two initiative options and nine epic options cover the missing identities. Existing option IDs, colors, descriptions, statuses and priorities are preserved, as [grouping.json](grouping.json) records.
 
-The evidence record starts at engineering commit `e79bdd9c5`, with publication receipts, grouping and retirement recorded incrementally. Alignment remains open for the decisions in [source-review.md](source-review.md). The pending interview question is #177's superseded diagnostic requirements.
+The user also approved retirement of #177 as superseded. It is closed as not planned with its body preserved and a [retirement comment](https://github.com/m2ux/prosiform/issues/177#issuecomment-6656075887) recording the decision. #187 omits W05, AC5 and AC6; all remaining IDs stand. The complete board read confirms its absence. The selected scope now has 25 open issues.
+
+The evidence record starts at engineering commit `e79bdd9c5`, with publication receipts, grouping and retirement recorded incrementally. Alignment remains open for the decisions in [source-review.md](source-review.md). The user selected the current contract as the basis for I01's remaining refinement work, retaining its ledger, real-use evidence and freeze goals; the earlier root and dispatch metadata specifications supply historical background.

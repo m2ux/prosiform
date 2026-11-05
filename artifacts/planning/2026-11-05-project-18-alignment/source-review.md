@@ -9,7 +9,7 @@ The existing initiative Overviews supply the goals for this alignment. This revi
 | Reproducible findings from use | I01 AC1, AC2 | E00 | Ledger format is delivered; capture and run records remain open. |
 | Design-first revisions and visible unsettled work | I01 AC3, AC4, AC8 | E01 | The row coverage exists; bootstrap guidance names the removed example tree. |
 | Exposure before a tagged freeze | I01 AC5, AC6, AC7, AC9 | E00, E13 | The exposure goal includes example modes absent from current main. |
-| Accounted-for carried debt | I01 AC10 | E03 | Rows exist, but diagnostic and fault-option requirements describe retired surfaces. |
+| Accounted-for carried debt | I01 AC10 | E03 | Superseded diagnostic and fault-option rows are retired by confirmed decisions. |
 | Structural grouping and file-owned settings | I01 AC11, AC12, AC13 | E02, E06 | Closed delivery is recorded; current presets differ from the marked historical sources. |
 | Dispatch declaration and repository branch shape | I01 AC14, AC15 | E09, E10 | Closed delivery is recorded; dispatch metadata is superseded by the guide, and configuration is absent from current code bases. |
 | A baseline that distinguishes forms | I10 AC1, AC2, AC9, AC11, AC12 | E00 | The epic is closed as completed. The initiative criteria are ready to verify, not automatically ticked. |
@@ -39,12 +39,12 @@ No unread marked source is claimed as checked. The source departures above remai
 
 - **Resolved:** #161 required a diagnostic the current compiler does not define. Its AC1 starts “Each fault `E_INVALID_GROUP_RULE` names”. Current main at `ba93ca60860f0dc46722f27acd471740465279da` contains no such code in the compiler or diagnostic catalogue.
   **User decision, 2026-11-05:** Retire it as not planned, remove W03 and AC3 from #187, and remove its board entry. The issue's body is preserved and its retirement comment records the reason. [Readback evidence](retirement-161.json).
-- **Problem:** #177 AC1 requires `--fault`; current main declares no such option. Its AC2 requires a code-listing option, which the current design already declares as `-C`, `--codes`.
-  **Proposed resolution:** Retire the fault-injection requirement and verify the surviving code-listing requirement before deciding the issue's remaining scope.
+- **Resolved:** #177 AC1 required `--fault`, which the compiler retires. Its code-listing requirement is already stated in the current design as `-C`, `--codes`.
+  **User decision, 2026-11-05:** Retire the superseded issue as not planned, remove W05, AC5 and AC6 from #187, and remove its board entry. Its historical body is preserved. [Readback evidence](retirement-177.json).
 - **Problem:** #20 AC7 and #21's exposure-set criteria require the worked example's mode entries. #22 R2 points to `main/example/work-planner/bootstrap.md`, which the current main tree does not hold.
   **Proposed resolution:** Choose a current exposure set and an accessible bootstrap exemplar; retain the historical demonstration only as measured history.
 - **Problem:** #20 AC13 and AC14 describe file-owned invocation and dispatch metadata that the current contract does not admit. The marked sources specify several different schema generations.
-  **Proposed resolution:** Confirm the governing source revision and restate the refinement criteria against it, with explicit boundaries for historical requirements.
+  **User decision, 2026-11-05:** The current contract governs the remaining refinement work. The ledger, real-use evidence and specification-freeze goals stand; earlier root and dispatch metadata specifications are historical background. Source and criterion reconciliation against that boundary is in progress.
 
 ### I10 integration — high
 
@@ -88,4 +88,4 @@ No unread marked source is claimed as checked. The source departures above remai
 
 ## Interview queue
 
-The I10 reconciliation and #161 retirement were approved and applied. The pending question is #177's superseded diagnostic requirements. Subsequent questions cover remaining I01 scope and source decisions, criterion splits, component declarations and branch configuration. Each is asked separately.
+The I10 reconciliation and retirements of #161 and #177 are approved and applied. The current contract is the confirmed basis for I01. Remaining questions cover its exposure set, criterion boundaries and splits, component declarations and branch configuration. Each is asked separately.

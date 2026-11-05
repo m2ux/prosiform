@@ -2,7 +2,7 @@
 
 These checks use the saved issue bodies after the approved corrections. A passing delivery script can still report incomplete delivery or unevaluated branch checks. Closed epic bodies supply context and are outside the body-edit scope. The source review distinguishes genuine findings from wording-check false positives.
 
-Current scope: 26 open issues. #161 is retired as not planned and absent from the board.
+Current scope: 25 open issues. #161 and #177 are retired as not planned and absent from the board.
 
 ## Format checks
 
@@ -132,12 +132,6 @@ Current scope: 26 open issues. #161 is retired as not planned and absent from th
   decide: Problem: change narrative "ether a flag was renamed, or the output moved to another stream — is not obser"; state the plan as it is
 ```
 
-### Issue 177
-
-```text
-#177 task (open): 0 fixed, 0 to apply, 0 to decide
-```
-
 ### Issue 185
 
 ```text
@@ -218,7 +212,6 @@ E02:W07 (level 1) is numbered after E02:W06 (level 2)
 0 E03:W01 - A code block indented inside a list item
 0 E03:W02 - Uncalled functions named only by a check
 0 E03:W04 - Tracker route exercised by the repository check
-0 E03:W05 - The options the design does not state
 0 E03:W06 - Lowercase build words in the design
 0 E03:W07 - An avoided term in a corpus declaration
 0 E03:W08 - One fixture run by its identity
@@ -262,7 +255,7 @@ E02:W07 (level 1) is numbered after E02:W06 (level 2)
 
 --- component contention: rows of different epics extending one component
 none
-not checked, no component read: E01:W01, E01:W02, E01:W03, E01:W04, E03:W01, E03:W02, E03:W04, E03:W05, E03:W06, E03:W07, E03:W08, E03:W09, E03:W10, E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10, E06:W11, E09:W01, E09:W02, E09:W03, E09:W04, E10:W01, E10:W02, E13:W01, E13:W02
+not checked, no component read: E01:W01, E01:W02, E01:W03, E01:W04, E03:W01, E03:W02, E03:W04, E03:W06, E03:W07, E03:W08, E03:W09, E03:W10, E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10, E06:W11, E09:W01, E09:W02, E09:W03, E09:W04, E10:W01, E10:W02, E13:W01, E13:W02
 
 --- epic priority (epics sharing a number start together)
 1 E00
@@ -303,7 +296,6 @@ E02:W08: artifacts/planning/2026-10-17-prosiform-v1/i01-e02/w08.md
 E03:W01: MISSING registered work item
 E03:W02: MISSING registered work item
 E03:W04: MISSING registered work item
-E03:W05: MISSING registered work item
 E03:W06: MISSING registered work item
 E03:W07: MISSING registered work item
 E03:W08: MISSING registered work item
@@ -757,7 +749,6 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
   note: W01 links task issue #158; link its pull request
   note: W02 links task issue #160; link its pull request
   note: W04 links task issue #162; link its pull request
-  note: W05 links task issue #177; link its pull request
   note: W06 links task issue #185; link its pull request
   note: W07 links task issue #186; link its pull request
   note: W08 links task issue #189; link its pull request
@@ -773,7 +764,7 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
   not checked: review pull request Changes paths
   not checked: review pull request issue links
   not checked: pull request targets
-  closable: no (undelivered W01, W02, W04, W05, W06, W07, W08, W09, W10, W12, W13, W14, unticked AC1, AC2, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC13, AC14, AC15, AC16, AC17, AC18, AC19)
+  closable: no (undelivered W01, W02, W04, W06, W07, W08, W09, W10, W12, W13, W14, unticked AC1, AC2, AC4, AC7, AC8, AC9, AC10, AC11, AC13, AC14, AC15, AC16, AC17, AC18, AC19)
 ```
 
 ### Issue 524

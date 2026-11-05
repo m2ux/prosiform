@@ -1,0 +1,16 @@
+{
+  "issue": 177,
+  "state": "closed",
+  "state_reason": "not_planned",
+  "url": "https://github.com/m2ux/prosiform/issues/177",
+  "body_preserved": true,
+  "board_item_removed": true,
+  "comment_url": "https://github.com/m2ux/prosiform/issues/177#issuecomment-6656075887",
+  "parent_issue": 187,
+  "parent_row_removed": "W05",
+  "parent_criteria_removed": [
+    "AC5",
+    "AC6"
+  ],
+  "readback": "complete board inventory, no further page"
+}

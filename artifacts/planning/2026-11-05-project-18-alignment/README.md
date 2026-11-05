@@ -17,6 +17,7 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [Publication evidence](publication.json) | Saved issue URLs, changes and readback timestamps |
 | [Board grouping](grouping.json) | Preserved option IDs and verified initiative and epic assignments |
 | [Issue 161 retirement](retirement-161.json) | Confirmed not-planned closure, preserved body and board removal |
+| [Issue 177 retirement](retirement-177.json) | Confirmed superseded-requirement closure, preserved body and board removal |
 | [Source and goal review](source-review.md) | Goal trace, source departures and criterion findings |
 | [Criterion verification](verification.md) | Exact tested revisions, instruments and results for the approved I10 reconciliation |
 | [E04 test output](test-e04.txt) | The detached-revision harness run's console output |
