@@ -15,8 +15,12 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [Alignment review](alignment.md) | Scope, checks, findings, decisions and publication evidence |
 | [Check evidence](checks.md) | Format, visibility, dependency, work-item and delivery reports |
 | [Publication evidence](publication.json) | Saved issue URLs, changes and readback timestamps |
+| [Board grouping](grouping.json) | Preserved option IDs and verified initiative and epic assignments |
+| [Issue 161 retirement](retirement-161.json) | Confirmed not-planned closure, preserved body and board removal |
 | [Source and goal review](source-review.md) | Goal trace, source departures and criterion findings |
 | [Criterion verification](verification.md) | Exact tested revisions, instruments and results for the approved I10 reconciliation |
+| [E04 test output](test-e04.txt) | The detached-revision harness run's console output |
+| [Guide test output](test-guide.txt) | The current merged guide's three existing checks |
 | [PR 651 draft](drafts/pr-651.md) | Test coverage for the separated source, form and dispatched-bundle criteria |
 | [PR 622 draft](drafts/pr-622.md) | The current compiled form in the draft epic review |
 | [Issue 21 draft](drafts/issue-21.md) | The exact published body after mechanical alignment |

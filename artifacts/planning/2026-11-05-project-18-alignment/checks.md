@@ -1,6 +1,8 @@
 # Alignment check evidence
 
-These are read-only check results. Exit 0 from delivery reconciliation does not establish completion: each report names its unchecked conditions. Closed epic bodies supply context and remain outside the correction scope.
+These checks use the saved issue bodies after the approved corrections. A passing delivery script can still report incomplete delivery or unevaluated branch checks. Closed epic bodies supply context and are outside the body-edit scope. The source review distinguishes genuine findings from wording-check false positives.
+
+Current scope: 26 open issues. #161 is retired as not planned and absent from the board.
 
 ## Format checks
 
@@ -121,12 +123,6 @@ These are read-only check results. Exit 0 from delivery reconciliation does not 
   decide: Problem: names W22; a Problem or Proposal names no epic, task, or acceptance criterion of its own initiative
 ```
 
-### Issue 161
-
-```text
-#161 task (open): 0 fixed, 0 to apply, 0 to decide
-```
-
 ### Issue 162
 
 ```text
@@ -193,7 +189,7 @@ These are read-only check results. Exit 0 from delivery reconciliation does not 
 
 ## Reference visibility
 
-The visibility checker passes for all 27 open issues. Their References cite the public `m2ux/prosiform` repository. Public `m2ux/workflow-server` is also cited in issue prose.
+The visibility checks pass for the remaining open issues. Their References cite public repositories. The source review separately checks same-board membership and obsolete requirement sources.
 
 ## Dependencies for issue 20
 
@@ -221,7 +217,6 @@ E02:W07 (level 1) is numbered after E02:W06 (level 2)
 0 E02:W03 - Title case for every generated heading
 0 E03:W01 - A code block indented inside a list item
 0 E03:W02 - Uncalled functions named only by a check
-0 E03:W03 - A fixture for each group-rule fault
 0 E03:W04 - Tracker route exercised by the repository check
 0 E03:W05 - The options the design does not state
 0 E03:W06 - Lowercase build words in the design
@@ -267,7 +262,7 @@ E02:W07 (level 1) is numbered after E02:W06 (level 2)
 
 --- component contention: rows of different epics extending one component
 none
-not checked, no component read: E01:W01, E01:W02, E01:W03, E01:W04, E03:W01, E03:W02, E03:W03, E03:W04, E03:W05, E03:W06, E03:W07, E03:W08, E03:W09, E03:W10, E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10, E06:W11, E09:W01, E09:W02, E09:W03, E09:W04, E10:W01, E10:W02, E13:W01, E13:W02
+not checked, no component read: E01:W01, E01:W02, E01:W03, E01:W04, E03:W01, E03:W02, E03:W04, E03:W05, E03:W06, E03:W07, E03:W08, E03:W09, E03:W10, E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10, E06:W11, E09:W01, E09:W02, E09:W03, E09:W04, E10:W01, E10:W02, E13:W01, E13:W02
 
 --- epic priority (epics sharing a number start together)
 1 E00
@@ -286,7 +281,7 @@ E06:W01 -> E06:W02 -> E06:W03 -> E06:W04 -> E06:W05 -> E06:W06 -> E06:W07 -> E06
 
 ### Work-item evidence
 
-A missing entry below means this review did not locate a registered task file, rather than proving no file exists.
+A missing entry means this review did not locate the registered file, rather than proving none exists.
 
 ```text
 E00:W01: artifacts/planning/2026-10-26-21-i01-e00-w01-ledger-format-and-triage/w01.md
@@ -307,7 +302,6 @@ E02:W07: artifacts/planning/2026-10-17-prosiform-v1/i01-e02/w07.md
 E02:W08: artifacts/planning/2026-10-17-prosiform-v1/i01-e02/w08.md
 E03:W01: MISSING registered work item
 E03:W02: MISSING registered work item
-E03:W03: MISSING registered work item
 E03:W04: MISSING registered work item
 E03:W05: MISSING registered work item
 E03:W06: MISSING registered work item
@@ -354,15 +348,6 @@ E04:W16: depends on E04:W19, not an earlier task in its epic
 E05:W01: depends on E05:W03, not an earlier task in its epic
 E00:W02: E00:W01 is already implied by E00:W00
 E00:W02: E00:W04 is already implied by E00:W00
-E04:W14: E04:W03 is already implied by E04:W16
-E04:W14: E04:W05 is already implied by E04:W16
-E04:W14: E04:W06 is already implied by E04:W16
-E04:W14: E04:W07 is already implied by E04:W16
-E04:W14: E04:W08 is already implied by E04:W16
-E04:W14: E04:W09 is already implied by E04:W16
-E04:W14: E04:W10 is already implied by E04:W16
-E04:W14: E04:W11 is already implied by E04:W16
-E04:W14: E04:W12 is already implied by E04:W16
 E05:W01: E05:W00 is already implied by E05:W03
 E06:W10: E06:W03 is already implied by E06:W05
 
@@ -385,7 +370,7 @@ E06:W08 (level 2) is numbered after E06:W07 (level 3)
 0 E02:W01 - Every project-scope settings file refused
 0 E03:W00 - Design clause
 0 E04:W01 - Scenarios stating the `pf` runs a session makes
-0 E04:W02 - The `staged` form for shell harnesses
+0 E04:W02 - Compiled bundles with a limited `pf` shell
 0 E04:W03 - A session held to its stated runs
 0 E04:W04 - Sub-agent starts and commands at every depth
 0 E05:W00 - Write the runbook and triage rubric
@@ -399,12 +384,12 @@ E06:W08 (level 2) is numbered after E06:W07 (level 3)
 1 E04:W06 - Scenarios activating conditional and nested deferrals
 1 E04:W07 - A scenario deferring under matched presets
 1 E04:W08 - Scenarios composing under a conditional step
-1 E04:W09 - Scenarios reading arrow, footnote and self-composition
-1 E04:W10 - A scenario compiling a deferred dispatch
+1 E04:W09 - Composition, footnote and self-composition scenarios
+1 E04:W10 - Deferred composition reaching a dispatch
 1 E04:W11 - Scenarios dispatching three hops deep
 1 E04:W12 - Scenarios of a sub-agent's first `pf` run
 1 E04:W17 - Triage rubric entries for the run classes
-1 E04:W18 - A staged Claude session carrying a shell
+1 E04:W18 - Compiled Claude per-agent command evidence
 1 E05:W03 - Record managed configuration by count and fingerprint
 1 E06:W01 - A plain-text guide holding the rules
 1 E06:W02 - Every bundle opening with the run-pf line
@@ -414,7 +399,7 @@ E06:W08 (level 2) is numbered after E06:W07 (level 3)
 2 E01:W04 - The checks page states the trigger rule
 2 E02:W03 - The settings the preflight reads
 2 E03:W02 - The validation page states the invariant
-2 E04:W19 - The edge corpus test reading the new bundles
+2 E04:W19 - Edge corpus using the declared bundle grammar
 2 E05:W01 - Run the live default-matrix proof
 2 E05:W04 - Count managed hooks from the transcripts
 2 E06:W05 - Deferred dispatch marks refused
@@ -486,7 +471,7 @@ E04:W01 -> E04:W10 -> E04:W19 -> E04:W16 -> E04:W14 -> E04:W15
 
 ### Work-item evidence
 
-A missing entry below means this review did not locate a registered task file, rather than proving no file exists.
+A missing entry means this review did not locate the registered file, rather than proving none exists.
 
 ```text
 E00:W00: artifacts/planning/2026-11-01-464-i10-evaluation-and-checks/e00/w00.md
@@ -575,7 +560,7 @@ E00:W01 -> E00:W04
 
 ### Work-item evidence
 
-A missing entry below means this review did not locate a registered task file, rather than proving no file exists.
+A missing entry means this review did not locate the registered file, rather than proving none exists.
 
 ```text
 E00:W01: artifacts/planning/2026-11-02-524-i11-mvp-release/e00/w01.md
@@ -664,7 +649,7 @@ E00:W02 -> E00:W05 -> E01:W05 -> E01:W06
 
 ### Work-item evidence
 
-A missing entry below means this review did not locate a registered task file, rather than proving no file exists.
+A missing entry means this review did not locate the registered file, rather than proving none exists.
 
 ```text
 E00:W01: artifacts/planning/2026-11-02-526-i12-design-patterns/e00/w01.md
@@ -717,7 +702,6 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
   ready to verify: AC9 (E00)
   ready to verify: AC11 (E00)
   ready to verify: AC12 (E00)
-  done: E00
   closable: no (undelivered E04, unticked AC1, AC2, AC9, AC11, AC12, AC13, AC15)
 ```
 
@@ -772,7 +756,6 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
 #187 epic (open)
   note: W01 links task issue #158; link its pull request
   note: W02 links task issue #160; link its pull request
-  note: W03 links task issue #161; link its pull request
   note: W04 links task issue #162; link its pull request
   note: W05 links task issue #177; link its pull request
   note: W06 links task issue #185; link its pull request
@@ -790,7 +773,7 @@ E04:W06: artifacts/planning/2026-11-02-526-i12-design-patterns/e04/w06.md
   not checked: review pull request Changes paths
   not checked: review pull request issue links
   not checked: pull request targets
-  closable: no (undelivered W01, W02, W03, W04, W05, W06, W07, W08, W09, W10, W12, W13, W14, unticked AC1, AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC13, AC14, AC15, AC16, AC17, AC18, AC19)
+  closable: no (undelivered W01, W02, W04, W05, W06, W07, W08, W09, W10, W12, W13, W14, unticked AC1, AC2, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC13, AC14, AC15, AC16, AC17, AC18, AC19)
 ```
 
 ### Issue 524

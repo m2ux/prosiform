@@ -87,7 +87,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G2 | AC3, AC4, AC5, AC7 | E01 | E01 AC1–AC4 | No marked source |
 | G3 | AC6, AC8 | E02 | E02 AC1–AC6 | No marked source |
 | G4 | AC10 | E03 | E03 AC1–AC3 | No marked source |
-| G5 | AC13 | E04 | E04 AC1–AC22 | No marked source |
+| G5 | AC13 | E04 | E04 AC1–AC18, AC20–AC29 | No marked source |
 | G6 | AC14 | E05 | E05 AC1–AC5 | No marked source |
 | G7 | AC16, AC17 | E06 | E06 AC1–AC18 | User decisions, 2026-11-03 |
 
@@ -148,13 +148,11 @@ Delivery models (user, 2026-11-04): lane 1 uses `gpt-6.1-sol` at `max` reasoning
 
 | Lane | Rows, in the order they come free |
 | --- | --- |
-| 1 | E05 W00 · E00 W01 · E06 W00 · E00 W04 · E04 W01, W02, W03, W04 · E04 W05–W12 · E04 W18 · E04 W16 |
-| 2 | E02 W01–W03 · E01 W01–W04 · E03 W00–W02 (filler, taken while no run is free) · E05 W01, W02 · E06 W01 · E06 W02–W04 (one pull request) · E06 W05, W08 (one pull request) · E06 W06, W09 · E06 W07 · E04 W19 · E00 W00 · E00 W02, W03 · E04 W14, W15 |
+| 1 | E04 W16 |
+| 2 | E04 W14, W15 |
 
-- **Lane 1 never waits on lane 2.** E00 W01 depends on E05 W00 for the model, not on E00 W00's code change.
-- **Each run is fed by one lane 1 row.** The proof by E05 W00 (and the user's merge of I09:E05), the baseline by E00 W04, the edge run by E04 W16.
-- **E06 goes first in each lane.** It carries `priority: 5`, the highest of I10's open epics: its design clause, W00, is the next lane 1 row, and its build rows lead lane 2 once W00 lands. The baseline shakedown (E00 W04) waits on E06 W01 and W07, and the edge-run shakedown (E04 W16) on E04 W19 and E06 W01.
-- **Filler covers lane 2's waits.** At the start, while E05 W00 runs, and in the long stretch while lane 1 designs E04. E02 goes first so its `harness.py` rows land before E04 W04, which depends on E02 W02.
+- **The shakedown supplies the recorded run.** E04 W16 in lane 1 establishes the edge runbook and budget before lane 2 takes W14; W15 documents its results.
+- **The task table carries prerequisite order.** Dependencies apply across lanes, and a lane takes another available unit while one of its rows waits.
 
 ## Dependency Check
 

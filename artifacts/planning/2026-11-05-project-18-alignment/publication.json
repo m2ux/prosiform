@@ -70,5 +70,53 @@
     "url": "https://github.com/m2ux/prosiform/issues/464",
     "updated_at": "2026-11-05T08:52:38Z",
     "change": "Record completed Corpus Separability epic"
+  },
+  {
+    "kind": "issues",
+    "issue": 464,
+    "url": "https://github.com/m2ux/prosiform/issues/464",
+    "updated_at": "2026-11-05T09:08:08Z",
+    "change": "Approved I10 criterion and delivery-plan reconciliation"
+  },
+  {
+    "kind": "issues",
+    "issue": 579,
+    "url": "https://github.com/m2ux/prosiform/issues/579",
+    "updated_at": "2026-11-05T09:08:10Z",
+    "change": "Approved I10 criterion and delivery-plan reconciliation"
+  },
+  {
+    "kind": "pulls",
+    "pull_request": 651,
+    "url": "https://github.com/m2ux/prosiform/pull/651",
+    "updated_at": "2026-11-05T09:08:12Z",
+    "change": "Approved I10 criterion and delivery-plan reconciliation"
+  },
+  {
+    "kind": "pulls",
+    "pull_request": 622,
+    "url": "https://github.com/m2ux/prosiform/pull/622",
+    "updated_at": "2026-11-05T09:08:15Z",
+    "change": "Approved I10 criterion and delivery-plan reconciliation"
+  },
+  {
+    "kind": "issues",
+    "issue": 187,
+    "url": "https://github.com/m2ux/prosiform/issues/187",
+    "change": "User-approved retirement of W03 and AC3, with remaining IDs preserved"
+  },
+  {
+    "kind": "retirement",
+    "issue": 161,
+    "state": "closed",
+    "state_reason": "not_planned",
+    "url": "https://github.com/m2ux/prosiform/issues/161",
+    "body_preserved": true,
+    "board_item_removed": true,
+    "comment_url": "https://github.com/m2ux/prosiform/issues/161#issuecomment-6654122521",
+    "parent_issue": 187,
+    "parent_row_removed": "W03",
+    "parent_criterion_removed": "AC3",
+    "readback": "complete board inventory, no further page"
   }
 ]

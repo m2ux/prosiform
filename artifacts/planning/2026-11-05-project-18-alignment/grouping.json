@@ -1,0 +1,164 @@
+{
+  "added_options": {
+    "Initiative": [
+      "I11 MVP Release",
+      "I12 Design Patterns"
+    ],
+    "Epic": [
+      "I10:E04 Composition Following",
+      "I11 Initiative",
+      "I11:E00 Release Cut",
+      "I12 Initiative",
+      "I12:E00 Catalogue Foundation",
+      "I12:E01 Structure and Contracts",
+      "I12:E02 Polymorphism and Substitution",
+      "I12:E03 Composition and Reuse",
+      "I12:E04 Flow and Concurrency"
+    ]
+  },
+  "items": [
+    {
+      "issue": 524,
+      "fields": {
+        "Initiative": "I11 MVP Release",
+        "Epic": "I11 Initiative"
+      }
+    },
+    {
+      "issue": 525,
+      "fields": {
+        "Initiative": "I11 MVP Release",
+        "Epic": "I11:E00 Release Cut"
+      }
+    },
+    {
+      "issue": 526,
+      "fields": {
+        "Initiative": "I12 Design Patterns",
+        "Epic": "I12 Initiative"
+      }
+    },
+    {
+      "issue": 527,
+      "fields": {
+        "Initiative": "I12 Design Patterns",
+        "Epic": "I12:E00 Catalogue Foundation"
+      }
+    },
+    {
+      "issue": 528,
+      "fields": {
+        "Initiative": "I12 Design Patterns",
+        "Epic": "I12:E01 Structure and Contracts"
+      }
+    },
+    {
+      "issue": 529,
+      "fields": {
+        "Initiative": "I12 Design Patterns",
+        "Epic": "I12:E02 Polymorphism and Substitution"
+      }
+    },
+    {
+      "issue": 530,
+      "fields": {
+        "Initiative": "I12 Design Patterns",
+        "Epic": "I12:E03 Composition and Reuse"
+      }
+    },
+    {
+      "issue": 531,
+      "fields": {
+        "Initiative": "I12 Design Patterns",
+        "Epic": "I12:E04 Flow and Concurrency"
+      }
+    },
+    {
+      "issue": 579,
+      "fields": {
+        "Initiative": "I10 Evaluation and Checks",
+        "Epic": "I10:E04 Composition Following"
+      }
+    },
+    {
+      "issue": 158,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 160,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 162,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 177,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 185,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 186,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 189,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 191,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 193,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 243,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    },
+    {
+      "issue": 255,
+      "fields": {
+        "Initiative": "I01 Field Refinement",
+        "Epic": "I01:E03 Repository Checks"
+      }
+    }
+  ],
+  "existing_option_ids_preserved": true,
+  "statuses_and_priorities_preserved": true,
+  "readback_verified": true
+}

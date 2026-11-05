@@ -4,8 +4,8 @@
 
 - [x] Read the complete board inventory and confirm scope.
 - [x] Check issue bodies, sources, dependencies and delivery evidence; identify unevaluated conditions explicitly.
-- [ ] Publish mechanical corrections and resolve content decisions.
-- [ ] Read back published changes, repeat affected checks and publish this record.
+- [ ] Resolve the remaining content decisions (in progress).
+- [x] Read back the approved changes, repeat affected checks and publish their evidence record.
 
 ## Scope
 
@@ -29,4 +29,10 @@ The user approved reconciliation of I10 and #579 with delivered behavior. The [d
 
 The affected completed criteria pass the instruments in [verification.md](verification.md). The structural I11 and I12 dependency checks pass. I01 and I10 remain qualified by the findings in [source-review.md](source-review.md); historical closed-epic findings are separate from open-work corrections.
 
-The approved I10 bodies and PR updates await publication after this record reaches the engineering branch. Board statuses and priorities are preserved.
+The approved bodies of #464 and #579, PR #651's test coverage and draft review PR #622's compiled-form overview are saved and read back. Their evidence links resolve to this record published on engineering.
+
+The user approved retirement of #161. It is closed as not planned, with its historical body retained and a [retirement comment](https://github.com/m2ux/prosiform/issues/161#issuecomment-6654122521) naming the reason. #187 omits W03 and AC3 and preserves the remaining labels. A complete board read confirms #161 is absent; 26 open issues remain in the selected scope.
+
+Twenty open items have their Initiative and Epic grouping saved and read back. Two initiative options and nine epic options cover the missing identities. Existing option IDs, colors, descriptions, statuses and priorities are preserved, as [grouping.json](grouping.json) records.
+
+The evidence record starts at engineering commit `e79bdd9c5`, with publication receipts, grouping and retirement recorded incrementally. Alignment remains open for the decisions in [source-review.md](source-review.md). The pending interview question is #177's superseded diagnostic requirements.

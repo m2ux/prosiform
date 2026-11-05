@@ -37,8 +37,8 @@ No unread marked source is claimed as checked. The source departures above remai
 
 ### I01 requirements — high
 
-- **Problem:** #161 requires a diagnostic the current compiler does not define. Its AC1 starts “Each fault `E_INVALID_GROUP_RULE` names”. Current main at `ba93ca60860f0dc46722f27acd471740465279da` contains no such code in the compiler or diagnostic catalogue.
-  **Proposed resolution:** Retire #161 as not planned and remove its row and AC3 from #187, preserving the remaining criterion labels and recording why the requirement is obsolete. An alternative is a new requirement for the current metadata diagnostics; that is a scope change requiring a decision.
+- **Resolved:** #161 required a diagnostic the current compiler does not define. Its AC1 starts “Each fault `E_INVALID_GROUP_RULE` names”. Current main at `ba93ca60860f0dc46722f27acd471740465279da` contains no such code in the compiler or diagnostic catalogue.
+  **User decision, 2026-11-05:** Retire it as not planned, remove W03 and AC3 from #187, and remove its board entry. The issue's body is preserved and its retirement comment records the reason. [Readback evidence](retirement-161.json).
 - **Problem:** #177 AC1 requires `--fault`; current main declares no such option. Its AC2 requires a code-listing option, which the current design already declares as `-C`, `--codes`.
   **Proposed resolution:** Retire the fault-injection requirement and verify the surviving code-listing requirement before deciding the issue's remaining scope.
 - **Problem:** #20 AC7 and #21's exposure-set criteria require the worked example's mode entries. #22 R2 points to `main/example/work-planner/bootstrap.md`, which the current main tree does not hold.
@@ -48,7 +48,7 @@ No unread marked source is claimed as checked. The source departures above remai
 
 ### I10 integration — high
 
-- **Resolved decision:** The user authorized reconciliation with the delivered guide and `compiled` form, preserving task IDs. The drafts update the issue bodies, W14–W16, W19's coverage and the PR test table. [Verification](verification.md) establishes the affected ticks.
+- **Resolved decision:** The user authorized reconciliation with the delivered guide and `compiled` form, preserving task IDs. The saved issue bodies, W14–W16, W19's coverage and the PR test table state that design. [Verification](verification.md) establishes the affected ticks.
 - **Problem:** E04's base predates current main's guide and dispatch-set heading. Passing the old base's suite does not establish integration with main's later grammar and harness changes.
   **Proposed resolution:** W16 reads the current merged guide and validates the integrated base before its shakedown. No base merge or implementation repair is performed in this alignment.
 - **Problem:** PR #651's Open Questions hold the expanded default workflow matrix. Its merged implementation admits edge workflows through the existing `compiled` form; the planning record also carries the earlier decision to keep the baseline and edge workflow selections separate.
@@ -68,7 +68,7 @@ No unread marked source is claimed as checked. The source departures above remai
 - **Problem:** The graph proposes E00 W03 and W04 as a ledger join candidate; its directory-level declaration is insufficient to choose that join.
   **Proposed resolution:** Choose the actual file components before joining or recording why they remain split.
 - **Problem:** I10 has redundant edges in completed historical rows and backward task-number references. Closed epics remain outside the requested body-edit scope. E04 W14's redundant direct inputs are removed in the approved draft because W16 reaches them all.
-  **Proposed resolution:** Retain protected delivered task IDs. Any renumbering of undelivered rows requires a confirmed map.
+  **Resolution for E04:** The user selected reconciliation preserving task IDs, so its current IDs stand. Closed-epic numbering remains historical context. Other undelivered-row renumbering requires a confirmed map.
 - **Existing I12 decision:** All ten index-component contention pairs are printed in the graph report. The foundation's four pairs are ordered by row dependencies. The six family pairs have a recorded user decision for disjoint index sections and shared priority; this alignment changes no priority.
 
 ### Issue wording and references — low
@@ -83,10 +83,9 @@ No unread marked source is claimed as checked. The source departures above remai
 
 - **Problem:** `config/branches` at refreshed `origin/workspace` declares `engineering`, `main` and `workspace`, but is absent from `origin/main`, `origin/i01/e00/main` and `origin/i10/e04/main`. The delivery scripts explicitly leave route, base-integration and review-link checks unevaluated.
   **Proposed resolution:** Establish the declaration at the revisions the delivery checks evaluate before preparing missing bases. No branch is created, retargeted or merged using an inferred declaration.
-- **Problem:** Twenty-one open items have no Initiative or Epic custom-field value. The field options do not yet represent I11, I12 or I10 E04.
-  **Proposed resolution:** Add the missing options while preserving every existing option and assignment, then populate the open items from their confirmed issue identities. No status or priority change is implied.
+- **Resolved:** Twenty open items needed Initiative and Epic custom-field values after #161's retirement. Two initiative options and nine epic options cover I11, I12 and I10 E04. Existing IDs, colors, descriptions and assigned status and priority values were preserved; each saved grouping was read back. [Readback evidence](grouping.json).
 - **I11 constraint:** The accepted release design explicitly names a `release/vX.Y.Z` branch and a user-owned merge into main. Its relationship to generic epic-base routing remains a recorded branch-shape decision; this alignment does not silently rewrite that release procedure.
 
 ## Interview queue
 
-The I10 reconciliation was approved. Next: the disposition of #161's retired group-rule requirement. Subsequent questions cover remaining I01 scope and source decisions, criterion splits, component declarations, branch configuration and board grouping. Each is asked separately.
+The I10 reconciliation and #161 retirement were approved and applied. The pending question is #177's superseded diagnostic requirements. Subsequent questions cover remaining I01 scope and source decisions, criterion splits, component declarations and branch configuration. Each is asked separately.
