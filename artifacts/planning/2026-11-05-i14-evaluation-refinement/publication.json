@@ -42,5 +42,13 @@
     "url": "https://github.com/m2ux/prosiform/issues/661",
     "updated_at": "2026-11-05T13:13:18Z",
     "readback_verified": true
+  },
+  {
+    "kind": "pull_request",
+    "issue": 622,
+    "url": "https://github.com/m2ux/prosiform/pull/622",
+    "updated_at": "2026-11-05T13:19:06Z",
+    "change": "Overview states corpus/scorer/harness scope and assigns former W14-W16 measurement work to I14; references name the current compiled surface",
+    "readback_verified": true
   }
 ]
