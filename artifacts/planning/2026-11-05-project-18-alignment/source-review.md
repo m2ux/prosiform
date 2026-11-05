@@ -60,8 +60,9 @@ Every currently marked source has been read. The current-contract binding and it
 - **Resolved for I01:** AC11 states member headings, with distinct destinations in AC16 and derived heading casing in AC17. E02's Coverage includes all three; existing tests verify each condition.
 - **Resolved for I11:** The user approves separate conditions for the annotated tag pair (AC2), open release pull request (AC3) and passing checks (AC4). E00 separates the open pull request (AC5) from its checks (AC6), updating W04's Coverage while preserving task IDs and the joined unit. Every criterion remains unticked until observed.
 - **Resolved for I12:** The user approves AC2 for template section order and AC7 for compilation. The foundation row covers both through its existing checks. Task IDs, dependencies, joins, lanes and priorities are preserved; both criteria remain unticked until verified.
-- **Problem:** #187 AC13 combines CI triggering, collection of failed checks and crash-versus-drift verdicts. #255's CI conditions overlap the delivered #454 work. #243's AC2 says `--only` restricts a rewrite while its scope says triage reports and restatement is separate.
-  **Proposed resolution:** Reconcile current delivery and separate verdict, execution and restatement requirements before planning implementation. The [current-main review](check-state-review.md) records the delivered checked-path policy, absent check-all target and current runner result. The pending question is whether triage's selection flag filters reports, with writes held by restatement.
+- **Resolved for triage:** On resumption, #243's selection flag filters reports; a green corpus emits no drift report. #187 AC15 and AC16 and the registered W13 work item state the same scope. Restatement owns writes, and all affected criteria remain unticked.
+- **Problem:** #187 AC13 combines CI triggering, collection of failed checks and crash-versus-drift verdicts. #255's CI conditions overlap the delivered #454 work.
+  **Proposed resolution:** Reconcile current delivery and separate verdict, execution and restatement requirements before planning implementation. The [current-main review](check-state-review.md) records the delivered checked-path policy, absent check-all target and current runner result.
 
 ### Planning components and dependencies — medium
 

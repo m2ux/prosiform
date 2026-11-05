@@ -34,6 +34,7 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [Issue 20 draft](drafts/issue-20.md) | The saved current-contract binding, verified criteria and historical metadata references |
 | [Issue 23 draft](drafts/issue-23.md) | The exact published body after mechanical alignment |
 | [Issue 187 draft](drafts/issue-187.md) | The exact published body after mechanical alignment |
+| [Issue 243 draft](drafts/issue-243.md) | The report-only triage scope and category filter |
 | [Issue 525 draft](drafts/issue-525.md) | The exact published body after mechanical alignment |
 | [Issue 526 draft](drafts/issue-526.md) | Independent template section-order and compilation conditions |
 | [Issue 524 draft](drafts/issue-524.md) | The approved independent tag, pull-request and passing-check conditions |

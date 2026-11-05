@@ -15,8 +15,8 @@ On 2026-11-05, a fresh fetch of `main` resolves to `ba93ca60860f0dc46722f27acd47
 | #255 AC7: restatement refuses a failed invocation | Restatement is separately planned under #187 W14, downstream of triage. | Preserve the requirement while deciding its ownership and observing test. |
 | #187 AC13: one criterion spans trigger, complete failure collection and verdict classification | These are separate conditions, with different delivery evidence and implementation components. | Split only after the user decides how the delivered trigger policy relates to the older requirement. |
 
-## Pending triage decision
+## Triage scope reconciliation
 
-#243's Overview and scope boundary say triage reports and classifies, while its Proposal and AC2 say `--only` restricts a rewrite. The same claim appears in #187 AC15 and the registered W13 work item. The pending recommendation is report filtering for triage, leaving writes to restatement. AC3 and parent AC16 would state that a green corpus produces no drift report.
+#243's Overview and scope boundary say triage reports and classifies. On resumption, its Proposal and AC2 and parent AC15 consistently make `--only` select report categories; writes remain in restatement. AC3 and parent AC16 state that a green corpus produces no drift report. The registered W13 work item carries the same scope and observing checks. No criterion is ticked by this wording correction.
 
 The component declarations in these historical work items remain separate findings; this source review does not silently assign or split their implementation.

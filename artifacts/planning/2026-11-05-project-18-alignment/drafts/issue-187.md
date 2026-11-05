@@ -60,9 +60,9 @@ Debt that impairs nothing still has to be somewhere, and the epic that collected
 
 - [ ] **AC14.** Triage reports each fixture's difference as one declared category, and a run over a corpus holding one of each category names each fixture under its own, as that run shows.
 
-- [ ] **AC15.** `--only` restricts the rewrite to the category it names, as a run over a corpus holding two categories with one selected shows.
+- [ ] **AC15.** `--only` reports fixtures in the selected drift category alone, as a run over a corpus holding two categories with one selected shows.
 
-- [ ] **AC16.** A green corpus run leaves the tool reporting nothing to rewrite, as the tool run over `make corpus`'s passing tree shows.
+- [ ] **AC16.** A green corpus run produces no drift report, as the tool run over `make corpus`'s passing tree shows.
 
 - [ ] **AC17.** Restatement without `--write` leaves the working tree unmodified and names every fixture it would rewrite, as `git status` after a run over a corpus with one stale fixture shows.
 

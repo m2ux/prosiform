@@ -25,6 +25,8 @@ The red run that drove this preceded [#244](https://github.com/m2ux/prosiform/pu
 
 ## Row Joins
 
+The current triage scope is report-only: `--only` selects reported drift categories, fixture content is untouched, and a green corpus emits no drift report. Restatement owns writes. The [alignment record](../2026-11-05-project-18-alignment/alignment.md) records this reconciliation on resumption, 2026-11-05.
+
 W13 and W14 both write under `checks/`, and W14 reads the categories W13 declares, so W14 depends on W13 rather than joining it.
 
 - **W01 and W13.** W01 reads `checks/documents.py`, which neither tool imports.
