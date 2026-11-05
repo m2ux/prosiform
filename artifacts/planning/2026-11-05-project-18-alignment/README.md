@@ -16,6 +16,7 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [Check evidence](checks.md) | Format, visibility, dependency, work-item and delivery reports |
 | [Publication evidence](publication.json) | Saved issue URLs, changes and readback timestamps |
 | [Board grouping](grouping.json) | Preserved option IDs and verified initiative and epic assignments |
+| [Board readback](board-readback.json) | Complete item inventory, retired-issue absence and open-issue grouping coverage |
 | [Issue 161 retirement](retirement-161.json) | Confirmed not-planned closure, preserved body and board removal |
 | [Issue 177 retirement](retirement-177.json) | Confirmed superseded-requirement closure, preserved body and board removal |
 | [Source and goal review](source-review.md) | Goal trace, source departures and criterion findings |
@@ -28,7 +29,7 @@ Mechanical corrections preserve scope and wording. Decisions about criteria, dep
 | [PR 622 draft](drafts/pr-622.md) | The current compiled form in the draft epic review |
 | [Issue 21 draft](drafts/issue-21.md) | The exact published body after mechanical alignment |
 | [Issue 22 draft](drafts/issue-22.md) | The exact published body after mechanical alignment |
-| [Issue 20 draft](drafts/issue-20.md) | The approved current-contract binding and historical metadata references |
+| [Issue 20 draft](drafts/issue-20.md) | The saved current-contract binding, verified criteria and historical metadata references |
 | [Issue 23 draft](drafts/issue-23.md) | The exact published body after mechanical alignment |
 | [Issue 187 draft](drafts/issue-187.md) | The exact published body after mechanical alignment |
 | [Issue 525 draft](drafts/issue-525.md) | The exact published body after mechanical alignment |

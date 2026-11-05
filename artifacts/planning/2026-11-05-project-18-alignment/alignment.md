@@ -9,7 +9,7 @@
 
 ## Scope
 
-The user selected all open board work. Project 18 holds 90 items, including 27 open issues: four initiatives, eleven epics and twelve task issues. View 4 has no filter. The issues belong to `m2ux/prosiform`; the workspace checkout's `origin` identifies that repository. The nested `.project/main` checkout's remote uses `m2ux/md-composer`, which GitHub redirects to `m2ux/prosiform`. Git reads in this review use the workspace project checkout and refreshed origin refs.
+The user selected all open board work. The initial Project 18 inventory held 90 items, including 27 open issues: four initiatives, eleven epics and twelve task issues. The final complete [board readback](board-readback.json) holds 89 items and 25 open issues, with both approved retirements absent and every open issue grouped. View 4 has no filter. The issues belong to `m2ux/prosiform`; the workspace checkout's `origin` identifies that repository. The nested `.project/main` checkout's remote uses `m2ux/md-composer`, which GitHub redirects to `m2ux/prosiform`. Git reads in this review use the workspace project checkout and refreshed origin refs.
 
 Open initiatives: I01 (#20), I10 (#464), I11 (#524), I12 (#526).
 
@@ -43,4 +43,4 @@ The saved source binding on #20 names design revision `6deca17d6b56c61f477c815da
 
 The saved I10 follow-up criteria state the run-pf instruction before source content without claiming it is a bundle's first bytes. The instruction and absence of a generated dispatch protocol have separate criteria, AC17 and AC18. Three existing bundle-publication checks pass at merged main, and both criteria pass the initiative readiness gate against completed E06.
 
-The I01 criterion draft states current grouping, selected presets, declaring entry invocation and compiled dispatch behavior. AC11's independent destination and casing conditions have AC16 and AC17, with E02's Coverage updated. All six affected criteria pass 649 existing merged-main tests and the initiative readiness gate; exposure-dependent criteria await the user choice.
+The saved I01 criteria and canonical initiative body state current grouping, selected presets, declaring entry invocation and compiled dispatch behavior. AC11's independent destination and casing conditions have AC16 and AC17, with E02's Coverage updated. All six affected criteria pass 649 existing merged-main tests and the initiative readiness gate; exposure-dependent criteria await the user choice.

@@ -170,5 +170,12 @@
     "url": "https://github.com/m2ux/prosiform/issues/579",
     "updated_at": "2026-11-05T11:03:10Z",
     "change": "Precise verified instruction-opening and dispatch-protocol criteria"
+  },
+  {
+    "kind": "issues",
+    "issue": 20,
+    "url": "https://github.com/m2ux/prosiform/issues/20",
+    "updated_at": "2026-11-05T11:11:02Z",
+    "change": "Atomic verified criteria for current grouping, presets, invocation and dispatch"
   }
 ]

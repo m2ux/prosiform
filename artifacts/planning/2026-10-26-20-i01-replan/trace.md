@@ -1,6 +1,6 @@
 # Goal Trace
 
-The refinement goal traced after the re-plan. Clauses are the outcomes the initiative's Overview names.
+This trace records the 2026-10-26 re-plan. The [current-contract alignment](../2026-11-05-project-18-alignment/source-review.md) holds the current goal trace and confirmed requirement sources; the [initiative body](../2026-10-17-prosiform-v1/i01-initiative.md) holds current criterion IDs.
 
 | Goal clause | Initiative criteria | Epics | Epic criteria | Source requirement |
 | --- | --- | --- | --- | --- |

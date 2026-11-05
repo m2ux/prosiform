@@ -240,7 +240,7 @@ E02:W07 (level 1) is numbered after E02:W06 (level 2)
 2 E09:W04 - Handoff round-trip
 3 E01:W02 - Traceability refreshed on each revision
 3 E01:W03 - Open-finding summary from the ledger
-3 E01:W04 - Workspace skills following the example's bootstrap
+3 E01:W04 - Workspace skills following the compilation guide
 3 E02:W08 - Documented grouping and its diagrams
 3 E06:W04 - Per-file compilation settings
 4 E06:W05 - Metadata authoring guidance
