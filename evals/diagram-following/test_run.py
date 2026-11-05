@@ -119,8 +119,10 @@ absent fails here as surely as one that does not fire where it is present.
 
 
 def every_session(models: list[str], forms: list[str], repetitions: int) -> int:
-    """The sessions a run of the whole corpus starts."""
-    return len(matrix(list(CORPUS.values()), models, forms, repetitions))
+    """The sessions a run of the whole corpus starts on the stub's harness."""
+    return len(
+        matrix(list(CORPUS.values()), models, forms, repetitions, HARNESSES["claude"])
+    )
 
 
 def test_a_matrix_holds_no_cell_a_harness_cannot_observe() -> None:
@@ -176,12 +178,19 @@ def log(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
 
 
 def eval_run(tmp_path: Path, *extra: str) -> dict[str, Any]:
-    """A run of one model through the stub agent, its records under tmp_path."""
+    """A run of one model through the stub agent, its records under tmp_path.
+
+    The stub stands in for any harness, so the run names `claude`, whose
+    stream carries every scenario's trace, rather than the default harness
+    whose observability the corpus is sized by.
+    """
     return run(
         options(
             [
                 "--agent-command",
                 f"{sys.executable} {STUB}",
+                "--harness",
+                "claude",
                 "--models",
                 "stub-model",
                 "--results",
@@ -246,11 +255,13 @@ def material(session: Session) -> set[str]:
 
 
 def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -> None:
-    sessions = matrix(list(CORPUS.values()), ["a", "b"], list(FORMS), 5)
+    sessions = matrix(
+        list(CORPUS.values()), ["a", "b"], list(FORMS), 5, HARNESSES["claude"]
+    )
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * 76
+    assert len(sessions) == 2 * 5 * every_session(["a"], list(FORMS), 1)
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -290,7 +301,9 @@ def test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs(
     record = eval_run(
         tmp_path, "--repetitions", "2", "--budget-tokens", "200000", "--parallel", "3"
     )
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 2)
+    sessions = matrix(
+        list(CORPUS.values()), ["stub-model"], list(FORMS), 2, HARNESSES["claude"]
+    )
     workspaces = (tmp_path / "eval" / "workspaces" / "test").resolve()
     expected = every_session(["stub-model"], list(FORMS), 2)
     assert record["started"] == len(sessions) == expected
@@ -543,7 +556,9 @@ def test_a_run_whose_sessions_pass_their_cap_stops_starting_sessions(
     tokens each records.
     """
     monkeypatch.setenv("STUB_AGENT_TOKENS", "500")
-    sessions = matrix(list(CORPUS.values()), ["stub-model"], list(FORMS), 1)
+    sessions = matrix(
+        list(CORPUS.values()), ["stub-model"], list(FORMS), 1, HARNESSES["claude"]
+    )
     budget = 250 * len(sessions)
     record = eval_run(
         tmp_path,

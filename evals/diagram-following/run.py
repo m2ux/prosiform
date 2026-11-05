@@ -204,7 +204,10 @@ SKILL_FILES = (SKILL,)
 """The files a bootstrap skill carries beside the documents it compiles."""
 SUMMARY = ("run_id", "harness", "state", "sessions", "started", "tokens", "not_started")
 
-DEFAULT_MODELS = ("claude-haiku-5-5", "claude-sonnet-5-5")
+DEFAULT_MODELS = ("openrouter/deepseek/deepseek-v4.1-flash-1017",)
+"""The model the runbook records as the user's choice."""
+DEFAULT_HARNESS = "opencode"
+"""The harness that model is reached through."""
 DEFAULT_REPETITIONS = 5
 DEFAULT_PARALLEL = 4
 DEFAULT_SESSION_BUDGET = 2_830_000
@@ -315,7 +318,7 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--parallel", type=int, default=DEFAULT_PARALLEL)
     parser.add_argument(
         "--harness",
-        default="claude",
+        default=DEFAULT_HARNESS,
         help="the agent CLI the run drives: claude, cursor, opencode or codex",
     )
     parser.add_argument(
@@ -337,7 +340,7 @@ def matrix(
     models: list[str],
     forms: list[str],
     repetitions: int,
-    harness: Harness = HARNESSES["claude"],
+    harness: Harness = HARNESSES[DEFAULT_HARNESS],
 ) -> list[Session]:
     """Every session a run starts when its budget allows, in start order.
 

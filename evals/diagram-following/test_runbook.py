@@ -15,6 +15,7 @@ import pytest
 from harness import HARNESSES
 from report import DISPOSITION_NAMES
 from run import (
+    DEFAULT_HARNESS,
     DEFAULT_MODELS,
     DEFAULT_REPETITIONS,
     DEFAULT_SESSION_BUDGET,
@@ -85,6 +86,24 @@ def measured(field: str) -> list[int]:
     return [int(figure.replace(" ", "")) for figure in FIGURE.findall(row)]
 
 
+def recorded(field: str) -> str:
+    """The value one row of the baseline's shakedown table states."""
+    baseline = section("## Baseline")
+    table = baseline[baseline.index("### Shakedown") :]
+    row = next(line for line in table.splitlines() if line.startswith(f"| {field} |"))
+    return row.split("|")[2].strip()
+
+
+def test_the_default_model_is_the_one_the_runbook_records() -> None:
+    """AC8: `--models` defaults to the model `RUNBOOK.md` records as the choice."""
+    assert list(DEFAULT_MODELS) == [recorded("Model").split("`")[1]]
+
+
+def test_the_default_harness_reaches_that_model() -> None:
+    """AC8: the harness `--harness` defaults to is the one the runbook records."""
+    assert DEFAULT_HARNESS == recorded("Harness").strip("`")
+
+
 def test_the_session_cap_is_the_measured_largest_doubled() -> None:
     """AC10: the default cap follows the shakedown's largest session."""
     largest = measured("Fifth run")[-2]
@@ -101,7 +120,7 @@ def test_the_token_budget_covers_the_default_matrix_at_that_cap() -> None:
             list(DEFAULT_MODELS),
             list(FORMS),
             1,
-            HARNESSES["claude"],
+            HARNESSES[DEFAULT_HARNESS],
         )
     )
     assert int(found.group(1)) >= sessions * DEFAULT_SESSION_BUDGET

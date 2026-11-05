@@ -223,13 +223,13 @@ A run id requires fresh results and workspaces. An existing `results/<run-id>` o
 | `--budget-tokens` | required | The run's token cap, at least the sessions times `--session-budget-tokens`. A later value in `ARGS` overrides the default. |
 | `--session-budget-tokens` | 2 830 000 | Each session's token cap. |
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
-| `--models` | `claude-haiku-5-5,claude-sonnet-5-5` | The models, comma-separated. |
+| `--models` | `openrouter/deepseek/deepseek-v4.1-flash-1017` | The models, comma-separated. |
 | `--workflows` | every workflow | The workflows, comma-separated. |
 | `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |
-| `--harness` | `claude` | The agent CLI the run drives: `claude`, `cursor` or `opencode`. |
+| `--harness` | `opencode` | The agent CLI the run drives: `claude`, `cursor`, `opencode` or `codex`. |
 | `--agent-command` | the harness's own command | The agent's command line, overriding the harness. |
 | `--results` | `results/` beside this file | Where runs are recorded. |
 | `--run-id` | the start time, as `YYYYMMDDTHHMMSSZ` | The run's directory name. |
@@ -237,14 +237,14 @@ A run id requires fresh results and workspaces. An existing `results/<run-id>` o
 For example, one model over one workflow:
 
 ```bash
-make eval-diagrams ARGS='--models claude-haiku-5-5 --workflows linear --repetitions 1 --budget-tokens 100000 --session-budget-tokens 20000'
+make eval-diagrams ARGS='--workflows linear --repetitions 1 --budget-tokens 100000 --session-budget-tokens 20000'
 ```
 
 ### Default matrix and budget
 
-The default matrix is two models, `claude-haiku-5-5` and `claude-sonnet-5-5`; the thirty scenarios of the sixteen workflows, in the forms each is written in, 76 cells in all; and five repetitions: 760 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
+The default matrix is one model, `openrouter/deepseek/deepseek-v4.1-flash-1017` on the `opencode` harness, which the [runbook](RUNBOOK.md#shakedown-1) records as the user's choice; the thirty scenarios of the sixteen workflows, in the forms each is written in, 74 cells in all; and five repetitions: 370 sessions. The committed baseline records an earlier matrix of three forms — the diagram bundle, its source tree and the prose bundle — and predates the token budget, so its cells carry no token count; a run over four forms records the linked form's sessions on top.
 
-A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 760 sessions at the 2 830 000-token session cap need 2 150 800 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
+A run is held to tokens, the one measure every harness reports, and `--budget-tokens` must cover the sessions times `--session-budget-tokens` or it is refused before a session starts, naming the budget, the sessions, the cap and the budget they need. The default matrix's 370 sessions at the 2 830 000-token session cap need 1 047 100 000, which `EVAL_BUDGET_TOKENS` covers; a smaller matrix lowers the need by its sessions and a lower `--session-budget-tokens` by the cap.
 
 The Claude harness also passes `--max-budget-usd` to its CLI, which caps dollars between calls and reports no token ceiling. That figure is the harness's own `session_cap_usd`, USD 0.50, not the token cap, so it bounds what one session can spend before the run's guard sees a result. The Cursor and opencode CLIs accept neither a spend cap nor a token cap, so a run on either is bounded by its timeout and by the run's guard alone.
 
