@@ -12,6 +12,7 @@ The documentation today describes each feature alone, and the one worked composi
 
 | Artifact | What it holds |
 | --- | --- |
+| [Initiative body](initiative-body.md) | The catalogue criteria and epic coverage |
 | [E00 W01 work item](e00/w01.md) | The pattern page check |
 | [E00 W02 work item](e00/w02.md) | The page and specimen bundle check |
 | [E00 W03 work item](e00/w03.md) | The catalogue index and its SOLID map |
@@ -59,7 +60,7 @@ The clauses the user confirmed on 2026-11-02, G5 reworded the same day:
 | Goal clause | Initiative criteria | Epics | Epic criteria | Source requirement |
 | --- | --- | --- | --- | --- |
 | G1 | AC1, AC6 | E00, E01–E04 | E00 AC2; every family's page criteria | No marked source |
-| G2 | AC2 | E00 | E00 AC1, AC4 | No marked source |
+| G2 | AC2, AC7 | E00 | E00 AC1, AC4 | No marked source |
 | G3 | AC3 | E00 | E00 AC5, and every page criterion's committed bundle set | No marked source |
 | G4 | AC4 | E00, E01–E04 | E00 AC6; E01 AC6, E02 AC8, E03 AC5, E04 AC6 | No marked source |
 | G5 | AC5 | E00 | E00 AC3 | No marked source |
@@ -104,6 +105,7 @@ Every clause has a criterion, every criterion is covered by an epic row, and eve
 
 ## Decisions
 
+- **Template and compilation are separate conditions.** (User, 2026-11-05.) AC2 states section order and AC7 states page compilation. The foundation row covers both through its existing AC1 and AC4. No task ID, dependency, join, lane or priority changes; both initiative criteria remain unticked until verified.
 - **Audience.** (User, 2026-11-02.) Skill authors, human and agent: pages read on GitHub and compile under `pf`.
 - **Home.** (User, 2026-11-02.) `docs/patterns/`, linked from `docs/README.md`, published with the build.
 - **Proof.** (User, 2026-11-02.) A compile check over committed expected bundles; no live agent-following run.
