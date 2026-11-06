@@ -42,4 +42,6 @@ The complete deterministic eval directory passed before the final runner test (6
 
 ## CI and Delivery
 
-Pending exact-head CI success and task merge. Default-branch integration and draft review pull requests 664 and 666 remain with the coordinator.
+The [Checks CI run](https://github.com/m2ux/prosiform/actions/runs/42231292434) succeeded at exact head `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493`. Fresh epic target protection returned Branch not protected (404), and active branch rules returned an empty list. No approving review requirement applies to this target. Task merge is pending final SHA-pinned mutation/readback.
+
+Default-branch integration and draft review pull requests 664 and 666 remain with the coordinator.
