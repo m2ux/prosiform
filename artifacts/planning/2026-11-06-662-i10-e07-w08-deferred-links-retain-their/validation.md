@@ -26,7 +26,11 @@ The generated deferred line retains the original decoded title and uses the invo
 
 ## Delivery
 
-[Task pull request](https://github.com/m2ux/prosiform/pull/671) targets `i10/e07/main`. The user explicitly confirmed the repository's auto-close setting is disabled for this session. No setting was changed. Merge and criterion recording await complete validation.
+[Task pull request](https://github.com/m2ux/prosiform/pull/671) targets `i10/e07/main`. The user explicitly confirmed the repository's auto-close setting is disabled for this session. No setting was changed. GitHub Checks passed at the final head: [CI run](https://github.com/m2ux/prosiform/actions/runs/42228873466). The task merged into `i10/e07/main` as `1f6070d6bc0842cf6d656b5c85a112146108d9d1`, with head and target confirmed by readback. `git diff --quiet` confirms the merged tree is identical to the verified task head. Both named instruments passed again in a detached checkout of the merged revision: 40 parity cases and 537/537 corpus fixtures. The epic's W08 row is Done, and AC17 and AC18 are ticked with tracker readback confirmed. The epic draft review [pull request](https://github.com/m2ux/prosiform/pull/666) now cites W08 and describes the executable handoff; it remains a draft. W09 remains outside this resumed unit's scope.
+
+## Reconciliation Limitation
+
+The current work-planner sync reports that `config/branches` is absent at this historical epic base, so its long-lived-base classification, epic integration readiness, review-reference/path checks and target checks are unevaluable. No branch configuration was added as part of W08. The task target and branch requirements were read directly: `i10/e07/main`, unprotected, active branch rules empty. The task merged at the exact verified head; the review remains draft. W09 and AC19/AC20 remain incomplete, so no epic closure or integration was attempted.
 
 ## Plan Changes
 
