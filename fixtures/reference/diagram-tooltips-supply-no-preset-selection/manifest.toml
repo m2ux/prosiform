@@ -1,0 +1,22 @@
+description = "A Mermaid tooltip and node label naming a preset leave the followed destination under its implicit default; only the diagram destination is rewritten and the unused named preset warns."
+
+clauses = [
+  "Bundle destinations — Internal links",
+  "Parser and source-preserving edits — Untouched content",
+  "Presets — default always applies",
+  "Presets — A preset nothing selected warns",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "rules.md"
+message_contains = ["the preset 'checks'"]

@@ -445,6 +445,106 @@ def test_a_link_is_read_as_its_destination_and_its_opening_text() -> None:
     ]
 
 
+@pytest.mark.parametrize(
+    "text",
+    [
+        '[Plan](rules.md " Checks, Draft, checks ")\n',
+        '[Plan][rules]\n\n[rules]: rules.md " Checks, Draft, checks "\n',
+        '[rules][]\n\n[rules]: rules.md " Checks, Draft, checks "\n',
+        '[rules]\n\n[rules]: rules.md " Checks, Draft, checks "\n',
+        "[Plan](rules.md ' Checks, Draft, checks ')\n",
+        "[Plan](rules.md ( Checks, Draft, checks ))\n",
+    ],
+)
+def test_a_link_reads_its_parsed_title_as_complete_preset_names(text: str) -> None:
+    [found] = selected(text)
+    assert found.tags == {"checks", "draft"}
+    assert found.title is None
+
+
+@pytest.mark.parametrize(
+    "text, title",
+    [
+        ('# Context\n\n[Label](rules.md "draft")\n', "Context"),
+        ('# [Label](rules.md "draft")\n', "Label"),
+        ('> [Label](rules.md "draft")\n', None),
+        ('- [Label](rules.md "draft")\n', None),
+        ('| Link |\n| --- |\n| [Label](rules.md "draft") |\n', None),
+    ],
+)
+def test_a_link_title_is_independent_of_its_region_and_label(
+    text: str, title: str | None
+) -> None:
+    [found] = selected(text)
+    assert found.tags == {"draft"}
+    assert found.title == title
+    assert found.label == "Label"
+
+
+def test_title_tags_keep_each_inline_and_reference_occurrence_distinct() -> None:
+    found = selected(
+        '[First](rules.md "draft") [Second](rules.md "checks")\n\n'
+        "[Third][draft] [Fourth][checks]\n\n"
+        '[draft]: rules.md "draft"\n[checks]: rules.md "checks"\n'
+    )
+    assert [one.destination for one in found] == ["rules.md"] * 4
+    assert [one.tags for one in found] == [
+        {"draft"},
+        {"checks"},
+        {"draft"},
+        {"checks"},
+    ]
+
+
+def test_link_titles_use_the_parsers_decoded_attribute() -> None:
+    [found] = selected('[Plan](rules.md "Stra&#223;e&#44; CHECKS, Draft\\* ")\n')
+    assert found.tags == {"strasse", "checks", "draft*"}
+
+
+@pytest.mark.parametrize("title", ["", ' ""', ' " , , "'])
+def test_an_absent_or_empty_title_supplies_no_tags(title: str) -> None:
+    [found] = selected(f"# Checks\n\n[Draft](rules.md{title})\n")
+    assert found.tags == frozenset()
+
+
+@pytest.mark.parametrize("label", ["Plan", "¬ Plan", "↳ Plan", "⇉ Plan", "⫽ Plan"])
+def test_operator_labels_leave_the_title_selection_on_its_occurrence(
+    label: str,
+) -> None:
+    [found] = selected(f'[{label}](rules.md "draft")\n')
+    assert found.tags == {"draft"}
+    assert found.label == label
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        '![Checks](rules.md "draft")\n',
+        '![Checks][image]\n\n[image]: rules.md "draft"\n',
+        '[Checks](https://example.com/rules.md "draft")\n',
+        '[Checks](//example.com/rules.md "draft")\n',
+        '[Checks](mailto:rules@example.com "draft")\n',
+        '```mermaid\nflowchart LR\nclick A "rules.md" "draft"\n```\n',
+        '```mermaid\nclassDiagram\nlink A "rules.md" "draft"\n```\n',
+        "```mermaid\nsequenceDiagram\nlink A: draft @ rules.md\n```\n",
+    ],
+)
+def test_images_external_links_and_diagram_text_supply_no_tags(text: str) -> None:
+    [found] = selected("# Checks\n\n" + text)
+    assert found.tags == frozenset()
+
+
+def test_a_selected_section_reads_the_winning_reference_definition_title() -> None:
+    tokens = parse(
+        "# Guide\n\n## Plan\n\n[Use][rules]\n\n## Other\n\n"
+        '[rules]: rules.md "draft"\n[rules]: rules.md "checks"\n'
+    )
+    chosen = section(tokens, "plan")
+    assert chosen is not None
+    [found] = list(uses(tokens, chosen))
+    assert found.tags == {"draft"}
+
+
 def test_an_apparent_link_inside_a_code_span_is_no_link() -> None:
     assert selected("A `[¬ the rules](rules.md)` example.\n") == []
 

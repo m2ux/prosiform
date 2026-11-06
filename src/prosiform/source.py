@@ -122,6 +122,7 @@ from prosiform.metadata import (
     Conversion,
 )
 from prosiform.metadata import decode as decode_metadata
+from prosiform.tags import read as read_tags
 
 ENCODING = "utf-8"
 MARK = "﻿"
@@ -633,6 +634,10 @@ class Use:
     and the heading is the line that heading opens on; both are absent
     for a use in the preamble, which lies in no section.
 
+    The tags are the complete preset names in a local link's parsed
+    title attribute. Each occurrence carries its own immutable selection;
+    an image, an external link and a diagram destination carry none.
+
     The label is a link's whole text where that text is plain: text
     events alone, entities and escapes already decoded. It is absent
     where the text carries any other event — a code span, an emphasis,
@@ -648,6 +653,7 @@ class Use:
     title: str | None = None
     label: str | None = None
     heading: int | None = None
+    tags: frozenset[str] = frozenset()
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
@@ -1183,6 +1189,11 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     A diagram's link destination is written on its own line of the
     fence, so it is located at that line and opens with nothing.
 
+    A local link's title attribute supplies its tags through the shared
+    list reader. Images, external links and diagram destinations supply
+    no tags; neither the visible label nor a surrounding heading supplies
+    them.
+
     Each use carries the title of the section holding it, read against
     the whole document, since the heading rooting a selected region's
     section need not be selected with it.
@@ -1208,20 +1219,25 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
         heading, title = holding(line)
         for children, at, child in events(token.children or []):
             if child.type == LINK_OPEN:
-                destination = child.attrGet(HREF)
+                found = child.attrGet(HREF)
+                destination = "" if found is None else str(found)
+                attribute = child.attrGet("title")
                 yield Use(
-                    "" if destination is None else str(destination),
+                    destination,
                     opening_text(children, at),
                     line,
                     False,
                     title,
                     plain_label(children, at),
                     heading,
+                    read_tags(None if attribute is None else str(attribute))
+                    if not external(destination)
+                    else frozenset(),
                 )
             else:
-                destination = child.attrGet(SRC)
+                image_destination = child.attrGet(SRC)
                 yield Use(
-                    "" if destination is None else str(destination),
+                    "" if image_destination is None else str(image_destination),
                     alternative_text(child),
                     line,
                     True,
