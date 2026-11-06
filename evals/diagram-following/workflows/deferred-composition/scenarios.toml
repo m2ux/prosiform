@@ -11,7 +11,7 @@
 
 [[scenario]]
 name = "deferral-reached"
-path = ["Inventory", "Relocate", "Settle"]
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
 inputs = { "scope.txt" = "large", "history.txt" = "dropped" }
 
 [[scenario.compile]]
@@ -19,12 +19,12 @@ args = ["reference/migration.md#steps"]
 
 [[scenario]]
 name = "deferral-passed"
-path = ["Inventory", "Relocate", "Settle"]
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
 inputs = { "scope.txt" = "small", "history.txt" = "dropped" }
 
 [[scenario]]
 name = "nested-needed"
-path = ["Inventory", "Relocate", "Settle"]
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
 inputs = { "scope.txt" = "large", "history.txt" = "kept" }
 
 [[scenario.compile]]
@@ -35,5 +35,5 @@ args = ["reference/archive.md#steps"]
 
 [[scenario]]
 name = "nested-unreached"
-path = ["Inventory", "Relocate", "Settle"]
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
 inputs = { "scope.txt" = "small", "history.txt" = "kept" }

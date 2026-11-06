@@ -162,6 +162,7 @@ from workflow import (
     CorpusError,
     Scenario,
     Workflow,
+    baseline_workflows,
     bundle,
     bundled,
     dispatch_starts,
@@ -297,7 +298,7 @@ class Ledger:
 
 
 def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    """The run's options, defaulting to the eval's full matrix."""
+    """The run's options, defaulting to the baseline matrix."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument(
         "--budget-tokens", type=int, required=True, help="the run's token cap"
@@ -317,7 +318,9 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--models", default=",".join(DEFAULT_MODELS))
     parser.add_argument("--reasoning-effort", help="the Codex model's reasoning effort")
     parser.add_argument("--repetitions", type=int, default=DEFAULT_REPETITIONS)
-    parser.add_argument("--workflows", help="workflow names; every one by default")
+    parser.add_argument(
+        "--workflows", help="workflow names; baseline workflows by default"
+    )
     parser.add_argument("--forms", default=",".join(FORMS))
     parser.add_argument("--parallel", type=int, default=DEFAULT_PARALLEL)
     parser.add_argument(
@@ -384,10 +387,10 @@ def observable(
     read as the corpus form it carries before its sections are asked for.
     """
     if any(run.by is not None for run in scenario.compile) and not (
-        form in PF_SETS and harness.sub_agent_calls
+        form in PF_SETS and harness.nested_starts
     ):
         return False
-    if harness.sub_agent_calls:
+    if harness.nested_starts:
         return True
     starts = dispatch_starts(workflow, FORMS[form], scenario.path, scenario.inputs)
     return len(scenario.trace) <= sum(1 for _, _, depth in starts if depth == 0)
@@ -431,9 +434,9 @@ def prepare(
     A compiled workspace is what a `pf` run over the compiled sources leaves:
     the sources as they stand, since a `↳` line names its target from the
     directory `pf` ran in, and the bundle set in the folder `pf` writes it to,
-    with the build beside them. A bootstrap skill is placed where the run's
-    harness discovers one, and the session's workspace is the root it walks
-    up from.
+    with the build available on the session path. A bootstrap skill is placed
+    where the run's harness discovers one, and the session's workspace is the
+    root it walks up from.
     """
     if form == COMPILED_SET:
         shutil.copytree(workflow.form(COMPILED_FORM), workspace, dirs_exist_ok=True)
@@ -441,7 +444,6 @@ def prepare(
         folder.mkdir()
         for name, content in sets[(workflow.name, form)].items():
             (folder / name).write_bytes(content)
-        place_pf(workspace)
     elif form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
             written = ENTRY if name == workflow.entry_bundle.name else name
@@ -644,46 +646,6 @@ def start(
     return tokens
 
 
-def place_pf(workspace: Path) -> Path:
-    """Put the build under test where a session's shell finds it.
-
-    A session runs its own shell, whose path is the caller's and not this
-    run's, so the build is copied into a folder of the workspace's own and
-    that folder is named on the session's path. What a session compiles with
-    is therefore the build this run was configured with, not whatever `pf` the
-    host happens to hold.
-    """
-    found = shutil.which("pf")
-    if found is None:
-        raise CorpusError("no pf command is on the path to bundle a form with")
-    (workspace / BIN).mkdir()
-    placed = workspace / BIN / "pf"
-    shutil.copy2(found, placed)
-    placed.chmod(placed.stat().st_mode | 0o111)
-    return workspace / BIN
-
-
-def compiled_by(harness: Harness, transcript: Path, form: str) -> bool | None:
-    """Whether a session compiled its material, for a form that must.
-
-    A form outside the shell forms needs no compile, so nothing is asked. A
-    shell form's session is held to having run `pf`: a command whose first
-    word is `pf` or a path ending in `/pf`, since a command may be prefixed
-    by a directory or a wrapper.
-    """
-    if FORMS[form] not in SHELL_FORMS:
-        return None
-    commands = harness.commands(transcript)
-    if commands is None:
-        return None
-    for command in commands:
-        for part in command.replace("&&", ";").replace("|", ";").split(";"):
-            words = part.split()
-            if words and words[0].rsplit("/", 1)[-1] == PF:
-                return True
-    return False
-
-
 def entry_named(workflow: Workflow, form: str) -> str:
     """The document a session's instruction names.
 
@@ -791,10 +753,10 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         arguments.session_budget_tokens,
         reasoning_effort=arguments.reasoning_effort,
     )
-    corpus = workflows()
+    corpus = baseline_workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
-        corpus = [workflow for workflow in corpus if workflow.name in chosen]
+        corpus = [workflow for workflow in workflows() if workflow.name in chosen]
         if {workflow.name for workflow in corpus} != set(chosen):
             raise CorpusError(f"the corpus holds no workflow among {chosen}")
     forms = names(arguments.forms)

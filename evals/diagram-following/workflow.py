@@ -116,11 +116,30 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
+EDGE_WORKFLOWS = (
+    "conditional-composition",
+    "deferred-composition",
+    "deferred-dispatch",
+    "directive-labels",
+    "dispatch-depth",
+    "inline-bootstrap",
+    "preset-deferral",
+    "subagent-first-run",
+)
+"""The workflows measuring the operators' edges, run by the edge run alone.
+
+The default matrix runs the baseline workflows alone, so a cell it records is
+one every form of the baseline is measured by. The edge workflows defer,
+compose and dispatch in ways only a harness carrying a shell can follow, and
+they are measured by their own run, committed per harness beside the baseline.
+"""
 INSTRUCTION = ROOT / "instruction.md"
 INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
 INSTRUCTION_COMPILED = ROOT / "instruction-compiled.md"
 
 ENTRY = "workflow.md"
+RUN_PF_LINE = "Run `pf`, then follow the guidance it prints."
+"""The line under every bundle's instruction heading, naming the guide `pf` prints."""
 UNDECLARED = "undeclared"
 """The directory whose documents declare no `prosiform`, so a link to one stays text."""
 STATES = "states"
@@ -991,6 +1010,13 @@ def workflows(root: Path = WORKFLOWS) -> list[Workflow]:
     return [read_workflow(path) for path in sorted(root.iterdir()) if path.is_dir()]
 
 
+def baseline_workflows(root: Path = WORKFLOWS) -> list[Workflow]:
+    """The default matrix's workflows: every one the edge run does not measure."""
+    return [
+        workflow for workflow in workflows(root) if workflow.name not in EDGE_WORKFLOWS
+    ]
+
+
 def instruction(entry: str, form: str = "") -> str:
     """The task text a session is given, naming the document it reads.
 
@@ -1164,6 +1190,10 @@ def reached_lines(
     sections = bundled_sections(bundle_text)
     found: list[str] = []
     for line in scope.splitlines():
+        # The line `pf` opens a bundle with names the document's own heading,
+        # which is where a reader starts rather than a step the walk takes.
+        if line.startswith(RUN_PF_LINE):
+            continue
         linked = [
             sections[fragment]
             for _, fragment in FRAGMENT_LINK.findall(line)

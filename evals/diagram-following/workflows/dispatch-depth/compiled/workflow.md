@@ -7,7 +7,7 @@ The diagram is the workflow. Each state's section says what to do in that state,
 
 ```mermaid
 flowchart TD
-    start(( )) --> Brief
+    Entry(( )) --> Brief
     Brief -->|fanned| Fan
     Brief -->|lined| Route
     Route -->|asked| Query
@@ -16,7 +16,7 @@ flowchart TD
     Fan --> Wrap
     Relay --> Wrap
     Resume --> Wrap
-    Wrap --> stop((( )))
+    Wrap --> Exit((( )))
 
     click Brief href "states/brief.md"
     click Fan href "states/fan.md"
@@ -25,4 +25,6 @@ flowchart TD
     click Relay href "states/relay.md"
     click Resume href "states/resume.md"
     click Wrap href "states/wrap.md"
+    click Entry href "states/entry.md"
+    click Exit href "states/exit.md"
 ```

@@ -260,8 +260,8 @@ class Claude:
     shell_tool: str = SHELL_TOOL
     """The shell tool a session given `pf` also carries."""
     skill_home: str = ".claude/skills"
-    pf_only: str = "Bash(pf:*)"
-    """The allowlist rule confining that tool to the build under test."""
+    pf_only: str = "Bash(pf *)"
+    """The allowlist rule admitting `pf` with arguments and output redirects."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
@@ -568,7 +568,7 @@ class Claude:
         """The shell commands the session itself ran, in order.
 
         A `Bash` call in a message naming no `parent_tool_use_id` is the
-        session's own; one naming a `Task` call is that sub-agent's, and is
+        session's own; one naming an `Agent` call is that sub-agent's, and is
         read under its start.
         """
         return tuple(
@@ -808,13 +808,13 @@ class Cursor:
 
 
 def _owner(held: dict[str, object]) -> str | None:
-    """The `Task` call a Claude message runs under, or nothing for the session's."""
+    """The `Agent` call a Claude message runs under, or nothing for the session's."""
     owner = held.get(PARENT)
     return owner if isinstance(owner, str) else None
 
 
 def _shell_calls(transcript: Path) -> list[tuple[str | None, str]]:
-    """Each `Bash` call a Claude stream records, with the `Task` call it runs under."""
+    """Each `Bash` call a Claude stream records, with the `Agent` call it runs under."""
     found: list[tuple[str | None, str]] = []
     for held in messages(transcript):
         if held.get("type") != ASSISTANT:
@@ -1306,8 +1306,8 @@ class Codex:
                     str(row["target"]),
                     str(row["returned"]),
                     bool(row["together"]),
-                    row.get("actor"),
-                    row.get("group"),
+                    actor=row.get("actor"),
+                    group=row.get("group"),
                 )
                 for row in held
                 if isinstance(row, dict)

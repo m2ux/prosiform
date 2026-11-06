@@ -11,20 +11,17 @@
 
 [[scenario]]
 name = "three-hop-chain"
-path = ["Brief", "Route", "Relay", "Wrap"]
+path = ["Entry", "Brief", "Route", "Relay", "Wrap", "Exit"]
 inputs = { "shape.txt" = "line" }
 
 [[scenario.trace]]
 dispatch = "line/scope#frame"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "line/detail#expand"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "line/tally#count"
-returned = "done"
 
 # The division's first step starts the east and west halves as one set at the
 # second hop; both return before its second step starts the join, which
@@ -32,29 +29,24 @@ returned = "done"
 
 [[scenario]]
 name = "three-hop-set"
-path = ["Brief", "Fan", "Wrap"]
+path = ["Entry", "Brief", "Fan", "Wrap", "Exit"]
 inputs = { "shape.txt" = "set" }
 
 [[scenario.trace]]
 dispatch = "fan/divide#portion"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "fan/east#east"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "fan/west#west"
-returned = "done"
 together = true
 
 [[scenario.trace]]
 dispatch = "fan/join#join"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "fan/seal#seal"
-returned = "done"
 
 # The election, three hops down, returns its question; the probe and the
 # enquiry each return it in turn, so the session puts it to the user. Resume
@@ -63,29 +55,24 @@ returned = "done"
 
 [[scenario]]
 name = "three-hop-question"
-path = ["Brief", "Route", "Query", "Resume", "Wrap"]
+path = ["Entry", "Brief", "Route", "Query", "Resume", "Wrap", "Exit"]
 inputs = { "shape.txt" = "question" }
+answers = "Take the second option."
 
 [[scenario.trace]]
 dispatch = "ask/enquiry#pose"
-returned = "question"
 
 [[scenario.trace]]
 dispatch = "ask/probe#probe"
-returned = "question"
 
 [[scenario.trace]]
 dispatch = "ask/choice#elect"
-returned = "question"
 
 [[scenario.trace]]
 dispatch = "ask/enquiry#pose"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "ask/probe#probe"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "ask/choice#elect"
-returned = "done"

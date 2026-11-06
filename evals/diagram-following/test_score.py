@@ -69,11 +69,7 @@ def workspace(
     log: str | None = None,
     starts: list[Start] | None = None,
 ) -> Path:
-    """A workspace holding a trace, every action, and the sub-agent record.
-
-    Every action is the path's states' and the sub-agents' the workflow's
-    scenarios state.
-    """
+    """A workspace holding a trace, its states' actions, and the sub-agent record."""
     if log is None:
         log = "".join(f"{state}\n" for state in trace)
     (tmp_path / TRACE).write_text(log)
@@ -84,11 +80,6 @@ def workspace(
             continue
         name, value = action
         (tmp_path / ACTIONS / name).write_text(f"{value}\n")
-    for item in workflow.scenarios:
-        for entry in item.trace:
-            if entry.action is not None:
-                name, value = entry.action
-                (tmp_path / ACTIONS / name).write_text(f"{value}\n")
     record(tmp_path, list(starts or []))
     return tmp_path
 
@@ -96,7 +87,8 @@ def workspace(
 def done_by_sub_agents(held: Path, item: Scenario) -> Path:
     """Write the actions a scenario states its sub-agents do, as they would."""
     for entry in item.trace:
-        for name, value in entry.actions:
+        if entry.action is not None:
+            name, value = entry.action
             (held / ACTIONS / name).write_text(f"{value}\n")
     return held
 
@@ -105,7 +97,8 @@ def run(tmp_path: Path, workflow: str, name: str, trace: list[str]) -> Verdict:
     """The verdict on a hand-made trace for one scenario."""
     held = CORPUS[workflow]
     item = scenario(workflow, name)
-    return score(held, item, workspace(tmp_path, held, trace, starts=starts_of(item)))
+    records = workspace(tmp_path, held, trace, starts=starts_of(item))
+    return score(held, item, done_by_sub_agents(records, item))
 
 
 @pytest.mark.parametrize(
@@ -139,9 +132,8 @@ def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
     """AC3: every bundle a scenario names reached a sub-agent, in its order."""
     held = CORPUS[workflow]
     item = scenario(workflow, name)
-    verdict = score(
-        held, item, workspace(tmp_path, held, list(item.path), starts=starts_of(item))
-    )
+    records = workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    verdict = score(held, item, done_by_sub_agents(records, item))
     assert (verdict.passed, verdict.failure, len(read_starts(tmp_path))) == (
         True,
         None,
@@ -376,7 +368,8 @@ def dispatched(workflow: str, starts: list[Start], tmp_path: Path) -> Verdict:
     """The verdict on a dispatch scenario's own path with a chosen record."""
     held = CORPUS[workflow]
     [item] = held.scenarios
-    return score(held, item, workspace(tmp_path, held, list(item.path), starts=starts))
+    records = workspace(tmp_path, held, list(item.path), starts=starts)
+    return score(held, item, done_by_sub_agents(records, item))
 
 
 def test_a_bundle_that_reached_no_sub_agent_is_undispatched(
@@ -410,15 +403,15 @@ def test_a_native_parallel_set_keeps_its_response_group_across_child_events(
     verdict = dispatched(
         "dispatch-set",
         [
-            Start(first.section, "done", False, "root", "response-1"),
+            Start(first.section, "done", False, actor="root", group="response-1"),
             Start(
                 "a child starts unrelated work",
                 "done",
                 False,
-                "child",
-                "child-response",
+                actor="child",
+                group="child-response",
             ),
-            Start(second.section, "done", True, "root", "response-1"),
+            Start(second.section, "done", True, actor="root", group="response-1"),
         ],
         tmp_path,
     )
@@ -430,8 +423,8 @@ def test_native_starts_from_separate_responses_are_sequential(tmp_path: Path) ->
     verdict = dispatched(
         "dispatch-set",
         [
-            Start(first.section, "done", False, "root", "response-1"),
-            Start(second.section, "done", True, "root", "response-2"),
+            Start(first.section, "done", False, actor="root", group="response-1"),
+            Start(second.section, "done", True, actor="root", group="response-2"),
         ],
         tmp_path,
     )
@@ -537,6 +530,7 @@ def test_a_sub_agent_that_wrote_no_action_is_missing_action(tmp_path: Path) -> N
     held = CORPUS["dispatch-set"]
     [item] = held.scenarios
     workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    done_by_sub_agents(tmp_path, item)
     (tmp_path / ACTIONS / "tests.txt").write_text("skimmed\n")
     verdict = score(held, item, tmp_path)
     assert (verdict.failure, verdict.divergence, verdict.actions) == (
@@ -795,6 +789,7 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
     records = tmp_path / "records"
     records.mkdir()
     workspace(records, corpus, list(item.path))
+    done_by_sub_agents(records, item)
     record_calls(held, records, Opencode(), COMPILED_FORM)
     assert [start.returned for start in read_starts(records)] == [
         "question",
@@ -828,6 +823,7 @@ def compiling(
     workflow = CORPUS["dispatch-set"]
     item = replace(scenario("dispatch-set", "parallel-set"), compile=runs)
     held = workspace(tmp_path, workflow, list(item.path))
+    done_by_sub_agents(held, item)
     starts = [
         replace(start, commands=tuple(sub_agent))
         if start.target == "review#tests"
@@ -923,7 +919,7 @@ def test_a_run_from_another_directory_names_the_same_document(tmp_path: Path) ->
 
 
 def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, object]:
-    """One Claude assistant message holding one call, under `owner`'s `Task` call."""
+    """One Claude assistant message holding one call, under `owner`'s `Agent` call."""
     return {
         "type": "assistant",
         "parent_tool_use_id": owner,
@@ -946,7 +942,7 @@ def test_a_compiled_claude_record_holds_each_hops_runs(
     """AC12: `deep-hop-runs` is scored on the runs each nested start's sub-agent made.
 
     The stream a compiled Claude session prints files each `Bash` call under
-    the `Task` call its sub-agent runs under, so the ruling's runs, three
+    the `Agent` call its sub-agent runs under, so the ruling's runs, three
     hops down, are held to the one the scenario states by the ruling.
     """
     workflow = CORPUS["subagent-first-run"]
@@ -956,7 +952,7 @@ def test_a_compiled_claude_record_holds_each_hops_runs(
     held = done_by_sub_agents(workspace(records, workflow, list(item.path)), item)
 
     def task(key: str, target: str) -> dict[str, object]:
-        return {"id": key, "name": "Task", "input": {"description": target}}
+        return {"id": key, "name": "Agent", "input": {"prompt": target}}
 
     def bash(command: str) -> dict[str, object]:
         return {"id": f"bash-{command}", "name": "Bash", "input": {"command": command}}

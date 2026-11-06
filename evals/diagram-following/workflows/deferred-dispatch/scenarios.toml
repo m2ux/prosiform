@@ -13,21 +13,19 @@
 
 [[scenario]]
 name = "deferred-dispatch-compiled"
-path = ["Pick", "Pack", "Post"]
+path = ["Entry", "Pick", "Pack", "Post", "Exit"]
 inputs = { "order.txt" = "bulk" }
 
 [[scenario.trace]]
 dispatch = "reference/crew#lift"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "reference/crew#strap"
-returned = "done"
 
 [[scenario.compile]]
 args = ["reference/loading.md#crew"]
 
 [[scenario]]
 name = "deferred-dispatch-passed"
-path = ["Pick", "Pack", "Post"]
+path = ["Entry", "Pick", "Pack", "Post", "Exit"]
 inputs = { "order.txt" = "single" }

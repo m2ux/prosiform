@@ -10,10 +10,10 @@ warnings = ["W_COMPOSE_SELF"]
 
 [[scenario]]
 name = "footnote-opened"
-path = ["Compose", "Vet", "Issue"]
+path = ["Entry", "Compose", "Vet", "Issue", "Exit"]
 inputs = { "kind.txt" = "review" }
 
 [[scenario]]
 name = "self-composed"
-path = ["Compose", "Issue"]
+path = ["Entry", "Compose", "Issue", "Exit"]
 inputs = { "kind.txt" = "direct" }

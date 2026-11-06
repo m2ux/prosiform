@@ -7,12 +7,14 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Compose
+    Entry(( )) --> Compose
     Compose -->|review| Vet
     Compose -->|direct| Issue
     Vet --> Issue
-    Issue --> stop((( )))
+    Issue --> Exit((( )))
 
     click Compose href "states/compose.md"
     click Issue href "states/issue.md"
+    click Entry href "states/entry.md"
+    click Exit href "states/exit.md"
 ```

@@ -7,12 +7,14 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Inventory
+    Entry(( )) --> Inventory
     Inventory --> Relocate
     Relocate --> Settle
-    Settle --> stop((( )))
+    Settle --> Exit((( )))
 
     click Inventory href "states/inventory.md"
     click Relocate href "states/relocate.md"
     click Settle href "states/settle.md"
+    click Entry href "states/entry.md"
+    click Exit href "states/exit.md"
 ```

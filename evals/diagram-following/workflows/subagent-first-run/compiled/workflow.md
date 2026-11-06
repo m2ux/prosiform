@@ -7,15 +7,17 @@ The diagram is the workflow. Each state's section says what to do in that state,
 
 ```mermaid
 flowchart TD
-    start(( )) --> Allot
+    Entry(( )) --> Allot
     Allot -->|entrusted| Entrust
     Allot -->|cascaded| Cascade
     Entrust --> Tidy
     Cascade --> Tidy
-    Tidy --> stop((( )))
+    Tidy --> Exit((( )))
 
     click Allot href "states/allot.md"
     click Entrust href "states/entrust.md"
     click Cascade href "states/cascade.md"
     click Tidy href "states/tidy.md"
+    click Entry href "states/entry.md"
+    click Exit href "states/exit.md"
 ```

@@ -809,7 +809,7 @@ def test_opencode_sums_the_token_kinds_of_one_step(
 
 
 def under(parent: str | None, call: dict[str, object]) -> dict[str, object]:
-    """A Claude message as a sub-agent's stream prints it, naming its `Task` call."""
+    """A Claude message as a sub-agent's stream prints it, naming its `Agent` call."""
     return {**call, "parent_tool_use_id": parent}
 
 
@@ -818,7 +818,7 @@ def test_claude_files_each_start_under_the_sub_agent_that_made_it(
 ) -> None:
     """AC5: starts three dispatches deep sit under the section each followed.
 
-    A sub-agent's messages reach the session's stream, each naming the `Task`
+    A sub-agent's messages reach the session's stream, each naming the `Agent`
     call it runs under, so a start made at the second or third depth names
     the start whose sub-agent made it. A set two deep shares its message.
     """
@@ -829,8 +829,8 @@ def test_claude_files_each_start_under_the_sub_agent_that_made_it(
                 {
                     "type": "tool_use",
                     "id": identifier,
-                    "name": "Task",
-                    "input": {"description": target},
+                    "name": "Agent",
+                    "input": {"prompt": target},
                 }
                 for identifier, target in (
                     ("c", "review#source"),
@@ -889,6 +889,8 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
                 "together": False,
                 "parent": None,
                 "commands": [],
+                "actor": None,
+                "group": None,
             },
             {
                 "target": "review#check",
@@ -896,6 +898,8 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
                 "together": False,
                 "parent": 0,
                 "commands": [],
+                "actor": None,
+                "group": None,
             },
         ],
     }
@@ -936,12 +940,12 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
 def test_each_harness_declares_whether_a_sub_agents_calls_reach_its_stream() -> None:
     """AC5: depth is what each CLI prints, read rather than assumed.
 
-    Claude prints a sub-agent's messages under its `Task` call. Cursor reports
+    Claude prints a sub-agent's messages under its `Agent` call. Cursor reports
     a sub-agent's text and no tool call it made. opencode's run command prints
     a part only where it belongs to the session it started, and a sub-agent
     runs in a child session, so neither reports a nested start or a
     sub-agent's command.
     """
-    assert Claude().sub_agent_calls is True
-    assert Cursor().sub_agent_calls is False
-    assert Opencode().sub_agent_calls is False
+    assert Claude().nested_starts is True
+    assert Cursor().nested_starts is False
+    assert Opencode().nested_starts is False

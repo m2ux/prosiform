@@ -117,6 +117,7 @@ __all__ = [
     "score",
 ]
 from workflow import (
+    BOOTSTRAP,
     FEWER,
     SHELL_FORMS,
     SOURCE_DIR,
@@ -406,7 +407,10 @@ def _held_to(
 
 
 def compiles(
-    scenario: Scenario, commands: tuple[str, ...], starts: tuple[Start, ...]
+    scenario: Scenario,
+    commands: tuple[str, ...],
+    starts: tuple[Start, ...],
+    source_directory: str = "",
 ) -> Failure | None:
     """The first run check a session's record fails, or nothing when it passes.
 
@@ -421,7 +425,7 @@ def compiles(
             tuple(
                 command
                 for start in starts
-                if names(start.target, section)
+                if names(start.target, section, source_directory)
                 for command in start.commands
             )
         )
@@ -595,19 +599,16 @@ def score(
             )
         starts = read_starts(workspace)
         commands = read_commands(workspace)
-        order = dispatched(
-            scenario, starts, SOURCE_DIR if compiled is not None else ""
-        )
+        source_directory = SOURCE_DIR if BOOTSTRAP in workflow.forms else ""
+        order = dispatched(scenario, starts, source_directory)
         if order is not None:
             return Verdict(False, order, None, expected, actual, actions)
-        if (undone_by := sub_agent_undone(scenario, workspace)) is not None:
+        if undone_by := sub_agent_undone(scenario, workspace):
             return Verdict(
                 False, Failure.MISSING_ACTION, None, expected, actual, undone_by
             )
-        if compiled is False:
-            return Verdict(False, Failure.UNBOOTSTRAPPED, 0, expected, actual, actions)
         if commands is not None:
-            order = compiles(scenario, commands, starts)
+            order = compiles(scenario, commands, starts, source_directory)
             if order is not None:
                 return Verdict(False, order, None, expected, actual, actions)
         return Verdict(True, None, None, expected, actual, actions)

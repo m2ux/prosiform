@@ -7,10 +7,10 @@
 
 [[scenario]]
 name = "composed-entered"
-path = ["Sample", "Gauge", "Convert", "Finish"]
+path = ["Entry", "Sample", "Gauge", "Convert", "Finish", "Exit"]
 inputs = { "scope.txt" = "large" }
 
 [[scenario]]
 name = "composed-omitted"
-path = ["Sample", "Gauge", "Finish"]
+path = ["Entry", "Sample", "Gauge", "Finish", "Exit"]
 inputs = { "scope.txt" = "small" }

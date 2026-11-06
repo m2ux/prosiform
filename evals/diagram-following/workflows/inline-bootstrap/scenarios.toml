@@ -7,7 +7,7 @@
 
 [[scenario]]
 name = "feature-tagged"
-path = ["Freeze", "Tag", "Broadcast"]
+path = ["Entry", "Freeze", "Tag", "Broadcast", "Exit"]
 inputs = { "change.txt" = "feature" }
 
 [[scenario.compile]]
@@ -18,7 +18,7 @@ args = ["sources/workflow.md"]
 
 [[scenario]]
 name = "fix-backported"
-path = ["Freeze", "Backport", "Broadcast"]
+path = ["Entry", "Freeze", "Backport", "Broadcast", "Exit"]
 inputs = { "change.txt" = "fix" }
 
 [[scenario.compile]]

@@ -9,7 +9,7 @@
 
 [[scenario]]
 name = "stand-in-followed"
-path = ["Solicit", "Mirror", "Restore"]
+path = ["Entry", "Solicit", "Mirror", "Restore", "Exit"]
 inputs = {}
 
 [[scenario.compile]]

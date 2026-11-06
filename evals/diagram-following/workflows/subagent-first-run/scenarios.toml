@@ -12,13 +12,12 @@
 
 [[scenario]]
 name = "first-hop-run"
-path = ["Allot", "Entrust", "Tidy"]
+path = ["Entry", "Allot", "Entrust", "Tidy", "Exit"]
 inputs = { "reach.txt" = "near" }
 
 [[scenario.trace]]
 dispatch = "hop/ledger#balance"
-returned = "done"
-actions = { "closing.txt" = "closed" }
+action = { file = "closing.txt", value = "closed" }
 
 [[scenario.compile]]
 by = "hop/ledger#balance"
@@ -30,22 +29,19 @@ args = ["steps/closing.md#close"]
 
 [[scenario]]
 name = "deep-hop-runs"
-path = ["Allot", "Cascade", "Tidy"]
+path = ["Entry", "Allot", "Cascade", "Tidy", "Exit"]
 inputs = { "reach.txt" = "deep" }
 
 [[scenario.trace]]
 dispatch = "hop/audit#sweep"
-returned = "done"
 
 [[scenario.trace]]
 dispatch = "hop/review#scan"
-returned = "done"
-actions = { "weighing.txt" = "weighed" }
+action = { file = "weighing.txt", value = "weighed" }
 
 [[scenario.trace]]
 dispatch = "steps/ruling#rule"
-returned = "done"
-actions = { "ruling.txt" = "ruled" }
+action = { file = "ruling.txt", value = "ruled" }
 
 [[scenario.compile]]
 by = "hop/review#scan"

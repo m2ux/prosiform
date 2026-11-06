@@ -28,10 +28,9 @@ actions the scenario states for it.
 
 Where its `--tools` names `Bash`, it makes each `pf` run the scenario
 states as a `Bash` call: the session's own in a message of its own, and a
-sub-agent's in a message naming that sub-agent's `Task` call as
-`parent_tool_use_id`, as the CLI prints a sub-agent's calls. A session whose
-workspace holds `bin/pf` and whose scenario states no run of its own runs
-bare `pf`, as its bundle's first line asks.
+sub-agent's in a message naming that sub-agent's `Agent` call as
+`parent_tool_use_id`, as the CLI prints a sub-agent's calls. Each session
+opens with bare `pf`, as its bundle's first line asks.
 
 The environment scripts it:
 
@@ -77,7 +76,6 @@ from harness import (
     HANDBACK,
     PARENT,
     QUESTION,
-    QUESTION_LINE,
     SHELL_TOOL,
 )
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
@@ -206,7 +204,7 @@ def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None,
 
 
 def shell_call(command: str, owner: str | None) -> dict[str, object]:
-    """One assistant message making a `Bash` call, under `owner`'s `Task` call."""
+    """One assistant message making a `Bash` call, under `owner`'s `Agent` call."""
     return {
         "type": "assistant",
         PARENT: owner,
@@ -388,8 +386,8 @@ def main() -> int:
         )
     runs = shell_runs(item, sys.argv[1:])
     own = [command for by, command in runs if by is None]
-    if not own and (workspace / "bin" / "pf").is_file():
-        own = ["pf"]
+    if not own or own[0] != "pf":
+        own.insert(0, "pf")
     for command in own:
         print(json.dumps(shell_call(command, None)))
     if dispatch:

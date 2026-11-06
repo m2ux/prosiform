@@ -88,7 +88,7 @@ A stated run a sub-agent makes is read from that sub-agent's own commands, which
 
 ### Sub-agent runs
 
-A sub-agent's `pf` run is stated by the section it follows and read from that sub-agent's commands where its harness reports them; it is also shown by what it makes possible. Every bundle opens with the run-pf line, saying to run bare `pf` and follow the guide it prints, so a sub-agent handed one reads how to compile a `↳` line before it meets one. A trace entry's `actions` are the files only the material `pf` compiles on that line states, so a sub-agent that ran no `pf` writes none of them. The corpus test compiles each dispatched bundle a scenario's trace follows, from the entry's set or the set a run on a `↳` line wrote, runs `pf` on each line its steps reach, and holds the entry's `actions` to the ones that material states and the bundle itself does not, and the runs the scenario states `by` the entry's section to the lines its sub-agents compile, in order. It holds each such bundle to opening with the run-pf line, each `⇉` link a bundle carries, inline or as an `In parallel` item, to a file its run wrote, and each bundle a sub-agent follows to one a `⇉` link names. A scenario stating a sub-agent's run is given to `claude` alone, as [Stated runs](#stated-runs) states.
+A sub-agent's `pf` run is stated by the section it follows and read from that sub-agent's commands where its harness reports them; it is also shown by what it makes possible. Every bundle opens with the run-pf line, saying to run bare `pf` and follow the guide it prints, so a sub-agent handed one reads how to compile a `↳` line before it meets one. A trace entry's `action` names the file only the material `pf` compiles on that line states, so a sub-agent that ran no `pf` leaves it unwritten. The corpus test compiles each dispatched bundle a scenario's trace follows, from the entry's set or the set a run on a `↳` line wrote, runs `pf` on each line its steps reach, and holds the entry's `action` to the one that material states and the bundle itself does not, and the runs the scenario states `by` the entry's section to the lines its sub-agents compile, in order. It holds each such bundle to opening with the run-pf line, each `⇉` link a bundle carries, inline or as an `In parallel` item, to a file its run wrote, and each bundle a sub-agent follows to one a `⇉` link names. A scenario stating a sub-agent's run is given to `claude` alone, as [Stated runs](#stated-runs) states.
 
 | Workflow | Scenario | What its sub-agents run |
 | --- | --- | --- |
@@ -166,7 +166,6 @@ A session records each state it enters as a line of `trace.log` and does each st
 | Class | The session |
 | --- | --- |
 | `missing_action` | walked the path and left a state's action undone or wrong, or, in a dispatch scenario, a sub-agent's. |
-| `unbootstrapped` | walked the path with every action done, in the `bootstrap` form, without running `pf`. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
 | `loop_miscount` | repeated a loop more times than its input requires. |
@@ -302,7 +301,7 @@ A run id requires fresh results and workspaces. An existing `results/<run-id>` o
 | `--session-budget-tokens` | 2 830 000 | Each session's token cap. |
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `openrouter/deepseek/deepseek-v4.1-flash-1017` | The models, comma-separated. |
-| `--workflows` | every workflow | The workflows, comma-separated. |
+| `--workflows` | baseline workflows | The workflows, comma-separated. |
 | `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |

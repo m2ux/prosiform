@@ -84,8 +84,26 @@ from workflow import (
 )
 
 BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
-RUN_PF = "Before reading on, run `pf` with no arguments and follow the guide it prints."
-"""The line every bundle opens with, which `pf` publishes."""
+RUN_PF = "Run `pf`, then follow the guidance it prints."
+"""The instruction `pf` writes under every bundle's `§ Instructions` heading."""
+INSTRUCTIONS = "# § Instructions"
+
+
+def opens_with_run_pf(text: str) -> bool:
+    """Whether a bundle opens with `pf`'s instruction group and its run-pf line.
+
+    `pf` puts the line in a generated `§ Instructions` group ahead of the
+    document it compiled, so the line follows that heading rather than being
+    the file's first line.
+    """
+    lines = [line for line in text.splitlines() if line.strip()]
+    return (
+        len(lines) > 1
+        and lines[0].strip() == INSTRUCTIONS
+        and lines[1].strip().startswith(RUN_PF)
+    )
+
+
 DISPATCH_LINK = re.compile(r"\[⇉ [^\]]*\]\(([^)]+)\)")
 """A link a bundle publishes to the file `pf` compiled for a dispatched target."""
 CORPUS = workflows()
@@ -502,9 +520,14 @@ def compiled_faults(workflow: Workflow, scenario: Scenario, output: Path) -> lis
 
 
 def dispatched_bundle(section: str) -> str:
-    """The name `pf` gives the bundle it compiles for a dispatched section."""
-    document, _, heading = section.partition("#")
-    return f"{document.replace('/', '_')}__{heading}.bundle.md"
+    """The path `pf` gives the bundle it compiles for a dispatched section.
+
+    `pf` writes each target's bundle into a folder named for the document it
+    is compiled from, `<document>__<heading>.bundles`, holding
+    `<document>__<heading>.bundle.md`. The section may name its document with
+    or without the Markdown suffix.
+    """
+    return entry_bundle(section).as_posix()
 
 
 def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
@@ -537,25 +560,39 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         return (folder / entry_bundle(reference)).read_text()
 
     for entry in scenario.trace:
-        written = sorted(output.rglob(dispatched_bundle(entry.section)))
+        # `pf` writes every target's bundle beside the entry that dispatches
+        # it, in that entry's own `.bundles` folder, so a target is found
+        # there and in the set of any run a later document makes.
+        wanted = entry_bundle(entry.section).name
+        written = sorted(output.rglob(wanted))
         if not written:
             faults.append(f"no run writes the bundle {entry.section} follows")
             continue
         text = written[0].read_text()
         followed[entry.section] = written[0].resolve()
-        if not text.startswith(RUN_PF):
+        if not opens_with_run_pf(text):
             faults.append(f"{entry.section}'s bundle opens with no run-pf line")
         before = len(runs)
         compiled = activated(text, text, scenario.inputs, list(walked), activate)
         made[entry.section] += runs[before:]
-        found = tuple(ACTION.findall(compiled))
-        if found != entry.actions:
-            faults.append(f"{entry.section}'s runs compile the actions {list(found)}")
-        if own := ACTION.findall(text):
-            faults.append(f"{entry.section}'s bundle states the actions {own}")
+        # A section states its sub-agent's action itself, and the material a
+        # run on a deferred line compiles states the action where the section
+        # carries none, so the action is whichever of the two states it. A
+        # scenario stating answers has its sub-agent write the answer it was
+        # handed, so that section names the file and states the answer in
+        # prose rather than as a value.
+        stated = tuple(ACTION.findall(text)) + tuple(ACTION.findall(compiled))
+        expected = () if entry.action is None else (entry.action,)
+        if scenario.answers and expected:
+            name = expected[0][0]
+            bodies = text + compiled
+            if f"`actions/{name}`" not in bodies:
+                faults.append(f"{entry.section}'s runs write no actions/{name}")
+        elif stated != expected:
+            faults.append(f"{entry.section}'s runs compile the actions {list(stated)}")
     for section, ran in made.items():
-        stated = [run.args for run in scenario.compile if run.by == section]
-        if ran != stated:
+        stated_runs = [run.args for run in scenario.compile if run.by == section]
+        if ran != stated_runs:
             faults.append(f"{section}'s sub-agents run pf on {ran}")
     links = [
         (bundle, target)
@@ -850,14 +887,18 @@ def test_a_set_publishes_parallel_items_linking_bundles_opening_with_the_run_pf_
     workflow = CORPUS_BY_NAME["dispatch-set"]
     text, _ = compiled_entry(workflow, tmp_path / "set")
     folder = tmp_path / "set" / workflow.entry_bundle.parent
-    assert text.startswith(RUN_PF)
-    parallel = bundled_sections(text)["in-parallel"].text
+    assert opens_with_run_pf(text)
+    parallel = next(
+        section.text
+        for name, section in bundled_sections(text).items()
+        if DISPATCH_LINK.search(section.text) and section.title.startswith("⫽")
+    )
     assert DISPATCH_LINK.findall(parallel) == [
         "review__source.bundle.md",
         "review__tests.bundle.md",
     ]
     for name in DISPATCH_LINK.findall(parallel):
-        assert (folder / name).read_text().startswith(RUN_PF)
+        assert opens_with_run_pf((folder / name).read_text())
     chain = CORPUS_BY_NAME["dispatch-chain"]
     text, _ = compiled_entry(chain, tmp_path / "chain")
     assert DISPATCH_LINK.findall(text) == ["plan__work.bundle.md"]
@@ -1000,7 +1041,8 @@ def test_the_real_target_of_a_preset_deferral_leads_elsewhere(tmp_path: Path) ->
     )
     [scenario] = workflow.scenarios
     assert compiled_faults(workflow, scenario, tmp_path / "output") == [
-        "stand-in-followed: the compiled bundles lead ('Solicit', 'Mirror', 'Serve')"
+        "stand-in-followed: the compiled bundles lead "
+        "('Entry', 'Solicit', 'Mirror', 'Serve', 'Exit')"
     ]
 
 
@@ -1008,7 +1050,7 @@ def test_a_preset_deferral_states_the_stand_ins_path() -> None:
     """AC9: one preset on both headings, a stand-in, and the path it sends."""
     workflow = next(item for item in CORPUS if item.name == "preset-deferral")
     [scenario] = workflow.scenarios
-    assert scenario.path == ("Solicit", "Mirror", "Restore")
+    assert scenario.path == ("Entry", "Solicit", "Mirror", "Restore", "Exit")
     assert scenario.compile == (Compile(None, ("reference/fetch.md#read-mirror",)),)
     assert workflow.sections[COMPILED_FORM]["Mirror"].deferred
 
@@ -1027,10 +1069,11 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
         ("reference/crew#lift", False, 0),
         ("reference/crew#strap", False, 0),
     )
-    assert [(entry.section, entry.returned) for entry in compiled.trace] == [
-        ("reference/crew#lift", "done"),
-        ("reference/crew#strap", "done"),
+    assert [entry.section for entry in compiled.trace] == [
+        "reference/crew#lift",
+        "reference/crew#strap",
     ]
+    assert [entry.action for entry in compiled.trace] == [None, None]
     assert (passed.compile, passed.trace) == ((), ())
     assert dispatch_walk(workflow, COMPILED_FORM, passed.path, passed.inputs) == ()
 
@@ -1089,7 +1132,6 @@ def test_a_three_hop_chain_starts_each_hop_in_order_with_no_depth_warning(
         ("line/detail#expand", False, 1),
         ("line/tally#count", False, 2),
     )
-    assert {entry.returned for entry in chain.trace} == {"done"}
 
 
 def test_a_set_three_hops_deep_starts_together_before_the_chain_goes_on() -> None:
@@ -1109,7 +1151,6 @@ def test_a_set_three_hops_deep_starts_together_before_the_chain_goes_on() -> Non
             workflow, COMPILED_FORM, fan.path, fan.inputs
         )
     ]
-    assert {entry.returned for entry in fan.trace} == {"done"}
 
 
 def test_a_question_three_hops_deep_is_relayed_and_the_chain_dispatched_again() -> None:
@@ -1119,10 +1160,8 @@ def test_a_question_three_hops_deep_is_relayed_and_the_chain_dispatched_again() 
         item for item in workflow.scenarios if item.name == "three-hop-question"
     )
     chain = ["ask/enquiry#pose", "ask/probe#probe", "ask/choice#elect"]
-    assert [(entry.section, entry.returned) for entry in asked.trace] == [
-        *((section, "question") for section in chain),
-        *((section, "done") for section in chain),
-    ]
+    assert [entry.section for entry in asked.trace] == [*chain, *chain]
+    assert asked.answers, "a scenario whose sub-agent asks states the answers"
     assert [
         depth
         for _, _, depth in dispatch_starts(
@@ -1137,7 +1176,7 @@ def test_a_hop_missing_from_a_deep_trace_is_a_fault(tmp_path: Path) -> None:
         tmp_path,
         "dispatch-depth",
         "scenarios.toml",
-        '[[scenario.trace]]\ndispatch = "line/tally#count"\nreturned = "done"\n',
+        '[[scenario.trace]]\ndispatch = "line/tally#count"\n',
         "",
     )
     [fault] = [
@@ -1161,12 +1200,12 @@ def test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action(
     ledger = (
         tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
     ).read_text()
-    assert ledger.startswith(RUN_PF)
+    assert opens_with_run_pf(ledger)
     assert INLINE_LINE.findall(ledger) == [("Close", "steps/closing.md#close")]
     [entry] = first.trace
-    assert (entry.section, entry.actions) == (
+    assert (entry.section, entry.action) == (
         "hop/ledger#balance",
-        (("closing.txt", "closed"),),
+        ("closing.txt", "closed"),
     )
 
 
@@ -1180,10 +1219,10 @@ def test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles() -> N
             workflow, COMPILED_FORM, deep.path, deep.inputs
         )
     ] == [("hop/audit#sweep", 0), ("hop/review#scan", 1), ("steps/ruling#rule", 2)]
-    assert [(entry.section, entry.actions) for entry in deep.trace] == [
-        ("hop/audit#sweep", ()),
-        ("hop/review#scan", (("weighing.txt", "weighed"),)),
-        ("steps/ruling#rule", (("ruling.txt", "ruled"),)),
+    assert [(entry.section, entry.action) for entry in deep.trace] == [
+        ("hop/audit#sweep", None),
+        ("hop/review#scan", ("weighing.txt", "weighed")),
+        ("steps/ruling#rule", ("ruling.txt", "ruled")),
     ]
 
 
@@ -1192,25 +1231,23 @@ def test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles() -> N
     [
         (
             "scenarios.toml",
-            '"closing.txt" = "closed"',
-            '"closing.txt" = "shut"',
+            'file = "closing.txt", value = "closed"',
+            'file = "closing.txt", value = "shut"',
             "first-hop-run: hop/ledger#balance's runs compile the actions"
             " [('closing.txt', 'closed')]",
         ),
-        (
-            f"{COMPILED_FORM}/hop/ledger.md",
-            "1. Total the ledger.",
-            "Write `actions/closing.txt` containing `closed`.",
-            "first-hop-run: hop/ledger#balance's bundle states the actions"
-            " [('closing.txt', 'closed')]",
-        ),
     ],
-    ids=["action-uncompiled", "action-in-bundle"],
+    ids=["action-uncompiled"],
 )
 def test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault(
     tmp_path: Path, path: str, old: str, new: str, fault: str
 ) -> None:
-    """AC17: the action is the line's material's, and no other text states it."""
+    """AC17: the action a trace entry states is the one its material writes.
+
+    A section states its own action, so the corpus no longer holds the fault
+    this test's second case described: the bundle stating an action its runs
+    do not compile is how main writes every dispatched section.
+    """
     workflow = broken(tmp_path, "subagent-first-run", path, old, new)
     first = next(item for item in workflow.scenarios if item.name == "first-hop-run")
     assert sub_agent_faults(workflow, first, tmp_path / "output") == [fault]
@@ -1242,9 +1279,12 @@ def test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds(
     assert paths == {
         "composed-entered": (
             {"scope.txt": "large"},
-            ("Sample", "Gauge", "Convert", "Finish"),
+            ("Entry", "Sample", "Gauge", "Convert", "Finish", "Exit"),
         ),
-        "composed-omitted": ({"scope.txt": "small"}, ("Sample", "Gauge", "Finish")),
+        "composed-omitted": (
+            {"scope.txt": "small"},
+            ("Entry", "Sample", "Gauge", "Finish", "Exit"),
+        ),
     }
     text, _ = compiled_entry(workflow, tmp_path / "entry")
     assert enclosing(text, "Convert") == ["Gauge", "Rows"]
@@ -1257,9 +1297,10 @@ def test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds(
     [
         (
             "scenarios.toml",
-            'path = ["Sample", "Gauge", "Finish"]',
-            'path = ["Sample", "Gauge", "Convert", "Finish"]',
-            "composed-omitted: the compiled bundles lead ('Sample', 'Gauge', 'Finish')",
+            'path = ["Entry", "Sample", "Gauge", "Finish", "Exit"]',
+            'path = ["Entry", "Sample", "Gauge", "Convert", "Finish", "Exit"]',
+            "composed-omitted: the compiled bundles lead "
+            "('Entry', 'Sample', 'Gauge', 'Finish', 'Exit')",
         ),
         (
             f"{COMPILED_FORM}/{document('Gauge')}",
@@ -1305,7 +1346,7 @@ def test_a_footnote_opens_its_target_and_a_composition_composes_in_place(
     scenario = next(
         item for item in workflow.scenarios if item.name == "footnote-opened"
     )
-    assert scenario.path == ("Compose", "Vet", "Issue")
+    assert scenario.path == ("Entry", "Compose", "Vet", "Issue", "Exit")
     assert compiled_faults(workflow, scenario, tmp_path / "walk") == []
 
 
@@ -1343,7 +1384,7 @@ def test_a_self_composed_section_warns_and_states_its_bundles_path(
     assert enclosing(text, "Summary") == ["Issue"]
     assert enclosing(text, "Summary", 1) == ["Issue", "Release"]
     scenario = next(item for item in workflow.scenarios if item.name == "self-composed")
-    assert scenario.path == ("Compose", "Issue")
+    assert scenario.path == ("Entry", "Compose", "Issue", "Exit")
     assert compiled_faults(workflow, scenario, tmp_path / "walk") == []
 
 
@@ -1355,12 +1396,12 @@ def test_a_self_composed_scenario_stating_another_path_is_a_fault(
         tmp_path,
         "directive-labels",
         "scenarios.toml",
-        'path = ["Compose", "Issue"]',
-        'path = ["Compose", "Vet", "Issue"]',
+        'path = ["Entry", "Compose", "Issue", "Exit"]',
+        'path = ["Entry", "Compose", "Vet", "Issue", "Exit"]',
     )
     scenario = next(item for item in workflow.scenarios if item.name == "self-composed")
     assert compiled_faults(workflow, scenario, tmp_path / "walk") == [
-        "self-composed: the compiled bundles lead ('Compose', 'Issue')"
+        "self-composed: the compiled bundles lead ('Entry', 'Compose', 'Issue', 'Exit')"
     ]
 
 
@@ -2163,9 +2204,16 @@ def scored(
     trace: tuple[str, ...],
     starts: tuple[Start, ...],
     undone: str = "",
-    compiled: bool | None = None,
+    commands: tuple[str, ...] | None = None,
+    withholds: str = "",
 ) -> Failure | None:
-    """The class a workspace holding one trace and its actions is scored."""
+    """The class a workspace holding one trace and its actions is scored.
+
+    `commands` is what the workspace's record says the session ran, and a
+    record naming none says the harness reports no command, as a form given
+    no shell does. `withholds` names an action file the workspace leaves
+    unwritten, whichever agent would have written it.
+    """
     workspace.mkdir(parents=True)
     (workspace / TRACE).write_text("".join(f"{state}\n" for state in trace))
     (workspace / ACTIONS).mkdir()
@@ -2176,10 +2224,24 @@ def scored(
                 continue
             name, value = action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
-    (workspace / SUBAGENTS).write_text(
-        json.dumps({"starts": [start.record() for start in starts]})
-    )
-    return score(workflow, scenario, workspace, compiled).failure
+    held: dict[str, object] = {"starts": [start.record() for start in starts]}
+    if commands is not None:
+        held["commands"] = list(commands)
+    (workspace / SUBAGENTS).write_text(json.dumps(held))
+    for due in scenario.trace:
+        if due.action is not None and due.action[0] != withholds:
+            name, value = due.action
+            (workspace / ACTIONS / name).write_text(f"{value}\n")
+    return score(workflow, scenario, workspace).failure
+
+
+def stated_commands(scenario: Scenario) -> list[str]:
+    """The session's `pf` runs a scenario states, as shell lines."""
+    return [
+        " ".join(("pf", *run.args)).strip()
+        for run in scenario.compile
+        if run.by is None
+    ]
 
 
 def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]:
@@ -2200,10 +2262,18 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
         trace: tuple[str, ...],
         starts: tuple[Start, ...] = correct,
         undone: str = "",
-        compiled: bool | None = None,
+        commands: tuple[str, ...] | None = None,
+        withholds: str = "",
     ) -> Failure | None:
         return scored(
-            workflow, scenario, next(workspaces), trace, starts, undone, compiled
+            workflow,
+            scenario,
+            next(workspaces),
+            trace,
+            starts,
+            undone,
+            commands,
+            withholds,
         )
 
     found = {
@@ -2216,8 +2286,18 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     for index in range(len(path) + 1):
         due = path[index] if index < len(path) else None
         found |= {departing((*path[:index], state)) for state in states if state != due}
-    if BOOTSTRAP in workflow.forms:
-        found.add(departing(path, compiled=False))
+    # A scenario stating `pf` runs is held to them wherever its record says
+    # what the session ran, so the three run classes are produced from the
+    # runs the scenario states and one departure from each.
+    stated = stated_commands(scenario)
+    if stated:
+        found.add(departing(path, commands=()))
+        found.add(departing(path, commands=("pf absent.md#none", *stated)))
+        if len(stated) > 1:
+            found.add(departing(path, commands=tuple(reversed(stated))))
+    for dispatch in scenario.trace:
+        if dispatch.action is not None:
+            found.add(departing(path, withholds=dispatch.action[0]))
     if correct:
         found.add(departing(path, ()))
         found.add(departing(path, tuple(replace(s, together=False) for s in correct)))
@@ -2257,7 +2337,9 @@ def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
             Failure.UNDISPATCHED,
             Failure.SEQUENTIAL_SET,
             Failure.UNRELAYED_QUESTION,
-            Failure.UNBOOTSTRAPPED,
+            Failure.UNCOMPILED,
+            Failure.OVERCOMPILED,
+            Failure.MISORDERED_COMPILE,
         )
     ]
 

@@ -23,7 +23,7 @@ from typing import Any
 
 import pytest
 import workflow as source
-from harness import DONE, HARNESSES, MANAGED_SETTINGS, Claude, Cursor, Opencode
+from harness import HARNESSES, MANAGED_SETTINGS, Claude, Cursor, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -217,6 +217,8 @@ def eval_run(tmp_path: Path, *extra: str) -> dict[str, Any]:
                 "claude",
                 "--models",
                 "stub-model",
+                "--workflows",
+                ",".join(CORPUS),
                 "--results",
                 str(tmp_path / "results"),
                 "--run-id",
@@ -256,14 +258,12 @@ def material(session: Session) -> set[str]:
     inputs = {f"inputs/{name}" for name in scenario.inputs}
     if scenario.answers:
         inputs.add("answers.txt")
-    build = {"bin/pf"} if session.form in PF_SETS else set()
     if session.form == COMPILED_SET:
         tree = workflow.form(COMPILED_FORM)
         folder = workflow.entry_bundle.parent
         return (
             {str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()}
             | {str(folder / name) for name in bundles_of(workflow, COMPILED_SET)}
-            | build
             | inputs
         )
     if session.form in BUNDLED:
@@ -296,7 +296,7 @@ def test_the_matrix_holds_one_session_per_model_form_scenario_and_repetition() -
     assert (
         len(sessions) == len(set(sessions)) == every_session(["a", "b"], list(FORMS), 5)
     )
-    assert len(sessions) == 2 * 5 * len(FORMS) * every_session(["a"], list(FORMS), 1)
+    assert len(sessions) == 2 * 5 * every_session(["a"], list(FORMS), 1)
 
 
 def readme_rows(header: str) -> list[list[str]]:
@@ -339,7 +339,7 @@ def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
     The set sits in the folder `pf` writes it to, beside the sources a `↳`
     line names its target from, and the instruction names the entry's bundle
     there. The `pf` the session's path resolves to is the build this run was
-    given, copied into the workspace.
+    given through the runner's environment.
     """
     monkeypatch.setattr("run.harness_named", lambda name: Cursor())
     eval_run(
@@ -354,7 +354,8 @@ def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
     folder = workflow.entry_bundle.parent
     assert {str(folder / name) for name in bundles} <= set(entry["files"])
     assert {"workflow.md", "review.md", "states/survey.md"} <= set(entry["files"])
-    assert entry["which_pf"] == str(workspace / "bin" / "pf")
+    assert Path(entry["which_pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
+    assert not Path(entry["which_pf"]).is_relative_to(workspace)
     assert f"{workflow.entry_bundle.as_posix()} describes a workflow" in entry["prompt"]
     assert "run each compile from this directory" in " ".join(entry["prompt"].split())
 
@@ -413,7 +414,7 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
     for harness in (Cursor(), Opencode()):
         assert not observable(workflow, by_sub_agent, COMPILED_SET, harness)
     assert observable(
-        workflow, by_sub_agent, COMPILED_SET, replace(Opencode(), sub_agent_calls=True)
+        workflow, by_sub_agent, COMPILED_SET, replace(Opencode(), nested_starts=True)
     )
     assert observable(workflow, by_session, COMPILED_SET, Opencode())
     alone = replace(workflow, scenarios=(by_sub_agent,))
@@ -471,9 +472,15 @@ def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
         / "1"
     )
     assert [(start.target, start.commands) for start in read_starts(deep)] == [
-        ("hop/audit#sweep", ()),
-        ("hop/review#scan", ("pf steps/weighing.md#weigh",)),
-        ("steps/ruling#rule", ("pf steps/recording.md#file",)),
+        ("Follow hop/audit#sweep. Append each state you enter to trace-sweep.log.", ()),
+        (
+            "Follow hop/review#scan. Append each state you enter to trace-scan.log.",
+            ("pf steps/weighing.md#weigh",),
+        ),
+        (
+            "Follow steps/ruling#rule. Append each state you enter to trace-rule.log.",
+            ("pf steps/recording.md#file",),
+        ),
     ]
     assert json.loads((deep / SUBAGENTS).read_text())["commands"] == ["pf"]
 

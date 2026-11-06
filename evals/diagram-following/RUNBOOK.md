@@ -30,7 +30,6 @@ Each class the [scorer](score.py) defines, and `errored`:
 | Class | `miss` when | `defect` when | `unclear` when |
 | --- | --- | --- | --- |
 | `missing_action` | The state's or dispatched section in the session's form names the file and value the scorer reads, and the transcript, the sub-agent's included, writes no such file or another value. | The form states another file or value than the scorer reads, `answers.txt` holds no answer the dispatched section can take, or the transcript writes the right value and `actions/` lacks it. | The transcript's writes cannot be matched to the record. |
-| `unbootstrapped` | The transcript runs no `pf` and the session read the sources directly. | The transcript runs `pf` and the verdict says it did not, or `stderr.log` shows no `pf` on the session's path. | The transcript's commands are absent or cut short. |
 | `unfinished` | The session ended on its own before the path's end: its `result` message claims completion, asks a question or gives up, and its exit status is not `timeout`. | The session was cut off while progressing: its exit status is `timeout` or its `result` names its session cap, with the transcript still walking states; or its trace went to a file other than `trace.log`. | The session timed out with no progress the transcript shows. |
 | `invented_state` | The name entered at `divergence` is no heading of the session's form, written though the form spells the state as the path does. | The session's form spells that state as the session wrote it, so the form and the path disagree. | The name is close to a heading in a way neither the form nor the instruction settles. |
 | `loop_miscount` | `inputs/` holds the scenario's value, the loop's decision in the form reads it as the path does, and the session looped otherwise. | The input as written, or the decision as the form states it, gives the count the session walked. | The decision's wording admits both counts. |
@@ -141,7 +140,7 @@ The baseline over the hardened corpus, run by [I10:E00](https://github.com/m2ux/
 | --- | --- |
 | Harness | `opencode` |
 | Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
-| Workflows | Every workflow: the default `--workflows`. |
+| Workflows | The baseline workflows: the default `--workflows`. Edge workflows are selected explicitly for the composition-edge run. |
 | Forms | The default `--forms`: each workflow in every form it is written in that the opencode harness runs. |
 | Repetitions | 5 |
 | Sessions | The matrix's cells times 5, as the run prints them before its first session. |

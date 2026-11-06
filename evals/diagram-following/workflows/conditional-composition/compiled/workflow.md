@@ -7,14 +7,16 @@ The diagram is the workflow. Each state's section says what to do in that state 
 
 ```mermaid
 flowchart TD
-    start(( )) --> Sample
+    Entry(( )) --> Sample
     Sample --> Gauge
     Gauge -->|large| Convert
     Gauge -->|small| Finish
     Convert --> Finish
-    Finish --> stop((( )))
+    Finish --> Exit((( )))
 
     click Sample href "states/sample.md"
     click Gauge href "states/gauge.md"
     click Finish href "states/finish.md"
+    click Entry href "states/entry.md"
+    click Exit href "states/exit.md"
 ```
