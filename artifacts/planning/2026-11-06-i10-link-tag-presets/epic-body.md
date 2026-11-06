@@ -38,7 +38,7 @@ Each Markdown link selects its target document's presets through its comma-separ
 | --- | --- | --- | --- | --- | --- | --- |
 | [W00](https://github.com/m2ux/prosiform/pull/663) | The design states explicit preset selection | AC1 | | | 1 | ✓ |
 | [W01](https://github.com/m2ux/prosiform/pull/665) | One reader interprets tag lists | AC2 | W00 | | 1 | ✓ |
-| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-662-i10-e07-w02-source-links-carry-title/) | Source links carry title tags | AC4, AC5 | W01 | | 1 | |
+| [W02](https://github.com/m2ux/prosiform/pull/667) | Source links carry title tags | AC4, AC5 | W01 | | 1 | ✓ |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w03.md) | References carry effective selection identity | AC6, AC7 | W02 | | 1 | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w04.md) | Entries select presets through tags | AC8, AC9, AC10 | W03 | W05 | 1 | |
 | [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w05.md) | Guide and callers specify tagged compilation | AC3, AC11, AC21 | W03 | W04 | 1 | |
@@ -52,8 +52,8 @@ Each Markdown link selects its target document's presets through its comma-separ
 - [x] **AC1.** The pinned design defines the link-title and single-entry command contract, as design-to-fixture conformance review shows.
 - [x] **AC2.** Comma-separated tag lists normalize complete names independently of whitespace, case, repetition and ordering, as shared tag-reader unit tests show.
 - [ ] **AC3.** Authored links and CLI preset arguments use the same tag-list interpretation, as shared-reader integration tests show.
-- [ ] **AC4.** Inline and reference-style Markdown link occurrences expose their own title tags in preambles and sections, as source-reader tests show.
-- [ ] **AC5.** Image and external-reference titles, Mermaid tooltips and diagram labels supply no preset-selection tags, as source tests and resource/diagram corpus fixtures show.
+- [x] **AC4.** Inline and reference-style Markdown link occurrences expose their own title tags in preambles and sections, as source-reader tests show.
+- [x] **AC5.** Image and external-reference titles, Mermaid tooltips and diagram labels supply no preset-selection tags, as source tests and resource/diagram corpus fixtures show.
 - [ ] **AC6.** A reference occurrence retains its tag selection through resolution and substitution, as closure tests show.
 - [ ] **AC7.** Bundle selection identity depends on destination and effective named presets, as identity tests covering equivalent and distinct selections show.
 - [ ] **AC8.** A compile command accepts exactly one --entry and at most one --presets list, as CLI grammar fixtures and the installed-wheel smoke check show.

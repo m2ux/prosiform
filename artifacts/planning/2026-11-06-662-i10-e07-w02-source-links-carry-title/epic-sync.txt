@@ -1,0 +1,16 @@
+#662 epic (open)
+  in flight: #664 [I10:E07] Link-Tag Preset Design
+  in flight: #666 [I10:E07] Link-Tag Presets
+  ticked: AC4
+  ticked: AC5
+  done: W02
+  unevaluable: config/branches at 227069a8fed00554deb7f044da37f396f35a3208 in /home/mike1/projects/dev/md-composer/.git is absent
+  unevaluable: config/branches at 1a7ccc7daf3f8a30d781231b8ef7d698f1741562 in /home/mike1/projects/dev/md-composer/.git is absent
+  not checked: epic-base pull requests set apart from task deliveries
+  not checked: unmerged epic bases
+  not checked: draft epic bases
+  not checked: review pull request References
+  not checked: review pull request Changes paths
+  not checked: review pull request issue links
+  not checked: pull request targets
+  closable: no (undelivered W03, W04, W05, W06, W07, W08, W09, unticked AC3, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21)

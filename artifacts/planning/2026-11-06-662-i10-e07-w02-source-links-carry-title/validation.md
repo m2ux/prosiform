@@ -52,3 +52,9 @@ The standing runtime contract pin reports 361 clauses, zero declarations naming 
 The source reader obtains titles from parser attributes and calls the one normalized-list reader. The new field has no effect on target classification, containing-heading context, byte-preserving publication or current preset matching. Its default is the absent-title selection. Image and diagram constructors carry that empty value, and external link occurrences explicitly carry it. The field is independent of visible labels and the order in which repeated destinations are encountered.
 
 The new source tests directly observe occurrence data, and the resource/diagram corpus cases execute publication through the compiler. The full diff and immediate caller boundaries were reviewed; no defect or outside-scope debt was found. The [criterion-boundary clarification](changes.md) records the source-tag exclusion invariant separately from runtime heading/label independence. This unit establishes parsed title data and exclusion boundaries; source-to-reference retention and runtime preset matching remain their declared delivery work.
+
+## Delivery Readback
+
+Task PR [#667](https://github.com/m2ux/prosiform/pull/667) merges at `227069a8fed00554deb7f044da37f396f35a3208` after local and hosted checks pass. The exact merged revision passes the observing instrument `pytest src/tests/test_source.py src/tests/test_tags.py`, as [merged-check.txt](merged-check.txt) records. Current issue readback links every unit row to that merged PR and ticks its covered criteria and Done. The updated main integration remains a draft until the complete epic passes review.
+
+The coordinator continues with W03 under the epic-wide authorization. No further unit confirmation is required.
