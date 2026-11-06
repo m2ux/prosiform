@@ -1,10 +1,10 @@
 # W06+W07 Validation
 
-Source head: `cd325d5c3f6c71ef8890c8910adad85cc2b7895c` on `i10/e07/w06-compilation-schedules-distinct-selection`, based on `6578295a1bd40899ab4286a8185203451e159554`.
+Source head: `98d44ee0a268ae97debf250e293b8c11a808872d` on `i10/e07/w06-compilation-schedules-distinct-selection`, incorporating updated E07 base `e7e4af6268fc0cdf843f7c0e8257c6171cd6df8f` and completed E04 main `d8265c82e797355a55cf7ec7d921949b4d7eb6c0`.
 
 The runtime design is pinned at [`795bbfb67c66b02193f0313138f59f18aa6c5274`](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md).
 
-The final exact-head full gate **passes**. Its complete output is [make-check.log](make-check.log). Plain `git push` publishes that exact head, the remote tracking ref matches, and the source worktree is clean.
+The updated exact-head full gate **passes**. Its complete output is [make-check.log](make-check.log). Plain `git push` publishes the exact head, the remote tracking ref matches, and the source worktree is clean. The prior `cd325d5c3` gate remains in [make-check-cd325d5c3.log](make-check-cd325d5c3.log).
 
 ## Distinct Bundle Selections
 
@@ -44,7 +44,7 @@ Instrument: `test_distinct_variants_colliding_on_a_filename_preserve_the_previou
 - The initial full gate at `bf7f61592d569b213d03b53fe2b78d2221bc9191` found candidate set validation applying source ambiguity rules to repeated generated headings. The corrected candidate check follows renderer identities; the original failing log is retained in [make-check-bf7f61592.log](make-check-bf7f61592.log).
 - Collision review covers the heading-inline case before candidate validation, including filename-based parallel aliasing. Every finding belongs to this unit and is fixed on this branch.
 
-No criterion or required instrument is waived. No plan change or paid session is required. No open implementation finding remains. Coordinator publication, task PR, hosted checks, merge and tracker reconciliation follow this source handoff.
+No criterion or required instrument is waived. No plan change or paid session is required. No open implementation finding remains. The coordinator republishes current evidence and the existing PR #670 body, verifies hosted checks, merges and reconciles the tracker after this source handoff.
 
 ## Full Check
 
@@ -54,12 +54,28 @@ From the unit worktree:
 PROSIFORM_BUILD='uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w06-compilation-schedules-distinct-selection/src --frozen pf' make check
 ```
 
-Result: **passed at `cd325d5c3f6c71ef8890c8910adad85cc2b7895c`** — 1,850 source tests, 1,419 deterministic harness tests and 533 external-build corpus fixtures. Lint, formatting and strict typing (92 source files), installed-wheel smoke, layout, command/dependency tables, online links, vocabulary, invocation, design conformance and independence all pass. Conformance reports zero fixture declarations naming an absent clause. No source byte changes after this gate.
+Prior result: **passed at `cd325d5c3f6c71ef8890c8910adad85cc2b7895c`** — 1,850 source tests, 1,419 deterministic harness tests and 533 external-build corpus fixtures, plus every remaining required target.
+
+Updated result: **passed at `98d44ee0a268ae97debf250e293b8c11a808872d`** — 1,861 source tests, 1,630 deterministic harness tests and 533 external-build corpus fixtures. Lint, formatting, strict typing (93 source files), installed-wheel smoke, layout, command/dependency tables, online links, vocabulary, invocation, conformance and independence all pass. Conformance reports zero fixture declarations naming an absent clause.
+
+The base refresh preserves effective variant scheduling and destination checks alongside E04's evaluation workflow/caller contracts and generated deferred-line title and requested-tag integrity. The merge is mechanical; no unit criterion or validation target changes. No source byte changes after the gate; no open finding remains.
+
+## Current Base Interaction
+
+The completed E04 main is incorporated through the refreshed E07 base. Review of the automatic composition/provenance/candidate overlap confirms generated activation lines preserve their escaped parsed title and `(target, requested tags)` provenance alongside selection-specific direct and parallel destination validation. `read_tags` remains shared. No E04 implementation is duplicated on this task branch.
+
+The focused variant/candidate/deferred-title replay passes **114 tests** at the updated committed head; [updated-focused.log](updated-focused.log) retains its output. The complete current-head gate also checks the integrated evaluation callers, compile expectations and deterministic scoring.
 
 ## Merged-Revision Replay
 
 The coordinator can observe this unit at the merged revision with:
 
 ```text
-uv run --project src --frozen pytest --config-file src/pyproject.toml src/tests/test_dispatch.py src/tests/test_dispatch_variants.py src/tests/test_dispatch_publication.py src/tests/test_variant_integrity.py src/tests/test_candidate.py
+uv run --project src --frozen pytest --config-file src/pyproject.toml src/tests/test_dispatch.py src/tests/test_dispatch_variants.py src/tests/test_dispatch_publication.py src/tests/test_variant_integrity.py src/tests/test_candidate.py src/tests/test_deferred_titles.py
 ```
+
+## Delivery Readback
+
+Task PR [#670](https://github.com/m2ux/prosiform/pull/670) merges at `d0444a092cd1c7ddfc27d0994578811748bd35ac` after local and hosted checks pass. The exact merged revision passes the observing instrument `pytest src/tests/test_dispatch.py src/tests/test_dispatch_variants.py src/tests/test_dispatch_publication.py src/tests/test_variant_integrity.py src/tests/test_candidate.py src/tests/test_deferred_titles.py`, as [merged-check.txt](merged-check.txt) records. Current issue readback links every unit row to that merged PR and ticks its covered criteria and Done. The updated main integration remains a draft until the complete epic passes review.
+
+The coordinator continues with W08 under the epic-wide authorization. No further unit confirmation is required.

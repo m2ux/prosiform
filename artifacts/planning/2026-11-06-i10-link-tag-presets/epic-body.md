@@ -42,8 +42,8 @@ Each Markdown link selects its target document's presets through its comma-separ
 | [W03](https://github.com/m2ux/prosiform/pull/668) | References carry effective selection identity | AC6, AC7 | W02 | | 1 | ✓ |
 | [W04](https://github.com/m2ux/prosiform/pull/669) | Entries select presets through tags | AC8, AC9, AC10 | W03 | W05 | 1 | ✓ |
 | [W05](https://github.com/m2ux/prosiform/pull/669) | Guide and callers specify tagged compilation | AC3, AC11, AC21 | W03 | W04 | 1 | ✓ |
-| [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w06.md) | Compilation schedules distinct selection variants | AC12, AC13, AC14 | W04 | W07 | 1 | |
-| [W07](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w07.md) | Dispatch links name their selected bundles | AC15, AC16 | W04 | W06 | 1 | |
+| [W06](https://github.com/m2ux/prosiform/pull/670) | Compilation schedules distinct selection variants | AC12, AC13, AC14 | W04 | W07 | 1 | ✓ |
+| [W07](https://github.com/m2ux/prosiform/pull/670) | Dispatch links name their selected bundles | AC15, AC16 | W04 | W06 | 1 | ✓ |
 | [W08](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w08.md) | Deferred links retain their tag selection | AC17, AC18 | W07 | | 1 | |
 | [W09](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w09.md) | Eval workflows exercise tagged command specifications | AC19, AC20 | W08 | | 1 | |
 
@@ -60,11 +60,11 @@ Each Markdown link selects its target document's presets through its comma-separ
 - [x] **AC9.** An occurrence selects its target document's matching presets above default, silently ignoring unknown tags, as authored-link and CLI parity fixtures show.
 - [x] **AC10.** Section headings and link labels select no presets, as fixtures varying them while holding tags fixed show.
 - [x] **AC11.** The plain-text guide specifies the command an agent supplies for a tagged link, as guide fixtures covering relative paths, same-file fragments and shell quoting show.
-- [ ] **AC12.** A run compiles a distinct dispatched bundle for each effective selection of one destination, as a dispatch-variant corpus fixture shows.
-- [ ] **AC13.** Equivalent effective selections share a deterministic output filename, as variant-name fixtures covering reordered and unmatched tags show.
-- [ ] **AC14.** Dispatch cycle and depth checks operate on the bundle variants the run schedules, as dispatch-analysis tests show.
-- [ ] **AC15.** Each dispatch or parallel-set link names the bundle for its selected variant, as dispatch publication and candidate-validation tests show.
-- [ ] **AC16.** A filename collision between distinct selection variants fails publication, as a collision-injection test shows.
+- [x] **AC12.** A run compiles a distinct dispatched bundle for each effective selection of one destination, as a dispatch-variant corpus fixture shows.
+- [x] **AC13.** Equivalent effective selections share a deterministic output filename, as variant-name fixtures covering reordered and unmatched tags show.
+- [x] **AC14.** Dispatch cycle and depth checks operate on the bundle variants the run schedules, as dispatch-analysis tests show.
+- [x] **AC15.** Each dispatch or parallel-set link names the bundle for its selected variant, as dispatch publication and candidate-validation tests show.
+- [x] **AC16.** A filename collision between distinct selection variants fails publication, as a collision-injection test shows.
 - [ ] **AC17.** A deferred link preserves the tags needed for its later CLI invocation, as deferred-link publication fixtures show.
 - [ ] **AC18.** Equivalent immediate and deferred compositions select identical presets independently of their headings, as composition parity fixtures show.
 - [ ] **AC19.** Repository command callers use the single-entry command specification, as smoke, corpus and deterministic harness tests show.

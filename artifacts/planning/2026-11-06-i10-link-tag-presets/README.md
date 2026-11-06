@@ -61,6 +61,7 @@ Heading wording can serve presentation because the link states its settings dire
 | [w07.md](w07.md) | Component work item |
 | [w08.md](w08.md) | Component work item |
 | [w09.md](w09.md) | Component work item |
+| [w10.md](w10.md) | Final documentation accuracy and completeness audit |
 
 ## Links
 

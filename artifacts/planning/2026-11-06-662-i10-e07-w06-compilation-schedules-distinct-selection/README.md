@@ -22,6 +22,19 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | [source-result.json](source-result.json) | Clean pushed source head and coordinator handoff |
 | [make-check.log](make-check.log) | Passing complete repository gate at the delivered source revision |
 | [make-check-bf7f61592.log](make-check-bf7f61592.log) | Initial gate finding before the candidate renderer-identity repair |
+| [make-check-cd325d5c3.log](make-check-cd325d5c3.log) | Passing unit gate before the completed E04 base refresh |
+| [updated-focused.log](updated-focused.log) | Current-base variant, candidate and deferred-title interaction replay |
+| [completed-epic.json](completed-epic.json) | Unit planning, delivery or verification evidence |
+| [delivery.json](delivery.json) | Unit planning, delivery or verification evidence |
+| [epic-sync.txt](epic-sync.txt) | Unit planning, delivery or verification evidence |
+| [head-checks.json](head-checks.json) | Unit planning, delivery or verification evidence |
+| [integration.json](integration.json) | Unit planning, delivery or verification evidence |
+| [merge-result.json](merge-result.json) | Unit planning, delivery or verification evidence |
+| [merged-check.txt](merged-check.txt) | Unit planning, delivery or verification evidence |
+| [merged-pr.json](merged-pr.json) | Unit planning, delivery or verification evidence |
+| [reviews.json](reviews.json) | Unit planning, delivery or verification evidence |
+| [target-protection.json](target-protection.json) | Unit planning, delivery or verification evidence |
+| [target-rules.json](target-rules.json) | Unit planning, delivery or verification evidence |
 
 ## Links
 

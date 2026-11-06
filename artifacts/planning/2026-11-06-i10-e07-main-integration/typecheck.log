@@ -1,0 +1,2 @@
+uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
+Success: no issues found in 90 source files

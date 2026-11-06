@@ -2,6 +2,10 @@
 
 > Initiative Plan - Created 2026-10-17 - Revised 2026-10-18
 
+## Current Contract
+
+This folder also retains historical decisions, plans, worked examples and validation evidence at their recorded revisions. The current link-title preset and single-entry command contract is the [immutable design used by the build](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md), maintained through the [Link-Tag Presets plan](../2026-11-06-i10-link-tag-presets/README.md). The mutable design file in this historical folder and older worked examples are not the current command guide; use the build's [Invocation](https://github.com/m2ux/prosiform/blob/i10/e07/main/invocation.md).
+
 ## Executive Summary
 
 prosiform compiles a set of linked local Markdown documents into one continuous, validated Markdown document. Agent skills in this workspace are authored as modular instruction sets: a skill entry point links to modes, modes link to artifacts, and artifacts link to one another's sections. Reaching the complete context for one operation currently means the agent resolves that graph itself, deciding which sections to read, where each section ends, and when the closure is complete. prosiform moves that retrieval into a deterministic compilation step that either returns the whole bundle or fails with a diagnostic.
