@@ -24,8 +24,8 @@ A harness reads its own stream: `starts()` returns the same `Start` values
 from any of them, so the scorer above it is unaware of which CLI produced
 them. Each start names the start whose sub-agent made it and the shell
 commands its own sub-agent ran, wherever the stream attributes a call to a
-sub-agent; `nested_starts` declares whether it does, as read from what
-each CLI prints.
+sub-agent. `nested_starts` declares child-dispatch observation and
+`nested_commands` declares per-child command attribution, as each CLI reports.
 """
 
 from __future__ import annotations
@@ -265,12 +265,14 @@ class Claude:
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
-    """Whether a sub-agent's own starts and tool calls reach the session's stream.
+    """Whether a sub-agent's own starts reach the session's stream.
 
     They do: a sub-agent's messages are printed in the session's stream, each
     naming the `Agent` call it runs under as `parent_tool_use_id`, so its
     starts and its shell commands are read under the start it follows.
     """
+    nested_commands: bool = True
+    """The stream attributes each sub-agent's `Bash` calls to its `Agent` call."""
     session_cap_usd: float = 0.50
     """The price the CLI itself may spend in one session.
 
@@ -623,6 +625,8 @@ class Cursor:
     made inside a sub-agent, or which states a sub-agent's `pf` run, cannot
     be observed on this harness.
     """
+    nested_commands: bool = False
+    """The stream carries no sub-agent's shell calls."""
     usage: tuple[str, str, str, str] = (
         "inputTokens",
         "outputTokens",
@@ -951,6 +955,8 @@ class Opencode:
     `pf` runs are read from the commands it ran, which are absent for the
     same reason.
     """
+    nested_commands: bool = False
+    """A child session's shell calls are absent from the parent's stream."""
 
     def argv(
         self,
@@ -1217,6 +1223,9 @@ class Codex:
     default_agent: str = "codex"
     prompt_on_argv: bool = False
     nested_starts: bool = True
+    """Native child dispatches reach the bridge's start list."""
+    nested_commands: bool = False
+    """Native start records carry no per-child command list."""
     skill_home: str = ".agents/skills"
 
     def argv(

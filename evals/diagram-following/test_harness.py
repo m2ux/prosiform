@@ -949,3 +949,8 @@ def test_each_harness_declares_whether_a_sub_agents_calls_reach_its_stream() -> 
     assert Claude().nested_starts is True
     assert Cursor().nested_starts is False
     assert Opencode().nested_starts is False
+    assert Claude().nested_commands is True
+    assert Cursor().nested_commands is False
+    assert Opencode().nested_commands is False
+    assert Codex().nested_starts is True
+    assert Codex().nested_commands is False

@@ -379,15 +379,14 @@ def observable(
     report only the starts the session makes itself, those the path's own
     sections and the material its `↳` lines compile start, so a scenario
     whose trace outruns that count is beyond it. A stated run a sub-agent makes is
-    read from that sub-agent's commands, which a harness reports only where
-    the form's session carries a shell and the harness surfaces a sub-agent's
-    own calls.
+    read from that sub-agent's commands, which requires a shell form and the
+    harness's declared per-child command evidence.
 
     The corpus names its forms by what they hold, so the runner's form is
     read as the corpus form it carries before its sections are asked for.
     """
     if any(run.by is not None for run in scenario.compile) and not (
-        form in PF_SETS and harness.nested_starts
+        form in PF_SETS and harness.nested_commands
     ):
         return False
     if harness.nested_starts:

@@ -84,7 +84,7 @@ A reference resolves from the directory a shell form runs `pf` in: the skill's d
 
 A `compiled` session reads the bundle set `pf` compiled from the compiled form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. The four dispatch scenarios compile nothing, so they state no run.
 
-A stated run a sub-agent makes is read from that sub-agent's own commands, which a harness reports only where the form's session carries a shell and its stream carries a sub-agent's own calls: `claude` in the `compiled` form. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports: those the session makes itself, from its path's own steps and from the bundle its run on a `↳` line writes.
+A stated run a sub-agent makes is read from that sub-agent's own commands, which requires a shell form and the harness's `nested_commands` capability: `claude` in the `compiled` form. `nested_starts` separately states whether child dispatches are observed. Codex exposes nested starts while its start records carry no child commands, so it receives deep chains and omits scenarios requiring per-child compiler runs. A harness reporting no sub-agent's commands is given no scenario stating a sub-agent's run, as it is given no scenario whose trace outruns the starts it reports: those the session makes itself, from its path's own steps and from the bundle its run on a `↳` line writes.
 
 ### Sub-agent runs
 

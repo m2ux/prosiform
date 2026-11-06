@@ -23,7 +23,7 @@ from typing import Any
 
 import pytest
 import workflow as source
-from harness import HARNESSES, MANAGED_SETTINGS, Claude, Cursor, Opencode
+from harness import HARNESSES, MANAGED_SETTINGS, Claude, Codex, Cursor, Opencode
 from report import REPORT_JSON, REPORT_MD, RUN, SESSION, TIMEOUT, main
 from run import (
     AUTHORED_SET,
@@ -401,9 +401,9 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
 
     Claude reports them in the compiled form, whose session carries a shell,
     and in no form whose session carries none. Neither Cursor's stream nor
-    opencode's carries a sub-agent's own calls; a harness that did would be
-    given the scenario, and a run the session makes itself is given wherever
-    a shell is.
+    opencode's carries a sub-agent's own calls. Codex exposes child starts
+    while its start records carry no child commands. A harness reporting
+    those commands receives the scenario; a session's own run needs a shell.
     """
     workflow = CORPUS["dispatch-set"]
     [scenario] = workflow.scenarios
@@ -411,14 +411,19 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
     by_session = replace(scenario, compile=(Compile(None, ()),))
     assert observable(workflow, by_sub_agent, COMPILED_SET, Claude())
     assert not observable(workflow, by_sub_agent, AUTHORED_SET, Claude())
-    for harness in (Cursor(), Opencode()):
+    for harness in (Cursor(), Opencode(), Codex()):
         assert not observable(workflow, by_sub_agent, COMPILED_SET, harness)
     assert observable(
-        workflow, by_sub_agent, COMPILED_SET, replace(Opencode(), nested_starts=True)
+        workflow,
+        by_sub_agent,
+        COMPILED_SET,
+        replace(Opencode(), nested_starts=True, nested_commands=True),
     )
     assert observable(workflow, by_session, COMPILED_SET, Opencode())
+    assert observable(workflow, by_session, COMPILED_SET, Codex())
     alone = replace(workflow, scenarios=(by_sub_agent,))
     assert matrix([alone], ["m"], [COMPILED_SET], 1, Opencode()) == []
+    assert matrix([alone], ["m"], [COMPILED_SET], 1, Codex()) == []
 
 
 def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> None:
@@ -432,6 +437,18 @@ def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> 
     assert ("subagent-first-run", "first-hop-run") not in given
     assert ("subagent-first-run", "deep-hop-runs") not in given
     assert not any(workflow == "dispatch-depth" for workflow, _ in given)
+
+
+def test_native_child_starts_admit_chains_with_no_child_command_requirement() -> None:
+    """AC22: native chains are observable; per-child compiler runs need attribution."""
+    corpus = [CORPUS["dispatch-depth"], CORPUS["subagent-first-run"]]
+    sessions = matrix(corpus, ["m"], [COMPILED_SET], 1, Codex())
+    assert {session.workflow for session in sessions} == {"dispatch-depth"}
+    assert {session.scenario for session in sessions} == {
+        "three-hop-chain",
+        "three-hop-set",
+        "three-hop-question",
+    }
 
 
 def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
