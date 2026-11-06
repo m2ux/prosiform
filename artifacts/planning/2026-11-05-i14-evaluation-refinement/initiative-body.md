@@ -1,6 +1,6 @@
 ## Overview
 
-The composition, deferral and dispatch evaluation has published measurements backed by a measured runbook and committed session evidence. Its goal is an auditable account of how agents follow the edge workflows, with every failed session classified under the triage rubric.
+The composition, deferral and dispatch evaluation has published measurements backed by a measured runbook and committed session evidence, and the default matrix's baseline and harness records cover every cell it measures. Its goal is an auditable account of how agents follow the edge workflows, with every failed session classified under the triage rubric.
 
 ## Problem
 
@@ -12,6 +12,8 @@ The edge workflows have corpus and harness tests but no committed live measureme
   The shakedown establishes the session limits and token or cost cap before the full run starts.
 - **A result needs traceable evidence.**
   A reader needs the source revision, run configuration and failure dispositions behind the published rates.
+- **The default matrix is measured in part.**
+  The committed baseline carries no cell for the matrix's bootstrap-audit scenarios and records one harness's sessions alone.
 
 ## Proposal
 
@@ -19,6 +21,8 @@ The edge workflows have corpus and harness tests but no committed live measureme
   A shakedown of the edge workflows establishes the budget and tests the rubric against real sessions.
 - **The records preserve the measured scope.**
   Each shell harness has a committed edge record, with the matrix's model, form and scenario cells and a rubric disposition for every failed session.
+- **The baseline and harness records cover the matrix.**
+  The committed baseline carries a cell for every model, form and scenario the matrix builds, and each harness the eval defines has its own committed run.
 - **The published account follows the records.**
   The evaluation page identifies the compiled form, workflow inventory and measured pass rates against those records.
 - **The work is deferred beyond the release.**
@@ -29,10 +33,12 @@ The edge workflows have corpus and harness tests but no committed live measureme
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/661) | Composition Measurements | AC1 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/677) | Matrix Coverage | AC2 | | |
 
 ## Acceptance Criteria
 
 - [ ] **AC1.** The published edge evaluation is supported by committed measurements taken under its measured runbook, as a review of the evaluation page against the workflow corpus, runbook and session records shows.
+- [ ] **AC2.** The evaluation's committed records cover the default matrix in full, each cell carrying a measured pass rate and each harness a crash-free run, as a comparison of the baseline and harness records against the matrix shows.
 
 ## Non-Goals
 
@@ -44,4 +50,4 @@ The edge workflows have corpus and harness tests but no committed live measureme
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-05-i14-evaluation-refinement) — the deferred scope, source mapping, work items and delivery decisions.
 - **R2.** [Composition Following](https://github.com/m2ux/prosiform/issues/579) — the corpus and harness implementation supplying the measurement inputs.
-- **R3.** [Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) — the originating initiative, whose edge measurement is deferred here.
+- **R3.** [Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) — the originating initiative, whose edge measurement and default-matrix baseline and cross-harness coverage are deferred here.

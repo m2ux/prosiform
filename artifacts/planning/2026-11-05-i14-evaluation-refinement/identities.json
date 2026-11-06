@@ -2,5 +2,16 @@
   "initiative": 660,
   "initiative_url": "https://github.com/m2ux/prosiform/issues/660",
   "epic": 661,
-  "epic_url": "https://github.com/m2ux/prosiform/issues/661"
+  "epic_url": "https://github.com/m2ux/prosiform/issues/661",
+  "epics": {
+    "E00": {
+      "issue": 661,
+      "url": "https://github.com/m2ux/prosiform/issues/661"
+    },
+    "E01": {
+      "issue": 677,
+      "url": "https://github.com/m2ux/prosiform/issues/677"
+    }
+  },
+  "originating_initiative": 464
 }

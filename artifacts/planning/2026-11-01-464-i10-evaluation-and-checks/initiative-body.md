@@ -56,42 +56,43 @@ A measurement that cannot fail measures nothing.
 | [E01](https://github.com/m2ux/prosiform/issues/454) | Check Coverage | AC3, AC4, AC5, AC7 | | ✓ |
 | [E02](https://github.com/m2ux/prosiform/issues/456) | Session Isolation | AC6, AC8 | | ✓ |
 | [E03](https://github.com/m2ux/prosiform/issues/455) | Grouping Targets | AC10 | | ✓ |
-| [E04](https://github.com/m2ux/prosiform/issues/579) | Composition Following | AC13 | | |
+| [E04](https://github.com/m2ux/prosiform/issues/579) | Composition Following | AC13 | | ✓ |
 | [E05](https://github.com/m2ux/prosiform/issues/594) | MVP Proof | AC14, AC15 | [I09:E05](https://github.com/m2ux/prosiform/issues/523) | ✓ |
 | [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17, AC18 | | ✓ |
-| [E07](https://github.com/m2ux/prosiform/issues/662) | Link-Tag Presets | AC19, AC20, AC21 | | |
+| [E07](https://github.com/m2ux/prosiform/issues/662) | Link-Tag Presets | AC19, AC20, AC21 | | ✓ |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The committed diagram-following baseline gives a pass rate for every model, form and scenario the default matrix runs, as a comparison of the baseline file against the matrix shows.
-- [ ] **AC2.** The committed baseline gives different forms of at least one scenario different pass rates, as the baseline file shows.
+- [x] **AC1.** The committed diagram-following baseline gives a pass rate for every model, form and scenario the default matrix runs, as a comparison of the baseline file against the matrix shows. Deferred to the evaluation refinement initiative, whose committed baseline supplies each cell this initiative's baseline lacks. No cell of that baseline was measured here.
+- [x] **AC2.** The committed baseline gives different forms of at least one scenario different pass rates, as the baseline file shows.
 - [x] **AC3.** A pull request changing the build, the corpus or the checks runs the checks before it merges, whatever its branch is called, as the workflow records of such pull requests show.
 - [x] **AC4.** A pull request's check record states whether the checks ran on its change, as the records of a checked and an unchecked pull request show.
 - [x] **AC5.** A check reading another branch of the repository names the commit it read, as that check's output shows.
 - [x] **AC6.** A diagram-following run starts no session while a user- or project-scope settings file its sessions would read declares a hook, and records a managed-scope hook in its run record, as the stub-agent tests `make check` runs show.
 - [x] **AC7.** The checks page states which changes run the checks, as an inspection of the page against the workflow shows.
 - [x] **AC8.** The eval's README states each settings file a run refuses, and `--eval-root` as the remedy for one above the workspaces, as an inspection of the README against the preflight shows.
-- [ ] **AC9.** Every failure class the eval's scorer defines is produced by at least one scenario of the corpus, as the corpus test `make check` runs shows.
+- [x] **AC9.** Every failure class the eval's scorer defines is produced by at least one scenario of the corpus, as the corpus test `make check` runs shows.
 - [x] **AC10.** A reference into a group reaches the document it named and no other member of that group, as the candidate-validation tests show.
-- [ ] **AC11.** A diagram-following harness crashes on no form the matrix runs, as the committed default-matrix run, against each harness, shows.
-- [ ] **AC12.** A dispatched question counts as answered only where the session produced an answer, as the committed default-matrix run, against each harness, shows.
-- [ ] **AC13.** The evaluation checks ordered compilation and agent paths through deferral, composition and dispatch, as its corpus and harness tests show.
+- [x] **AC11.** A diagram-following harness crashes on no form the matrix runs, as the committed default-matrix run, against each harness, shows. Deferred to the evaluation refinement initiative, whose committed runs record each harness crash-free across the matrix. No harness's crash-free run was recorded here.
+- [x] **AC12.** A dispatched question counts as answered only where the session produced an answer, as the committed default-matrix run, against each harness, shows.
+- [x] **AC13.** The evaluation checks ordered compilation and agent paths through deferral, composition and dispatch, as its corpus and harness tests show.
 - [x] **AC14.** An agent follows every feature the merged bundling surface delivers from the bundle `pf` compiles, on a live run of the feature workflows, as the committed proof run shows.
-- [ ] **AC15.** Every live run the eval commits follows its runbook in `RUNBOOK.md`, and gives each failing session the triage rubric's disposition, as each committed run record shows.
+- [x] **AC15.** Every live run the eval commits follows its runbook in `RUNBOOK.md`, and gives each failing session the triage rubric's disposition, as each committed run record shows.
 - [x] **AC16.** Bare `pf` prints plain text giving an instruction for every mark and dispatch-set subsection a bundle carries, as the guide fixture `make check` runs shows.
 - [x] **AC17.** Every published bundle directs its reader to run bare `pf` before its selected source content, as the bundle-publication tests `make check` runs show.
 
 - [x] **AC18.** A published bundle carries no generated dispatch protocol of its own, as the dispatch bundle-publication tests `make check` runs show.
 
-- [ ] **AC19.** Compilation and agent handoff preserve the preset selection each authored link states, as the tag-selection corpus and deterministic harness checks show.
-- [ ] **AC20.** Distinct effective preset selections of a dispatched destination are represented by distinct output bundles, as the dispatch-variant corpus shows.
-- [ ] **AC21.** Presentation wording has no effect on preset selection, as the heading-and-label independence fixtures show.
+- [x] **AC19.** Compilation and agent handoff preserve the preset selection each authored link states, as the tag-selection corpus and deterministic harness checks show.
+- [x] **AC20.** Distinct effective preset selections of a dispatched destination are represented by distinct output bundles, as the dispatch-variant corpus shows.
+- [x] **AC21.** Presentation wording has no effect on preset selection, as the heading-and-label independence fixtures show.
 
 ## Non-Goals
 
 - Live edge-workflow measurements and publication are deferred to later evaluation refinement.
 
 - The eval does not add a harness or a form to its default matrix.
+- The baseline's bootstrap-audit cells and each harness's crash-free record are measured outside this initiative.
 - The checks do not move the contract off its own branch.
 - Validation does not change how a reference to a pooled heading resolves; it holds the existing rule.
 
@@ -103,6 +104,6 @@ A measurement that cannot fail measures nothing.
 - **R4.** [Grouping and composition record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-02-463-i09-grouping-and-composition) — where the grouping-targets work and the feature workflows were planned, and the proof's earlier decisions.
 - **R5.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed criterion reconciliation, lane evidence and verification results.
 
-- **R6.** [Evaluation Refinement](https://github.com/m2ux/prosiform/issues/660) — the deferred edge shakedown, live measurements and results publication.
+- **R6.** [Evaluation Refinement](https://github.com/m2ux/prosiform/issues/660) — the deferred edge shakedown, live measurements, results publication and the deferred default-matrix baseline and cross-harness coverage.
 
 - **R7.** [Link-tag preset planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets) — the user-confirmed extension to explicit selection and agent command specifications.

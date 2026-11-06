@@ -135,7 +135,7 @@ Every initiative criterion traces to a clause, every clause has a criterion, eve
 
 E04 (#579) supplies the corpus and harness capability for following compiled bundles, conditional and nested deferral, composition and deep dispatch. Scenarios state ordered pf runs for every agent, and the scorer checks those runs with the action path. Live edge measurements, their shakedown and publication are held by [I14 Evaluation Refinement](../2026-11-05-i14-evaluation-refinement/README.md).
 
-The default baseline and feature-proof records retain their own scope. E04's integration into main remains subject to review and conflict resolution; completed branch-level tests do not establish that integration.
+The default baseline and feature-proof records retain their own scope. The committed baseline covers the six forms its run carried, and the matrix's bootstrap-audit cells and each further harness's crash-free record are measured under [I14 E01](../2026-11-05-i14-evaluation-refinement/README.md). E04's integration into main remains subject to review and conflict resolution; completed branch-level tests do not establish that integration.
 
 ## Measurement of the Name-Based Trigger
 
@@ -143,7 +143,7 @@ Over the eleven most recent merged pull requests at the time E01 was raised, the
 
 ## Delivery Lanes
 
-All retained I10 task rows are delivered to their epic bases. No row is currently assigned for dispatch. Integration review and the initiative's outstanding criterion verification remain separate completion conditions. The deferred measurement work is held by I14, with one sequential epic and no lanes (user, 2026-11-05).
+All retained I10 task rows are delivered to their epic bases. No row is currently assigned for dispatch. Integration review is a separate completion condition. The deferred measurement work is held by I14, with two epics of three sequential tasks each and no lanes (user, 2026-11-05 and 2026-11-06).
 
 ## Dependency Check
 
@@ -197,6 +197,8 @@ E00 W02 and E02 W03 both edit `evals/diagram-following/README.md`, in different 
 ## Decisions
 
 - **Edge measurements are deferred.** (User, 2026-11-05.) E04 W14–W16 and AC20, AC21, AC24 and AC25 are held by [I14 #660](https://github.com/m2ux/prosiform/issues/660), with the mapping in its [record](../2026-11-05-i14-evaluation-refinement/decisions.md). I10 retains the corpus and harness implementation. I11 release preparation does not wait for those measurements.
+
+- **The default-matrix baseline and cross-harness coverage are deferred.** (User, 2026-11-06.) AC1 and AC11 keep their ids, each gains a sentence naming the deferral, and each is ticked with the deferral as its disposition. The measurement is carried by [I14 E01 #677](https://github.com/m2ux/prosiform/issues/677), whose [plan change](../2026-11-05-i14-evaluation-refinement/plan-change.md) records the disposition. No cell of the default matrix and no harness's crash-free run was measured under I10.
 
 Each decision below is the user's (2026-11-01) unless marked as planning's.
 

@@ -50,5 +50,30 @@
     "updated_at": "2026-11-05T13:19:06Z",
     "change": "Overview states corpus/scorer/harness scope and assigns former W14-W16 measurement work to I14; references name the current compiled surface",
     "readback_verified": true
+  },
+  {
+    "kind": "issue",
+    "issue": 464,
+    "url": "https://github.com/m2ux/prosiform/issues/464",
+    "updated_at": "2026-11-06T15:55:25Z",
+    "change": "AC1 and AC11 ticked with the deferral to this initiative as their disposition; Non-Goals and R6 name the deferred default-matrix baseline and cross-harness coverage",
+    "readback_verified": true
+  },
+  {
+    "kind": "issue",
+    "issue": 677,
+    "url": "https://github.com/m2ux/prosiform/issues/677",
+    "created": true,
+    "updated_at": "2026-11-06T16:00:21Z",
+    "change": "Matrix Coverage epic created with three task rows and three criteria",
+    "readback_verified": true
+  },
+  {
+    "kind": "issue",
+    "issue": 660,
+    "url": "https://github.com/m2ux/prosiform/issues/660",
+    "updated_at": "2026-11-06T16:00:29Z",
+    "change": "Work Breakdown gains the E01 row and the initiative gains AC2 for the matrix's full coverage",
+    "readback_verified": true
   }
 ]

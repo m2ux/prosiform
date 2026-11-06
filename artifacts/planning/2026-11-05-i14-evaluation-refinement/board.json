@@ -6,7 +6,8 @@
         "Initiative": "I14 Evaluation Refinement",
         "Epic": "I14 Initiative",
         "Status": "Backlog"
-      }
+      },
+      "assignees": []
     },
     {
       "issue": 661,
@@ -14,9 +15,25 @@
         "Initiative": "I14 Evaluation Refinement",
         "Epic": "I14:E00 Composition Measurements",
         "Status": "Backlog"
-      }
+      },
+      "assignees": []
+    },
+    {
+      "issue": 677,
+      "fields": {
+        "Initiative": "I14 Evaluation Refinement",
+        "Epic": "I14:E01 Matrix Coverage",
+        "Status": "Backlog"
+      },
+      "item": 296153510,
+      "assignees": []
     }
   ],
   "existing_options_and_assignments_preserved": true,
+  "epic_option_added": {
+    "field": "PVTSSF_lAHOCotKsc4BnhDMzhnYDrE",
+    "option": "ac1da61d",
+    "name": "I14:E01 Matrix Coverage"
+  },
   "readback_verified": true
 }
