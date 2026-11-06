@@ -2,10 +2,12 @@
 
 ## Confirmed
 
+- The CLI option is `--presets` (user, 2026-11-06); link titles supply its comma-separated preset names.
+
 - The epic belongs to I10. Its goal and acceptance criteria extend to link-tag preset selection (user, 2026-11-06).
 - The link title holds plain comma-separated preset names, such as `"checks,draft"`; angle brackets are not tag delimiters.
 - A tag with no matching preset of the target is silently ignored. A document's `default` continues to apply.
-- The command form is `pf --entry guide.md#plan-report --tags checks,draft`. An agent encountering a tagged link is instructed to supply that command specification.
+- The command form is `pf --entry guide.md#plan-report --presets checks,draft`. An agent encountering a tagged link is instructed to supply that command specification.
 - One invocation takes one entry and produces that entry's set of output bundles. The final clarification supersedes the provisional repeated-entry and full-Markdown-link argument proposals.
 - Heading names and visible link labels select no presets. Tags are carried by each individual link.
 - Two dispatches to the same document and section with different effective preset selections produce distinct bundles. Identical effective selections share a bundle.
@@ -23,5 +25,5 @@
 - Bundle variants use destination plus the canonical effective preset-name set, excluding `default` as an implicit constant. Unknown tags and tag order do not create variants. A deterministic filename qualifier distinguishes named-preset variants; the empty-selection bundle uses the ordinary destination-derived filename.
 - A deferred link preserves its title for a later command. Destination paths passed to the command resolve from the chosen invocation directory; a same-file fragment needs its containing document path.
 - The heading-comparison refusal for deferred compositions is retired because the later command supplies the selection explicitly.
-- Bare `pf` continues to print its guide. A compilation has exactly one `--entry` and at most one `--tags`; positional compilation entries, repeated entry groups, tags without an entry and a full Markdown-link CLI argument are outside the command grammar.
+- Bare `pf` continues to print its guide. A compilation has exactly one `--entry` and at most one `--presets`; positional compilation entries, repeated entry groups, tags without an entry and a full Markdown-link CLI argument are outside the command grammar.
 

@@ -11,11 +11,11 @@ An authored Markdown link identifies both the content to compile and the target 
 ```
 
 ```sh
-pf --entry guide.md#plan-report --tags checks,draft
+pf --entry guide.md#plan-report --presets checks,draft
 pf --entry guide.md#plan-report
 ```
 
-The second command selects `default` alone. The destination is resolved relative to the invocation directory; an agent resolves a link relative to its authoring document before choosing that directory and command path. `--tags` carries the whole comma-separated list as one shell argument, quoted when needed. A fragment-only authored link is qualified with its containing document in the command.
+The second command selects `default` alone. The destination is resolved relative to the invocation directory; an agent resolves a link relative to its authoring document before choosing that directory and command path. `--presets` carries the whole comma-separated list as one shell argument, quoted when needed. A fragment-only authored link is qualified with its containing document in the command.
 
 ## Selection
 
@@ -31,7 +31,7 @@ Markdown inline and reference-style links, including preamble links and operator
 
 Reference occurrence metadata carries normalized tags separately from the heading title needed for composition placement. Substitution preserves the occurrence's tag selection while changing its resolved destination; the substitute's own presets answer that selection. Traversal retains distinct selecting occurrences while source capture still reads each physical document once per bundle.
 
-A deferred link retains its title when published. The guide tells an agent to compile its destination with the same `--tags` list. Heading equality supplies no selection guarantee; the deferred-composition refusal comparing the two headings' keyword matches has no role in explicit selection and is retired. Immediate and deferred compilation of an equivalent occurrence select the same presets.
+A deferred link retains its title when published. The guide tells an agent to compile its destination with the same `--presets` list. Heading equality supplies no selection guarantee; the deferred-composition refusal comparing the two headings' keyword matches has no role in explicit selection and is retired. Immediate and deferred compilation of an equivalent occurrence select the same presets.
 
 ## Bundle Variants
 
@@ -41,7 +41,7 @@ The ordinary destination-derived name identifies an empty named selection. A non
 
 ## Agent Guide and Consumers
 
-The one guide printed by bare `pf` states how an agent translates the destination and title to `pf --entry REF --tags TAGS`, omitting `--tags` for an empty list. It includes relative-file and same-file-fragment examples and shell quoting. Bundle instruction headings continue to point readers to that guide. Bundles carry no duplicate guide protocol.
+The one guide printed by bare `pf` states how an agent translates the destination and title to `pf --entry REF --presets PRESETS`, omitting `--presets` for an empty list. It includes relative-file and same-file-fragment examples and shell quoting. Bundle instruction headings continue to point readers to that guide. Bundles carry no duplicate guide protocol.
 
 The command's help, invocation tables, smoke and corpus runners, fixtures, checked examples, renderer examples and eval command builders use the single-entry grammar. Any existing multi-entry example is expressed by an authored entry document linking its inputs. Eval expectations account for tag-preserving deferred compilation and variant output names. Deterministic harness tests validate command expectations without a new paid baseline or a paid live agent run.
 
