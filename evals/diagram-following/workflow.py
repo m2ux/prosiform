@@ -49,6 +49,7 @@ value, and the path a correct run walks. A dispatch form's scenario also
 lists the trace a correct run produces: one `[[scenario.trace]]` table per
 sub-agent start, in the order the walk dispatches them, naming the section
 the sub-agent follows as the document and heading it was compiled from,
+`presets` for the effective declared names selecting its bundle,
 `together` on each entry of a set started at once, and the `action` its
 section states, as the `file` under `actions/` and the `value` it holds. A
 scenario whose sub-agent returns a question states its `answers`, the text
@@ -573,6 +574,8 @@ class Dispatch:
     section: str
     together: bool
     action: tuple[str, str] | None = None
+    presets: frozenset[str] = frozenset()
+    """Declared named presets identifying the dispatched bundle selection."""
 
 
 @dataclass(frozen=True)
@@ -993,6 +996,9 @@ def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
     write; a start whose section states none carries none.
     """
     action = row.get("action")
+    presets = row.get("presets")
+    if presets is not None and not isinstance(presets, str):
+        raise CorpusError(f"{named}: a start's presets need a string list")
     if action is not None and (
         not isinstance(action, dict)
         or not isinstance(action.get("file"), str)
@@ -1003,6 +1009,7 @@ def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
         str(row["dispatch"]),
         bool(row.get("together", False)),
         (action["file"], action["value"]) if action is not None else None,
+        read_tags(presets),
     )
 
 
@@ -1537,7 +1544,10 @@ def dispatched(
         if form in MARKED_FORMS:
             if COMPILED_STEP.match(line) is None:
                 continue
-            named = LINK_TARGET.findall(line)
+            named = [
+                (link.label, *link.destination.partition("#")[::2])
+                for link in markdown_links(line)
+            ]
             marks = OPERATOR_LINK.findall(line)
             if len(marks) != len(named):
                 raise CorpusError(f"a compiled step carries an unmarked link: {line!r}")
@@ -1564,8 +1574,8 @@ def dispatched(
                 re.MULTILINE | re.IGNORECASE,
             ):
                 raise CorpusError(f"{document} holds no {heading} section")
-            named = written.relative_to(root.resolve()).with_suffix("")
-            targets.append(f"{named.as_posix()}#{heading.lower()}")
+            relative = written.relative_to(root.resolve()).with_suffix("")
+            targets.append(f"{relative.as_posix()}#{heading.lower()}")
         if not targets:
             raise CorpusError(f"a dispatch step names no document: {line!r}")
         if together and len(targets) < 2:

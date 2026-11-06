@@ -1,12 +1,12 @@
 ---
-prosiform: {}
+prosiform:
+  lift:
+    subst: [{action.md: lift.md}]
+  strap:
+    subst: [{action.md: strap.md}]
 ---
 # Crew
 
-## Lift
+## Work
 
-Lift the goods onto the pallet.
-
-## Strap
-
-Strap the goods to the pallet.
+[↳ Action](action.md#act)

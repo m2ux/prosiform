@@ -125,7 +125,7 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 | `deferred-composition` | `deferral-passed` | Nothing: Relocate's step does not hold, so its line is passed. |
 | `deferred-composition` | `nested-needed` | The migration's line, then the archive's line its bundle holds, whose step holds where `history.txt` reads `kept`. |
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
-| `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches the lift, then the strap. |
+| `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches `reference/crew.md#work` with `lift`, then `strap`, each selection writing its own action. |
 | `deferred-dispatch` | `deferred-dispatch-passed` | Nothing: `Pack`'s step does not hold, so its line is passed and nothing is dispatched. |
 | `preset-deferral` | `stand-in-followed` | `pf --entry=reference/fetch.md#read-mirror --presets=mirror`. The deferral's title selects `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 

@@ -166,13 +166,18 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
     sequential = bool(os.environ.get("STUB_AGENT_SEQUENTIAL"))
     made: list[tuple[str, str, bool]] = []
     for entry in item.trace:
+        target = (
+            entry_bundle(entry.section, entry.presets).name
+            if entry.presets
+            else entry.section
+        )
         together = entry.together and not sequential
         if not item.answers:
-            made.append((entry.section, DONE, together))
+            made.append((target, DONE, together))
             continue
-        made.append((entry.section, QUESTION, together))
+        made.append((target, QUESTION, together))
         if not answering:
-            made.append((entry.section, DONE, False))
+            made.append((target, DONE, False))
     return made
 
 
@@ -182,7 +187,12 @@ def write_sub_agent_actions(
     """Write each sub-agent's action, where a start of its section returned done."""
     finished = {section for section, returned, _ in started if returned == DONE}
     for entry in item.trace if item else ():
-        if entry.action is not None and entry.section in finished:
+        target = (
+            entry_bundle(entry.section, entry.presets).name
+            if entry.presets
+            else entry.section
+        )
+        if entry.action is not None and target in finished:
             name, value = entry.action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
 

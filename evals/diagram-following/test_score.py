@@ -29,7 +29,7 @@ from score import (
     record_calls,
     score,
 )
-from workflow import COMPILED_FORM, Compile, Scenario, Workflow, workflows
+from workflow import COMPILED_FORM, Compile, Scenario, Workflow, entry_bundle, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -47,11 +47,16 @@ def starts_of(item: Scenario) -> list[Start]:
     """
     made: list[Start] = []
     for entry in item.trace:
+        target = (
+            entry_bundle(entry.section, entry.presets).name
+            if entry.presets
+            else entry.section
+        )
         if item.answers:
-            made.append(Start(entry.section, "question", entry.together))
-            made.append(Start(entry.section, "done", False))
+            made.append(Start(target, "question", entry.together))
+            made.append(Start(target, "done", False))
         else:
-            made.append(Start(entry.section, "done", entry.together))
+            made.append(Start(target, "done", entry.together))
     return made
 
 
@@ -1088,6 +1093,55 @@ def test_unknown_names_share_default_selection(tmp_path: Path) -> None:
     assert (
         compiles(item, ("pf --entry target.md --presets checks",), (), root=tmp_path)
         == Failure.UNCOMPILED
+    )
+
+
+@pytest.mark.parametrize(
+    ("presets", "failure"),
+    [
+        (None, Failure.UNCOMPILED),
+        ("strap", Failure.UNCOMPILED),
+        ("mirror", None),
+        ("UNKNOWN, MIRROR,mirror,default", None),
+    ],
+)
+def test_tagged_deferred_workflow_requires_its_selection(
+    tmp_path: Path, presets: str | None, failure: Failure | None
+) -> None:
+    workflow = CORPUS["preset-deferral"]
+    [item] = workflow.scenarios
+    held = workspace(tmp_path, workflow, list(item.path))
+    command = "pf --entry reference/fetch.md#read-mirror"
+    if presets is not None:
+        command += f" --presets='{presets}'"
+    (held / SUBAGENTS).write_text(json.dumps({"commands": [command], "starts": []}))
+    assert score(workflow, item, held).failure == failure
+
+
+@pytest.mark.parametrize(
+    "selection", ["correct", "omitted", "wrong", "repeated", "reversed"]
+)
+def test_dispatch_workflow_requires_both_selected_bundles(
+    tmp_path: Path, selection: str
+) -> None:
+    workflow = CORPUS["deferred-dispatch"]
+    item = workflow.scenarios[0]
+    starts = starts_of(item)
+    if selection == "omitted":
+        starts[1] = replace(starts[1], target="reference_crew__work.bundle.md")
+    elif selection == "wrong":
+        starts[1] = replace(
+            starts[1],
+            target=entry_bundle("reference/crew#work", frozenset({"wrong"})).name,
+        )
+    elif selection == "repeated":
+        starts[1] = replace(starts[1], target=starts[0].target)
+    elif selection == "reversed":
+        starts.reverse()
+    held = workspace(tmp_path, workflow, list(item.path), starts=starts)
+    done_by_sub_agents(held, item)
+    assert score(workflow, item, held).failure == (
+        None if selection == "correct" else Failure.UNDISPATCHED
     )
 
 
