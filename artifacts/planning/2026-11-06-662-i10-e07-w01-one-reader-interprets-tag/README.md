@@ -15,6 +15,17 @@ The reader establishes the common interpretation consumed by the source and comm
 | [w01.md](w01.md) | Component scope and observing checks |
 | [todos.md](todos.md) | Delivery checklist |
 | [changes.md](changes.md) | Applied coverage corrections and run boundary |
+| [validation.md](validation.md) | Tested revision, observing checks and review findings |
+| [make-check.txt](make-check.txt) | Full deterministic check output |
+| [authorization.json](authorization.json) | Authorized unit and lane |
+| [delivery-survey.txt](delivery-survey.txt) | Fresh task eligibility and blocked work |
+| [dispatch-export.json](dispatch-export.json) | Machine-readable eligible unit |
+| [dispatch-batch.json](dispatch-batch.json) | Selected delivery batch |
+| [start-evidence.json](start-evidence.json) | Published-record and reservation checks |
+| [reservation-readback.json](reservation-readback.json) | Saved task reservation |
+| [board-reservation-readback.json](board-reservation-readback.json) | Saved In Progress board state |
+| [target-protection.json](target-protection.json) | Target branch protection response |
+| [target-rules.json](target-rules.json) | Target branch active rules |
 
 ## Links
 
