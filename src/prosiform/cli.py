@@ -175,7 +175,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Contributing, Target
+from prosiform.provenance import Contributing
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -2419,6 +2419,8 @@ def file_named(
     wrapped: bool,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> Named | None:
     """One document's file heading, located at the title it carries or at the document.
 
@@ -2441,7 +2443,7 @@ def file_named(
     at = None if title is None or title.map is None else title.map[0] + 1
     line = source.line(at)
     return Named(
-        file_heading(path, tokens, declarations, substitution),
+        file_heading(path, tokens, declarations, substitution, conversions=conversions),
         Location(path, 1 if line is None else line, 1),
     )
 
@@ -2505,6 +2507,7 @@ def coincident(
     """
     files: dict[str, tuple[int, list[Named]]] = {}
     found: list[tuple[int, Diagnostic]] = []
+    conversions = {path: source.conversion for path, source in read.items()}
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
@@ -2512,7 +2515,13 @@ def coincident(
                 # The `§ Instructions` group names no source document.
                 continue
             heading = file_named(
-                named, read[named], parsed[named], one.filed, declarations, substitution
+                named,
+                read[named],
+                parsed[named],
+                one.filed,
+                declarations,
+                substitution,
+                conversions=conversions,
             )
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
@@ -2793,6 +2802,7 @@ def assembled(
         nested.setdefault(holder, []).append(division)
     built: dict[Division, Group] = {}
     authored = None if composing is None else composing.get((), {})
+    conversions = {path: source.conversion for path, source in read.items()}
     with assembling(chains):
         for division in order:
             path, grouped = division
@@ -2812,6 +2822,7 @@ def assembled(
                 read[path].first_line,
                 substitution,
                 authored,
+                conversions=conversions,
             )
         for named, paths in merging.items():
             depth = inforce[named]
@@ -2833,6 +2844,7 @@ def assembled(
                         read[path].first_line,
                         substitution,
                         authored,
+                        conversions=conversions,
                     )
                     for path in paths
                 ],
@@ -3537,8 +3549,8 @@ def bundle_file(selection: BundleSelection) -> str:
 class Compiled:
     """One bundle of a run, compiled from its own entry under its own budgets.
 
-    The dispatches are each distinct target the bundle dispatches, at the
-    first link naming it. The warnings are held in two runs so a depth
+    The dispatches are keyed by their effective bundle selections, at the
+    first link naming each. The warnings are held in two runs so a depth
     warning, which only the run's entry raises and only once every
     bundle is compiled, takes its place between them. The unselected
     presets are those `unselected` returns for the documents the bundle
@@ -3549,7 +3561,8 @@ class Compiled:
 
     text: str
     name: str
-    hops: Sequence[Hop]
+    selection: BundleSelection
+    hops: Mapping[BundleSelection, Hop]
     leading: Sequence[Diagnostic]
     trailing: Sequence[Diagnostic]
     captured: Mapping[str, Capture]
@@ -3582,9 +3595,8 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    name = bundle_file(
-        bundle_selection(requested[0], read[requested[0].path].conversion)
-    )
+    selected = bundle_selection(requested[0], read[requested[0].path].conversion)
+    name = bundle_file(selected)
     pairs = governing(read, parsed, contributing(found), requested)
     bundled, coinciding, hops, itself = compose(
         read,
@@ -3599,6 +3611,11 @@ def compiled(
         declarations,
         governed(substitution, pairs),
     )
+    dispatching: dict[BundleSelection, Hop] = {}
+    for hop in hops:
+        dispatching.setdefault(
+            bundle_selection(hop.target, read[hop.target.path].conversion), hop
+        )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
         trailing.append(
@@ -3613,8 +3630,13 @@ def compiled(
     return Compiled(
         bundled,
         name,
-        hops,
-        [*coinciding, *(selfward(hop) for hop in hops if hop.own), *itself],
+        selected,
+        dispatching,
+        [
+            *coinciding,
+            *(selfward(hop) for hop in dispatching.values() if hop.own),
+            *itself,
+        ],
         trailing,
         captured,
         unselected(read, parsed, contributing(found), requested),
@@ -3689,33 +3711,38 @@ def unused_pairs(
 def dispatched_set(
     root: Path,
     entry: Compiled,
-    single: Collection[str],
+    single: Collection[BundleSelection],
     options: argparse.Namespace,
     substitution: Substitution = UNSUBSTITUTED,
-) -> dict[str, Compiled]:
-    """Every bundle the entry's dispatches reach, transitively, by target.
+) -> dict[BundleSelection, Compiled]:
+    """Every dispatched bundle, transitively, by its effective selection.
 
-    Each distinct target is compiled once, as its own entry, in the
-    order the dispatches reaching it were read. A target naming the
+    Each distinct selection is compiled once, as its own entry, in the
+    order the dispatches reaching it were read. A dispatch naming the
     run's own single selection is the entry's bundle.
     """
-    built: dict[str, Compiled] = {}
-    pending = list(entry.hops)
+    built: dict[BundleSelection, Compiled] = {}
+    pending = list(entry.hops.items())
     while pending:
-        hop = pending.pop(0)
-        if hop.name in built or hop.name in single:
+        selected, hop = pending.pop(0)
+        if selected in built or selected in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
         one = compiled(root, [target], options, substitution)
-        built[hop.name] = one
-        pending.extend(one.hops)
+        built[selected] = one
+        pending.extend(one.hops.items())
     return built
 
 
-def target_name(target: Target) -> str:
-    """One selection as the document and the section it names."""
-    path, fragment = target
-    return path if fragment is None else f"{path}#{fragment}"
+def selection_text(selected: BundleSelection) -> str:
+    """One bundle selection as its destination and matched declared preset names."""
+    destination = selected.path
+    if selected.fragment is not None:
+        destination += f"#{selected.fragment}"
+    if selected.presets:
+        names = json.dumps(sorted(selected.presets), ensure_ascii=False)
+        destination += f" with presets {names}"
+    return destination
 
 
 def captured_once(captures: Iterator[Mapping[str, Capture]]) -> dict[str, Capture]:
@@ -3781,16 +3808,14 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     root = Path.cwd().resolve()
     requested = entered(requested)
 
-    selected = ((requested[0].path, requested[0].fragment),)
     output = Path(options.output).resolve()
     first = compiled(root, requested, options, mapping)
     folder = output / (first.name.removesuffix(BUNDLE_SUFFIX) + RUN_FOLDER_SUFFIX)
-    single = {requested[0].chain[0]}
+    single = {first.selection}
     built = dispatched_set(root, first, single, options, mapping)
 
-    def onward(target: Reference) -> Sequence[Hop]:
-        name = identity(target)
-        return first.hops if name in single else built[name].hops
+    def onward(target: BundleSelection) -> Mapping[BundleSelection, Hop]:
+        return first.hops if target in single else built[target].hops
 
     try:
         cycle(first.hops, single, onward)
@@ -3814,11 +3839,16 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             first.text,
             first.name,
             [*first.leading, *deep, *first.trailing],
-            " ".join(target_name(one) for one in selected),
+            selection_text(first.selection),
         ),
         *(
-            Bundle(one.text, one.name, [*one.leading, *one.trailing], name)
-            for name, one in built.items()
+            Bundle(
+                one.text,
+                one.name,
+                [*one.leading, *one.trailing],
+                selection_text(selected),
+            )
+            for selected, one in built.items()
         ),
     ]
     publication(
