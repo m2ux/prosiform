@@ -5,4 +5,4 @@
 - [x] Review the complete affected contract and run its observing checks.
 - [x] Commit and push the task; open PR #663.
 - [x] Record the verified PR and In Progress board state.
-- [ ] Merge awaits confirmation that repository automatic issue closure is disabled; AC1 and W00 remain unticked.
+- [x] Merge PR #663 into i10/e07/engineering; verify W00 and AC1 complete.

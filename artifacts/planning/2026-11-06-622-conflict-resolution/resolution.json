@@ -1,0 +1,38 @@
+{
+  "pull_request": "https://github.com/m2ux/prosiform/pull/622",
+  "base": "main",
+  "base_sha": "ba93ca60860f0dc46722f27acd471740465279da",
+  "published_head_before": "1076ef5293c0da74163d1289adf56ab0ef8cfbb0",
+  "integration_merge": "b93f6bf7ab3726fec0cb7c76e274fe092d9794e8",
+  "published_head_after": "6b483919c4d9ca9339e39d73b3293e8d15efdcf4",
+  "checkout": "/home/mike1/projects/dev/md-composer/.worktrees/pr622-conflict-resolution",
+  "repository": "/tmp/prosiform-pr622-resolution.git",
+  "branch": "i10/e04/main",
+  "push": "git push",
+  "verification": {
+    "make_check_exit_status": 0,
+    "source_tests": 1731,
+    "harness_and_eval_tests": 1585,
+    "corpus_fixtures": 516,
+    "live_agent_sessions": 0,
+    "original_checkout_unchanged": true,
+    "preserved_dirty_paths": 65
+  },
+  "github": {
+    "isDraft": true,
+    "mergeable": "MERGEABLE",
+    "mergeStateStatus": "BLOCKED",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "0001-01-01T00:00:00Z",
+        "conclusion": "",
+        "detailsUrl": "https://github.com/m2ux/prosiform/actions/runs/42198894331/job/127828967573",
+        "name": "Checks",
+        "startedAt": "2026-11-06T09:57:13Z",
+        "status": "IN_PROGRESS",
+        "workflowName": "Checks"
+      }
+    ]
+  }
+}

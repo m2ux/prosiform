@@ -5,4 +5,5 @@
 - [x] Publish and reserve the W00 planning record.
 - [x] Implement and validate the explicit-selection design contract; PR #663 is open.
 - [x] Publish the task commit and reconcile the epic row and board.
-- [ ] W00 merge awaits the repository auto-close confirmation; follow-on units remain blocked.
+- [x] Merge W00 after the user confirms automatic issue closure is disabled; verify the completed row and criterion.
+- [x] Open draft engineering integration #664 and verify its Development link.

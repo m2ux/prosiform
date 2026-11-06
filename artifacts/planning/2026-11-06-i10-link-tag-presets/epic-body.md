@@ -37,15 +37,15 @@ Each Markdown link selects its target document's presets through its comma-separ
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [W00](https://github.com/m2ux/prosiform/pull/663) | The design states explicit preset selection | AC1 | | | 1 | ✓ |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w01.md) | One reader interprets tag lists | AC2, AC3 | W00 | | 1 | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w01.md) | One reader interprets tag lists | AC2 | W00 | | 1 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w02.md) | Source links carry title tags | AC4, AC5 | W01 | | 1 | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w03.md) | References carry effective selection identity | AC6, AC7 | W02 | | 1 | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w04.md) | Entries select presets through tags | AC8, AC9, AC10 | W03 | W05 | 1 | |
-| [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w05.md) | Guide and callers specify tagged compilation | AC11, AC19, AC21 | W03 | W04 | 1 | |
+| [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w05.md) | Guide and callers specify tagged compilation | AC3, AC11, AC21 | W03 | W04 | 1 | |
 | [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w06.md) | Compilation schedules distinct selection variants | AC12, AC13, AC14 | W04 | W07 | 1 | |
 | [W07](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w07.md) | Dispatch links name their selected bundles | AC15, AC16 | W04 | W06 | 1 | |
 | [W08](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w08.md) | Deferred links retain their tag selection | AC17, AC18 | W07 | | 1 | |
-| [W09](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w09.md) | Eval workflows exercise tagged command specifications | AC20 | W08 | | 1 | |
+| [W09](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w09.md) | Eval workflows exercise tagged command specifications | AC19, AC20 | W08 | | 1 | |
 
 ## Acceptance Criteria
 

@@ -31,4 +31,10 @@ The [report](pinned-conformance.txt) reads the existing immutable pin: 361 claus
 
 ## Delivery Boundaries
 
-Only the engineering design document changes in the task commit. Product source, fixture behavior and the current main README pin are outside W00. The task PR targets `i10/e07/engineering`. Its target has no branch protection and no active rules, as the fetched target evidence records. Automatic issue closure confirmation remains pending before a merge; no repository setting is changed.
+Only the engineering design document changes in the task commit. Product source, fixture behavior and the current main README pin are outside W00. The task PR targets `i10/e07/engineering`. Its target has no branch protection and no active rules, as the fetched target evidence records. Repository automatic issue closure is confirmed disabled by the user on 2026-11-06; no repository setting is changed.
+
+## Merged Delivery
+
+PR #663 merged into `i10/e07/engineering` at `dfbcca186371e02d8be84514d8f4da25baec6b54`. The design file at that merge is byte-identical to reviewed head `d6f95677d6dfa6d6b7b37f9106cb7e2a4fafabfd`, verified with `git diff --exit-code <head> <merge> -- artifacts/planning/2026-10-17-prosiform-v1/design.md`.
+
+The epic reads back W00 done and AC1 ticked, and remains In Progress. The engineering integration is draft PR #664 with its Development link to #662 verified from both ends. Full-epic automated base/target checks remain unevaluable because the engineering base carries no `config/branches`; that limitation does not claim full epic readiness. The next task is W01; I11 remains blocked on #464.

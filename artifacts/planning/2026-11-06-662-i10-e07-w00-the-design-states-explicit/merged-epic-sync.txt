@@ -1,0 +1,12 @@
+#662 epic (open)
+  ticked: AC1
+  done: W00
+  unevaluable: config/branches at dfbcca186371e02d8be84514d8f4da25baec6b54 in /home/mike1/projects/dev/md-composer/.git is absent
+  not checked: epic-base pull requests set apart from task deliveries
+  not checked: unmerged epic bases
+  not checked: draft epic bases
+  not checked: review pull request References
+  not checked: review pull request Changes paths
+  not checked: review pull request issue links
+  not checked: pull request targets
+  closable: no (undelivered W01, W02, W03, W04, W05, W06, W07, W08, W09, unticked AC2, AC3, AC4, AC5, AC6, AC7, AC8, AC9, AC10, AC11, AC12, AC13, AC14, AC15, AC16, AC17, AC18, AC19, AC20, AC21)
