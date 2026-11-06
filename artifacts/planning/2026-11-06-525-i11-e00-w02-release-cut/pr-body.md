@@ -19,6 +19,10 @@ The MVP release cut: `release/v0.17.0` declares the version the previous contrac
 | T4 | Both annotated tags name the version commit | AC3, AC4 | [✓](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-525-i11-e00-w02-release-cut/version.md#the-version) |
 | T5 | The pull request is open from `release/v0.17.0` into `main` | AC5 | [✓](https://github.com/m2ux/prosiform/pull/678) |
 
+## Merge
+
+`main` requires an approving review, so this pull request is handed over unmerged. The `contract/v0.17.0` and `python/v0.17.0` tags name `b10437ea7`, whose `Checks` run completed `success`.
+
 ## References
 
 - **R1.** [Release cut record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-06-525-i11-e00-w02-release-cut) — the version derivation, the tag messages and the validation at the tagged head.
