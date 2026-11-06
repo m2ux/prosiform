@@ -1,4 +1,4 @@
-description = "The single-entry command grammar refuses a markdown link is no entry destination, returning E_INVALID_USAGE and publishing nothing."
+description = "A complete Markdown-link expression is no --entry destination and fails with E_INVALID_USAGE without publication."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 

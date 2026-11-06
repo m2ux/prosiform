@@ -20,7 +20,7 @@ path = [
 ]
 inputs = { "change.txt" = "docs", "risk.txt" = "low" }
 
-# Patch's title selects verify.md's patch preset, which places Verify.
+# Patch's link title selects verify.md's patch preset, which places Verify.
 [[scenario]]
 name = "title-selected"
 path = [

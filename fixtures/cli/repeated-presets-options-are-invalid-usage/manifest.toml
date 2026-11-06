@@ -1,4 +1,4 @@
-description = "The single-entry command grammar refuses repeated presets options are invalid usage, returning E_INVALID_USAGE and publishing nothing."
+description = "Repeated --presets options fail with E_INVALID_USAGE even when the first list is empty, without publication."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 
