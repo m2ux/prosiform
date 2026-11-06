@@ -1,0 +1,16 @@
+description = "The generated deferred composition line retains its title tags for the later command. Its scope and target headings select no presets, and the target body remains absent."
+
+clauses = [
+  "Section composition — Deferred composition",
+  "Section composition — Presets and subst",
+  "Presets — Selection belongs to the link",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "modes/guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_guide.bundle.md"]
+diagnostics = []

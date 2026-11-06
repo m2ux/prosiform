@@ -1,0 +1,38 @@
+description = "The command prescribed by the published deferred line selects the same cached page and reviewed notes as immediate composition. The requested list includes repeated and unmatched names and the headings supply no selection."
+
+clauses = [
+  "Section composition — Activation",
+  "Section composition — Presets and subst",
+  "Presets — A command-line entry reads the file it names",
+  "CLI contract — Automatic output names",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "library/material.md#instructions", "--presets", " release candidate,CAFÉ,unknown,café "]
+
+[expected]
+exit_status = 0
+bundles = ["expected/library_material__instructions--p-013a885a09022b8f2fe76bef3c9c86751ab9a7e73ec21bb04727f5bf145ccd5c.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "live.md#details"
+resolved = "library/cached.md#details"
+
+[expected.diagnostics.location]
+file = "library/material.md"
+line = 12
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "draft.md#details"
+resolved = "library/reviewed.md#details"
+
+[expected.diagnostics.location]
+file = "library/material.md"
+line = 12
+column = 1
