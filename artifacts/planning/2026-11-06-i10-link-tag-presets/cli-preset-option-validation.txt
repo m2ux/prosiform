@@ -1,0 +1,19 @@
+ok   local      #grouping
+ok   local      #section-composition
+ok   local      #link-classification-and-resource-handling
+ok   local      #conversion-metadata
+ok   local      #presets
+ok   local      #file-scoped-hierarchy
+ok   local      #guide
+ok   local      #automatic-output-names
+ok   local      #source-local-reference-interpretation
+ok   local      #resource-limits
+ok   local      #validation-and-failure-contract
+Design diff: CLI option, matching metavariables and guide alignment only
+Active plan and tracker draft scans: zero obsolete CLI option references
+Contract clauses: 365 ; option clause uses the --presets PRESETS name; other clause identities retained
+Marked terms retained: 47
+Internal-link failures: 0
+Existing external references not fetched: 6
+Epic task table, coverage, criterion identities and completion states retained
+Runtime and paid agent sessions: none; specification amendment only

@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-A Markdown link supplies its destination and the target document's preset names through its title. The planned I10 E07 epic makes that selection explicit in source compilation and in `pf --entry REF --tags TAGS`, with one entry producing its set of output bundles.
+A Markdown link supplies its destination and the target document's preset names through its title. The planned I10 E07 epic makes that selection explicit in source compilation and in `pf --entry REF --presets PRESETS`, with one entry producing its set of output bundles.
 
 Heading wording can serve presentation because the link states its settings directly. The plan also makes distinct dispatched selections distinguishable and instructs agents how to preserve tags when they compile a link in a later run.
 
@@ -13,6 +13,10 @@ Heading wording can serve presentation because the link states its settings dire
 | Artifact | What it holds |
 | --- | --- |
 | [baseline-dependencies.txt](baseline-dependencies.txt) | Plan and validation artifact |
+| [cli-preset-option.md](cli-preset-option.md) | User-confirmed CLI option and implementation contract |
+| [cli-preset-option.json](cli-preset-option.json) | Immutable amended design pin and exact tracker readback |
+| [cli-preset-option-validation.txt](cli-preset-option-validation.txt) | Specification scope, vocabulary and internal-link verification |
+| [cli-preset-option-format.txt](cli-preset-option-format.txt) | Epic format verification |
 | [decisions.md](decisions.md) | Plan and validation artifact |
 | [design.md](design.md) | Plan and validation artifact |
 | [epic-body.md](epic-body.md) | Plan and validation artifact |

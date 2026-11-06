@@ -6,3 +6,9 @@
 - [x] Validate draft format, coverage, dependencies and contention.
 - [x] Confirm lane 1, priority 1 and initial Backlog status.
 - [x] Publish the planning record and tracker bodies; verify Project 18 readback.
+# CLI Preset Option
+
+- [x] Refresh the live epic, design integration and engineering worktrees.
+- [x] Update the design, command examples and affected work items.
+- [x] Validate the amended specification and issue format.
+- [x] Commit, push and read back the epic and design integration.

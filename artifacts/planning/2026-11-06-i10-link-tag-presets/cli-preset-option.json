@@ -1,0 +1,18 @@
+{
+  "decision": "The CLI option supplying comma-separated preset names is --presets.",
+  "date": "2026-11-06",
+  "design_revision": "c67cf78f020923c4e5bd25d95497ced206be7161",
+  "design_url": "https://github.com/m2ux/prosiform/blob/c67cf78f020923c4e5bd25d95497ced206be7161/artifacts/planning/2026-10-17-prosiform-v1/design.md",
+  "example": "pf --entry guide.md#plan-report --presets checks,draft",
+  "issue": "https://github.com/m2ux/prosiform/issues/662",
+  "issue_body_readback": "exact",
+  "integration": "https://github.com/m2ux/prosiform/pull/664",
+  "integration_body_readback": "exact",
+  "contract_clauses": 365,
+  "marked_terms": 47,
+  "internal_link_failures": 0,
+  "issue_format": "0 fixed, 0 to apply, 0 to decide",
+  "specification_scope": "CLI option name, matching metavariables and guide spacing",
+  "plan_structure": "task table, coverage, criterion identities and completion states retained",
+  "product_implementation_started": false
+}

@@ -1,6 +1,6 @@
 ## Overview
 
-Each Markdown link selects its target document's presets through its comma-separated title tags. An agent translates that link to one `pf --entry REF --tags TAGS` invocation, which publishes a validated set of bundles and distinguishes dispatched variants of the same destination.
+Each Markdown link selects its target document's presets through its comma-separated title tags. An agent translates that link to one `pf --entry REF --presets PRESETS` invocation, which publishes a validated set of bundles and distinguishes dispatched variants of the same destination.
 
 ## Problem
 
@@ -18,7 +18,7 @@ Each Markdown link selects its target document's presets through its comma-separ
 - **Selection belongs to each occurrence.**
   Only the target's matching presets layer over its `default`; headings and labels select nothing, and outgoing links use their own tags.
 - **The command compiles one entry.**
-  `pf --entry guide.md#plan-report --tags checks,draft` compiles one link's destination; `--tags` is optional, and bare `pf` prints the guide.
+  `pf --entry guide.md#plan-report --presets checks,draft` compiles one link's destination; `--presets` is optional, and bare `pf` prints the guide.
 - **The guide states the command specification.**
   An agent resolves the authored destination and supplies its title tags, including for a deferred link; examples cover relative paths, fragments and shell quoting.
 - **A bundle answers one effective selection.**
@@ -51,12 +51,12 @@ Each Markdown link selects its target document's presets through its comma-separ
 
 - [x] **AC1.** The pinned design defines the link-title and single-entry command contract, as design-to-fixture conformance review shows.
 - [ ] **AC2.** Comma-separated tag lists normalize complete names independently of whitespace, case, repetition and ordering, as shared tag-reader unit tests show.
-- [ ] **AC3.** Authored links and CLI tag arguments use the same tag-list interpretation, as shared-reader integration tests show.
+- [ ] **AC3.** Authored links and CLI preset arguments use the same tag-list interpretation, as shared-reader integration tests show.
 - [ ] **AC4.** Inline and reference-style Markdown link occurrences expose their own title tags in preambles and sections, as source-reader tests show.
 - [ ] **AC5.** Resources and Mermaid destinations select no named preset through tooltip, image title or surrounding text, as resource and diagram corpus fixtures show.
 - [ ] **AC6.** A reference occurrence retains its tag selection through resolution and substitution, as closure tests show.
 - [ ] **AC7.** Bundle selection identity depends on destination and effective named presets, as identity tests covering equivalent and distinct selections show.
-- [ ] **AC8.** A compile command accepts exactly one --entry and at most one --tags list, as CLI grammar fixtures and the installed-wheel smoke check show.
+- [ ] **AC8.** A compile command accepts exactly one --entry and at most one --presets list, as CLI grammar fixtures and the installed-wheel smoke check show.
 - [ ] **AC9.** An occurrence selects its target document's matching presets above default, silently ignoring unknown tags, as authored-link and CLI parity fixtures show.
 - [ ] **AC10.** Section headings and link labels select no presets, as fixtures varying them while holding tags fixed show.
 - [ ] **AC11.** The plain-text guide specifies the command an agent supplies for a tagged link, as guide fixtures covering relative paths, same-file fragments and shell quoting show.
