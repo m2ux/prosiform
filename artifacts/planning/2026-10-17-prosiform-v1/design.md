@@ -144,6 +144,10 @@ The build names no requirement that a source document be a skill: any Markdown d
       pf --entry modes/review.md#review --presets 'checks, final draft'
       pf --entry guide.md#plan-report
 
+    Attach a value beginning with - to its option with =:
+
+      pf --entry=-guide.md --presets=-checks
+
     Tags select the target's own presets above default. Unknown tags
     select nothing. Headings and visible link text select no presets.
     Preserve the same tags when compiling a deferred link in a later run.
