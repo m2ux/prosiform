@@ -207,3 +207,23 @@ def test_occurrences_union_explicit_group_pairs(
     assert "\n# Rules\n" not in run.bundle
     assert "## Reviews\n\n### Rules\n\nRules body." in run.bundle
     assert run.bundle.count("Rules body.") == 1
+
+
+@pytest.mark.parametrize("depth", [None, 1])
+def test_a_later_occurrence_activates_substitution_at_the_reference_depth(
+    tmp_path: Path, depth: int | None
+) -> None:
+    written(
+        tmp_path,
+        "entry.md",
+        "---\nprosiform:\n  checks:\n    subst: [{old.md: new.md}]\n---\n"
+        "# Guide\n\n[Body](old.md)\n",
+    )
+    written(tmp_path, "old.md", DECLARED + '# Old\n\n[Back](entry.md "checks")\n')
+    written(tmp_path, "new.md", DECLARED + "# New\n\nSelected stand-in.\n")
+    arguments = [] if depth is None else ["--budget", f"depth={depth}"]
+    run = invoke("--entry", "entry.md", *arguments, cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "[Body](#new)" in run.bundle
+    assert "Selected stand-in." in run.bundle
+    assert "W_SUBST_USED" in run.stderr

@@ -1,4 +1,4 @@
-description = "Two references whose selected presets map one subst key to two alternatives disagree: the section Checks selects the Checks preset of rules.md and the section Draft its Draft preset, which map steps.md to checked-steps.md and to draft-steps.md, so the run fails with E_INVALID_USAGE naming both presets and the key, and publishes nothing."
+description = "Two incoming link titles separately select Checks and Draft on rules.md. Their conflicting substitutions for one key fail with E_INVALID_USAGE, naming both declarations."
 
 clauses = [
   "Presets — One document under several selections",

@@ -1,0 +1,17 @@
+description = "A later incoming title selects checks on an already captured entry. The fixed point expands its newly active direct substitution; depth=1 counts that direct reference, not the extra selection rounds."
+
+clauses = ["Presets — Selection by tags", "Presets — One document under several selections", "Resource limits — depth"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "entry.md", "--budget", "depth=1"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "old.md"
+resolved = "new.md"

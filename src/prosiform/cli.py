@@ -2029,7 +2029,7 @@ def traverse(
     sources its frontier names, then reads every group's selected
     content for the dependencies it marks; a dependency naming a
     document and section the run already carries adds no target, and the
-    round that discovers no new one is the fixed point. A reference
+    round that discovers no new target or selection is the fixed point. A reference
     graph with a cycle therefore terminates on the identity each
     reference normalized to rather than on a depth the traversal
     refuses at.
@@ -2037,8 +2037,8 @@ def traverse(
     References to one carried document and section retain their distinct
     heading context, requested tags and inclusion or composition kind.
     Each joins the references the run carries. Its destination enters
-    the frontier once, since the selected content is content the run
-    already reads and physical capture belongs to the source path.
+    the frontier when it adds a target or selecting occurrence, since a
+    selection can activate substitutions. Physical capture belongs to the source path.
 
     The selection of a group grows as later content marks more of its
     document, so every group is read again each round. What the
@@ -2046,12 +2046,10 @@ def traverse(
     bundle follows from the closure rather than from the order its
     documents were discovered in.
 
-    Each reference carries the chain that reached it, which is the
-    chain of the first reference naming the document the link was
-    written in and the reference's own identity after it. That first
-    reference is the one the shortest route arrived by, because the
-    rounds discover a document at the hop its nearest entry reference
-    reaches it in.
+    Each reference carries the shortest recorded chain to the document
+    writing it and its own identity after that. A newly active
+    substitution can reveal a short route in a later round; its depth
+    counts that route's links.
 
     Reading a document and validating what it contributes are two
     stages, and the selection divides them. Opening a source holds the
@@ -2064,11 +2062,8 @@ def traverse(
     never asked for. A selection only grows, so a region a later round
     adds is held to the same checks in the round that adds it.
 
-    A round is one link hop: an entry reference stands at no hops, and
-    a reference a round discovers stands at that round's number. A
-    selection only grows, so the round a reference is first discovered
-    in is the shortest path from the nearest entry reference to it,
-    which is what the expansion-depth budget is declared over. The
+    Expansion depth counts the reference chain from the nearest entry,
+    independently of the fixed-point rounds needed to activate presets. The
     budgets over what the run opens, counts and reaches are held here
     as each figure is reached, so a run crosses a boundary at the point
     it crosses it rather than after building what it could not keep.
@@ -2101,10 +2096,8 @@ def traverse(
     dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
-    hop = 0
     frontier = list(requested)
     while frontier:
-        hop += 1
         for one in frontier:
             verify_cached(root, one, captured)
             if one.path in read:
@@ -2140,7 +2133,7 @@ def traverse(
             )
             counted[path] = occurrences(parsed[path], regions_read)
             limits.hold(LINKS, sum(counted.values()))
-            reached = selecting[0].chain
+            reached = min((one.chain for one in selecting), key=len)
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
@@ -2208,13 +2201,13 @@ def traverse(
                 if (one.path, one.fragment) in seen:
                     reselecting.append(one)
                     continue
-                limits.hold(EXPANSION_DEPTH, hop)
+                limits.hold(EXPANSION_DEPTH, len(one.chain) - 1)
                 seen.add((one.path, one.fragment))
                 limits.hold(TARGETS, len(seen))
                 discovered.append(one)
         found.extend(discovered)
         found.extend(reselecting)
-        frontier = discovered
+        frontier = [*discovered, *reselecting]
     for one in postponed.values():
         if one.path not in read:
             limits.hold(FILES, len(read) + 1)

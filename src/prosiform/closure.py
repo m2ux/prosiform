@@ -842,7 +842,7 @@ def inside(
     and `resolvable` asks it. A path normalizing above the invocation
     working directory keeps its leading parent segments, so its target
     is asked like any other and opened through the bounded no-follow
-    walk from the working directory, the access a positional entry
+    walk from the working directory, the access an explicit entry
     takes.
 
     The grammar still bounds the path: a drive path and a root-relative
