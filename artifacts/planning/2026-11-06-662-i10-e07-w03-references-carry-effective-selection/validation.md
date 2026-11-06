@@ -46,3 +46,9 @@ The redirect changes destination fields through an immutable dataclass replaceme
 The destination matcher and effective identity are separate from activation, output naming and dispatch scheduling. The new API is directly observed by identity tests, and the tag retention seams are observed through actual source traversal. This unit claims reference retention and effective key semantics; the CLI-selection and dispatch-variant units deliver those runtime consumers.
 
 The complete diff and immediate callers were inspected against the candidate design. No unresolved defect or outside-scope debt was found.
+
+## Delivery Readback
+
+Task PR [#668](https://github.com/m2ux/prosiform/pull/668) merges at `e058df86e511bcda66a0c210a236316c995f824c` after local and hosted checks pass. The exact merged revision passes the observing instrument `pytest src/tests/test_selection.py src/tests/test_closure.py src/tests/test_subst.py`, as [merged-check.txt](merged-check.txt) records. Current issue readback links every unit row to that merged PR and ticks its covered criteria and Done. The updated main integration remains a draft until the complete epic passes review.
+
+The coordinator continues with W04 + W05 under the epic-wide authorization. No further unit confirmation is required.

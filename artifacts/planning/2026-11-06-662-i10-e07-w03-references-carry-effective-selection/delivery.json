@@ -1,0 +1,10 @@
+{
+  "unit": "m2ux/prosiform#I10:E07:W03",
+  "state": "completed",
+  "worker": "/root/i10_e07_w03",
+  "head": "b02538060691f18231c4b9e6933e6fa411c02c5a",
+  "merge": "e058df86e511bcda66a0c210a236316c995f824c",
+  "pull_request": "https://github.com/m2ux/prosiform/pull/668",
+  "verified_at": "2026-11-06T11:15:16.062134+00:00",
+  "next": "W04 + W05"
+}
