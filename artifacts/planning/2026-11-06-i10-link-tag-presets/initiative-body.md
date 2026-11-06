@@ -59,8 +59,7 @@ A measurement that cannot fail measures nothing.
 | [E04](https://github.com/m2ux/prosiform/issues/579) | Composition Following | AC13 | | |
 | [E05](https://github.com/m2ux/prosiform/issues/594) | MVP Proof | AC14, AC15 | [I09:E05](https://github.com/m2ux/prosiform/issues/523) | ✓ |
 | [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17, AC18 | | ✓ |
-
-| [E07](EPIC_ISSUE_URL) | Link-Tag Presets | AC19, AC20, AC21 | | |
+| [E07](https://github.com/m2ux/prosiform/issues/662) | Link-Tag Presets | AC19, AC20, AC21 | | |
 
 ## Acceptance Criteria
 

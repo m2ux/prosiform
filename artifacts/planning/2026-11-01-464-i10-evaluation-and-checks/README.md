@@ -57,6 +57,7 @@ The initiative was split out of I05 with three epics raised as standalone issues
 | [E06 W10 work item](e06/w10.md) | The dispatch refusals stating no link to publish, found by the integration review |
 | [Handoff](handoff.md) | The current delivery checkpoint and lane assignments |
 | [Initiative draft](initiative-body.md) | The initiative body as saved, the source of its next edit |
+| [Link-tag preset record](../2026-11-06-i10-link-tag-presets/README.md) | E07's confirmed decisions, design, work items and publication evidence |
 | [E04 draft](e04-body.md) | The E04 epic body as saved, the source of its next edit |
 | [E05 draft](e05-body.md) | The E05 epic body as saved, the source of its next edit |
 | [E06 draft](e06-body.md) | The E06 epic body as saved, the source of its next edit |
@@ -78,6 +79,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 - **G5.** The eval scores ordered compilation and agent paths through deferral, composition and dispatch.
 - **G6.** One live run proves the MVP's features followed.
 - **G7.** An agent is told every mark it meets, by one guide, before it meets one.
+- **G8.** Link-title tags state the preset selection preserved through compilation and agent handoff, independently of presentation wording.
 
 ## Goal Trace
 
@@ -90,6 +92,7 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | G5 | AC13 | E04 | E04 AC1–AC18, AC22, AC23, AC26–AC29 | No marked source |
 | G6 | AC14 | E05 | E05 AC1–AC5 | No marked source |
 | G7 | AC16, AC17, AC18 | E06 | E06 AC1–AC18 | User decisions, 2026-11-03 and 2026-11-05 |
+| G8 | AC19, AC20, AC21 | E07 | E07 AC1–AC21 | User decisions, 2026-11-06 |
 
 | Initiative criterion | Epic criteria that make it true |
 | --- | --- |
@@ -109,6 +112,9 @@ The goal is the initiative's Overview: a measurement that can fail. Its clauses:
 | AC16 | E06 AC2, AC3, AC4, resting on AC1 |
 | AC17 | E06 AC5, resting on AC1, AC7–AC10 and AC14–AC16 |
 | AC18 | E06 AC6 |
+| AC19 | E07 AC2–AC6, AC8–AC11, AC17–AC21 |
+| AC20 | E07 AC7, AC12–AC16 |
+| AC21 | E07 AC10, AC18, AC21 |
 
 Every initiative criterion traces to a clause, every clause has a criterion, every initiative criterion is made true by the criteria of the one epic citing it, and every epic criterion is covered by exactly one task row. E00 AC2 makes AC2 true by holding the forms of a scenario to one workflow, and E02 AC2 keeps AC6 from being met by a preflight refusing every run. E04 AC1–AC18, AC22, AC23 and AC26–AC29 bind the scenarios, scoring, harness evidence and admitted grammar. Live measurements and results publication are held by I14. The initiative marks no requirement source, so the criteria answer to the Overview, Problem and Proposal alone.
 

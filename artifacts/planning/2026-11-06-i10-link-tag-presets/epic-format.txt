@@ -1,2 +1,2 @@
-#None epic (open): 0 fixed, 0 to apply, 0 to decide
+#662 epic (open): 0 fixed, 0 to apply, 0 to decide
   source: config/required-criteria.json at ba93ca60860f0dc46722f27acd471740465279da in /home/mike1/projects/dev/md-composer/.git

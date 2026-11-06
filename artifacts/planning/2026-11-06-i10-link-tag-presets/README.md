@@ -23,7 +23,11 @@ Heading wording can serve presentation because the link states its settings dire
 | [initiative-format.txt](initiative-format.txt) | Plan and validation artifact |
 | [initiative.json](initiative.json) | Plan and validation artifact |
 | [new-epic-dependencies.txt](new-epic-dependencies.txt) | Plan and validation artifact |
+| [publication.json](publication.json) | Plan and validation artifact |
 | [review.md](review.md) | Plan and validation artifact |
+| [saved-board.json](saved-board.json) | Plan and validation artifact |
+| [saved-epic.json](saved-epic.json) | Plan and validation artifact |
+| [saved-initiative.json](saved-initiative.json) | Plan and validation artifact |
 | [source-board.json](source-board.json) | Live source evidence |
 | [source-e00-body.md](source-e00-body.md) | Live source evidence |
 | [source-e00.json](source-e00.json) | Live source evidence |
@@ -60,3 +64,4 @@ Heading wording can serve presentation because the link states its settings dire
 | Theme board | [Project 18](https://github.com/users/m2ux/projects/18/views/4) |
 | Initiative | [I10 Evaluation and Checks](https://github.com/m2ux/prosiform/issues/464) |
 | Existing preset contract | [Section Presets](https://github.com/m2ux/prosiform/issues/436) |
+| Epic | [I10 E07 Link-Tag Presets](https://github.com/m2ux/prosiform/issues/662) |

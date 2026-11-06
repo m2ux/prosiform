@@ -1,0 +1,18 @@
+{
+  "issue": "https://github.com/m2ux/prosiform/issues/662",
+  "initiative": "https://github.com/m2ux/prosiform/issues/464",
+  "boardItem": "PVTI_lAHOCotKsc4BnhDMzhGgsn4",
+  "fields": {
+    "Status": "Backlog",
+    "Initiative": "I10 Evaluation and Checks",
+    "Epic": "I10:E07 Link-Tag Presets"
+  },
+  "labels": [
+    "enhancement",
+    "priority: 1",
+    "theme:python",
+    "type:epic"
+  ],
+  "bodyReadback": "exact",
+  "assignees": []
+}

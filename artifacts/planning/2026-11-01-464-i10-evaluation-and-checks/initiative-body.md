@@ -1,6 +1,6 @@
 ## Overview
 
-The repository states its behaviour in a corpus that any implementation can run, and its own checks and its eval are what hold that corpus, the design and the build to each other. The goal is a measurement that can fail: the eval's baseline tells the forms it runs apart, a check states what it measured and on which revision, an eval session reads only what the run gave it, validation refuses a bundle whose reference lands on a destination two documents share, the eval scores stated compilation and agent paths through deferral, composition and dispatch, one live run proves the MVP's features followed, and an agent is told every mark it meets, by one guide, before it meets one.
+The repository states its behaviour in a corpus that any implementation can run, and its own checks and its eval are what hold that corpus, the design and the build to each other. The goal is a measurement that can fail: the eval's baseline tells the forms it runs apart, a check states what it measured and on which revision, an eval session reads only what the run gave it, validation refuses a bundle whose reference lands on a destination two documents share, the eval scores stated compilation and agent paths through deferral, composition and dispatch, one live run proves the MVP's features followed, and an agent is told every mark it meets, by one guide, before it meets one. A link also states the preset selection that compilation and agent handoff preserve.
 
 ## Problem
 
@@ -23,6 +23,9 @@ A measurement that cannot fail measures nothing.
 - **An agent meets marks nothing explains.**
   Bare `pf` explains the `↳` inline target alone, in Markdown, and each dispatching bundle restates the dispatch protocols, so the rules an agent follows a bundle by have no one home.
 
+- **Presentation words choose conversion settings.**
+  Presets are selected from section headings, while a link and a direct compilation cannot state the same explicit selection.
+
 ## Proposal
 
 - **The corpus distinguishes its forms.**
@@ -42,6 +45,9 @@ A measurement that cannot fail measures nothing.
 - **One guide states every mark.**
   Bare `pf` prints plain text giving an instruction for every mark and dispatch-set subsection a bundle carries, and every bundle opens by telling its reader to run it.
 
+- **A link states its selection.**
+  Compilation and agent handoff use the presets its title tags select; each dispatched selection is represented by its own bundle.
+
 ## Work Breakdown
 
 | Epic | Description | Coverage | Depends on | Done |
@@ -53,6 +59,7 @@ A measurement that cannot fail measures nothing.
 | [E04](https://github.com/m2ux/prosiform/issues/579) | Composition Following | AC13 | | |
 | [E05](https://github.com/m2ux/prosiform/issues/594) | MVP Proof | AC14, AC15 | [I09:E05](https://github.com/m2ux/prosiform/issues/523) | ✓ |
 | [E06](https://github.com/m2ux/prosiform/issues/639) | Agent Guide | AC16, AC17, AC18 | | ✓ |
+| [E07](https://github.com/m2ux/prosiform/issues/662) | Link-Tag Presets | AC19, AC20, AC21 | | |
 
 ## Acceptance Criteria
 
@@ -76,6 +83,10 @@ A measurement that cannot fail measures nothing.
 
 - [x] **AC18.** A published bundle carries no generated dispatch protocol of its own, as the dispatch bundle-publication tests `make check` runs show.
 
+- [ ] **AC19.** Compilation and agent handoff preserve the preset selection each authored link states, as the tag-selection corpus and deterministic harness checks show.
+- [ ] **AC20.** Distinct effective preset selections of a dispatched destination are represented by distinct output bundles, as the dispatch-variant corpus shows.
+- [ ] **AC21.** Presentation wording has no effect on preset selection, as the heading-and-label independence fixtures show.
+
 ## Non-Goals
 
 - Live edge-workflow measurements and publication are deferred to later evaluation refinement.
@@ -93,3 +104,5 @@ A measurement that cannot fail measures nothing.
 - **R5.** [Board alignment](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-05-project-18-alignment/alignment.md) — the confirmed criterion reconciliation, lane evidence and verification results.
 
 - **R6.** [Evaluation Refinement](https://github.com/m2ux/prosiform/issues/660) — the deferred edge shakedown, live measurements and results publication.
+
+- **R7.** [Link-tag preset planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets) — the user-confirmed extension to explicit selection and agent command specifications.

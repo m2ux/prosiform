@@ -39,3 +39,7 @@ Existing AC1–AC18 and their epic coverage are retained verbatim in the initiat
 - The CLI unit includes guide, caller, fixture and public-description updates, so consumers and the new grammar ship together. Every implementation unit carries its observing tests and configured checks; validation is not postponed to a test-only task.
 - Existing case-insensitive matching, default precedence, preset union/conflict rules, and unused-preset warnings remain in the regression suite under explicit tags.
 - All new acceptance criteria have a unique delivering task and an observing instrument. No live model run is needed to validate this deterministic compiler contract.
+
+## Publication Readback
+
+The epic and initiative bodies read back byte-for-byte. The epic is unassigned with priority 1 and Project 18 fields Backlog, I10 Evaluation and Checks, and I10:E07 Link-Tag Presets. The saved snapshots and publication.json hold the exact returned records.

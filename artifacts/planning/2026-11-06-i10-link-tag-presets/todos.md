@@ -5,4 +5,4 @@
 - [x] Draft the design, epic, initiative extension and component work items.
 - [x] Validate draft format, coverage, dependencies and contention.
 - [x] Confirm lane 1, priority 1 and initial Backlog status.
-- [ ] In progress: publish the planning record and tracker bodies; verify Project 18 readback.
+- [x] Publish the planning record and tracker bodies; verify Project 18 readback.
