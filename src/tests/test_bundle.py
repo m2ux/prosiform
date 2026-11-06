@@ -38,7 +38,7 @@ from prosiform.source import Selection, lines, regions, section
 
 def grouped(path: str, text: str) -> Group:
     """One file group, from the path that names it and the source it carries."""
-    return group(path, parse(text), lines(text))
+    return group(path, parse(text), lines(text), conversions={})
 
 
 @pytest.mark.parametrize(
@@ -373,7 +373,9 @@ def selecting(path: str, text: str, *named: str) -> Group:
     chosen = tuple(
         token for token in regions(tokens) if any(token is one for one in wanted)
     )
-    return group(path, tokens, lines(text), None, Selection(chosen), None)
+    return group(
+        path, tokens, lines(text), None, Selection(chosen), None, conversions={}
+    )
 
 
 OUTLINED = """## Alpha

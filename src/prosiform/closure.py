@@ -263,8 +263,8 @@ class Redirects:
     the run reads it after traversal rather than inferring it from the
     bundle.
 
-    A record is kept under the pair that served the reference and the
-    document it substituted, so a pair naming one target states one
+    A record is kept under the pair that served the reference and its
+    declared substitute document and fragment, so a pair naming one target states one
     substitution however many references named it — a document key
     serving the document and one of its sections included. A pair is its
     declaring document and its key, so two documents declaring one key
@@ -279,19 +279,20 @@ class Redirects:
     """
 
     def __init__(self) -> None:
-        self._records: dict[tuple[Served, str], Redirect] = {}
-        self._served: set[Served] = set()
+        self._records: dict[tuple[Served, tuple[str, str | None]], Redirect] = {}
+        self._served: set[tuple[Served, tuple[str, str | None]]] = set()
 
     def record(
         self,
         pair: Served,
+        declared: Reference,
         substitute: Reference,
         found: Reference,
         origin: str | None = None,
     ) -> None:
         """Note one redirect: its pair, target and the position it was written at."""
-        self._served.add(pair)
-        named = (pair, substitute.path)
+        named = (pair, (declared.path, declared.fragment))
+        self._served.add(named)
         earlier = self._records.get(named)
         if earlier is None:
             self._records[named] = Redirect(
@@ -300,9 +301,9 @@ class Redirects:
         elif earlier.origin is None and origin is not None:
             self._records[named] = replace(earlier, origin=origin)
 
-    def served(self, pair: Served) -> bool:
-        """Whether any reference of the run named this pair."""
-        return pair in self._served
+    def served(self, pair: Served, declared: Reference) -> bool:
+        """Whether a reference used this pair with its declared substitute."""
+        return (pair, (declared.path, declared.fragment)) in self._served
 
     def targets(self) -> tuple[Redirect, ...]:
         """Each substitution the run performed, in the order it first reached one."""
@@ -420,7 +421,7 @@ class Substitution:
             walk=named.walk,
             redirected=True,
         )
-        self.redirects.record((self.writer, key), substituted, found, origin)
+        self.redirects.record((self.writer, key), named, substituted, found, origin)
         return substituted
 
 

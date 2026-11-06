@@ -83,6 +83,7 @@ from prosiform.source import (
     opening_markers,
     opening_text,
 )
+from prosiform.tags import read as read_tags
 
 BACKTICK = "`"
 ESCAPE = "\\"
@@ -444,8 +445,8 @@ def uses(
     return found
 
 
-def destinations(inline: Token) -> list[tuple[str, str]]:
-    """Each link one inline token carries, as its destination and its opening.
+def destinations(inline: Token) -> list[tuple[str, str, frozenset[str]]]:
+    """Each inline link's destination, opening and requested preset tags.
 
     The opening is the literal text the link's content begins with,
     which is what a deferral is written in, so a caller classifying the
@@ -459,7 +460,11 @@ def destinations(inline: Token) -> list[tuple[str, str]]:
     was written in.
     """
     return [
-        (str(child.attrGet(HREF) or ""), opening_text(children, at))
+        (
+            str(child.attrGet(HREF) or ""),
+            opening_text(children, at),
+            read_tags(str(child.attrGet("title") or "")),
+        )
         for children, at, child in events(inline.children or [])
         if child.type == LINK_OPEN
     ]

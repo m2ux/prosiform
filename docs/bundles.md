@@ -2,7 +2,7 @@
 
 One command can produce more than one file. A bundle that dispatches work hands part of it to a sub-agent, and that part is a bundle of its own — so what reaches disk is not one document but a small set of them, published together.
 
-That set is a **bundle set**: one bundle for the entry, and one for each target the run's dispatches reach. The run writes them into a folder of its own, and the folder is what a reader is pointed at.
+That set is a **bundle set**: one bundle for the entry, and one for each effective selection the run's dispatches reach. A selection is its canonical document, fragment and matching named presets. Two dispatches of one document under different presets receive separate bundles; equivalent requests share one. The run writes them into a folder of its own, and the folder is what a reader is pointed at.
 
 ## The shape of a result
 

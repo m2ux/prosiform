@@ -124,6 +124,7 @@ from prosiform.closure import (
     Substitution,
 )
 from prosiform.heading import WORD, title_cased, worded
+from prosiform.metadata import Conversion
 from prosiform.provenance import (
     GROUP_HEADING,
     MEMBER_OVERVIEW,
@@ -277,6 +278,8 @@ def prepared(
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -298,7 +301,7 @@ def prepared(
         if selected is None
         else {id(token) for token in selected.regions}
     )
-    text = shown_text(path, tokens, declarations, substitution)
+    text = shown_text(path, tokens, declarations, substitution, conversions=conversions)
     named = source_fragments(tokens)
     titled_token = absorbed(tokens, PurePosixPath(path).stem)
     absorbing = (

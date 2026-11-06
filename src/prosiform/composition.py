@@ -274,6 +274,7 @@ class Composing:
     ) -> None:
         self.parsed = parsed
         self.read = read
+        self.conversions = {path: source.conversion for path, source in read.items()}
         self.defined = defined
         self.limits = limits
         self.assigned = assigned
@@ -322,7 +323,11 @@ class Composing:
                 if not chosen:
                     continue
                 shows = shown_text(
-                    found.path, named, self.declarations, self.substitution
+                    found.path,
+                    named,
+                    self.declarations,
+                    self.substitution,
+                    conversions=self.conversions,
                 )
                 yield Directive(
                     found,
@@ -398,7 +403,13 @@ class Composing:
         parents = ancestry(tokens)[id(opening)]
         if not parents:
             raise Parentless(one.at[0], one.line, one.written)
-        shows = shown_text(path, tokens, self.declarations, self.substitution)
+        shows = shown_text(
+            path,
+            tokens,
+            self.declarations,
+            self.substitution,
+            conversions=self.conversions,
+        )
         contribution = Generated(
             single_line(shows[id(parents[-1])]), depth, CONTRIBUTION_HEADING
         )
