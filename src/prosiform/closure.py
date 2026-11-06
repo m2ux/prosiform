@@ -16,7 +16,7 @@ sub-agent follows it, and a parallel dispatch that a sub-agent follows it
 together with the section's other parallel dispatches. A deferred link's
 destination is the target's path, which no compiled link carries, so the
 deferral is stated there; a dispatched link points at a bundle file or an
-`In parallel` sub-section naming the bundle the run compiles for its
+dispatch-set sub-section naming the bundle the run compiles for its
 target, which states the dispatch. The composition mark places the
 target's section beneath the section writing it, so the link points at
 that placement. Every mark is therefore authoring syntax, and the bundle
@@ -679,7 +679,7 @@ def withholding(opening: str) -> bool:
     link.
 
     A deferral's destination states when the material is compiled, and
-    a dispatch's file or `In parallel` sub-section states who compiles
+    a dispatch's file or dispatch-set sub-section states who compiles
     it.
     """
     return deferred(opening) or dispatched(opening)
@@ -717,7 +717,7 @@ def published_text(text: str, file: bool) -> str:
     Every other operator's marks go, with the blanks that are their
     spacing, because the destination states what they stated: a path for
     a deferral, the contribution heading for a composition and the
-    `In parallel` sub-section for a set.
+    dispatch-set sub-section for a set.
     """
     found = opened(text)
     if found is None:

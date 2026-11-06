@@ -385,7 +385,7 @@ def intended(
     A deferred link naming a declaring document carries its target's
     path from the invocation working directory, so where it points is
     the destination the bundle rebased. A dispatched link points at the
-    bundle file or `In parallel` sub-section its region carries for its
+    bundle file or dispatch-set sub-section its region carries for its
     target. A link
     resolving nowhere the bundle is responsible for is published as
     authored like any other mention.
@@ -1250,7 +1250,7 @@ def dispatches(
 ) -> None:
     """Hold each dispatched link's destination to a bundle file or a set's section.
 
-    An `In parallel` sub-section answers to no source target, so what a
+    A dispatch-set sub-section answers to no source target, so what a
     set's link destination is held to is the kind of heading it reaches.
     A destination that is no fragment of the bundle names a file beside
     it, which no heading stands for.
@@ -1275,7 +1275,7 @@ def dispatches(
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the destination {destination!r} a dispatch of {target!r} in "
-                    f"{path!r} was given reaches no In parallel sub-section",
+                    f"{path!r} was given reaches no dispatch-set sub-section",
                 )
 
 

@@ -5,7 +5,24 @@ from pathlib import Path
 import pytest
 from test_cli import DECLARED, invoke, written
 
+from prosiform.cli import GUIDE
 from prosiform.dispatch import PARALLEL
+
+
+def test_dispatch_guide_names_the_structure_the_compiler_emits(tmp_path: Path) -> None:
+    written(
+        tmp_path,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Work\n\n[⫽ A](a.md)\n\n[⫽ B](b.md)\n",
+    )
+    written(tmp_path, "a.md", DECLARED + "# A\n")
+    written(tmp_path, "b.md", DECLARED + "# B\n")
+    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert f"sub-section headed {PARALLEL}." in " ".join(GUIDE.split())
+    assert f"### {PARALLEL}\n\n[⇉ A](a.bundle.md)\n[⇉ B](b.bundle.md)" in run.bundle
+    assert "Give each of these" not in run.bundle
+    assert "- [⇉" not in run.bundle
 
 
 def task(root: Path) -> None:

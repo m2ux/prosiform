@@ -1,4 +1,4 @@
-description = "A target two parallel links of one section name is one bundle, listed once in the section's In parallel sub-section with the first link's text, and both links point at that sub-section."
+description = "A target two parallel links of one section name is one bundle, listed once in the section's dispatch-set sub-section with the first link's text, and both links point at that sub-section."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",

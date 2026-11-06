@@ -548,7 +548,7 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     and the actions a trace entry states are the ones the material those
     runs compile states, none of them stated by the bundle itself. Each
     dispatched bundle opens with the run-pf line, each `⇉` link it carries,
-    inline or as an `In parallel` item, names a file its run wrote beside it,
+    inline or as an dispatch-set item, names a file its run wrote beside it,
     and each bundle a sub-agent follows is one a `⇉` link names.
     """
     walked, _, faults = compiled_walk(workflow, scenario.inputs, output)
@@ -906,7 +906,7 @@ def test_no_edge_workflow_source_writes_a_retired_mark() -> None:
 def test_a_set_publishes_parallel_items_linking_bundles_opening_with_the_run_pf_line(
     tmp_path: Path,
 ) -> None:
-    """AC27: `dispatch-set`'s set is an `In parallel` section of `⇉` items.
+    """AC27: `dispatch-set`'s set is an dispatch-set section of `⇉` items.
 
     Each item names the file `pf` wrote for its target beside the entry, and
     that file opens with the run-pf line, as the chain's inline `⇉` link

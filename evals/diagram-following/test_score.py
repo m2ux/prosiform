@@ -1015,8 +1015,79 @@ def test_each_command_splits_into_the_pf_runs_it_makes() -> None:
 
 
 @pytest.mark.parametrize(
+    "redirect",
+    [
+        "> guide.log",
+        ">>guide.log",
+        "2> errors.log",
+        "2>>errors.log",
+        "2>&1",
+        ">guide.log 2>&1",
+        "1> 'guide output.log' 2>errors.log",
+    ],
+)
+@pytest.mark.parametrize("entry", [None, "target.md"])
+def test_shell_redirects_do_not_change_the_compiler_selection(
+    redirect: str,
+    entry: str | None,
+) -> None:
+    expected = Compile(None, entry)
+    command = "pf" + (" --entry target.md" if entry else "") + " " + redirect
+    item = Scenario("redirected", {}, (), compile=(expected,))
+    assert pf_runs((command,)) == [expected]
+    assert compiles(item, (command,), ()) is None
+
+
+def test_codex_recorded_redirects_reach_the_same_selected_compile() -> None:
+    from codex_agent import pf_command
+
+    expected = Compile(None, "target.md", frozenset({"checks"}))
+    for append in (False, True):
+        command = pf_command(
+            {
+                "args": ["--entry", "target.md", "--presets", "checks"],
+                "stdout": "guide output.log",
+                "stderr": "errors.log",
+                "stderr_to_stdout": True,
+                "append": append,
+            }
+        )
+        assert pf_runs((command,)) == [expected]
+        item = Scenario("recorded", {}, (), compile=(expected,))
+        assert compiles(item, (command,), ()) is None
+
+
+def test_redirects_can_precede_or_interrupt_compiler_words() -> None:
+    expected = Compile(None, "target.md")
+    for command in (
+        ">out pf --entry target.md",
+        "pf >out --entry target.md",
+        "pf --entry target.md>out",
+        "pf --entry target.md 2>err >out",
+    ):
+        assert pf_runs((command,)) == [expected]
+
+
+def test_quoted_shell_operators_remain_compiler_argument_text() -> None:
+    assert pf_runs(("pf --entry 'a>b.md' --presets 'a&b,c|d' >out",)) == [
+        Compile(None, "a>b.md", frozenset({"a&b", "c|d"}))
+    ]
+    assert pf_runs((r"pf --entry a\>b.md",)) == [Compile(None, "a>b.md")]
+    assert pf_runs(
+        ("pf --entry a.md 2>&1 && pf >guide.log; pf --entry b.md | cat",)
+    ) == [Compile(None, "a.md"), Compile(None), Compile(None, "b.md")]
+
+
+@pytest.mark.parametrize(
     "command",
     [
+        "pf target.md >out",
+        "pf --entry target.md --entry other.md 2>&1",
+        "pf --entry target.md unexpected >out",
+        "pf --entry target.md >",
+        "pf --entry target.md 2>&",
+        "pf --entry target.md > >out",
+        "pf --entry target.md 'unterminated",
         "pf target.md",
         "pf --entry target.md --entry target.md",
         "pf --entry=target.md --presets=checks --presets=checks",

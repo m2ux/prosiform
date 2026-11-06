@@ -57,7 +57,7 @@ A mark survives the rewrite where it states who compiles the material. A
 dispatch pointing at a bundle file is the one thing in the bundle saying
 the material belongs to another agent, so its label reaches the bundle
 opening with the dispatch mark and one blank. A deferral states when, a
-composition where, and a set's `In parallel` sub-section states who,
+composition where, and a set's dispatch-set sub-section states who,
 which each destination already says, so their marks and the blanks
 following them are dropped from the label they open.
 A link the bundle took no destination for opens with no operator, because

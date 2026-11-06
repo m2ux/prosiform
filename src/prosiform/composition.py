@@ -64,7 +64,7 @@ counts.
 
 Composition runs on the built groups ahead of the dispatch pass, which
 reads what a destination section carries as the scope's own content:
-a scope's `In parallel` sub-sections follow its destination sections, and
+a scope's dispatch-set sub-sections follow its destination sections, and
 its child sections follow both.
 
 Titles are matched exactly as their headings show them: no case
