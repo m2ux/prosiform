@@ -258,3 +258,86 @@ def test_a_later_occurrence_activates_substitution_at_the_reference_depth(
     assert "[Body](#new)" in run.bundle
     assert "Selected stand-in." in run.bundle
     assert "W_SUBST_USED" in run.stderr
+
+
+def late_withheld_tree(root: Path, mark: str, fragment: str = "") -> None:
+    written(
+        root,
+        "entry.md",
+        "---\nprosiform:\n  checks:\n    subst: [{old.md: new.md}]\n---\n"
+        f"# Guide\n\n[Trigger](trigger.md)\n\n[{mark} Job](old.md{fragment})\n",
+    )
+    written(root, "trigger.md", DECLARED + '# Trigger\n\n[Back](entry.md "checks")\n')
+    written(root, "old.md", DECLARED + "# Old\n\nTransient worker.\n")
+    written(root, "new.md", DECLARED + "# New\n\n## Steps\n\nSelected worker.\n")
+
+
+def test_a_later_selection_schedules_only_the_effective_dispatch(
+    tmp_path: Path,
+) -> None:
+    late_withheld_tree(tmp_path, "⇉")
+    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert set(run.bundles) == {"entry.bundle.md", "new.bundle.md"}
+    assert "[⇉ Job](new.bundle.md)" in run.bundle
+    assert "Selected worker." in run.bundles["new.bundle.md"]
+    assert "Transient worker." not in "".join(run.bundles.values())
+    assert "W_SUBST_USED" in run.stderr
+
+
+def test_a_later_selection_confirms_only_the_effective_deferred_target(
+    tmp_path: Path,
+) -> None:
+    late_withheld_tree(tmp_path, "¬", "#steps")
+    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert set(run.bundles) == {"entry.bundle.md"}
+    assert "[Job](new.md#steps)" in run.bundle
+    assert "Selected worker." not in run.bundle
+
+
+def test_a_body_absent_from_the_final_placement_schedules_no_dispatch(
+    tmp_path: Path,
+) -> None:
+    written(
+        tmp_path,
+        "entry.md",
+        "---\nprosiform:\n  checks:\n    subst: [{old.md: new.md}]\n---\n"
+        "# Guide\n\n[Body](old.md)\n",
+    )
+    written(
+        tmp_path,
+        "old.md",
+        DECLARED + '# Old\n\n[Back](entry.md "checks")\n\n[⇉ Side](side.md)\n',
+    )
+    written(tmp_path, "new.md", DECLARED + "# New\n\nSelected body.\n")
+    written(tmp_path, "side.md", DECLARED + "# Side\n\nHidden dispatch.\n")
+    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert set(run.bundles) == {"entry.bundle.md"}
+    assert "[Body](#new)" in run.bundle
+    assert "Selected body." in run.bundle
+    assert "Hidden dispatch." not in run.bundle
+
+
+def test_a_body_absent_from_final_placement_emits_no_self_composition_warning(
+    tmp_path: Path,
+) -> None:
+    written(
+        tmp_path,
+        "entry.md",
+        "---\nprosiform:\n  checks:\n    subst: [{old.md: new.md}]\n---\n"
+        "# Guide\n\n[Body](old.md)\n",
+    )
+    written(
+        tmp_path,
+        "old.md",
+        DECLARED + '# Old\n\n[Back](entry.md "checks")\n\n## Scope\n\n'
+        "[↳ Local](#part)\n\n## Part\n\nLocal content.\n",
+    )
+    written(tmp_path, "new.md", DECLARED + "# New\n\nSelected body.\n")
+    run = invoke("-d", "json", "--entry", "entry.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert [one["code"] for one in run.diagnostics()] == ["W_SUBST_USED"]
+    assert "Selected body." in run.bundle
+    assert "Local content." not in run.bundle

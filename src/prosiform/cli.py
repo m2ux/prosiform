@@ -125,6 +125,7 @@ from prosiform.dispatch import (
     anchors,
     collisions,
     cycle,
+    region_of,
     selfward,
     subsections,
     written_in,
@@ -2076,10 +2077,9 @@ def traverse(
     resolved a link by, so the run's record is written as the bundle is
     composed, under the pairs the fixed point puts in force.
 
-    The dispatched links the selected content carries are returned as
-    well, each target once at the first link the rounds read naming it,
-    for the bundles the run compiles from them, and so is one warning
-    for each directive composing a section of the document writing it.
+    Discovered dispatch occurrences and self-composition warnings describe
+    the current mapping. Final composition determines the published
+    handoffs from the source ranges its groups actually carry.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -2126,6 +2126,11 @@ def traverse(
         mapping = governed(
             substitution, governing(read, parsed, carried, requested)
         ).unrecorded()
+        # These answers describe the current mapping. Captures and selecting
+        # occurrences retain their monotonic union across rounds.
+        postponed.clear()
+        dispatching.clear()
+        composed_itself.clear()
         for path, selecting in carried.items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
@@ -2994,6 +2999,19 @@ def destination_map(
     return found
 
 
+def emitted_regions(
+    groups: Sequence[Group], parsed: Mapping[str, Sequence[Token]]
+) -> Iterator[tuple[str, Token]]:
+    """Each source region the published groups carry, in first-emitted order."""
+    seen: set[tuple[str, tuple[int, int]]] = set()
+    for one in groups:
+        for part in one.record.ranges:
+            key = (part.path, part.lines)
+            if key not in seen:
+                seen.add(key)
+                yield part.path, region_of(parsed[part.path], part)
+
+
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -3004,8 +3022,8 @@ def compose(
     bundle_file: Callable[[Reference], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-) -> tuple[str, list[Diagnostic]]:
-    """The complete bundle candidate, and the warnings its headings raise.
+) -> tuple[str, list[Diagnostic], list[Hop], list[Diagnostic]]:
+    """The validated bundle, its heading warnings and its published handoffs.
 
     The candidate holds the groups each included source takes, and it
     opens on the first group's first part. A source only composition
@@ -3014,6 +3032,9 @@ def compose(
     source, whichever kind of reference reached it. The warnings name
     the generated headings that coincide, which accompany the bundle
     rather than refuse it.
+
+    Handoffs and self-composition warnings come from the source ranges
+    the final groups carry, independently of traversal's retained captures.
 
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
@@ -3125,8 +3146,24 @@ def compose(
     except Unsafe as boundary:
         reached = chains.get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, coincident(
-        groups, selected, joins, read, parsed, declarations, substitution
+    hops: dict[tuple[str, frozenset[str]], Hop] = {}
+    itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
+    for path, region in emitted_regions(groups, parsed):
+        chosen = Selection((region,))
+        chain = chains.get(path, ())
+        for hop in dispatches(
+            path, read[path], parsed[path], chosen, chain, declarations, substitution
+        ):
+            hops.setdefault((hop.name, hop.target.tags), hop)
+        for warning in composing_itself(
+            path, read[path], parsed[path], chosen, chain, substitution
+        ):
+            itself.setdefault((warning.location, warning.reference), warning)
+    return (
+        bundled,
+        coincident(groups, selected, joins, read, parsed, declarations, substitution),
+        list(hops.values()),
+        list(itself.values()),
     )
 
 
@@ -3540,7 +3577,7 @@ def compiled(
     declarations = Declarations(lambda found: probe(root, found, limits))
     declared_entries(requested, declarations)
     try:
-        read, parsed, defined, captured, found, hops, itself = traverse(
+        read, parsed, defined, captured, found, _, _ = traverse(
             root, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
@@ -3549,7 +3586,7 @@ def compiled(
         bundle_selection(requested[0], read[requested[0].path].conversion)
     )
     pairs = governing(read, parsed, contributing(found), requested)
-    bundled, coinciding = compose(
+    bundled, coinciding, hops, itself = compose(
         read,
         parsed,
         defined,

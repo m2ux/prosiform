@@ -1,0 +1,17 @@
+description = "The old source activates a substitution through a tagged back-reference. Its selecting occurrence remains in the capture and selection union, while the final published body is New. A dispatch found only in the absent old body schedules no extra bundle."
+
+clauses = ["Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "entry.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "old.md"
+resolved = "new.md"
