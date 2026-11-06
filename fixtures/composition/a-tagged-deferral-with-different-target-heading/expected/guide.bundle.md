@@ -12,4 +12,4 @@ Its body is composed by a later run [Implementation](#fetch "offline").
 
 #### Fetch
 
-[↳ Implementation](fetch.md#implementation)
+[↳ Implementation](fetch.md#implementation "offline")
