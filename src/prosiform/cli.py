@@ -3154,6 +3154,7 @@ def compose(
             declarations,
             substitution,
             composing,
+            bundle_file=bundle_file,
         )
     except Unsafe as boundary:
         reached = chains.get(boundary.path or "", ())
@@ -3688,11 +3689,11 @@ def unused_pairs(
     location: bundle by bundle, each bundle's documents by path, and each
     document's pairs in the order its presets are read.
     """
-    held: dict[tuple[str, tuple[str, str | None]], Governed] = {}
+    held: dict[tuple[str, str, tuple[str, str | None]], Governed] = {}
     for one in bundles:
         for path in sorted(one.pairs):
             for key, pair in one.pairs[path].items():
-                held.setdefault((path, key), pair)
+                held.setdefault((path, pair.preset, key), pair)
     return [
         Diagnostic(
             WARNING,
@@ -3703,8 +3704,8 @@ def unused_pairs(
             source=one.pair.original,
             remedy="name an identity the declaring document links, or drop the pair",
         )
-        for (path, key), one in held.items()
-        if not mapping.redirects.served((path, key))
+        for (path, _preset, key), one in held.items()
+        if not mapping.redirects.served((path, key), one.substitute)
     ]
 
 

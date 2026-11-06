@@ -37,7 +37,9 @@ def group_of(named: str, depth: int, documents: Mapping[str, str]) -> Group:
         named,
         depth,
         [
-            prepared(path, parse(text), lines(text), {}, None, None, depth)
+            prepared(
+                path, parse(text), lines(text), {}, None, None, depth, conversions={}
+            )
             for path, text in sorted(documents.items())
         ],
     )
@@ -255,6 +257,7 @@ def test_a_titled_parent_s_whole_document_reference_reaches_its_title() -> None:
                     None,
                     depth,
                     keep_title=path == "rules/guide.md",
+                    conversions={},
                 )
                 for path, text in sorted(documents.items())
             ],
@@ -476,7 +479,7 @@ def test_a_nested_group_moves_every_heading_down_one_level_per_division() -> Non
         "notes",
         2,
         [
-            prepared(path, parse(text), lines(text), {}, None, None, 2)
+            prepared(path, parse(text), lines(text), {}, None, None, 2, conversions={})
             for path, text in sorted(documents.items())
         ],
         at=3,

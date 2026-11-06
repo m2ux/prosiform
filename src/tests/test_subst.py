@@ -88,7 +88,9 @@ def test_a_section_key_serves_no_other_section_of_its_document() -> None:
     mapped = writing({("rules.md", "escalation"): SECTION})
     found = inside("guide.md", "rules.md#other", mapped)
     assert identity(found) == "rules.md#other"
-    assert not mapped.redirects.served(("guide.md", ("rules.md", "escalation")))
+    assert not mapped.redirects.served(
+        ("guide.md", ("rules.md", "escalation")), SECTION
+    )
 
 
 def test_a_section_keys_substitute_section_is_the_one_the_run_reads() -> None:
@@ -215,9 +217,9 @@ def test_a_mapping_stating_no_pair_records_no_substitution() -> None:
 def test_a_pair_is_served_by_a_reference_its_document_writes() -> None:
     mapped = writing({("rules.md", None): SUBSTITUTE})
     inside("guide.md", "notes.md", mapped)
-    assert not mapped.redirects.served(("guide.md", ("rules.md", None)))
+    assert not mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
     inside("guide.md", "rules.md", mapped)
-    assert mapped.redirects.served(("guide.md", ("rules.md", None)))
+    assert mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
 
 
 def stating(document: Path, subst: str) -> None:
@@ -841,17 +843,17 @@ def test_a_documents_pair_records_to_the_runs_record() -> None:
     governed = mapped.governed({"guide.md": {("rules.md", None): SUBSTITUTE}})
     inside("guide.md", "rules.md", governed, "guide.md:6")
     assert [one.resolved for one in mapped.redirects.targets()] == ["stand-in.md"]
-    assert mapped.redirects.served(("guide.md", ("rules.md", None)))
+    assert mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
 
 
 def test_reading_what_a_heading_shows_records_no_substitution() -> None:
     """The heading-text path decides what a heading shows and serves no key."""
     mapped = writing({("rules.md", None): SUBSTITUTE})
     tokens = parse("# Guide\n\n## [\u00ac Rules](rules.md)\n", BUDGET)
-    shown = shown_text("guide.md", tokens, DECLARING, mapped)
+    shown = shown_text("guide.md", tokens, DECLARING, mapped, conversions={})
     assert list(shown.values()) == ["Guide", "Rules"]
     assert mapped.redirects.targets() == ()
-    assert not mapped.redirects.served(("guide.md", ("rules.md", None)))
+    assert not mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
 
 
 def test_an_unrecorded_mapping_answers_as_the_mapping_does() -> None:
@@ -861,7 +863,7 @@ def test_an_unrecorded_mapping_answers_as_the_mapping_does() -> None:
         "stand-in.md"
     )
     assert mapped.redirects.targets() == ()
-    assert not mapped.redirects.served(("guide.md", ("rules.md", None)))
+    assert not mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
 
 
 def presetted(tree: Path, presets: str) -> None:

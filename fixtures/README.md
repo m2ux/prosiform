@@ -24,7 +24,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `destinations/` | The destination each bundled heading takes. |
 | `determinism/` | Bundle order independent of entry and discovery order. |
 | `diagnostics/` | Diagnostic chains, JSON lines and a run that fails in itself. |
-| `dispatch/` | The dispatch operator: dispatched bundles, inline links, chains, depth and cycles. |
+| `dispatch/` | Dispatched selection variants, equivalent requests, inline/parallel links, chains, depth and cycles. |
 | `extraction/` | Section extraction: the headings a fragment names and where its section ends. |
 | `file-wide-safety/` | A safety limit crossed in content no selection reaches. |
 | `frontmatter/` | Frontmatter delimiters, YAML and the `prosiform` mapping. |

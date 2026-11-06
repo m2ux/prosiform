@@ -71,8 +71,8 @@ COMPOSED_HEADINGS = (DESTINATION_SECTION, CONTRIBUTION_HEADING)
 
 Target = tuple[str, str | None]
 
-Served = tuple[Target, bool]
-"""A dispatched link's target, and whether the link dispatches it in parallel."""
+Served = tuple[Target, frozenset[str], bool]
+"""A dispatched occurrence's destination, requested tags and parallel operator."""
 
 Located = tuple[str, int, int]
 """One link, as its document, the line of content its inline block opens on and
@@ -216,11 +216,10 @@ class Instruction:
     """One block the bundle wrote itself, with no source range.
 
     The run-pf line that opens every bundle is one: a paragraph. An
-    `In parallel` sub-section carries two: the instruction, and the
-    bulleted list of the bundles it hands out together. It carries no
+    dispatch-set sub-section carries the lines naming the bundles it
+    hands out together. It carries no
     source range, so it can never stand in for selected body content a
-    group failed to emit. A listed instruction is a bulleted list, and
-    every other one a paragraph.
+    group failed to emit.
 
     A deferred directive's contribution heading carries one as well: the
     line naming the target a later run composes, which `activates`

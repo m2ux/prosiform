@@ -297,7 +297,18 @@ def test_a_line_break_a_replacement_swallows_ends_the_entry_that_held_it() -> No
 def test_the_parser_names_each_link_a_token_carries(
     text: str, expected: list[tuple[str, str]]
 ) -> None:
-    assert destinations(inline_of(text)) == expected
+    assert destinations(inline_of(text)) == [
+        (destination, opening, frozenset()) for destination, opening in expected
+    ]
+
+
+def test_link_destinations_carry_each_occurrences_requested_tags() -> None:
+    assert destinations(
+        inline_of('[A](task.md "Checks, draft") [B](task.md "other")')
+    ) == [
+        ("task.md", "A", frozenset({"checks", "draft"})),
+        ("task.md", "B", frozenset({"other"})),
+    ]
 
 
 NESTINGS = [
