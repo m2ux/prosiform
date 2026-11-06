@@ -17,6 +17,7 @@ The coordinator publishes records, reserves units, dispatches implementation, ve
 | [decisions.md](decisions.md) | Confirmed execution boundary and prerequisites |
 | [main-rules.json](main-rules.json) | Main integration's active review requirement |
 | [engineering-rules.json](engineering-rules.json) | Design integration's active review requirement |
+| [sessions.json](sessions.json) | Observed unit worker identities and execution states |
 
 ## Links
 
