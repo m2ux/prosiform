@@ -326,22 +326,16 @@ Usage:
 
 Compiling a link:
 
-  Resolve its destination from the document carrying the link, then name
-  that destination from the working directory used for the command.
-  Qualify a same-document fragment with that document's path. Supply
-  its title as one --presets argument, shell-quoted where needed:
+  Resolve the destination from the linking document, then express it
+  from the command's working directory; include the file for #fragments.
+  Pass title tags as one quoted --presets value, also for deferred links:
 
-    pf --entry guide.md#plan-report --presets checks,draft
     pf --entry modes/review.md#review --presets 'checks, final draft'
-    pf --entry guide.md#plan-report
 
-  Attach a value beginning with - to its option with =:
-
+  Omit --presets without tags; use = for values starting with -:
     pf --entry=-guide.md --presets=-checks
 
-  Tags select the target's own presets above default. Unknown tags
-  select nothing. Headings and visible link text select no presets.
-  Preserve the same tags when compiling a deferred link in a later run.
+  Tags layer the target's presets above default.
 
 Exit status:
 

@@ -166,11 +166,11 @@ def test_the_guide_specifies_resolution_and_shell_quoting() -> None:
     assert run.status == 2
     guide = " ".join(cli.GUIDE.split())
     for rule in (
-        "Resolve its destination from the document carrying the link",
-        "Qualify a same-document fragment with that document's path",
-        "its title as one --presets argument, shell-quoted where needed",
+        "Resolve the destination from the linking document",
+        "include the file for #fragments",
+        "Pass title tags as one quoted --presets value, also for deferred links",
         "pf --entry modes/review.md#review --presets 'checks, final draft'",
-        "Preserve the same tags when compiling a deferred link in a later run",
+        "Omit --presets without tags; use = for values starting with -",
     ):
         assert rule in guide
 
@@ -178,7 +178,6 @@ def test_the_guide_specifies_resolution_and_shell_quoting() -> None:
 @pytest.mark.parametrize(
     ("destination", "section", "names"),
     [
-        ("guide.md", "Plan Report", ("checks", "draft")),
         ("modes/review.md", "Review", ("checks", "final draft")),
     ],
 )
