@@ -222,13 +222,13 @@ class Instruction:
     group failed to emit.
 
     A deferred directive's contribution heading carries one as well: the
-    line naming the target a later run composes, which `activates`
-    holds.
+    line naming the target and requested preset tags a later run composes,
+    which `activates` holds.
     """
 
     text: str
     listed: bool = False
-    activates: Target | None = None
+    activates: tuple[Target, frozenset[str]] | None = None
 
     @property
     def kind(self) -> str:

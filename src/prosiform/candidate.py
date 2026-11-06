@@ -1348,15 +1348,19 @@ def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
 
     The line is the bundle's own text and writes one link, whose
     destination is the target's path from the invocation working
-    directory and the fragment naming its section.
+    directory, the fragment naming its section and its requested presets.
     """
     found = [use for inline in inlines(tokens, [span]) for _c, _a, use in uses(inline)]
     resolved = [resolve(use.destination) for use in found]
-    if [(one.path, one.fragment) for one in resolved] != [part.activates]:
+    selections = [
+        ((one.path, one.fragment), read_tags(use.title))
+        for one, use in zip(resolved, found, strict=True)
+    ]
+    if selections != [part.activates]:
         raise Invalid(
             TARGET_INTEGRITY,
             f"the line {part.text!r} a deferred directive's contribution carries "
-            f"names no one target {part.activates!r}",
+            f"does not preserve its one requested selection {part.activates!r}",
         )
 
 

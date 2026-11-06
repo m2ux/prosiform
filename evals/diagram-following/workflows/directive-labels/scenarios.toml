@@ -1,0 +1,19 @@
+# A scenario is the inputs a run is given and the path a correct run walks.
+# Each input is a file under inputs/ holding the value written, then a newline.
+#
+# Compose composes the house style with the composition mark, read in place, and links
+# Vet with a footnote mark, which publishes Vet as a document of its own
+# that the path opens. Issue composes a section of its own document, which
+# pf publishes with a warning.
+
+warnings = ["W_COMPOSE_SELF"]
+
+[[scenario]]
+name = "footnote-opened"
+path = ["Entry", "Compose", "Vet", "Issue", "Exit"]
+inputs = { "kind.txt" = "review" }
+
+[[scenario]]
+name = "self-composed"
+path = ["Entry", "Compose", "Issue", "Exit"]
+inputs = { "kind.txt" = "direct" }

@@ -26,7 +26,10 @@ case and headed with the state's name.
   for a set of them, so `pf` compiles each target into a bundle of its own.
   `authored/` writes the same step with the protocol as prose and only
   ordinary links, so it publishes one bundle and the protocol an agent
-  reads is the corpus's text rather than the profile's.
+  reads is the corpus's text rather than the profile's. A compiled
+  session receives the bundle set `pf` compiles from `compiled/` beside the
+  sources and the build, so a `↳` line its bundle carries is compiled where
+  it stands.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
@@ -53,6 +56,19 @@ a run writes to `answers.txt` for the session to hand back.
 A run writes each input to `inputs/<name>` as the value followed by a
 newline, and a condition reads the file with surrounding whitespace removed.
 
+A trace entry may also list the actions its sub-agent does, each a file
+under `actions/` and the value it holds, which only the material a `pf`
+run on a deferred line of its bundle compiles states.
+
+A scenario also lists the `pf` runs a correct run makes: one
+`[[scenario.compile]]` table per run, in the order the walk makes them,
+naming in `by` the section of the trace whose sub-agent makes it, absent
+for the session's own, in `entry` its one reference and in `presets` the
+link title's comma-separated names. A run with no entry is bare `pf`.
+A reference resolves from the directory a shell form runs `pf`
+in, so a run naming a document that is not there states no run of the
+workflow.
+
 A form is bundled by the `pf` command the environment provides, run from
 the form's directory, so the bundle is the one this checkout builds. The
 reference `pf` is given is the workflow's entry: `workflow.md`, or the
@@ -67,32 +83,72 @@ beyond the warning codes the workflow's `scenarios.toml` declares under
 `warnings`, which a feature such as `subst` raises wherever it is used.
 
 The diagram form's bundle states a path of its own: a state's section is
-the heading the previous section's link or the bundle's diagram names, and
-what `pf` placed into a group or redirected through `subst` is what that
-section holds. A scenario's path is held to that walk as well as to the
-sources', so a workflow built on a feature states the path its bundle
-states.
+the heading the previous section's link or the bundle's diagram names, a
+link naming the state by its text or by the heading it links, as a `↳`
+composition or a footnote mark does, and what `pf` placed into a group or
+redirected through `subst` is what that section holds. A scenario's path
+is held to that walk as well as to the sources', so a workflow built on a
+feature states the path its bundle states.
+
+A compiled form's bundle states a path and runs of its own: a deferred
+composition, `[¬↳ <title>](<path>#<section>)`, is published as a link to a
+sub-section holding the `[↳ <title>](<path>#<section>)` line, a step opening
+with a condition reaches its lines only where the condition holds, and the
+walk runs `pf` on each line a step it takes reaches, reading what the run
+writes as part of that state. Material a line compiles may dispatch, and the
+bundle that run writes links the bundles of its targets, so the agent that
+ran it starts them. A state may defer its transition, so its document writes
+no transition paragraph and the material its deferral compiles states the
+edge taken.
 
 A document under an `undeclared/` directory declares no `prosiform`, so a
-link to it is left as written rather than followed; every other document
-declares.
+link to it is left as written rather than followed; a skill's `SKILL.md`,
+which its agent CLI reads rather than `pf`, may declare nothing; every
+other document declares.
 """
 
+import hashlib
+import json
 import re
 import shutil
 import subprocess
 import tomllib
+from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 from markdown_it import MarkdownIt
 
+from prosiform.closure import matching_presets
+from prosiform.source import declaration
+from prosiform.tags import read as read_tags
+
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
+EDGE_WORKFLOWS = (
+    "conditional-composition",
+    "deferred-composition",
+    "deferred-dispatch",
+    "directive-labels",
+    "dispatch-depth",
+    "inline-bootstrap",
+    "preset-deferral",
+    "subagent-first-run",
+)
+"""The workflows measuring the operators' edges, run by the edge run alone.
+
+The default matrix runs the baseline workflows alone, so a cell it records is
+one every form of the baseline is measured by. The edge workflows defer,
+compose and dispatch in ways only a harness carrying a shell can follow, and
+they are measured by their own run, committed per harness beside the baseline.
+"""
 INSTRUCTION = ROOT / "instruction.md"
 INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
+INSTRUCTION_COMPILED = ROOT / "instruction-compiled.md"
 
 ENTRY = "workflow.md"
+RUN_PF_LINE = "Run `pf`, then follow the guidance it prints."
+"""The line under every bundle's instruction heading, naming the guide `pf` prints."""
 UNDECLARED = "undeclared"
 """The directory whose documents declare no `prosiform`, so a link to one stays text."""
 STATES = "states"
@@ -119,10 +175,10 @@ MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
 """The forms whose dispatch steps are written as marked links and no prose.
 
 A bootstrap skill's documents are the ones its compiled bundle carries, so a
-step states its dispatch by its marks there as it does in the compiled form.
+step states its dispatch by its marks in each.
 """
-SHELL_FORMS = (BOOTSTRAP,)
-"""The forms a session runs a command to read, which no other form needs."""
+SHELL_FORMS = (COMPILED_FORM, BOOTSTRAP)
+"""The forms whose session is given the build under test as `pf` and a shell."""
 
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
 UNDRAWN = (PROSE,)
@@ -266,6 +322,12 @@ OPERATOR = re.compile(rf"^\[({DISPATCH_OPERATOR}|{PARALLEL_OPERATOR}) ")
 """The operator a link's text opens with, where it opens with one."""
 RULE_STATEMENT = re.compile(r"^The transition into `(\w+)` applies\.$", re.MULTILINE)
 _DIAGRAM_DECISION = re.compile(rf"^If (.+), {LABEL}\. Otherwise, {LABEL}\.$")
+LABELLED_EDGE = re.compile(r"^Take the transition labelled `([^`]+)`\.$")
+"""A transition taking one labelled edge, as material a deferral activates states.
+
+A state deferring its transition names no condition, so the material its
+deferral compiles, a preset's stand-in among them, states the one edge taken.
+"""
 DECISION = {
     DIAGRAM: _DIAGRAM_DECISION,
     PROSE: re.compile(rf"^If (.+), {GO_TO}\. Otherwise, {GO_TO}\.$"),
@@ -290,8 +352,17 @@ SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
 """The characters a renderer drops from a heading's text in making its slug."""
 
 
-def fragment_links(text: str) -> list[tuple[str, str]]:
-    """Links naming bundle headings, with title attributes kept outside the href."""
+@dataclass(frozen=True)
+class Link:
+    """A Markdown link's label, destination and normalized title tags."""
+
+    label: str
+    destination: str
+    tags: frozenset[str]
+
+
+def markdown_links(text: str) -> list[Link]:
+    """Ordinary Markdown links, retaining their decoded title attributes."""
     found = []
     for block in MarkdownIt("commonmark").parse(text):
         children = block.children or []
@@ -299,19 +370,52 @@ def fragment_links(text: str) -> list[tuple[str, str]]:
             if token.type != "link_open":
                 continue
             href = str(token.attrGet("href") or "")
-            if not href.startswith("#"):
-                continue
             label = []
             for child in children[at + 1 :]:
                 if child.type == "link_close":
                     break
                 label.append(child.content)
-            found.append(("".join(label), href[1:]))
+            title = token.attrGet("title")
+            found.append(
+                Link(
+                    "".join(label),
+                    href,
+                    read_tags(str(title) if title is not None else None),
+                )
+            )
     return found
+
+
+def fragment_links(text: str) -> list[tuple[str, str]]:
+    """Links naming bundle headings, with title attributes outside the href."""
+    return [
+        (link.label, link.destination[1:])
+        for link in markdown_links(text)
+        if link.destination.startswith("#")
+    ]
 
 
 NEXT_PARAGRAPH = re.compile(rf"^{re.escape(NEXT)}(.+)$", re.MULTILINE)
 """A section's transition paragraph as a bundle carries it."""
+
+
+def deferred_links(text: str) -> list[Link]:
+    """Deferred composition links with the tags their later commands need."""
+    return [link for link in markdown_links(text) if link.label.startswith("¬↳ ")]
+
+
+def inline_lines(text: str) -> list[Link]:
+    """Standalone composition links an agent compiles where reached."""
+    return [
+        replace(link, label=link.label.removeprefix("↳ "))
+        for line in text.splitlines()
+        for link in markdown_links(line)
+        if line.startswith("[↳ ") and link.label.startswith("↳ ")
+    ]
+
+
+CONDITIONAL_STEP = re.compile(r"^If (`inputs/[^`]+` reads `[^`]*`), ")
+"""A step that holds only under a condition, which its opening clause states."""
 
 
 class CorpusError(Exception):
@@ -436,9 +540,12 @@ class Section:
     """One state's document: its action and its transition.
 
     `body` is the document up to the transition paragraph, which is the part
-    the two forms share. A terminal section carries no transition. A section
-    stating no action is the workflow's entry or exit, which the diagram
-    names and which neither does nor writes anything.
+    the two forms share. A terminal section carries no transition, and nor
+    does a `deferred` one, which writes no transition paragraph and defers
+    the material stating its transition, so only the run activating that
+    material reads where it goes. A section stating no action is the
+    workflow's entry or exit, which the diagram names and which neither does
+    nor writes anything.
     """
 
     state: str
@@ -446,6 +553,7 @@ class Section:
     body: str
     action: tuple[str, str] | None
     transition: Transition | None
+    deferred: bool = False
 
 
 @dataclass(frozen=True)
@@ -458,7 +566,8 @@ class Dispatch:
     an entry of a set started beside the entry above it. `action` is the
     file under `actions/` the section has the sub-agent write and the value
     it holds; a section stating no action carries none, and nothing is
-    checked for it.
+    checked for it. The action a deferred composition activates is stated
+    here too, since only the material a run on that line compiles states it.
     """
 
     section: str
@@ -467,19 +576,61 @@ class Dispatch:
 
 
 @dataclass(frozen=True)
-class Scenario:
-    """One run's inputs, the path a correct run walks and its dispatch trace.
+class Compile:
+    """One `pf` run a correct run makes.
 
-    `trace` is empty for a form that dispatches nothing. `answers` is what a
-    run writes to `answers.txt`, the user's answers to a question a
-    sub-agent returns; it is empty where no sub-agent asks, and no file is
-    written.
+    `by` is the section of the trace whose sub-agent makes the run, as
+    `<document>#<heading>`, or nothing for the session's own. `entry` is one
+    `<document>[#<fragment>]` from the shell form's directory, or nothing for
+    bare `pf`. `presets` holds normalized complete names from the link title.
+    Output and diagnostic options are the agent's to choose.
+    """
+
+    by: str | None
+    entry: str | None = None
+    presets: frozenset[str] = frozenset()
+
+    @property
+    def args(self) -> tuple[str, ...]:
+        """The command's entry and preset options as shell words."""
+        if self.entry is None:
+            return ()
+        return (
+            f"--entry={self.entry}",
+            *((f"--presets={','.join(sorted(self.presets))}",) if self.presets else ()),
+        )
+
+    def selection(self, root: Path) -> tuple[str | None, str | None, frozenset[str]]:
+        """The owner, destination and matching declared names of this run."""
+        return self.by, self.entry, effective_presets(root, self)
+
+
+def effective_presets(root: Path, run: Compile) -> frozenset[str]:
+    """Declared named presets selected by one explicit request."""
+    if run.entry is None or not run.presets:
+        return frozenset()
+    path = root / run.entry.partition("#")[0]
+    conversion = declaration(path.read_text(), file=str(path))
+    return frozenset(
+        preset.name for preset in matching_presets(conversion, run.presets)
+    )
+
+
+@dataclass(frozen=True)
+class Scenario:
+    """One run's inputs, the path a correct run walks, its trace and its runs.
+
+    `trace` is empty for a form that dispatches nothing, and `compile` for a
+    scenario whose correct run runs no `pf`. `answers` is what a run writes
+    to `answers.txt`, the user's answers to a question a sub-agent returns;
+    it is empty where no sub-agent asks, and no file is written.
     """
 
     name: str
     inputs: dict[str, str]
     path: tuple[str, ...]
     trace: tuple[Dispatch, ...] = ()
+    compile: tuple[Compile, ...] = ()
     answers: str = ""
 
 
@@ -525,6 +676,21 @@ class Workflow:
     def forms(self) -> tuple[str, ...]:
         """The forms this workflow is written in."""
         return tuple(form for form in FORMS if self.form(form).is_dir())
+
+    @property
+    def compile_root(self) -> Path | None:
+        """The directory a session's `pf` runs resolve their references from.
+
+        A bootstrap session runs `pf` from the skill's directory, as the guide
+        states, and a compiled session from its workspace, which holds the
+        compiled form's sources as they stand. A workflow written in neither
+        form runs `pf` nowhere.
+        """
+        if BOOTSTRAP in self.forms:
+            return self.directory / BOOTSTRAP_DIR
+        if COMPILED_FORM in self.forms:
+            return self.form(COMPILED_FORM)
+        return None
 
     @property
     def walked(self) -> dict[str, Section]:
@@ -656,6 +822,8 @@ def parse_transition(
         condition, then, otherwise = decision.groups()
         input_read(condition)
         return Transition(condition, then, otherwise)
+    if form == DIAGRAM and (labelled := LABELLED_EDGE.match(text)):
+        return Transition(None, labelled.group(1), None)
     plain = UNCONDITIONAL.get(form)
     if plain is not None and (unconditional := plain.match(text)):
         target = unconditional.group(1) if unconditional.groups() else None
@@ -727,6 +895,7 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
         body,
         actions[0] if actions else None,
         parse_transition(form, transition.strip(), path.parent) if marker else None,
+        not marker and bool(deferred_links(body)),
     )
 
 
@@ -765,18 +934,22 @@ def read_sections(form_directory: Path, form: str) -> dict[str, Section]:
     return {section.state: section for section in sections}
 
 
-def entry_bundle(entry: str) -> Path:
+def entry_bundle(entry: str, presets: frozenset[str] = frozenset()) -> Path:
     """The entry's bundle under an output folder, by the name `pf` derives.
 
     A selection's name is its path without the Markdown suffix, each
     separator written as `_`, and a section adds `__` and its fragment. The
     run's folder takes that name with `.bundles`, and the entry's bundle with
-    `.bundle.md`.
+    `.bundle.md`. Matching declared named presets add `--p-` and the full
+    lowercase SHA256 of their sorted distinct names as compact UTF8 JSON.
     """
     document, _, fragment = entry.partition("#")
     name = Path(document).with_suffix("").as_posix().replace("/", "_")
     if fragment:
         name = f"{name}__{fragment}"
+    if presets:
+        encoded = json.dumps(sorted(presets), ensure_ascii=False, separators=(",", ":"))
+        name += "--p-" + hashlib.sha256(encoded.encode()).hexdigest()
     return Path(f"{name}.bundles", f"{name}.bundle.md")
 
 
@@ -797,6 +970,42 @@ def read_warnings(path: Path) -> frozenset[str]:
         return frozenset(tomllib.load(handle).get("warnings", ()))
 
 
+def read_compile(row: dict[str, object], named: str) -> Compile:
+    """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+    by = row.get("by")
+    entry = row.get("entry")
+    presets = row.get("presets")
+    if by is not None and not isinstance(by, str):
+        raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
+    if entry is not None and not isinstance(entry, str):
+        raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
+    if presets is not None and (not isinstance(presets, str) or entry is None):
+        raise CorpusError(f"{named}: a run's presets need an entry and a string list")
+    if set(row) - {"by", "entry", "presets"}:
+        raise CorpusError(f"{named}: a run's fields are entry, presets and by")
+    return Compile(by, entry, read_tags(presets))
+
+
+def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
+    """One sub-agent start, as a `[[scenario.trace]]` table writes it.
+
+    A section states one action, which is the file it has its sub-agent
+    write; a start whose section states none carries none.
+    """
+    action = row.get("action")
+    if action is not None and (
+        not isinstance(action, dict)
+        or not isinstance(action.get("file"), str)
+        or not isinstance(action.get("value"), str)
+    ):
+        raise CorpusError(f"{named}: a start's action is {action!r}, not a file")
+    return Dispatch(
+        str(row["dispatch"]),
+        bool(row.get("together", False)),
+        (action["file"], action["value"]) if action is not None else None,
+    )
+
+
 def read_scenarios(path: Path) -> tuple[Scenario, ...]:
     """The scenarios a workflow's `scenarios.toml` lists."""
     with path.open("rb") as handle:
@@ -806,20 +1015,38 @@ def read_scenarios(path: Path) -> tuple[Scenario, ...]:
             entry["name"],
             dict(entry["inputs"]),
             tuple(entry["path"]),
-            tuple(
-                Dispatch(
-                    row["dispatch"],
-                    row.get("together", False),
-                    (row["action"]["file"], row["action"]["value"])
-                    if "action" in row
-                    else None,
-                )
-                for row in entry.get("trace", ())
-            ),
+            tuple(read_dispatch(row, entry["name"]) for row in entry.get("trace", ())),
+            tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
             entry.get("answers", ""),
         )
         for entry in entries
     )
+
+
+def compile_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
+    """How a scenario's stated runs fail to name what its workflow holds.
+
+    A run is made by the session or by a sub-agent its trace starts, and
+    each reference it names is a document under the directory `pf` runs in.
+    A workflow written in no shell form gives no session a command to run.
+    """
+    if not scenario.compile:
+        return []
+    root = workflow.compile_root
+    if root is None:
+        return [f"{scenario.name}: it states a pf run, and no form runs one"]
+    sections = {entry.section for entry in scenario.trace}
+    faults = []
+    for run in scenario.compile:
+        if run.by is not None and run.by not in sections:
+            faults.append(f"{scenario.name}: a run by {run.by} is by no start")
+        if (arg := run.entry) is not None:
+            document = arg.partition("#")[0]
+            if not document or not (root / document).is_file():
+                faults.append(
+                    f"{scenario.name}: a run names {arg}, no document of its sources"
+                )
+    return faults
 
 
 def form_directory(workflow_directory: Path, form: str) -> Path:
@@ -874,14 +1101,25 @@ def workflows(root: Path = WORKFLOWS) -> list[Workflow]:
     return [read_workflow(path) for path in sorted(root.iterdir()) if path.is_dir()]
 
 
+def baseline_workflows(root: Path = WORKFLOWS) -> list[Workflow]:
+    """The default matrix's workflows: every one the edge run does not measure."""
+    return [
+        workflow for workflow in workflows(root) if workflow.name not in EDGE_WORKFLOWS
+    ]
+
+
 def instruction(entry: str, form: str = "") -> str:
     """The task text a session is given, naming the document it reads.
 
     A bootstrap session is given its own text, which names the skill it reads
     rather than a bundle, since that form's document is a skill that states a
-    compile rather than a workflow to follow.
+    compile rather than a workflow to follow. A compiled session is given its
+    own too, naming the entry's bundle and the `pf` beside it.
     """
-    source = INSTRUCTION_BOOTSTRAP if form == BOOTSTRAP else INSTRUCTION
+    source = {
+        BOOTSTRAP: INSTRUCTION_BOOTSTRAP,
+        COMPILED_FORM: INSTRUCTION_COMPILED,
+    }.get(form, INSTRUCTION)
     blocks: list[str] = [
         body for kind, body in FENCE.findall(source.read_text()) if kind == "text"
     ]
@@ -899,12 +1137,22 @@ def bundle(
     succeeds, and every other bundle the run writes sits beside it in the
     same folder.
     """
+    return compile_reference(workflow.form(form), workflow.entry, output)
+
+
+def compile_reference(
+    root: Path, reference: str, output: Path, presets: frozenset[str] = frozenset()
+) -> subprocess.CompletedProcess[bytes]:
+    """The `pf` run compiling one reference from `root` under `output`.
+
+    Its entry's bundle is `output / entry_bundle(reference)` once it succeeds.
+    """
     command = shutil.which("pf")
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, "--entry", workflow.entry, "-o", str(output)],
-        cwd=workflow.form(form),
+        [command, *Compile(None, reference, presets).args, "-o", str(output)],
+        cwd=root,
         capture_output=True,
         check=False,
     )
@@ -1020,19 +1268,86 @@ def bundled_sections(bundle_text: str) -> dict[str, BundledSection]:
     return sections
 
 
+def reached_lines(
+    bundle_text: str, scope: str, inputs: dict[str, str], trace: list[str]
+) -> list[Compile]:
+    """The references of the deferred lines a scope's steps reach, in step order.
+
+    A deferred composition is published as a link to the heading its `↳` line
+    sits under, so a step reaches each line the headings it links hold. A
+    step opening with a condition reaches its lines only where the condition
+    holds.
+    """
+    sections = bundled_sections(bundle_text)
+    found: list[Compile] = []
+    for line in scope.splitlines():
+        # The line `pf` opens a bundle with names the document's own heading,
+        # which is where a reader starts rather than a step the walk takes.
+        if line.startswith(RUN_PF_LINE):
+            continue
+        linked = [
+            sections[fragment]
+            for _, fragment in fragment_links(line)
+            if fragment in sections
+        ]
+        if not linked:
+            continue
+        if (step := CONDITIONAL_STEP.match(line)) and not holds(
+            step.group(1), inputs, trace
+        ):
+            continue
+        for section in linked:
+            found += [
+                Compile(None, link.destination, link.tags)
+                for link in inline_lines(section.text)
+            ]
+    return found
+
+
+def activated(
+    bundle_text: str,
+    scope: str,
+    inputs: dict[str, str],
+    trace: list[str],
+    activate: Callable[[Compile], str],
+) -> str:
+    """The text the runs on a scope's reached `↳` lines compile, in run order.
+
+    An activated bundle's own steps may reach further lines, each compiled
+    after the run that wrote it, so the text holds every level a walk needs.
+    """
+    texts: list[str] = []
+    for reference in reached_lines(bundle_text, scope, inputs, trace):
+        compiled = activate(reference)
+        texts += [
+            compiled,
+            activated(compiled, compiled, inputs, trace, activate),
+        ]
+    return "".join(texts)
+
+
 def bundle_walk(
-    workflow: Workflow, bundle_text: str, inputs: dict[str, str]
+    workflow: Workflow,
+    bundle_text: str,
+    inputs: dict[str, str],
+    activate: Callable[[Compile], str] | None = None,
 ) -> tuple[tuple[str, ...], list[str]]:
     """The path a diagram form's bundle states for the inputs, and its faults.
 
     The walk reads the bundle alone, as a session given it does: the
     bundle's diagram names each edge, its clicks name the first state's
     section, and each state is entered at the section the previous state's
-    own link names, or else at the one the diagram clicks. Each section
-    states its action and its transition, so what `pf` placed, redirected or
-    substituted is what the walk follows. A state whose bundled action is
-    not the one its source states is a fault, since the scorer holds a
-    session to the source's.
+    own link names, or else at the one the diagram clicks. A link names a
+    state by its text, or by the heading it links, so a state composed under
+    a `↳` title, or published as a document a footnote opens, is entered
+    where the link leads. Each section states its action and its transition, so what
+    `pf` placed, redirected or substituted is what the walk follows. A state
+    whose bundled action is not the one its source states is a fault, since
+    the scorer holds a session to the source's.
+
+    Given `activate`, which compiles a `↳` line's reference and returns the
+    bundle it writes, a state's section also holds what the runs on the
+    lines its steps reach compile, so a transition stated there is followed.
     """
     diagram = read_diagram_text(mermaid_text(bundle_text), named="the bundle")
     sections = bundled_sections(bundle_text)
@@ -1047,6 +1362,12 @@ def bundle_walk(
         section = sections.get(fragment)
         if section is None or section.title != shown:
             return tuple(path), [f"the bundle heads no {shown} section at #{fragment}"]
+        if activate is not None:
+            section = replace(
+                section,
+                text=section.text
+                + activated(bundle_text, section.text, inputs, path, activate),
+            )
         actions = ACTION.findall(section.text)
         if len(actions) > 1:
             return tuple(path), [f"the bundle's {state} states {len(actions)} actions"]
@@ -1115,26 +1436,76 @@ def bundle_walk(
             return tuple(path), faults
         state = targets[0]
         linked = [
-            target for text, target in fragment_links(section.text) if text == state
+            target
+            for text, target in fragment_links(section.text)
+            if text == state or (target in sections and sections[target].title == state)
         ]
         fragment = (
             linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
         )
 
 
+def compiled_walk(
+    workflow: Workflow, inputs: dict[str, str], output: Path
+) -> tuple[tuple[str, ...], tuple[Compile, ...], list[str]]:
+    """The path and the session's runs the compiled form's bundles state, and faults.
+
+    The walk reads the entry's bundle `pf` compiles from the compiled sources,
+    and runs `pf` from them on each `↳` line a state's steps reach, as a
+    session does, so the runs are the ones a correct
+    session makes and the path is the one the bundles they write state. Each
+    run writes under `output`, and one failing is a fault.
+    """
+    entry = output / "entry"
+    run = bundle(workflow, COMPILED_FORM, entry)
+    if run.returncode != 0:
+        return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
+    runs: list[Compile] = []
+
+    def activate(request: Compile) -> str:
+        runs.append(request)
+        reference = request.entry
+        assert reference is not None
+        folder = output / f"run-{len(runs)}"
+        root = workflow.form(COMPILED_FORM)
+        made = compile_reference(root, reference, folder, request.presets)
+        if made.returncode != 0:
+            raise CorpusError(
+                f"pf {reference} exited {made.returncode}: {made.stderr.decode()}"
+            )
+        return (
+            folder / entry_bundle(reference, effective_presets(root, request))
+        ).read_text()
+
+    try:
+        path, faults = bundle_walk(
+            workflow, (entry / workflow.entry_bundle).read_text(), inputs, activate
+        )
+    except CorpusError as error:
+        return (), tuple(runs), [str(error)]
+    return path, tuple(runs), faults
+
+
 def section_body(directory: Path, document: str, heading: str) -> str:
     """One heading's content within a document, and nothing beside it.
 
     `directory` is that of the section writing the link, which is where the
-    document resolves from. A heading is matched without regard to case,
-    since a section names it lower case and the document heads it as a
-    title.
+    document resolves from. A heading is matched by the fragment a link names
+    it by, the slug of its title, since a section names it lower case and the
+    document heads it as a title.
     """
     path = (directory / document).resolve()
     if not path.is_file():
         raise CorpusError(f"a dispatch names {document}, which is no document")
     text = path.read_text()
-    start = re.search(rf"^#+ {re.escape(heading)}$", text, re.MULTILINE | re.IGNORECASE)
+    start = next(
+        (
+            match
+            for match in BUNDLE_HEADING.finditer(text)
+            if slug(match.group(2)) == heading.lower()
+        ),
+        None,
+    )
     if start is None:
         raise CorpusError(f"{document} holds no {heading} section")
     rest = text[start.end() :]
@@ -1251,34 +1622,70 @@ def nested_conditions(workflow: Workflow, root: Path) -> tuple[str, ...]:
 
 
 def dispatch_walk(
-    workflow: Workflow, form: str, inputs: dict[str, str]
+    workflow: Workflow, form: str, path: tuple[str, ...], inputs: dict[str, str]
 ) -> tuple[tuple[str, bool], ...]:
-    """The sub-agents a correct run of one form starts, in order.
+    """The sub-agents a correct run of one form starts along a path, in order.
+
+    Each pair is a start's section and whether it started beside the entry
+    above it, as `dispatch_starts` walks them.
+    """
+    return tuple(
+        (section, together)
+        for section, together, _ in dispatch_starts(workflow, form, path, inputs)
+    )
+
+
+def dispatch_starts(
+    workflow: Workflow, form: str, path: tuple[str, ...], inputs: dict[str, str]
+) -> tuple[tuple[str, bool, int], ...]:
+    """Each sub-agent start a correct run of one form makes along a path, in order.
 
     Each state on the path dispatches the targets its section's steps name,
     and a dispatched section dispatches its own targets in turn, so the walk
     is the source's statement of which sub-agents start, in what order, and
-    which of them start together. What each returns is the sub-agent's to
-    give, and a returned question's second start is the session's answer to
-    it, so neither is part of the walk.
+    which of them start together. A deferred composition a step reaches,
+    where its condition holds, is compiled by the agent following that step,
+    and the bundle that run writes dispatches the target's own targets, so
+    they start from that agent. Each start carries its depth: 0 for one the session
+    makes itself, one more for each sub-agent between. What each returns is
+    the sub-agent's to give, and a returned question's second start is the
+    session's answer to it, so neither is part of the walk.
     """
     root = workflow.form(form)
-    trace: list[tuple[str, bool]] = []
+    trace: list[tuple[str, bool, int]] = []
 
-    def follow(body: str, directory: Path) -> None:
-        for together, targets in dispatched(body, directory, root, form):
-            for index, target in enumerate(targets):
-                trace.append((target, together and index > 0))
-                document, _, heading = target.partition("#")
-                written = root / f"{document}.md"
+    def follow(body: str, directory: Path, depth: int, walked: list[str]) -> None:
+        for line in body.splitlines():
+            if (step := CONDITIONAL_STEP.match(line)) and not holds(
+                step.group(1), inputs, walked
+            ):
+                continue
+            for link in deferred_links(line):
+                document, _, heading = link.destination.partition("#")
+                written = (directory / document).resolve()
                 follow(
-                    section_body(written.parent, written.name, heading),
+                    section_body(written.parent, written.name, heading)
+                    if heading
+                    else authored(written),
                     written.parent,
+                    depth,
+                    walked,
                 )
+            for together, targets in dispatched(line, directory, root, form):
+                for index, target in enumerate(targets):
+                    trace.append((target, together and index > 0, depth))
+                    document, _, heading = target.partition("#")
+                    written = root / f"{document}.md"
+                    follow(
+                        section_body(written.parent, written.name, heading),
+                        written.parent,
+                        depth + 1,
+                        walked,
+                    )
 
-    for state in walk(workflow, form, inputs):
+    for index, state in enumerate(path):
         section = sections_of(workflow, form)[state]
-        follow(section.body, section.path.parent)
+        follow(section.body, section.path.parent, 0, list(path[: index + 1]))
     return tuple(trace)
 
 
@@ -1316,12 +1723,29 @@ def inputs_read(workflow: Workflow, form: str) -> set[str]:
             for condition in workflow.conditions.values()
             if condition.condition is not None
         }
-        return found | nested_inputs(workflow)
+        return found | nested_inputs(workflow) | deferral_inputs(workflow, form)
     written = form if form in workflow.sections else TRANSITION[form]
     return {
         input_read(section.transition.condition)
         for section in workflow.sections[written].values()
         if section.transition is not None and section.transition.condition is not None
+    } | deferral_inputs(workflow, form)
+
+
+def deferral_inputs(workflow: Workflow, form: str) -> set[str]:
+    """The inputs a form's conditional deferrals read, in any document of it.
+
+    A deferred directive under a conditional step is reached only where its
+    condition holds, and an activated target's own steps decide on inputs
+    too, so each document the form holds is read, not only its states.
+    """
+    if form not in workflow.forms:
+        return set()
+    return {
+        input_read(step.group(1))
+        for path in sorted(workflow.form(form).rglob("*.md"))
+        for line in authored(path).splitlines()
+        if deferred_links(line) and (step := CONDITIONAL_STEP.match(line))
     }
 
 
@@ -1336,7 +1760,13 @@ def successor(
     """The state one form's section for a state says comes next, if any."""
     if workflow.diagram.decisions:
         return drawn_successor(workflow, state, inputs, trace)
-    transition = sections_of(workflow, form)[state].transition
+    section = sections_of(workflow, form)[state]
+    if section.deferred:
+        raise CorpusError(
+            f"{workflow.name}: {state} defers its transition, which only the run"
+            " activating it states"
+        )
+    transition = section.transition
     if transition is None:
         # A plain state states no transition: the diagram's one edge is its
         # transition. A decision's section states the branch it takes, and a

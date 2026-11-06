@@ -20,7 +20,13 @@ from codex_agent import (
 from harness import Codex
 from run import BOOTSTRAP_SET, FORMS, matrix, prepare
 from score import names
-from workflow import SOURCE_DIR, CorpusError, entry_bundle, workflows
+from workflow import (
+    SOURCE_DIR,
+    CorpusError,
+    baseline_workflows,
+    entry_bundle,
+    workflows,
+)
 
 
 def event(
@@ -118,7 +124,9 @@ def finished(thread: str, text: str, turn: str = "turn-root") -> list[dict[str, 
     ]
 
 
-def test_native_response_groups_survive_interleaved_child_starts() -> None:
+def test_native_response_groups_survive_interleaved_child_starts(
+    tmp_path: Path,
+) -> None:
     events = [
         *group("a", "b"),
         call("a", "first", "Follow review__source.bundle.md"),
@@ -144,6 +152,15 @@ def test_native_response_groups_survive_interleaved_child_starts() -> None:
     ]
     assert all(row["returned"] == "done" for row in result["starts"])
     assert result["tokens"] == 240
+    transcript = tmp_path / "transcript.jsonl"
+    transcript.write_text(json.dumps(result) + "\n")
+    starts = Codex().starts(transcript)
+    assert [(start.actor, start.group, start.together) for start in starts] == [
+        ("root", "response-1", False),
+        ("first", "child-response", False),
+        ("root", "response-1", True),
+    ]
+    assert all(start.parent is None and start.commands == () for start in starts)
 
 
 def test_a_question_is_not_reused_as_a_followups_return() -> None:
@@ -338,7 +355,10 @@ def test_codex_bootstrap_material_uses_its_native_skill_root(tmp_path: Path) -> 
     assert (tmp_path / ".agents/skills/bootstrap-audit/SKILL.md").is_file()
     assert not (tmp_path / ".claude").exists()
     assert not (tmp_path / "bin/pf").exists()
-    assert len(matrix(workflows(), ["gpt-6.1-sol"], list(FORMS), 1, Codex())) == 76
+    assert (
+        len(matrix(baseline_workflows(), ["gpt-6.1-sol"], list(FORMS), 1, Codex()))
+        == 76
+    )
 
 
 def test_native_thread_readback_refuses_another_model_or_outside_instructions(

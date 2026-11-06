@@ -30,7 +30,6 @@ Each class the [scorer](score.py) defines, and `errored`:
 | Class | `miss` when | `defect` when | `unclear` when |
 | --- | --- | --- | --- |
 | `missing_action` | The state's or dispatched section in the session's form names the file and value the scorer reads, and the transcript, the sub-agent's included, writes no such file or another value. | The form states another file or value than the scorer reads, `answers.txt` holds no answer the dispatched section can take, or the transcript writes the right value and `actions/` lacks it. | The transcript's writes cannot be matched to the record. |
-| `unbootstrapped` | The transcript runs no `pf` and the session read the sources directly. | The transcript runs `pf` and the verdict says it did not, or `stderr.log` shows no `pf` on the session's path. | The transcript's commands are absent or cut short. |
 | `unfinished` | The session ended on its own before the path's end: its `result` message claims completion, asks a question or gives up, and its exit status is not `timeout`. | The session was cut off while progressing: its exit status is `timeout` or its `result` names its session cap, with the transcript still walking states; or its trace went to a file other than `trace.log`. | The session timed out with no progress the transcript shows. |
 | `invented_state` | The name entered at `divergence` is no heading of the session's form, written though the form spells the state as the path does. | The session's form spells that state as the session wrote it, so the form and the path disagree. | The name is close to a heading in a way neither the form nor the instruction settles. |
 | `loop_miscount` | `inputs/` holds the scenario's value, the loop's decision in the form reads it as the path does, and the session looped otherwise. | The input as written, or the decision as the form states it, gives the count the session walked. | The decision's wording admits both counts. |
@@ -40,6 +39,9 @@ Each class the [scorer](score.py) defines, and `errored`:
 | `undispatched` | The transcript holds no `Agent` prompt naming a dispatched section's compiled file or authored reference, or holds them in another order, while the form states the dispatch. | The transcript holds those prompt targets in the scenario's order and `subagents.json` omits or reorders them. | A prompt's target cannot be matched to the form's files or authored references. |
 | `sequential_set` | The transcript starts the set's members across more than one assistant message. | The transcript starts them in one message and `subagents.json` records them apart. | The stream's message boundaries are absent. |
 | `unrelayed_question` | The sub-agent's report in the transcript opens with a question, and the session went on without starting it again with the answers. | `subagents.json` reads the return otherwise than the report inside the transcript's hand-back frame holds it. | The report's text is cut off. |
+| `uncompiled` | A run a `[[scenario.compile]]` table states for an agent is in neither that agent's `commands` in `subagents.json` nor the transcript's shell calls, while the session's form states the line, link or guide run it compiles on a step the path reached. | The transcript's shell calls make that run and `subagents.json` omits it or gives it to another agent; or the form states no line, link or guide run for it on the path. | The transcript's shell calls are cut short, or a command's words cannot be split to read its references. |
+| `overcompiled` | An agent's `commands` run `pf` on a reference no `[[scenario.compile]]` table states for it, as on a line whose step does not hold for the scenario's `inputs/`, and the form states no such line on the path. | The form states that reference on the path and the tables omit it; the reference is a stated one spelled in a way the scorer does not match; or the harness, not the agent, ran the command. | The step's condition admits reaching the line either way. |
+| `misordered_compile` | The agent made every stated run, the transcript's shell calls make them in the order its `commands` record, and the form's steps reach their lines in the tables' order. | The transcript's shell calls make them in the tables' order and `subagents.json` records another; or the form's steps reach the lines in another order than the tables state. | One assistant message holds several of the runs, so their order is not settled. |
 | `errored` | Never: the session entered no state. | The `result` text or `stderr.log` names the cause: a refusal, a spent or expired login, an unknown model or flag, a crash, a provider error. | Neither names a cause. |
 
 ### Dispositions File
@@ -138,7 +140,7 @@ The baseline over the hardened corpus, run by [I10:E00](https://github.com/m2ux/
 | --- | --- |
 | Harness | `opencode` |
 | Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
-| Workflows | Every workflow: the default `--workflows`. |
+| Workflows | The baseline workflows: the default `--workflows`. Edge workflows are selected explicitly for the composition-edge run. |
 | Forms | The default `--forms`: each workflow in every form it is written in that the opencode harness runs. |
 | Repetitions | 5 |
 | Sessions | The matrix's cells times 5, as the run prints them before its first session. |
