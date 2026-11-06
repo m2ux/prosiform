@@ -14,6 +14,13 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | --- | --- |
 | [w02.md](w02.md) | Component plan and required checks |
 | [todos.md](todos.md) | Unit delivery checklist |
+| [validation.md](validation.md) | Exact revision, observing checks and review findings |
+| [changes.md](changes.md) | Applied criterion-boundary clarification |
+| [source-reader-check.txt](source-reader-check.txt) | Source and shared-reader tests at the committed head |
+| [make-check.txt](make-check.txt) | Full deterministic check output |
+| [reservation.json](reservation.json) | Unit planning, delivery or verification evidence |
+| [start-evidence.json](start-evidence.json) | Unit planning, delivery or verification evidence |
+| [unit.json](unit.json) | Unit planning, delivery or verification evidence |
 
 ## Links
 
