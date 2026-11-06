@@ -58,6 +58,27 @@ sub-agents it started, and a record failing two checks takes the earlier.
 A scenario that dispatches nothing passes all four, and a record absent
 from a session that dispatches nothing names no start.
 
+A scenario also states the `pf` runs a correct run makes, so a run that
+passes the dispatch checks and its sub-agents' actions is held to them
+wherever its harness reports the commands a session ran. The record holds
+the session's commands beside its starts, and each start the commands its
+own sub-agent ran. A command is a
+`pf` run in each segment `;`, `&&`, `||` or `|` separate whose first word is
+`pf` or a path ending `/pf`, and the run's references are its words other
+than options and their values. A reference names a stated one when it is that
+reference or ends `/` and that reference, so a run from another directory
+names the same document. Each agent's runs, the session's and each started
+sub-agent's, are held to the runs stated for it:
+
+- every stated run was made: otherwise *uncompiled*;
+- every run naming a reference is a stated one: otherwise *overcompiled*,
+  as a run on a deferred line the path did not reach is. A bare `pf` beyond
+  those stated prints the guide and compiles nothing, so it is no departure;
+- the stated runs were made in their order: otherwise *misordered_compile*.
+
+The checks are read in that order, after the dispatch checks, so a sub-agent
+that never started fails *undispatched* rather than leaving its runs unmade.
+
 A start is an `Agent` tool call in the transcript, whose prompt names the
 compiled file or authored section it hands over; its
 return is the sub-agent's report, read as `question` when its first line opens
@@ -72,6 +93,7 @@ The verdict's `record` is the form the runner writes and the report reads.
 
 import json
 import re
+import shlex
 from dataclasses import asdict, dataclass
 from enum import StrEnum
 from pathlib import Path
@@ -87,13 +109,17 @@ __all__ = [
     "Failure",
     "Start",
     "Verdict",
+    "pf_runs",
+    "read_commands",
     "read_starts",
     "read_trace",
-    "record_starts",
+    "record_calls",
     "score",
 ]
 from workflow import (
+    BOOTSTRAP,
     FEWER,
+    SHELL_FORMS,
     SOURCE_DIR,
     START,
     Dispatch,
@@ -101,6 +127,12 @@ from workflow import (
     Workflow,
     entry_bundle,
 )
+
+PF = "pf"
+SEPARATORS = re.compile(r"&&|\|\||[;|\n]")
+"""What separates one command of a shell line from the next."""
+VALUED = frozenset({"-o", "-d", "--budget"})
+"""The `pf` options taking a value as the next word, which is no reference."""
 
 TRACE = "trace.log"
 """The path a session writes its own states to."""
@@ -134,7 +166,9 @@ class Failure(StrEnum):
     UNDISPATCHED = "undispatched"
     SEQUENTIAL_SET = "sequential_set"
     UNRELAYED_QUESTION = "unrelayed_question"
-    UNBOOTSTRAPPED = "unbootstrapped"
+    UNCOMPILED = "uncompiled"
+    OVERCOMPILED = "overcompiled"
+    MISORDERED_COMPILE = "misordered_compile"
     ERRORED = "errored"
 
 
@@ -230,21 +264,67 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
     return Failure.INVALID_TRANSITION
 
 
-def record_starts(
-    transcript: Path, records: Path, harness: Harness
-) -> tuple[Start, ...]:
-    """Read a session's transcript for its sub-agent starts and record them.
+def sub_agent_undone(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
+    """The action files a scenario's sub-agents leave undone, in trace order."""
+    return tuple(
+        dict.fromkeys(
+            due.action[0]
+            for due in scenario.trace
+            if due.action is not None and not written(due.action, workspace)
+        )
+    )
 
-    The record is `subagents.json` beside the trace and the session's tokens,
-    one entry per start in the order the transcript made them, so the scorer
-    reads it instead of the transcript. The harness reads its own stream, so
-    one record shape serves every agent CLI.
+
+def record_calls(
+    transcript: Path, records: Path, harness: Harness, form: str
+) -> tuple[Start, ...]:
+    """Read a session's transcript for its commands and starts and record them.
+
+    The record is `subagents.json` beside the trace and the session's tokens:
+    `commands`, the shell commands the session ran, null where the harness
+    gives a session in its corpus form, `form`, no `pf`, and `starts`, one
+    entry per start in the order the transcript made them, each naming its
+    parent start and its sub-agent's commands. The scorer reads it instead of
+    the transcript. The harness reads its own stream, so one record shape
+    serves every agent CLI.
     """
     starts = harness.starts(transcript)
-    (records / SUBAGENTS).write_text(
-        json.dumps({"starts": [start.record() for start in starts]}, indent=2) + "\n"
-    )
+    commands = harness.commands(transcript) if form in SHELL_FORMS else None
+    held = {
+        "commands": None if commands is None else list(commands),
+        "starts": [start.record() for start in starts],
+    }
+    (records / SUBAGENTS).write_text(json.dumps(held, indent=2) + "\n")
     return starts
+
+
+def _held(workspace: Path) -> dict[str, object]:
+    """The record a workspace holds, or nothing where it holds none readable."""
+    path = workspace / SUBAGENTS
+    if not path.is_file():
+        return {}
+    try:
+        held = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return {}
+    return held if isinstance(held, dict) else {}
+
+
+def _texts(value: object) -> tuple[str, ...]:
+    """The strings a record's list holds, in order."""
+    if not isinstance(value, list):
+        return ()
+    return tuple(item for item in value if isinstance(item, str))
+
+
+def read_commands(workspace: Path) -> tuple[str, ...] | None:
+    """The shell commands a workspace's record says the session ran.
+
+    A record naming no list says the harness reports no command, so nothing
+    can be asked of what the session ran.
+    """
+    commands = _held(workspace).get("commands")
+    return _texts(commands) if isinstance(commands, list) else None
 
 
 def read_starts(workspace: Path) -> tuple[Start, ...]:
@@ -253,26 +333,109 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
     The record is read as the runner wrote it, so the scorer takes no second
     read of the transcript, and a workspace with no record names no start.
     """
-    path = workspace / SUBAGENTS
-    if not path.is_file():
-        return ()
-    try:
-        held = json.loads(path.read_text())
-    except json.JSONDecodeError:
-        return ()
-    if not isinstance(held, dict):
-        return ()
+    rows = _held(workspace).get("starts", [])
     return tuple(
         Start(
             str(row.get("target", "")),
             str(row.get("returned", "")),
             bool(row.get("together")),
+            row["parent"] if isinstance(row.get("parent"), int) else None,
+            _texts(row.get("commands")),
             row.get("actor"),
             row.get("group"),
         )
-        for row in held.get("starts", [])
+        for row in (rows if isinstance(rows, list) else [])
         if isinstance(row, dict)
     )
+
+
+def _words(segment: str) -> list[str]:
+    """One command's words, as the shell splits them where it can."""
+    try:
+        return shlex.split(segment)
+    except ValueError:
+        return segment.split()
+
+
+def pf_runs(commands: tuple[str, ...]) -> list[tuple[str, ...]]:
+    """The `pf` runs a list of shell commands makes, each as its references.
+
+    A run is a command whose first word is `pf` or a path ending `/pf`, since
+    a command may name the build by a directory. Its references are its words
+    other than an option and the value an option takes.
+    """
+    runs: list[tuple[str, ...]] = []
+    for command in commands:
+        for segment in SEPARATORS.split(command):
+            words = _words(segment)
+            if not words or words[0].rsplit("/", 1)[-1] != PF:
+                continue
+            references: list[str] = []
+            skip = False
+            for word in words[1:]:
+                if skip:
+                    skip = False
+                elif word in VALUED:
+                    skip = True
+                elif not word.startswith("-"):
+                    references.append(word.removeprefix("./"))
+            runs.append(tuple(references))
+    return runs
+
+
+def _names(made: tuple[str, ...], stated: tuple[str, ...]) -> bool:
+    """Whether a run's references are a stated run's, from any directory."""
+    return len(made) == len(stated) and all(
+        reference == due or reference.endswith(f"/{due}")
+        for reference, due in zip(made, stated, strict=True)
+    )
+
+
+def _held_to(
+    made: list[tuple[str, ...]], stated: list[tuple[str, ...]]
+) -> Failure | None:
+    """The first run check one agent's runs fail, or nothing when they pass."""
+    if not all(any(_names(run, due) for run in made) for due in stated):
+        return Failure.UNCOMPILED
+    if any(run and not any(_names(run, due) for due in stated) for run in made):
+        return Failure.OVERCOMPILED
+    cursor = 0
+    for run in made:
+        if cursor < len(stated) and _names(run, stated[cursor]):
+            cursor += 1
+    return None if cursor == len(stated) else Failure.MISORDERED_COMPILE
+
+
+def compiles(
+    scenario: Scenario,
+    commands: tuple[str, ...],
+    starts: tuple[Start, ...],
+    source_directory: str = "",
+) -> Failure | None:
+    """The first run check a session's record fails, or nothing when it passes.
+
+    The session's runs are read from its own commands, and a sub-agent's from
+    the commands of every start naming its section, so a section dispatched
+    again keeps one sequence of runs. Each check is read over every agent
+    before the next, so a record failing two takes the earlier.
+    """
+    agents: dict[str | None, list[tuple[str, ...]]] = {None: pf_runs(commands)}
+    for section in dict.fromkeys(entry.section for entry in scenario.trace):
+        agents[section] = pf_runs(
+            tuple(
+                command
+                for start in starts
+                if names(start.target, section, source_directory)
+                for command in start.commands
+            )
+        )
+    stated = {
+        agent: [run.args for run in scenario.compile if run.by == agent]
+        for agent in agents
+    }
+    found = [_held_to(made, stated[agent]) for agent, made in agents.items()]
+    order = (Failure.UNCOMPILED, Failure.OVERCOMPILED, Failure.MISORDERED_COMPILE)
+    return next((failure for failure in order if failure in found), None)
 
 
 def names(target: str, section: str, source_directory: str = "") -> bool:
@@ -406,15 +569,8 @@ def score(
     workflow: Workflow,
     scenario: Scenario,
     workspace: Path,
-    compiled: bool | None = None,
 ) -> Verdict:
-    """The verdict on one finished workspace for one scenario.
-
-    `compiled` states whether a form whose material must be compiled saw that
-    compile run. A session that followed the sources without compiling is
-    `unbootstrapped`, since the step the form exists to perform did not
-    happen whatever its trace shows.
-    """
+    """The verdict on one finished workspace for one scenario."""
     expected = scenario.path
     actual = read_trace(workspace)
     missing = undone(workflow, actual, workspace)
@@ -441,22 +597,20 @@ def score(
             return Verdict(
                 False, Failure.MISSING_ACTION, missing[0], expected, actual, actions
             )
-        if compiled is False:
-            return Verdict(False, Failure.UNBOOTSTRAPPED, 0, expected, actual, actions)
-        order = dispatched(
-            scenario, read_starts(workspace), SOURCE_DIR if compiled is not None else ""
-        )
+        starts = read_starts(workspace)
+        commands = read_commands(workspace)
+        source_directory = SOURCE_DIR if BOOTSTRAP in workflow.forms else ""
+        order = dispatched(scenario, starts, source_directory)
         if order is not None:
             return Verdict(False, order, None, expected, actual, actions)
-        unwritten = tuple(
-            due.action[0]
-            for due in scenario.trace
-            if due.action is not None and not written(due.action, workspace)
-        )
-        if unwritten:
+        if undone_by := sub_agent_undone(scenario, workspace):
             return Verdict(
-                False, Failure.MISSING_ACTION, None, expected, actual, unwritten
+                False, Failure.MISSING_ACTION, None, expected, actual, undone_by
             )
+        if commands is not None:
+            order = compiles(scenario, commands, starts, source_directory)
+            if order is not None:
+                return Verdict(False, order, None, expected, actual, actions)
         return Verdict(True, None, None, expected, actual, actions)
     elif divergence == len(actual):
         failure, at = Failure.UNFINISHED, divergence

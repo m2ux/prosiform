@@ -118,7 +118,7 @@ def recorded(tmp_path: Path) -> Path:
             "scenario": scenario,
             "form": form,
             "repetition": repetitions[cell],
-            "command": ["claude", "-p"],
+            "commands": {"bundle": ["claude", "-p"]},
             "exit_status": status,
             "duration_seconds": 12.5,
             "usage": None if cost is None else USAGE,
@@ -138,7 +138,7 @@ def recorded(tmp_path: Path) -> Path:
         "run_id": "recorded",
         "date": "2026-10-27T10:00:00+00:00",
         "options": {"models": f"{HAIKU},{SONNET}", "repetitions": 4},
-        "command": ["claude", "-p"],
+        "commands": {"bundle": ["claude", "-p"]},
         "harness": "claude",
         "sessions": len(RECORDED) + len(NOT_STARTED),
         "started": len(RECORDED),
@@ -415,7 +415,7 @@ def test_a_refused_run_gives_its_state_and_reason_and_no_row(
         "run_id": "refused",
         "date": "2026-10-27T11:00:00+00:00",
         "options": {"models": HAIKU, "repetitions": 1},
-        "command": ["claude", "-p"],
+        "commands": {"bundle": ["claude", "-p"]},
         "state": "refused",
         "reason": "You've hit your weekly limit · resets Monday",
         "sessions": 1,
@@ -471,11 +471,11 @@ def test_a_run_that_measured_no_cell_writes_no_baseline(
     """A completed run that started nothing leaves the committed baseline whole."""
     directory = tmp_path / "results" / "empty"
     directory.mkdir(parents=True)
-    run = {
+    run: dict[str, object] = {
         "run_id": "empty",
         "date": "2026-10-27T12:00:00+00:00",
         "options": {"models": HAIKU, "repetitions": 1},
-        "command": ["claude", "-p"],
+        "commands": {"bundle": ["claude", "-p"]},
         "state": "completed",
         "reason": None,
         "sessions": 0,

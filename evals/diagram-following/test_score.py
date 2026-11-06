@@ -9,6 +9,7 @@ dispatch class by one record built to fail that check and no earlier one.
 """
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -21,12 +22,13 @@ from score import (
     Start,
     Verdict,
     names,
+    pf_runs,
     read_starts,
     read_trace,
-    record_starts,
+    record_calls,
     score,
 )
-from workflow import Scenario, Workflow, workflows
+from workflow import COMPILED_FORM, Compile, Scenario, Workflow, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -67,11 +69,7 @@ def workspace(
     log: str | None = None,
     starts: list[Start] | None = None,
 ) -> Path:
-    """A workspace holding a trace, every action, and the sub-agent record.
-
-    Every action is the path's states' and the sub-agents' the workflow's
-    scenarios state.
-    """
+    """A workspace holding a trace, its states' actions, and the sub-agent record."""
     if log is None:
         log = "".join(f"{state}\n" for state in trace)
     (tmp_path / TRACE).write_text(log)
@@ -82,20 +80,25 @@ def workspace(
             continue
         name, value = action
         (tmp_path / ACTIONS / name).write_text(f"{value}\n")
-    for item in workflow.scenarios:
-        for entry in item.trace:
-            if entry.action is not None:
-                name, value = entry.action
-                (tmp_path / ACTIONS / name).write_text(f"{value}\n")
     record(tmp_path, list(starts or []))
     return tmp_path
+
+
+def done_by_sub_agents(held: Path, item: Scenario) -> Path:
+    """Write the actions a scenario states its sub-agents do, as they would."""
+    for entry in item.trace:
+        if entry.action is not None:
+            name, value = entry.action
+            (held / ACTIONS / name).write_text(f"{value}\n")
+    return held
 
 
 def run(tmp_path: Path, workflow: str, name: str, trace: list[str]) -> Verdict:
     """The verdict on a hand-made trace for one scenario."""
     held = CORPUS[workflow]
     item = scenario(workflow, name)
-    return score(held, item, workspace(tmp_path, held, trace, starts=starts_of(item)))
+    records = workspace(tmp_path, held, trace, starts=starts_of(item))
+    return score(held, item, done_by_sub_agents(records, item))
 
 
 @pytest.mark.parametrize(
@@ -108,24 +111,29 @@ def test_a_run_walking_its_scenario_path_with_every_action_passes(
 ) -> None:
     """AC3: a dispatch scenario's own record passes beside its path."""
     held = workspace(tmp_path, workflow, list(item.path), starts=starts_of(item))
+    done_by_sub_agents(held, item)
     assert score(workflow, item, held) == Verdict(
         True, None, None, item.path, item.path, ()
     )
 
 
 @pytest.mark.parametrize(
-    "workflow",
-    [workflow for workflow in CORPUS if workflow.startswith("dispatch")],
+    ("workflow", "name"),
+    [
+        (workflow, item.name)
+        for workflow in CORPUS
+        if workflow.startswith("dispatch")
+        for item in CORPUS[workflow].scenarios
+    ],
 )
 def test_a_dispatch_scenario_passes_on_its_path_and_its_record(
-    tmp_path: Path, workflow: str
+    tmp_path: Path, workflow: str, name: str
 ) -> None:
     """AC3: every bundle a scenario names reached a sub-agent, in its order."""
     held = CORPUS[workflow]
-    [item] = held.scenarios
-    verdict = score(
-        held, item, workspace(tmp_path, held, list(item.path), starts=starts_of(item))
-    )
+    item = scenario(workflow, name)
+    records = workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    verdict = score(held, item, done_by_sub_agents(records, item))
     assert (verdict.passed, verdict.failure, len(read_starts(tmp_path))) == (
         True,
         None,
@@ -360,7 +368,8 @@ def dispatched(workflow: str, starts: list[Start], tmp_path: Path) -> Verdict:
     """The verdict on a dispatch scenario's own path with a chosen record."""
     held = CORPUS[workflow]
     [item] = held.scenarios
-    return score(held, item, workspace(tmp_path, held, list(item.path), starts=starts))
+    records = workspace(tmp_path, held, list(item.path), starts=starts)
+    return score(held, item, done_by_sub_agents(records, item))
 
 
 def test_a_bundle_that_reached_no_sub_agent_is_undispatched(
@@ -394,15 +403,15 @@ def test_a_native_parallel_set_keeps_its_response_group_across_child_events(
     verdict = dispatched(
         "dispatch-set",
         [
-            Start(first.section, "done", False, "root", "response-1"),
+            Start(first.section, "done", False, actor="root", group="response-1"),
             Start(
                 "a child starts unrelated work",
                 "done",
                 False,
-                "child",
-                "child-response",
+                actor="child",
+                group="child-response",
             ),
-            Start(second.section, "done", True, "root", "response-1"),
+            Start(second.section, "done", True, actor="root", group="response-1"),
         ],
         tmp_path,
     )
@@ -414,8 +423,8 @@ def test_native_starts_from_separate_responses_are_sequential(tmp_path: Path) ->
     verdict = dispatched(
         "dispatch-set",
         [
-            Start(first.section, "done", False, "root", "response-1"),
-            Start(second.section, "done", True, "root", "response-2"),
+            Start(first.section, "done", False, actor="root", group="response-1"),
+            Start(second.section, "done", True, actor="root", group="response-2"),
         ],
         tmp_path,
     )
@@ -521,6 +530,7 @@ def test_a_sub_agent_that_wrote_no_action_is_missing_action(tmp_path: Path) -> N
     held = CORPUS["dispatch-set"]
     [item] = held.scenarios
     workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    done_by_sub_agents(tmp_path, item)
     (tmp_path / ACTIONS / "tests.txt").write_text("skimmed\n")
     verdict = score(held, item, tmp_path)
     assert (verdict.failure, verdict.divergence, verdict.actions) == (
@@ -633,7 +643,7 @@ def test_a_start_is_read_from_the_transcript_with_its_position_and_return(
     )
     records = tmp_path / "records"
     records.mkdir()
-    record_starts(held, records, Claude())
+    record_calls(held, records, Claude(), COMPILED_FORM)
     assert read_starts(records) == (
         Start("plan#work", "done", False),
         Start("review#source", "question", False),
@@ -662,6 +672,49 @@ def test_a_start_names_its_file_or_authored_section_exactly() -> None:
     assert names("Follow the Review section", "plan#work") is False
 
 
+def test_a_bundle_of_a_document_in_a_folder_names_its_section() -> None:
+    """`pf` writes each `/` of a dispatched document's path as `_` in its bundle."""
+    assert names("Dispatch ask_enquiry__pose.bundle.md", "ask/enquiry#pose") is True
+    assert names("Dispatch ask_probe__probe.bundle.md", "ask/enquiry#pose") is False
+
+
+@pytest.mark.parametrize(
+    ("name", "undone"),
+    [
+        ("first-hop-run", ("closing.txt",)),
+        ("deep-hop-runs", ("weighing.txt", "ruling.txt")),
+    ],
+)
+def test_a_sub_agent_running_no_pf_on_its_line_misses_its_action(
+    tmp_path: Path, name: str, undone: tuple[str, ...]
+) -> None:
+    """AC17, AC18: only the line's compiled material states the sub-agent's action.
+
+    Each start is recorded, and the session's path and its states' actions are
+    done, so a sub-agent that ran no `pf` on its line leaves only the action
+    that material states undone, which no harness's stream need carry.
+    """
+    held = CORPUS["subagent-first-run"]
+    item = scenario("subagent-first-run", name)
+    workspace(tmp_path, held, list(item.path), starts=starts_of(item))
+    verdict = score(held, item, tmp_path)
+    assert verdict == Verdict(
+        False, Failure.MISSING_ACTION, None, item.path, item.path, undone
+    )
+    done_by_sub_agents(tmp_path, item)
+    assert score(held, item, tmp_path).passed is True
+
+
+def test_a_sub_agent_never_started_is_undispatched_before_its_action(
+    tmp_path: Path,
+) -> None:
+    """AC18: the dispatch checks read first, so an unstarted hop is `undispatched`."""
+    held = CORPUS["subagent-first-run"]
+    item = scenario("subagent-first-run", "deep-hop-runs")
+    workspace(tmp_path, held, list(item.path), starts=starts_of(item)[:2])
+    assert score(held, item, tmp_path).failure == Failure.UNDISPATCHED
+
+
 def test_a_start_naming_its_compiled_bundle_names_the_same_section(
     tmp_path: Path,
 ) -> None:
@@ -681,7 +734,9 @@ def test_an_absent_transcript_records_no_start(tmp_path: Path) -> None:
     """A session that dispatched nothing, or wrote no transcript, records none."""
     records = tmp_path / "records"
     records.mkdir()
-    assert record_starts(tmp_path / "absent.jsonl", records, Claude()) == ()
+    assert (
+        record_calls(tmp_path / "absent.jsonl", records, Claude(), COMPILED_FORM) == ()
+    )
     assert read_starts(records) == ()
     assert read_starts(tmp_path / "unwritten") == ()
 
@@ -734,10 +789,212 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
     records = tmp_path / "records"
     records.mkdir()
     workspace(records, corpus, list(item.path))
-    record_starts(held, records, Opencode())
+    done_by_sub_agents(records, item)
+    record_calls(held, records, Opencode(), COMPILED_FORM)
     assert [start.returned for start in read_starts(records)] == [
         "question",
         "done",
     ]
     verdict = score(corpus, item, records)
     assert (verdict.passed, verdict.failure) == (True, None)
+
+
+STATED_RUNS = (
+    Compile(None, ()),
+    Compile(None, ("fetch.md#implementation",)),
+    Compile("review#tests", ()),
+    Compile("review#tests", ("net.md#retry",)),
+)
+"""Runs a compiled scenario states: the session's two, then a sub-agent's two."""
+
+
+def compiling(
+    tmp_path: Path,
+    session: list[str] | None,
+    sub_agent: list[str],
+    runs: tuple[Compile, ...] = STATED_RUNS,
+) -> Verdict:
+    """The verdict on a correct walk of `dispatch-set` whose record holds commands.
+
+    The scenario states `runs`; the session ran `session`, null where its
+    harness reports no command, and the sub-agent following `review#tests` ran
+    `sub_agent`.
+    """
+    workflow = CORPUS["dispatch-set"]
+    item = replace(scenario("dispatch-set", "parallel-set"), compile=runs)
+    held = workspace(tmp_path, workflow, list(item.path))
+    done_by_sub_agents(held, item)
+    starts = [
+        replace(start, commands=tuple(sub_agent))
+        if start.target == "review#tests"
+        else start
+        for start in starts_of(item)
+    ]
+    (held / SUBAGENTS).write_text(
+        json.dumps(
+            {"commands": session, "starts": [start.record() for start in starts]}
+        )
+    )
+    return score(workflow, item, held)
+
+
+CORRECT_SESSION = ["pf", "./bin/pf -o out fetch.md#implementation"]
+CORRECT_SUB_AGENT = ["pf && pf -o out 'net.md#retry'"]
+
+
+def test_a_session_making_its_stated_runs_passes(tmp_path: Path) -> None:
+    """AC4: the stated runs, each by its agent and in order, pass."""
+    verdict = compiling(tmp_path, CORRECT_SESSION, CORRECT_SUB_AGENT)
+    assert (verdict.passed, verdict.failure) == (True, None)
+
+
+@pytest.mark.parametrize(
+    ("session", "sub_agent", "failure"),
+    [
+        (["pf"], CORRECT_SUB_AGENT, Failure.UNCOMPILED),
+        (CORRECT_SESSION, ["pf"], Failure.UNCOMPILED),
+        (
+            [*CORRECT_SESSION, "pf -o out net.md#retry"],
+            CORRECT_SUB_AGENT,
+            Failure.OVERCOMPILED,
+        ),
+        (
+            CORRECT_SESSION,
+            [*CORRECT_SUB_AGENT, "cd . ; pf fetch.md#implementation"],
+            Failure.OVERCOMPILED,
+        ),
+        (
+            list(reversed(CORRECT_SESSION)),
+            CORRECT_SUB_AGENT,
+            Failure.MISORDERED_COMPILE,
+        ),
+        (CORRECT_SESSION, ["pf net.md#retry", "pf"], Failure.MISORDERED_COMPILE),
+        (["pf other.md"], ["pf"], Failure.UNCOMPILED),
+    ],
+    ids=[
+        "session-omits",
+        "sub-agent-omits",
+        "session-adds",
+        "sub-agent-adds",
+        "session-reorders",
+        "sub-agent-reorders",
+        "omission-before-addition",
+    ],
+)
+def test_a_session_departing_from_its_stated_runs_fails_with_its_class(
+    tmp_path: Path, session: list[str], sub_agent: list[str], failure: Failure
+) -> None:
+    """AC4: a run omitted, added or out of order fails the walk that passed."""
+    verdict = compiling(tmp_path, session, sub_agent)
+    assert (verdict.passed, verdict.failure, verdict.divergence) == (
+        False,
+        failure,
+        None,
+    )
+
+
+def test_a_run_on_a_line_no_scenario_states_is_overcompiled(tmp_path: Path) -> None:
+    """AC4: a scenario stating no run fails a session compiling a deferred line."""
+    verdict = compiling(tmp_path, ["pf -o out net.md#retry"], [], runs=())
+    assert verdict.failure == Failure.OVERCOMPILED
+
+
+def test_a_bare_pf_beyond_those_stated_is_no_departure(tmp_path: Path) -> None:
+    """A bare `pf` prints the guide and compiles nothing, so it adds no run."""
+    verdict = compiling(tmp_path, ["pf", *CORRECT_SESSION], CORRECT_SUB_AGENT)
+    assert verdict.passed is True
+
+
+def test_a_run_from_another_directory_names_the_same_document(tmp_path: Path) -> None:
+    """A reference ending in the stated one names it, wherever `pf` ran from."""
+    runs = (Compile(None, ("sources/workflow.md",)),)
+    named = [
+        ".claude/skills/audit/bin/pf -o build"
+        " ./.claude/skills/audit/sources/workflow.md"
+    ]
+    assert compiling(tmp_path, named, [], runs=runs).passed is True
+    assert compiling(tmp_path, ["pf other/workflow.md"], [], runs=runs).failure == (
+        Failure.UNCOMPILED
+    )
+
+
+def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, object]:
+    """One Claude assistant message holding one call, under `owner`'s `Agent` call."""
+    return {
+        "type": "assistant",
+        "parent_tool_use_id": owner,
+        "message": {"content": [{"type": "tool_use", **block}]},
+    }
+
+
+@pytest.mark.parametrize(
+    ("ruling", "failure"),
+    [
+        (["pf steps/recording.md#file"], None),
+        (["pf steps/recording.md#file", "pf steps/closing.md#close"], "over"),
+        ([], "un"),
+    ],
+    ids=["stated", "unstated-run", "no-run"],
+)
+def test_a_compiled_claude_record_holds_each_hops_runs(
+    tmp_path: Path, ruling: list[str], failure: str | None
+) -> None:
+    """AC26: `deep-hop-runs` is scored on each nested start's sub-agent runs.
+
+    The stream a compiled Claude session prints files each `Bash` call under
+    the `Agent` call its sub-agent runs under, so the ruling's runs, three
+    hops down, are held to the one the scenario states by the ruling.
+    """
+    workflow = CORPUS["subagent-first-run"]
+    item = scenario("subagent-first-run", "deep-hop-runs")
+    records = tmp_path / "records"
+    records.mkdir()
+    held = done_by_sub_agents(workspace(records, workflow, list(item.path)), item)
+
+    def task(key: str, target: str) -> dict[str, object]:
+        return {"id": key, "name": "Agent", "input": {"prompt": target}}
+
+    def bash(command: str) -> dict[str, object]:
+        return {"id": f"bash-{command}", "name": "Bash", "input": {"command": command}}
+
+    stream = tmp_path / "transcript.jsonl"
+    lines = [
+        claude_message(None, task("a", "hop/audit#sweep")),
+        claude_message("a", task("b", "hop/review#scan")),
+        claude_message("b", bash("pf steps/weighing.md#weigh")),
+        claude_message("b", task("c", "steps/ruling#rule")),
+        *(claude_message("c", bash(command)) for command in ruling),
+    ]
+    stream.write_text("".join(json.dumps(line) + "\n" for line in lines))
+    record_calls(stream, held, Claude(), COMPILED_FORM)
+    expected = {
+        None: None,
+        "over": Failure.OVERCOMPILED,
+        "un": Failure.UNCOMPILED,
+    }[failure]
+    assert score(workflow, item, held).failure == expected
+
+
+def test_a_harness_reporting_no_command_asks_no_run(tmp_path: Path) -> None:
+    """A record naming no commands holds the session to none of its runs."""
+    assert compiling(tmp_path, None, []).passed is True
+
+
+def test_the_run_checks_follow_the_dispatch_checks(tmp_path: Path) -> None:
+    """A record failing a dispatch check takes it, whatever its runs."""
+    workflow = CORPUS["dispatch-set"]
+    item = replace(scenario("dispatch-set", "parallel-set"), compile=STATED_RUNS)
+    held = workspace(tmp_path, workflow, list(item.path))
+    (held / SUBAGENTS).write_text(json.dumps({"commands": [], "starts": []}))
+    assert score(workflow, item, held).failure == Failure.UNDISPATCHED
+
+
+def test_each_command_splits_into_the_pf_runs_it_makes() -> None:
+    """A run is a segment opening with `pf`, its references stripped of options."""
+    assert pf_runs(
+        (
+            "pf",
+            "cd build && ../bin/pf -o out -d json --budget files=9 a.md#b | cat",
+            "echo pf; ls; pfx a.md || pf -c 'c d.md'",
+        )
+    ) == [(), ("a.md#b",), ("c d.md",)]

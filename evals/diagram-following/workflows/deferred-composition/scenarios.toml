@@ -1,0 +1,39 @@
+# A scenario is the inputs a run is given, the path a correct run walks and the
+# pf runs it makes. Each input is a file under inputs/ holding the value
+# written, then a newline. A compile entry names the reference one pf run
+# compiles, from the workspace, in the order the session makes them.
+#
+# Relocate defers the migration's steps under a step that holds where
+# scope.txt reads large, and those steps defer the archive's under one that
+# holds where history.txt reads kept. A run is stated for each line a step
+# that holds reaches, and the archive's line is reached only once the
+# migration's run has compiled it.
+
+[[scenario]]
+name = "deferral-reached"
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
+inputs = { "scope.txt" = "large", "history.txt" = "dropped" }
+
+[[scenario.compile]]
+args = ["reference/migration.md#steps"]
+
+[[scenario]]
+name = "deferral-passed"
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
+inputs = { "scope.txt" = "small", "history.txt" = "dropped" }
+
+[[scenario]]
+name = "nested-needed"
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
+inputs = { "scope.txt" = "large", "history.txt" = "kept" }
+
+[[scenario.compile]]
+args = ["reference/migration.md#steps"]
+
+[[scenario.compile]]
+args = ["reference/archive.md#steps"]
+
+[[scenario]]
+name = "nested-unreached"
+path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
+inputs = { "scope.txt" = "small", "history.txt" = "kept" }

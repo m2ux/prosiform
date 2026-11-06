@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 from harness import HARNESSES, Claude, Codex, Cursor, Opencode, Start, harness_named
 from run import BOOTSTRAP_SET, prepare
-from workflow import workflows
+from workflow import AUTHORED_FORM, COMPILED_FORM, workflows
 
 
 def transcript(tmp_path: Path, lines: list[dict[str, object]]) -> Path:
@@ -489,6 +489,67 @@ def test_the_claude_cli_is_capped_in_dollars_not_tokens(tmp_path: Path) -> None:
     assert "60000" not in argv
 
 
+def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
+    tmp_path: Path,
+) -> None:
+    """AC5, AC26: a `Bash` call belongs to the session or its parent start.
+
+    The session runs `pf` on its line, the review's sub-agent compiles its
+    line and starts the ruling, and the ruling's sub-agent compiles its own
+    line. A compiled session records the session's command list; one in a
+    form carrying no shell records none.
+    """
+    from score import read_commands, read_starts, record_calls
+
+    held = transcript(
+        tmp_path,
+        [
+            under(None, shell_call("s", "pf reference/loading.md#crew")),
+            under(None, claude_call("a", "hop/review#scan")),
+            under("a", shell_call("t", "pf steps/weighing.md#weigh")),
+            under("a", claude_call("b", "steps/ruling#rule")),
+            under("b", shell_call("u", "pf -o out steps/recording.md#file")),
+        ],
+    )
+    assert Claude().commands(held) == ("pf reference/loading.md#crew",)
+    assert Claude().starts(held) == (
+        Start("hop/review#scan", "done", False, None, ("pf steps/weighing.md#weigh",)),
+        Start(
+            "steps/ruling#rule",
+            "done",
+            False,
+            0,
+            ("pf -o out steps/recording.md#file",),
+        ),
+    )
+    compiled = tmp_path / "compiled"
+    compiled.mkdir()
+    record_calls(held, compiled, Claude(), COMPILED_FORM)
+    assert read_commands(compiled) == ("pf reference/loading.md#crew",)
+    assert read_starts(compiled) == Claude().starts(held)
+    authored = tmp_path / "authored"
+    authored.mkdir()
+    record_calls(held, authored, Claude(), AUTHORED_FORM)
+    assert read_commands(authored) is None
+
+
+def shell_call(identifier: str, command: str) -> dict[str, object]:
+    """One Claude `Bash` call, as the CLI prints it."""
+    return {
+        "type": "assistant",
+        "message": {
+            "content": [
+                {
+                    "type": "tool_use",
+                    "id": identifier,
+                    "name": "Bash",
+                    "input": {"command": command},
+                }
+            ]
+        },
+    }
+
+
 def test_a_harness_hands_its_own_isolation_to_the_session(tmp_path: Path) -> None:
     """Each harness names what confines a session, and refuses what it cannot."""
     config = tmp_path / "config"
@@ -745,3 +806,151 @@ def test_opencode_sums_the_token_kinds_of_one_step(
     result = Opencode().result(held)
     assert Opencode().tokens(result) == 117
     assert Opencode().cost(result) == 0.125
+
+
+def under(parent: str | None, call: dict[str, object]) -> dict[str, object]:
+    """A Claude message as a sub-agent's stream prints it, naming its `Agent` call."""
+    return {**call, "parent_tool_use_id": parent}
+
+
+def test_claude_files_each_start_under_the_sub_agent_that_made_it(
+    tmp_path: Path,
+) -> None:
+    """AC5: starts three dispatches deep sit under the section each followed.
+
+    A sub-agent's messages reach the session's stream, each naming the `Agent`
+    call it runs under, so a start made at the second or third depth names
+    the start whose sub-agent made it. A set two deep shares its message.
+    """
+    nested_set: dict[str, object] = {
+        "type": "assistant",
+        "message": {
+            "content": [
+                {
+                    "type": "tool_use",
+                    "id": identifier,
+                    "name": "Agent",
+                    "input": {"prompt": target},
+                }
+                for identifier, target in (
+                    ("c", "review#source"),
+                    ("d", "review#tests"),
+                )
+            ]
+        },
+    }
+    held = transcript(
+        tmp_path,
+        [
+            under(None, claude_call("a", "plan#work")),
+            under("a", claude_call("b", "review#check")),
+            under("b", nested_set),
+            under("d", claude_call("e", "deep#leaf")),
+            claude_call("f", "close#out"),
+        ],
+    )
+    starts = Claude().starts(held)
+    assert [(start.target, start.parent, start.together) for start in starts] == [
+        ("plan#work", None, False),
+        ("review#check", 0, False),
+        ("review#source", 1, False),
+        ("review#tests", 1, True),
+        ("deep#leaf", 3, False),
+        ("close#out", None, False),
+    ]
+    assert all(start.commands == () for start in starts)
+
+
+def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) -> None:
+    """AC5: the session record holds its commands and each start's parent and commands.
+
+    The record is what the scorer reads, so a start written under its parent
+    with its sub-agent's commands reads back as the same start.
+    """
+    from score import SUBAGENTS, read_commands, read_starts, record_calls
+
+    held = transcript(
+        tmp_path,
+        [
+            under(None, claude_call("a", "plan#work")),
+            under("a", claude_call("b", "review#check")),
+        ],
+    )
+    records = tmp_path / "claude"
+    records.mkdir()
+    record_calls(held, records, Claude(), COMPILED_FORM)
+    written = json.loads((records / SUBAGENTS).read_text())
+    assert written == {
+        "commands": [],
+        "starts": [
+            {
+                "target": "plan#work",
+                "returned": "done",
+                "together": False,
+                "parent": None,
+                "commands": [],
+                "actor": None,
+                "group": None,
+            },
+            {
+                "target": "review#check",
+                "returned": "done",
+                "together": False,
+                "parent": 0,
+                "commands": [],
+                "actor": None,
+                "group": None,
+            },
+        ],
+    }
+    assert read_starts(records) == Claude().starts(held)
+    assert read_commands(records) == ()
+    (records / SUBAGENTS).write_text(
+        json.dumps(
+            {
+                "commands": ["pf"],
+                "starts": [
+                    {
+                        "target": "plan#work",
+                        "returned": "done",
+                        "together": False,
+                        "parent": None,
+                        "commands": ["pf", "pf -o out net.md#retry"],
+                    }
+                ],
+            }
+        )
+    )
+    assert read_commands(records) == ("pf",)
+    assert read_starts(records) == (
+        Start("plan#work", "done", False, None, ("pf", "pf -o out net.md#retry")),
+    )
+    opencode = tmp_path / "opencode"
+    opencode.mkdir()
+    shell = opencode_part(tool="bash", description="compile")
+    shell["part"]["state"]["input"] = {"command": "pf"}  # type: ignore[index]
+    stream = transcript(
+        opencode, [shell, opencode_part(tool="task", description="plan#work")]
+    )
+    record_calls(stream, opencode, Opencode(), COMPILED_FORM)
+    assert read_commands(opencode) == ("pf",)
+    assert read_starts(opencode) == (Start("plan#work", "done", False),)
+
+
+def test_each_harness_declares_whether_a_sub_agents_calls_reach_its_stream() -> None:
+    """AC5: depth is what each CLI prints, read rather than assumed.
+
+    Claude prints a sub-agent's messages under its `Agent` call. Cursor reports
+    a sub-agent's text and no tool call it made. opencode's run command prints
+    a part only where it belongs to the session it started, and a sub-agent
+    runs in a child session, so neither reports a nested start or a
+    sub-agent's command.
+    """
+    assert Claude().nested_starts is True
+    assert Cursor().nested_starts is False
+    assert Opencode().nested_starts is False
+    assert Claude().nested_commands is True
+    assert Cursor().nested_commands is False
+    assert Opencode().nested_commands is False
+    assert Codex().nested_starts is True
+    assert Codex().nested_commands is False

@@ -22,7 +22,10 @@ the harness is the whole of what an agent CLI differs in.
 
 A harness reads its own stream: `starts()` returns the same `Start` values
 from any of them, so the scorer above it is unaware of which CLI produced
-them.
+them. Each start names the start whose sub-agent made it and the shell
+commands its own sub-agent ran, wherever the stream attributes a call to a
+sub-agent. `nested_starts` declares child-dispatch observation and
+`nested_commands` declares per-child command attribution, as each CLI reports.
 """
 
 from __future__ import annotations
@@ -62,6 +65,10 @@ TOOL_RESULT = "tool_result"
 CALL_ID = "tool_use_id"
 AGENT = "Agent"
 PROMPT = "prompt"
+PARENT = "parent_tool_use_id"
+"""The `Agent` call a Claude message runs under, null for the session's own."""
+SHELL_TOOL = "Bash"
+"""The Claude Code tool that runs a command line."""
 RESULT = "result"
 IS_ERROR = "is_error"
 USAGE = "usage"
@@ -110,12 +117,20 @@ class Start:
     `target` is the prompt the dispatching call carried, naming the file or
     section it handed over; `returned` is what the sub-agent gave back, and `together`
     says whether it started in the same message as the start above it.
+    `parent` is the index of the start whose sub-agent made this one, or
+    nothing for a start the session made itself, so each sub-agent's own
+    starts sit under the section it followed at whatever depth. `commands`
+    are the shell commands this start's sub-agent ran, in order, as the
+    stream attributes them to it. `actor` is the sub-agent a native response
+    group belongs to, and `group` that group's identity: two starts sharing
+    both were dispatched together, wherever a harness reports that natively.
     """
 
     target: str
     returned: str
     together: bool
-    """Whether this actor's preceding start shares its native response group."""
+    parent: int | None = None
+    commands: tuple[str, ...] = ()
     actor: str | None = None
     group: str | None = None
 
@@ -242,15 +257,22 @@ class Claude:
     at once, the parent ends its turn before the answer arrives, and the
     answer reaches it as a notification rather than as the call's result.
     """
-    shell_tool: str = "Bash"
-    """The shell tool every session carries."""
+    shell_tool: str = SHELL_TOOL
+    """The shell tool a session given `pf` also carries."""
     skill_home: str = ".claude/skills"
     pf_only: str = "Bash(pf *)"
     """The allowlist rule admitting `pf` with arguments and output redirects."""
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = True
-    """Whether a sub-agent's own dispatch reaches the parent's transcript."""
+    """Whether a sub-agent's own starts reach the session's stream.
+
+    They do: a sub-agent's messages are printed in the session's stream, each
+    naming the `Agent` call it runs under as `parent_tool_use_id`, so its
+    starts and its shell commands are read under the start it follows.
+    """
+    nested_commands: bool = True
+    """The stream attributes each sub-agent's `Bash` calls to its `Agent` call."""
     session_cap_usd: float = 0.50
     """The price the CLI itself may spend in one session.
 
@@ -492,10 +514,14 @@ class Claude:
         start is together with the one before it when both carry one id. A
         start's target is the `prompt` its input carries, naming the file or
         section handed over, and its return is the report inside the CLI's
-        hand-back frame.
+        hand-back frame. A start's parent is the start whose `Agent` call the
+        message's `parent_tool_use_id` names, and its commands are those of
+        the `Bash` calls in messages naming its own `Agent` call that way,
+        which its sub-agent made.
         """
-        found: dict[str, tuple[str, bool]] = {}
+        found: dict[str, tuple[str, bool, str | None]] = {}
         returned: dict[str, str] = {}
+        ran = _shell_calls(transcript)
         last: object = None
         for index, held in enumerate(messages(transcript)):
             kind = held.get("type")
@@ -504,6 +530,7 @@ class Claude:
             if not isinstance(content, list) or not isinstance(carried, dict):
                 continue
             if kind == ASSISTANT:
+                parent = _owner(held)
                 named = carried.get("id")
                 message: object = named if isinstance(named, str) else index
                 for block in content:
@@ -518,7 +545,7 @@ class Claude:
                     key = block.get("id")
                     if not isinstance(key, str) or not isinstance(target, str):
                         continue
-                    found[key] = (target, message == last)
+                    found[key] = (target, message == last, parent)
                     last = message
             elif kind == USER:
                 for block in content:
@@ -527,34 +554,28 @@ class Claude:
                     key = block.get(CALL_ID)
                     if isinstance(key, str):
                         returned[key] = asked(unframed(block.get("content")))
+        order = {key: index for index, key in enumerate(found)}
         return tuple(
-            Start(target, returned.get(key, DONE), together)
-            for key, (target, together) in found.items()
+            Start(
+                target,
+                returned.get(key, DONE),
+                together,
+                order.get(parent) if parent is not None else None,
+                tuple(command for owner, command in ran if owner == key),
+            )
+            for key, (target, together, parent) in found.items()
         )
 
     def commands(self, transcript: Path) -> tuple[str, ...]:
-        """The shell commands a session ran, in order.
+        """The shell commands the session itself ran, in order.
 
-        A `tool_use` block naming the shell tool carries the command line.
+        A `Bash` call in a message naming no `parent_tool_use_id` is the
+        session's own; one naming an `Agent` call is that sub-agent's, and is
+        read under its start.
         """
-        found: list[str] = []
-        for held in messages(transcript):
-            carried = held.get(MESSAGE)
-            content = carried.get("content") if isinstance(carried, dict) else None
-            if held.get("type") != ASSISTANT or not isinstance(content, list):
-                continue
-            for block in content:
-                if not isinstance(block, dict) or block.get("type") != TOOL_USE:
-                    continue
-                if block.get("name") != self.shell_tool:
-                    continue
-                held_input = block.get("input")
-                command = (
-                    held_input.get(COMMAND) if isinstance(held_input, dict) else None
-                )
-                if isinstance(command, str):
-                    found.append(command)
-        return tuple(found)
+        return tuple(
+            command for owner, command in _shell_calls(transcript) if owner is None
+        )
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
         """The tokens one session processed, its sub-agents' among them.
@@ -597,12 +618,15 @@ class Cursor:
     prompt_on_argv: bool = False
     """Whether the task text is an argument rather than the session's input."""
     nested_starts: bool = False
-    """Whether a sub-agent's own dispatch reaches the parent's transcript.
+    """Whether a sub-agent's own starts and tool calls reach the session's stream.
 
-    It does not: the CLI reports a sub-agent's final text and the steps it
+    They do not: the CLI reports a sub-agent's final text and the steps it
     took, and no tool call it made. A scenario whose trace names a start
-    made inside a sub-agent cannot be observed on this harness.
+    made inside a sub-agent, or which states a sub-agent's `pf` run, cannot
+    be observed on this harness.
     """
+    nested_commands: bool = False
+    """The stream carries no sub-agent's shell calls."""
     usage: tuple[str, str, str, str] = (
         "inputTokens",
         "outputTokens",
@@ -706,7 +730,7 @@ class Cursor:
         stream is not part of its parent's transcript, so a dispatch nested
         inside a sub-agent leaves its parent's record silent about it. A
         scenario stating such a start is beyond what this harness reports,
-        which `observes` states.
+        as `nested_starts` declares.
         """
         found: list[tuple[str, str, bool]] = []
         returned: dict[str, str] = {}
@@ -760,8 +784,8 @@ class Cursor:
     def commands(self, transcript: Path) -> tuple[str, ...]:
         """The shell commands a session ran, in order.
 
-        A `shellToolCall` carries the command line it ran. A session whose
-        material must be compiled with a command is held to having run it,
+        A `shellToolCall` carries the command line it ran. A session is held
+        to the `pf` runs its scenario states, read from these commands,
         so what the stream states about commands is read rather than assumed.
         """
         found: list[str] = []
@@ -785,6 +809,36 @@ class Cursor:
     def cost(self, result: dict[str, object] | None) -> float | None:
         """The cost a session reported, which this harness does not."""
         return None
+
+
+def _owner(held: dict[str, object]) -> str | None:
+    """The `Agent` call a Claude message runs under, or nothing for the session's."""
+    owner = held.get(PARENT)
+    return owner if isinstance(owner, str) else None
+
+
+def _shell_calls(transcript: Path) -> list[tuple[str | None, str]]:
+    """Each `Bash` call a Claude stream records, with the `Agent` call it runs under."""
+    found: list[tuple[str | None, str]] = []
+    for held in messages(transcript):
+        if held.get("type") != ASSISTANT:
+            continue
+        carried = held.get(MESSAGE)
+        content = carried.get("content") if isinstance(carried, dict) else None
+        if not isinstance(content, list):
+            continue
+        for block in content:
+            if not isinstance(block, dict) or block.get("type") != TOOL_USE:
+                continue
+            if block.get("name") != SHELL_TOOL:
+                continue
+            carried_input = block.get("input")
+            command = (
+                carried_input.get(COMMAND) if isinstance(carried_input, dict) else None
+            )
+            if isinstance(command, str):
+                found.append((_owner(held), command))
+    return found
 
 
 def _record(path: Path) -> dict[str, object]:
@@ -811,6 +865,8 @@ class Opencode:
     distinct from an assistant message, so a start and a command are read from
     what the session did rather than from prose. Tokens and cost are reported
     on each `step_finish` part, one per model step, and summed over the session.
+    The parts printed are the started session's alone, so a sub-agent's own
+    calls are not among them.
     """
 
     name: str = "opencode"
@@ -895,8 +951,12 @@ class Opencode:
     It does not: a `task` call's parts are its own, and a start either its
     sub-agent made is a part of that sub-agent's session, which the parent's
     stream never carries. A scenario whose trace names one is beyond this
-    harness's observation, so the runner leaves it out.
+    harness's observation, so the runner leaves it out, and a sub-agent's own
+    `pf` runs are read from the commands it ran, which are absent for the
+    same reason.
     """
+    nested_commands: bool = False
+    """A child session's shell calls are absent from the parent's stream."""
 
     def argv(
         self,
@@ -1163,6 +1223,9 @@ class Codex:
     default_agent: str = "codex"
     prompt_on_argv: bool = False
     nested_starts: bool = True
+    """Native child dispatches reach the bridge's start list."""
+    nested_commands: bool = False
+    """Native start records carry no per-child command list."""
     skill_home: str = ".agents/skills"
 
     def argv(
@@ -1252,8 +1315,8 @@ class Codex:
                     str(row["target"]),
                     str(row["returned"]),
                     bool(row["together"]),
-                    row.get("actor"),
-                    row.get("group"),
+                    actor=row.get("actor"),
+                    group=row.get("group"),
                 )
                 for row in held
                 if isinstance(row, dict)

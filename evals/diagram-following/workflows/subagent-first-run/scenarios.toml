@@ -1,0 +1,52 @@
+# A scenario is the inputs a run is given, the path a correct run walks, and the
+# sub-agents a correct run starts. Each input is a file under inputs/ holding
+# the value written, then a newline. A trace entry names the section a
+# sub-agent follows, in the order the walk dispatches it, what it returned,
+# and the actions it does: each a file under actions/ and the value it holds.
+#
+# Every bundle opens with the run-pf line, so a sub-agent reads the guide
+# before it meets a deferred line, and only the material pf compiles on that
+# line states the sub-agent's action. Each sub-agent's own pf run is stated by the
+# section it follows, and the action that run's material states shows it on a
+# harness reporting no sub-agent's commands.
+
+[[scenario]]
+name = "first-hop-run"
+path = ["Entry", "Allot", "Entrust", "Tidy", "Exit"]
+inputs = { "reach.txt" = "near" }
+
+[[scenario.trace]]
+dispatch = "hop/ledger#balance"
+action = { file = "closing.txt", value = "closed" }
+
+[[scenario.compile]]
+by = "hop/ledger#balance"
+args = ["steps/closing.md#close"]
+
+# The review, at the second hop, compiles the weighing rules its line names;
+# their bundle states its action and dispatches the ruling, whose bundle, at
+# the third hop, carries a line its own run compiles.
+
+[[scenario]]
+name = "deep-hop-runs"
+path = ["Entry", "Allot", "Cascade", "Tidy", "Exit"]
+inputs = { "reach.txt" = "deep" }
+
+[[scenario.trace]]
+dispatch = "hop/audit#sweep"
+
+[[scenario.trace]]
+dispatch = "hop/review#scan"
+action = { file = "weighing.txt", value = "weighed" }
+
+[[scenario.trace]]
+dispatch = "steps/ruling#rule"
+action = { file = "ruling.txt", value = "ruled" }
+
+[[scenario.compile]]
+by = "hop/review#scan"
+args = ["steps/weighing.md#weigh"]
+
+[[scenario.compile]]
+by = "steps/ruling#rule"
+args = ["steps/recording.md#file"]

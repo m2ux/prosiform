@@ -3,11 +3,12 @@
 It runs in a session's workspace and takes the agent's options, which it
 records and otherwise ignores. It recognises the workflow by the state
 headings its workspace's documents hold, at whatever level a group placed
-them, walks that workflow's diagram for
-the inputs under `inputs/`, and writes the walk to `trace.log` with every
-state's action, as a correct agent would. It then prints a stream-json
-transcript ending in a `result` message carrying usage, each model's usage
-and a cost.
+them, walks the path of the scenario whose inputs `inputs/` holds, or else
+that workflow's diagram for those inputs, and writes the walk to
+`trace.log` with every state's action, as a correct agent would. A state
+deferring its transition is followed only through the scenario's path. It
+then prints a stream-json transcript ending in a `result` message carrying
+usage, each model's usage and a cost.
 
 Every session finds `pf` on its path and opens with a `Bash` call running
 it, as its bundle's first line asks.
@@ -22,7 +23,14 @@ or `Done:`. A scenario stating answers has each sub-agent return a question,
 then starts it again, and that start returns done; a sub-agent that returned
 done writes its section's action. Where its
 instruction names the sub-agent trace, each call's prompt hands that name on,
-and each sub-agent writes the trace its prompt names and no other.
+and each sub-agent writes the trace its prompt names and no other, and the
+actions the scenario states for it.
+
+Where its `--tools` names `Bash`, it makes each `pf` run the scenario
+states as a `Bash` call: the session's own in a message of its own, and a
+sub-agent's in a message naming that sub-agent's `Agent` call as
+`parent_tool_use_id`, as the CLI prints a sub-agent's calls. Each session
+opens with bare `pf`, as its bundle's first line asks.
 
 The environment scripts it:
 
@@ -38,7 +46,8 @@ The environment scripts it:
   started again, as a session answering it in the sub-agent's place does;
 - `STUB_AGENT_LOG`: a directory to which it writes, per session, the files
   its workspace held on starting, its arguments, its prompt, the names of
-  its environment's variables and its `CLAUDE_CONFIG_DIR`;
+  its environment's variables, its `CLAUDE_CONFIG_DIR` and the `pf` its path
+  resolves to;
 - `STUB_AGENT_SILENT`: when set, it prints no `result` message;
 - `STUB_AGENT_ERROR`: when set, its `result` message reports `is_error` true,
   as a refusal or a crashed agent does;
@@ -62,7 +71,13 @@ import time
 import uuid
 from pathlib import Path
 
-from harness import DONE, HANDBACK, QUESTION
+from harness import (
+    DONE,
+    HANDBACK,
+    PARENT,
+    QUESTION,
+    SHELL_TOOL,
+)
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
 from workflow import (
     SOURCE_DIR,
@@ -77,20 +92,6 @@ BOOTSTRAP_INSTRUCTION = "A skill is available"
 """How a `bootstrap` session's instruction opens, which no other form's does."""
 
 STATED_TRACE = SUB_AGENT_TRACE.format(section="<section>")
-RAN_PF = {
-    "type": "assistant",
-    "message": {
-        "content": [
-            {
-                "type": "tool_use",
-                "id": "toolu_pf",
-                "name": "Bash",
-                "input": {"command": "pf"},
-            }
-        ]
-    },
-}
-"""The shell call a session given `pf` opens with, as the run-pf line asks."""
 """The sub-agent trace as an instruction states it."""
 
 HANDED_TRACE = re.compile(re.escape(SUB_AGENT_TRACE).replace(r"\{section\}", r"(\S+?)"))
@@ -105,6 +106,19 @@ def held(workspace: Path) -> list[str]:
         str(path.relative_to(workspace))
         for path in workspace.rglob("*")
         if path.is_file()
+    )
+
+
+def recognised(headings: set[str], corpus: list[Workflow]) -> Workflow:
+    """The workflow a workspace holds, from the headings its documents carry.
+
+    It is the workflow with the most states, each heading a section there,
+    since one whose states are a subset of another's is headed in that one's
+    workspace too.
+    """
+    return max(
+        (item for item in corpus if item.diagram.states <= headings),
+        key=lambda item: len(item.diagram.states),
     )
 
 
@@ -178,6 +192,35 @@ def framed(report: str) -> str:
     return f"[Subagent hand-back] A subagent's final report. {HANDBACK}\n{lines}"
 
 
+def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None, str]]:
+    """Each stated `pf` run as the agent making it and its command line.
+
+    A session whose `--tools` names no shell runs none.
+    """
+    tools = argv[argv.index("--tools") + 1] if "--tools" in argv else ""
+    if item is None or SHELL_TOOL not in tools.split(","):
+        return []
+    return [(run.by, " ".join(["pf", *run.args])) for run in item.compile]
+
+
+def shell_call(command: str, owner: str | None) -> dict[str, object]:
+    """One assistant message making a `Bash` call, under `owner`'s `Agent` call."""
+    return {
+        "type": "assistant",
+        PARENT: owner,
+        "message": {
+            "content": [
+                {
+                    "type": "tool_use",
+                    "id": f"toolu_{uuid.uuid4().hex[:12]}",
+                    "name": SHELL_TOOL,
+                    "input": {"command": command},
+                }
+            ]
+        },
+    }
+
+
 def handed(section: str, instruction: str) -> str:
     """The prompt a session's `Agent` call gives the sub-agent following a section.
 
@@ -226,14 +269,17 @@ def message(
 
 
 def transcript_of(
-    started: list[tuple[str, str, bool]], instruction: str
+    started: list[tuple[str, str, bool]],
+    instruction: str,
+    runs: list[tuple[str | None, str]],
 ) -> list[dict[str, object]]:
     """The assistant and user messages a session's sub-agent starts print.
 
     Two starts together share one assistant message, whose calls the CLI
     prints one event each under the message's id, and each call is answered
     on its own, so a reader recovers both the order and what each sub-agent
-    returned.
+    returned. A sub-agent's run is printed under the first start of the
+    section it states, before any call is answered.
     """
     messages: list[dict[str, object]] = []
     made: list[tuple[str, str]] = []
@@ -253,6 +299,12 @@ def transcript_of(
             }
         )
         made.append((identifier, returned))
+    first: dict[str, str] = {}
+    for (section, _, _), (identifier, _) in zip(started, made, strict=True):
+        first.setdefault(section, identifier)
+    messages.extend(
+        shell_call(command, first.get(by)) for by, command in runs if by is not None
+    )
     for identifier, returned in made:
         text = framed(
             "Question: which provider should the draft name?"
@@ -288,6 +340,7 @@ def main() -> int:
         entry["prompt"] = prompt
         entry["variables"] = sorted(os.environ)
         entry["config"] = os.environ.get("CLAUDE_CONFIG_DIR")
+        entry["which_pf"] = shutil.which("pf")
         (Path(log) / f"{uuid.uuid4()}.json").write_text(json.dumps(entry))
     headings = {
         heading
@@ -295,9 +348,10 @@ def main() -> int:
         if name.endswith(".md")
         for heading in HEADING.findall((workspace / name).read_text())
     }
-    workflow = next(item for item in workflows() if item.diagram.states <= headings)
+    workflow = recognised(headings, workflows())
     inputs = {path.name: path.read_text() for path in (workspace / "inputs").iterdir()}
-    path = walk(workflow, workflow.forms[0], inputs)
+    item = scenario_of(workflow, inputs)
+    path = item.path if item else walk(workflow, workflow.forms[0], inputs)
     if stop := os.environ.get("STUB_AGENT_STOP"):
         path = path[: int(stop)]
     (workspace / ACTIONS).mkdir()
@@ -309,7 +363,7 @@ def main() -> int:
                 continue
             name, value = action
             (workspace / ACTIONS / name).write_text(f"{value}\n")
-    dispatch = starts(scenario_of(workflow, inputs))
+    dispatch = starts(item)
     write_sub_agent_traces(
         workspace, [handed(section, prompt) for section, _, _ in dispatch]
     )
@@ -330,10 +384,14 @@ def main() -> int:
                 }
             )
         )
-    if shutil.which("pf"):
-        print(json.dumps(RAN_PF))
+    runs = shell_runs(item, sys.argv[1:])
+    own = [command for by, command in runs if by is None]
+    if not own or own[0] != "pf":
+        own.insert(0, "pf")
+    for command in own:
+        print(json.dumps(shell_call(command, None)))
     if dispatch:
-        for said in transcript_of(dispatch, prompt):
+        for said in transcript_of(dispatch, prompt, runs):
             print(json.dumps(said))
     else:
         print(json.dumps({"type": "assistant", "message": {"content": list(path)}}))
