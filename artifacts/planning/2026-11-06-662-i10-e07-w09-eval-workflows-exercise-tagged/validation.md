@@ -42,6 +42,8 @@ The complete deterministic eval directory passed before the final runner test (6
 
 ## CI and Delivery
 
-The [Checks CI run](https://github.com/m2ux/prosiform/actions/runs/42231292434) succeeded at exact head `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493`. Fresh epic target protection returned Branch not protected (404), and active branch rules returned an empty list. No approving review requirement applies to this target. Task merge is pending final SHA-pinned mutation/readback.
+The [Checks CI run](https://github.com/m2ux/prosiform/actions/runs/42231292434) succeeded at exact head `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493`. Fresh epic target protection returned Branch not protected (404), and active branch rules returned an empty list. No approving review requirement applies to this target. The SHA-pinned merge-commit mutation succeeded: `f04086096c666cc29241a7fda3dcbdfd9c354743` on `i10/e07/main`, preserving the task branch. REST readback confirmed merged=true, exact head, target and merge SHA. The merge tree is identical to the validated task tree. `revision-check.py --project <task-worktree> --revision f04086096c666cc29241a7fda3dcbdfd9c354743 -- make harness corpus smoke PROSIFORM_BUILD='env -u VIRTUAL_ENV uv run --project <absolute-task-worktree>/src --frozen pf'` passed: 1,650 harness tests, 537 corpus fixtures and installed-wheel smoke, exit 0. This verifies AC19 and AC20 at the merged revision. The merged tree is identical to the task head whose full configured check passed.
+
+Task-row recording marks W09 Done and ticks AC19/AC20 from the passing observing checks. W10 and AC22/AC23 remain pending and outside this unit. Epic issue remains open.
 
 Default-branch integration and draft review pull requests 664 and 666 remain with the coordinator.
