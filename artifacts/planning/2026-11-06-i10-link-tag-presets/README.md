@@ -14,6 +14,9 @@ Heading wording can serve presentation because the link states its settings dire
 | --- | --- |
 | [baseline-dependencies.txt](baseline-dependencies.txt) | Plan and validation artifact |
 | [cli-preset-option.md](cli-preset-option.md) | User-confirmed CLI option and implementation contract |
+| [cli-preset-option.json](cli-preset-option.json) | Immutable amended design pin and exact tracker readback |
+| [cli-preset-option-validation.txt](cli-preset-option-validation.txt) | Specification scope, vocabulary and internal-link verification |
+| [cli-preset-option-format.txt](cli-preset-option-format.txt) | Epic format verification |
 | [decisions.md](decisions.md) | Plan and validation artifact |
 | [design.md](design.md) | Plan and validation artifact |
 | [epic-body.md](epic-body.md) | Plan and validation artifact |

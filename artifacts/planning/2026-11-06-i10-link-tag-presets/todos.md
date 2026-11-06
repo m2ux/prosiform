@@ -11,4 +11,4 @@
 - [x] Refresh the live epic, design integration and engineering worktrees.
 - [x] Update the design, command examples and affected work items.
 - [x] Validate the amended specification and issue format.
-- [ ] In progress: commit, push and read back the epic and design integration.
+- [x] Commit, push and read back the epic and design integration.
