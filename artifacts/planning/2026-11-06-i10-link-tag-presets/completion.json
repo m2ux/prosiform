@@ -1,0 +1,72 @@
+{
+  "recorded_at": "2026-11-06T15:34:00Z",
+  "repository": "m2ux/prosiform",
+  "authorization": "Reconcile merged E07 and deliver exactly the next eligible Project 18 unit, no lane supplied; no paid evaluation; direct engineering evidence publication explicitly authorized.",
+  "configuration_revision": "543e1a830c64d7bccd6a541e6c7db268b19ed842",
+  "configuration_path": "config/branches",
+  "epic": {
+    "number": 662,
+    "state": "closed",
+    "state_reason": "completed",
+    "tasks": "W00-W10 delivered",
+    "criteria": "AC1-AC23 ticked with recorded task evidence",
+    "closure_comment": "https://github.com/m2ux/prosiform/issues/662#issuecomment-6688533121",
+    "development": {"664": "MERGED", "666": "MERGED", "671": "MERGED", "672": "MERGED", "673": "MERGED", "674": "MERGED"},
+    "closure_gate": "Passed on fresh issue and complete Development snapshot immediately before completion",
+    "closure_audit": "0 unsupported, 0 unevaluable, 0 not planned",
+    "design_head": "4e076e6082d86aa74374bee6359f411ecaf89714",
+    "design_merge": "a9c1bc0f0",
+    "product_head": "f51948dee1f3b7778da02d1bb5ce31aab737d505",
+    "product_merge": "fb17c2c97524b649dc4b619f1b88cd825a797d85",
+    "base_merge_checks": "Both expected epic heads are ancestors of refreshed origin/engineering and origin/main",
+    "final_head_ci": "https://github.com/m2ux/prosiform/actions/runs/42242150935",
+    "review_limit": "Historical agent reviews name earlier heads. No passing final integration review verdict is invented. Human-merged integration and user-explicit residual deferral are recorded.",
+    "supplemental_repair": "PR674 is recorded in the closure comment and Development gate. The sync matcher reports it unmatched because task rows already link their main deliveries; no delivered link is replaced and no extra task is invented."
+  },
+  "deferred_followups": [
+    {"number": 675, "url": "https://github.com/m2ux/prosiform/issues/675", "finding": "Adjacent redirects 2>&1>out falsely uncompiled", "state": "open, standalone, deferred; no fix implemented"},
+    {"number": 676, "url": "https://github.com/m2ux/prosiform/issues/676", "finding": "Compiler-looking text inside unrelated cat heredoc falsely overcompiled", "state": "open, standalone, deferred; no fix implemented"}
+  ],
+  "initiative": {
+    "number": 464,
+    "state": "open",
+    "epic_row": "E07 Done",
+    "new_verified_ticks": ["AC2", "AC9", "AC12", "AC13", "AC15", "AC19", "AC20", "AC21"],
+    "remaining_unticked": ["AC1", "AC11"],
+    "AC1": "Fresh default matrix has 74 cells; committed baseline has 72, missing bootstrap-audit/blocking-two-halves/bootstrap and bootstrap-audit/clean-one-half/bootstrap, each with five repetitions. The historical baseline has 360 sessions; current matrix requires 370. No current complete-matrix claim is supported.",
+    "AC11": "Committed baseline covers opencode only. README explicitly records no baseline crash evidence for other harnesses; baseline aggregate cells carry no raw exit-status records. Historical opencode run is not evidence for every harness/form.",
+    "AC2": "Three dispatch scenarios have differing authored versus compiled rates in baseline.json.",
+    "AC9_AC12_AC13": "Deterministic workflow/scorer tests pass; relayed-question positive and negative controls and ordered compilation paths are included.",
+    "AC15": "Baseline report has 19 failures and proof report has two; every committed failure has a miss disposition and evidence. Runbook tests pass; no new live run is claimed."
+  },
+  "validation": {
+    "revision": "fb17c2c97524b649dc4b619f1b88cd825a797d85",
+    "checkout": ".worktrees/next1625-verification (detached)",
+    "source_tests": {"exit": 0, "observations": 1901, "count_basis": "Successful pytest progress observations; quiet configuration suppresses summary"},
+    "deterministic_instruments": {"exit": 0, "passed": 643, "files": ["test_runbook.py", "test_report.py", "test_run.py", "test_score.py", "test_workflow.py"]},
+    "paid_runs": 0,
+    "scope_limit": "These are criterion verification runs, not a new full configured make-check claim. Full final product-head CI is linked separately."
+  },
+  "board": {
+    "number": 18,
+    "items": 134,
+    "status_counts": {"Done": 107, "Backlog": 24, "In Progress": 1, "Ready": 2},
+    "epic_662": "Done",
+    "initiative_464": "In Progress",
+    "initiative_524": "Ready",
+    "epic_525": "Ready",
+    "delivery_recomputation": "All 11 board initiatives recomputed; zero proposed calls",
+    "queue_recomputation": "Complete current queue; zero calls; next I11:E00",
+    "survey": "0 available, 0 held, 2 blocked, 0 unresolved, 0 undeclared, 0 merges, 0 invalid",
+    "next_unit": "I11:E00:W01 (unlaned)",
+    "blocker": "W01 requires completed #462, #463 and #464; #462 and #463 are complete but #464 remains open with AC1 and AC11 unverified. W02+W03+W04 waits on W01.",
+    "dispatch_export": [],
+    "other_work": "I01, I12 and I14 remain Backlog; no hold release or reprioritisation performed. No new delivery base or reservation created for blocked work."
+  },
+  "change_list": [
+    "Applied: E07 completed after both human merges and fresh closure gate.",
+    "Applied: verified I10 criteria and completed E07 row recorded.",
+    "Applied: two user-deferred residual findings preserved as standalone issues.",
+    "Held: release W01 cannot start until I10 completion has truthful matrix and harness evidence; no criterion waiver, paid run or scope transfer inferred."
+  ]
+}
