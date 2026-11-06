@@ -16,6 +16,7 @@ The product and design content are validated independently from handoff eligibil
 | [Validation](validation.md) | Exact revisions, full checks, criteria evidence, target rules and blockers |
 | [Design review](design-review.md) | Complete design-diff inspection and unresolved handoff-contract blockers |
 | [Product review](product-review.md) | Full product diff, definitions, callers and criterion review scope |
+| [Product agent review JSON](product-agent-review.json) | Reconciled complete inspection with two open blocking findings |
 | [Design agent review JSON](design-agent-review.json) | Exact inspected design revision and blocking preparation findings |
 | [Graph measurements](graph-measurements.md) | Current graph revisions, measured edges/ordered traces and completeness limits |
 | [Complete check output](make-check.log) | Full configured product check at the exact integration head |

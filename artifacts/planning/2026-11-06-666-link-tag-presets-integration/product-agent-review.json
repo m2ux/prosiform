@@ -1,0 +1,31 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/666",
+    "head": "3164e8a5c8f695f965a464d8cefef0847cff4a72",
+    "base": "d8265c82e797355a55cf7ec7d921949b4d7eb6c0",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-666-link-tag-presets-integration/product-agent-review.json",
+    "reviewer": "Cursor integration coordinator with completed selection/CLI, dispatch/publication and eval/documentation inspections",
+    "reviewed_at": "2026-11-06T14:58:00Z",
+    "scope": "Complete target-to-head integration diff over 834 changed paths, reconciled across three completed inspections. Compiler parsing, occurrence transport, closure, selection, scheduling, rewriting, provenance, candidate validation and publication definitions and callers were inspected. Eval/scorer/runner/stub/workflow, repository callers, documentation, examples and corpus changes were inspected, including the unchanged codex_agent command producer. Direct inspection is supplemented by 781 symbol contexts and 245 flow queries, with bounded graph coverage. No inspection remains outstanding. This record reviews the stated historical head; subsequent repairs require a new review.",
+    "criteria": "AC1-23 and their W00-W10 evidence inspected. AC19/20 are challenged by valid redirected compiler calls falsely scored as uncompiled. AC21/22 are challenged by maintained dispatch instructions disagreeing with emitted output. Inventory agreement alone does not prove semantic accuracy. Existing uncovered conformance clauses are not represented as resolved.",
+    "validation": "Exact-head full configured make check passed: 1901 source tests, 1662 deterministic harness tests, 537 corpus fixtures and installed-wheel/static/documentation/contract checks. 954 observing tests, 1964-path inventory and nine checked examples passed. Exact-head CI run 42234869005 succeeded. Dispatch/publication inspection separately passed 981 focused tests. Independent reproduction confirmed redirected commands, descriptor duplication, redirected bare-guide calls and codex-generated redirected commands fail scoring. Source and corpus inspection confirmed fixed Dispatch Set heading and bare link lines without the promised instruction sentence. Passing suites do not resolve the findings below. No integration merge or readiness assertion is made.",
+    "findings": [
+      {
+        "id": "E07-IR-1",
+        "priority": "P2",
+        "severity": "blocking",
+        "disposition": "open",
+        "description": "Valid redirected compiler calls are scored as uncompiled. score.py splits descriptor-redirection ampersands and passes shell redirection words into compiler argument parsing. Ordinary output redirects, 2>&1, redirected bare-guide calls and existing codex_agent.pf_command output reproduce the defect. AC19/20 require shell-redirection and producer-to-scorer regression checks. Repairs are underway but are not yet verified at this record's head.",
+        "source": "https://github.com/m2ux/prosiform/blob/3164e8a5c8f695f965a464d8cefef0847cff4a72/evals/diagram-following/score.py#L362-L406"
+      },
+      {
+        "id": "E07-IR-2",
+        "priority": "P2",
+        "severity": "blocking",
+        "disposition": "open",
+        "description": "Maintained dispatch instructions in docs/dispatch.md, glossary, eval README and runtime GUIDE describe section-specific dispatch headings and sometimes instruction/bullet text. Actual output uses the fixed Dispatch Set heading and bare dispatch-link lines, with no instruction sentence. AC21/22 require corrected guidance and actual-output agreement checks. Repairs are underway but are not yet verified at this record's head.",
+        "source": "https://github.com/m2ux/prosiform/blob/3164e8a5c8f695f965a464d8cefef0847cff4a72/docs/dispatch.md#L31-L44"
+      }
+    ]
+  }
+]
