@@ -1,0 +1,34 @@
+Changes: 834 files, 781 symbols
+Affected processes: 245
+Risk level: critical
+
+Changed symbols:
+  Section <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform → README.md
+  Section Usage → README.md
+  Section Bundle a Source and its Dependencies → README.md
+  Section Compile a Selected Section → README.md
+  Section Checks → checks.md
+  Section What Each Check Asserts → checks.md
+  Section The Corpus → checks.md
+  Section The Harness → checks.md
+  Section Checks → checks/README.md
+  Function bundles → checks/smoke.py
+  Function publishes → checks/smoke.py
+  Function selects_presets → checks/smoke.py
+  Function smoke → checks/smoke.py
+  Variable INSTRUCTIONS → checks/tests/test_authoring.py
+  Function commands → checks/tests/test_authoring.py
+... and 766 more
+
+Affected execution flows:
+  • File_heading → Admissible (10 steps) — changed: file_heading, shown_text, emitted_visible, named, resolvable, withholding_target, inside, resolve
+  • File_heading → Identity (10 steps) — changed: redirect, record, file_heading, shown_text, emitted_visible, named, resolvable, withholding_target, inside
+  • Group → Decoded (10 steps) — changed: group, shown_text, emitted_visible, named, resolvable, withholding_target, inside, resolve
+  • Coincident → Writing (10 steps) — changed: file_heading, shown_text, emitted_visible, coincident, file_named, named, resolvable, withholding_target, inside
+  • Coincident → Opened (10 steps) — changed: file_heading, shown_text, emitted_visible, coincident, file_named, withholding_target
+  • Compose → Diagram_opening (10 steps) — changed: compose, place, placement, required, uses
+  • File_named → Record (10 steps) — changed: redirect, record, file_heading, shown_text, emitted_visible, file_named, named, resolvable, withholding_target, inside
+  • Main → Markdown_links (9 steps) — changed: read_section, deferred_links, markdown_links
+  • Main → Input_read (9 steps) — changed: read_section
+  • Main → Ruled_state (9 steps) — changed: read_section
+... and 235 more

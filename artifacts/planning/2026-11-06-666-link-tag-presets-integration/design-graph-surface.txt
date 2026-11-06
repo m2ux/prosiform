@@ -1,0 +1,21 @@
+Changes: 1 files, 22 symbols
+Affected processes: 0
+Risk level: low
+
+Changed symbols:
+  Section prosiform: revised v1 design → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Input and output contract → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section CLI contract → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Guide → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Automatic output names → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Section extraction and output hierarchy → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Grouping → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section guide → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Frontmatter policy → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Conversion metadata → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Presets → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Metadata failures → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Link classification and resource handling → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Section composition → artifacts/planning/2026-10-17-prosiform-v1/design.md
+  Section Reference normalization and path identity → artifacts/planning/2026-10-17-prosiform-v1/design.md
+... and 7 more

@@ -1,0 +1,18 @@
+ok   local      #grouping
+ok   local      #section-composition
+ok   local      #link-classification-and-resource-handling
+ok   local      #conversion-metadata
+ok   local      #presets
+ok   local      #file-scoped-hierarchy
+ok   local      #guide
+ok   local      #automatic-output-names
+ok   local      #source-local-reference-interpretation
+ok   local      #resource-limits
+ok   local      #validation-and-failure-contract
+Design head: 4e076e6082d86aa74374bee6359f411ecaf89714
+Target at review: 905b3a86ca2544c7a795410949c22ddf1109e38a
+Exact byte identity with product contract pin795bbfb67c66b02193f0313138f59f18aa6c5274: PASS
+Internal links: PASS; existing external links not fetched: 6
+Vocabulary: PASS; 47 marked terms; stale operative patterns: 0
+Digest and balanced fences: PASS
+Conformance: PASS; 365 clauses; 67 uncovered; no nonexistent declarations or code mismatches

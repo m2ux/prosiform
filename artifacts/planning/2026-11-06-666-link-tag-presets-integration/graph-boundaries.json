@@ -1,0 +1,170 @@
+[
+  {
+    "symbol": {
+      "uid": "Function:evals/diagram-following/run.py:start",
+      "name": "start",
+      "kind": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "startLine": 585,
+      "endLine": 648
+    },
+    "boundaries": [
+      "3 call sites invoking `start` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 3,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Function:evals/diagram-following/stub_agent.py:starts",
+      "name": "starts",
+      "kind": "Function",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "startLine": 153,
+      "endLine": 181
+    },
+    "boundaries": [
+      "1 call site invoking `starts` was dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 1,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Function:scripts/render-example.py:render",
+      "name": "render",
+      "kind": "Function",
+      "filePath": "scripts/render-example.py",
+      "startLine": 405,
+      "endLine": 439
+    },
+    "boundaries": [
+      "2 call sites invoking `render` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 2,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Method:src/prosiform/closure.py:Redirects.__init__#0",
+      "name": "__init__",
+      "kind": "Method",
+      "filePath": "src/prosiform/closure.py",
+      "startLine": 281,
+      "endLine": 283
+    },
+    "boundaries": [
+      "17 call sites invoking `__init__` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 17,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Function:src/prosiform/closure.py:resolve",
+      "name": "resolve",
+      "kind": "Function",
+      "filePath": "src/prosiform/closure.py",
+      "startLine": 740,
+      "endLine": 778
+    },
+    "boundaries": [
+      "42 call sites invoking `resolve` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 42,
+      "dispatchBoundary": 0,
+      "externalBoundary": 1,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Method:src/prosiform/composition.py:Composing.__init__#9",
+      "name": "__init__",
+      "kind": "Method",
+      "filePath": "src/prosiform/composition.py",
+      "startLine": 263,
+      "endLine": 292
+    },
+    "boundaries": [
+      "17 call sites invoking `__init__` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 17,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Method:src/prosiform/dispatch.py:Placing.__init__#6",
+      "name": "__init__",
+      "kind": "Method",
+      "filePath": "src/prosiform/dispatch.py",
+      "startLine": 490,
+      "endLine": 517
+    },
+    "boundaries": [
+      "17 call sites invoking `__init__` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 17,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  },
+  {
+    "symbol": {
+      "uid": "Function:src/prosiform/tags.py:read",
+      "name": "read",
+      "kind": "Function",
+      "filePath": "src/prosiform/tags.py",
+      "startLine": 11,
+      "endLine": 17
+    },
+    "boundaries": [
+      "2 call sites invoking `read` were dropped at index time because the receiver's type could not be established (e.g. an unresolved constructor, factory or chained expression). Those callers are absent from this result \u2014 actual impact may be higher."
+    ],
+    "causes": {
+      "scopeExtractionFiles": 0,
+      "receiverTyping": 2,
+      "dispatchBoundary": 0,
+      "externalBoundary": 0,
+      "undecidedSatisfaction": 0,
+      "callableValueReferences": 0
+    }
+  }
+]

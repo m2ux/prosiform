@@ -1,0 +1,25 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/664",
+    "head": "4e076e6082d86aa74374bee6359f411ecaf89714",
+    "base": "905b3a86ca2544c7a795410949c22ddf1109e38a",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-666-link-tag-presets-integration/design-agent-review.json",
+    "reviewer": "Cursor integration review session",
+    "reviewed_at": "2026-11-06T14:47:00Z",
+    "scope": "Complete target-to-head design diff: artifacts/planning/2026-10-17-prosiform-v1/design.md (85 additions, 56 deletions), affected contract definitions and current product consumers/pin. Reviewed single-entry grammar, guide/path/quoting, tag matching/default/union, canonical effective identity and filenames, substitution, dispatch/sets/cycles/depth/candidate requirements, deferred title parity, diagnostics and conformance obligations. No design-content defect found; readiness-contract blockers remain explicit.",
+    "criteria": "AC1 inspected through W00 clause review, confirmed --presets and leading-dash amendments, exact byte identity with product pin795bbfb67c66b02193f0313138f59f18aa6c5274 and current implementation/test evidence. AC2-23 product observations are documented separately; design acceptance is not an unqualified total-conformance claim.",
+    "validation": "Exact design instrument passes: 11 internal destinations,47 defined terms,0 stale operative patterns,canonical JSON/SHA256 and balanced fences,365 clauses/67uncovered,0 nonexistent clause declarations or code mismatches. Full configured product check at3164e8a5c8f695f965a464d8cefef0847cff4a72 passes1901source/1662harness/537corpus and remaining checks. Exact-head graph has22changed sections and0execution processes. Target rules require one human approval. Publication advances engineering target, so this inspected base becomes stale; no readiness claim.",
+    "findings": [
+      {
+        "description": "Preparation blocker: an epic review record must live on engineering and name its exact target SHA, while PR664 itself targets engineering. Publishing its evidence advances that target; the current schema has no epic tree-equivalence or base-ref exception. A supported publication/freshness contract is required before ready.",
+        "severity": "blocking",
+        "disposition": "open"
+      },
+      {
+        "description": "Preparation blocker: Change Overview requires a graph-derived functional sequence, but the exact documentation-only design graph supplies no execution process. No fabricated runtime sequence is provided; design overview remains incomplete pending a procedure-supported documentation-only representation.",
+        "severity": "blocking",
+        "disposition": "open"
+      }
+    ]
+  }
+]
