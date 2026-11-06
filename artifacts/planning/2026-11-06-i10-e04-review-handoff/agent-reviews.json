@@ -1,0 +1,27 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/622",
+    "head": "8ca53994e89dab6657c2eea9eef72f74c48764e0",
+    "base": "ba93ca60860f0dc46722f27acd471740465279da",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-e04-review-handoff/agent-reviews.json",
+    "reviewer": "Codex coordinator",
+    "reviewed_at": "2026-11-06T12:32:29.921746+00:00",
+    "scope": "Complete main-to-epic integration diff, all affected definitions and immediate callers, corpus sources/scenarios, harness capabilities, native attribution, scorer failure precedence, workspace preparation and preservation. Fresh graph:360 symbol contexts and39 reported flows, with static-analysis limits recorded.",
+    "criteria": "All 24 retained epic criteria verified against named source/corpus/harness instruments and full current-head gates; I14 owns the separately deferred live measurements.",
+    "validation": "Full make check and hosted CI pass at the exact head:1731 source tests,1586 harness/evaluation tests,516 corpus fixtures and every remaining gate. Three focused AC22 regressions pass after an observed failure.",
+    "findings": [
+      {
+        "description": "Stale criterion references and change-history prose in test documentation.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/3711aabdd79de26de6de3a455ca562606e45f04f"
+      },
+      {
+        "description": "Native nested starts incorrectly admitted scenarios requiring per-child compiler-command evidence.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/8ca53994e89dab6657c2eea9eef72f74c48764e0"
+      }
+    ]
+  }
+]

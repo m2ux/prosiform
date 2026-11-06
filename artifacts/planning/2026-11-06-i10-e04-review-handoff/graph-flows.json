@@ -1,0 +1,4451 @@
+[
+  {
+    "flow": {
+      "id": "proc_6_main",
+      "name": "Main → Input_read",
+      "process_type": "cross_community",
+      "step_count": 9,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_section",
+          "step": 7
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 8
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITIONAL_STEP",
+          "name": "CONDITIONAL_STEP",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 361,
+          "endLine": 361
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITION",
+          "name": "CONDITION",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 752,
+          "endLine": 752
+        },
+        {
+          "id": "Function:src/tests/test_diagram_renderer.py:test_compact_changes_both_panels_without_changing_input",
+          "name": "test_compact_changes_both_panels_without_changing_input",
+          "filePath": "src/tests/test_diagram_renderer.py",
+          "startLine": 74,
+          "endLine": 89,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagram_renderer.py:test_panel_section_levels_are_independent",
+          "name": "test_panel_section_levels_are_independent",
+          "filePath": "src/tests/test_diagram_renderer.py",
+          "startLine": 176,
+          "endLine": 193,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagram_renderer.py",
+          "name": "test_diagram_renderer.py",
+          "filePath": "src/tests/test_diagram_renderer.py"
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        }
+      ],
+      "timing": {
+        "vector": 2.9,
+        "bm25": 105.3,
+        "merge": 0.1,
+        "symbol_lookup": 13.2,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 119
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 6 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 7 |\n| Function:evals/diagram-following/workflow.py:parse_transition | parse_transition | evals/diagram-following/workflow.py | 722 | 748 | 8 |\n| Function:evals/diagram-following/workflow.py:input_read | input_read | evals/diagram-following/workflow.py | 1604 | 1610 | 9 |",
+      "row_count": 9
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_7_main",
+      "name": "Main → Ruled_state",
+      "process_type": "cross_community",
+      "step_count": 9,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_section",
+          "step": 7
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 8
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Property:checks/conformance.py:Clause.rule",
+          "name": "rule",
+          "filePath": "checks/conformance.py",
+          "startLine": 141,
+          "endLine": 141
+        },
+        {
+          "id": "Method:checks/conformance.py:Clause.name#0",
+          "name": "name",
+          "filePath": "checks/conformance.py",
+          "startLine": 144,
+          "endLine": 147
+        },
+        {
+          "id": "File:checks/conformance.py",
+          "name": "conformance.py",
+          "filePath": "checks/conformance.py"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_two_selected_presets_stating_different_group_pairs_are_refused",
+          "name": "test_two_selected_presets_stating_different_group_pairs_are_refused",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1367,
+          "endLine": 1397,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:src/tests/test_cli.py:TWO_SECTIONS",
+          "name": "TWO_SECTIONS",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1654,
+          "endLine": 1657
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles",
+          "name": "test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1212,
+          "endLine": 1226,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_a_linked_rule_naming_a_state_its_decision_does_not_reach_is_a_fault",
+          "name": "test_a_linked_rule_naming_a_state_its_decision_does_not_reach_is_a_fault",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1916,
+          "endLine": 1928,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_a_linked_rule_that_states_no_state_is_a_fault",
+          "name": "test_a_linked_rule_that_states_no_state_is_a_fault",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1931,
+          "endLine": 1939,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:STATES",
+          "name": "STATES",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 145,
+          "endLine": 145
+        }
+      ],
+      "timing": {
+        "vector": 0.8,
+        "bm25": 108,
+        "merge": 0.1,
+        "symbol_lookup": 16.5,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 124.5
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 6 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 7 |\n| Function:evals/diagram-following/workflow.py:parse_transition | parse_transition | evals/diagram-following/workflow.py | 722 | 748 | 8 |\n| Function:evals/diagram-following/workflow.py:ruled_state | ruled_state | evals/diagram-following/workflow.py | 701 | 719 | 9 |",
+      "row_count": 9
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_12_main",
+      "name": "Main → Mermaid_text",
+      "process_type": "cross_community",
+      "step_count": 8,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_116_main",
+          "summary": "Main → Anchors",
+          "priority": 0.116,
+          "symbol_count": 2,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/render.py:rendered",
+          "name": "rendered",
+          "filePath": "checks/render.py",
+          "startLine": 117,
+          "endLine": 135,
+          "module": "Checks",
+          "process_id": "proc_116_main",
+          "step_index": 2
+        },
+        {
+          "id": "Function:checks/render.py:main",
+          "name": "main",
+          "filePath": "checks/render.py",
+          "startLine": 175,
+          "endLine": 196,
+          "module": "Checks",
+          "process_id": "proc_116_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "File:checks/render.py",
+          "name": "render.py",
+          "filePath": "checks/render.py"
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:mermaid_text.blocks@635:4",
+          "name": "blocks",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 636,
+          "endLine": 638
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:DIAGRAM",
+          "name": "DIAGRAM",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 157,
+          "endLine": 157
+        },
+        {
+          "id": "Function:src/prosiform/source.py:statement_end",
+          "name": "statement_end",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 1044,
+          "endLine": 1062,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Variable:src/prosiform/diagnostics.py:TEXT",
+          "name": "TEXT",
+          "filePath": "src/prosiform/diagnostics.py",
+          "startLine": 33,
+          "endLine": 33
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 121.2,
+        "merge": 0.1,
+        "symbol_lookup": 21.5,
+        "ranking": 0.3,
+        "formatting": 0.1,
+        "wall": 143.2
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_diagram | read_diagram | evals/diagram-following/workflow.py | 660 | 662 | 6 |\n| Function:evals/diagram-following/workflow.py:mermaid | mermaid | evals/diagram-following/workflow.py | 628 | 630 | 7 |\n| Function:evals/diagram-following/workflow.py:mermaid_text | mermaid_text | evals/diagram-following/workflow.py | 633 | 640 | 8 |",
+      "row_count": 8
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_13_main",
+      "name": "Main → Node_shape",
+      "process_type": "cross_community",
+      "step_count": 8,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_13_main",
+          "summary": "Main → Node_shape",
+          "priority": 0.093,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 8
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:node_shape",
+          "name": "node_shape",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 644,
+          "endLine": 658,
+          "module": "Diagram-following",
+          "process_id": "proc_13_main",
+          "step_index": 8
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_diagram_text",
+          "name": "read_diagram_text",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 671,
+          "endLine": 699,
+          "module": "Diagram-following",
+          "process_id": "proc_13_main",
+          "step_index": 7
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:shapes_nodes",
+          "name": "shapes_nodes",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 666,
+          "endLine": 668
+        },
+        {
+          "id": "Function:src/prosiform/metadata.py:_pair",
+          "name": "_pair",
+          "filePath": "src/prosiform/metadata.py",
+          "startLine": 531,
+          "endLine": 548,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/metadata.py:_subst",
+          "name": "_subst",
+          "filePath": "src/prosiform/metadata.py",
+          "startLine": 584,
+          "endLine": 603,
+          "module": "Prosiform"
+        },
+        {
+          "id": "File:src/prosiform/metadata.py",
+          "name": "metadata.py",
+          "filePath": "src/prosiform/metadata.py"
+        },
+        {
+          "id": "Class:checks/independence.py:Reference",
+          "name": "Reference",
+          "filePath": "checks/independence.py",
+          "startLine": 91,
+          "endLine": 95
+        },
+        {
+          "id": "File:checks/independence.py",
+          "name": "independence.py",
+          "filePath": "checks/independence.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 99.2,
+        "merge": 0.1,
+        "symbol_lookup": 22.5,
+        "ranking": 0.1,
+        "formatting": 0.1,
+        "wall": 122
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_diagram | read_diagram | evals/diagram-following/workflow.py | 660 | 662 | 6 |\n| Function:evals/diagram-following/workflow.py:read_diagram_text | read_diagram_text | evals/diagram-following/workflow.py | 670 | 698 | 7 |\n| Function:evals/diagram-following/workflow.py:node_shape | node_shape | evals/diagram-following/workflow.py | 643 | 657 | 8 |",
+      "row_count": 8
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_14_main",
+      "name": "Main → Authored",
+      "process_type": "cross_community",
+      "step_count": 8,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_section",
+          "step": 7
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_122_main",
+          "summary": "Main → Harness_named",
+          "priority": 0.093,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/run.py:main",
+          "name": "main",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 898,
+          "endLine": 902,
+          "module": "Diagram-following",
+          "process_id": "proc_122_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/run.py:AUTHORED_SET",
+          "name": "AUTHORED_SET",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 191,
+          "endLine": 191
+        },
+        {
+          "id": "Variable:evals/diagram-following/run.py:BUNDLED",
+          "name": "BUNDLED",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 202,
+          "endLine": 202
+        },
+        {
+          "id": "Method:src/prosiform/composition.py:Colliding.__init__#5",
+          "name": "__init__",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 193,
+          "endLine": 209
+        },
+        {
+          "id": "Method:src/prosiform/composition.py:Composing.collide#0",
+          "name": "collide",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 503,
+          "endLine": 530,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:AUTHORITY",
+          "name": "AUTHORITY",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 219,
+          "endLine": 219
+        },
+        {
+          "id": "Class:src/prosiform/source.py:Use",
+          "name": "Use",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 617,
+          "endLine": 650
+        }
+      ],
+      "timing": {
+        "vector": 1.3,
+        "bm25": 109.4,
+        "merge": 0.1,
+        "symbol_lookup": 15.2,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 124.9
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 6 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 7 |\n| Function:evals/diagram-following/workflow.py:authored | authored | evals/diagram-following/workflow.py | 765 | 767 | 8 |",
+      "row_count": 8
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_20_main",
+      "name": "Main → Read_compile",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_scenarios",
+          "step": 6
+        },
+        {
+          "symbol": "read_compile",
+          "step": 7
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_175_main",
+          "summary": "Main → Read_compile",
+          "priority": 0.068,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_compile",
+          "name": "read_compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 887,
+          "endLine": 895,
+          "module": "Diagram-following",
+          "process_id": "proc_175_main",
+          "step_index": 5
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:Scenario.compile",
+          "name": "compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 551,
+          "endLine": 551
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Class:src/tests/test_candidate.py:Built",
+          "name": "Built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 68,
+          "endLine": 90
+        },
+        {
+          "id": "Property:src/tests/test_candidate.py:Built.read",
+          "name": "read",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 75,
+          "endLine": 75
+        },
+        {
+          "id": "Method:src/tests/test_candidate.py:Built.validate#0",
+          "name": "validate",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 79,
+          "endLine": 90,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagram_renderer.py:test_panel_section_levels_are_independent",
+          "name": "test_panel_section_levels_are_independent",
+          "filePath": "src/tests/test_diagram_renderer.py",
+          "startLine": 176,
+          "endLine": 193,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagram_renderer.py",
+          "name": "test_diagram_renderer.py",
+          "filePath": "src/tests/test_diagram_renderer.py"
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 111.1,
+        "merge": 0.1,
+        "symbol_lookup": 13.8,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 125.1
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_scenarios | read_scenarios | evals/diagram-following/workflow.py | 917 | 931 | 6 |\n| Function:evals/diagram-following/workflow.py:read_compile | read_compile | evals/diagram-following/workflow.py | 886 | 894 | 7 |",
+      "row_count": 7
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_21_main",
+      "name": "Main → Read_dispatch",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_scenarios",
+          "step": 6
+        },
+        {
+          "symbol": "read_dispatch",
+          "step": 7
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_cli.py",
+          "name": "test_cli.py",
+          "filePath": "src/tests/test_cli.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/test_run.py:DISPATCHING",
+          "name": "DISPATCHING",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 83,
+          "endLine": 83
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:test_a_dispatch_run_that_stopped_short_is_unfinished",
+          "name": "test_a_dispatch_run_that_stopped_short_is_unfinished",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 1848,
+          "endLine": 1862,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/test_run.py",
+          "name": "test_run.py",
+          "filePath": "evals/diagram-following/test_run.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/dispatch.py:DISPATCH_DEPTH",
+          "name": "DISPATCH_DEPTH",
+          "filePath": "src/prosiform/dispatch.py",
+          "startLine": 114,
+          "endLine": 114
+        },
+        {
+          "id": "Variable:src/prosiform/dispatch.py:DISPATCH_SELF",
+          "name": "DISPATCH_SELF",
+          "filePath": "src/prosiform/dispatch.py",
+          "startLine": 115,
+          "endLine": 115
+        }
+      ],
+      "timing": {
+        "vector": 1.4,
+        "bm25": 106.7,
+        "merge": 0,
+        "symbol_lookup": 13.3,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 120.2
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:read_scenarios | read_scenarios | evals/diagram-following/workflow.py | 917 | 931 | 6 |\n| Function:evals/diagram-following/workflow.py:read_dispatch | read_dispatch | evals/diagram-following/workflow.py | 897 | 914 | 7 |",
+      "row_count": 7
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_30_main",
+      "name": "Main → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_346_compile_root",
+          "summary": "Compile_root → Form_directory",
+          "priority": 0.097,
+          "symbol_count": 3,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.form#1",
+          "name": "form",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 584,
+          "endLine": 591,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 2
+        },
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.compile_root#0",
+          "name": "compile_root",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 599,
+          "endLine": 611,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 1
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:form_directory",
+          "name": "form_directory",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 961,
+          "endLine": 968,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 3
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Class:evals/diagram-following/run.py:Session",
+          "name": "Session",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 223,
+          "endLine": 241
+        },
+        {
+          "id": "Method:evals/diagram-following/run.py:Session.directory#1",
+          "name": "directory",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 232,
+          "endLine": 241,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/run.py",
+          "name": "run.py",
+          "filePath": "evals/diagram-following/run.py"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_bundle_is_written_into_the_working_directory_without_o",
+          "name": "test_a_bundle_is_written_into_the_working_directory_without_o",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 628,
+          "endLine": 638,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Property:evals/diagram-following/report.py:report.built@211:4",
+          "name": "built",
+          "filePath": "evals/diagram-following/report.py",
+          "startLine": 212,
+          "endLine": 231
+        }
+      ],
+      "timing": {
+        "vector": 0.7,
+        "bm25": 94,
+        "merge": 0,
+        "symbol_lookup": 13.8,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 108
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/workflow.py:baseline_workflows | baseline_workflows | evals/diagram-following/workflow.py | 1012 | 1016 | 3 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 4 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 5 |\n| Function:evals/diagram-following/workflow.py:form_directory | form_directory | evals/diagram-following/workflow.py | 960 | 967 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_87_transcript_of",
+      "name": "Transcript_of → Entry_bundle",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "transcript_of",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_183_start",
+          "summary": "Start → Form_directory",
+          "priority": 0.096,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/run.py:start",
+          "name": "start",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 585,
+          "endLine": 645,
+          "module": "Diagram-following",
+          "process_id": "proc_183_start",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/score.py:TRANSCRIPT",
+          "name": "TRANSCRIPT",
+          "filePath": "evals/diagram-following/score.py",
+          "startLine": 153,
+          "endLine": 153
+        },
+        {
+          "id": "Function:evals/diagram-following/score.py:record_calls",
+          "name": "record_calls",
+          "filePath": "evals/diagram-following/score.py",
+          "startLine": 278,
+          "endLine": 298,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/score.py",
+          "name": "score.py",
+          "filePath": "evals/diagram-following/score.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/run.py:TRANSCRIPT",
+          "name": "TRANSCRIPT",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 177,
+          "endLine": 177
+        },
+        {
+          "id": "File:evals/diagram-following/run.py",
+          "name": "run.py",
+          "filePath": "evals/diagram-following/run.py"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:test_a_dispatch_session_records_its_sub_agents_beside_its_trace",
+          "name": "test_a_dispatch_session_records_its_sub_agents_beside_its_trace",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 1659,
+          "endLine": 1691,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it",
+          "name": "test_every_form_is_given_pf_on_its_path_and_a_shell_limited_to_it",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 1967,
+          "endLine": 1986,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/test_run.py",
+          "name": "test_run.py",
+          "filePath": "evals/diagram-following/test_run.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:ENTRY_PLACEHOLDER",
+          "name": "ENTRY_PLACEHOLDER",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 221,
+          "endLine": 221
+        }
+      ],
+      "timing": {
+        "vector": 1.6,
+        "bm25": 126.4,
+        "merge": 0,
+        "symbol_lookup": 13.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 140.1
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:transcript_of | transcript_of | evals/diagram-following/stub_agent.py | 270 | 327 | 1 |\n| Function:evals/diagram-following/stub_agent.py:message | message | evals/diagram-following/stub_agent.py | 257 | 267 | 2 |\n| Function:evals/diagram-following/stub_agent.py:handed | handed | evals/diagram-following/stub_agent.py | 223 | 241 | 3 |\n| Method:evals/diagram-following/workflow.py:Workflow.entry_bundle#0 | entry_bundle | evals/diagram-following/workflow.py | 579 | 581 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_88_activated",
+      "name": "Activated → Slug",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "activated",
+          "step": 1
+        },
+        {
+          "symbol": "reached_lines",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_174_compose",
+          "summary": "Compose → Slug",
+          "priority": 0.077,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 6
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/source.py:slug",
+          "name": "slug",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 459,
+          "endLine": 461,
+          "module": "Prosiform",
+          "process_id": "proc_174_compose",
+          "step_index": 6
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:src/prosiform/source.py:SLUG_SPACE",
+          "name": "SLUG_SPACE",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 236,
+          "endLine": 236
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:SLUG_HYPHEN",
+          "name": "SLUG_HYPHEN",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 237,
+          "endLine": 237
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:SLUG_DISCARDED",
+          "name": "SLUG_DISCARDED",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 342,
+          "endLine": 342
+        },
+        {
+          "id": "File:evals/diagram-following/workflow.py",
+          "name": "workflow.py",
+          "filePath": "evals/diagram-following/workflow.py"
+        },
+        {
+          "id": "Class:src/prosiform/provenance.py:Instruction",
+          "name": "Instruction",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 215,
+          "endLine": 237
+        },
+        {
+          "id": "Property:src/prosiform/provenance.py:Instruction.activates",
+          "name": "activates",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 232,
+          "endLine": 232
+        },
+        {
+          "id": "File:src/prosiform/provenance.py",
+          "name": "provenance.py",
+          "filePath": "src/prosiform/provenance.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 105.1,
+        "merge": 0,
+        "symbol_lookup": 15,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 120.2
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:activated | activated | evals/diagram-following/workflow.py | 1212 | 1231 | 1 |\n| Function:evals/diagram-following/workflow.py:reached_lines | reached_lines | evals/diagram-following/workflow.py | 1179 | 1209 | 2 |\n| Function:evals/diagram-following/workflow.py:bundled_sections | bundled_sections | evals/diagram-following/workflow.py | 1120 | 1176 | 3 |\n| Function:evals/diagram-following/workflow.py:slug | slug | evals/diagram-following/workflow.py | 1115 | 1117 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_122_main",
+      "name": "Main → Harness_named",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_122_main",
+          "summary": "Main → Harness_named",
+          "priority": 0.086,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/harness.py:harness_named",
+          "name": "harness_named",
+          "filePath": "evals/diagram-following/harness.py",
+          "startLine": 1356,
+          "endLine": 1360,
+          "module": "Diagram-following",
+          "process_id": "proc_122_main",
+          "step_index": 3
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/test_harness.py:test_the_declared_harnesses_are_named",
+          "name": "test_the_declared_harnesses_are_named",
+          "filePath": "evals/diagram-following/test_harness.py",
+          "startLine": 73,
+          "endLine": 83,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_harness.py:test_the_harness_module_names_every_declared_harness",
+          "name": "test_the_harness_module_names_every_declared_harness",
+          "filePath": "evals/diagram-following/test_harness.py",
+          "startLine": 86,
+          "endLine": 92
+        },
+        {
+          "id": "Function:evals/diagram-following/test_harness.py:test_a_harness_hands_its_own_isolation_to_the_session",
+          "name": "test_a_harness_hands_its_own_isolation_to_the_session",
+          "filePath": "evals/diagram-following/test_harness.py",
+          "startLine": 553,
+          "endLine": 563,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Variable:evals/diagram-following/harness.py:Harness",
+          "name": "Harness",
+          "filePath": "evals/diagram-following/harness.py",
+          "startLine": 1348,
+          "endLine": 1348
+        },
+        {
+          "id": "Variable:evals/diagram-following/harness.py:HARNESSES",
+          "name": "HARNESSES",
+          "filePath": "evals/diagram-following/harness.py",
+          "startLine": 1351,
+          "endLine": 1353
+        },
+        {
+          "id": "Function:evals/diagram-following/run.py:matrix",
+          "name": "matrix",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 345,
+          "endLine": 369,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/run.py:observable",
+          "name": "observable",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 372,
+          "endLine": 395,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/run.py",
+          "name": "run.py",
+          "filePath": "evals/diagram-following/run.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1,
+        "bm25": 101.8,
+        "merge": 0,
+        "symbol_lookup": 14.1,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 116
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/harness.py:harness_named | harness_named | evals/diagram-following/harness.py | 1355 | 1359 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_123_attempt",
+      "name": "Attempt → Fits",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "attempt",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_123_attempt",
+          "summary": "Attempt → Fits",
+          "priority": 0.12,
+          "symbol_count": 3,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/run.py:Ledger.fits#0",
+          "name": "fits",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 262,
+          "endLine": 269,
+          "module": "Diagram-following",
+          "process_id": "proc_123_attempt",
+          "step_index": 3
+        },
+        {
+          "id": "Method:evals/diagram-following/run.py:Ledger.reserve#0",
+          "name": "reserve",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 271,
+          "endLine": 280,
+          "module": "Diagram-following",
+          "process_id": "proc_123_attempt",
+          "step_index": 2
+        },
+        {
+          "id": "Function:evals/diagram-following/run.py:run.attempt@812:4",
+          "name": "attempt",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 813,
+          "endLine": 843,
+          "module": "Diagram-following",
+          "process_id": "proc_123_attempt",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:checks/tests/test_links.py:test_a_silent_host_is_attempted_the_bounded_number_of_times",
+          "name": "test_a_silent_host_is_attempted_the_bounded_number_of_times",
+          "filePath": "checks/tests/test_links.py",
+          "startLine": 137,
+          "endLine": 143,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_links.py:test_a_host_answering_on_a_later_attempt_is_resolved",
+          "name": "test_a_host_answering_on_a_later_attempt_is_resolved",
+          "filePath": "checks/tests/test_links.py",
+          "startLine": 146,
+          "endLine": 152,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:checks/tests/test_links.py:test_a_host_forbidding_both_methods_is_asked_with_each_on_every_attempt",
+          "name": "test_a_host_forbidding_both_methods_is_asked_with_each_on_every_attempt",
+          "filePath": "checks/tests/test_links.py",
+          "startLine": 196,
+          "endLine": 202,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:checks/links.py:ATTEMPTS",
+          "name": "ATTEMPTS",
+          "filePath": "checks/links.py",
+          "startLine": 67,
+          "endLine": 67
+        },
+        {
+          "id": "File:checks/links.py",
+          "name": "links.py",
+          "filePath": "checks/links.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.5,
+        "bm25": 92.2,
+        "merge": 0,
+        "symbol_lookup": 14,
+        "ranking": 0,
+        "formatting": 0.2,
+        "wall": 106.5
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:run.attempt@812:4 | attempt | evals/diagram-following/run.py | 812 | 842 | 1 |\n| Method:evals/diagram-following/run.py:Ledger.reserve#0 | reserve | evals/diagram-following/run.py | 270 | 279 | 2 |\n| Method:evals/diagram-following/run.py:Ledger.fits#0 | fits | evals/diagram-following/run.py | 261 | 268 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_124_compiles",
+      "name": "Compiles → _names",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compiles",
+          "step": 1
+        },
+        {
+          "symbol": "_held_to",
+          "step": 2
+        },
+        {
+          "symbol": "_names",
+          "step": 3
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_175_main",
+          "summary": "Main → Read_compile",
+          "priority": 0.069,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_compile",
+          "name": "read_compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 887,
+          "endLine": 895,
+          "module": "Diagram-following",
+          "process_id": "proc_175_main",
+          "step_index": 5
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Property:evals/diagram-following/workflow.py:Scenario.compile",
+          "name": "compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 551,
+          "endLine": 551
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:instruction",
+          "name": "instruction",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1020,
+          "endLine": 1037,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Property:src/prosiform/cli.py:publication.named@3338:4",
+          "name": "named",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3339,
+          "endLine": 3339
+        },
+        {
+          "id": "Class:src/prosiform/cli.py:Compiled",
+          "name": "Compiled",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3582,
+          "endLine": 3602
+        },
+        {
+          "id": "Property:src/prosiform/cli.py:dispatched_set.built@3749:4",
+          "name": "built",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3750,
+          "endLine": 3750
+        },
+        {
+          "id": "Variable:src/prosiform/diagnostics.py:HOP",
+          "name": "HOP",
+          "filePath": "src/prosiform/diagnostics.py",
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "id": "File:src/prosiform/diagnostics.py",
+          "name": "diagnostics.py",
+          "filePath": "src/prosiform/diagnostics.py"
+        }
+      ],
+      "timing": {
+        "vector": 1,
+        "bm25": 103.8,
+        "merge": 0,
+        "symbol_lookup": 14.9,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 118.9
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/score.py:compiles | compiles | evals/diagram-following/score.py | 408 | 437 | 1 |\n| Function:evals/diagram-following/score.py:_held_to | _held_to | evals/diagram-following/score.py | 393 | 405 | 2 |\n| Function:evals/diagram-following/score.py:_names | _names | evals/diagram-following/score.py | 385 | 390 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_125_compiles",
+      "name": "Compiles → _words",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compiles",
+          "step": 1
+        },
+        {
+          "symbol": "pf_runs",
+          "step": 2
+        },
+        {
+          "symbol": "_words",
+          "step": 3
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_125_compiles",
+          "summary": "Compiles → _words",
+          "priority": 0.113,
+          "symbol_count": 2,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/score.py:_words",
+          "name": "_words",
+          "filePath": "evals/diagram-following/score.py",
+          "startLine": 352,
+          "endLine": 357,
+          "module": "Diagram-following",
+          "process_id": "proc_125_compiles",
+          "step_index": 3
+        },
+        {
+          "id": "Function:evals/diagram-following/score.py:pf_runs",
+          "name": "pf_runs",
+          "filePath": "evals/diagram-following/score.py",
+          "startLine": 360,
+          "endLine": 383,
+          "module": "Diagram-following",
+          "process_id": "proc_125_compiles",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:src/prosiform/heading.py:WORD",
+          "name": "WORD",
+          "filePath": "src/prosiform/heading.py",
+          "startLine": 16,
+          "endLine": 16
+        },
+        {
+          "id": "Function:src/prosiform/heading.py:worded",
+          "name": "worded",
+          "filePath": "src/prosiform/heading.py",
+          "startLine": 24,
+          "endLine": 26,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:restated",
+          "name": "restated",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 294,
+          "endLine": 302,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:Scenario.compile",
+          "name": "compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 551,
+          "endLine": 551
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:compiled_walk.runs@1370:4",
+          "name": "runs",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1371,
+          "endLine": 1371
+        },
+        {
+          "id": "File:evals/diagram-following/score.py",
+          "name": "score.py",
+          "filePath": "evals/diagram-following/score.py"
+        },
+        {
+          "id": "Function:checks/vocabulary.py:usage_pattern",
+          "name": "usage_pattern",
+          "filePath": "checks/vocabulary.py",
+          "startLine": 151,
+          "endLine": 154,
+          "module": "Checks"
+        }
+      ],
+      "timing": {
+        "vector": 1.3,
+        "bm25": 107.4,
+        "merge": 0.1,
+        "symbol_lookup": 14.9,
+        "ranking": 0,
+        "formatting": 0.1,
+        "wall": 122.5
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/score.py:compiles | compiles | evals/diagram-following/score.py | 408 | 437 | 1 |\n| Function:evals/diagram-following/score.py:pf_runs | pf_runs | evals/diagram-following/score.py | 359 | 382 | 2 |\n| Function:evals/diagram-following/score.py:_words | _words | evals/diagram-following/score.py | 351 | 356 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_127_activated",
+      "name": "Activated → Compile_reference",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "activate",
+          "step": 2
+        },
+        {
+          "symbol": "activated",
+          "step": 1
+        },
+        {
+          "symbol": "compile_reference",
+          "step": 3
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_127_activated",
+          "summary": "Activated → Compile_reference",
+          "priority": 0.087,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:activated",
+          "name": "activated",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1213,
+          "endLine": 1232,
+          "module": "Diagram-following",
+          "process_id": "proc_127_activated",
+          "step_index": 1
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4",
+          "name": "activate",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1373,
+          "endLine": 1381,
+          "module": "Diagram-following",
+          "process_id": "proc_127_activated",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:compiled_walk",
+          "name": "compiled_walk",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1356,
+          "endLine": 1389,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:sub_agent_faults",
+          "name": "sub_agent_faults",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 533,
+          "endLine": 613,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:sub_agent_faults.activate@554:4",
+          "name": "activate",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 555,
+          "endLine": 560,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_composed_sections_stand_beneath_the_step_naming_them",
+          "name": "test_composed_sections_stand_beneath_the_step_naming_them",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 2111,
+          "endLine": 2145,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Property:src/prosiform/cli.py:dispatched_set.built@3749:4",
+          "name": "built",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3750,
+          "endLine": 3750
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 115.1,
+        "merge": 0.1,
+        "symbol_lookup": 16.2,
+        "ranking": 0.1,
+        "formatting": 0.1,
+        "wall": 131.7
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:activated | activated | evals/diagram-following/workflow.py | 1212 | 1231 | 1 |\n| Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4 | activate | evals/diagram-following/workflow.py | 1372 | 1380 | 2 |\n| Function:evals/diagram-following/workflow.py:compile_reference | compile_reference | evals/diagram-following/workflow.py | 1051 | 1066 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_128_activated",
+      "name": "Activated → Entry_bundle",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "activate",
+          "step": 2
+        },
+        {
+          "symbol": "activated",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_127_activated",
+          "summary": "Activated → Compile_reference",
+          "priority": 0.087,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:activated",
+          "name": "activated",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1213,
+          "endLine": 1232,
+          "module": "Diagram-following",
+          "process_id": "proc_127_activated",
+          "step_index": 1
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4",
+          "name": "activate",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1373,
+          "endLine": 1381,
+          "module": "Diagram-following",
+          "process_id": "proc_127_activated",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:sub_agent_faults.activate@554:4",
+          "name": "activate",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 555,
+          "endLine": 560,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_composed_sections_stand_beneath_the_step_naming_them",
+          "name": "test_composed_sections_stand_beneath_the_step_naming_them",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 2111,
+          "endLine": 2145,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/test_workflow.py",
+          "name": "test_workflow.py",
+          "filePath": "evals/diagram-following/test_workflow.py"
+        },
+        {
+          "id": "Class:src/prosiform/provenance.py:Instruction",
+          "name": "Instruction",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 215,
+          "endLine": 237
+        },
+        {
+          "id": "Property:src/prosiform/provenance.py:Instruction.activates",
+          "name": "activates",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 232,
+          "endLine": 232
+        },
+        {
+          "id": "File:src/prosiform/provenance.py",
+          "name": "provenance.py",
+          "filePath": "src/prosiform/provenance.py"
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:Run.bundle",
+          "name": "bundle",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 174,
+          "endLine": 174
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 96.8,
+        "merge": 0,
+        "symbol_lookup": 20,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 117
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:activated | activated | evals/diagram-following/workflow.py | 1212 | 1231 | 1 |\n| Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4 | activate | evals/diagram-following/workflow.py | 1372 | 1380 | 2 |\n| Function:evals/diagram-following/workflow.py:entry_bundle | entry_bundle | evals/diagram-following/workflow.py | 854 | 866 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_129_activated",
+      "name": "Activated → Holds",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "activated",
+          "step": 1
+        },
+        {
+          "symbol": "reached_lines",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_178_contribute",
+          "summary": "Contribute → Hold",
+          "priority": 0.093,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:src/prosiform/composition.py:Composing.activation#1",
+          "name": "activation",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 341,
+          "endLine": 355,
+          "module": "Prosiform",
+          "process_id": "proc_178_contribute",
+          "step_index": 2
+        },
+        {
+          "id": "Method:src/prosiform/composition.py:Composing.contribute#3",
+          "name": "contribute",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 357,
+          "endLine": 450,
+          "module": "Prosiform",
+          "process_id": "proc_178_contribute",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Class:src/prosiform/provenance.py:Instruction",
+          "name": "Instruction",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 215,
+          "endLine": 237
+        },
+        {
+          "id": "Property:src/prosiform/provenance.py:Instruction.activates",
+          "name": "activates",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 232,
+          "endLine": 232
+        },
+        {
+          "id": "File:src/prosiform/provenance.py",
+          "name": "provenance.py",
+          "filePath": "src/prosiform/provenance.py"
+        },
+        {
+          "id": "File:src/prosiform/composition.py",
+          "name": "composition.py",
+          "filePath": "src/prosiform/composition.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 97.8,
+        "merge": 0,
+        "symbol_lookup": 13.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 111.6
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:activated | activated | evals/diagram-following/workflow.py | 1212 | 1231 | 1 |\n| Function:evals/diagram-following/workflow.py:reached_lines | reached_lines | evals/diagram-following/workflow.py | 1179 | 1209 | 2 |\n| Function:evals/diagram-following/workflow.py:holds | holds | evals/diagram-following/workflow.py | 1593 | 1601 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_161_run",
+      "name": "Run → Input_read",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 6
+        },
+        {
+          "symbol": "run",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_300_verify_cached",
+          "summary": "Verify_cached → Input_failure",
+          "priority": 0.071,
+          "symbol_count": 1,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/cli.py:changed",
+          "name": "changed",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1259,
+          "endLine": 1269,
+          "module": "Prosiform",
+          "process_id": "proc_300_verify_cached",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_fragment_reference_reads_the_whole_document_it_names",
+          "name": "test_a_fragment_reference_reads_the_whole_document_it_names",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 887,
+          "endLine": 891,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_cli.py",
+          "name": "test_cli.py",
+          "filePath": "src/tests/test_cli.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITION",
+          "name": "CONDITION",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 752,
+          "endLine": 752
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:nested_inputs",
+          "name": "nested_inputs",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1480,
+          "endLine": 1490,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Variable:src/prosiform/cli.py:INPUT_FAILURE",
+          "name": "INPUT_FAILURE",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 212,
+          "endLine": 212
+        },
+        {
+          "id": "Property:src/prosiform/cli.py:traverse.read@2074:4",
+          "name": "read",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 2075,
+          "endLine": 2075
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.7,
+        "bm25": 130.1,
+        "merge": 0,
+        "symbol_lookup": 20.4,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 150.7
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 4 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 5 |\n| Function:evals/diagram-following/workflow.py:parse_transition | parse_transition | evals/diagram-following/workflow.py | 722 | 748 | 6 |\n| Function:evals/diagram-following/workflow.py:input_read | input_read | evals/diagram-following/workflow.py | 1604 | 1610 | 7 |",
+      "row_count": 7
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_162_main",
+      "name": "Main → Ruled_state",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 6
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Property:checks/conformance.py:Clause.rule",
+          "name": "rule",
+          "filePath": "checks/conformance.py",
+          "startLine": 141,
+          "endLine": 141
+        },
+        {
+          "id": "Method:checks/conformance.py:Clause.name#0",
+          "name": "name",
+          "filePath": "checks/conformance.py",
+          "startLine": 144,
+          "endLine": 147
+        },
+        {
+          "id": "File:checks/conformance.py",
+          "name": "conformance.py",
+          "filePath": "checks/conformance.py"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_two_selected_presets_stating_different_group_pairs_are_refused",
+          "name": "test_two_selected_presets_stating_different_group_pairs_are_refused",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1367,
+          "endLine": 1397,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:src/tests/test_cli.py:TWO_SECTIONS",
+          "name": "TWO_SECTIONS",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 1654,
+          "endLine": 1657
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles",
+          "name": "test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1212,
+          "endLine": 1226,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_a_linked_rule_naming_a_state_its_decision_does_not_reach_is_a_fault",
+          "name": "test_a_linked_rule_naming_a_state_its_decision_does_not_reach_is_a_fault",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1916,
+          "endLine": 1928,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_a_linked_rule_that_states_no_state_is_a_fault",
+          "name": "test_a_linked_rule_that_states_no_state_is_a_fault",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1931,
+          "endLine": 1939,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:STATES",
+          "name": "STATES",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 145,
+          "endLine": 145
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 114.1,
+        "merge": 0,
+        "symbol_lookup": 16.9,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 131.1
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 4 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 5 |\n| Function:evals/diagram-following/workflow.py:parse_transition | parse_transition | evals/diagram-following/workflow.py | 722 | 748 | 6 |\n| Function:evals/diagram-following/workflow.py:ruled_state | ruled_state | evals/diagram-following/workflow.py | 701 | 719 | 7 |",
+      "row_count": 7
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_167_main",
+      "name": "Main → Mermaid_text",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_116_main",
+          "summary": "Main → Anchors",
+          "priority": 0.116,
+          "symbol_count": 2,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/render.py:rendered",
+          "name": "rendered",
+          "filePath": "checks/render.py",
+          "startLine": 117,
+          "endLine": 135,
+          "module": "Checks",
+          "process_id": "proc_116_main",
+          "step_index": 2
+        },
+        {
+          "id": "Function:checks/render.py:main",
+          "name": "main",
+          "filePath": "checks/render.py",
+          "startLine": 175,
+          "endLine": 196,
+          "module": "Checks",
+          "process_id": "proc_116_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "File:checks/render.py",
+          "name": "render.py",
+          "filePath": "checks/render.py"
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:mermaid_text.blocks@635:4",
+          "name": "blocks",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 636,
+          "endLine": 638
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:DIAGRAM",
+          "name": "DIAGRAM",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 157,
+          "endLine": 157
+        },
+        {
+          "id": "Function:src/prosiform/source.py:statement_end",
+          "name": "statement_end",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 1044,
+          "endLine": 1062,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Variable:src/prosiform/diagnostics.py:TEXT",
+          "name": "TEXT",
+          "filePath": "src/prosiform/diagnostics.py",
+          "startLine": 33,
+          "endLine": 33
+        }
+      ],
+      "timing": {
+        "vector": 0.8,
+        "bm25": 111.8,
+        "merge": 0,
+        "symbol_lookup": 15,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 126.9
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_diagram | read_diagram | evals/diagram-following/workflow.py | 660 | 662 | 4 |\n| Function:evals/diagram-following/workflow.py:mermaid | mermaid | evals/diagram-following/workflow.py | 628 | 630 | 5 |\n| Function:evals/diagram-following/workflow.py:mermaid_text | mermaid_text | evals/diagram-following/workflow.py | 633 | 640 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_168_main",
+      "name": "Main → Node_shape",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_13_main",
+          "summary": "Main → Node_shape",
+          "priority": 0.093,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 8
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:node_shape",
+          "name": "node_shape",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 644,
+          "endLine": 658,
+          "module": "Diagram-following",
+          "process_id": "proc_13_main",
+          "step_index": 8
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_diagram_text",
+          "name": "read_diagram_text",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 671,
+          "endLine": 699,
+          "module": "Diagram-following",
+          "process_id": "proc_13_main",
+          "step_index": 7
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:shapes_nodes",
+          "name": "shapes_nodes",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 666,
+          "endLine": 668
+        },
+        {
+          "id": "Function:src/prosiform/metadata.py:_pair",
+          "name": "_pair",
+          "filePath": "src/prosiform/metadata.py",
+          "startLine": 531,
+          "endLine": 548,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/metadata.py:_subst",
+          "name": "_subst",
+          "filePath": "src/prosiform/metadata.py",
+          "startLine": 584,
+          "endLine": 603,
+          "module": "Prosiform"
+        },
+        {
+          "id": "File:src/prosiform/metadata.py",
+          "name": "metadata.py",
+          "filePath": "src/prosiform/metadata.py"
+        },
+        {
+          "id": "Class:checks/independence.py:Reference",
+          "name": "Reference",
+          "filePath": "checks/independence.py",
+          "startLine": 91,
+          "endLine": 95
+        },
+        {
+          "id": "File:checks/independence.py",
+          "name": "independence.py",
+          "filePath": "checks/independence.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 99,
+        "merge": 0,
+        "symbol_lookup": 15.3,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 114.4
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_diagram | read_diagram | evals/diagram-following/workflow.py | 660 | 662 | 4 |\n| Function:evals/diagram-following/workflow.py:read_diagram_text | read_diagram_text | evals/diagram-following/workflow.py | 670 | 698 | 5 |\n| Function:evals/diagram-following/workflow.py:node_shape | node_shape | evals/diagram-following/workflow.py | 643 | 657 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_169_run",
+      "name": "Run → Authored",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "run",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_unmarked_image_is_emitted_as_authored",
+          "name": "test_an_unmarked_image_is_emitted_as_authored",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 2353,
+          "endLine": 2359,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_unmarked_resource_is_emitted_as_authored",
+          "name": "test_an_unmarked_resource_is_emitted_as_authored",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 2362,
+          "endLine": 2368,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:evals/diagram-following/test_workflow.py:RUN_PF",
+          "name": "RUN_PF",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 87,
+          "endLine": 87
+        },
+        {
+          "id": "Property:evals/diagram-following/test_workflow.py:sub_agent_faults.runs@549:4",
+          "name": "runs",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 550,
+          "endLine": 550
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_the_compiled_form_publishes_a_bundle_per_target_and_the_authored_none",
+          "name": "test_the_compiled_form_publishes_a_bundle_per_target_and_the_authored_none",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1616,
+          "endLine": 1627,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:AUTHORED_FORM",
+          "name": "AUTHORED_FORM",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 151,
+          "endLine": 151
+        },
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Diagram.states#0",
+          "name": "states",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 436,
+          "endLine": 447
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:compiled_walk.runs@1370:4",
+          "name": "runs",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1371,
+          "endLine": 1371
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 108.4,
+        "merge": 0.1,
+        "symbol_lookup": 15.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 123.7
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 4 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 5 |\n| Function:evals/diagram-following/workflow.py:authored | authored | evals/diagram-following/workflow.py | 765 | 767 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_175_main",
+      "name": "Main → Read_compile",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "read_scenarios",
+          "step": 4
+        },
+        {
+          "symbol": "read_compile",
+          "step": 5
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_175_main",
+          "summary": "Main → Read_compile",
+          "priority": 0.068,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 5
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_compile",
+          "name": "read_compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 887,
+          "endLine": 895,
+          "module": "Diagram-following",
+          "process_id": "proc_175_main",
+          "step_index": 5
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Property:evals/diagram-following/workflow.py:Scenario.compile",
+          "name": "compile",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 551,
+          "endLine": 551
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Class:src/tests/test_candidate.py:Built",
+          "name": "Built",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 68,
+          "endLine": 90
+        },
+        {
+          "id": "Property:src/tests/test_candidate.py:Built.read",
+          "name": "read",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 75,
+          "endLine": 75
+        },
+        {
+          "id": "Method:src/tests/test_candidate.py:Built.validate#0",
+          "name": "validate",
+          "filePath": "src/tests/test_candidate.py",
+          "startLine": 79,
+          "endLine": 90,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagram_renderer.py:test_panel_section_levels_are_independent",
+          "name": "test_panel_section_levels_are_independent",
+          "filePath": "src/tests/test_diagram_renderer.py",
+          "startLine": 176,
+          "endLine": 193,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagram_renderer.py",
+          "name": "test_diagram_renderer.py",
+          "filePath": "src/tests/test_diagram_renderer.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 100.3,
+        "merge": 0,
+        "symbol_lookup": 15.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 115.5
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_scenarios | read_scenarios | evals/diagram-following/workflow.py | 917 | 931 | 4 |\n| Function:evals/diagram-following/workflow.py:read_compile | read_compile | evals/diagram-following/workflow.py | 886 | 894 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_176_main",
+      "name": "Main → Read_dispatch",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "read_scenarios",
+          "step": 4
+        },
+        {
+          "symbol": "read_dispatch",
+          "step": 5
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_cli.py",
+          "name": "test_cli.py",
+          "filePath": "src/tests/test_cli.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/test_run.py:DISPATCHING",
+          "name": "DISPATCHING",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 83,
+          "endLine": 83
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:test_a_dispatch_run_that_stopped_short_is_unfinished",
+          "name": "test_a_dispatch_run_that_stopped_short_is_unfinished",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 1848,
+          "endLine": 1862,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/test_run.py",
+          "name": "test_run.py",
+          "filePath": "evals/diagram-following/test_run.py"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/dispatch.py:DISPATCH_DEPTH",
+          "name": "DISPATCH_DEPTH",
+          "filePath": "src/prosiform/dispatch.py",
+          "startLine": 114,
+          "endLine": 114
+        },
+        {
+          "id": "Variable:src/prosiform/dispatch.py:DISPATCH_SELF",
+          "name": "DISPATCH_SELF",
+          "filePath": "src/prosiform/dispatch.py",
+          "startLine": 115,
+          "endLine": 115
+        }
+      ],
+      "timing": {
+        "vector": 1,
+        "bm25": 99.2,
+        "merge": 0,
+        "symbol_lookup": 18.3,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 117.5
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_scenarios | read_scenarios | evals/diagram-following/workflow.py | 917 | 931 | 4 |\n| Function:evals/diagram-following/workflow.py:read_dispatch | read_dispatch | evals/diagram-following/workflow.py | 897 | 914 | 5 |",
+      "row_count": 5
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_183_start",
+      "name": "Start → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "start",
+          "step": 1
+        },
+        {
+          "symbol": "prepare",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_346_compile_root",
+          "summary": "Compile_root → Form_directory",
+          "priority": 0.081,
+          "symbol_count": 2,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.form#1",
+          "name": "form",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 584,
+          "endLine": 591,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 2
+        },
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.compile_root#0",
+          "name": "compile_root",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 599,
+          "endLine": 611,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "File:evals/diagram-following/workflow.py",
+          "name": "workflow.py",
+          "filePath": "evals/diagram-following/workflow.py"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:test_a_question_the_session_answered_is_unrelayed_question",
+          "name": "test_a_question_the_session_answered_is_unrelayed_question",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 1831,
+          "endLine": 1845,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:test_a_scenario_dispatching_nothing_records_no_start",
+          "name": "test_a_scenario_dispatching_nothing_records_no_start",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 1865,
+          "endLine": 1878,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/test_run.py",
+          "name": "test_run.py",
+          "filePath": "evals/diagram-following/test_run.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/test_report.py:NOT_STARTED",
+          "name": "NOT_STARTED",
+          "filePath": "evals/diagram-following/test_report.py",
+          "startLine": 57,
+          "endLine": 66
+        },
+        {
+          "id": "Function:evals/diagram-following/test_report.py:recorded",
+          "name": "recorded",
+          "filePath": "evals/diagram-following/test_report.py",
+          "startLine": 106,
+          "endLine": 150
+        },
+        {
+          "id": "File:evals/diagram-following/test_report.py",
+          "name": "test_report.py",
+          "filePath": "evals/diagram-following/test_report.py"
+        },
+        {
+          "id": "Class:evals/diagram-following/run.py:Session",
+          "name": "Session",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 223,
+          "endLine": 241
+        }
+      ],
+      "timing": {
+        "vector": 1.7,
+        "bm25": 114.1,
+        "merge": 0,
+        "symbol_lookup": 14.2,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 128.5
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:start | start | evals/diagram-following/run.py | 584 | 644 | 1 |\n| Function:evals/diagram-following/run.py:prepare | prepare | evals/diagram-following/run.py | 417 | 460 | 2 |\n| Method:evals/diagram-following/workflow.py:Workflow.form#1 | form | evals/diagram-following/workflow.py | 583 | 590 | 3 |\n| Function:evals/diagram-following/workflow.py:form_directory | form_directory | evals/diagram-following/workflow.py | 960 | 967 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_203_main",
+      "name": "Main → Names",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_109_main",
+          "summary": "Main → Compare",
+          "priority": 0.082,
+          "symbol_count": 1,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:checks/invocation.py:main",
+          "name": "main",
+          "filePath": "checks/invocation.py",
+          "startLine": 294,
+          "endLine": 318,
+          "module": "Checks",
+          "process_id": "proc_109_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_cli.py:invoke",
+          "name": "invoke",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 193,
+          "endLine": 203,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_an_argument_naming_no_entry_reference_is_no_bare_command",
+          "name": "test_an_argument_naming_no_entry_reference_is_no_bare_command",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 287,
+          "endLine": 293,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:checks/invocation.py:NAMED",
+          "name": "NAMED",
+          "filePath": "checks/invocation.py",
+          "startLine": 80,
+          "endLine": 80
+        },
+        {
+          "id": "Property:checks/invocation.py:compare.named@210:4",
+          "name": "named",
+          "filePath": "checks/invocation.py",
+          "startLine": 211,
+          "endLine": 211
+        },
+        {
+          "id": "Property:checks/tables.py:main.named_targets@112:4",
+          "name": "named_targets",
+          "filePath": "checks/tables.py",
+          "startLine": 113,
+          "endLine": 113
+        },
+        {
+          "id": "Property:checks/tables.py:main.named_items@113:4",
+          "name": "named_items",
+          "filePath": "checks/tables.py",
+          "startLine": 114,
+          "endLine": 114
+        }
+      ],
+      "timing": {
+        "vector": 0.7,
+        "bm25": 102.5,
+        "merge": 0,
+        "symbol_lookup": 15,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 117.6
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/run.py:main | main | evals/diagram-following/run.py | 897 | 901 | 1 |\n| Function:evals/diagram-following/run.py:run | run | evals/diagram-following/run.py | 724 | 894 | 2 |\n| Function:evals/diagram-following/report.py:names | names | evals/diagram-following/report.py | 90 | 92 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_204_compiles",
+      "name": "Compiles → Entry_bundle",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compiles",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_204_compiles",
+          "summary": "Compiles → Entry_bundle",
+          "priority": 0.075,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.entry_bundle#0",
+          "name": "entry_bundle",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 580,
+          "endLine": 582,
+          "module": "Diagram-following",
+          "process_id": "proc_204_compiles",
+          "step_index": 3
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:compiled_bundle",
+          "name": "compiled_bundle",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 487,
+          "endLine": 491,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:compiled_entry",
+          "name": "compiled_entry",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 1255,
+          "endLine": 1259,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_workflow.py:test_a_section_entry_compiles_its_section_alone",
+          "name": "test_a_section_entry_compiles_its_section_alone",
+          "filePath": "evals/diagram-following/test_workflow.py",
+          "startLine": 2084,
+          "endLine": 2108,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:compiled_walk",
+          "name": "compiled_walk",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1356,
+          "endLine": 1389,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Class:src/prosiform/cli.py:Bundle",
+          "name": "Bundle",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3291,
+          "endLine": 3301
+        },
+        {
+          "id": "Class:src/prosiform/cli.py:Compiled",
+          "name": "Compiled",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3582,
+          "endLine": 3602
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:dispatched_set",
+          "name": "dispatched_set",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 3736,
+          "endLine": 3760,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:Run.bundle",
+          "name": "bundle",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 174,
+          "endLine": 174
+        }
+      ],
+      "timing": {
+        "vector": 1.3,
+        "bm25": 119.4,
+        "merge": 0.1,
+        "symbol_lookup": 18.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 138.2
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/score.py:compiles | compiles | evals/diagram-following/score.py | 408 | 437 | 1 |\n| Function:evals/diagram-following/score.py:names | names | evals/diagram-following/score.py | 440 | 469 | 2 |\n| Method:evals/diagram-following/workflow.py:Workflow.entry_bundle#0 | entry_bundle | evals/diagram-following/workflow.py | 579 | 581 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_205_follow",
+      "name": "Follow → Slug",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "follow",
+          "step": 1
+        },
+        {
+          "symbol": "section_body",
+          "step": 2
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_387_absorbing",
+          "summary": "Absorbing → Slug",
+          "priority": 0.09,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:src/prosiform/source.py:slug",
+          "name": "slug",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 459,
+          "endLine": 461,
+          "module": "Prosiform",
+          "process_id": "proc_387_absorbing",
+          "step_index": 3
+        },
+        {
+          "id": "Function:src/prosiform/bundle.py:absorbed",
+          "name": "absorbed",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 780,
+          "endLine": 793,
+          "module": "Tests",
+          "process_id": "proc_387_absorbing",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_name_is_slugged_as_the_title_it_is_compared_with_is",
+          "name": "test_a_name_is_slugged_as_the_title_it_is_compared_with_is",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 139,
+          "endLine": 140,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:src/tests/test_bundle.py:LINE",
+          "name": "LINE",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 547,
+          "endLine": 547
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:opening",
+          "name": "opening",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 552,
+          "endLine": 557,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:opening",
+          "name": "opening",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 158,
+          "endLine": 161,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:SLUG_SPACE",
+          "name": "SLUG_SPACE",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 236,
+          "endLine": 236
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:SLUG_HYPHEN",
+          "name": "SLUG_HYPHEN",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 237,
+          "endLine": 237
+        },
+        {
+          "id": "Variable:src/prosiform/bundle.py:RUN_PF",
+          "name": "RUN_PF",
+          "filePath": "src/prosiform/bundle.py",
+          "startLine": 201,
+          "endLine": 201
+        }
+      ],
+      "timing": {
+        "vector": 1.4,
+        "bm25": 110.7,
+        "merge": 0,
+        "symbol_lookup": 13.8,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 124.7
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:dispatch_starts.follow@1559:4 | follow | evals/diagram-following/workflow.py | 1559 | 1585 | 1 |\n| Function:evals/diagram-following/workflow.py:section_body | section_body | evals/diagram-following/workflow.py | 1391 | 1415 | 2 |\n| Function:evals/diagram-following/workflow.py:slug | slug | evals/diagram-following/workflow.py | 1115 | 1117 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_214_successor",
+      "name": "Successor → Leaving",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "successor",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_214_successor",
+          "summary": "Successor → Leaving",
+          "priority": 0.089,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:successor",
+          "name": "successor",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1659,
+          "endLine": 1696,
+          "module": "Diagram-following",
+          "process_id": "proc_214_successor",
+          "step_index": 1
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:drawn_successor",
+          "name": "drawn_successor",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1699,
+          "endLine": 1722,
+          "module": "Diagram-following",
+          "process_id": "proc_214_successor",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:walk",
+          "name": "walk",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1725,
+          "endLine": 1734,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/diagnostics.py:HOP",
+          "name": "HOP",
+          "filePath": "src/prosiform/diagnostics.py",
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "id": "File:src/prosiform/diagnostics.py",
+          "name": "diagnostics.py",
+          "filePath": "src/prosiform/diagnostics.py"
+        },
+        {
+          "id": "Function:src/tests/test_source.py:test_a_block_closing_on_the_last_line_leaves_no_content",
+          "name": "test_a_block_closing_on_the_last_line_leaves_no_content",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 107,
+          "endLine": 108
+        },
+        {
+          "id": "Function:src/tests/test_source.py:test_a_block_whose_closer_carries_no_terminator_leaves_no_content",
+          "name": "test_a_block_whose_closer_carries_no_terminator_leaves_no_content",
+          "filePath": "src/tests/test_source.py",
+          "startLine": 111,
+          "endLine": 112
+        },
+        {
+          "id": "Function:src/tests/test_bundle.py:test_a_second_h1_leaves_the_title_unabsorbed",
+          "name": "test_a_second_h1_leaves_the_title_unabsorbed",
+          "filePath": "src/tests/test_bundle.py",
+          "startLine": 169,
+          "endLine": 171,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.5,
+        "bm25": 108.8,
+        "merge": 0,
+        "symbol_lookup": 14.9,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 123.8
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:successor | successor | evals/diagram-following/workflow.py | 1658 | 1695 | 1 |\n| Function:evals/diagram-following/workflow.py:drawn_successor | drawn_successor | evals/diagram-following/workflow.py | 1698 | 1721 | 2 |\n| Method:evals/diagram-following/workflow.py:Diagram.leaving#1 | leaving | evals/diagram-following/workflow.py | 448 | 462 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_215_successor",
+      "name": "Successor → Holds",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "successor",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_178_contribute",
+          "summary": "Contribute → Hold",
+          "priority": 0.092,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:src/prosiform/composition.py:Composing.emit#2",
+          "name": "emit",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 324,
+          "endLine": 333,
+          "module": "Prosiform",
+          "process_id": "proc_178_contribute",
+          "step_index": 3
+        },
+        {
+          "id": "Method:src/prosiform/composition.py:Composing.contribute#3",
+          "name": "contribute",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 357,
+          "endLine": 450,
+          "module": "Prosiform",
+          "process_id": "proc_178_contribute",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:walk",
+          "name": "walk",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1725,
+          "endLine": 1734,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/diagnostics.py:HOP",
+          "name": "HOP",
+          "filePath": "src/prosiform/diagnostics.py",
+          "startLine": 41,
+          "endLine": 41
+        },
+        {
+          "id": "File:src/prosiform/diagnostics.py",
+          "name": "diagnostics.py",
+          "filePath": "src/prosiform/diagnostics.py"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 0.8,
+        "bm25": 116.8,
+        "merge": 0,
+        "symbol_lookup": 17.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 134.6
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:successor | successor | evals/diagram-following/workflow.py | 1658 | 1695 | 1 |\n| Function:evals/diagram-following/workflow.py:drawn_successor | drawn_successor | evals/diagram-following/workflow.py | 1698 | 1721 | 2 |\n| Function:evals/diagram-following/workflow.py:holds | holds | evals/diagram-following/workflow.py | 1593 | 1601 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_228_main",
+      "name": "Main → Input_read",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 6
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITIONAL_STEP",
+          "name": "CONDITIONAL_STEP",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 361,
+          "endLine": 361
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITION",
+          "name": "CONDITION",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 752,
+          "endLine": 752
+        },
+        {
+          "id": "Function:src/tests/test_diagram_renderer.py:test_compact_changes_both_panels_without_changing_input",
+          "name": "test_compact_changes_both_panels_without_changing_input",
+          "filePath": "src/tests/test_diagram_renderer.py",
+          "startLine": 74,
+          "endLine": 89,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagram_renderer.py:test_panel_section_levels_are_independent",
+          "name": "test_panel_section_levels_are_independent",
+          "filePath": "src/tests/test_diagram_renderer.py",
+          "startLine": 176,
+          "endLine": 193,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagram_renderer.py",
+          "name": "test_diagram_renderer.py",
+          "filePath": "src/tests/test_diagram_renderer.py"
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 124.9,
+        "merge": 0,
+        "symbol_lookup": 15.4,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 140.4
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 4 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 5 |\n| Function:evals/diagram-following/workflow.py:parse_transition | parse_transition | evals/diagram-following/workflow.py | 722 | 748 | 6 |\n| Function:evals/diagram-following/workflow.py:input_read | input_read | evals/diagram-following/workflow.py | 1604 | 1610 | 7 |",
+      "row_count": 7
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_233_bundle_walk",
+      "name": "Bundle_walk → Node_shape",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "bundle_walk",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_13_main",
+          "summary": "Main → Node_shape",
+          "priority": 0.076,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 8
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_diagram_text",
+          "name": "read_diagram_text",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 671,
+          "endLine": 699,
+          "module": "Diagram-following",
+          "process_id": "proc_13_main",
+          "step_index": 7
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:shapes_nodes",
+          "name": "shapes_nodes",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 666,
+          "endLine": 668
+        },
+        {
+          "id": "File:evals/diagram-following/workflow.py",
+          "name": "workflow.py",
+          "filePath": "evals/diagram-following/workflow.py"
+        },
+        {
+          "id": "Function:src/prosiform/metadata.py:_pair",
+          "name": "_pair",
+          "filePath": "src/prosiform/metadata.py",
+          "startLine": 531,
+          "endLine": 548,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/prosiform/metadata.py:_subst",
+          "name": "_subst",
+          "filePath": "src/prosiform/metadata.py",
+          "startLine": 584,
+          "endLine": 603,
+          "module": "Prosiform"
+        },
+        {
+          "id": "File:src/prosiform/metadata.py",
+          "name": "metadata.py",
+          "filePath": "src/prosiform/metadata.py"
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:Run.bundle",
+          "name": "bundle",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 174,
+          "endLine": 174
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:Run.bundles",
+          "name": "bundles",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 175,
+          "endLine": 175
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        }
+      ],
+      "timing": {
+        "vector": 1.1,
+        "bm25": 130.2,
+        "merge": 0.1,
+        "symbol_lookup": 16.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 147
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:bundle_walk | bundle_walk | evals/diagram-following/workflow.py | 1234 | 1352 | 1 |\n| Function:evals/diagram-following/workflow.py:read_diagram_text | read_diagram_text | evals/diagram-following/workflow.py | 670 | 698 | 2 |\n| Function:evals/diagram-following/workflow.py:node_shape | node_shape | evals/diagram-following/workflow.py | 643 | 657 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_234_main",
+      "name": "Main → Authored",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_122_main",
+          "summary": "Main → Harness_named",
+          "priority": 0.093,
+          "symbol_count": 1,
+          "process_type": "cross_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/run.py:main",
+          "name": "main",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 898,
+          "endLine": 902,
+          "module": "Diagram-following",
+          "process_id": "proc_122_main",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/run.py:AUTHORED_SET",
+          "name": "AUTHORED_SET",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 191,
+          "endLine": 191
+        },
+        {
+          "id": "Variable:evals/diagram-following/run.py:BUNDLED",
+          "name": "BUNDLED",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 202,
+          "endLine": 202
+        },
+        {
+          "id": "Method:src/prosiform/composition.py:Colliding.__init__#5",
+          "name": "__init__",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 193,
+          "endLine": 209
+        },
+        {
+          "id": "Method:src/prosiform/composition.py:Composing.collide#0",
+          "name": "collide",
+          "filePath": "src/prosiform/composition.py",
+          "startLine": 503,
+          "endLine": 530,
+          "module": "Prosiform"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/source.py:AUTHORITY",
+          "name": "AUTHORITY",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 219,
+          "endLine": 219
+        },
+        {
+          "id": "Class:src/prosiform/source.py:Use",
+          "name": "Use",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 617,
+          "endLine": 650
+        }
+      ],
+      "timing": {
+        "vector": 1.9,
+        "bm25": 112,
+        "merge": 0,
+        "symbol_lookup": 14.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 126.7
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:read_sections | read_sections | evals/diagram-following/workflow.py | 845 | 851 | 4 |\n| Function:evals/diagram-following/workflow.py:read_section | read_section | evals/diagram-following/workflow.py | 795 | 816 | 5 |\n| Function:evals/diagram-following/workflow.py:authored | authored | evals/diagram-following/workflow.py | 765 | 767 | 6 |",
+      "row_count": 6
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_243_main",
+      "name": "Main → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_346_compile_root",
+          "summary": "Compile_root → Form_directory",
+          "priority": 0.097,
+          "symbol_count": 3,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.form#1",
+          "name": "form",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 584,
+          "endLine": 591,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 2
+        },
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.compile_root#0",
+          "name": "compile_root",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 599,
+          "endLine": 611,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 1
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:form_directory",
+          "name": "form_directory",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 961,
+          "endLine": 968,
+          "module": "Diagram-following",
+          "process_id": "proc_346_compile_root",
+          "step_index": 3
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Class:evals/diagram-following/run.py:Session",
+          "name": "Session",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 223,
+          "endLine": 241
+        },
+        {
+          "id": "Method:evals/diagram-following/run.py:Session.directory#1",
+          "name": "directory",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 232,
+          "endLine": 241,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/run.py",
+          "name": "run.py",
+          "filePath": "evals/diagram-following/run.py"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_bundle_is_written_into_the_working_directory_without_o",
+          "name": "test_a_bundle_is_written_into_the_working_directory_without_o",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 628,
+          "endLine": 638,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Property:evals/diagram-following/report.py:report.built@211:4",
+          "name": "built",
+          "filePath": "evals/diagram-following/report.py",
+          "startLine": 212,
+          "endLine": 231
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 125.5,
+        "merge": 0,
+        "symbol_lookup": 18.5,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 144.1
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/stub_agent.py:main | main | evals/diagram-following/stub_agent.py | 330 | 414 | 1 |\n| Function:evals/diagram-following/workflow.py:workflows | workflows | evals/diagram-following/workflow.py | 1007 | 1009 | 2 |\n| Function:evals/diagram-following/workflow.py:read_workflow | read_workflow | evals/diagram-following/workflow.py | 970 | 1004 | 3 |\n| Function:evals/diagram-following/workflow.py:form_directory | form_directory | evals/diagram-following/workflow.py | 960 | 967 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_273_inputs_read",
+      "name": "Inputs_read → Input_read",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "deferral_inputs",
+          "step": 2
+        },
+        {
+          "symbol": "inputs_read",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [],
+      "process_symbols": [],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITIONAL_STEP",
+          "name": "CONDITIONAL_STEP",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 361,
+          "endLine": 361
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITION",
+          "name": "CONDITION",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 752,
+          "endLine": 752
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        },
+        {
+          "id": "Variable:src/prosiform/cli.py:INPUT_FAILURE",
+          "name": "INPUT_FAILURE",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 212,
+          "endLine": 212
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:reading",
+          "name": "reading",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 1017,
+          "endLine": 1055,
+          "module": "Tests"
+        },
+        {
+          "id": "Property:src/prosiform/cli.py:traverse.read@2074:4",
+          "name": "read",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 2075,
+          "endLine": 2075
+        }
+      ],
+      "timing": {
+        "vector": 0.8,
+        "bm25": 119.6,
+        "merge": 0,
+        "symbol_lookup": 20.3,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 140
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:inputs_read | inputs_read | evals/diagram-following/workflow.py | 1613 | 1633 | 1 |\n| Function:evals/diagram-following/workflow.py:deferral_inputs | deferral_inputs | evals/diagram-following/workflow.py | 1636 | 1650 | 2 |\n| Function:evals/diagram-following/workflow.py:input_read | input_read | evals/diagram-following/workflow.py | 1604 | 1610 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_279_inputs_read",
+      "name": "Inputs_read → Authored",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "deferral_inputs",
+          "step": 2
+        },
+        {
+          "symbol": "inputs_read",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_273_inputs_read",
+          "summary": "Inputs_read → Input_read",
+          "priority": 0.088,
+          "symbol_count": 1,
+          "process_type": "intra_community",
+          "step_count": 3
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:deferral_inputs",
+          "name": "deferral_inputs",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1637,
+          "endLine": 1651,
+          "module": "Diagram-following",
+          "process_id": "proc_273_inputs_read",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:READS",
+          "name": "READS",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 331,
+          "endLine": 331
+        },
+        {
+          "id": "Variable:evals/diagram-following/workflow.py:CONDITION",
+          "name": "CONDITION",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 752,
+          "endLine": 752
+        },
+        {
+          "id": "Function:src/prosiform/cli.py:unindexable",
+          "name": "unindexable",
+          "filePath": "src/prosiform/cli.py",
+          "startLine": 409,
+          "endLine": 426,
+          "module": "Prosiform"
+        },
+        {
+          "id": "File:src/prosiform/cli.py",
+          "name": "cli.py",
+          "filePath": "src/prosiform/cli.py"
+        },
+        {
+          "id": "Property:src/tests/test_cli.py:writing_once.reads@3439:4",
+          "name": "reads",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3440,
+          "endLine": 3440
+        },
+        {
+          "id": "Function:src/tests/test_cli.py:test_a_dispatch_warning_reads_as_text",
+          "name": "test_a_dispatch_warning_reads_as_text",
+          "filePath": "src/tests/test_cli.py",
+          "startLine": 3844,
+          "endLine": 3850,
+          "module": "Tests"
+        },
+        {
+          "id": "Function:src/tests/test_diagnostics.py:test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "name": "test_text_writes_the_chain_hop_by_hop_on_one_line",
+          "filePath": "src/tests/test_diagnostics.py",
+          "startLine": 63,
+          "endLine": 66,
+          "module": "Tests"
+        },
+        {
+          "id": "File:src/tests/test_diagnostics.py",
+          "name": "test_diagnostics.py",
+          "filePath": "src/tests/test_diagnostics.py"
+        }
+      ],
+      "timing": {
+        "vector": 1.2,
+        "bm25": 97.7,
+        "merge": 0.1,
+        "symbol_lookup": 16.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 114
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:inputs_read | inputs_read | evals/diagram-following/workflow.py | 1613 | 1633 | 1 |\n| Function:evals/diagram-following/workflow.py:deferral_inputs | deferral_inputs | evals/diagram-following/workflow.py | 1636 | 1650 | 2 |\n| Function:evals/diagram-following/workflow.py:authored | authored | evals/diagram-following/workflow.py | 765 | 767 | 3 |",
+      "row_count": 3
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_287_activated",
+      "name": "Activated → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "activate",
+          "step": 2
+        },
+        {
+          "symbol": "activated",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_287_activated",
+          "summary": "Activated → Form_directory",
+          "priority": 0.088,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/workflow.py:Workflow.form#1",
+          "name": "form",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 584,
+          "endLine": 591,
+          "module": "Diagram-following",
+          "process_id": "proc_287_activated",
+          "step_index": 3
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4",
+          "name": "activate",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 1373,
+          "endLine": 1381,
+          "module": "Diagram-following",
+          "process_id": "proc_287_activated",
+          "step_index": 2
+        }
+      ],
+      "definitions": [
+        {
+          "id": "File:evals/diagram-following/workflow.py",
+          "name": "workflow.py",
+          "filePath": "evals/diagram-following/workflow.py"
+        },
+        {
+          "id": "Class:evals/diagram-following/run.py:Session",
+          "name": "Session",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 223,
+          "endLine": 241
+        },
+        {
+          "id": "Property:evals/diagram-following/run.py:Session.form",
+          "name": "form",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 229,
+          "endLine": 229
+        },
+        {
+          "id": "Method:evals/diagram-following/run.py:Session.directory#1",
+          "name": "directory",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 232,
+          "endLine": 241,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "Property:src/prosiform/source.py:Capture.directories",
+          "name": "directories",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 299,
+          "endLine": 299
+        },
+        {
+          "id": "Class:src/prosiform/source.py:Unfollowed",
+          "name": "Unfollowed",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 748,
+          "endLine": 760
+        },
+        {
+          "id": "Property:src/prosiform/source.py:Unfollowed.form",
+          "name": "form",
+          "filePath": "src/prosiform/source.py",
+          "startLine": 758,
+          "endLine": 758
+        },
+        {
+          "id": "Class:src/prosiform/provenance.py:Instruction",
+          "name": "Instruction",
+          "filePath": "src/prosiform/provenance.py",
+          "startLine": 215,
+          "endLine": 237
+        }
+      ],
+      "timing": {
+        "vector": 1,
+        "bm25": 108.4,
+        "merge": 0,
+        "symbol_lookup": 20.6,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 129.1
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:activated | activated | evals/diagram-following/workflow.py | 1212 | 1231 | 1 |\n| Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4 | activate | evals/diagram-following/workflow.py | 1372 | 1380 | 2 |\n| Method:evals/diagram-following/workflow.py:Workflow.form#1 | form | evals/diagram-following/workflow.py | 583 | 590 | 3 |\n| Function:evals/diagram-following/workflow.py:form_directory | form_directory | evals/diagram-following/workflow.py | 960 | 967 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_319_inputs_read",
+      "name": "Inputs_read → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "deferral_inputs",
+          "step": 2
+        },
+        {
+          "symbol": "inputs_read",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_161_run",
+          "summary": "Run → Input_read",
+          "priority": 0.093,
+          "symbol_count": 2,
+          "process_type": "cross_community",
+          "step_count": 7
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Function:evals/diagram-following/workflow.py:parse_transition",
+          "name": "parse_transition",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 723,
+          "endLine": 749,
+          "module": "Diagram-following",
+          "process_id": "proc_161_run",
+          "step_index": 6
+        },
+        {
+          "id": "Function:evals/diagram-following/workflow.py:read_workflow",
+          "name": "read_workflow",
+          "filePath": "evals/diagram-following/workflow.py",
+          "startLine": 971,
+          "endLine": 1005,
+          "module": "Diagram-following",
+          "process_id": "proc_161_run",
+          "step_index": 3
+        }
+      ],
+      "definitions": [
+        {
+          "id": "File:evals/diagram-following/workflow.py",
+          "name": "workflow.py",
+          "filePath": "evals/diagram-following/workflow.py"
+        },
+        {
+          "id": "Method:evals/diagram-following/run.py:Session.directory#1",
+          "name": "directory",
+          "filePath": "evals/diagram-following/run.py",
+          "startLine": 232,
+          "endLine": 241,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/run.py",
+          "name": "run.py",
+          "filePath": "evals/diagram-following/run.py"
+        },
+        {
+          "id": "Function:evals/diagram-following/test_run.py:material",
+          "name": "material",
+          "filePath": "evals/diagram-following/test_run.py",
+          "startLine": 247,
+          "endLine": 289,
+          "module": "Diagram-following"
+        },
+        {
+          "id": "File:evals/diagram-following/test_run.py",
+          "name": "test_run.py",
+          "filePath": "evals/diagram-following/test_run.py"
+        },
+        {
+          "id": "Variable:evals/diagram-following/harness.py:INPUT",
+          "name": "INPUT",
+          "filePath": "evals/diagram-following/harness.py",
+          "startLine": 91,
+          "endLine": 91
+        },
+        {
+          "id": "Method:evals/diagram-following/harness.py:Cursor.managed#2",
+          "name": "managed",
+          "filePath": "evals/diagram-following/harness.py",
+          "startLine": 709,
+          "endLine": 711,
+          "module": "Diagram-following"
+        }
+      ],
+      "timing": {
+        "vector": 0.9,
+        "bm25": 107.9,
+        "merge": 0.1,
+        "symbol_lookup": 15.1,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 123.2
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Function:evals/diagram-following/workflow.py:inputs_read | inputs_read | evals/diagram-following/workflow.py | 1613 | 1633 | 1 |\n| Function:evals/diagram-following/workflow.py:deferral_inputs | deferral_inputs | evals/diagram-following/workflow.py | 1636 | 1650 | 2 |\n| Method:evals/diagram-following/workflow.py:Workflow.form#1 | form | evals/diagram-following/workflow.py | 583 | 590 | 3 |\n| Function:evals/diagram-following/workflow.py:form_directory | form_directory | evals/diagram-following/workflow.py | 960 | 967 | 4 |",
+      "row_count": 4
+    }
+  },
+  {
+    "flow": {
+      "id": "proc_346_compile_root",
+      "name": "Compile_root → Form_directory",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compile_root",
+          "step": 1
+        }
+      ]
+    },
+    "query": {
+      "processes": [
+        {
+          "id": "proc_263_preflight",
+          "summary": "Preflight → _record",
+          "priority": 0.111,
+          "symbol_count": 1,
+          "process_type": "intra_community",
+          "step_count": 4
+        }
+      ],
+      "process_symbols": [
+        {
+          "id": "Method:evals/diagram-following/harness.py:Claude.preflight#3",
+          "name": "preflight",
+          "filePath": "evals/diagram-following/harness.py",
+          "startLine": 343,
+          "endLine": 421,
+          "module": "Diagram-following",
+          "process_id": "proc_263_preflight",
+          "step_index": 1
+        }
+      ],
+      "definitions": [
+        {
+          "id": "File:evals/diagram-following/workflow.py",
+          "name": "workflow.py",
+          "filePath": "evals/diagram-following/workflow.py"
+        },
+        {
+          "id": "File:evals/diagram-following/run.py",
+          "name": "run.py",
+          "filePath": "evals/diagram-following/run.py"
+        },
+        {
+          "id": "Variable:src/prosiform/access.py:ROOT",
+          "name": "ROOT",
+          "filePath": "src/prosiform/access.py",
+          "startLine": 20,
+          "endLine": 20
+        },
+        {
+          "id": "Variable:src/prosiform/access.py:DIRECTORY",
+          "name": "DIRECTORY",
+          "filePath": "src/prosiform/access.py",
+          "startLine": 22,
+          "endLine": 22
+        },
+        {
+          "id": "Class:src/prosiform/access.py:Unreadable",
+          "name": "Unreadable",
+          "filePath": "src/prosiform/access.py",
+          "startLine": 25,
+          "endLine": 30,
+          "module": "Prosiform"
+        }
+      ],
+      "timing": {
+        "vector": 1,
+        "bm25": 127.4,
+        "merge": 0,
+        "symbol_lookup": 20.7,
+        "ranking": 0,
+        "formatting": 0,
+        "wall": 148.2
+      }
+    },
+    "steps": {
+      "markdown": "| id | name | filePath | startLine | endLine | step_index |\n| --- | --- | --- | --- | --- | --- |\n| Method:evals/diagram-following/workflow.py:Workflow.compile_root#0 | compile_root | evals/diagram-following/workflow.py | 598 | 610 | 1 |\n| Method:evals/diagram-following/workflow.py:Workflow.form#1 | form | evals/diagram-following/workflow.py | 583 | 590 | 2 |\n| Function:evals/diagram-following/workflow.py:form_directory | form_directory | evals/diagram-following/workflow.py | 960 | 967 | 3 |",
+      "row_count": 3
+    }
+  }
+]

@@ -1,0 +1,52 @@
+[
+  {
+    "repo": "m2ux/prosiform",
+    "number": 621,
+    "closingIssuesReferences": []
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 622,
+    "closingIssuesReferences": [
+      {
+        "repo": "m2ux/prosiform",
+        "number": 579
+      }
+    ]
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 626,
+    "closingIssuesReferences": []
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 628,
+    "closingIssuesReferences": []
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 634,
+    "closingIssuesReferences": []
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 638,
+    "closingIssuesReferences": [
+      {
+        "repo": "m2ux/prosiform",
+        "number": 635
+      }
+    ]
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 640,
+    "closingIssuesReferences": []
+  },
+  {
+    "repo": "m2ux/prosiform",
+    "number": 651,
+    "closingIssuesReferences": []
+  }
+]

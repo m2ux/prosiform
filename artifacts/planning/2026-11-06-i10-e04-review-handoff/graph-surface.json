@@ -1,0 +1,3176 @@
+{
+  "summary": {
+    "changed_count": 360,
+    "affected_count": 39,
+    "changed_files": 109,
+    "risk_level": "critical"
+  },
+  "changed_symbols": [
+    {
+      "id": "Section:evals/diagram-following/README.md:L1:Diagram-Following Eval",
+      "name": "Diagram-Following Eval",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L5:Forms",
+      "name": "Forms",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L45:Dispatch scenarios",
+      "name": "Dispatch scenarios",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L74:Stated runs",
+      "name": "Stated runs",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L89:Sub-agent runs",
+      "name": "Sub-agent runs",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L98:Bootstrap scenarios",
+      "name": "Bootstrap scenarios",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L111:Deferral scenarios",
+      "name": "Deferral scenarios",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L129:Composition scenarios",
+      "name": "Composition scenarios",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L162:Scoring",
+      "name": "Scoring",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L190:Dispatch checks",
+      "name": "Dispatch checks",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L207:Run checks",
+      "name": "Run checks",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L288:Running",
+      "name": "Running",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/README.md:L338:Reading the report",
+      "name": "Reading the report",
+      "type": "Section",
+      "filePath": "evals/diagram-following/README.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/RUNBOOK.md:L1:Diagram-Following Runbook",
+      "name": "Diagram-Following Runbook",
+      "type": "Section",
+      "filePath": "evals/diagram-following/RUNBOOK.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/RUNBOOK.md:L5:Triage Rubric",
+      "name": "Triage Rubric",
+      "type": "Section",
+      "filePath": "evals/diagram-following/RUNBOOK.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/RUNBOOK.md:L26:By Class",
+      "name": "By Class",
+      "type": "Section",
+      "filePath": "evals/diagram-following/RUNBOOK.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/RUNBOOK.md:L135:Baseline",
+      "name": "Baseline",
+      "type": "Section",
+      "filePath": "evals/diagram-following/RUNBOOK.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/harness.py:PARENT",
+      "name": "PARENT",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/harness.py:SHELL_TOOL",
+      "name": "SHELL_TOOL",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/harness.py:Start",
+      "name": "Start",
+      "type": "Class",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Start.parent",
+      "name": "parent",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Start.commands",
+      "name": "commands",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/harness.py:Claude",
+      "name": "Claude",
+      "type": "Class",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Claude.shell_tool",
+      "name": "shell_tool",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Claude.nested_commands",
+      "name": "nested_commands",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:evals/diagram-following/harness.py:Claude.starts#1",
+      "name": "starts",
+      "type": "Method",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Claude.starts.found@521:8",
+      "name": "found",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:evals/diagram-following/harness.py:Claude.commands#1",
+      "name": "commands",
+      "type": "Method",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/harness.py:Cursor",
+      "name": "Cursor",
+      "type": "Class",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Cursor.nested_commands",
+      "name": "nested_commands",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:evals/diagram-following/harness.py:Cursor.starts#1",
+      "name": "starts",
+      "type": "Method",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:evals/diagram-following/harness.py:Cursor.commands#1",
+      "name": "commands",
+      "type": "Method",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/harness.py:_owner",
+      "name": "_owner",
+      "type": "Function",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/harness.py:_shell_calls",
+      "name": "_shell_calls",
+      "type": "Function",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:_shell_calls.found@821:4",
+      "name": "found",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/harness.py:Opencode",
+      "name": "Opencode",
+      "type": "Class",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Opencode.nested_commands",
+      "name": "nested_commands",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/harness.py:Codex",
+      "name": "Codex",
+      "type": "Class",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/harness.py:Codex.nested_commands",
+      "name": "nested_commands",
+      "type": "Property",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:evals/diagram-following/harness.py:Codex.starts#1",
+      "name": "starts",
+      "type": "Method",
+      "filePath": "evals/diagram-following/harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/instruction-compiled.md:L1:Instruction: Following a Compiled Bundle",
+      "name": "Instruction: Following a Compiled Bundle",
+      "type": "Section",
+      "filePath": "evals/diagram-following/instruction-compiled.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/instruction.md:L1:Instruction",
+      "name": "Instruction",
+      "type": "Section",
+      "filePath": "evals/diagram-following/instruction.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/run.py:PF_SETS",
+      "name": "PF_SETS",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:options",
+      "name": "options",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:observable",
+      "name": "observable",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:prepare",
+      "name": "prepare",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:start",
+      "name": "start",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:entry_named",
+      "name": "entry_named",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:run",
+      "name": "run",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/run.py:run.attempt@812:4",
+      "name": "attempt",
+      "type": "Function",
+      "filePath": "evals/diagram-following/run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:__all__",
+      "name": "__all__",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:PF",
+      "name": "PF",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:SEPARATORS",
+      "name": "SEPARATORS",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:VALUED",
+      "name": "VALUED",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/score.py:Failure",
+      "name": "Failure",
+      "type": "Class",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:UNCOMPILED",
+      "name": "UNCOMPILED",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:OVERCOMPILED",
+      "name": "OVERCOMPILED",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/score.py:MISORDERED_COMPILE",
+      "name": "MISORDERED_COMPILE",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:sub_agent_undone",
+      "name": "sub_agent_undone",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:record_calls",
+      "name": "record_calls",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:_held",
+      "name": "_held",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:_texts",
+      "name": "_texts",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:read_commands",
+      "name": "read_commands",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:read_starts",
+      "name": "read_starts",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:_words",
+      "name": "_words",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:pf_runs",
+      "name": "pf_runs",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/score.py:pf_runs.runs@366:4",
+      "name": "runs",
+      "type": "Property",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/score.py:pf_runs.references@372:12",
+      "name": "references",
+      "type": "Property",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:_names",
+      "name": "_names",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:_held_to",
+      "name": "_held_to",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:compiles",
+      "name": "compiles",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/score.py:compiles.agents@421:4",
+      "name": "agents",
+      "type": "Property",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/score.py:score",
+      "name": "score",
+      "type": "Function",
+      "filePath": "evals/diagram-following/score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/stub_agent.py:STATED_TRACE",
+      "name": "STATED_TRACE",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/stub_agent.py:recognised",
+      "name": "recognised",
+      "type": "Function",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/stub_agent.py:shell_runs",
+      "name": "shell_runs",
+      "type": "Function",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/stub_agent.py:shell_call",
+      "name": "shell_call",
+      "type": "Function",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/stub_agent.py:transcript_of",
+      "name": "transcript_of",
+      "type": "Function",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/stub_agent.py:transcript_of.first@301:4",
+      "name": "first",
+      "type": "Property",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/stub_agent.py:main",
+      "name": "main",
+      "type": "Function",
+      "filePath": "evals/diagram-following/stub_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_codex_agent.py:test_native_response_groups_survive_interleaved_child_starts",
+      "name": "test_native_response_groups_survive_interleaved_child_starts",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_codex_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_codex_agent.py:test_codex_bootstrap_material_uses_its_native_skill_root",
+      "name": "test_codex_bootstrap_material_uses_its_native_skill_root",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_codex_agent.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_harness.py:test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it",
+      "name": "test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_harness.py:shell_call",
+      "name": "shell_call",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_harness.py:under",
+      "name": "under",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_harness.py:test_claude_files_each_start_under_the_sub_agent_that_made_it",
+      "name": "test_claude_files_each_start_under_the_sub_agent_that_made_it",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/test_harness.py:test_claude_files_each_start_under_the_sub_agent_that_made_it.nested_set@824:4",
+      "name": "nested_set",
+      "type": "Property",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_harness.py:test_the_record_lists_each_sub_agents_starts_and_commands",
+      "name": "test_the_record_lists_each_sub_agents_starts_and_commands",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_harness.py:test_each_harness_declares_whether_a_sub_agents_calls_reach_its_stream",
+      "name": "test_each_harness_declares_whether_a_sub_agents_calls_reach_its_stream",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_harness.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_report.py:recorded",
+      "name": "recorded",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_report.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_report.py:test_a_refused_run_gives_its_state_and_reason_and_no_row",
+      "name": "test_a_refused_run_gives_its_state_and_reason_and_no_row",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_report.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_report.py:test_a_run_that_measured_no_cell_writes_no_baseline",
+      "name": "test_a_run_that_measured_no_cell_writes_no_baseline",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_report.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/test_report.py:test_a_run_that_measured_no_cell_writes_no_baseline.run@473:4",
+      "name": "run",
+      "type": "Property",
+      "filePath": "evals/diagram-following/test_report.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_the_stub_recognises_the_workflow_holding_the_most_states",
+      "name": "test_the_stub_recognises_the_workflow_holding_the_most_states",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:eval_run",
+      "name": "eval_run",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:material",
+      "name": "material",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_the_readme_states_every_form_the_runner_offers_and_its_default",
+      "name": "test_the_readme_states_every_form_the_runner_offers_and_its_default",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build",
+      "name": "test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports",
+      "name": "test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run",
+      "name": "test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios",
+      "name": "test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_native_child_starts_admit_chains_with_no_child_command_requirement",
+      "name": "test_native_child_starts_admit_chains_with_no_child_command_requirement",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs",
+      "name": "test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs",
+      "name": "test_each_session_starts_in_a_fresh_workspace_of_its_form_and_inputs",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_compiled_form_gives_its_whole_bundle_set",
+      "name": "test_a_compiled_form_gives_its_whole_bundle_set",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_run.py:test_a_sub_agent_untold_its_trace_name_keeps_none",
+      "name": "test_a_sub_agent_untold_its_trace_name_keeps_none",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_run.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_runbook.py:test_the_token_budget_covers_the_default_matrix_at_that_cap",
+      "name": "test_the_token_budget_covers_the_default_matrix_at_that_cap",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_runbook.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:workspace",
+      "name": "workspace",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:done_by_sub_agents",
+      "name": "done_by_sub_agents",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:run",
+      "name": "run",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_run_walking_its_scenario_path_with_every_action_passes",
+      "name": "test_a_run_walking_its_scenario_path_with_every_action_passes",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_dispatch_scenario_passes_on_its_path_and_its_record",
+      "name": "test_a_dispatch_scenario_passes_on_its_path_and_its_record",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:dispatched",
+      "name": "dispatched",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_native_parallel_set_keeps_its_response_group_across_child_events",
+      "name": "test_a_native_parallel_set_keeps_its_response_group_across_child_events",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_native_starts_from_separate_responses_are_sequential",
+      "name": "test_native_starts_from_separate_responses_are_sequential",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_sub_agent_that_wrote_no_action_is_missing_action",
+      "name": "test_a_sub_agent_that_wrote_no_action_is_missing_action",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_start_is_read_from_the_transcript_with_its_position_and_return",
+      "name": "test_a_start_is_read_from_the_transcript_with_its_position_and_return",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_bundle_of_a_document_in_a_folder_names_its_section",
+      "name": "test_a_bundle_of_a_document_in_a_folder_names_its_section",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_sub_agent_running_no_pf_on_its_line_misses_its_action",
+      "name": "test_a_sub_agent_running_no_pf_on_its_line_misses_its_action",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_sub_agent_never_started_is_undispatched_before_its_action",
+      "name": "test_a_sub_agent_never_started_is_undispatched_before_its_action",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_an_absent_transcript_records_no_start",
+      "name": "test_an_absent_transcript_records_no_start",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_an_opencode_question_left_unanswered_scores_as_a_question",
+      "name": "test_an_opencode_question_left_unanswered_scores_as_a_question",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_score.py:STATED_RUNS",
+      "name": "STATED_RUNS",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:compiling",
+      "name": "compiling",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_score.py:CORRECT_SESSION",
+      "name": "CORRECT_SESSION",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_score.py:CORRECT_SUB_AGENT",
+      "name": "CORRECT_SUB_AGENT",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_session_making_its_stated_runs_passes",
+      "name": "test_a_session_making_its_stated_runs_passes",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_session_departing_from_its_stated_runs_fails_with_its_class",
+      "name": "test_a_session_departing_from_its_stated_runs_fails_with_its_class",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_run_on_a_line_no_scenario_states_is_overcompiled",
+      "name": "test_a_run_on_a_line_no_scenario_states_is_overcompiled",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_bare_pf_beyond_those_stated_is_no_departure",
+      "name": "test_a_bare_pf_beyond_those_stated_is_no_departure",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_run_from_another_directory_names_the_same_document",
+      "name": "test_a_run_from_another_directory_names_the_same_document",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:claude_message",
+      "name": "claude_message",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_compiled_claude_record_holds_each_hops_runs",
+      "name": "test_a_compiled_claude_record_holds_each_hops_runs",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_compiled_claude_record_holds_each_hops_runs.task@953:4",
+      "name": "task",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_compiled_claude_record_holds_each_hops_runs.bash@956:4",
+      "name": "bash",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_a_harness_reporting_no_command_asks_no_run",
+      "name": "test_a_harness_reporting_no_command_asks_no_run",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_the_run_checks_follow_the_dispatch_checks",
+      "name": "test_the_run_checks_follow_the_dispatch_checks",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_score.py:test_each_command_splits_into_the_pf_runs_it_makes",
+      "name": "test_each_command_splits_into_the_pf_runs_it_makes",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_score.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:RUN_PF",
+      "name": "RUN_PF",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:INSTRUCTIONS",
+      "name": "INSTRUCTIONS",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:opens_with_run_pf",
+      "name": "opens_with_run_pf",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:DISPATCH_LINK",
+      "name": "DISPATCH_LINK",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:DISPATCHING",
+      "name": "DISPATCHING",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:COMPILING",
+      "name": "COMPILING",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:BOOTSTRAPPING",
+      "name": "BOOTSTRAPPING",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:declaration_faults",
+      "name": "declaration_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:skill_entry",
+      "name": "skill_entry",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:bundle_faults",
+      "name": "bundle_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:transition_faults",
+      "name": "transition_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:scenario_faults",
+      "name": "scenario_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:compiled_faults",
+      "name": "compiled_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:dispatched_bundle",
+      "name": "dispatched_bundle",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:sub_agent_faults",
+      "name": "sub_agent_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/test_workflow.py:sub_agent_faults.followed@548:4",
+      "name": "followed",
+      "type": "Property",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/test_workflow.py:sub_agent_faults.runs@549:4",
+      "name": "runs",
+      "type": "Property",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/test_workflow.py:sub_agent_faults.made@550:4",
+      "name": "made",
+      "type": "Property",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:sub_agent_faults.activate@554:4",
+      "name": "activate",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:bootstrap_faults",
+      "name": "bootstrap_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_the_corpus_holds_the_graded_workflows",
+      "name": "test_the_corpus_holds_the_graded_workflows",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_each_compiled_scenario_states_the_runs_and_path_its_bundles_state",
+      "name": "test_each_compiled_scenario_states_the_runs_and_path_its_bundles_state",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_each_compiled_sub_agent_states_the_actions_its_runs_compile",
+      "name": "test_each_compiled_sub_agent_states_the_actions_its_runs_compile",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/test_workflow.py:RETIRED",
+      "name": "RETIRED",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_no_edge_workflow_source_writes_a_retired_mark",
+      "name": "test_no_edge_workflow_source_writes_a_retired_mark",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_set_publishes_parallel_items_linking_bundles_opening_with_the_run_pf_line",
+      "name": "test_a_set_publishes_parallel_items_linking_bundles_opening_with_the_run_pf_line",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_dispatched_bundle_opening_without_the_run_pf_line_is_a_fault",
+      "name": "test_a_dispatched_bundle_opening_without_the_run_pf_line_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_each_bootstrap_scenario_states_the_guide_its_line_and_the_walk",
+      "name": "test_each_bootstrap_scenario_states_the_guide_its_line_and_the_walk",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_skill_entry_declaring_nothing_holds_its_line_as_written",
+      "name": "test_a_skill_entry_declaring_nothing_holds_its_line_as_written",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_skill_line_its_scenario_does_not_compile_is_a_fault",
+      "name": "test_a_skill_line_its_scenario_does_not_compile_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_bootstrap_scenario_omitting_the_guide_is_a_fault",
+      "name": "test_a_bootstrap_scenario_omitting_the_guide_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_conditional_deferral_is_run_where_its_step_holds_and_nowhere_else",
+      "name": "test_a_conditional_deferral_is_run_where_its_step_holds_and_nowhere_else",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_run_on_a_line_the_path_does_not_reach_is_a_fault",
+      "name": "test_a_run_on_a_line_the_path_does_not_reach_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_the_real_target_of_a_preset_deferral_leads_elsewhere",
+      "name": "test_the_real_target_of_a_preset_deferral_leads_elsewhere",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_preset_deferral_states_the_stand_ins_path",
+      "name": "test_a_preset_deferral_states_the_stand_ins_path",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches",
+      "name": "test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_deferred_dispatch_stated_off_its_walk_is_a_fault",
+      "name": "test_a_deferred_dispatch_stated_off_its_walk_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_three_hop_chain_starts_each_hop_in_order_with_no_depth_warning",
+      "name": "test_a_three_hop_chain_starts_each_hop_in_order_with_no_depth_warning",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_set_three_hops_deep_starts_together_before_the_chain_goes_on",
+      "name": "test_a_set_three_hops_deep_starts_together_before_the_chain_goes_on",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_question_three_hops_deep_is_relayed_and_the_chain_dispatched_again",
+      "name": "test_a_question_three_hops_deep_is_relayed_and_the_chain_dispatched_again",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_hop_missing_from_a_deep_trace_is_a_fault",
+      "name": "test_a_hop_missing_from_a_deep_trace_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action",
+      "name": "test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles",
+      "name": "test_each_deep_hop_carrying_a_line_states_the_action_its_run_compiles",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault",
+      "name": "test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:compiled_entry",
+      "name": "compiled_entry",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds",
+      "name": "test_a_state_composed_under_a_conditional_step_is_entered_where_it_holds",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_composed_state_entered_off_its_condition_is_a_fault",
+      "name": "test_a_composed_state_entered_off_its_condition_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_footnote_opens_its_target_and_a_composition_composes_in_place",
+      "name": "test_a_footnote_opens_its_target_and_a_composition_composes_in_place",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_path_the_footnote_does_not_open_is_a_fault",
+      "name": "test_a_path_the_footnote_does_not_open_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_self_composed_section_warns_and_states_its_bundles_path",
+      "name": "test_a_self_composed_section_warns_and_states_its_bundles_path",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_self_composed_scenario_stating_another_path_is_a_fault",
+      "name": "test_a_self_composed_scenario_stating_another_path_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_scenario_naming_no_trace_is_a_fault",
+      "name": "test_a_scenario_naming_no_trace_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_trace_disagreeing_with_the_source_is_a_fault",
+      "name": "test_a_trace_disagreeing_with_the_source_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_scenario_states_each_pf_run_in_order_with_its_arguments",
+      "name": "test_a_scenario_states_each_pf_run_in_order_with_its_arguments",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_sub_agents_run_is_read_by_the_section_it_follows",
+      "name": "test_a_sub_agents_run_is_read_by_the_section_it_follows",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_stated_run_naming_no_document_of_the_sources_is_a_fault",
+      "name": "test_a_stated_run_naming_no_document_of_the_sources_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_run_stated_by_a_workflow_running_no_command_is_a_fault",
+      "name": "test_a_run_stated_by_a_workflow_running_no_command_is_a_fault",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_run_whose_fields_are_not_references_is_refused",
+      "name": "test_a_run_whose_fields_are_not_references_is_refused",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:scored",
+      "name": "scored",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/test_workflow.py:scored.held@2225:4",
+      "name": "held",
+      "type": "Property",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:stated_commands",
+      "name": "stated_commands",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:produced",
+      "name": "produced",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:produced.departing@2259:4",
+      "name": "departing",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/test_workflow.py:test_a_class_no_scenario_produces_is_named",
+      "name": "test_a_class_no_scenario_produces_is_named",
+      "type": "Function",
+      "filePath": "evals/diagram-following/test_workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:EDGE_WORKFLOWS",
+      "name": "EDGE_WORKFLOWS",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:INSTRUCTION_COMPILED",
+      "name": "INSTRUCTION_COMPILED",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:RUN_PF_LINE",
+      "name": "RUN_PF_LINE",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:SHELL_FORMS",
+      "name": "SHELL_FORMS",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:LABELLED_EDGE",
+      "name": "LABELLED_EDGE",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:DEFERRED_COMPOSITION",
+      "name": "DEFERRED_COMPOSITION",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:INLINE_LINE",
+      "name": "INLINE_LINE",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Variable:evals/diagram-following/workflow.py:CONDITIONAL_STEP",
+      "name": "CONDITIONAL_STEP",
+      "type": "Variable",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/workflow.py:Section",
+      "name": "Section",
+      "type": "Class",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:Section.deferred",
+      "name": "deferred",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/workflow.py:Dispatch",
+      "name": "Dispatch",
+      "type": "Class",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/workflow.py:Compile",
+      "name": "Compile",
+      "type": "Class",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:Compile.by",
+      "name": "by",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:Compile.args",
+      "name": "args",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/workflow.py:Scenario",
+      "name": "Scenario",
+      "type": "Class",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:Scenario.compile",
+      "name": "compile",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Class:evals/diagram-following/workflow.py:Workflow",
+      "name": "Workflow",
+      "type": "Class",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Method:evals/diagram-following/workflow.py:Workflow.compile_root#0",
+      "name": "compile_root",
+      "type": "Method",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:parse_transition",
+      "name": "parse_transition",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:read_section",
+      "name": "read_section",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:read_compile",
+      "name": "read_compile",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:read_dispatch",
+      "name": "read_dispatch",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:read_scenarios",
+      "name": "read_scenarios",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:compile_faults",
+      "name": "compile_faults",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:baseline_workflows",
+      "name": "baseline_workflows",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:instruction",
+      "name": "instruction",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:bundle",
+      "name": "bundle",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:compile_reference",
+      "name": "compile_reference",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:reached_lines",
+      "name": "reached_lines",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:reached_lines.found@1190:4",
+      "name": "found",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:activated",
+      "name": "activated",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:activated.texts@1224:4",
+      "name": "texts",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:bundle_walk",
+      "name": "bundle_walk",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:compiled_walk",
+      "name": "compiled_walk",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:compiled_walk.runs@1370:4",
+      "name": "runs",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:compiled_walk.activate@1372:4",
+      "name": "activate",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:section_body",
+      "name": "section_body",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:dispatch_walk",
+      "name": "dispatch_walk",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:dispatch_starts",
+      "name": "dispatch_starts",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Property:evals/diagram-following/workflow.py:dispatch_starts.trace@1557:4",
+      "name": "trace",
+      "type": "Property",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:dispatch_starts.follow@1559:4",
+      "name": "follow",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:inputs_read",
+      "name": "inputs_read",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:deferral_inputs",
+      "name": "deferral_inputs",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Function:evals/diagram-following/workflow.py:successor",
+      "name": "successor",
+      "type": "Function",
+      "filePath": "evals/diagram-following/workflow.py",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/bootstrap-audit/skill/SKILL.md:L6:Audit",
+      "name": "Audit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/bootstrap-audit/skill/SKILL.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/convert.md:L4:Convert",
+      "name": "Convert",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/convert.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/convert.md:L6:Rows",
+      "name": "Rows",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/convert.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/finish.md:L4:Finish",
+      "name": "Finish",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/finish.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/gauge.md:L4:Gauge",
+      "name": "Gauge",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/gauge.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/states/sample.md:L4:Sample",
+      "name": "Sample",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/states/sample.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/conditional-composition/compiled/workflow.md:L4:Upgrade",
+      "name": "Upgrade",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/conditional-composition/compiled/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/reference/archive.md:L4:Archive",
+      "name": "Archive",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/reference/archive.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/reference/archive.md:L6:Steps",
+      "name": "Steps",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/reference/archive.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/reference/migration.md:L4:Migration",
+      "name": "Migration",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/reference/migration.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/reference/migration.md:L6:Steps",
+      "name": "Steps",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/reference/migration.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/states/inventory.md:L4:Inventory",
+      "name": "Inventory",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/states/inventory.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/states/relocate.md:L4:Relocate",
+      "name": "Relocate",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/states/relocate.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/states/settle.md:L4:Settle",
+      "name": "Settle",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/states/settle.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-composition/compiled/workflow.md:L4:Relocation",
+      "name": "Relocation",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-composition/compiled/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/reference/crew.md:L4:Crew",
+      "name": "Crew",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/reference/crew.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/reference/crew.md:L6:Lift",
+      "name": "Lift",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/reference/crew.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/reference/crew.md:L10:Strap",
+      "name": "Strap",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/reference/crew.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/reference/loading.md:L4:Loading",
+      "name": "Loading",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/reference/loading.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/reference/loading.md:L6:Crew",
+      "name": "Crew",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/reference/loading.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/states/pack.md:L4:Pack",
+      "name": "Pack",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/states/pack.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/states/pick.md:L4:Pick",
+      "name": "Pick",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/states/pick.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/states/post.md:L4:Post",
+      "name": "Post",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/states/post.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/deferred-dispatch/compiled/workflow.md:L4:Dispatch Floor",
+      "name": "Dispatch Floor",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/deferred-dispatch/compiled/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/reference/style.md:L4:Style",
+      "name": "Style",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/reference/style.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/reference/style.md:L6:Rules",
+      "name": "Rules",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/reference/style.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/compose.md:L4:Compose",
+      "name": "Compose",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/compose.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/issue.md:L4:Issue",
+      "name": "Issue",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/issue.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/issue.md:L8:Summary",
+      "name": "Summary",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/issue.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/issue.md:L12:Release",
+      "name": "Release",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/issue.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/states/vet.md:L4:Vet",
+      "name": "Vet",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/states/vet.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/directive-labels/compiled/workflow.md:L4:Release notes",
+      "name": "Release notes",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/directive-labels/compiled/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/ask/choice.md:L4:Choice",
+      "name": "Choice",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/ask/choice.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/ask/choice.md:L6:Elect",
+      "name": "Elect",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/ask/choice.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/ask/enquiry.md:L4:Enquiry",
+      "name": "Enquiry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/ask/enquiry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/ask/enquiry.md:L6:Pose",
+      "name": "Pose",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/ask/enquiry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/ask/probe.md:L4:Probing",
+      "name": "Probing",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/ask/probe.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/ask/probe.md:L6:Probe",
+      "name": "Probe",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/ask/probe.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/divide.md:L4:Divide",
+      "name": "Divide",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/divide.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/divide.md:L6:Portion",
+      "name": "Portion",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/divide.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/east.md:L4:Eastern",
+      "name": "Eastern",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/east.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/east.md:L6:East",
+      "name": "East",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/east.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/join.md:L4:Joining",
+      "name": "Joining",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/join.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/join.md:L6:Join",
+      "name": "Join",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/join.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/seal.md:L4:Sealing",
+      "name": "Sealing",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/seal.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/seal.md:L6:Seal",
+      "name": "Seal",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/seal.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/west.md:L4:Western",
+      "name": "Western",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/west.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/fan/west.md:L6:West",
+      "name": "West",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/fan/west.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/line/detail.md:L4:Detail",
+      "name": "Detail",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/line/detail.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/line/detail.md:L6:Expand",
+      "name": "Expand",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/line/detail.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/line/scope.md:L4:Scope",
+      "name": "Scope",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/line/scope.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/line/scope.md:L6:Frame",
+      "name": "Frame",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/line/scope.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/line/tally.md:L4:Tally",
+      "name": "Tally",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/line/tally.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/line/tally.md:L6:Count",
+      "name": "Count",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/line/tally.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/brief.md:L4:Brief",
+      "name": "Brief",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/brief.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/fan.md:L4:Fan",
+      "name": "Fan",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/fan.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/query.md:L4:Query",
+      "name": "Query",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/query.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/relay.md:L4:Relay",
+      "name": "Relay",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/relay.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/resume.md:L4:Resume",
+      "name": "Resume",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/resume.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/route.md:L4:Route",
+      "name": "Route",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/route.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/states/wrap.md:L4:Wrap",
+      "name": "Wrap",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/states/wrap.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/dispatch-depth/compiled/workflow.md:L4:Depth",
+      "name": "Depth",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/dispatch-depth/compiled/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/SKILL.md:L5:Release",
+      "name": "Release",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/SKILL.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/backport.md:L4:Backport",
+      "name": "Backport",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/backport.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/broadcast.md:L4:Broadcast",
+      "name": "Broadcast",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/broadcast.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/freeze.md:L4:Freeze",
+      "name": "Freeze",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/freeze.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/tag.md:L4:Tag",
+      "name": "Tag",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/states/tag.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/inline-bootstrap/skill/sources/workflow.md:L4:Release",
+      "name": "Release",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/inline-bootstrap/skill/sources/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/reference/cache.md:L4:Cache",
+      "name": "Cache",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/reference/cache.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/reference/cache.md:L6:Open",
+      "name": "Open",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/reference/cache.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/reference/fetch.md:L6:Fetch",
+      "name": "Fetch",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/reference/fetch.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/reference/fetch.md:L8:Read mirror",
+      "name": "Read mirror",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/reference/fetch.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/reference/net.md:L4:Net",
+      "name": "Net",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/reference/net.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/reference/net.md:L6:Open",
+      "name": "Open",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/reference/net.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/states/mirror.md:L4:Mirror",
+      "name": "Mirror",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/states/mirror.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/states/restore.md:L4:Restore",
+      "name": "Restore",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/states/restore.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/states/serve.md:L4:Serve",
+      "name": "Serve",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/states/serve.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/states/solicit.md:L4:Solicit",
+      "name": "Solicit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/states/solicit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/preset-deferral/compiled/workflow.md:L4:Retrieval",
+      "name": "Retrieval",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/preset-deferral/compiled/workflow.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/hop/audit.md:L4:Audit Sweep",
+      "name": "Audit Sweep",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/hop/audit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/hop/audit.md:L6:Sweep",
+      "name": "Sweep",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/hop/audit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/hop/ledger.md:L4:Ledger",
+      "name": "Ledger",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/hop/ledger.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/hop/ledger.md:L6:Balance",
+      "name": "Balance",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/hop/ledger.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/hop/review.md:L4:Findings Review",
+      "name": "Findings Review",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/hop/review.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/hop/review.md:L6:Scan",
+      "name": "Scan",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/hop/review.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/states/allot.md:L4:Allot",
+      "name": "Allot",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/states/allot.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/states/cascade.md:L4:Cascade",
+      "name": "Cascade",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/states/cascade.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/states/entrust.md:L4:Entrust",
+      "name": "Entrust",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/states/entrust.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/states/entry.md:L4:Entry",
+      "name": "Entry",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/states/entry.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/states/exit.md:L4:Exit",
+      "name": "Exit",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/states/exit.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/states/tidy.md:L4:Tidy",
+      "name": "Tidy",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/states/tidy.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/closing.md:L4:Closing",
+      "name": "Closing",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/closing.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/closing.md:L6:Close",
+      "name": "Close",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/closing.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/recording.md:L4:Recording",
+      "name": "Recording",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/recording.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/recording.md:L6:File",
+      "name": "File",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/recording.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/ruling.md:L4:Ruling",
+      "name": "Ruling",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/ruling.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/ruling.md:L6:Rule",
+      "name": "Rule",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/ruling.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/weighing.md:L4:Weighing",
+      "name": "Weighing",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/weighing.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/steps/weighing.md:L6:Weigh",
+      "name": "Weigh",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/steps/weighing.md",
+      "change_type": "touched"
+    },
+    {
+      "id": "Section:evals/diagram-following/workflows/subagent-first-run/compiled/workflow.md:L4:Delegation",
+      "name": "Delegation",
+      "type": "Section",
+      "filePath": "evals/diagram-following/workflows/subagent-first-run/compiled/workflow.md",
+      "change_type": "touched"
+    }
+  ],
+  "affected_processes": [
+    {
+      "id": "proc_6_main",
+      "name": "Main → Input_read",
+      "process_type": "cross_community",
+      "step_count": 9,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_section",
+          "step": 7
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 8
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_7_main",
+      "name": "Main → Ruled_state",
+      "process_type": "cross_community",
+      "step_count": 9,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_section",
+          "step": 7
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 8
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_12_main",
+      "name": "Main → Mermaid_text",
+      "process_type": "cross_community",
+      "step_count": 8,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_13_main",
+      "name": "Main → Node_shape",
+      "process_type": "cross_community",
+      "step_count": 8,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_14_main",
+      "name": "Main → Authored",
+      "process_type": "cross_community",
+      "step_count": 8,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_section",
+          "step": 7
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_20_main",
+      "name": "Main → Read_compile",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_scenarios",
+          "step": 6
+        },
+        {
+          "symbol": "read_compile",
+          "step": 7
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_21_main",
+      "name": "Main → Read_dispatch",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "read_scenarios",
+          "step": 6
+        },
+        {
+          "symbol": "read_dispatch",
+          "step": 7
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_30_main",
+      "name": "Main → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "baseline_workflows",
+          "step": 3
+        },
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_87_transcript_of",
+      "name": "Transcript_of → Entry_bundle",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "transcript_of",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_88_activated",
+      "name": "Activated → Slug",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "activated",
+          "step": 1
+        },
+        {
+          "symbol": "reached_lines",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_122_main",
+      "name": "Main → Harness_named",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_123_attempt",
+      "name": "Attempt → Fits",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "attempt",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_124_compiles",
+      "name": "Compiles → _names",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compiles",
+          "step": 1
+        },
+        {
+          "symbol": "_held_to",
+          "step": 2
+        },
+        {
+          "symbol": "_names",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "id": "proc_125_compiles",
+      "name": "Compiles → _words",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compiles",
+          "step": 1
+        },
+        {
+          "symbol": "pf_runs",
+          "step": 2
+        },
+        {
+          "symbol": "_words",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "id": "proc_127_activated",
+      "name": "Activated → Compile_reference",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "activate",
+          "step": 2
+        },
+        {
+          "symbol": "activated",
+          "step": 1
+        },
+        {
+          "symbol": "compile_reference",
+          "step": 3
+        }
+      ]
+    },
+    {
+      "id": "proc_128_activated",
+      "name": "Activated → Entry_bundle",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "activate",
+          "step": 2
+        },
+        {
+          "symbol": "activated",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_129_activated",
+      "name": "Activated → Holds",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "activated",
+          "step": 1
+        },
+        {
+          "symbol": "reached_lines",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_161_run",
+      "name": "Run → Input_read",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 6
+        },
+        {
+          "symbol": "run",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_162_main",
+      "name": "Main → Ruled_state",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 6
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_167_main",
+      "name": "Main → Mermaid_text",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_168_main",
+      "name": "Main → Node_shape",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_169_run",
+      "name": "Run → Authored",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "run",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_175_main",
+      "name": "Main → Read_compile",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "read_scenarios",
+          "step": 4
+        },
+        {
+          "symbol": "read_compile",
+          "step": 5
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_176_main",
+      "name": "Main → Read_dispatch",
+      "process_type": "cross_community",
+      "step_count": 5,
+      "changed_steps": [
+        {
+          "symbol": "read_scenarios",
+          "step": 4
+        },
+        {
+          "symbol": "read_dispatch",
+          "step": 5
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_183_start",
+      "name": "Start → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "start",
+          "step": 1
+        },
+        {
+          "symbol": "prepare",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_203_main",
+      "name": "Main → Names",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "run",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_204_compiles",
+      "name": "Compiles → Entry_bundle",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compiles",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_205_follow",
+      "name": "Follow → Slug",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "follow",
+          "step": 1
+        },
+        {
+          "symbol": "section_body",
+          "step": 2
+        }
+      ]
+    },
+    {
+      "id": "proc_214_successor",
+      "name": "Successor → Leaving",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "successor",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_215_successor",
+      "name": "Successor → Holds",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "successor",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_228_main",
+      "name": "Main → Input_read",
+      "process_type": "cross_community",
+      "step_count": 7,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "parse_transition",
+          "step": 6
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_233_bundle_walk",
+      "name": "Bundle_walk → Node_shape",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "bundle_walk",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_234_main",
+      "name": "Main → Authored",
+      "process_type": "cross_community",
+      "step_count": 6,
+      "changed_steps": [
+        {
+          "symbol": "read_section",
+          "step": 5
+        },
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_243_main",
+      "name": "Main → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "main",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_273_inputs_read",
+      "name": "Inputs_read → Input_read",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "deferral_inputs",
+          "step": 2
+        },
+        {
+          "symbol": "inputs_read",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_279_inputs_read",
+      "name": "Inputs_read → Authored",
+      "process_type": "cross_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "deferral_inputs",
+          "step": 2
+        },
+        {
+          "symbol": "inputs_read",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_287_activated",
+      "name": "Activated → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "activate",
+          "step": 2
+        },
+        {
+          "symbol": "activated",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_319_inputs_read",
+      "name": "Inputs_read → Form_directory",
+      "process_type": "cross_community",
+      "step_count": 4,
+      "changed_steps": [
+        {
+          "symbol": "deferral_inputs",
+          "step": 2
+        },
+        {
+          "symbol": "inputs_read",
+          "step": 1
+        }
+      ]
+    },
+    {
+      "id": "proc_346_compile_root",
+      "name": "Compile_root → Form_directory",
+      "process_type": "intra_community",
+      "step_count": 3,
+      "changed_steps": [
+        {
+          "symbol": "compile_root",
+          "step": 1
+        }
+      ]
+    }
+  ]
+}

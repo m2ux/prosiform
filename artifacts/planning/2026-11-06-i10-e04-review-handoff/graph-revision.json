@@ -1,0 +1,32 @@
+{
+  "head": "8ca53994e89dab6657c2eea9eef72f74c48764e0",
+  "indexed_at": "2026-11-06T12:28:00.843Z",
+  "capabilities": {
+    "graph": {
+      "provider": "ladybugdb",
+      "status": "available"
+    },
+    "fts": {
+      "provider": "ladybugdb-fts",
+      "status": "available"
+    },
+    "vectorSearch": {
+      "provider": "ladybugdb-vector",
+      "status": "unavailable",
+      "exactScanLimit": 10000
+    }
+  },
+  "stats": {
+    "files": 512,
+    "nodes": 6380,
+    "edges": 15868,
+    "communities": 272,
+    "processes": 479,
+    "embeddings": 0
+  },
+  "contexts": 360,
+  "flows": 39,
+  "context_errors": [],
+  "flow_errors": [],
+  "query_staleness": []
+}
