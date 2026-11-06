@@ -472,7 +472,7 @@ class Placing:
         self,
         parsed: Mapping[str, Sequence[Token]],
         read: Mapping[str, Source],
-        bundle_file: Callable[[Target], str],
+        bundle_file: Callable[[Reference], str],
         grouped: Collection[tuple[str, int]],
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
@@ -552,7 +552,7 @@ class Placing:
         """
         together = [link for link in pending.values() if link.parallel]
         serving: dict[Served, int | str] = {
-            served: file_destination(self.bundle_file(link.target))
+            served: file_destination(self.bundle_file(link.reference))
             for served, link in pending.items()
         }
         if len(together) > 1:
@@ -571,7 +571,7 @@ class Placing:
                     )
                 )
             listed = listing(
-                [(self.bundle_file(link.target), link.text) for link in together]
+                [(self.bundle_file(link.reference), link.text) for link in together]
             )
             body: list[Instruction] = [Instruction(listed)]
             at = self.heading(PARALLEL, depth, body)
@@ -668,7 +668,7 @@ def subsections(
     groups: Sequence[Group],
     parsed: Mapping[str, Sequence[Token]],
     read: Mapping[str, Source],
-    bundle_file: Callable[[Target], str],
+    bundle_file: Callable[[Reference], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[list[Group], Placed]:
