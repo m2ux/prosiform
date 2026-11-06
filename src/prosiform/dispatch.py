@@ -110,6 +110,7 @@ from prosiform.source import (
     regions,
     shown,
 )
+from prosiform.tags import read as read_tags
 
 DISPATCH_DEPTH = "W_DISPATCH_DEPTH"
 DISPATCH_SELF = "W_DISPATCH_SELF"
@@ -407,7 +408,15 @@ def written_in(
             if not dispatched(opening):
                 continue
             destination = str(child.attrGet("href") or "")
-            target = withheld(path, destination, opening, declarations, substitution)
+            title = child.attrGet("title")
+            target = withheld(
+                path,
+                destination,
+                opening,
+                declarations,
+                substitution,
+                tags=read_tags(None if title is None else str(title)),
+            )
             if target is None:
                 continue
             found.append(

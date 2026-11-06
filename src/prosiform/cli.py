@@ -1527,7 +1527,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, substitution, at)
+            found = inside(path, use.destination, substitution, at, tags=use.tags)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1663,7 +1663,7 @@ def refusals_of_operators(
         target = (
             None
             if use.resource
-            else named(path, use.destination, substitution, at, chain)
+            else named(path, use.destination, substitution, at, chain, tags=use.tags)
         )
         answer = None if target is None else declarations.answer(target)
         if answer is Probed.DECLARING:
@@ -1741,7 +1741,9 @@ def refusals_of_directives(
             continue
         at = location(path, source.line(use.line))
         if use.title is not None:
-            target = named(path, use.destination, substitution, at, chain)
+            target = named(
+                path, use.destination, substitution, at, chain, tags=use.tags
+            )
             if target is None or declarations.answer(target) is not Probed.DECLARING:
                 continue
             if target.fragment is None:
@@ -1819,7 +1821,7 @@ def composing_itself(
         if use.title is None or not directive(use.opening) or deferred(use.opening):
             continue
         at = location(path, source.line(use.line))
-        target = named(path, use.destination, substitution, at, chain)
+        target = named(path, use.destination, substitution, at, chain, tags=use.tags)
         if target is None or target.fragment is None or target.path != path:
             continue
         yield Diagnostic(
@@ -1911,7 +1913,14 @@ def withheld(
             continue
         at = location(path, source.line(use.line))
         found = withholding_target(
-            path, use.destination, use.opening, declarations, substitution, at, chain
+            path,
+            use.destination,
+            use.opening,
+            declarations,
+            substitution,
+            at,
+            chain,
+            tags=use.tags,
         )
         if found is None:
             continue
@@ -2016,15 +2025,11 @@ def traverse(
     reference normalized to rather than on a depth the traversal
     refuses at.
 
-    A dependency reaching a carried document and section from a section
-    title no earlier dependency reached it from is carried all the same,
-    because the title selects that document's presets and each reference
-    bundles the document under the selection it made. So is one reaching
-    it by the other kind, a directive where an inclusion reached it or
-    an inclusion where a directive did, because the bundle places a
-    document's content by the references of each kind. It joins the
-    references the run carries and not the frontier, since the content
-    it selects is content the run already reads.
+    References to one carried document and section retain their distinct
+    heading context, requested tags and inclusion or composition kind.
+    Each joins the references the run carries. Its destination enters
+    the frontier once, since the selected content is content the run
+    already reads and physical capture belongs to the source path.
 
     The selection of a group grows as later content marks more of its
     document, so every group is read again each round. What the
@@ -2078,11 +2083,13 @@ def traverse(
     captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
-    titled: set[tuple[str, str | None, str | None, bool]] = set()
+    titled: set[tuple[str, str | None, str | None, bool, frozenset[str]]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
-    postponed: dict[tuple[str, str | None, str | None, bool], Reference] = {}
-    dispatching: dict[str, Hop] = {}
+    postponed: dict[
+        tuple[str, str | None, str | None, bool, frozenset[str]], Reference
+    ] = {}
+    dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
     hop = 0
@@ -2163,7 +2170,7 @@ def traverse(
             ):
                 verify_cached(root, one, captured)
                 postponed.setdefault(
-                    (one.path, one.fragment, one.title, one.composes), one
+                    (one.path, one.fragment, one.title, one.composes, one.tags), one
                 )
             for link in dispatches(
                 path,
@@ -2174,7 +2181,7 @@ def traverse(
                 declarations,
                 mapping,
             ):
-                dispatching.setdefault(link.name, link)
+                dispatching.setdefault((link.name, link.target.tags), link)
             for one in required(
                 path,
                 read[path],
@@ -2185,9 +2192,10 @@ def traverse(
                 mapping,
             ):
                 verify_cached(root, one, captured)
-                if (one.path, one.fragment, one.title, one.composes) in titled:
+                occurrence = (one.path, one.fragment, one.title, one.composes, one.tags)
+                if occurrence in titled:
                     continue
-                titled.add((one.path, one.fragment, one.title, one.composes))
+                titled.add(occurrence)
                 if (one.path, one.fragment) in seen:
                     reselecting.append(one)
                     continue
