@@ -1,0 +1,26 @@
+# A scenario is the inputs a run is given, the path a correct run walks and the
+# pf runs it makes. Each input is a file under inputs/ holding the value
+# written, then a newline. The skill's SKILL.md declares no prosiform and holds
+# one hand-written line naming the workflow to compile, so a compile entry
+# names, from the skill's directory, bare pf for the guide the skill says to
+# run, then the document that line names.
+
+[[scenario]]
+name = "feature-tagged"
+path = ["Entry", "Freeze", "Tag", "Broadcast", "Exit"]
+inputs = { "change.txt" = "feature" }
+
+[[scenario.compile]]
+
+[[scenario.compile]]
+entry = "sources/workflow.md"
+
+[[scenario]]
+name = "fix-backported"
+path = ["Entry", "Freeze", "Backport", "Broadcast", "Exit"]
+inputs = { "change.txt" = "fix" }
+
+[[scenario.compile]]
+
+[[scenario.compile]]
+entry = "sources/workflow.md"

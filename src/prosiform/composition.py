@@ -24,8 +24,8 @@ ordinary link names included, each in the scope that writes it.
 
 A directive is a reference. It resolves through the substitution in
 force for the document writing it, so that document's `subst` decides
-the section composed, and the title of its scope selects the target's
-presets as any reference's containing section does. Their `subst`
+the section composed, and its link title selects the target's presets
+by complete comma-separated names. Their `subst`
 pairs redirect the links the contribution writes, since those are the
 target document's own. A `group` pair places a document where an
 ordinary reference bundles it, so it places no contribution.
@@ -42,8 +42,9 @@ directives whose compositions placed it, outermost first, its own last.
 A deferred directive keeps its place and contributes no content: it
 takes its destination section and contribution heading as an immediate
 one does, and the contribution carries one generated line naming the
-target by its heading text and by the path the run that composes it
-compiles. That run reads the target as an entry, so its body is
+target by its heading text, the path the later run compiles and the
+link title carrying its requested presets. That run reads the target as an entry,
+so its body is
 validated there, its immediate directives compose and its deferred
 ones keep their own lines.
 
@@ -87,6 +88,7 @@ a dispatch there.
 
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass, replace
+from html import escape
 
 from markdown_it.token import Token
 
@@ -148,6 +150,7 @@ from prosiform.source import (
     opening_text,
     section,
 )
+from prosiform.tags import read as read_tags
 
 Composed = dict[Placing, Generated]
 """Each contribution's heading, by the placing of the composition it heads."""
@@ -241,6 +244,7 @@ class Directive:
     at: Located
     title: str
     deferred: bool = False
+    link_title: str | None = None
 
     def overflowing(self, heading: str, depth: int) -> Overflowing:
         """The refusal of a heading this directive would compose past H6."""
@@ -302,7 +306,15 @@ class Composing:
                 if not directive(opening_text(children, at)):
                     continue
                 written = str(child.attrGet(HREF) or "")
-                found = resolvable(path, written, self.declarations, self.substitution)
+                raw_title = child.attrGet("title")
+                link_title = None if raw_title is None else str(raw_title)
+                found = resolvable(
+                    path,
+                    written,
+                    self.declarations,
+                    self.substitution,
+                    tags=read_tags(link_title),
+                )
                 if found is None or found.fragment is None:
                     continue
                 named = self.parsed[found.path]
@@ -319,6 +331,7 @@ class Composing:
                     (path, inline.map[0], here),
                     single_line(shows[id(chosen[0])]),
                     deferred(opening_text(children, at)),
+                    link_title,
                 )
 
     def emit(self, text: str, generated: bool = False) -> None:
@@ -346,12 +359,26 @@ class Composing:
         destination names it, so that run composes the body this one
         withholds. Every pass emits it alike.
         """
+        suffix = ""
+        if one.link_title is not None:
+            title = (
+                escape(one.link_title, quote=True)
+                .replace("\\", "&#92;")
+                .replace("\n", "&#10;")
+                .replace("\r", "&#13;")
+                .replace("\t", "&#9;")
+            )
+            suffix = f' "{title}"'
         text = (
-            f"[{INLINE_MARK} {escaped(one.title)}]({rebased(one.target, one.written)})"
+            f"[{INLINE_MARK} {escaped(one.title)}]"
+            f"({rebased(one.target, one.written)}{suffix})"
         )
         self.emit(text, generated=True)
         self.parts.append(
-            Instruction(text, activates=(one.target.path, one.target.fragment))
+            Instruction(
+                text,
+                activates=((one.target.path, one.target.fragment), one.target.tags),
+            )
         )
 
     def contribute(

@@ -11,8 +11,9 @@ forms are:
 - `tree`: the diagram form's source tree as it is, entered at `workflow.md`;
 - `prose`: the prose form bundled by `pf`, as one file;
 - `linked`: the linked form's source tree as it is, entered at `workflow.md`;
-- `compiled`: the compiled form's bundle set, the entry's bundle as
-  `workflow.md` and every dispatched target's beside it;
+- `compiled`: the compiled form's sources, with the entry's bundle set
+  in the folder `pf` writes it to and the build under test as `pf` on the
+  session's path;
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
   it compiles.
@@ -66,15 +67,17 @@ session's place in the matrix and removed once its records are kept.
 Each session's records go to `results/<run-id>/<model>/<workflow>/
 <scenario>/<form>/<repetition>/`: `transcript.jsonl`, the stream-json the
 agent printed; `stderr.log` when it printed any; `subagents.json`, the
-sub-agent starts the transcript records, in order, with what each returned;
+session's shell commands and the sub-agent starts the transcript records, in
+order, with what each returned, the start whose sub-agent made it and the
+commands its own sub-agent ran;
 the final workspace's `trace.log`, each sub-agent's `trace-<section>.log` and
 `actions/`; and `session.json`, holding the session's identity, exit status,
 duration, the stream's `result` message with its `usage` and
 `total_cost_usd`, and the scorer's verdict record. `run.json`
-holds the run's date, options, managed configuration, recorded tokens,
-the sessions it did not start and the run's state. Once `run.json` is
-written, `report.py` writes the run's report beside it, compared with the
-committed baseline.
+holds the run's date, options, each form's command line, managed
+configuration, recorded tokens, the sessions it did not start and the run's
+state. Once `run.json` is written, `report.py` writes the run's report beside
+it, compared with the committed baseline.
 
 A run every session of which took the `errored` verdict is `refused`: no
 session entered a state, so the matrix is no result and its pass rates
@@ -142,7 +145,7 @@ from score import (
     Failure,
     Verdict,
     read_trace,
-    record_starts,
+    record_calls,
     score,
 )
 from workflow import (
@@ -159,11 +162,11 @@ from workflow import (
     CorpusError,
     Scenario,
     Workflow,
+    baseline_workflows,
     bundle,
     bundled,
-    dispatched,
+    dispatch_starts,
     instruction,
-    sections_of,
     stray,
     workflows,
 )
@@ -197,6 +200,8 @@ FORMS = {
     BOOTSTRAP_SET: BOOTSTRAP,
 }
 BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
+PF_SETS = {form for form, written in FORMS.items() if written in SHELL_FORMS}
+"""The forms whose session runs the build under test as `pf`."""
 BUILD = "build"
 """The existing folder a bootstrapping session compiles into."""
 SKILL = "SKILL.md"
@@ -293,7 +298,7 @@ class Ledger:
 
 
 def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    """The run's options, defaulting to the eval's full matrix."""
+    """The run's options, defaulting to the baseline matrix."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument(
         "--budget-tokens", type=int, required=True, help="the run's token cap"
@@ -313,7 +318,9 @@ def options(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--models", default=",".join(DEFAULT_MODELS))
     parser.add_argument("--reasoning-effort", help="the Codex model's reasoning effort")
     parser.add_argument("--repetitions", type=int, default=DEFAULT_REPETITIONS)
-    parser.add_argument("--workflows", help="workflow names; every one by default")
+    parser.add_argument(
+        "--workflows", help="workflow names; baseline workflows by default"
+    )
     parser.add_argument("--forms", default=",".join(FORMS))
     parser.add_argument("--parallel", type=int, default=DEFAULT_PARALLEL)
     parser.add_argument(
@@ -365,31 +372,27 @@ def matrix(
 def observable(
     workflow: Workflow, scenario: Scenario, form: str, harness: Harness
 ) -> bool:
-    """Whether a scenario's trace is one this harness reports.
+    """Whether a scenario's trace and stated runs are ones this harness reports.
 
     A trace names one start per dispatch a correct run makes, nested ones
-    included. A harness that does not surface a sub-agent's own dispatch can
-    report only the starts the path's own sections make, so a scenario whose
-    trace outruns that count is beyond it.
+    included. A harness that does not surface a sub-agent's own calls can
+    report only the starts the session makes itself, those the path's own
+    sections and the material its `↳` lines compile start, so a scenario
+    whose trace outruns that count is beyond it. A stated run a sub-agent makes is
+    read from that sub-agent's commands, which requires a shell form and the
+    harness's declared per-child command evidence.
 
     The corpus names its forms by what they hold, so the runner's form is
     read as the corpus form it carries before its sections are asked for.
     """
+    if any(run.by is not None for run in scenario.compile) and not (
+        form in PF_SETS and harness.nested_commands
+    ):
+        return False
     if harness.nested_starts:
         return True
-    written = FORMS[form]
-    sections = sections_of(workflow, written)
-    root = workflow.form(written)
-    top = 0
-    for state in scenario.path:
-        section = sections[state]
-        top += sum(
-            len(targets)
-            for _, targets in dispatched(
-                section.body, section.path.parent, root, written
-            )
-        )
-    return len(scenario.trace) <= top
+    starts = dispatch_starts(workflow, FORMS[form], scenario.path, scenario.inputs)
+    return len(scenario.trace) <= sum(1 for _, _, depth in starts if depth == 0)
 
 
 def bundles_of(workflow: Workflow, form: str) -> dict[str, bytes]:
@@ -425,11 +428,22 @@ def prepare(
     A bundled form's entry bundle is the document the instruction names, and
     every other bundle in its set is written beside it under the name `pf`
     gave it, since a dispatching bundle names the bundles it hands to
-    sub-agents by that name. A bootstrap skill is placed where the run's
-    harness discovers one, and the session's workspace is the root it walks
-    up from.
+    sub-agents by that name.
+
+    A compiled workspace is what a `pf` run over the compiled sources leaves:
+    the sources as they stand, since a `↳` line names its target from the
+    directory `pf` ran in, and the bundle set in the folder `pf` writes it to,
+    with the build available on the session path. A bootstrap skill is placed
+    where the run's harness discovers one, and the session's workspace is the
+    root it walks up from.
     """
-    if form in BUNDLED:
+    if form == COMPILED_SET:
+        shutil.copytree(workflow.form(COMPILED_FORM), workspace, dirs_exist_ok=True)
+        folder = workspace / workflow.entry_bundle.parent
+        folder.mkdir()
+        for name, content in sets[(workflow.name, form)].items():
+            (folder / name).write_bytes(content)
+    elif form in BUNDLED:
         for name, content in sets[(workflow.name, form)].items():
             written = ENTRY if name == workflow.entry_bundle.name else name
             (workspace / written).write_bytes(content)
@@ -603,15 +617,14 @@ def start(
         if stderr:
             (records / STDERR).write_bytes(stderr)
         keep(workspace, records)
-        record_starts(records / TRANSCRIPT, records, harness)
+        record_calls(records / TRANSCRIPT, records, harness, FORMS[session.form])
         result = harness.result(records / TRANSCRIPT)
         ran = read_trace(records)
-        compiled = compiled_by(harness, records / TRANSCRIPT, session.form)
         verdict = (
             errored(workflow, scenario)
             if (result is not None and result.get("is_error"))
             or (result is None and not ran)
-            else score(workflow, scenario, records, compiled)
+            else score(workflow, scenario, records)
         )
     finally:
         shutil.rmtree(workspace)
@@ -632,25 +645,13 @@ def start(
     return tokens
 
 
-def compiled_by(harness: Harness, transcript: Path, form: str) -> bool | None:
-    """Whether a session compiled its material, for a form that must.
+def entry_named(workflow: Workflow, form: str) -> str:
+    """The document a session's instruction names.
 
-    A form outside the shell forms needs no compile, so nothing is asked. A
-    shell form's session is held to having run `pf`: a command whose first
-    word is `pf` or a path ending in `/pf`, since a command may be prefixed
-    by a directory or a wrapper.
+    A compiled session reads the entry's bundle where `pf` wrote it, beside
+    the sources it was compiled from; every other form's entry is `workflow.md`.
     """
-    if FORMS[form] not in SHELL_FORMS:
-        return None
-    commands = harness.commands(transcript)
-    if commands is None:
-        return None
-    for command in commands:
-        for part in command.replace("&&", ";").replace("|", ";").split(";"):
-            words = part.split()
-            if words and words[0].rsplit("/", 1)[-1] == "pf":
-                return True
-    return False
+    return workflow.entry_bundle.as_posix() if form == COMPILED_SET else ENTRY
 
 
 def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
@@ -751,10 +752,10 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         arguments.session_budget_tokens,
         reasoning_effort=arguments.reasoning_effort,
     )
-    corpus = workflows()
+    corpus = baseline_workflows()
     if arguments.workflows:
         chosen = names(arguments.workflows)
-        corpus = [workflow for workflow in corpus if workflow.name in chosen]
+        corpus = [workflow for workflow in workflows() if workflow.name in chosen]
         if {workflow.name for workflow in corpus} != set(chosen):
             raise CorpusError(f"the corpus holds no workflow among {chosen}")
     forms = names(arguments.forms)
@@ -777,7 +778,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         workflow.form(FORMS[form])
         for workflow in corpus
         for form in forms
-        if form not in BUNDLED
+        if (form not in BUNDLED or form == COMPILED_SET)
         and form != BOOTSTRAP_SET
         and FORMS[form] in workflow.forms
     )
@@ -801,7 +802,12 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
             f"{arguments.session_budget_tokens}, which need {covered}"
         )
     run_directory.mkdir(parents=True)
-    prompts = {form: instruction(ENTRY, FORMS[form]) for form in forms}
+    workspaces = eval_root / WORKSPACES / run_id
+    prompts = {
+        (workflow.name, form): instruction(entry_named(workflow, form), FORMS[form])
+        for workflow in corpus
+        for form in forms
+    }
     ledger = Ledger(arguments.budget_tokens, arguments.session_budget_tokens)
 
     def attempt(session: Session) -> bool:
@@ -824,7 +830,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
                     session.directory(workspaces),
                     arguments.reasoning_effort,
                 ),
-                prompts[session.form],
+                prompts[(session.workflow, session.form)],
                 sets,
                 session.directory(run_directory),
                 session.directory(workspaces),

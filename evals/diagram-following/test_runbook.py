@@ -25,7 +25,7 @@ from run import (
     options,
 )
 from score import Failure
-from workflow import workflows
+from workflow import baseline_workflows
 
 ROOT = Path(__file__).with_name("RUNBOOK.md")
 MAKEFILE = Path(__file__).parent.parent.parent / "Makefile"
@@ -124,7 +124,7 @@ def test_the_token_budget_covers_the_default_matrix_at_that_cap() -> None:
     assert found is not None
     sessions = DEFAULT_REPETITIONS * len(
         matrix(
-            list(workflows()),
+            list(baseline_workflows()),
             list(DEFAULT_MODELS),
             list(FORMS),
             1,
