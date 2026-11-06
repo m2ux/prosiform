@@ -1,0 +1,392 @@
+uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests evals/diagram-following
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 62%]
+..........................................F............................. [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 88%]
+............................................................F........... [ 93%]
+........................F...........................................FFFF [ 97%]
+........................................                                 [100%]
+=================================== FAILURES ===================================
+__ test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs ___
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_a_compiled_claude_run_sco0')
+log = PosixPath('/tmp/pytest-of-mike/pytest-70/test_a_compiled_claude_run_sco0/log')
+
+    def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
+        tmp_path: Path, log: Path
+    ) -> None:
+        """AC26: nested scenarios take a Claude cell, scored on each start's runs.
+    
+        The stub's compiled session carries `Bash`, so it makes each stated `pf`
+        run under the start whose sub-agent makes it, and the record holds them
+        there. Every cell passes, `deep-hop-runs` among them, and its review and
+        ruling hold their own runs.
+        """
+        record = eval_run(
+            tmp_path,
+            *("--workflows", "dispatch-depth,subagent-first-run", "--forms", COMPILED_SET),
+            *("--repetitions", "1", "--budget-tokens", "100000"),
+        )
+        cells = {(item["workflow"], item["scenario"]) for item in records(tmp_path)}
+        assert record["started"] == len(cells) == 5
+        assert {
+            ("dispatch-depth", "three-hop-chain"),
+            ("dispatch-depth", "three-hop-set"),
+            ("dispatch-depth", "three-hop-question"),
+            ("subagent-first-run", "deep-hop-runs"),
+        } <= cells
+        assert all(item["verdict"]["passed"] for item in records(tmp_path))
+        for entry in seen(log):
+            argv = entry["argv"]
+            assert argv[argv.index("--tools") + 1].endswith(",Bash")
+        deep = (
+            tmp_path
+            / "results"
+            / "test"
+            / "stub-model"
+            / "subagent-first-run"
+            / "deep-hop-runs"
+            / COMPILED_SET
+            / "1"
+        )
+>       assert [(start.target, start.commands) for start in read_starts(deep)] == [
+            ("Follow hop/audit#sweep. Append each state you enter to trace-sweep.log.", ()),
+            (
+                "Follow hop/review#scan. Append each state you enter to trace-scan.log.",
+                ("pf --entry steps/weighing.md#weigh",),
+            ),
+            (
+                "Follow steps/ruling#rule. Append each state you enter to trace-rule.log.",
+                ("pf --entry steps/recording.md#file",),
+            ),
+        ]
+E       assert [('Follow hop....md#file'",))] == [('Follow hop...g.md#file',))]
+E         
+E         At index 1 diff: ('Follow hop/review#scan. Append each state you enter to trace-scan.log.', ("pf '--entry=steps/weighing.md#weigh'",)) != ('Follow hop/review#scan. Append each state you enter to trace-scan.log.', ('pf --entry steps/weighing.md#weigh',))
+E         Use -v to get more diff
+
+evals/diagram-following/test_run.py:491: AssertionError
+_ test_each_compiled_scenario_states_the_runs_and_path_its_bundles_state[preset-deferral-stand-in-followed] _
+
+workflow = Workflow(name='preset-deferral', directory=PosixPath('/home/mike1/projects/dev/md-composer/.worktrees/i10/e07/main/eva...set({'mirror'})),), answers=''),), transitions={}, conditions={}, nested=(), entry='workflow.md', warnings=frozenset())
+scenario = Scenario(name='stand-in-followed', inputs={}, path=('Entry', 'Solicit', 'Mirror', 'Restore', 'Exit'), trace=(), compile=(Compile(by=None, entry='reference/fetch.md#read-mirror', presets=frozenset({'mirror'})),), answers='')
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_each_compiled_scenario_st17')
+
+        assert bundle_path_faults(workflow, scenario, tmp_path) == []
+    
+    
+    @pytest.mark.parametrize(
+        ("workflow", "scenario"),
+        [(workflow, scenario) for workflow in COMPILING for scenario in workflow.scenarios],
+        ids=lambda item: item.name,
+    )
+    def test_each_compiled_scenario_states_the_runs_and_path_its_bundles_state(
+>       workflow: Workflow, scenario: Scenario, tmp_path: Path
+    ) -> None:
+E   assert ["stand-in-fo...d-mirror',)]"] == []
+E     
+E     Left contains 2 more items, first extra item: "stand-in-followed: the compiled bundles lead ('Entry', 'Solicit', 'Mirror', 'Serve', 'Exit')"
+E     Use -v to get more diff
+
+evals/diagram-following/test_workflow.py:842: AssertionError
+__________ test_the_real_target_of_a_preset_deferral_leads_elsewhere ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_the_real_target_of_a_pres0')
+
+        assert faults == [fault]
+    
+    
+    def test_the_real_target_of_a_preset_deferral_leads_elsewhere(tmp_path: Path) -> None:
+        """AC9: without the preset's stand-in, the path leaves Mirror by `live`."""
+        workflow = broken(
+            tmp_path,
+            "preset-deferral",
+            f"{COMPILED_FORM}/reference/fetch.md",
+            "prosiform:\n  mirror:\n    subst: [{net.md: cache.md}]\n",
+>           "prosiform:\n  mirror: {}\n",
+        )
+E       assert ["stand-in-fo...d-mirror',)]"] == ["stand-in-fo...ve', 'Exit')"]
+E         
+E         Left contains one more item: "stand-in-followed: the walk runs pf on [('reference/fetch.md#read-mirror',)]"
+E         Use -v to get more diff
+
+evals/diagram-following/test_workflow.py:1059: AssertionError
+___________ test_a_sub_agents_run_is_read_by_the_section_it_follows ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_a_sub_agents_run_is_read_0')
+
+        tmp_path,
+        "dispatch-set",
+>       "scenarios.toml",
+        "[[scenario.trace]]",
+        "[[scenario.absent]]",
+        count=-1,
+    )
+
+evals/diagram-following/test_workflow.py:1784: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+evals/diagram-following/test_workflow.py:691: in broken
+    text = target.read_text()
+           ^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1085: in read_workflow
+    read_scenarios(directory / SCENARIOS),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1009: in read_scenarios
+    return tuple(
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'by': 'review#tests', 'action': {'file': 'tests.txt', 'value': 'tested'}}
+named = 'parallel-set'
+
+    def read_compile(row: dict[str, object], named: str) -> Compile:
+        """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+        by = row.get("by")
+        entry = row.get("entry")
+        presets = row.get("presets")
+        if by is not None and not isinstance(by, str):
+            raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
+        if entry is not None and not isinstance(entry, str):
+            raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
+        if presets is not None and (not isinstance(presets, str) or entry is None):
+            raise CorpusError(f"{named}: a run's presets need an entry and a string list")
+        if set(row) - {"by", "entry", "presets"}:
+>           raise CorpusError(f"{named}: a run's fields are entry, presets and by")
+E           workflow.CorpusError: parallel-set: a run's fields are entry, presets and by
+
+evals/diagram-following/workflow.py:981: CorpusError
+_ test_a_stated_run_naming_no_document_of_the_sources_is_a_fault[entry = "absent.md#work"-parallel-set: a run names absent.md#work, no document of its sources] _
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_a_stated_run_naming_no_do0')
+run = 'entry = "absent.md#work"'
+fault = 'parallel-set: a run names absent.md#work, no document of its sources'
+
+    
+    def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
+        """A set's second target started alone is the trace the source denies."""
+        workflow = broken(
+            tmp_path,
+            "dispatch-set",
+            "scenarios.toml",
+            'dispatch = "review#tests"\ntogether = true\n',
+            'dispatch = "review#tests"\n',
+        )
+        faults = scenario_faults(workflow, workflow.scenarios[0])
+        assert len(faults) == len(workflow.forms) and all(
+            "parallel-set: the" in fault for fault in faults
+        )
+    
+    
+    def test_a_scenario_states_each_pf_run_in_order_with_its_arguments() -> None:
+        """AC1: a run names the agent making it and the references it compiles."""
+        named = {workflow.name: workflow for workflow in CORPUS}
+        for scenario in named["bootstrap-audit"].scenarios:
+            assert scenario.compile == (
+>               Compile(None),
+                Compile(None, "sources/workflow.md"),
+            )
+
+evals/diagram-following/test_workflow.py:1817: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+evals/diagram-following/test_workflow.py:691: in broken
+    text = target.read_text()
+           ^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1085: in read_workflow
+    read_scenarios(directory / SCENARIOS),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1009: in read_scenarios
+    return tuple(
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'entry': 'absent.md#work', 'action': {'file': 'tests.txt', 'value': 'tested'}}
+named = 'parallel-set'
+
+    def read_compile(row: dict[str, object], named: str) -> Compile:
+        """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+        by = row.get("by")
+        entry = row.get("entry")
+        presets = row.get("presets")
+        if by is not None and not isinstance(by, str):
+            raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
+        if entry is not None and not isinstance(entry, str):
+            raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
+        if presets is not None and (not isinstance(presets, str) or entry is None):
+            raise CorpusError(f"{named}: a run's presets need an entry and a string list")
+        if set(row) - {"by", "entry", "presets"}:
+>           raise CorpusError(f"{named}: a run's fields are entry, presets and by")
+E           workflow.CorpusError: parallel-set: a run's fields are entry, presets and by
+
+evals/diagram-following/workflow.py:981: CorpusError
+_ test_a_stated_run_naming_no_document_of_the_sources_is_a_fault[entry = "#source"-parallel-set: a run names #source, no document of its sources] _
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_a_stated_run_naming_no_do1')
+run = 'entry = "#source"'
+fault = 'parallel-set: a run names #source, no document of its sources'
+
+    
+    def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
+        """A set's second target started alone is the trace the source denies."""
+        workflow = broken(
+            tmp_path,
+            "dispatch-set",
+            "scenarios.toml",
+            'dispatch = "review#tests"\ntogether = true\n',
+            'dispatch = "review#tests"\n',
+        )
+        faults = scenario_faults(workflow, workflow.scenarios[0])
+        assert len(faults) == len(workflow.forms) and all(
+            "parallel-set: the" in fault for fault in faults
+        )
+    
+    
+    def test_a_scenario_states_each_pf_run_in_order_with_its_arguments() -> None:
+        """AC1: a run names the agent making it and the references it compiles."""
+        named = {workflow.name: workflow for workflow in CORPUS}
+        for scenario in named["bootstrap-audit"].scenarios:
+            assert scenario.compile == (
+>               Compile(None),
+                Compile(None, "sources/workflow.md"),
+            )
+
+evals/diagram-following/test_workflow.py:1817: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+evals/diagram-following/test_workflow.py:691: in broken
+    text = target.read_text()
+           ^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1085: in read_workflow
+    read_scenarios(directory / SCENARIOS),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1009: in read_scenarios
+    return tuple(
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'entry': '#source', 'action': {'file': 'tests.txt', 'value': 'tested'}}
+named = 'parallel-set'
+
+    def read_compile(row: dict[str, object], named: str) -> Compile:
+        """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+        by = row.get("by")
+        entry = row.get("entry")
+        presets = row.get("presets")
+        if by is not None and not isinstance(by, str):
+            raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
+        if entry is not None and not isinstance(entry, str):
+            raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
+        if presets is not None and (not isinstance(presets, str) or entry is None):
+            raise CorpusError(f"{named}: a run's presets need an entry and a string list")
+        if set(row) - {"by", "entry", "presets"}:
+>           raise CorpusError(f"{named}: a run's fields are entry, presets and by")
+E           workflow.CorpusError: parallel-set: a run's fields are entry, presets and by
+
+evals/diagram-following/workflow.py:981: CorpusError
+_ test_a_stated_run_naming_no_document_of_the_sources_is_a_fault[by = "review#absent"-parallel-set: a run by review#absent is by no start] _
+
+tmp_path = PosixPath('/tmp/pytest-of-mike/pytest-70/test_a_stated_run_naming_no_do2')
+run = 'by = "review#absent"'
+fault = 'parallel-set: a run by review#absent is by no start'
+
+    
+    def test_a_trace_disagreeing_with_the_source_is_a_fault(tmp_path: Path) -> None:
+        """A set's second target started alone is the trace the source denies."""
+        workflow = broken(
+            tmp_path,
+            "dispatch-set",
+            "scenarios.toml",
+            'dispatch = "review#tests"\ntogether = true\n',
+            'dispatch = "review#tests"\n',
+        )
+        faults = scenario_faults(workflow, workflow.scenarios[0])
+        assert len(faults) == len(workflow.forms) and all(
+            "parallel-set: the" in fault for fault in faults
+        )
+    
+    
+    def test_a_scenario_states_each_pf_run_in_order_with_its_arguments() -> None:
+        """AC1: a run names the agent making it and the references it compiles."""
+        named = {workflow.name: workflow for workflow in CORPUS}
+        for scenario in named["bootstrap-audit"].scenarios:
+            assert scenario.compile == (
+>               Compile(None),
+                Compile(None, "sources/workflow.md"),
+            )
+
+evals/diagram-following/test_workflow.py:1817: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+evals/diagram-following/test_workflow.py:691: in broken
+    text = target.read_text()
+           ^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1085: in read_workflow
+    read_scenarios(directory / SCENARIOS),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1009: in read_scenarios
+    return tuple(
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+evals/diagram-following/workflow.py:1015: in <genexpr>
+    tuple(read_compile(row, entry["name"]) for row in entry.get("compile", ())),
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+row = {'by': 'review#absent', 'action': {'file': 'tests.txt', 'value': 'tested'}}
+named = 'parallel-set'
+
+    def read_compile(row: dict[str, object], named: str) -> Compile:
+        """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
+        by = row.get("by")
+        entry = row.get("entry")
+        presets = row.get("presets")
+        if by is not None and not isinstance(by, str):
+            raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
+        if entry is not None and not isinstance(entry, str):
+            raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
+        if presets is not None and (not isinstance(presets, str) or entry is None):
+            raise CorpusError(f"{named}: a run's presets need an entry and a string list")
+        if set(row) - {"by", "entry", "presets"}:
+>           raise CorpusError(f"{named}: a run's fields are entry, presets and by")
+E           workflow.CorpusError: parallel-set: a run's fields are entry, presets and by
+
+evals/diagram-following/workflow.py:981: CorpusError
+=========================== short test summary info ============================
+FAILED evals/diagram-following/test_run.py::test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs
+FAILED evals/diagram-following/test_workflow.py::test_each_compiled_scenario_states_the_runs_and_path_its_bundles_state[preset-deferral-stand-in-followed]
+FAILED evals/diagram-following/test_workflow.py::test_the_real_target_of_a_preset_deferral_leads_elsewhere
+FAILED evals/diagram-following/test_workflow.py::test_a_sub_agents_run_is_read_by_the_section_it_follows
+FAILED evals/diagram-following/test_workflow.py::test_a_stated_run_naming_no_document_of_the_sources_is_a_fault[entry = "absent.md#work"-parallel-set: a run names absent.md#work, no document of its sources]
+FAILED evals/diagram-following/test_workflow.py::test_a_stated_run_naming_no_document_of_the_sources_is_a_fault[entry = "#source"-parallel-set: a run names #source, no document of its sources]
+FAILED evals/diagram-following/test_workflow.py::test_a_stated_run_naming_no_document_of_the_sources_is_a_fault[by = "review#absent"-parallel-set: a run by review#absent is by no start]
+7 failed, 1617 passed in 100.12s (0:01:40)
+make: *** [Makefile:74: harness] Error 1

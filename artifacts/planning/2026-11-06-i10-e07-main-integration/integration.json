@@ -1,0 +1,16 @@
+{
+  "head": "e7e4af6268fc0cdf843f7c0e8257c6171cd6df8f",
+  "parents": [
+    "e1a0ac023b23cb3a118905a003e65e9df76f31d0"
+  ],
+  "tree": "5d5bdebecaa0fbe11ac55f65fcc281e77c35ff7f",
+  "source_tests": 1825,
+  "harness_tests": 1627,
+  "scope": "All required make-check targets pass across two runs. Source/harness gates pass at e1a0ac023; final head differs only in two corpus expected files. Corpus and remaining gates pass at final head. Runtime, checks and test bytes are identical.",
+  "source_harness_head": "e1a0ac023b23cb3a118905a003e65e9df76f31d0",
+  "fixture_only_diff": [
+    "fixtures/composition/a-deferral-whose-step-and-target-select-one-preset-is-kept/expected/guide.bundle.md",
+    "fixtures/composition/a-tagged-deferral-with-different-target-heading/expected/guide.bundle.md"
+  ],
+  "command": "PROSIFORM_BUILD='uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/main/src --frozen pf' make check"
+}

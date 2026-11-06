@@ -1,0 +1,606 @@
+cd src && uv lock --check
+Resolved 24 packages in 1ms
+uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
+All checks passed!
+uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
+465 files already formatted
+uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
+Success: no issues found in 90 source files
+cd src && uv run --frozen pytest
+........................................................................ [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 31%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 43%]
+........................................................................ [ 47%]
+........................................................................ [ 51%]
+........................................................................ [ 55%]
+........................................................................ [ 59%]
+........................................................................ [ 63%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 78%]
+........................................................................ [ 82%]
+........................................................................ [ 86%]
+........................................................................ [ 90%]
+........................................................................ [ 94%]
+........................................................................ [ 98%]
+.........................                                                [100%]
+1825 passed in 6.04s
+uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests evals/diagram-following
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
+........................................................................ [ 30%]
+........................................................................ [ 35%]
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 84%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 97%]
+...........................................                              [100%]
+1627 passed in 102.15s (0:01:42)
+uv run --project src --frozen python checks/corpus.py
+absorbed-title/a-reference-naming-a-title-no-heading-absorbed: pass
+absorbed-title/a-reference-naming-an-absorbed-title: pass
+ancestor-promotion/a-link-to-a-heading-only-ancestor: pass
+ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies: pass
+ancestor-promotion/a-promotion-two-documents-out: pass
+boundary/a-code-example-a-list-reads-as-markup: pass
+boundary/a-nested-list-and-the-list-below-it: pass
+boundary/a-yaml-example-the-bundle-keeps-intact: pass
+boundary/the-file-heading-between-two-groups: pass
+boundary/two-lists-a-definition-separates: pass
+candidate-validation/a-code-example-carried-byte-for-byte: pass
+candidate-validation/a-definition-removed-beside-its-literal-example: pass
+candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere: pass
+candidate-validation/a-selected-region-between-two-unselected-ones: pass
+candidate-validation/crlf-lines-beside-a-rewritten-link: pass
+candidate-validation/every-line-terminated-with-crlf: pass
+candidate-validation/repeated-identical-prose-in-two-regions: pass
+candidate-validation/tabs-beside-a-rewritten-link: pass
+candidate-validation/untouched-bytes-beside-a-rewritten-link: pass
+citation/a-reference-above-the-working-directory: pass
+cli/a-bare-fragment-is-invalid-usage: pass
+cli/a-budget-entry-naming-no-budget-is-invalid-usage: pass
+cli/a-budget-named-twice-is-refused: pass
+cli/a-bundle-written-into-the-folder-o-names: pass
+cli/a-bundle-written-into-the-working-directory: pass
+cli/a-command-line-naming-no-entry-reference: pass
+cli/a-malformed-budget-entry-is-invalid-usage: pass
+cli/a-markdown-link-is-no-entry-destination: pass
+cli/a-nesting-budget-below-two-is-refused: pass
+cli/a-positional-entry-is-invalid-usage: pass
+cli/abbreviated-entry-options-are-invalid-usage: pass
+cli/an-author-folder-named-like-the-entry-is-left-untouched: pass
+cli/an-empty-preset-list-selects-default: pass
+cli/an-option-the-contract-does-not-declare: pass
+cli/an-undeclared-tags-option-is-invalid-usage: pass
+cli/an-unknown-budget-name-is-invalid-usage: pass
+cli/an-unknown-fault-is-invalid-usage: pass
+cli/diagnostics-format-unknown: pass
+cli/informational-codes-response: pass
+cli/informational-guide-response: pass
+cli/informational-long-codes-response: pass
+cli/informational-long-usage-response: pass
+cli/informational-long-version-response: pass
+cli/informational-usage-response: pass
+cli/informational-version-response: pass
+cli/output-naming-what-a-link-points-at: pass
+cli/presets-without-an-entry-are-invalid-usage: pass
+cli/repeated-entry-options-are-invalid-usage: pass
+cli/repeated-presets-options-are-invalid-usage: pass
+cli/run-folder-holding-a-dependency-source: pass
+cli/several-entries-joined-into-one-name: pass
+cli/standard-output-named-as-the-output-folder: pass
+cli/unknown-preset-names-select-default: pass
+cli/validation-only-run: pass
+cli/validation-only-run-with-an-output-folder: pass
+composition/a-blank-between-the-deferral-mark-and-an-arrow-label-is-refused: pass
+composition/a-blank-between-the-deferral-mark-and-the-composition-mark-is-refused: pass
+composition/a-blank-between-the-dispatch-mark-and-an-arrow-label-is-refused: pass
+composition/a-composed-contract-leaves-its-deferred-implementation-absent: pass
+composition/a-composition-failing-in-a-check-run-publishes-nothing: pass
+composition/a-composition-failing-in-a-dispatched-bundle-publishes-nothing: pass
+composition/a-composition-failing-under-a-named-output-folder-publishes-nothing: pass
+composition/a-composition-mark-with-no-space-after-it-opens-an-ordinary-link: pass
+composition/a-contribution-composing-its-own-section-is-refused: pass
+composition/a-contribution-resolves-links-from-its-source-directory: pass
+composition/a-cycle-of-directives-is-refused: pass
+composition/a-deferral-whose-step-and-target-select-no-preset-is-kept: pass
+composition/a-deferral-whose-step-and-target-select-one-preset-is-kept: fail
+composition/a-deferred-arrow-label-is-refused: pass
+composition/a-deferred-body-that-fails-fails-when-activated: pass
+composition/a-deferred-body-that-fails-is-deferred-without-failing: pass
+composition/a-deferred-directive-is-activated-by-the-run-its-line-names: pass
+composition/a-deferred-directive-naming-a-document-that-declares-nothing-is-refused: pass
+composition/a-diagnostic-inside-a-contribution-names-its-source: pass
+composition/a-directive-composing-a-section-of-its-own-document-by-fragment-warns: pass
+composition/a-directive-composing-a-section-of-its-own-document-by-path-warns: pass
+composition/a-directive-composing-its-own-section-is-refused: pass
+composition/a-directive-composing-past-the-sixth-level-is-refused: pass
+composition/a-directive-in-a-preamble-has-no-scope: pass
+composition/a-directive-in-a-title-above-the-selection-has-no-scope: pass
+composition/a-directive-in-an-absorbed-title-has-no-scope: pass
+composition/a-directive-inside-a-contribution-composes-beneath-it: pass
+composition/a-directive-is-a-hop-toward-the-expansion-depth: pass
+composition/a-directive-naming-a-document-that-declares-nothing-is-refused: pass
+composition/a-directive-naming-a-missing-document-is-refused: pass
+composition/a-directive-naming-a-missing-section-is-refused: pass
+composition/a-directive-naming-a-remote-address-is-refused: pass
+composition/a-directive-naming-a-resource-is-refused: pass
+composition/a-directive-naming-a-whole-document-is-refused: pass
+composition/a-dispatch-in-an-inline-only-contribution-publishes-inline: pass
+composition/a-dispatch-mark-written-against-an-arrow-label-is-refused: pass
+composition/a-dispatch-mark-written-against-the-composition-mark-is-refused: pass
+composition/a-link-inside-a-contribution-includes-its-target: pass
+composition/a-list-is-carried-as-written: pass
+composition/a-mark-in-code-or-unresolved-brackets-is-text: pass
+composition/a-multi-paragraph-body-is-carried-whole: pass
+composition/a-multiplying-composition-crossing-the-output-budget: pass
+composition/a-parallel-mark-written-against-an-arrow-label-is-refused: pass
+composition/a-parallel-mark-written-against-the-composition-mark-is-refused: pass
+composition/a-reference-style-directive-is-a-directive: pass
+composition/a-repeated-directive-contributes-each-time: pass
+composition/a-section-composed-and-deferred-in-one-step-is-refused: pass
+composition/a-selected-group-pair-places-no-contribution: pass
+composition/a-selected-preset-governs-the-contribution: pass
+composition/a-supplementary-arrow-label-is-refused: pass
+composition/a-table-is-carried-as-written: pass
+composition/a-tagged-deferral-with-different-target-heading: fail
+composition/a-target-only-directives-reach-takes-no-group: pass
+composition/a-target-with-no-parent-heading-is-refused: pass
+composition/an-arrow-label-is-refused: pass
+composition/an-authored-heading-equal-to-a-destination-section-is-refused: pass
+composition/an-entity-decoding-to-one-arrow-is-refused: pass
+composition/an-immediate-directive-is-held-to-no-target-heading: pass
+composition/an-inclusion-of-another-section-keeps-only-that-section: pass
+composition/an-inclusion-of-the-composed-section-keeps-its-group: pass
+composition/an-ordinary-deferred-label-is-a-deferral: pass
+composition/an-untagged-deferral-with-a-preset-word-in-its-target-heading: pass
+composition/ascii-and-spaced-labels-are-ordinary-links: pass
+composition/colliding-definitions-resolve-against-their-own-source: pass
+composition/destination-sections-follow-first-reference-order: pass
+composition/formatted-labels-are-ordinary-links: pass
+composition/multi-scalar-labels-are-ordinary-links: pass
+composition/nested-headings-keep-their-relative-depth: pass
+composition/non-arrow-labels-are-ordinary-links: pass
+composition/operator-marks-are-no-directive-label: pass
+composition/ordinary-and-composing-links-to-one-section-each-keep-their-meaning: pass
+composition/same-titled-parents-keep-a-contribution-each: pass
+composition/sibling-steps-each-carry-their-own-destination-section: pass
+composition/the-composition-mark-written-against-the-deferral-mark-is-a-deferred-directive: pass
+composition/the-writers-subst-redirects-a-directive: pass
+composition/titles-from-several-sources-share-one-destination-section: pass
+composition/titles-match-exactly-as-written: pass
+confinement/a-drive-path-inside-a-source: pass
+confinement/a-path-the-filesystem-cannot-open: pass
+confinement/a-root-relative-reference-inside-a-source: pass
+confinement/a-symlink-chain-below-the-working-directory: pass
+confinement/a-symlink-to-a-document-inside-the-working-directory: pass
+confinement/a-symlinked-directory-below-the-working-directory: pass
+confinement/a-symlinked-source: pass
+confinement/an-entry-above-the-working-directory: pass
+consolidation/a-child-then-its-whole-document: pass
+consolidation/a-subsection-and-its-section: pass
+deferral/a-deferral-mark-with-no-space-after-it-opens-an-ordinary-link: pass
+deferral/a-deferral-stands-where-another-reference-carried-its-target: pass
+deferral/a-deferred-destination-named-from-the-working-directory: pass
+deferral/a-deferred-fragment-of-its-own-document: pass
+deferral/a-deferred-image: pass
+deferral/a-deferred-link-naming-a-document-above-the-working-directory: pass
+deferral/a-deferred-link-naming-a-remote-address: pass
+deferral/a-deferred-link-naming-a-resource: pass
+deferral/a-deferred-reference-naming-no-document: pass
+deferral/a-deferred-reference-naming-no-heading: pass
+deferral/a-marked-reference-is-not-compiled: pass
+depth-overflow/a-source-heading-the-shift-places-at-the-sixth: pass
+depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth: pass
+depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth: pass
+destinations/a-heading-a-container-carries: pass
+destinations/a-whole-document-reference-to-a-titled-entry: pass
+destinations/source-heading-fragments: pass
+determinism/entry-references-in-another-order: pass
+determinism/entry-references-in-source-order: pass
+determinism/groups-in-first-link-order: pass
+diagnostics/a-failure-two-hops-from-the-entry-reference: pass
+diagnostics/a-run-that-fails-in-itself: pass
+diagnostics/one-json-object-per-diagnostic-line: pass
+dispatch/a-blank-between-the-marks-of-a-compound-operator: pass
+dispatch/a-body-absent-from-final-placement-dispatches-nothing: pass
+dispatch/a-chain-of-three-dispatches: pass
+dispatch/a-chain-of-two-dispatches: pass
+dispatch/a-cycle-of-dispatches-is-refused: pass
+dispatch/a-deferred-directive-in-a-dispatched-bundle-opens-with-the-run-pf-line: pass
+dispatch/a-deferred-dispatch-in-a-dispatched-bundle-is-refused: pass
+dispatch/a-deferred-dispatch-is-refused: pass
+dispatch/a-deferred-dispatch-reached-through-a-chain-is-refused: pass
+dispatch/a-dispatch-heading-publishes-beside-a-dispatch: pass
+dispatch/a-dispatch-in-a-level-six-section-publishes: pass
+dispatch/a-dispatch-in-a-nested-section: pass
+dispatch/a-dispatch-in-a-title-above-the-selection-is-refused: pass
+dispatch/a-dispatch-in-an-absorbed-member-title-is-refused: pass
+dispatch/a-dispatch-link-keeps-its-text-and-one-blank-after-its-mark: pass
+dispatch/a-dispatch-link-with-no-text-is-refused: pass
+dispatch/a-dispatch-mark-with-no-space-after-it-opens-an-ordinary-link: pass
+dispatch/a-dispatch-of-a-section-of-its-own-document-by-fragment-warns: pass
+dispatch/a-dispatch-of-a-section-of-its-own-document-by-path-warns: pass
+dispatch/a-dispatch-of-its-own-whole-document-is-a-cycle: pass
+dispatch/a-dispatched-bundle-carrying-a-deferral-and-dispatching: pass
+dispatch/a-dispatched-bundle-named-from-the-working-directory: pass
+dispatch/a-dispatched-document-carrying-no-step: pass
+dispatch/a-dispatched-image: pass
+dispatch/a-dispatched-link-naming-a-document-above-the-working-directory: pass
+dispatch/a-dispatched-link-naming-a-remote-address: pass
+dispatch/a-dispatched-link-naming-a-resource: pass
+dispatch/a-dispatched-section-carrying-steps: pass
+dispatch/a-dispatched-section-of-fields: pass
+dispatch/a-dispatched-section-of-the-entry-is-a-hop: pass
+dispatch/a-dispatched-target-crossing-the-file-budget: pass
+dispatch/a-dispatched-target-is-a-bundle-of-its-own: pass
+dispatch/a-fourth-dispatch-warns: pass
+dispatch/a-later-selection-publishes-only-the-substituted-dispatch: pass
+dispatch/a-link-carrying-two-dispatch-marks: pass
+dispatch/a-mark-with-no-space-after-it-is-text-beside-one: pass
+dispatch/a-parallel-heading-publishes-beside-a-dispatch-only: pass
+dispatch/a-plain-deferral-in-a-dispatched-bundle-opens-with-the-run-pf-line: pass
+dispatch/a-prosiform-heading-publishes-in-a-dispatching-bundle: pass
+dispatch/a-prosiform-heading-publishes-where-nothing-is-dispatched: pass
+dispatch/each-section-keeps-its-own-dispatch-link-inline: pass
+dispatch/several-joined-entries-each-dispatching: pass
+extraction/a-heading-a-blockquote-carries: pass
+extraction/a-heading-only-in-a-code-example: pass
+extraction/a-list-item-heading-as-a-target: pass
+extraction/a-section-the-document-outlasts: pass
+extraction/a-setext-heading-as-a-root: pass
+extraction/a-subsection-inside-the-section: pass
+extraction/an-unterminated-example-at-the-section-end: pass
+extraction/heading-like-text-in-a-code-example: pass
+extraction/nested-section-target: pass
+extraction/section-to-the-next-sibling: pass
+file-wide-safety/an-unselected-construct-crosses-a-safety-limit: pass
+frontmatter/a-metadata-field-carries-no-conversion-meaning: pass
+frontmatter/an-unknown-prosiform-key-fails: pass
+frontmatter/crlf-delimiters: pass
+frontmatter/delimiter-with-trailing-spaces: pass
+frontmatter/dot-terminated: pass
+frontmatter/indented-delimiter: pass
+frontmatter/invalid-conversion: pass
+frontmatter/invalid-yaml: pass
+frontmatter/leading-blank-line: pass
+frontmatter/optional-mark: pass
+frontmatter/toml-fence: pass
+frontmatter/unterminated-block: pass
+frontmatter/yaml-example-in-a-code-block: pass
+grouping/a-document-no-group-matches: pass
+grouping/a-file-places-its-own-sections: pass
+grouping/a-group-declaration-naming-group-heading-fails: pass
+grouping/a-group-emitting-no-merged-section: pass
+grouping/a-group-its-own-member-places-stands-at-the-top-level: pass
+grouping/a-group-name-carrying-no-word-fails: pass
+grouping/a-group-placed-by-a-document-in-two-groups: pass
+grouping/a-link-a-file-does-not-bundle-stays-its-content: pass
+grouping/a-linked-file-is-composed-before-its-parent-merges-it: pass
+grouping/a-member-carrying-one-heading-bundled-by-document: pass
+grouping/a-member-named-by-the-title-it-absorbs: pass
+grouping/a-member-whose-name-carries-no-word-takes-its-path-text: pass
+grouping/a-nested-group-pushing-a-heading-past-the-sixth-fails: pass
+grouping/a-pooled-subset-keeps-group-member-names: pass
+grouping/a-reference-to-a-grouping-depth-heading: pass
+grouping/a-reference-to-a-member-carrying-one-heading: pass
+grouping/a-rule-matching-no-document-in-the-closure: pass
+grouping/a-section-shallower-than-the-grouping-depth: pass
+grouping/a-titled-parent-reached-as-a-whole-at-depth-one: pass
+grouping/a-titled-parent-reached-as-a-whole-at-depth-two: pass
+grouping/a-variant-drops-the-group-word: pass
+grouping/a-whole-document-reference-to-a-member: pass
+grouping/an-entry-naming-a-member-carrying-one-heading: pass
+grouping/an-intermediate-group-nests-inside-its-parent: pass
+grouping/conflicting-member-depths: pass
+grouping/member-names-distinguished-after-formatting: pass
+grouping/members-of-one-stem-in-different-directories: pass
+grouping/mixed-contributions-name-every-member: pass
+grouping/one-entry-bundled-by-document: pass
+grouping/one-entry-bundled-by-group: pass
+grouping/one-entry-under-a-group: pass
+grouping/one-spelling-for-every-generated-heading: pass
+grouping/structural-ancestors-inside-a-merged-group: pass
+grouping/subheadings-name-every-member: pass
+grouping/two-members-contributing-one-heading-text: pass
+grouping/two-members-sharing-a-name-beneath-an-entry: pass
+grouping/two-members-whose-paths-differ-only-by-suffix: pass
+grouping/two-whole-document-entries-in-one-group: pass
+grouping/variant-headings-distinguished-at-more-than-one-segment: pass
+headings/a-heading-with-no-visible-text: pass
+headings/an-authored-heading-beside-a-generated-one: pass
+headings/an-entity-in-a-heading: pass
+headings/collision-with-a-natural-suffix: pass
+headings/image-alternative-text: pass
+hierarchy/a-preamble-before-a-kept-title: pass
+hierarchy/a-setext-heading-a-quote-carries: pass
+hierarchy/a-setext-heading-an-absorbed-title-leaves: pass
+hierarchy/a-setext-heading-becomes-atx: pass
+hierarchy/a-setext-heading-over-two-lines: pass
+hierarchy/a-shift-that-writes-a-level-only: pass
+hierarchy/every-level-moves-down-one: pass
+hierarchy/headings-a-container-carries: pass
+hierarchy/regions-the-source-separates: pass
+identity/a-path-ending-in-a-number-sign: pass
+identity/a-second-h1-leaves-the-title: pass
+identity/a-title-the-path-spells-with-a-space: pass
+identity/a-title-the-path-spells-with-hyphens: pass
+identity/an-h1-below-the-first-heading: pass
+identity/an-ordinal-names-no-source-heading: pass
+identity/path-needing-escaping: pass
+identity/paths-differing-only-by-suffix: pass
+identity/same-basename-in-two-directories: pass
+identity/title-the-path-does-not-carry: pass
+identity/two-documents-sharing-a-title: pass
+identity/two-headings-sharing-a-slug: pass
+identity/whole-document: pass
+inclusion/a-declared-root-is-refused: pass
+inclusion/a-declaring-target-above-the-working-directory-is-compiled: pass
+inclusion/a-declaring-target-is-compiled: pass
+inclusion/a-deferred-target-keeps-its-preset: pass
+inclusion/a-dependencys-preset-comes-from-itself: pass
+inclusion/a-dispatched-bundle-reads-its-own-subst: pass
+inclusion/a-duplicate-subst-entry-is-refused: pass
+inclusion/a-folder-subst-is-refused: pass
+inclusion/a-followed-deferral-reads-its-preset: pass
+inclusion/a-fragment-naming-no-heading: pass
+inclusion/a-group-entry-keyed-by-a-number-is-refused: pass
+inclusion/a-later-title-selection-activates-a-direct-substitution: pass
+inclusion/a-link-naming-no-document-is-text: pass
+inclusion/a-link-title-selecting-two-complete-preset-names: pass
+inclusion/a-link-title-selects-its-preset: pass
+inclusion/a-malformed-group-entry-is-refused: pass
+inclusion/a-pair-a-selected-preset-overrides-records-no-substitution: pass
+inclusion/a-pair-one-reference-selects-reaches-every-section: pass
+inclusion/a-pair-reached-only-outside-the-selection-is-unused: pass
+inclusion/a-preset-governs-its-own-document: pass
+inclusion/a-preset-key-holding-a-scalar-is-refused: pass
+inclusion/a-preset-key-holds-a-mapping: pass
+inclusion/a-preset-pair-resolves-from-its-file: pass
+inclusion/a-preset-states-the-pair: pass
+inclusion/a-presets-pairs-reach-the-reference-it-governs: pass
+inclusion/a-probe-follows-no-link: pass
+inclusion/a-section-matching-no-preset-selects-default: pass
+inclusion/a-section-only-subst-key-is-refused: pass
+inclusion/a-silent-target-above-is-text: pass
+inclusion/a-silent-target-is-text: pass
+inclusion/a-subst-entry-is-a-colon-pair: pass
+inclusion/a-subst-key-naming-its-value-is-refused: pass
+inclusion/a-subst-pair-stays-in-its-document: pass
+inclusion/a-subst-side-is-read-by-the-reference-grammar: pass
+inclusion/a-target-above-the-writing-directory-is-compiled: pass
+inclusion/a-whole-document-entry-selects-default: pass
+inclusion/an-empty-block-declares: pass
+inclusion/an-entry-is-not-substituted: pass
+inclusion/an-entry-name-reads-its-documents-presets: pass
+inclusion/an-entry-naming-a-silent-document: pass
+inclusion/an-oversized-declaring-target-fails: pass
+inclusion/an-oversized-silent-target-is-text: pass
+inclusion/an-unused-preset-warns: pass
+inclusion/default-applies-in-every-section: pass
+inclusion/every-stage-reads-one-selection: pass
+inclusion/no-block-does-not-declare: pass
+inclusion/no-preset-substitutes-nothing: pass
+inclusion/one-document-two-presets: pass
+inclusion/operators-keep-the-absent-target-refusal: pass
+inclusion/two-documents-placing-one-document-in-two-groups: pass
+inclusion/two-presets-disagreeing-about-a-subst-key-are-refused: pass
+inclusion/two-presets-disagreeing-are-refused: pass
+inclusion/two-presets-stating-two-groups-are-refused: pass
+inclusion/two-references-disagreeing-about-a-subst-key-are-refused: pass
+limits/a-file-count-budget-crossed: pass
+limits/a-link-budget-crossed: pass
+limits/a-link-budget-crossed-by-a-links-line: pass
+limits/a-link-budget-crossed-by-diagram-clicks: pass
+limits/a-named-budget-bounds-the-run: pass
+limits/a-negative-override-is-refused: pass
+limits/a-nesting-budget-crossed: pass
+limits/a-source-byte-budget-crossed: pass
+limits/a-target-at-the-expansion-depth: pass
+limits/a-target-budget-crossed: pass
+limits/a-zero-override-is-refused: pass
+limits/an-expansion-depth-budget-crossed: pass
+limits/an-input-byte-budget-crossed: pass
+limits/an-output-byte-budget-crossed: pass
+literal-bracket/a-bracket-another-source-defines: pass
+literal-bracket/brackets-in-examples-stay-as-written: pass
+mock/a-citation-above-the-working-directory-is-redirected: pass
+mock/a-deferred-target-is-redirected: pass
+mock/a-document-key-and-a-section-key-together: pass
+mock/a-fragment-key-redirects-one-section: pass
+mock/a-key-naming-an-absent-document-is-substituted: pass
+mock/a-mocked-check-publishes-nothing: pass
+mock/a-mocked-dependency-is-compiled: pass
+mock/a-substitute-above-the-working-directory-is-reachable: pass
+mock/a-substitute-declaring-a-group-joins-it: pass
+mock/a-substitute-that-is-a-key-is-not-redirected-again: pass
+mock/a-substitution-warns-with-its-target: pass
+mock/a-value-naming-no-markdown-document-is-refused: pass
+mock/an-unused-key-warns-and-publishes: pass
+normalization/a-double-encoded-escape: pass
+normalization/a-drive-path: pass
+normalization/a-non-utf8-escape-sequence: pass
+normalization/a-parent-segment-and-a-fragment: pass
+normalization/a-parent-segment-reaching-the-working-directory: pass
+normalization/a-protocol-relative-url: pass
+normalization/a-reference-above-the-working-directory-is-text: pass
+normalization/a-scheme-and-an-authority-in-selected-content: pass
+normalization/an-empty-fragment: pass
+normalization/an-encoded-number-sign: pass
+normalization/an-encoded-path-separator: pass
+normalization/an-escaped-fragment: pass
+normalization/an-over-long-percent-escape: pass
+normalization/an-unencoded-number-sign: pass
+normalization/bare-text-paths: pass
+normalization/query-on-an-entry-reference: pass
+normalization/root-relative-entry-reference: pass
+normalization/two-spellings-of-one-document: pass
+ownership/a-self-reference-after-consolidation: pass
+ownership/an-ancestor-reference-after-consolidation: pass
+ownership/an-ancestor-reference-with-the-child-selected: pass
+parallel-dispatch/a-deferred-parallel-dispatch-is-refused: pass
+parallel-dispatch/a-dispatch-set-heading-is-refused-beside-a-set: pass
+parallel-dispatch/a-link-carrying-the-parallel-mark-and-the-dispatch-operator: pass
+parallel-dispatch/a-parallel-link-in-a-heading-of-a-set-of-one-publishes-as-a-dispatch: pass
+parallel-dispatch/a-parallel-link-naming-a-remote-address: pass
+parallel-dispatch/a-parallel-mark-with-no-space-after-it-opens-an-ordinary-link: pass
+parallel-dispatch/a-section-carrying-both-operators: pass
+parallel-dispatch/a-set-in-a-level-six-section-is-refused: pass
+parallel-dispatch/a-set-in-one-section: pass
+parallel-dispatch/a-set-of-one-target-publishes-as-an-inline-dispatch: pass
+parallel-dispatch/a-target-holding-a-numbered-list-publishes: pass
+parallel-dispatch/a-target-holding-a-paragraph-publishes: pass
+parallel-dispatch/a-target-holding-an-item-linking-no-document-publishes: pass
+parallel-dispatch/a-target-named-twice-in-one-set-is-listed-once: pass
+parallel-dispatch/an-in-parallel-heading-publishes-beside-a-set: pass
+parallel-dispatch/parallel-link-text-is-listed-on-one-line: pass
+parallel-dispatch/sets-in-sibling-and-nested-sections: pass
+parser-limit/a-budget-spent-on-the-last-valid-reference: pass
+parser-limit/a-lookup-suppressed-below-every-declared-budget: pass
+parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches: pass
+parser-limit/a-reference-lookup-the-parser-declines: pass
+profile/entry-suffix-outside-the-profile: pass
+profile/extension-lookalikes: pass
+profile/html-in-a-code-example: pass
+profile/invalid-byte-mid-document: pass
+profile/markdown-suffixes-in-mixed-case: pass
+profile/raw-html-in-selected-content: pass
+profile/source-not-utf8: pass
+profile/task-markers-and-typography: pass
+profile/task-markers-protected-from-definitions: pass
+profile/the-constructs-the-profile-supports: pass
+profile/unsupported-construct: pass
+profile/utf16-byte-order-mark: pass
+prosiform/a-bundle-opening-on-a-file-heading-opens-with-the-run-pf-line: pass
+prosiform/a-bundle-using-both-operators-carries-no-protocol: pass
+prosiform/a-bundle-using-neither-operator-opens-with-the-run-pf-line: pass
+prosiform/a-bundle-using-the-dispatch-operator-carries-no-protocol: pass
+prosiform/a-bundle-using-the-parallel-mark-carries-no-protocol: pass
+prosiform/an-authored-dispatch-heading-publishes-in-a-dispatching-bundle: pass
+prosiform/an-authored-parallel-dispatch-heading-publishes-beside-a-set: pass
+prosiform/an-entry-opening-on-content-above-its-title-opens-with-the-run-pf-line: pass
+publication/a-check-run-into-a-folder-that-does-not-exist-makes-it: pass
+publication/a-failing-run-publishes-no-bundle: pass
+publication/a-file-at-the-run-folder-s-path-is-refused: pass
+publication/a-successful-run-writes-only-the-bundle: pass
+publication/an-earlier-set-the-run-cannot-remove-warns: pass
+publication/an-output-folder-that-cannot-be-made-fails: pass
+publication/an-output-folder-that-does-not-exist-is-made: pass
+real-source/absorbed-title-and-self-references: pass
+real-source/frontmatter-and-a-shifted-group: pass
+real-source/heading-text-outside-ascii: pass
+real-source/markdown-inside-a-code-example: pass
+real-source/preamble-above-the-first-heading: pass
+real-source/tables-and-brace-placeholders: pass
+reference/a-click-naming-no-diagram-destination-is-text: pass
+reference/a-declaring-document-is-a-dependency: pass
+reference/a-definition-a-container-carries: pass
+reference/a-definition-outside-the-selected-section: pass
+reference/a-definition-spelled-across-two-lines: pass
+reference/a-diagram-click-above-the-working-directory-is-text: pass
+reference/a-kanban-ticket-naming-a-local-document: pass
+reference/a-label-two-definitions-spell-in-different-case: pass
+reference/a-link-inside-an-image-a-link-carries: pass
+reference/a-link-inside-image-alternative-content: pass
+reference/a-link-line-in-another-diagram-is-text: pass
+reference/a-links-value-that-is-an-array: pass
+reference/a-links-value-that-is-no-string: pass
+reference/a-reference-naming-no-heading-of-a-declaring-document: pass
+reference/a-reference-style-image-with-a-title: pass
+reference/a-silent-target-above-the-writing-directory-is-text: pass
+reference/an-html-anchor-in-a-node-label-naming-a-local-document: pass
+reference/an-html-anchor-mermaid-draws-as-no-anchor-is-text: pass
+reference/an-html-link-naming-a-local-document: pass
+reference/an-unused-definition-is-removed: pass
+reference/conflicting-labels-across-files: pass
+reference/diagram-links-naming-remote-addresses-are-text: pass
+reference/diagram-links-outside-the-forms-read: pass
+reference/diagram-tooltips-supply-no-preset-selection: pass
+resource/a-bundle-naming-no-resource-does-not-warn: pass
+resource/a-diagram-click-naming-a-resource: pass
+resource/an-image-naming-a-local-document: pass
+resource/resource-titles-supply-no-preset-selection: pass
+rewriting/a-class-diagram-click-in-each-form: pass
+rewriting/a-class-diagram-link-destination: pass
+rewriting/a-cross-group-reference: pass
+rewriting/a-diagram-click-destination: pass
+rewriting/a-diagram-link-keyword-in-any-case: pass
+rewriting/a-diagram-reached-through-a-linked-document: pass
+rewriting/a-diagram-short-click-destination: pass
+rewriting/a-flowchart-click-in-each-form: pass
+rewriting/a-fragment-only-dependency: pass
+rewriting/a-gantt-diagram-click-destination: pass
+rewriting/a-link-inside-a-heading: pass
+rewriting/a-reference-style-link: pass
+rewriting/a-sequence-diagram-destination-ending-at-a-semicolon: pass
+rewriting/a-sequence-diagram-destination-naming-a-section: pass
+rewriting/a-sequence-diagram-link-and-links-line-anchors: pass
+rewriting/a-sequence-diagram-link-destination: pass
+rewriting/a-sequence-diagram-links-line-destinations: pass
+rewriting/a-sequence-diagram-links-line-repeating-a-key: pass
+rewriting/a-sequence-diagram-menu-keywords-in-any-case: pass
+rewriting/a-state-diagram-click-in-each-form: pass
+rewriting/a-swimlanes-diagram-click-in-each-form: pass
+rewriting/every-click-on-one-diagram-line: pass
+rewriting/no-link-names-a-source-path: pass
+rewriting/two-targets-sharing-a-slug: pass
+self-reference/a-link-back-to-an-including-ancestor: pass
+self-reference/a-link-spelled-another-way-to-the-same-section: pass
+self-reference/a-link-to-another-section-of-the-same-file: pass
+self-reference/a-link-to-the-same-section: pass
+self-reference/a-preamble-link-to-its-own-document: pass
+self-reference/a-section-link-to-its-whole-document: pass
+source-consistency/a-source-that-changes-during-compilation: pass
+structural-ancestors/a-title-the-file-heading-already-names: pass
+structural-ancestors/an-ancestor-carries-no-body-or-sibling: pass
+structural-ancestors/an-ancestor-heading-is-literal-text: pass
+structural-ancestors/an-ancestor-two-selections-share: pass
+structural-ancestors/an-outline-that-skips-a-level: pass
+structural-ancestors/disjoint-selections-keep-their-outline: pass
+traversal/a-cycle-of-dependencies: pass
+traversal/a-declaring-reference-is-bundled: pass
+traversal/a-link-in-a-code-example: pass
+traversal/a-relative-resource-warns: pass
+traversal/a-second-reference-to-one-document: pass
+traversal/resources-are-not-dependencies: pass
+validation-scope/an-unselected-broken-link: pass
+validation-scope/an-unselected-refusal-in-a-named-document: pass
+validation-scope/an-unselected-refusal-in-a-reached-document: pass
+validation-scope/the-sibling-once-closure-includes-it: pass
+composition/a-deferral-whose-step-and-target-select-one-preset-is-kept: fail
+  expected.bundles: guide.bundle.md: the bytes differ
+    314 bytes expected, 324 produced
+    first difference at byte 312, expected line 15 column 61
+    expected b'd#implementation-offline)\n'
+    produced b'd#implementation-offline "offline")\n'
+composition/a-tagged-deferral-with-different-target-heading: fail
+  expected.bundles: guide.bundle.md: the bytes differ
+    282 bytes expected, 292 produced
+    first difference at byte 280, expected line 15 column 45
+    expected b'(fetch.md#implementation)\n'
+    produced b'(fetch.md#implementation "offline")\n'
+corpus check: 530 fixture(s), 528 pass, 2 fail, 0 awaited, 0 unexpected pass
+make: *** [Makefile:77: corpus] Error 1

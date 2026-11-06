@@ -1,0 +1,32 @@
+{
+  "status": "component_ready_for_coordinator_review",
+  "branch": "i10/e07/main",
+  "head_before_merge_commit": "6578295a1bd40899ab4286a8185203451e159554",
+  "merging_head": "d8265c82e797355a55cf7ec7d921949b4d7eb6c0",
+  "revision_scope": "uncommitted integration worktree; coordinator owns committed-head gates and publication",
+  "harness": {
+    "passed": 1627,
+    "seconds": 101.65,
+    "log": "harness-final.log"
+  },
+  "eval_files": {
+    "evals/diagram-following/README.md": "d94c4a0a9cdce102ab862383249d0f7ecf7d8f366fbe006afcbeb65710274e84",
+    "evals/diagram-following/score.py": "04f4c6c773e424c4d312801b763e54de034656e8302729a9096177844596b978",
+    "evals/diagram-following/stub_agent.py": "b4fd1de822ca76d1082bbb1d2aa33131df2dbb2584844a153319814389bd899d",
+    "evals/diagram-following/test_harness.py": "a1691540e43b1b825478af2df4dda2396ef067490bf41778c286ef7eb1f26dde",
+    "evals/diagram-following/test_run.py": "0421f80d9d8704c89c44ce600853fe5dd25a99d3e6f9223df9fec88f7f76cacb",
+    "evals/diagram-following/test_score.py": "9d20e3bece496152b034f17db171df6a9bf5ccf899b7e4319c3824e9018dc22c",
+    "evals/diagram-following/test_workflow.py": "977a93a188c63702d5f4efe9b287221a64fe5768f281cae3feef5eca398ee6ec",
+    "evals/diagram-following/workflow.py": "d82e61862ba7e929a2638334595f241cb1288196e5f5615b24347c46daf093e7",
+    "evals/diagram-following/workflows/bootstrap-audit/scenarios.toml": "df9ac2234726097c4b23ea622a92b76713f1afb29d676e13b063b5a52323220b",
+    "evals/diagram-following/workflows/deferred-composition/scenarios.toml": "9393b68204362415272f7980c874af725bbd4abf1653fd6e6babd3056e4fc50d",
+    "evals/diagram-following/workflows/deferred-dispatch/scenarios.toml": "146389a118d53c2e51d6fda9014b7a7d0809a6faae8302d0491dcf1e9bdc195b",
+    "evals/diagram-following/workflows/inline-bootstrap/scenarios.toml": "79d2edef77193e06fa16f5ab5fbbc42190983bd02b8583a8f2160f9f99820936",
+    "evals/diagram-following/workflows/preset-deferral/compiled/states/mirror.md": "b34ed5fb55190edad3622d8fb52392bb2e24960e656c7f1c7ea544dd6d235aea",
+    "evals/diagram-following/workflows/preset-deferral/scenarios.toml": "a40b087fe1668a70b8203c10abe227961c4bad3b8e1425ffff47397aceecf36c",
+    "evals/diagram-following/workflows/subagent-first-run/scenarios.toml": "8c642e54bd94d3d6d26437a645e9af665b0a5f75b9e16dc56ab03bfb20d38dd4"
+  },
+  "open_findings": [],
+  "paid_sessions": 0,
+  "source_commits_created_by_contributor": 0
+}
