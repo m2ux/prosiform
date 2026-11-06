@@ -22,6 +22,8 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | [source-result.json](source-result.json) | Clean pushed source head and coordinator handoff |
 | [make-check.log](make-check.log) | Passing complete repository gate at the delivered source revision |
 | [make-check-bf7f61592.log](make-check-bf7f61592.log) | Initial gate finding before the candidate renderer-identity repair |
+| [make-check-cd325d5c3.log](make-check-cd325d5c3.log) | Passing unit gate before the completed E04 base refresh |
+| [updated-focused.log](updated-focused.log) | Current-base variant, candidate and deferred-title interaction replay |
 
 ## Links
 

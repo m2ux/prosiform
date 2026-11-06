@@ -1,11 +1,11 @@
 cd src && uv lock --check
-Resolved 24 packages in 0.84ms
+Resolved 24 packages in 0.90ms
 uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
 All checks passed!
 uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
-383 files already formatted
+468 files already formatted
 uv run --project src --frozen mypy --config-file src/pyproject.toml src/prosiform src/tests checks evals
-Success: no issues found in 92 source files
+Success: no issues found in 93 source files
 cd src && uv run --frozen pytest
 ........................................................................ [  3%]
 ........................................................................ [  7%]
@@ -14,48 +14,51 @@ cd src && uv run --frozen pytest
 ........................................................................ [ 19%]
 ........................................................................ [ 23%]
 ........................................................................ [ 27%]
-........................................................................ [ 31%]
-........................................................................ [ 35%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
 ........................................................................ [ 38%]
 ........................................................................ [ 42%]
 ........................................................................ [ 46%]
 ........................................................................ [ 50%]
 ........................................................................ [ 54%]
 ........................................................................ [ 58%]
-........................................................................ [ 62%]
-........................................................................ [ 66%]
-........................................................................ [ 70%]
+........................................................................ [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
 ........................................................................ [ 73%]
 ........................................................................ [ 77%]
 ........................................................................ [ 81%]
 ........................................................................ [ 85%]
-........................................................................ [ 89%]
-........................................................................ [ 93%]
-........................................................................ [ 97%]
-..................................................                       [100%]
-1850 passed in 5.59s
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+.............................................................            [100%]
+1861 passed in 5.61s
 uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests evals/diagram-following
-........................................................................ [  5%]
-........................................................................ [ 10%]
-........................................................................ [ 15%]
-........................................................................ [ 20%]
-........................................................................ [ 25%]
+........................................................................ [  4%]
+........................................................................ [  8%]
+........................................................................ [ 13%]
+........................................................................ [ 17%]
+........................................................................ [ 22%]
+........................................................................ [ 26%]
 ........................................................................ [ 30%]
 ........................................................................ [ 35%]
-........................................................................ [ 40%]
-........................................................................ [ 45%]
-........................................................................ [ 50%]
-........................................................................ [ 55%]
-........................................................................ [ 60%]
-........................................................................ [ 65%]
-........................................................................ [ 71%]
-........................................................................ [ 76%]
-........................................................................ [ 81%]
-........................................................................ [ 86%]
-........................................................................ [ 91%]
-........................................................................ [ 96%]
-...................................................                      [100%]
-1419 passed in 63.17s (0:01:03)
+........................................................................ [ 39%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 57%]
+........................................................................ [ 61%]
+........................................................................ [ 66%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 79%]
+........................................................................ [ 83%]
+........................................................................ [ 88%]
+........................................................................ [ 92%]
+........................................................................ [ 97%]
+..............................................                           [100%]
+1630 passed in 100.54s (0:01:40)
 uv run --project src --frozen python checks/corpus.py
 absorbed-title/a-reference-naming-a-title-no-heading-absorbed: pass
 absorbed-title/a-reference-naming-an-absorbed-title: pass
@@ -593,18 +596,18 @@ validation-scope/the-sibling-once-closure-includes-it: pass
 corpus check: 533 fixture(s), 533 pass, 0 fail, 0 awaited, 0 unexpected pass
 python3 checks/smoke.py
 ok   wheel        prosiform-0.16.0-py3-none-any.whl
-ok   installed    /tmp/pf-smoke-q067mm0y/environment
-ok   resolved     pf — /tmp/pf-smoke-q067mm0y/environment/bin/pf, outside the repository
+ok   installed    /tmp/pf-smoke-_wrr8bep/environment
+ok   resolved     pf — /tmp/pf-smoke-_wrr8bep/environment/bin/pf, outside the repository
 ok   version      pf 0.16.0 (prosiform-markdown)
-ok   bundled      guide.md from /tmp/pf-smoke-q067mm0y/sources, run from /tmp/pf-smoke-q067mm0y/elsewhere
+ok   bundled      guide.md from /tmp/pf-smoke-_wrr8bep/sources, run from /tmp/pf-smoke-_wrr8bep/elsewhere
 ok   glossary     glossary.md, shipped
 
 smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
 python3 checks/layout.py
 ok   docs/ — 25 tracked file(s), the documentation this repository owns
-ok   evals/ — 324 tracked file(s), the evaluations of agents reading what the build produces
+ok   evals/ — 416 tracked file(s), the evaluations of agents reading what the build produces
 ok   fixtures/ — 2088 tracked file(s), the language-neutral fixture corpus
-ok   src/ — 50 tracked file(s), the build
+ok   src/ — 51 tracked file(s), the build
 
 layout check: 4 tree(s) present
 python3 checks/tables.py
@@ -875,9 +878,15 @@ ok   local      ../invocation.md
 ok   local      #what-the-numbers-mean
 ok   local      workflows
 ok   local      workflow.py
+ok   local      #deferral-scenarios
+ok   local      #composition-scenarios
+ok   local      #bootstrap-scenarios
 ok   local      instruction.md
 ok   local      instruction-bootstrap.md
+ok   local      instruction-compiled.md
 ok   local      #dispatch-scenarios
+ok   local      #stated-runs
+ok   local      #sub-agent-runs
 ok   local      score.py
 ok   local      run.py
 ok   local      RUNBOOK.md
@@ -904,6 +913,7 @@ ok   remote     https://github.com/m2ux/prosiform/issues/637
 ok   remote     https://github.com/m2ux/prosiform/issues/650
 ok   remote     https://github.com/m2ux/prosiform/issues/579
 ok   local      instruction-bootstrap.md
+ok   local      instruction-compiled.md
 ok   local      sources/workflow.md
 ok   local      ../review.md#repair
 ok   local      ../review.md#source
@@ -922,8 +932,17 @@ ok   local      exit.md
 ok   local      escalate.md
 ok   local      queue.md
 ok   local      states/entry.md
+ok   local      convert.md#rows
 ok   local      verify.md
 ok   local      ../undeclared/handover.md
+ok   local      archive.md#steps
+ok   local      ../reference/migration.md#steps
+ok   local      crew.md#lift
+ok   local      crew.md#strap
+ok   local      ../reference/loading.md#crew
+ok   local      ../reference/style.md#rules
+ok   local      vet.md#vet
+ok   local      #summary
 ok   local      ../plan.md#work
 ok   local      ../review.md#source
 ok   local      ../review.md#tests
@@ -934,6 +953,18 @@ ok   local      review.md#check
 ok   local      ../plan.md#work
 ok   local      review.md#check
 ok   local      ../plan.md#work
+ok   local      probe.md#probe
+ok   local      choice.md#elect
+ok   local      east.md#east
+ok   local      west.md#west
+ok   local      join.md#join
+ok   local      seal.md#seal
+ok   local      tally.md#count
+ok   local      detail.md#expand
+ok   local      ../fan/divide.md#portion
+ok   local      ../ask/enquiry.md#pose
+ok   local      ../line/scope.md#frame
+ok   local      ../ask/enquiry.md#pose
 ok   local      ../draft.md#choose
 ok   local      ../draft.md#choose
 ok   local      ../review.md#source
@@ -943,6 +974,7 @@ ok   local      ../review.md#tests
 ok   local      notify.md
 ok   local      package.md
 ok   local      sign.md
+ok   local      sources/workflow.md
 ok   local      test.md
 ok   local      plan.md
 ok   local      build.md
@@ -961,6 +993,8 @@ ok   local      revise.md
 ok   local      publish.md
 ok   local      check.md
 ok   local      states/entry.md
+ok   local      net.md#open
+ok   local      ../reference/fetch.md#read-mirror
 ok   local      ../notes/policy.md
 ok   local      proof.md
 ok   local      audit.md
@@ -1001,6 +1035,13 @@ ok   local      ../reference/settings.md#inputs
 ok   local      ../reference/schema.md#inputs
 ok   local      ../reference/migration.md#steps
 ok   local      upkeep/notes.md
+ok   local      review.md#scan
+ok   local      ../steps/closing.md#close
+ok   local      ../steps/weighing.md#weigh
+ok   local      ../hop/audit.md#sweep
+ok   local      ../hop/ledger.md#balance
+ok   local      recording.md#file
+ok   local      ruling.md#rule
 ok   local      inspect.md#inspect
 ok   local      gate.md
 ok   local      states/stage.md
@@ -1048,8 +1089,8 @@ ok   remote     https://pypi.org/project/mypy/
 ok   remote     https://pypi.org/project/jsonschema/
 ok   remote     https://pypi.org/project/types-jsonschema/
 
-link check: every reference in 311 document(s) resolved
-read engineering at 3d4132254bda
+link check: every reference in 395 document(s) resolved
+read engineering at 164029ae86ef
 python3 checks/vocabulary.py
 vocabulary check: 47 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on 795bbfb67c66b02193f0313138f59f18aa6c5274, every one defined in docs/glossary.md, and every definition carried by the contract across 28 source(s)
 uv run --project src --frozen python checks/invocation.py
