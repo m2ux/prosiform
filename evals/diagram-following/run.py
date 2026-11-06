@@ -638,7 +638,10 @@ def start(
         "tokens": tokens,
         "cost_usd": harness.cost(result),
         "result": result,
-        "trace": [asdict(entry) for entry in scenario.trace],
+        "trace": [
+            {**asdict(entry), "presets": sorted(entry.presets)}
+            for entry in scenario.trace
+        ],
         "verdict": verdict.record(),
     }
     (records / SESSION).write_text(json.dumps(record, indent=2) + "\n")

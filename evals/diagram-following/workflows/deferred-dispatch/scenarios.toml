@@ -17,10 +17,14 @@ path = ["Entry", "Pick", "Pack", "Post", "Exit"]
 inputs = { "order.txt" = "bulk" }
 
 [[scenario.trace]]
-dispatch = "reference/crew#lift"
+dispatch = "reference/crew#work"
+presets = "lift"
+action = { file = "lift.txt", value = "lifted" }
 
 [[scenario.trace]]
-dispatch = "reference/crew#strap"
+dispatch = "reference/crew#work"
+presets = "strap"
+action = { file = "strap.txt", value = "strapped" }
 
 [[scenario.compile]]
 entry = "reference/loading.md#crew"

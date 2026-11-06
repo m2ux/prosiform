@@ -484,7 +484,11 @@ def compiles(
             tuple(
                 command
                 for start in starts
-                if names(start.target, section, source_directory)
+                if any(
+                    names(start.target, entry.section, source_directory, entry.presets)
+                    for entry in scenario.trace
+                    if entry.section == section
+                )
                 for command in start.commands
             )
         )
@@ -497,7 +501,12 @@ def compiles(
     return next((failure for failure in order if failure in found), None)
 
 
-def names(target: str, section: str, source_directory: str = "") -> bool:
+def names(
+    target: str,
+    section: str,
+    source_directory: str = "",
+    presets: frozenset[str] = frozenset(),
+) -> bool:
     """Whether a start's prompt names a section's compiled file or authored reference.
 
     A compiled form hands over `pf`'s bundle for the section, named
@@ -510,20 +519,22 @@ def names(target: str, section: str, source_directory: str = "") -> bool:
     name: the reference the scenario states, or that reference as the skill
     directory holds it.
 
-    The file or reference identifies the section. Description wording and
-    headings alone carry no target identity.
+    A selected dispatch requires its selection-qualified bundle filename.
+    An unselected section also accepts an authored reference. Description
+    wording and headings alone carry no target identity.
     """
     references = [section]
     if source_directory:
         references.insert(0, f"{source_directory}/{section}")
     for reference in references:
         document, _, heading = reference.partition("#")
-        for spelled in (
-            f"{document}#{heading}",
-            f"{document}.md#{heading}",
-            entry_bundle(reference).name,
-            f"{entry_bundle(reference).name}#{heading}",
-        ):
+        spellings: tuple[str, ...] = (
+            entry_bundle(reference, presets).name,
+            f"{entry_bundle(reference, presets).name}#{heading}",
+        )
+        if not presets:
+            spellings += (f"{document}#{heading}", f"{document}.md#{heading}")
+        for spelled in spellings:
             if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
                 return True
     return False
@@ -565,7 +576,12 @@ def dispatched(
                     position
                     for position in range(cursor, len(starts))
                     if position not in taken
-                    and names(starts[position].target, due.section, source_directory)
+                    and names(
+                        starts[position].target,
+                        due.section,
+                        source_directory,
+                        due.presets,
+                    )
                 ),
                 None,
             )
@@ -599,7 +615,7 @@ def dispatched(
     if any(
         start.returned == QUESTION
         and not any(
-            names(later.target, due.section, source_directory)
+            names(later.target, due.section, source_directory, due.presets)
             for later in starts[index + 1 :]
         )
         for index, start, due in matched

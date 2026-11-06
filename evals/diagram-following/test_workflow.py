@@ -79,7 +79,9 @@ from workflow import (
     inline_lines,
     inputs_read,
     instruction,
+    markdown_links,
     read_compile,
+    read_dispatch,
     read_workflow,
     reported,
     section_body,
@@ -572,13 +574,13 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         # `pf` writes every target's bundle beside the entry that dispatches
         # it, in that entry's own `.bundles` folder, so a target is found
         # there and in the set of any run a later document makes.
-        wanted = entry_bundle(entry.section).name
+        wanted = entry_bundle(entry.section, entry.presets).name
         written = sorted(output.rglob(wanted))
         if not written:
             faults.append(f"no run writes the bundle {entry.section} follows")
             continue
         text = written[0].read_text()
-        followed[entry.section] = written[0].resolve()
+        followed[wanted] = written[0].resolve()
         if not opens_with_run_pf(text):
             faults.append(f"{entry.section}'s bundle opens with no run-pf line")
         before = len(runs)
@@ -613,7 +615,9 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     links = [
         (bundle, target)
         for bundle in sorted(output.rglob("*.bundle.md"))
-        for target in DISPATCH_LINK.findall(bundle.read_text())
+        for link in markdown_links(bundle.read_text())
+        if link.label.startswith("⇉ ")
+        for target in (link.destination,)
     ]
     faults += [
         f"{bundle.name} links {target}, which no run writes"
@@ -1083,6 +1087,46 @@ def test_a_preset_deferral_states_the_stand_ins_path() -> None:
     assert workflow.sections[COMPILED_FORM]["Mirror"].deferred
 
 
+def test_dispatch_trace_presets_require_a_string_list() -> None:
+    with pytest.raises(CorpusError, match="presets need a string list"):
+        read_dispatch({"dispatch": "crew#work", "presets": ["lift"]}, "bad")
+
+
+@pytest.mark.parametrize("tags", ["", ' "strap"'])
+def test_deferred_composition_without_its_required_tags_leads_elsewhere(
+    tmp_path: Path, tags: str
+) -> None:
+    workflow = broken(
+        tmp_path,
+        "preset-deferral",
+        "compiled/states/mirror.md",
+        ' "mirror"',
+        tags,
+    )
+    assert any(
+        "compiled bundles lead" in fault
+        for fault in compiled_faults(workflow, workflow.scenarios[0], tmp_path / "out")
+    )
+
+
+@pytest.mark.parametrize("tags", ["", ' "lift"', ' "wrong"'])
+def test_dispatched_selection_without_required_tags_has_no_matching_bundle(
+    tmp_path: Path, tags: str
+) -> None:
+    workflow = broken(
+        tmp_path,
+        "deferred-dispatch",
+        "compiled/reference/loading.md",
+        ' "strap"',
+        tags,
+    )
+    faults = sub_agent_faults(workflow, workflow.scenarios[0], tmp_path / "out")
+    assert any(
+        "no run writes the bundle reference/crew#work follows" in fault
+        for fault in faults
+    )
+
+
 def test_equivalent_scenario_preset_requests_name_the_same_compiled_run(
     tmp_path: Path,
 ) -> None:
@@ -1148,14 +1192,21 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
     compiled, passed = workflow.scenarios
     assert compiled.compile == (Compile(None, "reference/loading.md#crew"),)
     assert dispatch_starts(workflow, COMPILED_FORM, compiled.path, compiled.inputs) == (
-        ("reference/crew#lift", False, 0),
-        ("reference/crew#strap", False, 0),
+        ("reference/crew#work", False, 0),
+        ("reference/crew#work", False, 0),
     )
     assert [entry.section for entry in compiled.trace] == [
-        "reference/crew#lift",
-        "reference/crew#strap",
+        "reference/crew#work",
+        "reference/crew#work",
     ]
-    assert [entry.action for entry in compiled.trace] == [None, None]
+    assert [entry.presets for entry in compiled.trace] == [
+        frozenset({"lift"}),
+        frozenset({"strap"}),
+    ]
+    assert [entry.action for entry in compiled.trace] == [
+        ("lift.txt", "lifted"),
+        ("strap.txt", "strapped"),
+    ]
     assert (passed.compile, passed.trace) == ((), ())
     assert dispatch_walk(workflow, COMPILED_FORM, passed.path, passed.inputs) == ()
 
@@ -1170,7 +1221,7 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
                 "deferred-dispatch-passed: the walk runs pf on"
                 " [('--entry=reference/loading.md#crew',)]",
                 "deferred-dispatch-passed: the compiled form dispatches"
-                " ['reference/crew#lift', 'reference/crew#strap'], not the"
+                " ['reference/crew#work', 'reference/crew#work'], not the"
                 " [section, set] pairs the trace names: []",
             ],
         ),

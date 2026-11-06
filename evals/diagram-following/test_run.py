@@ -439,6 +439,27 @@ def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> 
     assert not any(workflow == "dispatch-depth" for workflow, _ in given)
 
 
+def test_tagged_dispatch_workflow_runs_with_selection_qualified_traces(
+    tmp_path: Path, log: Path
+) -> None:
+    eval_run(
+        tmp_path,
+        "--workflows",
+        "deferred-dispatch",
+        "--forms",
+        COMPILED_SET,
+        "--repetitions",
+        "1",
+        "--budget-tokens",
+        "4000",
+    )
+    found = records(tmp_path)
+    assert len(found) == 2
+    assert all(record["verdict"]["passed"] for record in found)
+    selected = next(record for record in found if record["trace"])
+    assert [entry["presets"] for entry in selected["trace"]] == [["lift"], ["strap"]]
+
+
 def test_native_child_starts_admit_chains_with_no_child_command_requirement() -> None:
     """AC22: native chains are observable; per-child compiler runs need attribution."""
     corpus = [CORPUS["dispatch-depth"], CORPUS["subagent-first-run"]]
@@ -1601,6 +1622,7 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
     assert record["trace"] == [
         {
             "section": entry.section,
+            "presets": sorted(entry.presets),
             "together": entry.together,
             "action": None if entry.action is None else list(entry.action),
         }
