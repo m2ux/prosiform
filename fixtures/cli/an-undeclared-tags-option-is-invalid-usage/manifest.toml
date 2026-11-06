@@ -1,0 +1,14 @@
+description = "The undeclared --tags option fails with E_INVALID_USAGE without publication."
+
+clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md", "--tags", "checks"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"

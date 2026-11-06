@@ -61,7 +61,7 @@ Each dispatched section states an action, a file under `actions/` and the value 
 | `together` | Whether it started beside the entry above it, which marks every member of a set but the one opening it. |
 | `action` | The `file` under `actions/` the section has the sub-agent write, and the `value` it holds. A deferred composition's activated material states the action too, as [Sub-agent runs](#sub-agent-runs) states. |
 
-The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps and the dispatches of the material each deferred composition a step reaches compiles, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: `pf` publishes a `⇉` link to the target's bundle where it stands and a set as an `In parallel` sub-section of `⇉` items, and the guide bare `pf` prints states what to do with each, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
+The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps and the dispatches of the material each deferred composition a step reaches compiles, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: `pf` publishes a `⇉` link to the target's bundle where it stands and a set as a `⫽ Dispatch Set` sub-section of `⇉` items, and the guide bare `pf` prints states what to do with each, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
 
 `dispatch-depth`, written in the `compiled` form alone, dispatches three hops below the session, the depth `pf` publishes with no `W_DISPATCH_DEPTH`. A sub-agent's own dispatch starts before it returns, so each hop is listed after the one that started it.
 
@@ -78,9 +78,12 @@ A scenario names each `pf` run a correct session and each of its sub-agents make
 | Field | Meaning |
 | --- | --- |
 | `by` | Optional. The section of the scenario's trace whose sub-agent makes the run, as `<document>#<heading>`; absent for the session's own run. |
-| `args` | Optional. Each reference the run compiles, as `<document>` or `<document>#<fragment>`; empty, or absent, for bare `pf`, which prints the guide. An option such as `-o` is the agent's to choose, so a run states none. |
+| `entry` | Optional. The one reference supplied to `--entry`, as `<document>` or `<document>#<fragment>`; absent for bare `pf`, which prints the guide. |
+| `presets` | Optional. The comma-separated link-title names supplied to `--presets`; needs an entry. Complete names trim, case-fold and deduplicate. Only matching declarations contribute to the effective selection. |
 
 A reference resolves from the directory a shell form runs `pf` in: the skill's directory for `bootstrap`, as the guide states, and the workspace for `compiled`, which holds the compiled form's sources as they stand. The corpus test refuses a reference naming no document there, a `by` naming no section of the trace, and a run stated by a workflow written in neither form.
+
+For example, `entry = "reference/fetch.md#read-mirror"` with `presets = "mirror"` states `pf --entry=reference/fetch.md#read-mirror --presets=mirror`. Output and diagnostic options are the agent's to choose. A named selection's expected output includes the compiler's qualifier over its matching declared names. The scorer reads the compiler's command grammar and compares effective selections; missing or different matching presets fail the run check. Informational `--help`, `--version` and `--codes` calls satisfy neither a compile nor the bare guide run.
 
 A `compiled` session reads the bundle set `pf` compiled from the compiled form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. The four dispatch scenarios compile nothing, so they state no run.
 
@@ -88,7 +91,7 @@ A stated run a sub-agent makes is read from that sub-agent's own commands, which
 
 ### Sub-agent runs
 
-A sub-agent's `pf` run is stated by the section it follows and read from that sub-agent's commands where its harness reports them; it is also shown by what it makes possible. Every bundle opens with the run-pf line, saying to run bare `pf` and follow the guide it prints, so a sub-agent handed one reads how to compile a `↳` line before it meets one. A trace entry's `action` names the file only the material `pf` compiles on that line states, so a sub-agent that ran no `pf` leaves it unwritten. The corpus test compiles each dispatched bundle a scenario's trace follows, from the entry's set or the set a run on a `↳` line wrote, runs `pf` on each line its steps reach, and holds the entry's `action` to the one that material states and the bundle itself does not, and the runs the scenario states `by` the entry's section to the lines its sub-agents compile, in order. It holds each such bundle to opening with the run-pf line, each `⇉` link a bundle carries, inline or as an `In parallel` item, to a file its run wrote, and each bundle a sub-agent follows to one a `⇉` link names. A scenario stating a sub-agent's run is given to `claude` alone, as [Stated runs](#stated-runs) states.
+A sub-agent's `pf` run is stated by the section it follows and read from that sub-agent's commands where its harness reports them; it is also shown by what it makes possible. Every bundle opens with the run-pf line, saying to run bare `pf` and follow the guide it prints, so a sub-agent handed one reads how to compile a `↳` line before it meets one. A trace entry's `action` names the file only the material `pf` compiles on that line states, so a sub-agent that ran no `pf` leaves it unwritten. The corpus test compiles each dispatched bundle a scenario's trace follows, from the entry's set or the set a run on a `↳` line wrote, runs `pf` on each line its steps reach, and holds the entry's `action` to the one that material states and the bundle itself does not, and the runs the scenario states `by` the entry's section to the lines its sub-agents compile, in order. It holds each such bundle to opening with the run-pf line, each `⇉` link a bundle carries, inline or as a dispatch-set item, to a file its run wrote, and each bundle a sub-agent follows to one a `⇉` link names. A scenario stating a sub-agent's run is given to `claude` alone, as [Stated runs](#stated-runs) states.
 
 | Workflow | Scenario | What its sub-agents run |
 | --- | --- | --- |
@@ -122,9 +125,9 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 | `deferred-composition` | `deferral-passed` | Nothing: Relocate's step does not hold, so its line is passed. |
 | `deferred-composition` | `nested-needed` | The migration's line, then the archive's line its bundle holds, whose step holds where `history.txt` reads `kept`. |
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
-| `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches the lift, then the strap. |
+| `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches `reference/crew.md#work` with `lift`, then `strap`, each selection writing its own action. |
 | `deferred-dispatch` | `deferred-dispatch-passed` | Nothing: `Pack`'s step does not hold, so its line is passed and nothing is dispatched. |
-| `preset-deferral` | `stand-in-followed` | `pf` on `reference/fetch.md#read-mirror`. `Mirror` and `Read mirror` both select `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
+| `preset-deferral` | `stand-in-followed` | `pf --entry=reference/fetch.md#read-mirror --presets=mirror`. The deferral's title selects `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 
 ### Composition scenarios
 
@@ -143,9 +146,9 @@ The six feature workflows each build on one bundling feature, and each scenario 
 
 | Workflow | Scenario | Permutation |
 | --- | --- | --- |
-| `preset-selection` | `default-alone` | A link whose section title selects no preset of its document, so the document's default places the state. |
-| `preset-selection` | `title-selected` | A section title selecting one preset of the document its link names. |
-| `preset-selection` | `two-presets-one-title` | A section title selecting two presets of one document together. |
+| `preset-selection` | `default-alone` | A link whose title selects no preset of its document, so the document's default places the state. |
+| `preset-selection` | `title-selected` | A link title selecting one preset of the document it names. |
+| `preset-selection` | `two-presets-one-title` | A link title selecting two presets of one document together. |
 | `group-placement` | `leaf-group` | Two states that link nothing, placed in one group. |
 | `group-placement` | `nested-intermediate` | A state placed in a group inside the group of the state linking it, and a second inside that. |
 | `group-placement` | `two-presets-one-document` | One document reached under its default and under a preset, so it stands in two groups. |
@@ -189,7 +192,7 @@ Each failure class the scorer defines is produced by some scenario, and the corp
 
 ### Dispatch checks
 
-A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. It holds the session's own shell `commands`, null where its harness gives it no shell, and its `starts`. Each start names the section a sub-agent followed, what it returned, whether it started beside the entry above it, `parent`, the index of the start whose sub-agent made it, null for the session's own, and `commands`, the shell commands its sub-agent ran, so each sub-agent's starts and commands sit under the section it followed at every depth the harness's stream reports. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when its first line opens `Question:`, as `pf`'s guide has a sub-agent write one, and `done` otherwise.
+A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. It holds the session's own shell `commands`, null where its harness gives it no shell, and its `starts`. Each start names the section a sub-agent followed, what it returned, whether it started beside the entry above it, `parent`, the index of the start whose sub-agent made it, null for the session's own, and `commands`, the shell commands its sub-agent ran, so each sub-agent's starts and commands sit under the section it followed at every depth the harness's stream reports. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when its first line opens `Question:`, as the authored workflow's question procedure states, and `done` otherwise.
 
 The checks hold the dispatch's shape, then the session's handling of each return as the dispatch protocol states it: a start returning `done` moves the session on, and one returning a question is started again with the answers. Each sub-agent's action is then held as a state's is.
 
@@ -206,7 +209,7 @@ A run passing them is then held to each sub-agent's stated `action`, whatever it
 
 ### Run checks
 
-A run that passes the dispatch checks and its sub-agents' actions is held to the `pf` runs its scenario states, wherever its harness reports the commands a session ran. A run is a command, split at `;`, `&&`, `||` and `|`, whose first word is `pf` or a path ending `/pf`; its references are its words other than options and their values, and one names a stated reference when it is that reference or ends `/` and that reference. The session's runs, and each sub-agent's from the commands of the starts naming its section, are held to those stated for it:
+A run that passes the dispatch checks and its sub-agents' actions is held to the `pf` runs its scenario states, wherever its harness reports the commands a session ran. A run is a command, split at `;`, `&&`, `||` and `|`, whose first word is `pf` or a path ending `/pf`; its single destination is the value of `--entry` and its selection is the optional `--presets` value, parsed with the compiler's grammar. The destination names a stated reference when it is that reference or ends `/` and that reference, and the destination's effective matching preset sets must agree. Malformed compile commands satisfy no stated run; informational calls satisfy neither a compile nor the bare guide run. The session's runs, and each sub-agent's from the commands of the starts naming its section, are held to those stated for it:
 
 | Class | The session |
 | --- | --- |
@@ -356,6 +359,8 @@ A refused run — one every started session of which took `errored` — has no r
 The managed platform configuration the sessions carried is recorded by count and fingerprint, as [Isolation](#isolation) states. [`RUNBOOK.md`](RUNBOOK.md#mvp-proof) states how the run is made.
 
 ## Refreshing the baseline
+
+The committed baseline and MVP proof are historical live-run evidence at the revisions their records name. They do not measure the current link-tag preset implementation. The deterministic workflow and scorer tests exercise the current tagged deferrals and dispatched variants; a new paid run requires separate authorization.
 
 Run the default matrix, review its report, then write its cells as the baseline and commit `baseline.json` with the run's `report.md` beside it:
 

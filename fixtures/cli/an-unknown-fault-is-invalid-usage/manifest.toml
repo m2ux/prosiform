@@ -10,7 +10,7 @@ fault = "unrecognized"
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 2

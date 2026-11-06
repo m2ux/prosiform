@@ -96,15 +96,19 @@ Paths below are relative to `src/`.
 
 ### Grouping
 
-`tests/test_grouping.py` checks title-cased group and member names that keep their separators, a member whose name carries no word taking its path text, redundant trailing-word removal, shortest distinguishing paths after shared segments, the subsection each member takes — including one the arrangement emits nothing else from — the `Overview` section emitted only over content a member carries beneath its subsection, a titled parent's whole-document reference reaching its title at each grouping depth, and group selection from the deepest matching directory.
+`tests/test_grouping.py` checks title-cased group and member names that keep their separators, a member whose name carries no word taking its path text, redundant trailing-word removal, shortest distinguishing paths after shared segments, the subsection each member takes — including one the arrangement emits nothing else from — the `Overview` section emitted only over content a member carries beneath its subsection, a titled parent's whole-document reference reaching its title at each grouping depth, and occurrence-local group placement from the target presets selected by each link title.
 
 ### Reference resolution
 
 `tests/test_closure.py` checks splitting before decoding, valid percent escapes, exactly one decoding pass, and rejection of decoded separators or control characters. It also covers relative-path normalization, a path above the working directory keeping its parent segments, scheme and authority classification, drive-letter paths, and exact decoded-fragment lookup.
 
+### Explicit preset selection
+
+`tests/test_tags.py`, `tests/test_source.py` and `tests/test_selection.py` observe complete-name normalization, inline and reference-style title occurrences, resource exclusions, substitution transport and effective selection identity. `tests/test_entry_presets.py` observes the single-entry grammar, default layering, title/CLI parity, shell quoting and leading-dash values. `tests/test_dispatch_variants.py` and `tests/test_dispatch_publication.py` observe distinct/equivalent variants, deterministic output names, collision refusal, parallel sets and variant-aware depth and cycles. `tests/test_deferred_titles.py` and `tests/test_deferred_presets.py` observe title preservation and immediate/deferred selection parity.
+
 ### Command interface
 
-`tests/test_cli.py` checks option grammar, the guide a bare `pf` prints, output streams, exit statuses, implementation-specific responses, and write failures. A run's bundles are written into a folder of its own under the folder `-o` names, or the working directory, under their joined derived names; the folder is published through one rename, an existing run folder keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
+`tests/test_cli.py` checks option grammar, the guide a bare `pf` prints, output streams, exit statuses, implementation-specific responses, and write failures. A run's bundles are written into a folder of its own under the folder `-o` names, or the working directory, under the entry's derived name; the folder is published through one rename, an existing run folder keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
 
 ### Candidate validation
 

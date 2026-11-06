@@ -11,9 +11,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["rules/agents.md", "rules/common.md"]
+arguments = ["--entry", "rules/agents.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/rules_agents+rules_common.bundle.md"]
+bundles = ["expected/rules_agents.bundle.md"]
 diagnostics = []

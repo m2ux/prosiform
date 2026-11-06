@@ -1,4 +1,4 @@
-description = "The parallel links of one section are one set: each target compiles to a bundle of its own, and every link is published without its mark, pointing at the one In parallel sub-section after the section's content, which lists each bundle file as a dispatch link with its link text."
+description = "The parallel links of one section are one set: each target compiles to a bundle of its own, and every link is published without its mark, pointing at the one dispatch-set sub-section after the section's content, which lists each bundle file as a dispatch link with its link text."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

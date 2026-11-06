@@ -12,10 +12,10 @@ arguments = []
 [expected]
 exit_status = 0
 stdout_contains = [
-  "pf -o <folder> <document>[#<section>]",
-  "-o <folder>      folder the run's bundles are written into",
-  "#<section>       one section of it, named by the slug of its heading",
-  "<document>       a document named from the working directory",
+  "pf -o <folder> --entry <document>[#<section>]",
+  "-o <folder>         folder the run's bundles are written into",
+  "--presets PRESETS   the link title's comma-separated preset names;",
+  "--entry REF         one document, or document#section, named from the",
   "1  a failure stopped the run: report its diagnostics and go no further",
   "2  invalid usage or option combination",
   "↳  names a section to inline",
@@ -23,7 +23,7 @@ stdout_contains = [
   "⇉  names a bundle to hand on",
   "⫽  marks a dispatch set",
   "its section holds one set of bundles, listed as",
-  "⇉ items in the sub-section headed ⫽ <that section's title> dispatch",
+  "⇉ lines in the sub-section headed ⫽ Dispatch Set.",
   "Give each bundle to its own sub-agent at once",
   "step that led there, one per value where that step applies to",
   "A failure cancels nothing; all failures return together.",

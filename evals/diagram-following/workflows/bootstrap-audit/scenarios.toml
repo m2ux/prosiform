@@ -35,10 +35,9 @@ dispatch = "review#appraise"
 dispatch = "review#repair"
 
 [[scenario.compile]]
-args = []
 
 [[scenario.compile]]
-args = ["sources/workflow.md"]
+entry = "sources/workflow.md"
 
 [[scenario]]
 name = "clean-one-half"
@@ -64,7 +63,6 @@ together = true
 dispatch = "review#appraise"
 
 [[scenario.compile]]
-args = []
 
 [[scenario.compile]]
-args = ["sources/workflow.md"]
+entry = "sources/workflow.md"

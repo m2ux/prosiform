@@ -112,7 +112,7 @@ def fixture(
     manifest: dict[str, Any] = {
         "description": name,
         "clauses": declared,
-        "invocation": {"arguments": ["guide.md"]},
+        "invocation": {"arguments": ["--entry", "guide.md"]},
         "expected": {
             "exit_status": status,
             "diagnostics": diagnostics or [],
@@ -131,7 +131,7 @@ def as_toml(manifest: dict[str, Any]) -> str:
     lines += ["]", ""]
     if "awaiting" in manifest:
         lines += [f"awaiting = {json.dumps(manifest['awaiting'])}", ""]
-    lines += ["[invocation]", 'arguments = ["guide.md"]', ""]
+    lines += ["[invocation]", 'arguments = ["--entry", "guide.md"]', ""]
     lines += [
         "[expected]",
         f"exit_status = {manifest['expected']['exit_status']}",

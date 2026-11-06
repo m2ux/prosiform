@@ -1,6 +1,6 @@
 """Compile captured Markdown sources, each link classified by its target's declaration.
 
-Positional files resolve from the invocation working directory, and every
+Entry files resolve from the invocation working directory, and every
 link resolves from the file carrying it. A link naming a Markdown document is
 a dependency when that document's frontmatter declares `prosiform`, which a
 frontmatter-only probe answers once per path. Bounded no-follow capture
@@ -10,6 +10,8 @@ validation read one record of declarations."""
 
 import argparse
 import errno
+import hashlib
+import json
 import os
 import posixpath
 import re
@@ -69,6 +71,7 @@ from prosiform.closure import (
     PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
+    BundleSelection,
     Declarations,
     Malformed,
     OutsideRoot,
@@ -76,6 +79,7 @@ from prosiform.closure import (
     Reference,
     Substitution,
     arrowed,
+    bundle_selection,
     components,
     conflicting,
     contradicting,
@@ -85,6 +89,7 @@ from prosiform.closure import (
     gapped,
     identity,
     inside,
+    matching_presets,
     named,
     operators,
     resolve,
@@ -120,6 +125,7 @@ from prosiform.dispatch import (
     anchors,
     collisions,
     cycle,
+    region_of,
     selfward,
     subsections,
     written_in,
@@ -153,7 +159,6 @@ from prosiform.metadata import (
     Conversion,
     InvalidMetadata,
     Membership,
-    Preset,
     Subst,
 )
 from prosiform.profile import (
@@ -170,7 +175,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Contributing, Target
+from prosiform.provenance import Contributing
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -198,13 +203,13 @@ from prosiform.source import (
     occurrences,
     regions,
     section,
-    sections,
     uses,
     within,
 )
 from prosiform.source import (
     CODES as SOURCE_CODES,
 )
+from prosiform.tags import read as read_tags
 
 NAME = "pf"
 
@@ -310,12 +315,27 @@ bundles.
 
 Usage:
 
-  pf -o <folder> <document>[#<section>]
+  pf -o <folder> --entry <document>[#<section>] [--presets <presets>]
 
-  -o <folder>      folder the run's bundles are written into, made if absent;
-                   default: the working directory
-  <document>       a document named from the working directory
-  #<section>       one section of it, named by the slug of its heading
+  -o <folder>         folder the run's bundles are written into, made if absent;
+                               default: the working directory
+  --entry REF         one document, or document#section, named from the
+                                  working directory
+  --presets PRESETS   the link title's comma-separated preset names;
+                                  omit it when the title carries no tags
+
+Compiling a link:
+
+  Resolve the destination from the linking document, then express it
+  from the command's working directory; include the file for #fragments.
+  Pass title tags as one quoted --presets value, also for deferred links:
+
+    pf --entry modes/review.md#review --presets 'checks, final draft'
+
+  Omit --presets without tags; use = for values starting with -:
+    pf --entry=-guide.md --presets=-checks
+
+  Tags layer the target's presets above default.
 
 Exit status:
 
@@ -330,8 +350,8 @@ Symbol grammar:
   ⇉  names a bundle to hand on: give it to a sub-agent with the inputs of
      the step that led there, and continue with its answer
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
-     ⇉ items in the sub-section headed ⫽ <that section's title> dispatch
-     set. Give each bundle to its own sub-agent at once, with the inputs of
+     ⇉ lines in the sub-section headed ⫽ Dispatch Set.
+     Give each bundle to its own sub-agent at once, with the inputs of
      the step that led there, one per value where that step applies to
      several. A failure cancels nothing; all failures return together.
 """
@@ -677,9 +697,9 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
 
 
 def agreed(
-    conversion: Conversion, title: str | None, reference: Reference, document: str
+    conversion: Conversion, tags: frozenset[str], reference: Reference, document: str
 ) -> None:
-    """Hold the presets one title selects to agreeing about every setting they share.
+    """Hold the selected presets to agreeing about every shared setting.
 
     Selected presets union, so two stating one `group` pair, or mapping
     one `subst` key to one alternative, state one setting. Two stating
@@ -691,8 +711,8 @@ def agreed(
     """
     stated: Membership | None = None
     alternatives: dict[tuple[str, str | None], tuple[str, Subst]] = {}
-    selected = f"selected by the title {title!r}"
-    for preset in keywords(conversion, title):
+    selected = f"selected by tags {sorted(tags)!r}"
+    for preset in matching_presets(conversion, tags):
         one = preset.membership
         stated = stated or one
         if (
@@ -705,7 +725,7 @@ def agreed(
                 f"prosiform.{one.preset}.{GROUP}, both {selected}, state "
                 f"{{{stated.group}: {stated.depth}}} and "
                 f"{{{one.group}: {one.depth}}}",
-                "state one group pair in the presets one title selects",
+                "state one group pair in the presets one tag selection selects",
                 reference,
                 stated.group_location,
                 (
@@ -724,8 +744,7 @@ def agreed(
                     f"prosiform.{preset.name}.{SUBST}, both {selected}, map "
                     f"{pair.original!r} to {first_pair.alternative!r} and "
                     f"{pair.alternative!r}",
-                    "map the reference to one alternative in the presets one title "
-                    "selects",
+                    "map the reference to one alternative in the selected presets",
                     reference,
                     first_pair.location,
                     (
@@ -795,9 +814,8 @@ def governing(
         }
         above: dict[tuple[str, str | None], Governed] = {}
         for reference in references:
-            title = selecting_title(parsed[path], reference, entries)
-            agreed(conversion, title, reference, path)
-            for preset in keywords(conversion, title):
+            agreed(conversion, reference.tags, reference, path)
+            for preset in matching_presets(conversion, reference.tags):
                 for pair in preset.substs:
                     one = Governed(
                         preset.name, pair, subst_reference(pair.alternative, path)
@@ -843,15 +861,30 @@ def governed(
     )
 
 
+class Once(argparse.Action):
+    """An option whose value is supplied at most once."""
+
+    def __call__(
+        self,
+        parser: argparse.ArgumentParser,
+        namespace: argparse.Namespace,
+        values: str | Sequence[Any] | None,
+        option_string: str | None = None,
+    ) -> None:
+        if getattr(namespace, self.dest, None) is not None:
+            raise usage_failure(f"{option_string} is supplied more than once")
+        setattr(namespace, self.dest, values)
+
+
 def parser() -> Parser:
     """The command's grammar: every option the contract declares, and no other."""
     grammar = Parser(
         prog=NAME,
         add_help=False,
         allow_abbrev=False,
-        usage=f"{NAME} [OPTIONS] REF [REF ...]",
+        usage=f"{NAME} [OPTIONS] --entry REF [--presets PRESETS]",
         description=(
-            "Bundle the local Markdown closure of one or more entry references, "
+            "Bundle the local Markdown closure of one entry reference, "
             "and of each target they dispatch, into validated bundles. Run with "
             "no arguments, pf prints the guide to following a bundle."
         ),
@@ -912,10 +945,16 @@ def parser() -> Parser:
         help="usage, defaults and exit statuses",
     )
     grammar.add_argument(
-        "references",
+        "--entry",
         metavar="REF",
-        nargs="*",
-        help="document or document#fragment; paths from cwd",
+        action=Once,
+        help="one document or document#fragment; paths from cwd",
+    )
+    grammar.add_argument(
+        "--presets",
+        metavar="PRESETS",
+        action=Once,
+        help="comma-separated preset names for the entry; default: no named presets",
     )
     return grammar
 
@@ -947,12 +986,16 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
 
 
 def entry(text: str) -> Reference:
-    """Normalize a positional reference, keeping the leading parents of a path above.
+    """Normalize an entry reference, keeping the leading parents of a path above.
 
     An entry reference is written by no document, so no `subst` pair
     redirects it: the run compiles the document it names and is named
     for the path the caller wrote.
     """
+    if re.fullmatch(r"\s*\[.*\]\(.*\)\s*", text, re.DOTALL):
+        raise usage_failure(
+            "--entry accepts a destination, not a Markdown link", reference=text
+        )
     try:
         found = resolve(text)
     except Malformed as malformed:
@@ -1527,7 +1570,7 @@ def required(
         if use.resource:
             continue
         try:
-            found = inside(path, use.destination, substitution, at)
+            found = inside(path, use.destination, substitution, at, tags=use.tags)
         except OutsideRoot:
             continue
         except Malformed as malformed:
@@ -1663,7 +1706,7 @@ def refusals_of_operators(
         target = (
             None
             if use.resource
-            else named(path, use.destination, substitution, at, chain)
+            else named(path, use.destination, substitution, at, chain, tags=use.tags)
         )
         answer = None if target is None else declarations.answer(target)
         if answer is Probed.DECLARING:
@@ -1741,7 +1784,9 @@ def refusals_of_directives(
             continue
         at = location(path, source.line(use.line))
         if use.title is not None:
-            target = named(path, use.destination, substitution, at, chain)
+            target = named(
+                path, use.destination, substitution, at, chain, tags=use.tags
+            )
             if target is None or declarations.answer(target) is not Probed.DECLARING:
                 continue
             if target.fragment is None:
@@ -1819,7 +1864,7 @@ def composing_itself(
         if use.title is None or not directive(use.opening) or deferred(use.opening):
             continue
         at = location(path, source.line(use.line))
-        target = named(path, use.destination, substitution, at, chain)
+        target = named(path, use.destination, substitution, at, chain, tags=use.tags)
         if target is None or target.fragment is None or target.path != path:
             continue
         yield Diagnostic(
@@ -1835,44 +1880,6 @@ def composing_itself(
             "without the composition mark",
             location=Location(path, source.line(use.line) or 1, 1),
         )
-
-
-def refusals_of_deferrals(
-    tokens: Sequence[Token], conversion: Conversion, one: Reference
-) -> None:
-    """Refuse a deferred directive whose scope selects other presets than its target.
-
-    A directive's scope title selects its target's presets, and the run
-    activating a deferred directive compiles the target section as an
-    entry, which selects them by that section's own heading: no option
-    names the referrer. Where the two titles select different presets the
-    deferred content would compile otherwise than composed, so the run
-    refuses the directive, naming the link and both selections.
-    """
-    heading = entry_title(tokens, one)
-    scoped = tuple(preset.name for preset in keywords(conversion, one.title))
-    activated = tuple(preset.name for preset in keywords(conversion, heading))
-    if scoped == activated:
-        return
-
-    def named_presets(names: tuple[str, ...]) -> str:
-        return ", ".join(repr(name) for name in names) if names else "no preset"
-
-    raise input_failure(
-        f"the deferred directive naming {one.original!r} sits in the section "
-        f"{one.title!r}, which selects {named_presets(scoped)} of {one.path!r}, "
-        f"and the run activating it selects by the target's heading "
-        f"{heading!r}, which selects {named_presets(activated)}, so the "
-        f"deferred section would compile under other presets than its scope "
-        f"selects",
-        code=UNSUPPORTED_CONSTRUCT,
-        remedy="title the scope and the target's heading so they select the "
-        "same presets, or compose the section rather than defer it",
-        reference=one.original,
-        resolved=identity(one),
-        source=one.origin,
-        chain=one.chain,
-    )
 
 
 def withheld(
@@ -1901,9 +1908,8 @@ def withheld(
     The chain is the one a compiled reference in the same place would
     carry, because a refusal reports the route the run followed to the
     link whichever half of the rule the link falls under. Each target
-    holds the title of the section the link is written in, and a
-    deferred directive's states that it composes, so the run activating
-    it is held to the presets that title selects.
+    retains the occurrence's tags, and a deferred directive states
+    that it composes, so its later entry compilation uses that selection.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -1911,7 +1917,14 @@ def withheld(
             continue
         at = location(path, source.line(use.line))
         found = withholding_target(
-            path, use.destination, use.opening, declarations, substitution, at, chain
+            path,
+            use.destination,
+            use.opening,
+            declarations,
+            substitution,
+            at,
+            chain,
+            tags=use.tags,
         )
         if found is None:
             continue
@@ -1939,7 +1952,7 @@ def dispatches(
     bundle of its own, so what is yielded is the target the link names,
     with the place the link is written: the hop a chain of dispatches
     takes from here. The links are those the bundle points at a bundle
-    file or an `In parallel` sub-section, read by the one reader that
+    file or a dispatch-set sub-section, read by the one reader that
     places them, so every hop the run follows has its file. A link with
     no text after its mark names nothing for its reader, so it is
     refused as the operator refusals are, naming the route.
@@ -2011,20 +2024,16 @@ def traverse(
     sources its frontier names, then reads every group's selected
     content for the dependencies it marks; a dependency naming a
     document and section the run already carries adds no target, and the
-    round that discovers no new one is the fixed point. A reference
+    round that discovers no new target or selection is the fixed point. A reference
     graph with a cycle therefore terminates on the identity each
     reference normalized to rather than on a depth the traversal
     refuses at.
 
-    A dependency reaching a carried document and section from a section
-    title no earlier dependency reached it from is carried all the same,
-    because the title selects that document's presets and each reference
-    bundles the document under the selection it made. So is one reaching
-    it by the other kind, a directive where an inclusion reached it or
-    an inclusion where a directive did, because the bundle places a
-    document's content by the references of each kind. It joins the
-    references the run carries and not the frontier, since the content
-    it selects is content the run already reads.
+    References to one carried document and section retain their distinct
+    heading context, requested tags and inclusion or composition kind.
+    Each joins the references the run carries. Its destination enters
+    the frontier when it adds a target or selecting occurrence, since a
+    selection can activate substitutions. Physical capture belongs to the source path.
 
     The selection of a group grows as later content marks more of its
     document, so every group is read again each round. What the
@@ -2032,12 +2041,10 @@ def traverse(
     bundle follows from the closure rather than from the order its
     documents were discovered in.
 
-    Each reference carries the chain that reached it, which is the
-    chain of the first reference naming the document the link was
-    written in and the reference's own identity after it. That first
-    reference is the one the shortest route arrived by, because the
-    rounds discover a document at the hop its nearest entry reference
-    reaches it in.
+    Each reference carries the shortest recorded chain to the document
+    writing it and its own identity after that. A newly active
+    substitution can reveal a short route in a later round; its depth
+    counts that route's links.
 
     Reading a document and validating what it contributes are two
     stages, and the selection divides them. Opening a source holds the
@@ -2050,11 +2057,8 @@ def traverse(
     never asked for. A selection only grows, so a region a later round
     adds is held to the same checks in the round that adds it.
 
-    A round is one link hop: an entry reference stands at no hops, and
-    a reference a round discovers stands at that round's number. A
-    selection only grows, so the round a reference is first discovered
-    in is the shortest path from the nearest entry reference to it,
-    which is what the expansion-depth budget is declared over. The
+    Expansion depth counts the reference chain from the nearest entry,
+    independently of the fixed-point rounds needed to activate presets. The
     budgets over what the run opens, counts and reaches are held here
     as each figure is reached, so a run crosses a boundary at the point
     it crosses it rather than after building what it could not keep.
@@ -2067,10 +2071,9 @@ def traverse(
     resolved a link by, so the run's record is written as the bundle is
     composed, under the pairs the fixed point puts in force.
 
-    The dispatched links the selected content carries are returned as
-    well, each target once at the first link the rounds read naming it,
-    for the bundles the run compiles from them, and so is one warning
-    for each directive composing a section of the document writing it.
+    Discovered dispatch occurrences and self-composition warnings describe
+    the current mapping. Final composition determines the published
+    handoffs from the source ranges its groups actually carry.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -2078,17 +2081,17 @@ def traverse(
     captured: dict[str, Capture] = {}
     found = list(requested)
     seen = {(one.path, one.fragment) for one in found}
-    titled: set[tuple[str, str | None, str | None, bool]] = set()
+    titled: set[tuple[str, str | None, str | None, bool, frozenset[str]]] = set()
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
-    postponed: dict[tuple[str, str | None, str | None, bool], Reference] = {}
-    dispatching: dict[str, Hop] = {}
+    postponed: dict[
+        tuple[str, str | None, str | None, bool, frozenset[str]], Reference
+    ] = {}
+    dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
-    hop = 0
     frontier = list(requested)
     while frontier:
-        hop += 1
         for one in frontier:
             verify_cached(root, one, captured)
             if one.path in read:
@@ -2117,6 +2120,11 @@ def traverse(
         mapping = governed(
             substitution, governing(read, parsed, carried, requested)
         ).unrecorded()
+        # These answers describe the current mapping. Captures and selecting
+        # occurrences retain their monotonic union across rounds.
+        postponed.clear()
+        dispatching.clear()
+        composed_itself.clear()
         for path, selecting in carried.items():
             chosen = selection(path, parsed[path], selecting, requested)
             regions_read = (
@@ -2124,7 +2132,7 @@ def traverse(
             )
             counted[path] = occurrences(parsed[path], regions_read)
             limits.hold(LINKS, sum(counted.values()))
-            reached = selecting[0].chain
+            reached = min((one.chain for one in selecting), key=len)
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
@@ -2163,7 +2171,7 @@ def traverse(
             ):
                 verify_cached(root, one, captured)
                 postponed.setdefault(
-                    (one.path, one.fragment, one.title, one.composes), one
+                    (one.path, one.fragment, one.title, one.composes, one.tags), one
                 )
             for link in dispatches(
                 path,
@@ -2174,7 +2182,7 @@ def traverse(
                 declarations,
                 mapping,
             ):
-                dispatching.setdefault(link.name, link)
+                dispatching.setdefault((link.name, link.target.tags), link)
             for one in required(
                 path,
                 read[path],
@@ -2185,19 +2193,20 @@ def traverse(
                 mapping,
             ):
                 verify_cached(root, one, captured)
-                if (one.path, one.fragment, one.title, one.composes) in titled:
+                occurrence = (one.path, one.fragment, one.title, one.composes, one.tags)
+                if occurrence in titled:
                     continue
-                titled.add((one.path, one.fragment, one.title, one.composes))
+                titled.add(occurrence)
                 if (one.path, one.fragment) in seen:
                     reselecting.append(one)
                     continue
-                limits.hold(EXPANSION_DEPTH, hop)
+                limits.hold(EXPANSION_DEPTH, len(one.chain) - 1)
                 seen.add((one.path, one.fragment))
                 limits.hold(TARGETS, len(seen))
                 discovered.append(one)
         found.extend(discovered)
         found.extend(reselecting)
-        frontier = discovered
+        frontier = [*discovered, *reselecting]
     for one in postponed.values():
         if one.path not in read:
             limits.hold(FILES, len(read) + 1)
@@ -2216,8 +2225,6 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
-        if one.composes:
-            refusals_of_deferrals(parsed[one.path], read[one.path].conversion, one)
     return (
         read,
         parsed,
@@ -2267,44 +2274,8 @@ def confirm(
     )
 
 
-def keyworded(name: str, title: str) -> bool:
-    """Whether a preset name appears as words in one section title.
-
-    The comparison ignores case, and each end of the name meets the
-    start or end of the title or a character that is neither a letter
-    nor a digit, so `checks` appears in `Checks and Draft` and not in
-    `Checklist`. A name carrying no character appears nowhere.
-    """
-    word = name.casefold()
-    folded = title.casefold()
-    start = folded.find(word) if word else -1
-    while start >= 0:
-        end = start + len(word)
-        before = folded[start - 1] if start else ""
-        after = folded[end] if end < len(folded) else ""
-        if not before.isalnum() and not after.isalnum():
-            return True
-        start = folded.find(word, start + 1)
-    return False
-
-
-def keywords(conversion: Conversion, title: str | None) -> tuple[Preset, ...]:
-    """The presets one section title selects, in the order they are declared.
-
-    `default` is in force beneath every selection, so it is selected by
-    no spelling; a title absent, as a preamble's is, selects nothing.
-    """
-    if title is None:
-        return ()
-    return tuple(
-        preset
-        for preset in conversion.presets
-        if preset.name != DEFAULT and keyworded(preset.name, title)
-    )
-
-
-def pair(conversion: Conversion, title: str | None) -> Membership | None:
-    """The `group` pair in force for content one section title selects.
+def pair(conversion: Conversion, tags: frozenset[str]) -> Membership | None:
+    """The `group` pair in force for content one tag selection selects.
 
     A selected preset's pair holds over the one `default` states, and the
     selected presets are held to agreeing before it is read; `default`'s
@@ -2314,47 +2285,11 @@ def pair(conversion: Conversion, title: str | None) -> Membership | None:
     return next(
         (
             preset.membership
-            for preset in keywords(conversion, title)
+            for preset in matching_presets(conversion, tags)
             if preset.membership is not None
         ),
         conversion.default.membership,
     )
-
-
-def entry_title(tokens: Sequence[Token], one: Reference) -> str | None:
-    """The title an entry reference selects its document's presets by.
-
-    An entry is written in no section, so the document it names supplies
-    the title: the heading of the section a section entry names, or the
-    document's own title for a whole-document entry, absent where the
-    document carries none.
-    """
-    if one.fragment is not None:
-        return next(
-            (
-                heading.text
-                for heading in index(tokens)
-                if heading.fragment == one.fragment
-            ),
-            None,
-        )
-    title = document_title(tokens)
-    if title is None or title.map is None:
-        return None
-    line = title.map[0] + 1
-    return next((text for at, text in sections(tokens) if at == line), None)
-
-
-def selecting_title(
-    tokens: Sequence[Token], reference: Reference, entries: Collection[Reference]
-) -> str | None:
-    """The title one reference selects its document's presets by.
-
-    An entry is written in no section, so `entry_title` reads the title
-    its own document supplies; any other reference selects by the title
-    of the section holding it.
-    """
-    return entry_title(tokens, reference) if reference in entries else reference.title
 
 
 def unselected(
@@ -2376,9 +2311,7 @@ def unselected(
         chosen = {
             preset.name
             for reference in references
-            for preset in keywords(
-                conversion, selecting_title(parsed[path], reference, entries)
-            )
+            for preset in matching_presets(conversion, reference.tags)
         }
         left[path] = tuple(
             preset.name
@@ -2397,22 +2330,20 @@ def joined(
     """The `group` pairs in force for each document the bundle carries.
 
     Each reference reaching a document selects that document's presets
-    by its own title, the title of the section it is written in or, for
-    an entry, the title `entry_title` reads, so a document's presets
+    by its own tags, so a document's presets
     govern its content and no other document's. The presets one
     reference selects are held to agreeing before their pair is read,
     so one reference places the document under one pair at most. A
-    document carries the pair each reference reaching it put in force,
-    each once.
+    document carries every explicit pair its references put in force,
+    each once. It keeps an individual file group where that union is empty.
     """
     joins: dict[str, tuple[Membership, ...]] = {}
     for path, references in selected.items():
         conversion = read[path].conversion
         held: dict[Membership, None] = {}
         for reference in references:
-            title = selecting_title(parsed[path], reference, entries)
-            agreed(conversion, title, reference, path)
-            one = pair(conversion, title)
+            agreed(conversion, reference.tags, reference, path)
+            one = pair(conversion, reference.tags)
             if one is not None:
                 held[one] = None
         joins[path] = tuple(held)
@@ -2482,6 +2413,8 @@ def file_named(
     wrapped: bool,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> Named | None:
     """One document's file heading, located at the title it carries or at the document.
 
@@ -2504,7 +2437,7 @@ def file_named(
     at = None if title is None or title.map is None else title.map[0] + 1
     line = source.line(at)
     return Named(
-        file_heading(path, tokens, declarations, substitution),
+        file_heading(path, tokens, declarations, substitution, conversions=conversions),
         Location(path, 1 if line is None else line, 1),
     )
 
@@ -2568,6 +2501,7 @@ def coincident(
     """
     files: dict[str, tuple[int, list[Named]]] = {}
     found: list[tuple[int, Diagnostic]] = []
+    conversions = {path: source.conversion for path, source in read.items()}
     for at, one in enumerate(groups):
         named = one.record.path
         if one.record.merged is None:
@@ -2575,7 +2509,13 @@ def coincident(
                 # The `§ Instructions` group names no source document.
                 continue
             heading = file_named(
-                named, read[named], parsed[named], one.filed, declarations, substitution
+                named,
+                read[named],
+                parsed[named],
+                one.filed,
+                declarations,
+                substitution,
+                conversions=conversions,
             )
             if heading is not None:
                 files.setdefault(heading.text.casefold(), (at, []))[1].append(heading)
@@ -2657,8 +2597,8 @@ def placement(
     the document whose group carries the first link placing it there,
     so a document two references place under different pairs is placed
     in each group by the reference that put that group's pair in force.
-    The pair a link puts in force is the one its own section title
-    selects, as `joined` reads it. An entry is placed by the invocation
+    The pair a link puts in force is the one its tags
+    select, as `joined` reads it. An entry is placed by the invocation
     rather than by a document, so a group an entry places a document in
     is absent there.
     """
@@ -2669,7 +2609,7 @@ def placement(
     for one in entries:
         if one.path not in selected:
             continue
-        held = pair(read[one.path].conversion, entry_title(parsed[one.path], one))
+        held = pair(read[one.path].conversion, one.tags)
         if held is not None:
             entered.add((one.path, held.group))
     composed: set[tuple[str, str | None]] = set()
@@ -2688,7 +2628,7 @@ def placement(
                 continue
             if one.path not in order:
                 order.append(one.path)
-            held = pair(read[one.path].conversion, one.title)
+            held = pair(read[one.path].conversion, one.tags)
             if held is not None and (one.path, held.group) not in entered:
                 placers.setdefault((one.path, held.group), holder)
 
@@ -2856,6 +2796,7 @@ def assembled(
         nested.setdefault(holder, []).append(division)
     built: dict[Division, Group] = {}
     authored = None if composing is None else composing.get((), {})
+    conversions = {path: source.conversion for path, source in read.items()}
     with assembling(chains):
         for division in order:
             path, grouped = division
@@ -2875,6 +2816,7 @@ def assembled(
                 read[path].first_line,
                 substitution,
                 authored,
+                conversions=conversions,
             )
         for named, paths in merging.items():
             depth = inforce[named]
@@ -2896,6 +2838,7 @@ def assembled(
                         read[path].first_line,
                         substitution,
                         authored,
+                        conversions=conversions,
                     )
                     for path in paths
                 ],
@@ -3062,6 +3005,19 @@ def destination_map(
     return found
 
 
+def emitted_regions(
+    groups: Sequence[Group], parsed: Mapping[str, Sequence[Token]]
+) -> Iterator[tuple[str, Token]]:
+    """Each source region the published groups carry, in first-emitted order."""
+    seen: set[tuple[str, tuple[int, int]]] = set()
+    for one in groups:
+        for part in one.record.ranges:
+            key = (part.path, part.lines)
+            if key not in seen:
+                seen.add(key)
+                yield part.path, region_of(parsed[part.path], part)
+
+
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -3069,11 +3025,11 @@ def compose(
     entries: Collection[Reference],
     found: Sequence[Reference],
     limits: Limits,
-    bundle_file: Callable[[Target], str],
+    bundle_file: Callable[[Reference], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
-) -> tuple[str, list[Diagnostic]]:
-    """The complete bundle candidate, and the warnings its headings raise.
+) -> tuple[str, list[Diagnostic], list[Hop], list[Diagnostic]]:
+    """The validated bundle, its heading warnings and its published handoffs.
 
     The candidate holds the groups each included source takes, and it
     opens on the first group's first part. A source only composition
@@ -3083,12 +3039,15 @@ def compose(
     the generated headings that coincide, which accompany the bundle
     rather than refuse it.
 
+    Handoffs and self-composition warnings come from the source ranges
+    the final groups carry, independently of traversal's retained captures.
+
     A destination belongs to the bundle rather than to a group, so it
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the `In
-    parallel` sub-sections its sections need, inserted once the group
+    compiled link is rewritten through. Each build carries the dispatch-set
+    sub-sections its sections need, inserted once the group
     exists, and the run-pf line that opens the bundle, so the headings
     the map is built from are every heading the bundle emits. The
     second pass emits the same headings as the first, because a rewrite
@@ -3189,12 +3148,29 @@ def compose(
             declarations,
             substitution,
             composing,
+            bundle_file=bundle_file,
         )
     except Unsafe as boundary:
         reached = chains.get(boundary.path or "", ())
         raise unsafe(boundary, reached) from boundary
-    return bundled, coincident(
-        groups, selected, joins, read, parsed, declarations, substitution
+    hops: dict[tuple[str, frozenset[str]], Hop] = {}
+    itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
+    for path, region in emitted_regions(groups, parsed):
+        chosen = Selection((region,))
+        chain = chains.get(path, ())
+        for hop in dispatches(
+            path, read[path], parsed[path], chosen, chain, declarations, substitution
+        ):
+            hops.setdefault((hop.name, hop.target.tags), hop)
+        for warning in composing_itself(
+            path, read[path], parsed[path], chosen, chain, substitution
+        ):
+            itself.setdefault((warning.location, warning.reference), warning)
+    return (
+        bundled,
+        coincident(groups, selected, joins, read, parsed, declarations, substitution),
+        list(hops.values()),
+        list(itself.values()),
     )
 
 
@@ -3340,7 +3316,7 @@ def publication(
     for one in bundles:
         earlier = named.setdefault(one.name, one)
         if earlier is not one:
-            raise colliding(earlier, one)
+            raise colliding(one.name, earlier.selection, one.selection)
     if not folder.parent.is_dir():
         try:
             folder.parent.mkdir(parents=True)
@@ -3418,14 +3394,14 @@ def overlong(one: Bundle, name: str, longest: int) -> Failure:
     )
 
 
-def colliding(earlier: Bundle, later: Bundle) -> Failure:
+def colliding(name: str, earlier: str, later: str) -> Failure:
     """Two bundles of one run whose selections derive one file name."""
     return Failure(
         PUBLICATION_FAILURE,
         Diagnostic(
             ERROR,
-            f"the bundles of {earlier.selection!r} and {later.selection!r} both "
-            f"derive the name {later.name!r}, so one would overwrite the other",
+            f"the bundles of {earlier!r} and {later!r} both "
+            f"derive the name {name!r}, so one would overwrite the other",
             code=PUBLICATION_FAILED,
             remedy="rename one of the two sources so their derived names differ",
         ),
@@ -3546,44 +3522,30 @@ def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
     )
 
 
-def selections(requested: Sequence[Reference]) -> tuple[Target, ...]:
-    """Each distinct selection the command line names, in first-named order."""
-    return tuple(dict.fromkeys((one.path, one.fragment) for one in requested))
+def selection_name(selection: BundleSelection) -> str:
+    """One effective selection's path, fragment and canonical preset qualifier."""
+    name = str(Path(selection.path).with_suffix("")).replace(os.sep, "_")
+    if selection.fragment is not None:
+        name += "__" + selection.fragment
+    if selection.presets:
+        encoded = json.dumps(
+            sorted(selection.presets), ensure_ascii=False, separators=(",", ":")
+        ).encode("utf-8")
+        name += "--p-" + hashlib.sha256(encoded).hexdigest()
+    return name
 
 
-def run_name(selected: Sequence[Target]) -> str:
-    """The name the selections give a run: each selection's name, joined.
-
-    A selection is named by its working-directory path, its Markdown
-    extension removed and each separator written as an underscore, and a
-    section adds two underscores and its fragment. The names are joined
-    with a plus sign in the order given.
-    """
-    names = []
-    for path, fragment in selected:
-        name = str(Path(path).with_suffix("")).replace(os.sep, "_")
-        if fragment is not None:
-            name += f"__{fragment}"
-        names.append(name)
-    return "+".join(names)
-
-
-def bundle_file(target: Target) -> str:
-    """The file one selection's bundle is published under."""
-    return f"{run_name((target,))}{BUNDLE_SUFFIX}"
-
-
-def derived_name(requested: Sequence[Reference]) -> str:
-    """The entry bundle's file name, joined from each distinct selection's name."""
-    return f"{run_name(selections(requested))}{BUNDLE_SUFFIX}"
+def bundle_file(selection: BundleSelection) -> str:
+    """The file one effective selection's bundle is published under."""
+    return selection_name(selection) + BUNDLE_SUFFIX
 
 
 @dataclass(frozen=True)
 class Compiled:
     """One bundle of a run, compiled from its own entry under its own budgets.
 
-    The dispatches are each distinct target the bundle dispatches, at the
-    first link naming it. The warnings are held in two runs so a depth
+    The dispatches are keyed by their effective bundle selections, at the
+    first link naming each. The warnings are held in two runs so a depth
     warning, which only the run's entry raises and only once every
     bundle is compiled, takes its place between them. The unselected
     presets are those `unselected` returns for the documents the bundle
@@ -3594,7 +3556,8 @@ class Compiled:
 
     text: str
     name: str
-    hops: Sequence[Hop]
+    selection: BundleSelection
+    hops: Mapping[BundleSelection, Hop]
     leading: Sequence[Diagnostic]
     trailing: Sequence[Diagnostic]
     captured: Mapping[str, Capture]
@@ -3606,7 +3569,6 @@ def compiled(
     root: Path,
     requested: Sequence[Reference],
     options: argparse.Namespace,
-    folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
@@ -3623,29 +3585,40 @@ def compiled(
     declarations = Declarations(lambda found: probe(root, found, limits))
     declared_entries(requested, declarations)
     try:
-        read, parsed, defined, captured, found, hops, itself = traverse(
+        read, parsed, defined, captured, found, _, _ = traverse(
             root, requested, limits, declarations, substitution
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    for held in sources(root, read):
-        if held == folder or folder in held.parents:
-            raise usage_failure(
-                f"the output folder {str(folder)!r} holds the input source "
-                f"{str(held)!r}"
-            )
+    selected = bundle_selection(requested[0], read[requested[0].path].conversion)
+    name = bundle_file(selected)
+    named = {name: selected}
+
+    def dispatched_file(reference: Reference) -> str:
+        effective = bundle_selection(reference, read[reference.path].conversion)
+        file = bundle_file(effective)
+        earlier = named.setdefault(file, effective)
+        if earlier != effective:
+            raise colliding(file, selection_text(earlier), selection_text(effective))
+        return file
+
     pairs = governing(read, parsed, contributing(found), requested)
-    bundled, coinciding = compose(
+    bundled, coinciding, hops, itself = compose(
         read,
         parsed,
         defined,
         requested,
         found,
         limits,
-        bundle_file,
+        dispatched_file,
         declarations,
         governed(substitution, pairs),
     )
+    dispatching: dict[BundleSelection, Hop] = {}
+    for hop in hops:
+        dispatching.setdefault(
+            bundle_selection(hop.target, read[hop.target.path].conversion), hop
+        )
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
         trailing.append(
@@ -3659,9 +3632,14 @@ def compiled(
         )
     return Compiled(
         bundled,
-        derived_name(requested),
-        hops,
-        [*coinciding, *(selfward(hop) for hop in hops if hop.own), *itself],
+        name,
+        selected,
+        dispatching,
+        [
+            *coinciding,
+            *(selfward(hop) for hop in dispatching.values() if hop.own),
+            *itself,
+        ],
         trailing,
         captured,
         unselected(read, parsed, contributing(found), requested),
@@ -3692,8 +3670,8 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
             code=PRESET_UNUSED,
             source=path,
             remedy=(
-                "name the preset as a word in the title of a section reaching the "
-                "document, or drop the preset"
+                "name the preset in the reaching link title or --presets, "
+                "or drop the preset"
             ),
         )
         for path in sorted(left)
@@ -3713,11 +3691,11 @@ def unused_pairs(
     location: bundle by bundle, each bundle's documents by path, and each
     document's pairs in the order its presets are read.
     """
-    held: dict[tuple[str, tuple[str, str | None]], Governed] = {}
+    held: dict[tuple[str, str, tuple[str, str | None]], Governed] = {}
     for one in bundles:
         for path in sorted(one.pairs):
             for key, pair in one.pairs[path].items():
-                held.setdefault((path, key), pair)
+                held.setdefault((path, pair.preset, key), pair)
     return [
         Diagnostic(
             WARNING,
@@ -3728,42 +3706,46 @@ def unused_pairs(
             source=one.pair.original,
             remedy="name an identity the declaring document links, or drop the pair",
         )
-        for (path, key), one in held.items()
-        if not mapping.redirects.served((path, key))
+        for (path, _preset, key), one in held.items()
+        if not mapping.redirects.served((path, key), one.substitute)
     ]
 
 
 def dispatched_set(
     root: Path,
     entry: Compiled,
-    single: Collection[str],
+    single: Collection[BundleSelection],
     options: argparse.Namespace,
-    folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
-) -> dict[str, Compiled]:
-    """Every bundle the entry's dispatches reach, transitively, by target.
+) -> dict[BundleSelection, Compiled]:
+    """Every dispatched bundle, transitively, by its effective selection.
 
-    Each distinct target is compiled once, as its own entry, in the
-    order the dispatches reaching it were read. A target naming the
+    Each distinct selection is compiled once, as its own entry, in the
+    order the dispatches reaching it were read. A dispatch naming the
     run's own single selection is the entry's bundle.
     """
-    built: dict[str, Compiled] = {}
-    pending = list(entry.hops)
+    built: dict[BundleSelection, Compiled] = {}
+    pending = list(entry.hops.items())
     while pending:
-        hop = pending.pop(0)
-        if hop.name in built or hop.name in single:
+        selected, hop = pending.pop(0)
+        if selected in built or selected in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, folder, substitution)
-        built[hop.name] = one
-        pending.extend(one.hops)
+        one = compiled(root, [target], options, substitution)
+        built[selected] = one
+        pending.extend(one.hops.items())
     return built
 
 
-def target_name(target: Target) -> str:
-    """One selection as the document and the section it names."""
-    path, fragment = target
-    return path if fragment is None else f"{path}#{fragment}"
+def selection_text(selected: BundleSelection) -> str:
+    """One bundle selection as its destination and matched declared preset names."""
+    destination = selected.path
+    if selected.fragment is not None:
+        destination += f"#{selected.fragment}"
+    if selected.presets:
+        names = json.dumps(sorted(selected.presets), ensure_ascii=False)
+        destination += f" with presets {names}"
+    return destination
 
 
 def captured_once(captures: Iterator[Mapping[str, Capture]]) -> dict[str, Capture]:
@@ -3808,15 +3790,15 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         return SUCCESS
 
     fault = conformance_fault(os.environ)
-    if not options.references:
-        raise usage_failure("at least one entry reference is required")
+    if options.entry is None:
+        raise usage_failure("one --entry reference is required")
     if options.output == STANDARD_OUTPUT:
         raise usage_failure(
             "-o - names standard output, which carries no bundle; -o names the "
             "folder the run's bundles are written under"
         )
     mapping = Substitution()
-    requested = [entry(reference) for reference in options.references]
+    requested = [replace(entry(options.entry), tags=read_tags(options.presets))]
     for one in requested:
         if not one.path:
             raise usage_failure(
@@ -3829,21 +3811,26 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     root = Path.cwd().resolve()
     requested = entered(requested)
 
-    selected = selections(requested)
-    folder = Path(options.output).resolve() / f"{run_name(selected)}{RUN_FOLDER_SUFFIX}"
-    first = compiled(root, requested, options, folder, mapping)
-    single = {requested[0].chain[0]} if len(selected) == 1 else set()
-    built = dispatched_set(root, first, single, options, folder, mapping)
+    output = Path(options.output).resolve()
+    first = compiled(root, requested, options, mapping)
+    folder = output / (first.name.removesuffix(BUNDLE_SUFFIX) + RUN_FOLDER_SUFFIX)
+    single = {first.selection}
+    built = dispatched_set(root, first, single, options, mapping)
 
-    def onward(target: Reference) -> Sequence[Hop]:
-        name = identity(target)
-        return first.hops if name in single else built[name].hops
+    def onward(target: BundleSelection) -> Mapping[BundleSelection, Hop]:
+        return first.hops if target in single else built[target].hops
 
     try:
         cycle(first.hops, single, onward)
     except Refused as refused:
         raise Failure(INPUT_FAILURE, refused.diagnostic) from refused
     captured = captured_once(one.captured for one in (first, *built.values()))
+    for held in sources(root, captured):
+        if held == folder or folder in held.parents:
+            raise usage_failure(
+                f"the output folder {str(folder)!r} holds the input source "
+                f"{str(held)!r}"
+            )
     if fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)
     recheck(root, captured)
@@ -3855,11 +3842,16 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             first.text,
             first.name,
             [*first.leading, *deep, *first.trailing],
-            " ".join(target_name(one) for one in selected),
+            selection_text(first.selection),
         ),
         *(
-            Bundle(one.text, one.name, [*one.leading, *one.trailing], name)
-            for name, one in built.items()
+            Bundle(
+                one.text,
+                one.name,
+                [*one.leading, *one.trailing],
+                selection_text(selected),
+            )
+            for selected, one in built.items()
         ),
     ]
     publication(

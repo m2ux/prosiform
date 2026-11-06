@@ -6,7 +6,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Calls
 
-Read the path [Inputs](#read), then follow [the read step](#read-1).
+Read the path [Inputs](#read "calls"), then follow [the read step](#read-1 "calls").
 
 ### Inputs
 

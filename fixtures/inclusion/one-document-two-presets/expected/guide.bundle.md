@@ -6,11 +6,11 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Checks
 
-Review against [the rules](#rules).
+Review against [the rules](#rules "Checks").
 
 ## Draft
 
-Draft against [the rules](#rules).
+Draft against [the rules](#rules "Draft").
 
 ## Reviews
 

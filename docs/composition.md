@@ -4,7 +4,7 @@ A procedure step often needs material stated elsewhere: the contract of a call i
 
 A directive is a link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`. The mark requests placement and nothing else. Written `¬↳`, as in `[¬↳ Inputs](read.md#inputs)`, the directive is deferred: a later run composes the section, and the bundle publishes the link with its text unmarked. The link's text is the author's, and the run reads no meaning into it or into the title of the section it places.
 
-The design's [Section composition](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
+The design's [Section composition](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
 
 ## What it looks like
 
@@ -73,7 +73,7 @@ The [operators](references.md#operators) and the composition mark share one rule
 | `[¬⇉ the rules](rules.md)` | refused: a dispatch is compiled up front, so no bundle publishes a deferred one |
 | `[¬ the rules](rules.md)` | a deferral, which withholds its target from this bundle |
 
-Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
+Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
 
 - [an-arrow-label-is-refused](../fixtures/composition/an-arrow-label-is-refused)
 - [a-deferred-arrow-label-is-refused](../fixtures/composition/a-deferred-arrow-label-is-refused)
@@ -118,7 +118,7 @@ Beneath the scope, one level down, each target title takes one **destination sec
 flowchart TD
   Scope["## Prepare<br/><i>the scope</i>"] --> Own["its own content"]
   Scope --> Dest["### Inputs<br/><i>a destination section</i>"]
-  Scope --> Disp["### ⫽ <title> dispatch set<br/><i>a set's sub-section</i>"]
+  Scope --> Disp["### ⫽ Dispatch Set<br/><i>a set's sub-section</i>"]
   Scope --> Child["### child sections"]
   Dest --> C1["#### Read<br/><i>a contribution</i>"]
   Dest --> C2["#### Write<br/><i>a contribution</i>"]
@@ -191,9 +191,9 @@ Design rule: *Budgets*. Fixtures:
 
 ## Presets and `subst`
 
-A directive is a reference, so its scope's title selects the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
+A directive is a reference, so its own title tags select the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
 
-An immediate directive is held to no heading of its target. A deferred one is compiled later under the presets its target's own heading selects, so a deferred directive whose scope title selects other presets of the target is refused with `E_UNSUPPORTED_CONSTRUCT`, naming both selections.
+An immediate directive and a later compilation of its deferred form use the same title tags. The deferred contribution preserves them for the later command's `--presets` argument. Scope and target headings supply no selection.
 
 Design rule: *Presets and `subst`*. Fixtures:
 
@@ -203,8 +203,8 @@ Design rule: *Presets and `subst`*. Fixtures:
 - [an-immediate-directive-is-held-to-no-target-heading](../fixtures/composition/an-immediate-directive-is-held-to-no-target-heading)
 - [a-deferral-whose-step-and-target-select-no-preset-is-kept](../fixtures/composition/a-deferral-whose-step-and-target-select-no-preset-is-kept)
 - [a-deferral-whose-step-and-target-select-one-preset-is-kept](../fixtures/composition/a-deferral-whose-step-and-target-select-one-preset-is-kept)
-- [a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused](../fixtures/composition/a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused)
-- [a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused](../fixtures/composition/a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused)
+- [a-tagged-deferral-with-different-target-heading](../fixtures/composition/a-tagged-deferral-with-different-target-heading)
+- [an-untagged-deferral-with-a-preset-word-in-its-target-heading](../fixtures/composition/an-untagged-deferral-with-a-preset-word-in-its-target-heading)
 
 ## Deferred directives
 
@@ -240,7 +240,7 @@ Takes a URL and returns the page it names.
 
 A scope composes a section or defers it: one scope holding an immediate and a deferred directive naming one section is refused.
 
-The `↳` line names the run that activates the target: `pf fetch.md#implementation` compiles it as an entry under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
+The `↳` line names the run that activates the target: `pf --entry fetch.md#implementation` compiles an untagged target as an entry; a line carrying title tags also supplies those tags as one `--presets` argument. It compiles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
 
 Design rules: *Deferred composition* and *Activation*, and *The run-pf line*. Fixtures:
 
@@ -258,7 +258,7 @@ Every failure above publishes nothing, under `-c` as without it, and in a dispat
 | Code | Raised for |
 | --- | --- |
 | `E_TARGET_NOT_FOUND` | a missing target document or section |
-| `E_UNSUPPORTED_CONSTRUCT` | an ineligible target, a directive with no scope, a target with no parent, a cycle, a refused combination of marks, a section composed and deferred by one scope, and a deferral whose presets differ |
+| `E_UNSUPPORTED_CONSTRUCT` | an ineligible target, a directive with no scope, a target with no parent, a cycle, a refused combination of marks, a section composed and deferred by one scope, and an operator naming a target that declares nothing |
 | `E_HEADING_COLLISION` | an authored heading equal to a destination section |
 | `E_HEADING_DEPTH_OVERFLOW` | a composed heading past H6 |
 | `E_RESOURCE_LIMIT` | a contribution crossing `output-bytes`, or a directive hop crossing `depth` |

@@ -1,4 +1,4 @@
-description = "Two presets one title selects mapping one subst key to two alternatives disagree: the section Checks and Draft selects the Checks and Draft presets of rules.md, which map steps.md to checked-steps.md and to draft-steps.md, so the run fails with E_INVALID_USAGE naming both presets and the key, and publishes nothing."
+description = "One link title selects Checks,Draft. They map one substitution key to distinct alternatives, so the run refuses the selection with E_INVALID_USAGE."
 
 clauses = [
   "Presets — Selected presets union",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 2

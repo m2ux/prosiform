@@ -20,3 +20,5 @@ A heading reaching the next free ordinal after that.
 ## Run-1
 
 A second heading spelling an ordinal, which is numbered from its own slug.
+
+[Input](run.md)

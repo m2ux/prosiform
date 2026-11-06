@@ -407,8 +407,8 @@ def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> Non
     """
     workflow = CORPUS["dispatch-set"]
     [scenario] = workflow.scenarios
-    by_sub_agent = replace(scenario, compile=(Compile("review#tests", ()),))
-    by_session = replace(scenario, compile=(Compile(None, ()),))
+    by_sub_agent = replace(scenario, compile=(Compile("review#tests"),))
+    by_session = replace(scenario, compile=(Compile(None),))
     assert observable(workflow, by_sub_agent, COMPILED_SET, Claude())
     assert not observable(workflow, by_sub_agent, AUTHORED_SET, Claude())
     for harness in (Cursor(), Opencode(), Codex()):
@@ -437,6 +437,27 @@ def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> 
     assert ("subagent-first-run", "first-hop-run") not in given
     assert ("subagent-first-run", "deep-hop-runs") not in given
     assert not any(workflow == "dispatch-depth" for workflow, _ in given)
+
+
+def test_tagged_dispatch_workflow_runs_with_selection_qualified_traces(
+    tmp_path: Path, log: Path
+) -> None:
+    eval_run(
+        tmp_path,
+        "--workflows",
+        "deferred-dispatch",
+        "--forms",
+        COMPILED_SET,
+        "--repetitions",
+        "1",
+        "--budget-tokens",
+        "4000",
+    )
+    found = records(tmp_path)
+    assert len(found) == 2
+    assert all(record["verdict"]["passed"] for record in found)
+    selected = next(record for record in found if record["trace"])
+    assert [entry["presets"] for entry in selected["trace"]] == [["lift"], ["strap"]]
 
 
 def test_native_child_starts_admit_chains_with_no_child_command_requirement() -> None:
@@ -492,11 +513,11 @@ def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
         ("Follow hop/audit#sweep. Append each state you enter to trace-sweep.log.", ()),
         (
             "Follow hop/review#scan. Append each state you enter to trace-scan.log.",
-            ("pf steps/weighing.md#weigh",),
+            ("pf '--entry=steps/weighing.md#weigh'",),
         ),
         (
             "Follow steps/ruling#rule. Append each state you enter to trace-rule.log.",
-            ("pf steps/recording.md#file",),
+            ("pf '--entry=steps/recording.md#file'",),
         ),
     ]
     assert json.loads((deep / SUBAGENTS).read_text())["commands"] == ["pf"]
@@ -1601,6 +1622,7 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
     assert record["trace"] == [
         {
             "section": entry.section,
+            "presets": sorted(entry.presets),
             "together": entry.together,
             "action": None if entry.action is None else list(entry.action),
         }
@@ -1953,7 +1975,7 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
         "---\nprosiform: {}\n---\n# Plan\n\n## Steps\n\nCount the files.\n"
     )
     compiled = subprocess.run(
-        [pf, "guide.md", "-o", str(tmp_path / "out")],
+        [pf, "--entry", "guide.md", "-o", str(tmp_path / "out")],
         cwd=workspace,
         capture_output=True,
         text=True,

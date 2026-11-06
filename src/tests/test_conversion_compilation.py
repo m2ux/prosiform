@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from test_cli import conversion, invoke, written
+from test_cli import conversion, invoke, linked, written
 
 DECLARED = "---\nprosiform: {}\n---\n"
 
@@ -25,7 +25,7 @@ def test_linked_destination_owns_its_settings(
         conversion("target", 2) + "# B\n\n## Run\n\nTarget content.\n",
     )
     written(tmp_path, "other/sibling.md", "# Sibling\n\nNot discovered.\n")
-    run = invoke(*references, cwd=tmp_path)
+    run = invoke("--entry", references[0], cwd=tmp_path)
     assert run.status == 0, run.stderr
     # A parent selected whole keeps its own H1; one selected by fragment is
     # entered beneath the group heading its declaration names.
@@ -56,7 +56,7 @@ def test_diamond_cycle_and_unannotated_sibling_keep_source_ownership(
         "nested/c.md",
         conversion("shared", 2) + "# C\n\n## Run\n\n[A](../a.md#run)\n\nUnique body.\n",
     )
-    run = invoke("entry.md", cwd=tmp_path)
+    run = invoke("--entry", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.bundle.count("Unique body.") == 1
     assert (
@@ -79,7 +79,7 @@ def test_deferred_only_metadata_does_not_join_or_conflict(
         + ("[Now](b.md)\n" if active else ""),
     )
     written(tmp_path, "b.md", conversion("shared", 3) + "# B\n\nLater content.\n")
-    run = invoke("-d", "json", "a.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", "a.md", cwd=tmp_path)
     assert run.status == (1 if active else 0), run.stderr
     if active:
         assert run.diagnostics()[0]["code"] == "E_GROUP_CONFLICT"
@@ -100,8 +100,12 @@ def test_conflicting_depths_are_stable_and_atomic(
     options = ["-o", str(tmp_path)]
     if mode == "check":
         options.append("-c")
-    forward = invoke("-d", form, *options, "a.md", "b.md", cwd=tmp_path)
-    reverse = invoke("-d", form, *options, "b.md", "a.md", cwd=tmp_path)
+    forward = invoke(
+        "-d", form, *options, "--entry", linked(tmp_path, "a.md", "b.md"), cwd=tmp_path
+    )
+    reverse = invoke(
+        "-d", form, *options, "--entry", linked(tmp_path, "b.md", "a.md"), cwd=tmp_path
+    )
     assert forward.status == reverse.status == 1
     assert forward.bundle == reverse.bundle == ""
     assert forward.stderr == reverse.stderr
@@ -128,7 +132,7 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
         written(
             tmp_path, path, conversion(group, 2) + "# Notes\n\n## Run\n\n" + text + "\n"
         )
-    run = invoke("x/notes.md", "y/notes.md", cwd=tmp_path)
+    run = invoke("--entry", linked(tmp_path, "x/notes.md", "y/notes.md"), cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert "### X/Notes\n" in run.bundle and "Y/Notes\n" in run.bundle
     assert "First." in run.bundle and "Second." in run.bundle
@@ -137,7 +141,7 @@ def test_group_names_have_no_directory_requirement(tmp_path: Path, group: str) -
 def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> None:
     written(tmp_path, "a.md", conversion("same", 2) + "# A\n\n[Other](same.md)\n")
     written(tmp_path, "same.md", DECLARED + "# Same\n\nSeparate file.\n")
-    run = invoke("a.md", cwd=tmp_path)
+    run = invoke("--entry", "a.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     # The parent emits its own H1 in place of the group heading its
     # declaration names, so the separate file's heading is the one
@@ -150,7 +154,7 @@ def test_group_and_file_heading_identities_remain_distinct(tmp_path: Path) -> No
 def test_exact_group_strings_are_distinct(tmp_path: Path) -> None:
     for name, group in [("a", "rules"), ("b", "Rules"), ("c", " rules ")]:
         written(tmp_path, name + ".md", conversion(group, 2) + "# " + name + "\n")
-    run = invoke("a.md", "b.md", "c.md", cwd=tmp_path)
+    run = invoke("--entry", linked(tmp_path, "a.md", "b.md", "c.md"), cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.bundle.count("# Rules\n") == 2
     assert "# a\n" in run.bundle

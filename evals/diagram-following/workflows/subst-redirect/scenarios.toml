@@ -26,7 +26,7 @@ path = [
 ]
 inputs = { "change.txt" = "major", "release.txt" = "hold" }
 
-# The entry's title selects stage.md's release preset, whose pair for gate.md
+# The entry's tagged link selects stage.md's release preset, whose pair for gate.md
 # holds over its default's.
 [[scenario]]
 name = "preset-over-default"

@@ -1,4 +1,4 @@
-description = "A bundle whose only operator is the parallel dispatch mark opens with the run-pf line and points its set at one In parallel sub-section whose items link the dispatched files, with no Prosiform section and no protocol paragraph."
+description = "A bundle whose only operator is the parallel dispatch mark opens with the run-pf line and points its set at one dispatch-set sub-section whose items link the dispatched files, with no Prosiform section and no protocol paragraph."
 
 clauses = [
   "Link classification and resource handling — The run-pf line",
@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

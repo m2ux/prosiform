@@ -3,13 +3,13 @@ description = "A group pair places a document's sections where an ordinary refer
 clauses = [
   "Section composition — Presets and subst",
   "Section composition — Inline-only targets",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Grouping — Group membership",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

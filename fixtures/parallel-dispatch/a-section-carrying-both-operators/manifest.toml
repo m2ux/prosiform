@@ -1,4 +1,4 @@
-description = "A section carrying a dispatch and a parallel set keeps the dispatch link inline and points its set at one In parallel sub-section after the section's content and before its child sections."
+description = "A section carrying a dispatch and a parallel set keeps the dispatch link inline and points its set at one dispatch-set sub-section after the section's content and before its child sections."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

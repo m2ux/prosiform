@@ -37,7 +37,9 @@ def group_of(named: str, depth: int, documents: Mapping[str, str]) -> Group:
         named,
         depth,
         [
-            prepared(path, parse(text), lines(text), {}, None, None, depth)
+            prepared(
+                path, parse(text), lines(text), {}, None, None, depth, conversions={}
+            )
             for path, text in sorted(documents.items())
         ],
     )
@@ -255,6 +257,7 @@ def test_a_titled_parent_s_whole_document_reference_reaches_its_title() -> None:
                     None,
                     depth,
                     keep_title=path == "rules/guide.md",
+                    conversions={},
                 )
                 for path, text in sorted(documents.items())
             ],
@@ -448,7 +451,7 @@ def composed(
         target.write_text(text)
     out, err = StringIO(), StringIO()
     with TemporaryDirectory() as folder, chdir(root):
-        status = main(["-o", folder, "-d", "json", entry], out, err)
+        status = main(["-o", folder, "-d", "json", "--entry", entry], out, err)
         written = sorted(Path(folder).glob("*.bundles/*.bundle.md"))
         bundle = written[0].read_text() if written else ""
     diagnostics = [json.loads(line) for line in err.getvalue().splitlines() if line]
@@ -476,7 +479,7 @@ def test_a_nested_group_moves_every_heading_down_one_level_per_division() -> Non
         "notes",
         2,
         [
-            prepared(path, parse(text), lines(text), {}, None, None, 2)
+            prepared(path, parse(text), lines(text), {}, None, None, 2, conversions={})
             for path, text in sorted(documents.items())
         ],
         at=3,
@@ -576,8 +579,11 @@ def test_a_group_placed_by_a_document_in_two_groups_nests_in_the_first(
     status, bundle, _ = composed(
         tmp_path,
         {
-            "guide.md": DECLARED + "# Guide\n\n## Checks\n\nSee [rules](rules.md).\n\n"
-            "## Draft\n\nSee [rules](rules.md).\n",
+            "guide.md": DECLARED
+            + (
+                '# Guide\n\n## Checks\n\nSee [rules](rules.md "checks").\n\n'
+                '## Draft\n\nSee [rules](rules.md "draft").\n'
+            ),
             "rules.md": "---\nprosiform:\n  Checks:\n    group: {reviews: 1}\n"
             "  Draft:\n    group: {drafts: 1}\n---\n"
             "# Rules\n\nTo [the leaf](leaf.md).\n",

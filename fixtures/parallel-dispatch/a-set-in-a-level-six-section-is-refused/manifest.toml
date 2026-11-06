@@ -1,4 +1,4 @@
-description = "A set of two targets in a level-6 section leaves no heading level for its In parallel sub-section, so the run publishes nothing and fails, naming the set's first link."
+description = "A set of two targets in a level-6 section leaves no heading level for its dispatch-set sub-section, so the run publishes nothing and fails, naming the set's first link."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 1

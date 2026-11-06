@@ -47,33 +47,35 @@
 <text x="70" y="1796" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text>
 <text x="44" y="1850" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
 <text x="94" y="1850" font-size="26" fill="#e6edf3" font-weight="500">Reviews</text>
-<text x="70" y="1898" font-size="20" fill="#e6edf3" font-weight="400">A change lands reviewed by someone who did not write it.</text><rect x="1110" y="80" width="1000" height="670" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="70" y="1898" font-size="20" fill="#e6edf3" font-weight="400">A change lands reviewed by someone who did not write it.</text><rect x="1110" y="80" width="1000" height="691" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/modes_review.bundle.md</text>
 <path d="M1110 134 H2110" stroke="#303b49"/>
-<text x="1148" y="191" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
-<text x="1148" y="228" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
-<text x="1122" y="286" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="286" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
-<text x="1148" y="334" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules and hands delivery to a sub-agent.</text>
-<text x="1122" y="388" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="388" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="436" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
-<text x="1148" y="473" font-size="20" fill="#e3b341" font-weight="400">2. Follow ⇉ Publish.</text>
-<text x="1122" y="527" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="527" font-size="26" fill="#e6edf3" font-weight="500">Notes</text>
-<text x="1148" y="575" font-size="20" fill="#e6edf3" font-weight="400">A review is not an approval.</text>
-<text x="1122" y="633" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="633" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
-<text x="1122" y="684" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1184" y="684" font-size="23" fill="#e6edf3" font-weight="500">Tests</text>
-<text x="1148" y="732" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="772" width="1000" height="363" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1134" y="808" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_publish.bundle.md</text>
-<path d="M1110 826 H2110" stroke="#303b49"/>
-<text x="1148" y="883" font-size="20" fill="#e6edf3" font-weight="400">Before reading on, run `pf` with no arguments and follow the guide it</text>
-<text x="1148" y="920" font-size="20" fill="#e6edf3" font-weight="400">prints.</text>
-<text x="1122" y="978" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="1160" y="978" font-size="30" fill="#e6edf3" font-weight="500">Publish</text>
-<text x="1122" y="1032" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="1172" y="1032" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="1148" y="1080" font-size="20" fill="#e6edf3" font-weight="400">1. Commit the change.</text>
-<text x="1148" y="1117" font-size="20" fill="#e6edf3" font-weight="400">2. Push the branch.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>
+<text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">§ Instructions</text>
+<text x="1148" y="249" font-size="20" fill="#58a6ff" font-weight="400">Run `pf`, then follow the guidance it prints. Follow Review Mode next.</text>
+<text x="1122" y="307" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="307" font-size="30" fill="#e6edf3" font-weight="500">Review Mode</text>
+<text x="1148" y="355" font-size="20" fill="#58a6ff" font-weight="400">Checks a change against the Rules and hands delivery to a sub-agent.</text>
+<text x="1122" y="409" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="409" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="457" font-size="20" fill="#58a6ff" font-weight="400">1. Read the Rules.</text>
+<text x="1148" y="494" font-size="20" fill="#e3b341" font-weight="400">2. Follow ⇉ Publish.</text>
+<text x="1122" y="548" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="548" font-size="26" fill="#e6edf3" font-weight="500">Notes</text>
+<text x="1148" y="596" font-size="20" fill="#e6edf3" font-weight="400">A review is not an approval.</text>
+<text x="1122" y="654" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="654" font-size="30" fill="#e6edf3" font-weight="500">Rules</text>
+<text x="1122" y="705" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="705" font-size="23" fill="#e6edf3" font-weight="500">Tests</text>
+<text x="1148" y="753" font-size="20" fill="#e6edf3" font-weight="400">A change lands with a test that fails without it.</text><rect x="1110" y="793" width="1000" height="384" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="829" font-size="21" fill="#b1c6df" font-weight="400">modes_review.bundles/protocols_publish.bundle.md</text>
+<path d="M1110 847 H2110" stroke="#303b49"/>
+<text x="1122" y="914" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="914" font-size="30" fill="#e6edf3" font-weight="500">§ Instructions</text>
+<text x="1148" y="962" font-size="20" fill="#58a6ff" font-weight="400">Run `pf`, then follow the guidance it prints. Follow Publish next.</text>
+<text x="1122" y="1020" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="1020" font-size="30" fill="#e6edf3" font-weight="500">Publish</text>
+<text x="1122" y="1074" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1074" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1148" y="1122" font-size="20" fill="#e6edf3" font-weight="400">1. Commit the change.</text>
+<text x="1148" y="1159" font-size="20" fill="#e6edf3" font-weight="400">2. Push the branch.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

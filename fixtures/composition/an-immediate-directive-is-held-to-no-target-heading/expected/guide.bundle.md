@@ -6,7 +6,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Fetch the page offline
 
-Its body is composed here [Implementation](#fetch).
+Its body is composed here [Implementation](#fetch "offline").
 
 ### Implementation
 

@@ -21,6 +21,7 @@ from score import (
     Failure,
     Start,
     Verdict,
+    compiles,
     names,
     pf_runs,
     read_starts,
@@ -28,7 +29,7 @@ from score import (
     record_calls,
     score,
 )
-from workflow import COMPILED_FORM, Compile, Scenario, Workflow, workflows
+from workflow import COMPILED_FORM, Compile, Scenario, Workflow, entry_bundle, workflows
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -46,11 +47,16 @@ def starts_of(item: Scenario) -> list[Start]:
     """
     made: list[Start] = []
     for entry in item.trace:
+        target = (
+            entry_bundle(entry.section, entry.presets).name
+            if entry.presets
+            else entry.section
+        )
         if item.answers:
-            made.append(Start(entry.section, "question", entry.together))
-            made.append(Start(entry.section, "done", False))
+            made.append(Start(target, "question", entry.together))
+            made.append(Start(target, "done", False))
         else:
-            made.append(Start(entry.section, "done", entry.together))
+            made.append(Start(target, "done", entry.together))
     return made
 
 
@@ -800,10 +806,10 @@ def test_an_opencode_question_left_unanswered_scores_as_a_question(
 
 
 STATED_RUNS = (
-    Compile(None, ()),
-    Compile(None, ("fetch.md#implementation",)),
-    Compile("review#tests", ()),
-    Compile("review#tests", ("net.md#retry",)),
+    Compile(None),
+    Compile(None, "fetch.md#implementation"),
+    Compile("review#tests"),
+    Compile("review#tests", "net.md#retry"),
 )
 """Runs a compiled scenario states: the session's two, then a sub-agent's two."""
 
@@ -838,8 +844,8 @@ def compiling(
     return score(workflow, item, held)
 
 
-CORRECT_SESSION = ["pf", "./bin/pf -o out fetch.md#implementation"]
-CORRECT_SUB_AGENT = ["pf && pf -o out 'net.md#retry'"]
+CORRECT_SESSION = ["pf", "./bin/pf -o out --entry fetch.md#implementation"]
+CORRECT_SUB_AGENT = ["pf && pf -o out --entry 'net.md#retry'"]
 
 
 def test_a_session_making_its_stated_runs_passes(tmp_path: Path) -> None:
@@ -854,13 +860,13 @@ def test_a_session_making_its_stated_runs_passes(tmp_path: Path) -> None:
         (["pf"], CORRECT_SUB_AGENT, Failure.UNCOMPILED),
         (CORRECT_SESSION, ["pf"], Failure.UNCOMPILED),
         (
-            [*CORRECT_SESSION, "pf -o out net.md#retry"],
+            [*CORRECT_SESSION, "pf -o out --entry net.md#retry"],
             CORRECT_SUB_AGENT,
             Failure.OVERCOMPILED,
         ),
         (
             CORRECT_SESSION,
-            [*CORRECT_SUB_AGENT, "cd . ; pf fetch.md#implementation"],
+            [*CORRECT_SUB_AGENT, "cd . ; pf --entry fetch.md#implementation"],
             Failure.OVERCOMPILED,
         ),
         (
@@ -868,8 +874,12 @@ def test_a_session_making_its_stated_runs_passes(tmp_path: Path) -> None:
             CORRECT_SUB_AGENT,
             Failure.MISORDERED_COMPILE,
         ),
-        (CORRECT_SESSION, ["pf net.md#retry", "pf"], Failure.MISORDERED_COMPILE),
-        (["pf other.md"], ["pf"], Failure.UNCOMPILED),
+        (
+            CORRECT_SESSION,
+            ["pf --entry net.md#retry", "pf"],
+            Failure.MISORDERED_COMPILE,
+        ),
+        (["pf --entry other.md"], ["pf"], Failure.UNCOMPILED),
     ],
     ids=[
         "session-omits",
@@ -895,7 +905,7 @@ def test_a_session_departing_from_its_stated_runs_fails_with_its_class(
 
 def test_a_run_on_a_line_no_scenario_states_is_overcompiled(tmp_path: Path) -> None:
     """AC4: a scenario stating no run fails a session compiling a deferred line."""
-    verdict = compiling(tmp_path, ["pf -o out net.md#retry"], [], runs=())
+    verdict = compiling(tmp_path, ["pf -o out --entry net.md#retry"], [], runs=())
     assert verdict.failure == Failure.OVERCOMPILED
 
 
@@ -907,15 +917,15 @@ def test_a_bare_pf_beyond_those_stated_is_no_departure(tmp_path: Path) -> None:
 
 def test_a_run_from_another_directory_names_the_same_document(tmp_path: Path) -> None:
     """A reference ending in the stated one names it, wherever `pf` ran from."""
-    runs = (Compile(None, ("sources/workflow.md",)),)
+    runs = (Compile(None, "sources/workflow.md"),)
     named = [
         ".claude/skills/audit/bin/pf -o build"
-        " ./.claude/skills/audit/sources/workflow.md"
+        " --entry ./.claude/skills/audit/sources/workflow.md"
     ]
     assert compiling(tmp_path, named, [], runs=runs).passed is True
-    assert compiling(tmp_path, ["pf other/workflow.md"], [], runs=runs).failure == (
-        Failure.UNCOMPILED
-    )
+    assert compiling(
+        tmp_path, ["pf --entry other/workflow.md"], [], runs=runs
+    ).failure == (Failure.UNCOMPILED)
 
 
 def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, object]:
@@ -930,8 +940,11 @@ def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, obj
 @pytest.mark.parametrize(
     ("ruling", "failure"),
     [
-        (["pf steps/recording.md#file"], None),
-        (["pf steps/recording.md#file", "pf steps/closing.md#close"], "over"),
+        (["pf --entry steps/recording.md#file"], None),
+        (
+            ["pf --entry steps/recording.md#file", "pf --entry steps/closing.md#close"],
+            "over",
+        ),
         ([], "un"),
     ],
     ids=["stated", "unstated-run", "no-run"],
@@ -961,7 +974,7 @@ def test_a_compiled_claude_record_holds_each_hops_runs(
     lines = [
         claude_message(None, task("a", "hop/audit#sweep")),
         claude_message("a", task("b", "hop/review#scan")),
-        claude_message("b", bash("pf steps/weighing.md#weigh")),
+        claude_message("b", bash("pf --entry steps/weighing.md#weigh")),
         claude_message("b", task("c", "steps/ruling#rule")),
         *(claude_message("c", bash(command)) for command in ruling),
     ]
@@ -994,7 +1007,216 @@ def test_each_command_splits_into_the_pf_runs_it_makes() -> None:
     assert pf_runs(
         (
             "pf",
-            "cd build && ../bin/pf -o out -d json --budget files=9 a.md#b | cat",
-            "echo pf; ls; pfx a.md || pf -c 'c d.md'",
+            "cd build && ../bin/pf -o out -d json --budget files=9"
+            " --entry a.md#b | cat",
+            "echo pf; ls; pfx a.md || pf -c --entry 'c d.md'",
         )
-    ) == [(), ("a.md#b",), ("c d.md",)]
+    ) == [Compile(None), Compile(None, "a.md#b"), Compile(None, "c d.md")]
+
+
+@pytest.mark.parametrize(
+    "redirect",
+    [
+        "> guide.log",
+        ">>guide.log",
+        "2> errors.log",
+        "2>>errors.log",
+        "2>&1",
+        ">guide.log 2>&1",
+        "1> 'guide output.log' 2>errors.log",
+    ],
+)
+@pytest.mark.parametrize("entry", [None, "target.md"])
+def test_shell_redirects_do_not_change_the_compiler_selection(
+    redirect: str,
+    entry: str | None,
+) -> None:
+    expected = Compile(None, entry)
+    command = "pf" + (" --entry target.md" if entry else "") + " " + redirect
+    item = Scenario("redirected", {}, (), compile=(expected,))
+    assert pf_runs((command,)) == [expected]
+    assert compiles(item, (command,), ()) is None
+
+
+def test_codex_recorded_redirects_reach_the_same_selected_compile() -> None:
+    from codex_agent import pf_command
+
+    expected = Compile(None, "target.md", frozenset({"checks"}))
+    for append in (False, True):
+        command = pf_command(
+            {
+                "args": ["--entry", "target.md", "--presets", "checks"],
+                "stdout": "guide output.log",
+                "stderr": "errors.log",
+                "stderr_to_stdout": True,
+                "append": append,
+            }
+        )
+        assert pf_runs((command,)) == [expected]
+        item = Scenario("recorded", {}, (), compile=(expected,))
+        assert compiles(item, (command,), ()) is None
+
+
+def test_redirects_can_precede_or_interrupt_compiler_words() -> None:
+    expected = Compile(None, "target.md")
+    for command in (
+        ">out pf --entry target.md",
+        "pf >out --entry target.md",
+        "pf --entry target.md>out",
+        "pf --entry target.md 2>err >out",
+    ):
+        assert pf_runs((command,)) == [expected]
+
+
+def test_quoted_shell_operators_remain_compiler_argument_text() -> None:
+    assert pf_runs(("pf --entry 'a>b.md' --presets 'a&b,c|d' >out",)) == [
+        Compile(None, "a>b.md", frozenset({"a&b", "c|d"}))
+    ]
+    assert pf_runs((r"pf --entry a\>b.md",)) == [Compile(None, "a>b.md")]
+    assert pf_runs(
+        ("pf --entry a.md 2>&1 && pf >guide.log; pf --entry b.md | cat",)
+    ) == [Compile(None, "a.md"), Compile(None), Compile(None, "b.md")]
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pf target.md >out",
+        "pf --entry target.md --entry other.md 2>&1",
+        "pf --entry target.md unexpected >out",
+        "pf --entry target.md >",
+        "pf --entry target.md 2>&",
+        "pf --entry target.md > >out",
+        "pf --entry target.md 'unterminated",
+        "pf target.md",
+        "pf --entry target.md --entry target.md",
+        "pf --entry=target.md --presets=checks --presets=checks",
+        "pf --presets checks",
+        "pf --entry",
+        "pf --entry='[Target](target.md)'",
+        "pf --tags checks --entry target.md",
+        "pf --entry target.md other.md",
+        "pf --ent target.md",
+    ],
+)
+def test_invalid_command_usage_satisfies_no_compile(command: str) -> None:
+    item = Scenario("one-entry", {}, (), compile=(Compile(None, "target.md"),))
+    assert pf_runs((command,)) == [None]
+    assert compiles(item, (command,), ()) == Failure.UNCOMPILED
+
+
+@pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
+def test_information_satisfies_neither_guide_nor_compile(option: str) -> None:
+    assert (
+        pf_runs((f"pf {option}", f"pf {option} --entry=target.md --presets=checks"))
+        == []
+    )
+    for expected in (Compile(None), Compile(None, "target.md", frozenset({"checks"}))):
+        item = Scenario("one-run", {}, (), compile=(expected,))
+        assert (
+            compiles(item, (f"pf {option} --entry=target.md --presets=checks",), ())
+            == Failure.UNCOMPILED
+        )
+
+
+@pytest.mark.parametrize(
+    ("presets", "failure"),
+    [
+        (None, Failure.UNCOMPILED),
+        ("other", Failure.UNCOMPILED),
+        ("checks", Failure.UNCOMPILED),
+        ("checks,draft", None),
+        (" DRAFT,checks,CHECKS,missing,default ", None),
+    ],
+)
+def test_run_checks_match_effective_declared_presets(
+    tmp_path: Path,
+    presets: str | None,
+    failure: Failure | None,
+) -> None:
+    (tmp_path / "target.md").write_text(
+        "---\nprosiform:\n  Checks: {}\n  Draft: {}\n  Other: {}\n---\n# Target\n"
+    )
+    item = Scenario(
+        "selected",
+        {},
+        (),
+        compile=(Compile(None, "target.md", frozenset({"checks", "draft"})),),
+    )
+    command = "pf --entry=target.md" + (
+        f" --presets='{presets}'" if presets is not None else ""
+    )
+    assert compiles(item, (command,), (), root=tmp_path) == failure
+
+
+def test_unknown_names_share_default_selection(tmp_path: Path) -> None:
+    (tmp_path / "target.md").write_text("---\nprosiform: {checks: {}}\n---\n# Target\n")
+    item = Scenario("default", {}, (), compile=(Compile(None, "target.md"),))
+    assert (
+        compiles(
+            item,
+            ("pf --entry target.md --presets 'unknown,default'",),
+            (),
+            root=tmp_path,
+        )
+        is None
+    )
+    assert (
+        compiles(item, ("pf --entry target.md --presets checks",), (), root=tmp_path)
+        == Failure.UNCOMPILED
+    )
+
+
+@pytest.mark.parametrize(
+    ("presets", "failure"),
+    [
+        (None, Failure.UNCOMPILED),
+        ("strap", Failure.UNCOMPILED),
+        ("mirror", None),
+        ("UNKNOWN, MIRROR,mirror,default", None),
+    ],
+)
+def test_tagged_deferred_workflow_requires_its_selection(
+    tmp_path: Path, presets: str | None, failure: Failure | None
+) -> None:
+    workflow = CORPUS["preset-deferral"]
+    [item] = workflow.scenarios
+    held = workspace(tmp_path, workflow, list(item.path))
+    command = "pf --entry reference/fetch.md#read-mirror"
+    if presets is not None:
+        command += f" --presets='{presets}'"
+    (held / SUBAGENTS).write_text(json.dumps({"commands": [command], "starts": []}))
+    assert score(workflow, item, held).failure == failure
+
+
+@pytest.mark.parametrize(
+    "selection", ["correct", "omitted", "wrong", "repeated", "reversed"]
+)
+def test_dispatch_workflow_requires_both_selected_bundles(
+    tmp_path: Path, selection: str
+) -> None:
+    workflow = CORPUS["deferred-dispatch"]
+    item = workflow.scenarios[0]
+    starts = starts_of(item)
+    if selection == "omitted":
+        starts[1] = replace(starts[1], target="reference_crew__work.bundle.md")
+    elif selection == "wrong":
+        starts[1] = replace(
+            starts[1],
+            target=entry_bundle("reference/crew#work", frozenset({"wrong"})).name,
+        )
+    elif selection == "repeated":
+        starts[1] = replace(starts[1], target=starts[0].target)
+    elif selection == "reversed":
+        starts.reverse()
+    held = workspace(tmp_path, workflow, list(item.path), starts=starts)
+    done_by_sub_agents(held, item)
+    assert score(workflow, item, held).failure == (
+        None if selection == "correct" else Failure.UNDISPATCHED
+    )
+
+
+def test_quoted_preset_separators_and_leading_dashes_are_values() -> None:
+    assert pf_runs(
+        ("pf --entry=-guide.md --presets='-checks,semi;colon,pipe|name'",)
+    ) == [Compile(None, "-guide.md", frozenset({"-checks", "semi;colon", "pipe|name"}))]

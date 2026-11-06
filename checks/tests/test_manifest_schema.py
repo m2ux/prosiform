@@ -46,7 +46,7 @@ def complete() -> dict[str, Any]:
     return {
         "description": "A reference outside the allowed source root fails.",
         "clauses": ["Reference normalization and path identity"],
-        "invocation": {"cwd": "source", "arguments": ["guide.md"]},
+        "invocation": {"cwd": "source", "arguments": ["--entry", "guide.md"]},
         "expected": {
             "exit_status": 1,
             "diagnostics": [
@@ -67,7 +67,7 @@ def succeeding() -> dict[str, Any]:
         "description": "A bundle carrying a resource reference warns on its "
         "portability and succeeds.",
         "clauses": ["Resources are text"],
-        "invocation": {"cwd": "source", "arguments": ["guide.md"]},
+        "invocation": {"cwd": "source", "arguments": ["--entry", "guide.md"]},
         "expected": {
             "exit_status": 0,
             "bundles": ["expected/guide.bundle.md"],

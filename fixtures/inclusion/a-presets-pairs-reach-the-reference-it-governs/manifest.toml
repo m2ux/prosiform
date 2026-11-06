@@ -1,7 +1,7 @@
-description = "A preset's group pair places the document declaring it for the reference that selects the preset: the section Targets selects the Targets preset of rules.md, which declares no default, and the bundle places rules.md under Targets."
+description = "A title tag selects the Targets preset on rules.md. Its explicit group pair places that source under Targets, independently of the containing heading."
 
 clauses = [
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Presets — What a selection governs",
   "Grouping — Group membership",
   "Grouping — Nested groups",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

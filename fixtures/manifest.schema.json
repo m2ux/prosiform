@@ -63,11 +63,10 @@
       ],
       "properties": {
         "arguments": {
-          "description": "Command arguments, in order. The runner supplies JSON diagnostics, except to a fixture declaring no argument, which runs the bare command.",
+          "description": "Command arguments, in order; an empty string can supply an empty preset list. The runner supplies JSON diagnostics, except to a fixture declaring no argument, which runs the bare command.",
           "type": "array",
           "items": {
-            "type": "string",
-            "minLength": 1
+            "type": "string"
           }
         },
         "cwd": {

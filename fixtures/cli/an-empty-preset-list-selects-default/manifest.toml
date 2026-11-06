@@ -1,0 +1,12 @@
+description = "An empty or unmatched preset list applies the implicit default selection, keeps the unqualified output name and emits no unknown-name diagnostic."
+
+clauses = ["CLI contract", "Presets — Selection by tags", "Presets — default always applies"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md", "--presets", ""]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

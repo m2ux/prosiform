@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/6deca17d6b56c61f477c815da6eeecc3949d8ca1/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and the linked sources it reaches as validated bundles.
@@ -45,18 +45,20 @@ pf -v
 
 Sources declare `prosiform` in [YAML frontmatter](docs/sources.md#frontmatter). Run `pf` with no arguments for the agent guide. Each run writes a `.bundles` folder containing the entry's bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.
 
+A link such as `[Review](rules.md#tests "checks,draft")` selects the target document's `checks` and `draft` presets above its `default`. Compile that occurrence with `pf --entry rules.md#tests --presets checks,draft`, resolving the destination from the document carrying the link. Headings and link labels select no presets. [Selection](docs/selection.md#presets-in-force) states normalization and layering; [Invocation](invocation.md#examples) covers shell quoting and later compilation of deferred links; [Bundles](docs/bundles.md#derived-names) explains the filenames that distinguish dispatched selections.
+
 Start each example below from the repository root. Both use source trees from the [fixture corpus](fixtures/README.md). File and directory names use hyphens rather than underscores.
 
 ### Bundle a Source and its Dependencies
 
 ```bash
 cd fixtures/dispatch/a-dispatched-target-is-a-bundle-of-its-own/source
-pf guide.md
+pf --entry guide.md
 ```
 
 ### Compile a Selected Section
 
 ```bash
 cd fixtures/extraction/section-to-the-next-sibling/source
-pf 'guide.md#run'
+pf --entry 'guide.md#run'
 ```

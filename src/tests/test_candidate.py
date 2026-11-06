@@ -36,13 +36,15 @@ from prosiform.candidate import (
     Unsafe,
     dispatches,
     one_member,
+    parallel_sets,
     validate,
 )
 from prosiform.cli import (
     assembled,
+    bundle_file,
     destination_map,
 )
-from prosiform.closure import Reference
+from prosiform.closure import BundleSelection, Reference, bundle_selection
 from prosiform.composition import contributions
 from prosiform.grouping import merged, prepared
 from prosiform.limits import NESTING, in_force
@@ -57,6 +59,7 @@ from prosiform.provenance import (
     Origin,
     Range,
     Record,
+    Served,
 )
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import Source, fragments, lines
@@ -87,6 +90,9 @@ class Built:
             self.parsed,
             BUDGET,
             composing=self.composing,
+            bundle_file=lambda reference: bundle_file(
+                bundle_selection(reference, self.read[reference.path].conversion)
+            ),
         )
 
 
@@ -345,7 +351,9 @@ def grouped(documents: dict[str, str], depth: int) -> Group:
         "rules",
         depth,
         [
-            prepared(path, parse(text), lines(text), {}, None, None, depth)
+            prepared(
+                path, parse(text), lines(text), {}, None, None, depth, conversions={}
+            )
             for path, text in sorted(documents.items())
         ],
     )
@@ -864,7 +872,41 @@ def pointing(destination: str) -> None:
         fragment: (record, heading)
         for fragment, heading in zip(["guide", "in-parallel"], headings, strict=True)
     }
-    dispatches(reached, {("guide.md", 0): {(("plan.md", None), True): destination}})
+    dispatches(
+        reached,
+        {("guide.md", 0): {(("plan.md", None), frozenset(), True): destination}},
+        lambda _reference: "plan.bundle.md",
+    )
+
+
+def test_a_dispatch_map_naming_the_other_preset_variant_fails() -> None:
+    checked = bundle_file(BundleSelection("plan.md", presets=frozenset({"checks"})))
+    drafted = bundle_file(BundleSelection("plan.md", presets=frozenset({"draft"})))
+    served = (("plan.md", None), frozenset({"checks"}), False)
+    with pytest.raises(Invalid) as raised:
+        dispatches({}, {("guide.md", 0): {served: drafted}}, lambda _reference: checked)
+    assert raised.value.invariant == TARGET_INTEGRITY
+    assert "selection differs" in str(raised.value)
+
+
+def test_a_parallel_set_listing_the_other_preset_variant_twice_fails() -> None:
+    tokens = parse(
+        "# Guide\n\n## ⫽ Dispatch Set\n\n"
+        "[⇉ Checks](checks.bundle.md)\n[⇉ Draft](checks.bundle.md)\n"
+    )
+    serving: dict[Served, str] = {
+        (("plan.md", None), frozenset({name}), True): "#⫽-dispatch-set"
+        for name in ("checks", "draft")
+    }
+    with pytest.raises(Invalid) as raised:
+        parallel_sets(
+            tokens,
+            ["guide", "⫽-dispatch-set"],
+            {("guide.md", 0): serving},
+            lambda reference: next(iter(reference.tags)) + ".bundle.md",
+        )
+    assert raised.value.invariant == TARGET_INTEGRITY
+    assert "effective bundle files" in str(raised.value)
 
 
 @pytest.mark.parametrize("destination", ["#in-parallel", "plan.bundle.md"])

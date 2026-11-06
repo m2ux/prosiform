@@ -15,7 +15,7 @@ path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
 inputs = { "scope.txt" = "large", "history.txt" = "dropped" }
 
 [[scenario.compile]]
-args = ["reference/migration.md#steps"]
+entry = "reference/migration.md#steps"
 
 [[scenario]]
 name = "deferral-passed"
@@ -28,10 +28,10 @@ path = ["Entry", "Inventory", "Relocate", "Settle", "Exit"]
 inputs = { "scope.txt" = "large", "history.txt" = "kept" }
 
 [[scenario.compile]]
-args = ["reference/migration.md#steps"]
+entry = "reference/migration.md#steps"
 
 [[scenario.compile]]
-args = ["reference/archive.md#steps"]
+entry = "reference/archive.md#steps"
 
 [[scenario]]
 name = "nested-unreached"

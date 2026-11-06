@@ -3,14 +3,14 @@ description = "A deferred directive is held to the presets its step selects for 
 clauses = [
   "Section composition — Deferred composition",
   "Section composition — Presets and subst",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Presets — A command-line entry reads the file it names",
   "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

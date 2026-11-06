@@ -10,15 +10,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = [
-  "article.md",
-  "café-münster.md",
-  "notes.md",
-  "the-code-span-and-bold-text.md",
-  "whats-new-v10.md",
-]
+arguments = ["--entry", "article.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/article+café-münster+notes+the-code-span-and-bold-text+whats-new-v10.bundle.md"]
+bundles = ["expected/article.bundle.md"]
 diagnostics = []

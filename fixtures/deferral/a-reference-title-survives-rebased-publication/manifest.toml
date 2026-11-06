@@ -1,0 +1,16 @@
+description = "A reference-style deferred link keeps its decoded comma-separated preset names while its destination is rebased from the writing document to the invocation working directory."
+
+clauses = [
+  "Link classification and resource handling — A deferred link's destination",
+  "Presets — Selection by tags",
+  "Presets — Selection belongs to the link",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "modes/guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_guide.bundle.md"]
+diagnostics = []

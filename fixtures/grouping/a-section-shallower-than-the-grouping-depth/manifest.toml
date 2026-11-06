@@ -10,9 +10,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["parts/one.md", "parts/two.md"]
+arguments = ["--entry", "parts/one.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/parts_one+parts_two.bundle.md"]
+bundles = ["expected/parts_one.bundle.md"]
 diagnostics = []

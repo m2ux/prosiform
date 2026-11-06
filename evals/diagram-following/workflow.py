@@ -49,6 +49,7 @@ value, and the path a correct run walks. A dispatch form's scenario also
 lists the trace a correct run produces: one `[[scenario.trace]]` table per
 sub-agent start, in the order the walk dispatches them, naming the section
 the sub-agent follows as the document and heading it was compiled from,
+`presets` for the effective declared names selecting its bundle,
 `together` on each entry of a set started at once, and the `action` its
 section states, as the `file` under `actions/` and the `value` it holds. A
 scenario whose sub-agent returns a question states its `answers`, the text
@@ -63,8 +64,9 @@ run on a deferred line of its bundle compiles states.
 A scenario also lists the `pf` runs a correct run makes: one
 `[[scenario.compile]]` table per run, in the order the walk makes them,
 naming in `by` the section of the trace whose sub-agent makes it, absent
-for the session's own, and in `args` each reference it compiles, empty for
-bare `pf`. A reference resolves from the directory a shell form runs `pf`
+for the session's own, in `entry` its one reference and in `presets` the
+link title's comma-separated names. A run with no entry is bare `pf`.
+A reference resolves from the directory a shell form runs `pf`
 in, so a run naming a document that is not there states no run of the
 workflow.
 
@@ -106,6 +108,8 @@ which its agent CLI reads rather than `pf`, may declare nothing; every
 other document declares.
 """
 
+import hashlib
+import json
 import re
 import shutil
 import subprocess
@@ -113,6 +117,12 @@ import tomllib
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+
+from markdown_it import MarkdownIt
+
+from prosiform.closure import matching_presets
+from prosiform.source import declaration
+from prosiform.tags import read as read_tags
 
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
@@ -342,21 +352,68 @@ BUNDLE_HEADING = re.compile(r"^(#{1,6}) (.+?)[ \t]*$", re.MULTILINE)
 SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
 """The characters a renderer drops from a heading's text in making its slug."""
 
-FRAGMENT_LINK = re.compile(r"\[([^\]]+)\]\(#([^)]+)\)")
-"""A link a bundle rewrote to a heading of its own, with its text and fragment."""
+
+@dataclass(frozen=True)
+class Link:
+    """A Markdown link's label, destination and normalized title tags."""
+
+    label: str
+    destination: str
+    tags: frozenset[str]
+
+
+def markdown_links(text: str) -> list[Link]:
+    """Ordinary Markdown links, retaining their decoded title attributes."""
+    found = []
+    for block in MarkdownIt("commonmark").parse(text):
+        children = block.children or []
+        for at, token in enumerate(children):
+            if token.type != "link_open":
+                continue
+            href = str(token.attrGet("href") or "")
+            label = []
+            for child in children[at + 1 :]:
+                if child.type == "link_close":
+                    break
+                label.append(child.content)
+            title = token.attrGet("title")
+            found.append(
+                Link(
+                    "".join(label),
+                    href,
+                    read_tags(str(title) if title is not None else None),
+                )
+            )
+    return found
+
+
+def fragment_links(text: str) -> list[tuple[str, str]]:
+    """Links naming bundle headings, with title attributes outside the href."""
+    return [
+        (link.label, link.destination[1:])
+        for link in markdown_links(text)
+        if link.destination.startswith("#")
+    ]
+
 
 NEXT_PARAGRAPH = re.compile(rf"^{re.escape(NEXT)}(.+)$", re.MULTILINE)
 """A section's transition paragraph as a bundle carries it."""
 
-DEFERRED_COMPOSITION = re.compile(r"\[¬↳ [^\]]*\]\(([^)#]*)(?:#([^)]*))?\)")
-"""A deferred composition as a source writes it, with its document and heading.
 
-`pf` publishes it as a link to a sub-section holding a `↳` line, which a run
-of `pf` on the line's reference compiles.
-"""
+def deferred_links(text: str) -> list[Link]:
+    """Deferred composition links with the tags their later commands need."""
+    return [link for link in markdown_links(text) if link.label.startswith("¬↳ ")]
 
-INLINE_LINE = re.compile(r"^\[↳ ([^\]]+)\]\(([^)]+)\)$", re.MULTILINE)
-"""A `↳` line: the title it carries and the reference a run of `pf` compiles."""
+
+def inline_lines(text: str) -> list[Link]:
+    """Standalone composition links an agent compiles where reached."""
+    return [
+        replace(link, label=link.label.removeprefix("↳ "))
+        for line in text.splitlines()
+        for link in markdown_links(line)
+        if line.startswith("[↳ ") and link.label.startswith("↳ ")
+    ]
+
 
 CONDITIONAL_STEP = re.compile(r"^If (`inputs/[^`]+` reads `[^`]*`), ")
 """A step that holds only under a condition, which its opening clause states."""
@@ -517,6 +574,8 @@ class Dispatch:
     section: str
     together: bool
     action: tuple[str, str] | None = None
+    presets: frozenset[str] = frozenset()
+    """Declared named presets identifying the dispatched bundle selection."""
 
 
 @dataclass(frozen=True)
@@ -524,14 +583,40 @@ class Compile:
     """One `pf` run a correct run makes.
 
     `by` is the section of the trace whose sub-agent makes the run, as
-    `<document>#<heading>`, or nothing for the session's own. `args` are the
-    references the run compiles, each `<document>[#<fragment>]` from the
-    directory a shell form runs `pf` in, and none for bare `pf`. An option
-    such as `-o` is the agent's to choose, so a run states none.
+    `<document>#<heading>`, or nothing for the session's own. `entry` is one
+    `<document>[#<fragment>]` from the shell form's directory, or nothing for
+    bare `pf`. `presets` holds normalized complete names from the link title.
+    Output and diagnostic options are the agent's to choose.
     """
 
     by: str | None
-    args: tuple[str, ...]
+    entry: str | None = None
+    presets: frozenset[str] = frozenset()
+
+    @property
+    def args(self) -> tuple[str, ...]:
+        """The command's entry and preset options as shell words."""
+        if self.entry is None:
+            return ()
+        return (
+            f"--entry={self.entry}",
+            *((f"--presets={','.join(sorted(self.presets))}",) if self.presets else ()),
+        )
+
+    def selection(self, root: Path) -> tuple[str | None, str | None, frozenset[str]]:
+        """The owner, destination and matching declared names of this run."""
+        return self.by, self.entry, effective_presets(root, self)
+
+
+def effective_presets(root: Path, run: Compile) -> frozenset[str]:
+    """Declared named presets selected by one explicit request."""
+    if run.entry is None or not run.presets:
+        return frozenset()
+    path = root / run.entry.partition("#")[0]
+    conversion = declaration(path.read_text(), file=str(path))
+    return frozenset(
+        preset.name for preset in matching_presets(conversion, run.presets)
+    )
 
 
 @dataclass(frozen=True)
@@ -813,7 +898,7 @@ def read_section(form: str, path: Path, directory: Path) -> Section:
         body,
         actions[0] if actions else None,
         parse_transition(form, transition.strip(), path.parent) if marker else None,
-        not marker and DEFERRED_COMPOSITION.search(body) is not None,
+        not marker and bool(deferred_links(body)),
     )
 
 
@@ -852,18 +937,22 @@ def read_sections(form_directory: Path, form: str) -> dict[str, Section]:
     return {section.state: section for section in sections}
 
 
-def entry_bundle(entry: str) -> Path:
+def entry_bundle(entry: str, presets: frozenset[str] = frozenset()) -> Path:
     """The entry's bundle under an output folder, by the name `pf` derives.
 
     A selection's name is its path without the Markdown suffix, each
     separator written as `_`, and a section adds `__` and its fragment. The
     run's folder takes that name with `.bundles`, and the entry's bundle with
-    `.bundle.md`.
+    `.bundle.md`. Matching declared named presets add `--p-` and the full
+    lowercase SHA256 of their sorted distinct names as compact UTF8 JSON.
     """
     document, _, fragment = entry.partition("#")
     name = Path(document).with_suffix("").as_posix().replace("/", "_")
     if fragment:
         name = f"{name}__{fragment}"
+    if presets:
+        encoded = json.dumps(sorted(presets), ensure_ascii=False, separators=(",", ":"))
+        name += "--p-" + hashlib.sha256(encoded.encode()).hexdigest()
     return Path(f"{name}.bundles", f"{name}.bundle.md")
 
 
@@ -887,12 +976,17 @@ def read_warnings(path: Path) -> frozenset[str]:
 def read_compile(row: dict[str, object], named: str) -> Compile:
     """One stated `pf` run, as a `[[scenario.compile]]` table writes it."""
     by = row.get("by")
-    args = row.get("args", [])
+    entry = row.get("entry")
+    presets = row.get("presets")
     if by is not None and not isinstance(by, str):
         raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
-    if not isinstance(args, list) or not all(isinstance(arg, str) for arg in args):
-        raise CorpusError(f"{named}: a run's args are {args!r}, not references")
-    return Compile(by, tuple(args))
+    if entry is not None and not isinstance(entry, str):
+        raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
+    if presets is not None and (not isinstance(presets, str) or entry is None):
+        raise CorpusError(f"{named}: a run's presets need an entry and a string list")
+    if set(row) - {"by", "entry", "presets"}:
+        raise CorpusError(f"{named}: a run's fields are entry, presets and by")
+    return Compile(by, entry, read_tags(presets))
 
 
 def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
@@ -902,6 +996,9 @@ def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
     write; a start whose section states none carries none.
     """
     action = row.get("action")
+    presets = row.get("presets")
+    if presets is not None and not isinstance(presets, str):
+        raise CorpusError(f"{named}: a start's presets need a string list")
     if action is not None and (
         not isinstance(action, dict)
         or not isinstance(action.get("file"), str)
@@ -912,6 +1009,7 @@ def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
         str(row["dispatch"]),
         bool(row.get("together", False)),
         (action["file"], action["value"]) if action is not None else None,
+        read_tags(presets),
     )
 
 
@@ -949,7 +1047,7 @@ def compile_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
     for run in scenario.compile:
         if run.by is not None and run.by not in sections:
             faults.append(f"{scenario.name}: a run by {run.by} is by no start")
-        for arg in run.args:
+        if (arg := run.entry) is not None:
             document = arg.partition("#")[0]
             if not document or not (root / document).is_file():
                 faults.append(
@@ -1050,7 +1148,7 @@ def bundle(
 
 
 def compile_reference(
-    root: Path, reference: str, output: Path
+    root: Path, reference: str, output: Path, presets: frozenset[str] = frozenset()
 ) -> subprocess.CompletedProcess[bytes]:
     """The `pf` run compiling one reference from `root` under `output`.
 
@@ -1060,7 +1158,7 @@ def compile_reference(
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, reference, "-o", str(output)],
+        [command, *Compile(None, reference, presets).args, "-o", str(output)],
         cwd=root,
         capture_output=True,
         check=False,
@@ -1179,7 +1277,7 @@ def bundled_sections(bundle_text: str) -> dict[str, BundledSection]:
 
 def reached_lines(
     bundle_text: str, scope: str, inputs: dict[str, str], trace: list[str]
-) -> list[str]:
+) -> list[Compile]:
     """The references of the deferred lines a scope's steps reach, in step order.
 
     A deferred composition is published as a link to the heading its `↳` line
@@ -1188,7 +1286,7 @@ def reached_lines(
     holds.
     """
     sections = bundled_sections(bundle_text)
-    found: list[str] = []
+    found: list[Compile] = []
     for line in scope.splitlines():
         # The line `pf` opens a bundle with names the document's own heading,
         # which is where a reader starts rather than a step the walk takes.
@@ -1196,7 +1294,7 @@ def reached_lines(
             continue
         linked = [
             sections[fragment]
-            for _, fragment in FRAGMENT_LINK.findall(line)
+            for _, fragment in fragment_links(line)
             if fragment in sections
         ]
         if not linked:
@@ -1206,7 +1304,10 @@ def reached_lines(
         ):
             continue
         for section in linked:
-            found += [reference for _, reference in INLINE_LINE.findall(section.text)]
+            found += [
+                Compile(None, link.destination, link.tags)
+                for link in inline_lines(section.text)
+            ]
     return found
 
 
@@ -1215,7 +1316,7 @@ def activated(
     scope: str,
     inputs: dict[str, str],
     trace: list[str],
-    activate: Callable[[str], str],
+    activate: Callable[[Compile], str],
 ) -> str:
     """The text the runs on a scope's reached `↳` lines compile, in run order.
 
@@ -1236,7 +1337,7 @@ def bundle_walk(
     workflow: Workflow,
     bundle_text: str,
     inputs: dict[str, str],
-    activate: Callable[[str], str] | None = None,
+    activate: Callable[[Compile], str] | None = None,
 ) -> tuple[tuple[str, ...], list[str]]:
     """The path a diagram form's bundle states for the inputs, and its faults.
 
@@ -1319,9 +1420,7 @@ def bundle_walk(
                 return tuple(path), faults
             state = edges[0].target
             linked = [
-                target
-                for text, target in FRAGMENT_LINK.findall(section.text)
-                if text == state
+                target for text, target in fragment_links(section.text) if text == state
             ]
             fragment = (
                 linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
@@ -1345,7 +1444,7 @@ def bundle_walk(
         state = targets[0]
         linked = [
             target
-            for text, target in FRAGMENT_LINK.findall(section.text)
+            for text, target in fragment_links(section.text)
             if text == state or (target in sections and sections[target].title == state)
         ]
         fragment = (
@@ -1370,15 +1469,20 @@ def compiled_walk(
         return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
     runs: list[Compile] = []
 
-    def activate(reference: str) -> str:
-        runs.append(Compile(None, (reference,)))
+    def activate(request: Compile) -> str:
+        runs.append(request)
+        reference = request.entry
+        assert reference is not None
         folder = output / f"run-{len(runs)}"
-        made = compile_reference(workflow.form(COMPILED_FORM), reference, folder)
+        root = workflow.form(COMPILED_FORM)
+        made = compile_reference(root, reference, folder, request.presets)
         if made.returncode != 0:
             raise CorpusError(
                 f"pf {reference} exited {made.returncode}: {made.stderr.decode()}"
             )
-        return (folder / entry_bundle(reference)).read_text()
+        return (
+            folder / entry_bundle(reference, effective_presets(root, request))
+        ).read_text()
 
     try:
         path, faults = bundle_walk(
@@ -1440,7 +1544,10 @@ def dispatched(
         if form in MARKED_FORMS:
             if COMPILED_STEP.match(line) is None:
                 continue
-            named = LINK_TARGET.findall(line)
+            named = [
+                (link.label, *link.destination.partition("#")[::2])
+                for link in markdown_links(line)
+            ]
             marks = OPERATOR_LINK.findall(line)
             if len(marks) != len(named):
                 raise CorpusError(f"a compiled step carries an unmarked link: {line!r}")
@@ -1467,8 +1574,8 @@ def dispatched(
                 re.MULTILINE | re.IGNORECASE,
             ):
                 raise CorpusError(f"{document} holds no {heading} section")
-            named = written.relative_to(root.resolve()).with_suffix("")
-            targets.append(f"{named.as_posix()}#{heading.lower()}")
+            relative = written.relative_to(root.resolve()).with_suffix("")
+            targets.append(f"{relative.as_posix()}#{heading.lower()}")
         if not targets:
             raise CorpusError(f"a dispatch step names no document: {line!r}")
         if together and len(targets) < 2:
@@ -1563,7 +1670,8 @@ def dispatch_starts(
                 step.group(1), inputs, walked
             ):
                 continue
-            for document, heading in DEFERRED_COMPOSITION.findall(line):
+            for link in deferred_links(line):
+                document, _, heading = link.destination.partition("#")
                 written = (directory / document).resolve()
                 follow(
                     section_body(written.parent, written.name, heading)
@@ -1647,7 +1755,7 @@ def deferral_inputs(workflow: Workflow, form: str) -> set[str]:
         input_read(step.group(1))
         for path in sorted(workflow.form(form).rglob("*.md"))
         for line in authored(path).splitlines()
-        if DEFERRED_COMPOSITION.search(line) and (step := CONDITIONAL_STEP.match(line))
+        if deferred_links(line) and (step := CONDITIONAL_STEP.match(line))
     }
 
 

@@ -24,7 +24,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `destinations/` | The destination each bundled heading takes. |
 | `determinism/` | Bundle order independent of entry and discovery order. |
 | `diagnostics/` | Diagnostic chains, JSON lines and a run that fails in itself. |
-| `dispatch/` | The dispatch operator: dispatched bundles, inline links, chains, depth and cycles. |
+| `dispatch/` | Dispatched selection variants, equivalent requests, inline/parallel links, chains, depth and cycles. |
 | `extraction/` | Section extraction: the headings a fragment names and where its section ends. |
 | `file-wide-safety/` | A safety limit crossed in content no selection reaches. |
 | `frontmatter/` | Frontmatter delimiters, YAML and the `prosiform` mapping. |
@@ -38,7 +38,7 @@ A family is a directory of fixtures sharing a subject. The design clauses each f
 | `mock/` | A `subst` pair redirecting a reference, and its warnings. |
 | `normalization/` | The resolution sequence for a reference's spelling. |
 | `ownership/` | Self and ancestor references after consolidation. |
-| `parallel-dispatch/` | The parallel dispatch mark and its `In parallel` sub-section. |
+| `parallel-dispatch/` | The parallel dispatch mark and its dispatch-set sub-section. |
 | `parser-limit/` | Parser viability gates: a reference lookup the parser suppresses or declines. |
 | `profile/` | The Markdown profile: suffixes, encoding, HTML and unsupported constructs. |
 | `prosiform/` | The run-pf line every bundle opens with, and the protocol paragraphs no bundle carries. |
@@ -100,7 +100,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 1
@@ -117,7 +117,7 @@ chain = ["guide.md", "../guidelines.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, named as [The clause form](#the-clause-form) states, so every clause maps to the fixtures that cover it. |
-| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It bounds positional entries and the paths diagnostics name. |
+| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It resolves explicit entry references and the paths diagnostics name. |
 | `invocation.arguments` | The arguments of the invocation, in order. None declares the bare command. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes into its folder, each named as the run names the bundle. A run writing no bundle declares none. |
@@ -130,7 +130,7 @@ The runner uses the working directory the manifest names and asks for diagnostic
 
 ## The clause form
 
-A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
+A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
 
 ```toml
 clauses = [
@@ -157,7 +157,7 @@ A run's working directory is the fixture's own, so the folder a run writes its b
 ```toml
 [invocation]
 cwd = "source"
-arguments = ["-c", "-o", "..", "guide.md"]
+arguments = ["-c", "-o", "..", "--entry", "guide.md"]
 
 [expected]
 exit_status = 0
@@ -166,7 +166,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
+A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and resolves explicit entry references and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
 
 ## Text an output carries
 
@@ -196,7 +196,7 @@ message_contains = ["#stop", "document#fragment"]
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the run folder that held an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
 
-The contract gathers seven faults under the code, and each is a fixture, so what the corpus covers under one code is read from the corpus rather than assumed from the code:
+The following fixtures illustrate invalid usage. The single-entry grammar also refuses positional entries, repeated `--entry` or `--presets`, presets without an entry, and complete Markdown-link expressions as entries. What the corpus covers under one code is read from the manifests rather than assumed from the code:
 
 | Fault | Fixture |
 | --- | --- |
@@ -224,14 +224,14 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 1
@@ -272,7 +272,7 @@ An error decides a failing run.
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
 | `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |
 | `E_HEADING_COLLISION` | Link classification and resource handling, Generated heading collisions, and Section composition, Generated heading collisions — an authored heading whose text equals one pf emits in the same bundle, a destination section among them. |
-| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow; Link classification and resource handling, Parallel dispatch sub-sections; and Section composition, Heading depth — an emitted heading beyond H6, an `In parallel` sub-section or a composed heading among them. |
+| `E_HEADING_DEPTH_OVERFLOW` | File-scoped hierarchy, Depth overflow; Link classification and resource handling, Parallel dispatch sub-sections; and Section composition, Heading depth — an emitted heading beyond H6, an dispatch-set sub-section or a composed heading among them. |
 | `E_INVALID_CONVERSION_METADATA` | Metadata failures — invalid conversion fields or metadata mapping, the refused `root` among them. |
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML or duplicate keys. |
@@ -289,7 +289,7 @@ An error decides a failing run.
 | `E_TARGET_NOT_FOUND` | Link classification, and Section composition, The eligible target — an operator's reference or a composition directive naming no document, or a reference naming no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, a blank between two symbols, a deferral mark written against a dispatch mark, a dispatch mark written against the composition mark, an arrow label, or an operator naming no Markdown document or section; Dispatch links — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection; Section composition — a directive naming no eligible target, standing in no scope, naming a target with no parent heading or closing a cycle, a section one scope both composes and defers, or a deferred directive whose scope selects other presets of its target than the target's own heading. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, a blank between two symbols, a deferral mark written against a dispatch mark, a dispatch mark written against the composition mark, an arrow label, or an operator naming no Markdown document or section; Dispatch links — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection; Section composition — a directive naming no eligible target, standing in no scope, naming a target with no parent heading or closing a cycle, a section one scope both composes and defers. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 
@@ -318,12 +318,12 @@ Each code either catalogue holds is declared by a fixture, which a further test 
 The runner takes one fixture, invokes the build under test against its source tree, and decides pass or fail by comparing the run with the manifest. The build is named by configuration rather than written in the corpus, so one fixture binds every implementation:
 
 ```bash
-export PROSIFORM_BUILD=prosiform
+export PROSIFORM_BUILD=pf
 ```
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

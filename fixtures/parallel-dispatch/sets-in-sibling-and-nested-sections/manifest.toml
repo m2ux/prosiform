@@ -1,4 +1,4 @@
-description = "A section, its child section and its sibling each carry a set of their own: each set takes an In parallel sub-section one level below its section, after the section's own content and before its child sections, the repeated headings taking the renderer's ordinals in bundle order, and a target two sets name is one bundle listed in each set with that set's own link text."
+description = "A section, its child section and its sibling each carry a set of their own: each set takes an dispatch-set sub-section one level below its section, after the section's own content and before its child sections, the repeated headings taking the renderer's ordinals in bundle order, and a target two sets name is one bundle listed in each set with that set's own link text."
 
 clauses = [
   "Link classification and resource handling — Parallel dispatch sub-sections",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

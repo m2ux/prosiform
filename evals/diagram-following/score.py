@@ -64,11 +64,12 @@ wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
 own sub-agent ran. A command is a
 `pf` run in each segment `;`, `&&`, `||` or `|` separate whose first word is
-`pf` or a path ending `/pf`, and the run's references are its words other
-than options and their values. A reference names a stated one when it is that
-reference or ends `/` and that reference, so a run from another directory
-names the same document. Each agent's runs, the session's and each started
-sub-agent's, are held to the runs stated for it:
+`pf` or a path ending `/pf`. The compiler's grammar reads one `--entry` and
+optional `--presets`; titles and arguments share complete-name normalization.
+A reference names a stated one when it is that reference or ends `/` and
+that reference, and its effective matching named presets agree. Informational
+calls compile nothing and satisfy no bare guide run. Each agent's runs, the
+session's and each started sub-agent's, are held to the runs stated for it:
 
 - every stated run was made: otherwise *uncompiled*;
 - every run naming a reference is a stated one: otherwise *overcompiled*,
@@ -94,7 +95,7 @@ The verdict's `record` is the form the runner writes and the report reads.
 import json
 import re
 import shlex
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from enum import StrEnum
 from pathlib import Path
 
@@ -122,17 +123,26 @@ from workflow import (
     SHELL_FORMS,
     SOURCE_DIR,
     START,
+    Compile,
     Dispatch,
     Scenario,
     Workflow,
+    effective_presets,
     entry_bundle,
 )
 
+from prosiform.cli import (
+    Failure as CommandFailure,
+)
+from prosiform.cli import (
+    entry as command_entry,
+)
+from prosiform.cli import (
+    parser as command_parser,
+)
+from prosiform.tags import read as read_tags
+
 PF = "pf"
-SEPARATORS = re.compile(r"&&|\|\||[;|\n]")
-"""What separates one command of a shell line from the next."""
-VALUED = frozenset({"-o", "-d", "--budget"})
-"""The `pf` options taking a value as the next word, which is no reference."""
 
 TRACE = "trace.log"
 """The path a session writes its own states to."""
@@ -349,59 +359,132 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
     )
 
 
-def _words(segment: str) -> list[str]:
-    """One command's words, as the shell splits them where it can."""
-    try:
-        return shlex.split(segment)
-    except ValueError:
-        return segment.split()
+SHELL_TOKEN = re.compile(
+    r"(?P<space>[^\S\n]+)"
+    r"|(?P<redirect>[0-9]*(?:>>|>\||<>|[<>]&|[<>]))"
+    r"|(?P<separator>&&|\|\||[;|&\n])"
+    r"|(?P<word>(?:'[^']*'|\"(?:\\.|[^\"\\])*\"|\\.|[^\s;|&<>\"'\\])+)",
+)
 
 
-def pf_runs(commands: tuple[str, ...]) -> list[tuple[str, ...]]:
-    """The `pf` runs a list of shell commands makes, each as its references.
+def _commands(command: str) -> list[list[str] | None]:
+    """Read literal shell words and redirects without evaluating shell input.
+
+    Redirection operators and their one operand belong to the shell, not
+    the compiler grammar. Quoted or escaped operators remain argument text.
+    An incomplete token or redirect invalidates its command segment.
+    """
+    found: list[list[str] | None] = []
+    words: list[str] = []
+    redirect = False
+    invalid = False
+    at = 0
+    while at < len(command):
+        token = SHELL_TOKEN.match(command, at)
+        if token is None:
+            invalid = True
+            break
+        at = token.end()
+        if token.lastgroup == "space":
+            continue
+        if token.lastgroup == "separator":
+            found.append(None if invalid or redirect else words)
+            words, redirect, invalid = [], False, False
+        elif token.lastgroup == "redirect":
+            invalid = invalid or redirect
+            redirect = True
+        else:
+            try:
+                [word] = shlex.split(token.group())
+            except ValueError:
+                invalid = True
+                break
+            if redirect:
+                redirect = False
+            else:
+                words.append(word)
+    found.append(None if invalid or redirect else words)
+    return found
+
+
+def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
+    """The single-entry selections commands request; None marks invalid usage.
 
     A run is a command whose first word is `pf` or a path ending `/pf`, since
-    a command may name the build by a directory. Its references are its words
-    other than an option and the value an option takes.
+    a command may name the build by a directory. The compiler's own grammar
+    reads its entry and preset options, including attached values.
     """
-    runs: list[tuple[str, ...]] = []
+    runs: list[Compile | None] = []
     for command in commands:
-        for segment in SEPARATORS.split(command):
-            words = _words(segment)
+        for words in _commands(command):
+            if words is None:
+                runs.append(None)
+                continue
             if not words or words[0].rsplit("/", 1)[-1] != PF:
                 continue
-            references: list[str] = []
-            skip = False
-            for word in words[1:]:
-                if skip:
-                    skip = False
-                elif word in VALUED:
-                    skip = True
-                elif not word.startswith("-"):
-                    references.append(word.removeprefix("./"))
-            runs.append(tuple(references))
+            try:
+                parsed = command_parser().parse_args(words[1:])
+            except CommandFailure:
+                runs.append(None)
+                continue
+            if parsed.help or parsed.version or parsed.codes:
+                continue
+            if (
+                parsed.presets is not None
+                and parsed.entry is None
+                or parsed.entry is None
+                and len(words) > 1
+            ):
+                runs.append(None)
+            else:
+                if parsed.entry is not None:
+                    try:
+                        command_entry(parsed.entry)
+                    except CommandFailure:
+                        runs.append(None)
+                        continue
+                runs.append(
+                    Compile(
+                        None,
+                        parsed.entry.removeprefix("./")
+                        if parsed.entry is not None
+                        else None,
+                        read_tags(parsed.presets),
+                    )
+                )
     return runs
 
 
-def _names(made: tuple[str, ...], stated: tuple[str, ...]) -> bool:
-    """Whether a run's references are a stated run's, from any directory."""
-    return len(made) == len(stated) and all(
-        reference == due or reference.endswith(f"/{due}")
-        for reference, due in zip(made, stated, strict=True)
-    )
+def _names(made: Compile | None, stated: Compile, root: Path | None) -> bool:
+    """Whether a command names the stated destination and effective presets."""
+    if made is None:
+        return False
+    if made.entry is None or stated.entry is None:
+        return made.entry == stated.entry and made.presets == stated.presets
+    if not (made.entry == stated.entry or made.entry.endswith(f"/{stated.entry}")):
+        return False
+    if root is None or not (root / stated.entry.partition("#")[0]).is_file():
+        return made.presets == stated.presets
+    return effective_presets(
+        root, replace(made, entry=stated.entry)
+    ) == effective_presets(root, stated)
 
 
 def _held_to(
-    made: list[tuple[str, ...]], stated: list[tuple[str, ...]]
+    made: list[Compile | None], stated: list[Compile], root: Path | None
 ) -> Failure | None:
     """The first run check one agent's runs fail, or nothing when they pass."""
-    if not all(any(_names(run, due) for run in made) for due in stated):
+    if not all(any(_names(run, due, root) for run in made) for due in stated):
         return Failure.UNCOMPILED
-    if any(run and not any(_names(run, due) for due in stated) for run in made):
+    if any(
+        (run is None or run.entry is not None)
+        and not any(_names(run, due, root) for due in stated)
+        for run in made
+    ):
         return Failure.OVERCOMPILED
     cursor = 0
     for run in made:
-        if cursor < len(stated) and _names(run, stated[cursor]):
+        if cursor < len(stated) and _names(run, stated[cursor], root):
             cursor += 1
     return None if cursor == len(stated) else Failure.MISORDERED_COMPILE
 
@@ -411,6 +494,7 @@ def compiles(
     commands: tuple[str, ...],
     starts: tuple[Start, ...],
     source_directory: str = "",
+    root: Path | None = None,
 ) -> Failure | None:
     """The first run check a session's record fails, or nothing when it passes.
 
@@ -419,26 +503,35 @@ def compiles(
     again keeps one sequence of runs. Each check is read over every agent
     before the next, so a record failing two takes the earlier.
     """
-    agents: dict[str | None, list[tuple[str, ...]]] = {None: pf_runs(commands)}
+    agents: dict[str | None, list[Compile | None]] = {None: pf_runs(commands)}
     for section in dict.fromkeys(entry.section for entry in scenario.trace):
         agents[section] = pf_runs(
             tuple(
                 command
                 for start in starts
-                if names(start.target, section, source_directory)
+                if any(
+                    names(start.target, entry.section, source_directory, entry.presets)
+                    for entry in scenario.trace
+                    if entry.section == section
+                )
                 for command in start.commands
             )
         )
     stated = {
-        agent: [run.args for run in scenario.compile if run.by == agent]
+        agent: [replace(run, by=None) for run in scenario.compile if run.by == agent]
         for agent in agents
     }
-    found = [_held_to(made, stated[agent]) for agent, made in agents.items()]
+    found = [_held_to(made, stated[agent], root) for agent, made in agents.items()]
     order = (Failure.UNCOMPILED, Failure.OVERCOMPILED, Failure.MISORDERED_COMPILE)
     return next((failure for failure in order if failure in found), None)
 
 
-def names(target: str, section: str, source_directory: str = "") -> bool:
+def names(
+    target: str,
+    section: str,
+    source_directory: str = "",
+    presets: frozenset[str] = frozenset(),
+) -> bool:
     """Whether a start's prompt names a section's compiled file or authored reference.
 
     A compiled form hands over `pf`'s bundle for the section, named
@@ -451,20 +544,22 @@ def names(target: str, section: str, source_directory: str = "") -> bool:
     name: the reference the scenario states, or that reference as the skill
     directory holds it.
 
-    The file or reference identifies the section. Description wording and
-    headings alone carry no target identity.
+    A selected dispatch requires its selection-qualified bundle filename.
+    An unselected section also accepts an authored reference. Description
+    wording and headings alone carry no target identity.
     """
     references = [section]
     if source_directory:
         references.insert(0, f"{source_directory}/{section}")
     for reference in references:
         document, _, heading = reference.partition("#")
-        for spelled in (
-            f"{document}#{heading}",
-            f"{document}.md#{heading}",
-            entry_bundle(reference).name,
-            f"{entry_bundle(reference).name}#{heading}",
-        ):
+        spellings: tuple[str, ...] = (
+            entry_bundle(reference, presets).name,
+            f"{entry_bundle(reference, presets).name}#{heading}",
+        )
+        if not presets:
+            spellings += (f"{document}#{heading}", f"{document}.md#{heading}")
+        for spelled in spellings:
             if re.search(rf"(?<![\w#-]){re.escape(spelled)}(?![\w#-]|\.\w)", target):
                 return True
     return False
@@ -506,7 +601,12 @@ def dispatched(
                     position
                     for position in range(cursor, len(starts))
                     if position not in taken
-                    and names(starts[position].target, due.section, source_directory)
+                    and names(
+                        starts[position].target,
+                        due.section,
+                        source_directory,
+                        due.presets,
+                    )
                 ),
                 None,
             )
@@ -540,7 +640,7 @@ def dispatched(
     if any(
         start.returned == QUESTION
         and not any(
-            names(later.target, due.section, source_directory)
+            names(later.target, due.section, source_directory, due.presets)
             for later in starts[index + 1 :]
         )
         for index, start, due in matched
@@ -608,7 +708,9 @@ def score(
                 False, Failure.MISSING_ACTION, None, expected, actual, undone_by
             )
         if commands is not None:
-            order = compiles(scenario, commands, starts, source_directory)
+            order = compiles(
+                scenario, commands, starts, source_directory, workflow.compile_root
+            )
             if order is not None:
                 return Verdict(False, order, None, expected, actual, actions)
         return Verdict(True, None, None, expected, actual, actions)

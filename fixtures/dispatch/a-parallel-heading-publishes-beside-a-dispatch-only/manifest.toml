@@ -1,4 +1,4 @@
-description = "A bundle using only the dispatch operator carries no In parallel sub-section, so an authored heading reading In parallel equals no heading pf emits there and publishes with no diagnostic."
+description = "A bundle using only the dispatch operator carries no dispatch-set sub-section, so an authored heading reading In parallel equals no heading pf emits there and publishes with no diagnostic."
 
 clauses = [
   "Link classification and resource handling — Generated heading collisions",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

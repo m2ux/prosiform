@@ -1,0 +1,19 @@
+description = "Image, external-reference and stylesheet titles are preserved as resource text and select no named preset; a declaring Markdown document named by image syntax contributes no content."
+
+clauses = [
+  "Link classification and resource handling — Resources",
+  "Link classification and resource handling — Examples",
+  "Resources are text",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_RESOURCE_PORTABILITY"

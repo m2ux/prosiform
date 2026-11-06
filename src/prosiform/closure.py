@@ -16,7 +16,7 @@ sub-agent follows it, and a parallel dispatch that a sub-agent follows it
 together with the section's other parallel dispatches. A deferred link's
 destination is the target's path, which no compiled link carries, so the
 deferral is stated there; a dispatched link points at a bundle file or an
-`In parallel` sub-section naming the bundle the run compiles for its
+dispatch-set sub-section naming the bundle the run compiles for its
 target, which states the dispatch. The composition mark places the
 target's section beneath the section writing it, so the link points at
 that placement. Every mark is therefore authoring syntax, and the bundle
@@ -50,6 +50,7 @@ from urllib.parse import quote
 
 from markdown_it.token import Token
 
+from prosiform.metadata import DEFAULT, Conversion, Preset
 from prosiform.profile import is_markdown
 from prosiform.source import ANCHOR, ENCODING, external, regions, uses
 
@@ -153,9 +154,10 @@ class Reference:
     one: its pair named the substitute, so a substitute naming no
     document is refused rather than read as a link to nothing.
 
-    A reference a source carries holds the title of the section it is
-    written in, which selects the presets of the document it reaches.
-    One in a preamble, and one written on the command line, holds none.
+    A source reference holds the title of the section it is written in
+    as its heading context. One in a preamble, and one written on the
+    command line, holds none. Its tags are its own normalized requested
+    preset names, retained when substitution redirects its destination.
 
     A reference a composition directive writes, naming a section, states
     that it composes: it places that section beneath the directive's
@@ -172,6 +174,47 @@ class Reference:
     redirected: bool = False
     title: str | None = None
     composes: bool = False
+    tags: frozenset[str] = frozenset()
+
+
+def matching_presets(
+    conversion: Conversion, tags: frozenset[str]
+) -> tuple[Preset, ...]:
+    """The destination's matching named presets, in declaration order.
+
+    Tags hold normalized complete names. An unmatched name adds nothing,
+    and the reserved default token supplies no named selection.
+    """
+    return tuple(
+        preset
+        for preset in conversion.presets
+        if preset.name.casefold() != DEFAULT and preset.name.casefold() in tags
+    )
+
+
+@dataclass(frozen=True)
+class BundleSelection:
+    """One canonical destination and the declared named presets it selects.
+
+    Preset spelling belongs to the declaration; its ordering is absent
+    from the identity. Source capture and diagnostic occurrence data are
+    separate from the bundle selection.
+    """
+
+    path: str
+    fragment: str | None = None
+    presets: frozenset[str] = frozenset()
+
+
+def bundle_selection(reference: Reference, conversion: Conversion) -> BundleSelection:
+    """The effective bundle identity of a resolved reference at its destination."""
+    return BundleSelection(
+        reference.path,
+        reference.fragment or None,
+        frozenset(
+            preset.name for preset in matching_presets(conversion, reference.tags)
+        ),
+    )
 
 
 def identity(reference: Reference, base: str = "") -> str:
@@ -220,8 +263,8 @@ class Redirects:
     the run reads it after traversal rather than inferring it from the
     bundle.
 
-    A record is kept under the pair that served the reference and the
-    document it substituted, so a pair naming one target states one
+    A record is kept under the pair that served the reference and its
+    declared substitute document and fragment, so a pair naming one target states one
     substitution however many references named it — a document key
     serving the document and one of its sections included. A pair is its
     declaring document and its key, so two documents declaring one key
@@ -236,19 +279,20 @@ class Redirects:
     """
 
     def __init__(self) -> None:
-        self._records: dict[tuple[Served, str], Redirect] = {}
-        self._served: set[Served] = set()
+        self._records: dict[tuple[Served, tuple[str, str | None]], Redirect] = {}
+        self._served: set[tuple[Served, tuple[str, str | None]]] = set()
 
     def record(
         self,
         pair: Served,
+        declared: Reference,
         substitute: Reference,
         found: Reference,
         origin: str | None = None,
     ) -> None:
         """Note one redirect: its pair, target and the position it was written at."""
-        self._served.add(pair)
-        named = (pair, substitute.path)
+        named = (pair, (declared.path, declared.fragment))
+        self._served.add(named)
         earlier = self._records.get(named)
         if earlier is None:
             self._records[named] = Redirect(
@@ -257,9 +301,9 @@ class Redirects:
         elif earlier.origin is None and origin is not None:
             self._records[named] = replace(earlier, origin=origin)
 
-    def served(self, pair: Served) -> bool:
-        """Whether any reference of the run named this pair."""
-        return pair in self._served
+    def served(self, pair: Served, declared: Reference) -> bool:
+        """Whether a reference used this pair with its declared substitute."""
+        return (pair, (declared.path, declared.fragment)) in self._served
 
     def targets(self) -> tuple[Redirect, ...]:
         """Each substitution the run performed, in the order it first reached one."""
@@ -347,6 +391,10 @@ class Substitution:
         states the section the run reads instead, so its section is the
         substitute's whole.
 
+        Requested tags and diagnostic context belong to the occurrence.
+        They remain on the redirected reference; the destination's own
+        declarations answer those tags.
+
         The record is the run's and not the mapping's, kept under the
         writer and the key that served the reference: every stage that
         resolves the same link again records the same substitution, and
@@ -366,14 +414,14 @@ class Substitution:
             named = pairs.get(key)
         if named is None or self.writer is None:
             return found
-        substituted = Reference(
-            found.original,
-            named.path,
-            found.fragment if named.fragment is None else named.fragment,
+        substituted = replace(
+            found,
+            path=named.path,
+            fragment=found.fragment if named.fragment is None else named.fragment,
             walk=named.walk,
             redirected=True,
         )
-        self.redirects.record((self.writer, key), substituted, found, origin)
+        self.redirects.record((self.writer, key), named, substituted, found, origin)
         return substituted
 
 
@@ -631,7 +679,7 @@ def withholding(opening: str) -> bool:
     link.
 
     A deferral's destination states when the material is compiled, and
-    a dispatch's file or `In parallel` sub-section states who compiles
+    a dispatch's file or dispatch-set sub-section states who compiles
     it.
     """
     return deferred(opening) or dispatched(opening)
@@ -669,7 +717,7 @@ def published_text(text: str, file: bool) -> str:
     Every other operator's marks go, with the blanks that are their
     spacing, because the destination states what they stated: a path for
     a deferral, the contribution heading for a composition and the
-    `In parallel` sub-section for a set.
+    dispatch-set sub-section for a set.
     """
     found = opened(text)
     if found is None:
@@ -689,7 +737,9 @@ def directive(opening: str) -> bool:
     return INLINE_MARK in operators(opening)
 
 
-def resolve(text: str, base: str = "") -> Reference:
+def resolve(
+    text: str, base: str = "", *, tags: frozenset[str] = frozenset()
+) -> Reference:
     """Decode a reference and normalize its path, retaining the authored access walk."""
     written = components(text)
     if DRIVE.match(written.path) is not None:
@@ -718,12 +768,13 @@ def resolve(text: str, base: str = "") -> Reference:
     path = normalized(base, parts)
     walk = "/".join(parts) if written.path else None
     if written.fragment is None or not written.fragment:
-        return Reference(text, path, walk=walk)
+        return Reference(text, path, walk=walk, tags=tags)
     return Reference(
         text,
         path,
         admissible(decoded(written.fragment, FRAGMENT_PART), FRAGMENT_PART),
         walk=walk,
+        tags=tags,
     )
 
 
@@ -780,6 +831,8 @@ def inside(
     text: str,
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
+    *,
+    tags: frozenset[str] = frozenset(),
 ) -> Reference:
     """Resolve a link from the file that carries it, held to the path grammar.
 
@@ -790,7 +843,7 @@ def inside(
     and `resolvable` asks it. A path normalizing above the invocation
     working directory keeps its leading parent segments, so its target
     is asked like any other and opened through the bounded no-follow
-    walk from the working directory, the access a positional entry
+    walk from the working directory, the access an explicit entry
     takes.
 
     The grammar still bounds the path: a drive path and a root-relative
@@ -814,7 +867,7 @@ def inside(
     same link again passes nothing and records nothing new.
     """
     base = posixpath.dirname(document)
-    found = resolve(text, base)
+    found = resolve(text, base, tags=tags)
     if found.external:
         return found
     substitution = substitution.writing(document)
@@ -835,6 +888,8 @@ def bundled(
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
     reached: Sequence[str] = (),
+    *,
+    tags: frozenset[str] = frozenset(),
 ) -> Reference | None:
     """The reference one link in a document names where the bundle compiles it.
 
@@ -859,7 +914,9 @@ def bundled(
     """
     if withholding(opening):
         return None
-    return resolvable(document, text, declarations, substitution, origin, reached)
+    return resolvable(
+        document, text, declarations, substitution, origin, reached, tags=tags
+    )
 
 
 def withholding_target(
@@ -870,6 +927,8 @@ def withholding_target(
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
     reached: Sequence[str] = (),
+    *,
+    tags: frozenset[str] = frozenset(),
 ) -> Reference | None:
     """The target one withheld link names, where the run is responsible for it.
 
@@ -892,7 +951,9 @@ def withholding_target(
     """
     if not withholding(opening):
         return None
-    return resolvable(document, text, declarations, substitution, origin, reached)
+    return resolvable(
+        document, text, declarations, substitution, origin, reached, tags=tags
+    )
 
 
 def resolvable(
@@ -902,6 +963,8 @@ def resolvable(
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
     reached: Sequence[str] = (),
+    *,
+    tags: frozenset[str] = frozenset(),
 ) -> Reference | None:
     """The target one link names, where it is a document that declares `prosiform`.
 
@@ -921,7 +984,7 @@ def resolvable(
     answers that question alone and leaves which run compiles it to the
     caller reading the mark.
     """
-    found = named(document, text, substitution, origin, reached)
+    found = named(document, text, substitution, origin, reached, tags=tags)
     if found is None or not declarations.declares(found):
         return None
     return replace(found, origin=None, chain=())
@@ -933,6 +996,8 @@ def named(
     substitution: Substitution = UNSUBSTITUTED,
     origin: str | None = None,
     reached: Sequence[str] = (),
+    *,
+    tags: frozenset[str] = frozenset(),
 ) -> Reference | None:
     """The local Markdown path one link names, as the occurrence written there.
 
@@ -943,7 +1008,7 @@ def named(
     this reference, which is what a probe or a refusal names.
     """
     try:
-        found = inside(document, text, substitution, origin)
+        found = inside(document, text, substitution, origin, tags=tags)
     except Unresolvable:
         return None
     if found.external or not is_markdown(found.path):

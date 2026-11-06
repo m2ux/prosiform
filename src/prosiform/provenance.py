@@ -13,8 +13,8 @@ share: a sentence repeated in two sections is two ranges, so repeated
 identical prose is not duplication and a count of occurrences is not a
 coverage test. A *generated* record names a heading the bundle wrote
 itself — the filename wrapper, and the group, overview and variant
-headings a metadata-declared group produces, each `In parallel`
-sub-section with the instruction and list beneath it, and the
+headings a metadata-declared group produces, each dispatch-set
+sub-section with the bare dispatch-link lines beneath it, and the
 destination section and contribution heading a composition directive
 places its target beneath — which carries
 no source range and so can never stand in for selected body content a
@@ -63,7 +63,7 @@ MEMBER_OVERVIEW = "member overview"
 VARIANT_HEADING = "variant heading"
 STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
-PARALLEL_SECTION = "In parallel sub-section"
+PARALLEL_SECTION = "dispatch-set sub-section"
 DESTINATION_SECTION = "destination section"
 CONTRIBUTION_HEADING = "contribution heading"
 
@@ -71,8 +71,8 @@ COMPOSED_HEADINGS = (DESTINATION_SECTION, CONTRIBUTION_HEADING)
 
 Target = tuple[str, str | None]
 
-Served = tuple[Target, bool]
-"""A dispatched link's target, and whether the link dispatches it in parallel."""
+Served = tuple[Target, frozenset[str], bool]
+"""A dispatched occurrence's destination, requested tags and parallel operator."""
 
 Located = tuple[str, int, int]
 """One link, as its document, the line of content its inline block opens on and
@@ -215,21 +215,20 @@ class Range:
 class Instruction:
     """One block the bundle wrote itself, with no source range.
 
-    The run-pf line that opens every bundle is one: a paragraph. An
-    `In parallel` sub-section carries two: the instruction, and the
-    bulleted list of the bundles it hands out together. It carries no
+    The run-pf line that opens every bundle is one: a paragraph. A
+    dispatch-set sub-section carries the lines naming the bundles it
+    hands out together. It carries no
     source range, so it can never stand in for selected body content a
-    group failed to emit. A listed instruction is a bulleted list, and
-    every other one a paragraph.
+    group failed to emit.
 
     A deferred directive's contribution heading carries one as well: the
-    line naming the target a later run composes, which `activates`
-    holds.
+    line naming the target and requested preset tags a later run composes,
+    which `activates` holds.
     """
 
     text: str
     listed: bool = False
-    activates: Target | None = None
+    activates: tuple[Target, frozenset[str]] | None = None
 
     @property
     def kind(self) -> str:

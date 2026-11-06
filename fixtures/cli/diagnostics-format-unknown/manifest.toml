@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-d", "yaml", "guide.md"]
+arguments = ["-d", "yaml", "--entry", "guide.md"]
 
 [expected]
 exit_status = 2

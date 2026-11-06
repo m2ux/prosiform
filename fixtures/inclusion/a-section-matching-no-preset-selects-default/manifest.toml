@@ -1,16 +1,16 @@
-description = "A section title naming none of a linked document's presets leaves it under its default alone: the section Other selects no preset of rules.md, so rules.md joins Modes, which default pairs it with, and not Reviews, which only its Checks preset names. No reference selects the Checks preset of rules.md, so the run warns that it governs nothing."
+description = "A link carrying no matching title tag applies default alone. The target joins Modes, and its unselected Checks preset warns unused."
 
 clauses = [
   "Presets — A preset nothing selected warns",
   "Presets — default always applies",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Grouping — Group membership",
   "Grouping — Nested groups",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

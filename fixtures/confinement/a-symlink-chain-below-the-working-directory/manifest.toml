@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["chain.md"]
+arguments = ["--entry", "chain.md"]
 
 [expected]
 exit_status = 1

@@ -18,6 +18,7 @@ to a fault.
 import itertools
 import json
 import re
+import shlex
 import shutil
 import sys
 from dataclasses import replace
@@ -43,7 +44,6 @@ from workflow import (
     FEWER,
     FORMS,
     FRONTMATTER,
-    INLINE_LINE,
     LINKED_FORM,
     MARKED_FORMS,
     PROSE,
@@ -69,12 +69,19 @@ from workflow import (
     compile_faults,
     compile_reference,
     compiled_walk,
+    deferred_links,
     dispatch_starts,
     dispatch_walk,
     dispatched,
+    effective_presets,
     entry_bundle,
+    fragment_links,
+    inline_lines,
     inputs_read,
     instruction,
+    markdown_links,
+    read_compile,
+    read_dispatch,
     read_workflow,
     reported,
     section_body,
@@ -514,7 +521,8 @@ def compiled_faults(workflow: Workflow, scenario: Scenario, output: Path) -> lis
     if not faults and walked != scenario.path:
         faults.append(f"the compiled bundles lead {walked}")
     stated = tuple(run for run in scenario.compile if run.by is None)
-    if runs != stated:
+    root = workflow.form(COMPILED_FORM)
+    if [run.selection(root) for run in runs] != [run.selection(root) for run in stated]:
         faults.append(f"the walk runs pf on {[run.args for run in runs]}")
     return [f"{scenario.name}: {fault}" for fault in faults]
 
@@ -540,36 +548,39 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     and the actions a trace entry states are the ones the material those
     runs compile states, none of them stated by the bundle itself. Each
     dispatched bundle opens with the run-pf line, each `⇉` link it carries,
-    inline or as an `In parallel` item, names a file its run wrote beside it,
+    inline or as an dispatch-set item, names a file its run wrote beside it,
     and each bundle a sub-agent follows is one a `⇉` link names.
     """
     walked, _, faults = compiled_walk(workflow, scenario.inputs, output)
     if faults:
         return [f"{scenario.name}: {fault}" for fault in faults]
     followed: dict[str, Path] = {}
-    runs: list[tuple[str, ...]] = []
-    made: dict[str, list[tuple[str, ...]]] = {
-        entry.section: [] for entry in scenario.trace
-    }
+    runs: list[Compile] = []
+    made: dict[str, list[Compile]] = {entry.section: [] for entry in scenario.trace}
 
-    def activate(reference: str) -> str:
-        runs.append((reference,))
+    def activate(request: Compile) -> str:
+        runs.append(request)
+        reference = request.entry
+        assert reference is not None
         folder = output / f"sub-{len(runs)}"
-        made = compile_reference(workflow.form(COMPILED_FORM), reference, folder)
+        root = workflow.form(COMPILED_FORM)
+        made = compile_reference(root, reference, folder, request.presets)
         assert made.returncode == 0, made.stderr.decode()
-        return (folder / entry_bundle(reference)).read_text()
+        return (
+            folder / entry_bundle(reference, effective_presets(root, request))
+        ).read_text()
 
     for entry in scenario.trace:
         # `pf` writes every target's bundle beside the entry that dispatches
         # it, in that entry's own `.bundles` folder, so a target is found
         # there and in the set of any run a later document makes.
-        wanted = entry_bundle(entry.section).name
+        wanted = entry_bundle(entry.section, entry.presets).name
         written = sorted(output.rglob(wanted))
         if not written:
             faults.append(f"no run writes the bundle {entry.section} follows")
             continue
         text = written[0].read_text()
-        followed[entry.section] = written[0].resolve()
+        followed[wanted] = written[0].resolve()
         if not opens_with_run_pf(text):
             faults.append(f"{entry.section}'s bundle opens with no run-pf line")
         before = len(runs)
@@ -591,13 +602,22 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         elif stated != expected:
             faults.append(f"{entry.section}'s runs compile the actions {list(stated)}")
     for section, ran in made.items():
-        stated_runs = [run.args for run in scenario.compile if run.by == section]
-        if ran != stated_runs:
-            faults.append(f"{section}'s sub-agents run pf on {ran}")
+        stated_runs = [
+            replace(run, by=None) for run in scenario.compile if run.by == section
+        ]
+        root = workflow.form(COMPILED_FORM)
+        if [run.selection(root) for run in ran] != [
+            run.selection(root) for run in stated_runs
+        ]:
+            faults.append(
+                f"{section}'s sub-agents run pf on {[run.args for run in ran]}"
+            )
     links = [
         (bundle, target)
         for bundle in sorted(output.rglob("*.bundle.md"))
-        for target in DISPATCH_LINK.findall(bundle.read_text())
+        for link in markdown_links(bundle.read_text())
+        if link.label.startswith("⇉ ")
+        for target in (link.destination,)
     ]
     faults += [
         f"{bundle.name} links {target}, which no run writes"
@@ -623,21 +643,29 @@ def bootstrap_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     so a workflow drawing one is held to its runs and title alone.
     """
     root = workflow.directory / BOOTSTRAP_DIR
-    lines = INLINE_LINE.findall(authored(root / SKILL_ENTRY))
+    lines = inline_lines(authored(root / SKILL_ENTRY))
     if len(lines) != 1:
         return [f"{scenario.name}: the skill holds {len(lines)} inline lines"]
-    [(title, reference)] = lines
+    [link] = lines
+    title, reference = link.label, link.destination
     faults = []
-    if scenario.compile != (Compile(None, ()), Compile(None, (reference,))):
-        faults.append(f"it states {scenario.compile}, not pf, then pf {reference}")
+    request = Compile(None, reference, link.tags)
+    if [run.selection(root) for run in scenario.compile] != [
+        run.selection(root) for run in (Compile(None), request)
+    ]:
+        faults.append(
+            f"it states {scenario.compile}, not pf, then pf --entry {reference}"
+        )
     headed = re.search(r"^# (.+)$", authored(root / reference), re.MULTILINE)
     if headed is None or headed.group(1) != title:
         faults.append(f"the line is titled {title!r}, not as {reference} is headed")
-    run = compile_reference(root, reference, output)
+    run = compile_reference(root, reference, output, request.presets)
     if run.returncode != 0:
         faults.append(f"pf {reference} exited {run.returncode}")
     elif not workflow.diagram.decisions:
-        compiled = (output / entry_bundle(reference)).read_text()
+        compiled = (
+            output / entry_bundle(reference, effective_presets(root, request))
+        ).read_text()
         walked, walk_faults = bundle_walk(workflow, compiled, scenario.inputs)
         faults += walk_faults
         if not walk_faults and walked != scenario.path:
@@ -878,7 +906,7 @@ def test_no_edge_workflow_source_writes_a_retired_mark() -> None:
 def test_a_set_publishes_parallel_items_linking_bundles_opening_with_the_run_pf_line(
     tmp_path: Path,
 ) -> None:
-    """AC27: `dispatch-set`'s set is an `In parallel` section of `⇉` items.
+    """AC27: `dispatch-set`'s set is an dispatch-set section of `⇉` items.
 
     Each item names the file `pf` wrote for its target beside the entry, and
     that file opens with the run-pf line, as the chain's inline `⇉` link
@@ -939,9 +967,9 @@ def test_a_skill_entry_declaring_nothing_holds_its_line_as_written() -> None:
     block = FRONTMATTER.match(entry.read_text())
     assert block is not None
     assert "prosiform" not in YAML(typ="safe", pure=True).load(block.group()[4:-4])
-    assert INLINE_LINE.findall(entry.read_text()) == [
-        ("Release", "sources/workflow.md")
-    ]
+    assert [
+        (link.label, link.destination) for link in inline_lines(entry.read_text())
+    ] == [("Release", "sources/workflow.md")]
 
 
 @pytest.mark.parametrize(
@@ -974,22 +1002,23 @@ def test_a_bootstrap_scenario_omitting_the_guide_is_a_fault(tmp_path: Path) -> N
         tmp_path,
         "inline-bootstrap",
         "scenarios.toml",
-        "[[scenario.compile]]\nargs = []\n\n",
+        "[[scenario.compile]]\n\n",
         "",
     )
     output = tmp_path / "output"
     output.mkdir()
     assert bootstrap_faults(workflow, workflow.scenarios[0], output) == [
-        "feature-tagged: it states (Compile(by=None, args=('sources/workflow.md',)),),"
-        " not pf, then pf sources/workflow.md"
+        "feature-tagged: it states (Compile(by=None, entry='sources/workflow.md', "
+        "presets=frozenset()),),"
+        " not pf, then pf --entry sources/workflow.md"
     ]
 
 
 def test_a_conditional_deferral_is_run_where_its_step_holds_and_nowhere_else() -> None:
     """AC7, AC8: the outer line reached and passed, the nested needed and not."""
     named = {workflow.name: workflow for workflow in CORPUS}
-    migration = Compile(None, ("reference/migration.md#steps",))
-    archive = Compile(None, ("reference/archive.md#steps",))
+    migration = Compile(None, "reference/migration.md#steps")
+    archive = Compile(None, "reference/archive.md#steps")
     assert {
         scenario.name: scenario.compile
         for scenario in named["deferred-composition"].scenarios
@@ -1012,7 +1041,8 @@ def test_a_conditional_deferral_is_run_where_its_step_holds_and_nowhere_else() -
         (
             '"scope.txt" = "large", "history.txt" = "kept"',
             '"scope.txt" = "large", "history.txt" = "dropped"',
-            "nested-needed: the walk runs pf on [('reference/migration.md#steps',)]",
+            "nested-needed: the walk runs pf on "
+            "[('--entry=reference/migration.md#steps',)]",
         ),
     ],
     ids=["outer-passed", "nested-unneeded"],
@@ -1047,12 +1077,106 @@ def test_the_real_target_of_a_preset_deferral_leads_elsewhere(tmp_path: Path) ->
 
 
 def test_a_preset_deferral_states_the_stand_ins_path() -> None:
-    """AC9: one preset on both headings, a stand-in, and the path it sends."""
+    """AC9: the deferral title selects a stand-in and the path it states."""
     workflow = next(item for item in CORPUS if item.name == "preset-deferral")
     [scenario] = workflow.scenarios
     assert scenario.path == ("Entry", "Solicit", "Mirror", "Restore", "Exit")
-    assert scenario.compile == (Compile(None, ("reference/fetch.md#read-mirror",)),)
+    assert scenario.compile == (
+        Compile(None, "reference/fetch.md#read-mirror", frozenset({"mirror"})),
+    )
     assert workflow.sections[COMPILED_FORM]["Mirror"].deferred
+
+
+def test_dispatch_trace_presets_require_a_string_list() -> None:
+    with pytest.raises(CorpusError, match="presets need a string list"):
+        read_dispatch({"dispatch": "crew#work", "presets": ["lift"]}, "bad")
+
+
+@pytest.mark.parametrize("tags", ["", ' "strap"'])
+def test_deferred_composition_without_its_required_tags_leads_elsewhere(
+    tmp_path: Path, tags: str
+) -> None:
+    workflow = broken(
+        tmp_path,
+        "preset-deferral",
+        "compiled/states/mirror.md",
+        ' "mirror"',
+        tags,
+    )
+    assert any(
+        "compiled bundles lead" in fault
+        for fault in compiled_faults(workflow, workflow.scenarios[0], tmp_path / "out")
+    )
+
+
+@pytest.mark.parametrize("tags", ["", ' "lift"', ' "wrong"'])
+def test_dispatched_selection_without_required_tags_has_no_matching_bundle(
+    tmp_path: Path, tags: str
+) -> None:
+    workflow = broken(
+        tmp_path,
+        "deferred-dispatch",
+        "compiled/reference/loading.md",
+        ' "strap"',
+        tags,
+    )
+    faults = sub_agent_faults(workflow, workflow.scenarios[0], tmp_path / "out")
+    assert any(
+        "no run writes the bundle reference/crew#work follows" in fault
+        for fault in faults
+    )
+
+
+def test_equivalent_scenario_preset_requests_name_the_same_compiled_run(
+    tmp_path: Path,
+) -> None:
+    """Expected runs compare matching names, including default and unknown tokens."""
+    workflow = broken(
+        tmp_path,
+        "preset-deferral",
+        "scenarios.toml",
+        'presets = "mirror"',
+        'presets = " UNKNOWN, MIRROR,mirror,default "',
+    )
+    assert compiled_faults(workflow, workflow.scenarios[0], tmp_path / "out") == []
+
+
+def test_compile_reference_selects_declared_presets_and_reads_qualified_output(
+    tmp_path: Path,
+) -> None:
+    """The eval's real compiler call preserves title tags and effective naming."""
+    (tmp_path / "entry.md").write_text(
+        "---\nprosiform:\n  Checks:\n    subst: [{old.md: new.md}]\n---\n"
+        "# Entry\n\n[Read](old.md)\n"
+    )
+    for name in ("old", "new"):
+        (tmp_path / f"{name}.md").write_text(
+            f"---\nprosiform: {{}}\n---\n# {name.title()}\n{name.title()} body.\n"
+        )
+    request = Compile(None, "entry.md", frozenset({"checks", "unknown"}))
+    output = tmp_path / "out"
+    made = compile_reference(tmp_path, "entry.md", output, request.presets)
+    assert made.returncode == 0, made.stderr.decode()
+    assert effective_presets(tmp_path, request) == frozenset({"Checks"})
+    path = output / entry_bundle("entry.md", frozenset({"Checks"}))
+    assert bundled(output) == [path]
+    assert "New body." in path.read_text()
+    assert "Old body." not in path.read_text()
+
+
+def test_composition_readers_retain_decoded_titles_outside_destinations() -> None:
+    """Tags survive source and published-line reads without joining the href."""
+    [deferred] = deferred_links(
+        '[¬↳ Read](fetch.md#read " Checks, Release Candidate ")'
+    )
+    [inline] = inline_lines('[↳ Read](fetch.md#read "checks,Release Candidate")')
+    assert deferred.destination == inline.destination == "fetch.md#read"
+    assert deferred.tags == inline.tags == frozenset({"checks", "release candidate"})
+    assert fragment_links('[Read](#read "checks,draft")') == [("Read", "read")]
+    assert read_compile(
+        {"entry": "fetch.md#read", "presets": " Checks,CHECKS, Release Candidate "},
+        "one",
+    ) == Compile(None, "fetch.md#read", inline.tags)
 
 
 def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches(
@@ -1061,19 +1185,28 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
     """AC13: the `↳` line compiled where Pack's step holds, then its dispatches."""
     workflow = next(item for item in CORPUS if item.name == "deferred-dispatch")
     text, _ = compiled_entry(workflow, tmp_path / "entry")
-    assert INLINE_LINE.findall(text) == [("Crew", "reference/loading.md#crew")]
+    assert [(link.label, link.destination) for link in inline_lines(text)] == [
+        ("Crew", "reference/loading.md#crew")
+    ]
     assert "¬" not in text and "⇉" not in text
     compiled, passed = workflow.scenarios
-    assert compiled.compile == (Compile(None, ("reference/loading.md#crew",)),)
+    assert compiled.compile == (Compile(None, "reference/loading.md#crew"),)
     assert dispatch_starts(workflow, COMPILED_FORM, compiled.path, compiled.inputs) == (
-        ("reference/crew#lift", False, 0),
-        ("reference/crew#strap", False, 0),
+        ("reference/crew#work", False, 0),
+        ("reference/crew#work", False, 0),
     )
     assert [entry.section for entry in compiled.trace] == [
-        "reference/crew#lift",
-        "reference/crew#strap",
+        "reference/crew#work",
+        "reference/crew#work",
     ]
-    assert [entry.action for entry in compiled.trace] == [None, None]
+    assert [entry.presets for entry in compiled.trace] == [
+        frozenset({"lift"}),
+        frozenset({"strap"}),
+    ]
+    assert [entry.action for entry in compiled.trace] == [
+        ("lift.txt", "lifted"),
+        ("strap.txt", "strapped"),
+    ]
     assert (passed.compile, passed.trace) == ((), ())
     assert dispatch_walk(workflow, COMPILED_FORM, passed.path, passed.inputs) == ()
 
@@ -1086,18 +1219,18 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
             '"order.txt" = "bulk"',
             [
                 "deferred-dispatch-passed: the walk runs pf on"
-                " [('reference/loading.md#crew',)]",
+                " [('--entry=reference/loading.md#crew',)]",
                 "deferred-dispatch-passed: the compiled form dispatches"
-                " ['reference/crew#lift', 'reference/crew#strap'], not the"
+                " ['reference/crew#work', 'reference/crew#work'], not the"
                 " [section, set] pairs the trace names: []",
             ],
         ),
         (
-            '[[scenario.compile]]\nargs = ["reference/loading.md#crew"]\n',
+            '[[scenario.compile]]\nentry = "reference/loading.md#crew"\n',
             "",
             [
                 "deferred-dispatch-compiled: the walk runs pf on"
-                " [('reference/loading.md#crew',)]"
+                " [('--entry=reference/loading.md#crew',)]"
             ],
         ),
     ],
@@ -1201,7 +1334,9 @@ def test_a_first_hop_bundle_runs_pf_first_and_its_line_states_its_action(
         tmp_path / "workflow.bundles" / "hop_ledger__balance.bundle.md"
     ).read_text()
     assert opens_with_run_pf(ledger)
-    assert INLINE_LINE.findall(ledger) == [("Close", "steps/closing.md#close")]
+    assert [(link.label, link.destination) for link in inline_lines(ledger)] == [
+        ("Close", "steps/closing.md#close")
+    ]
     [entry] = first.trace
     assert (entry.section, entry.action) == (
         "hop/ledger#balance",
@@ -1425,10 +1560,10 @@ def test_the_feature_workflows_are_preset_selection_group_placement_and_subst() 
     assert all(named[name].forms == (DIAGRAM,) for name in FEATURES)
 
 
-def test_the_title_linking_a_document_selects_the_presets_placing_it(
+def test_the_link_title_tags_select_the_presets_placing_its_document(
     tmp_path: Path,
 ) -> None:
-    """AC23: default alone, one preset a title selects, and two one title selects.
+    """AC23: default alone, one preset selected by a tag, and two selected together.
 
     Proof's default places it, Patch selects Verify's `patch` preset, and
     `Security Review` selects both Audit's `security` group and its `review`
@@ -1467,7 +1602,7 @@ def test_subst_pairs_redirect_the_links_a_document_writes(tmp_path: Path) -> Non
 
     The entry's default sends the diagram's Approve to another document,
     Amend's default sends its Inspect link to one section of the handbook, and
-    the entry's title selects Stage's `release` preset, whose Gate pair holds
+    the link title selects Stage's `release` preset, whose Gate pair holds
     over the default's.
     """
     workflow = read_workflow(WORKFLOWS / "subst-redirect")
@@ -1751,8 +1886,8 @@ def test_a_scenario_states_each_pf_run_in_order_with_its_arguments() -> None:
     named = {workflow.name: workflow for workflow in CORPUS}
     for scenario in named["bootstrap-audit"].scenarios:
         assert scenario.compile == (
-            Compile(None, ()),
-            Compile(None, ("sources/workflow.md",)),
+            Compile(None),
+            Compile(None, "sources/workflow.md"),
         )
     assert [scenario.compile for scenario in named["dispatch-set"].scenarios] == [()]
 
@@ -1763,11 +1898,12 @@ def test_a_sub_agents_run_is_read_by_the_section_it_follows(tmp_path: Path) -> N
         tmp_path,
         "dispatch-set",
         "scenarios.toml",
-        "together = true\n",
-        'together = true\n\n[[scenario.compile]]\nby = "review#tests"\nargs = []\n',
+        'action = { file = "tests.txt", value = "tested" }\n',
+        'action = { file = "tests.txt", value = "tested" }\n'
+        '\n[[scenario.compile]]\nby = "review#tests"\n',
     )
     [scenario] = workflow.scenarios
-    assert scenario.compile == (Compile("review#tests", ()),)
+    assert scenario.compile == (Compile("review#tests"),)
     assert compile_faults(workflow, scenario) == []
 
 
@@ -1775,11 +1911,11 @@ def test_a_sub_agents_run_is_read_by_the_section_it_follows(tmp_path: Path) -> N
     ("run", "fault"),
     [
         (
-            'args = ["absent.md#work"]',
+            'entry = "absent.md#work"',
             "parallel-set: a run names absent.md#work, no document of its sources",
         ),
         (
-            'args = ["#source"]',
+            'entry = "#source"',
             "parallel-set: a run names #source, no document of its sources",
         ),
         (
@@ -1796,8 +1932,9 @@ def test_a_stated_run_naming_no_document_of_the_sources_is_a_fault(
         tmp_path,
         "dispatch-set",
         "scenarios.toml",
-        "together = true\n",
-        f"together = true\n\n[[scenario.compile]]\n{run}\n",
+        'action = { file = "tests.txt", value = "tested" }\n',
+        'action = { file = "tests.txt", value = "tested" }\n'
+        f"\n[[scenario.compile]]\n{run}\n",
     )
     [scenario] = workflow.scenarios
     assert scenario_faults(workflow, scenario) == [fault]
@@ -1812,7 +1949,7 @@ def test_a_run_stated_by_a_workflow_running_no_command_is_a_fault(
         "linear",
         "scenarios.toml",
         "inputs = {}\n",
-        'inputs = {}\n\n[[scenario.compile]]\nargs = ["workflow.md"]\n',
+        'inputs = {}\n\n[[scenario.compile]]\nentry = "workflow.md"\n',
     )
     [scenario] = workflow.scenarios
     assert scenario_faults(workflow, scenario) == [
@@ -1821,19 +1958,28 @@ def test_a_run_stated_by_a_workflow_running_no_command_is_a_fault(
 
 
 @pytest.mark.parametrize(
-    "run", ['args = "workflow.md"', "args = [1]", "by = 2"], ids=str
+    "run",
+    [
+        'entry = ["workflow.md"]',
+        "entry = 1",
+        "by = 2",
+        "presets = 1",
+        'presets = "mirror"',
+    ],
+    ids=str,
 )
 def test_a_run_whose_fields_are_not_references_is_refused(
     tmp_path: Path, run: str
 ) -> None:
-    """AC1: `by` is a section and `args` a list of references, or nothing reads."""
+    """AC1: one entry and its preset list describe each compiling run."""
     with pytest.raises(CorpusError, match="parallel-set: a run's"):
         broken(
             tmp_path,
             "dispatch-set",
             "scenarios.toml",
-            "together = true\n",
-            f"together = true\n\n[[scenario.compile]]\n{run}\n",
+            'action = { file = "tests.txt", value = "tested" }\n',
+            'action = { file = "tests.txt", value = "tested" }\n'
+            f"\n[[scenario.compile]]\n{run}\n",
         )
 
 
@@ -2236,11 +2382,7 @@ def scored(
 
 def stated_commands(scenario: Scenario) -> list[str]:
     """The session's `pf` runs a scenario states, as shell lines."""
-    return [
-        " ".join(("pf", *run.args)).strip()
-        for run in scenario.compile
-        if run.by is None
-    ]
+    return [shlex.join(("pf", *run.args)) for run in scenario.compile if run.by is None]
 
 
 def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]:
@@ -2291,7 +2433,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     stated = stated_commands(scenario)
     if stated:
         found.add(departing(path, commands=()))
-        found.add(departing(path, commands=("pf absent.md#none", *stated)))
+        found.add(departing(path, commands=("pf --entry absent.md#none", *stated)))
         if len(stated) > 1:
             found.add(departing(path, commands=tuple(reversed(stated))))
     for dispatch in scenario.trace:

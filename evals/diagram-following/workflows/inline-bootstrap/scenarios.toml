@@ -11,10 +11,9 @@ path = ["Entry", "Freeze", "Tag", "Broadcast", "Exit"]
 inputs = { "change.txt" = "feature" }
 
 [[scenario.compile]]
-args = []
 
 [[scenario.compile]]
-args = ["sources/workflow.md"]
+entry = "sources/workflow.md"
 
 [[scenario]]
 name = "fix-backported"
@@ -22,7 +21,6 @@ path = ["Entry", "Freeze", "Backport", "Broadcast", "Exit"]
 inputs = { "change.txt" = "fix" }
 
 [[scenario.compile]]
-args = []
 
 [[scenario.compile]]
-args = ["sources/workflow.md"]
+entry = "sources/workflow.md"

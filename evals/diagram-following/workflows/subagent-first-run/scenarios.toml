@@ -21,7 +21,7 @@ action = { file = "closing.txt", value = "closed" }
 
 [[scenario.compile]]
 by = "hop/ledger#balance"
-args = ["steps/closing.md#close"]
+entry = "steps/closing.md#close"
 
 # The review, at the second hop, compiles the weighing rules its line names;
 # their bundle states its action and dispatches the ruling, whose bundle, at
@@ -45,8 +45,8 @@ action = { file = "ruling.txt", value = "ruled" }
 
 [[scenario.compile]]
 by = "hop/review#scan"
-args = ["steps/weighing.md#weigh"]
+entry = "steps/weighing.md#weigh"
 
 [[scenario.compile]]
 by = "steps/ruling#rule"
-args = ["steps/recording.md#file"]
+entry = "steps/recording.md#file"

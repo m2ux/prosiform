@@ -125,9 +125,11 @@ from markdown_it.token import Token
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    BundleSelection,
     Declarations,
     Reference,
     Substitution,
+    bundle_selection,
     bundled,
     directive,
     dispatched,
@@ -140,6 +142,7 @@ from prosiform.closure import (
     withholding_target,
 )
 from prosiform.heading import title_cased
+from prosiform.metadata import Conversion
 from prosiform.profile import SUFFIXES
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -181,6 +184,7 @@ from prosiform.source import (
     visible,
     within,
 )
+from prosiform.tags import read as read_tags
 
 MAX_LEVEL = 6
 SHIFT = 1
@@ -388,7 +392,7 @@ def pointing(
         return True
     if dispatched_to is None:
         return alone
-    given = dispatched_to.get(((target.path, target.fragment), True))
+    given = dispatched_to.get(((target.path, target.fragment), target.tags, True))
     return given is not None and filed(given)
 
 
@@ -398,6 +402,8 @@ def sole_set(
     heading: Token,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> bool:
     """Whether the `⫽` links a heading's own section writes name one distinct target.
 
@@ -405,7 +411,7 @@ def sole_set(
     document-level heading. A set of one target publishes as a dispatch,
     so the heading carrying one of its links shows the dispatch mark.
     """
-    targets: set[tuple[str, str | None]] = set()
+    targets: set[BundleSelection] = set()
     counting = False
     for region in regions(tokens):
         if region.type == HEADING_OPEN:
@@ -427,9 +433,14 @@ def sole_set(
                     opening,
                     declarations,
                     substitution,
+                    tags=read_tags(str(child.attrGet("title") or "")),
                 )
                 if found is not None:
-                    targets.add((found.path, found.fragment))
+                    # An unselected heading can name an uncaptured target.
+                    # Its labels establish no published single-selection set.
+                    if found.path not in conversions:
+                        return False
+                    targets.add(bundle_selection(found, conversions[found.path]))
     return len(targets) == 1
 
 
@@ -475,6 +486,7 @@ def emitted_visible(
                 child.content,
                 declarations,
                 substitution,
+                tags=read_tags(str(before.attrGet("title") or "")),
             )
             if target is not None:
                 shown_label = published_text(
@@ -496,6 +508,8 @@ def shown_text(
     tokens: Sequence[Token],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> dict[int, str]:
     """The visible text of each heading token, keyed by the token's identity.
 
@@ -509,7 +523,14 @@ def shown_text(
             inline,
             declarations,
             substitution,
-            alone=sole_set(path, tokens, opening, declarations, substitution),
+            alone=sole_set(
+                path,
+                tokens,
+                opening,
+                declarations,
+                substitution,
+                conversions=conversions,
+            ),
         )
         for opening, inline in headings(tokens)
     }
@@ -564,7 +585,7 @@ def rewrite(
 
     A dispatched link takes the destination its region carries for its
     target, which the dispatch map holds by the region's first line: a
-    bundle file, or the `In parallel` sub-section of a set. A dispatch the
+    bundle file, or the dispatch-set sub-section of a set. A dispatch the
     map holds none for is refused, and the line the refusal names is the
     line of the file the source was read from, which the first line of its
     content states.
@@ -609,8 +630,9 @@ def rewrite(
                     dispatched_to=here,
                     line=start + first_line,
                     substitution=substitution,
+                    tags=tags,
                 )
-                for at, (one, opening) in enumerate(found)
+                for at, (one, opening, tags) in enumerate(found)
             ]
             written[start:end] = rewritten(written[start:end], inline, targets, defined)
     for fence in within(tokens, selected):
@@ -692,6 +714,8 @@ def target(
     dispatched_to: Mapping[Served, str] | None = None,
     line: int | None = None,
     substitution: Substitution = UNSUBSTITUTED,
+    *,
+    tags: frozenset[str] = frozenset(),
 ) -> str | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -705,7 +729,7 @@ def target(
     path from the invocation working directory, so the run that
     compiles it later, from that directory, follows it as written. A
     dispatched one takes the destination its section carries for its
-    target, a bundle file or an `In parallel` sub-section, and a
+    target, a bundle file or a dispatch-set sub-section, and a
     dispatch the map holds none for is refused rather than published:
     the link states a handoff the bundle does not state. Neither is
     rewritten to the destination of the target's own heading, even where
@@ -720,13 +744,13 @@ def target(
     if found is not None:
         return f"{anchor}{assigned[(found.path, found.fragment)]}"
     withheld = withholding_target(
-        path, destination, opening, declarations, substitution
+        path, destination, opening, declarations, substitution, tags=tags
     )
     if withheld is None:
         return None
     if dispatched(opening):
         held = {} if dispatched_to is None else dispatched_to
-        served = ((withheld.path, withheld.fragment), parallel(opening))
+        served = ((withheld.path, withheld.fragment), withheld.tags, parallel(opening))
         if served not in held:
             raise Unplaced(path, line, destination, opening, composing=False)
         return held[served]
@@ -764,6 +788,8 @@ def file_heading(
     tokens: Sequence[Token],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> str:
     """The text one document's file group is headed by.
 
@@ -774,7 +800,11 @@ def file_heading(
     titled = document_title(tokens)
     if titled is None:
         return heading_text(path)
-    return single_line(shown_text(path, tokens, declarations, substitution)[id(titled)])
+    return single_line(
+        shown_text(path, tokens, declarations, substitution, conversions=conversions)[
+            id(titled)
+        ]
+    )
 
 
 def absorbed(tokens: Sequence[Token], name: str) -> Token | None:
@@ -1028,6 +1058,8 @@ def group(
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
+    *,
+    conversions: Mapping[str, Conversion],
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -1077,9 +1109,11 @@ def group(
     declarations behind them.
     """
     situate = situate and carries_title(tokens) and selected is None
-    text = shown_text(path, tokens, declarations, substitution)
+    text = shown_text(path, tokens, declarations, substitution, conversions=conversions)
     titled = document_title(tokens)
-    title = file_heading(path, tokens, declarations, substitution)
+    title = file_heading(
+        path, tokens, declarations, substitution, conversions=conversions
+    )
     environment: Mapping[str, Definition] = {} if defined is None else defined
     removed = {
         at for one in environment.values() for at in range(one.lines[0], one.lines[1])

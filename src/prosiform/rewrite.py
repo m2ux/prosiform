@@ -57,7 +57,7 @@ A mark survives the rewrite where it states who compiles the material. A
 dispatch pointing at a bundle file is the one thing in the bundle saying
 the material belongs to another agent, so its label reaches the bundle
 opening with the dispatch mark and one blank. A deferral states when, a
-composition where, and a set's `In parallel` sub-section states who,
+composition where, and a set's dispatch-set sub-section states who,
 which each destination already says, so their marks and the blanks
 following them are dropped from the label they open.
 A link the bundle took no destination for opens with no operator, because
@@ -83,6 +83,7 @@ from prosiform.source import (
     opening_markers,
     opening_text,
 )
+from prosiform.tags import read as read_tags
 
 BACKTICK = "`"
 ESCAPE = "\\"
@@ -444,8 +445,8 @@ def uses(
     return found
 
 
-def destinations(inline: Token) -> list[tuple[str, str]]:
-    """Each link one inline token carries, as its destination and its opening.
+def destinations(inline: Token) -> list[tuple[str, str, frozenset[str]]]:
+    """Each inline link's destination, opening and requested preset tags.
 
     The opening is the literal text the link's content begins with,
     which is what a deferral is written in, so a caller classifying the
@@ -459,7 +460,11 @@ def destinations(inline: Token) -> list[tuple[str, str]]:
     was written in.
     """
     return [
-        (str(child.attrGet(HREF) or ""), opening_text(children, at))
+        (
+            str(child.attrGet(HREF) or ""),
+            opening_text(children, at),
+            read_tags(str(child.attrGet("title") or "")),
+        )
         for children, at, child in events(inline.children or [])
         if child.type == LINK_OPEN
     ]

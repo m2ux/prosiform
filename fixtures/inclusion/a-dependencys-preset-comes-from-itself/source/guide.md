@@ -7,4 +7,4 @@ prosiform:
 
 ## Checks
 
-Follow [the rules](rules.md).
+Follow [the rules](rules.md "Checks").

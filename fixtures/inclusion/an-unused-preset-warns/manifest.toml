@@ -1,4 +1,4 @@
-description = "A preset no reference selects governs nothing, and the run says so beside the bundle it publishes: guide.md declares a Draft preset, its own title Guide names no Draft, and no other document links it, so the run warns once, naming guide.md and Draft, and exits 0."
+description = "The entry declares Draft, and its command supplies no matching --presets name. Draft governs nothing, so the run warns once and publishes."
 
 clauses = [
   "Presets — A preset nothing selected warns",
@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

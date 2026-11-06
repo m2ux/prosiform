@@ -12,7 +12,7 @@ An entry naming one section takes that section and nothing above it, so a headin
 
 ## Closure
 
-The run starts at the **entry references**, the arguments on the command line, and follows each dependency the selected content carries. It repeats until nothing new is reachable. The result is the **closure**: everything the bundle will contain.
+The run starts at the **entry reference**, supplied through `--entry`, and follows each dependency the selected content carries. It repeats until nothing new is reachable. The result is the **closure**: everything the bundle will contain.
 
 Fragment-only references resolve against their own source document wherever that source sits. A link to a sibling section of the same document is an ordinary reference; it is not a self-reference unless it names the region it sits in.
 
@@ -35,12 +35,12 @@ A link an operator withholds is not followed: a deferred or dispatched target co
 
 A document declares its presets, as [Sources](sources.md#frontmatter) states, and each reference reaching it decides which of them are in force.
 
-- **`default` always applies.** A document's `default` preset is in force wherever it is compiled. The word `default` in a title selects nothing.
-- **A title selects by keyword.** A reference selects each preset of its target whose name appears as a whole word, in any case, in the title of the section holding the reference, so `Checks and Draft` selects `checks` and `draft` and `Checklist` selects neither. A reference in a preamble stands in no section and selects by no keyword.
-- **An entry reads the file it names.** A command-line entry selects by the title of the section it names, or by its document's own title.
-- **Selected presets layer over `default`.** A selected preset's `group` pair holds over `default`'s, and its alternative for a `subst` key holds over `default`'s for that key. The presets one title selects union their settings, and two of them stating different `group` pairs, or mapping one `subst` key to two alternatives, fail the run with `E_INVALID_USAGE` and exit status 2, naming both presets.
-- **A preset governs its own document.** The presets in force decide the group a document's selected content joins, as [Hierarchy](hierarchy.md#groups) states, and the target each link it writes resolves to. A document it links is governed by that document's own presets, as the linking section selects them, and a dispatched or deferred target by its own when it is compiled.
-- **Each link selects for itself.** Two sections linking one document may put different presets of it in force, and one run then places that document under each `group` pair they select.
+- **`default` always applies.** A document's `default` preset is in force wherever it is compiled. The tag `default` selects no named preset.
+- **A link title selects complete names.** `[Plan](guide.md#plan "checks,draft")` selects the destination's `checks` and `draft` presets. Split the title on literal commas, trim surrounding Unicode whitespace, compare without case, and ignore empty, repeated and unknown names. Matching follows declaration order. `Checks and Draft` is one complete name, not two tags, and the list has no escape or quoting syntax for a comma inside a name. Shell quotes keep one argument together; they do not change this list grammar. Headings and visible labels supply no selection; a preamble link selects by its title like any other link.
+- **An entry reads the file it names.** `pf --entry guide.md#plan --presets checks,draft` supplies the same selection. Omitting `--presets` selects no named preset.
+- **Selected presets layer over `default`.** A selected preset's `group` pair holds over `default`'s, and its alternative for a `subst` key holds over `default`'s for that key. The presets one tag list selects union their settings, and two of them stating different `group` pairs, or mapping one `subst` key to two alternatives, fail the run with `E_INVALID_USAGE` and exit status 2, naming both presets.
+- **A preset governs its own document.** The presets in force decide the group a document's selected content joins, as [Hierarchy](hierarchy.md#groups) states, and the target each link it writes resolves to. A document it links is governed by that document's own presets, as its incoming link title selects them, and a dispatched or deferred target by its own when it is compiled.
+- **Each link selects for itself.** Two links reaching one document may put different presets of it in force, and one run then places that document under each `group` pair they select.
 - **A preset nothing selected warns.** A preset of a document the run's bundles carry that no reference reaching it selected, in any bundle of the run, raises `W_PRESET_UNUSED`, naming the document and the preset, and the run publishes at exit status 0. `default` is never unused. A document reached only through a deferral raises none: the run compiling the deferral reads its presets.
 
 ## The substitution mapping
@@ -65,7 +65,7 @@ Reachability is settled before any output is arranged. A source newly included b
 
 ## Placement order
 
-Sources are placed in the order the first reference names them: the entry references in command-line order, then each placed source's selected content in turn, in source order.
+Sources are placed in the order the first reference names them: the entry, then each placed source's selected content in turn, in source order.
 
 That order is the author's, not the discovery's. A preamble reading
 

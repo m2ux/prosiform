@@ -52,10 +52,11 @@ Every other failure raises `Invalid`, which names the invariant and
 what disagreed. Nothing is published while a check fails.
 """
 
-from collections.abc import Collection, Iterator, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Any
+from urllib.parse import quote
 
 from markdown_it.common.normalize_url import normalizeLink
 from markdown_it.token import Token
@@ -75,6 +76,7 @@ from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
     Declarations,
+    Reference,
     Substitution,
     bundled,
     dispatched,
@@ -129,6 +131,7 @@ from prosiform.source import (
     visible,
     within,
 )
+from prosiform.tags import read as read_tags
 
 TITLE = "title"
 LINK_CLOSE = "link_close"
@@ -382,7 +385,7 @@ def intended(
     A deferred link naming a declaring document carries its target's
     path from the invocation working directory, so where it points is
     the destination the bundle rebased. A dispatched link points at the
-    bundle file or `In parallel` sub-section its region carries for its
+    bundle file or dispatch-set sub-section its region carries for its
     target. A link
     resolving nowhere the bundle is responsible for is published as
     authored like any other mention.
@@ -414,13 +417,20 @@ def intended(
     found = bundled(path, one.destination, opening, declarations, substitution)
     if found is None:
         withheld = withholding_target(
-            path, one.destination, opening, declarations, substitution
+            path,
+            one.destination,
+            opening,
+            declarations,
+            substitution,
+            tags=read_tags(one.title),
         )
         if withheld is None:
             return one
         if dispatched(opening):
             served = {} if dispatched_to is None else dispatched_to
-            given = served.get(((withheld.path, withheld.fragment), parallel(opening)))
+            given = served.get(
+                ((withheld.path, withheld.fragment), withheld.tags, parallel(opening))
+            )
             if given is None:
                 raise Invalid(
                     TARGET_INTEGRITY,
@@ -1236,17 +1246,27 @@ def preserved(
 def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+    bundle_file: Callable[[Reference], str],
 ) -> None:
     """Hold each dispatched link's destination to a bundle file or a set's section.
 
-    An `In parallel` sub-section answers to no source target, so what a
+    A dispatch-set sub-section answers to no source target, so what a
     set's link destination is held to is the kind of heading it reaches.
     A destination that is no fragment of the bundle names a file beside
     it, which no heading stands for.
     """
     for (path, _line), served in dispatching.items():
-        for (target, _parallel), destination in served.items():
+        for (target, tags, _parallel), destination in served.items():
             if filed(destination):
+                reference = Reference(target[0], target[0], target[1], tags=tags)
+                expected = quote(bundle_file(reference), safe="")
+                if destination != expected:
+                    raise Invalid(
+                        TARGET_INTEGRITY,
+                        f"the dispatch of {target!r} with tags {sorted(tags)!r} "
+                        f"in {path!r} points at {destination!r}, whose bundle "
+                        f"selection differs from {expected!r}",
+                    )
                 continue
             found = reached.get(destination.removeprefix(ANCHOR))
             if found is None or not (
@@ -1255,8 +1275,48 @@ def dispatches(
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the destination {destination!r} a dispatch of {target!r} in "
-                    f"{path!r} was given reaches no In parallel sub-section",
+                    f"{path!r} was given reaches no dispatch-set sub-section",
                 )
+
+
+def parallel_sets(
+    tokens: Sequence[Token],
+    assigned: Sequence[str],
+    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+    bundle_file: Callable[[Reference], str],
+) -> None:
+    """Each generated dispatch set lists exactly its effective selection files."""
+    openings = dict(
+        zip(assigned, (one for one, _inline in headings(tokens)), strict=True)
+    )
+    spans = list(regions(tokens))
+    positions = {id(span): at for at, span in enumerate(spans)}
+    expected: dict[str, set[str]] = {}
+    for served in dispatching.values():
+        for (target, tags, _parallel), destination in served.items():
+            if filed(destination):
+                continue
+            reference = Reference(target[0], target[0], target[1], tags=tags)
+            expected.setdefault(destination, set()).add(
+                quote(bundle_file(reference), safe="")
+            )
+    for destination, files in expected.items():
+        opening = openings[destination.removeprefix(ANCHOR)]
+        found: list[str] = []
+        for span in spans[positions[id(opening)] + 1 :]:
+            if span.type == HEADING_OPEN:
+                break
+            found.extend(
+                one.destination
+                for _children, _at, one in carried(tokens, span)
+                if one.kind == LINK
+            )
+        if len(found) != len(files) or set(found) != files:
+            raise Invalid(
+                TARGET_INTEGRITY,
+                f"the dispatch set {destination!r} lists {found!r} against "
+                f"its effective bundle files {sorted(files)!r}",
+            )
 
 
 def contributions(
@@ -1288,15 +1348,19 @@ def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
 
     The line is the bundle's own text and writes one link, whose
     destination is the target's path from the invocation working
-    directory and the fragment naming its section.
+    directory, the fragment naming its section and its requested presets.
     """
     found = [use for inline in inlines(tokens, [span]) for _c, _a, use in uses(inline)]
     resolved = [resolve(use.destination) for use in found]
-    if [(one.path, one.fragment) for one in resolved] != [part.activates]:
+    selections = [
+        ((one.path, one.fragment), read_tags(use.title))
+        for one, use in zip(resolved, found, strict=True)
+    ]
+    if selections != [part.activates]:
         raise Invalid(
             TARGET_INTEGRITY,
             f"the line {part.text!r} a deferred directive's contribution carries "
-            f"names no one target {part.activates!r}",
+            f"does not preserve its one requested selection {part.activates!r}",
         )
 
 
@@ -1312,6 +1376,8 @@ def validate(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,
+    *,
+    bundle_file: Callable[[Reference], str],
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
@@ -1343,7 +1409,8 @@ def validate(
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
     one_member(groups)
-    dispatches(reached, served)
+    dispatches(reached, served, bundle_file)
+    parallel_sets(tokens, assigned, served, bundle_file)
     contributing = {} if composing is None else composing
     contributions(reached, contributing)
     for record, part, span in paired:

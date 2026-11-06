@@ -8,11 +8,11 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md", "guide.markdown"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide+guide.bundle.md"]
+bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

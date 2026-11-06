@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["model.md"]
+arguments = ["--entry", "model.md"]
 
 [expected]
 exit_status = 0
