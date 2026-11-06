@@ -14,7 +14,7 @@ The MVP's work lands on `main` with no release naming it.
 ## Proposal
 
 - **The release follows the merged MVP.**
-  The argument-surface and grouping-and-composition prerequisites establish the release input. Deferred edge evaluation measurements do not gate release preparation.
+  The argument-surface and grouping-and-composition prerequisites establish the release input. The evaluation initiative must complete before release preparation starts; deferred edge measurements held by evaluation refinement remain outside that prerequisite.
 
 - **The corpus run chooses the version.**
   The `contract/v0.15.0` corpus runs against the release build; any failure is incompatible, which below 1.0 bumps the minor.

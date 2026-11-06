@@ -13,6 +13,8 @@ The release cut for the MVP: the version the previous contract's corpus selects,
 
 ## Proposal
 
+- **The release waits for completed evaluation.**
+  The evaluation initiative must close before the version measurement or release preparation starts.
 - **The run first.**
   The `contract/v0.15.0` corpus runs against the release build, and the release record states its result and the version it selects: any failure is incompatible, which below 1.0 bumps the minor.
 - **One commit on a release branch.**
@@ -26,7 +28,7 @@ The release cut for the MVP: the version the previous contract's corpus selects,
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| W01 | The version the previous corpus selects | AC1 | #462, #463 | | | |
+| W01 | The version the previous corpus selects | AC1 | #462, #463, #464 | | | |
 | W02 | The release branch and its version commit | AC2 | W01 | W03, W04 | | |
 | W03 | The `contract/` and `python/` tag pair | AC3, AC4 | W01 | W02, W04 | | |
 | W04 | The release pull request into `main` | AC5, AC6 | W01 | W02, W03 | | |

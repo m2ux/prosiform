@@ -55,6 +55,8 @@ None. Every clause has a criterion, each criterion is delivered by the one epic,
 
 ## Decisions
 
+- **I11 waits for completed I10.** (User, 2026-11-06.) Release measurement depends on #464 closing; the gate includes the link-tag preset epic. This decision supersedes earlier release-preparation ordering.
+
 - **The release conditions are independent.** (User, 2026-11-05.) Initiative AC2 states the annotated tag pair, AC3 the open pull request and AC4 its passing checks. E00 AC5 states the open pull request and AC6 its checks. W04 covers both; its ID and the existing joined unit are preserved. All criteria remain unticked until observed.
 - **Deferred edge measurements do not gate release preparation.** (User, 2026-11-05.) I10 E04 W14–W16 are held by [I14 Evaluation Refinement #660](https://github.com/m2ux/prosiform/issues/660). The current queue selects I11 after its completed MVP prerequisites; E04 integration remains separate.
 
