@@ -1,0 +1,5874 @@
+{
+  "base": "d8265c82e797355a55cf7ec7d921949b4d7eb6c0",
+  "head": "d0444a092cd1c7ddfc27d0994578811748bd35ac",
+  "manifest_count": 532,
+  "changed_fields": {
+    "invocation": 529,
+    "expected": 68,
+    "description": 44,
+    "clauses": 37
+  },
+  "fixtures": [
+    {
+      "path": "fixtures/absorbed-title/a-reference-naming-a-title-no-heading-absorbed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/absorbed-title/a-reference-naming-an-absorbed-title/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/ancestor-promotion/a-link-to-a-heading-only-ancestor/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__detail+guide__gamma.bundle.md"
+          ],
+          "after": [
+            "expected/guide__detail.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__detail+guide__gamma.bundle.md"
+          ],
+          "after": [
+            "expected/guide__detail.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/ancestor-promotion/a-promotion-two-documents-out/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__detail+guide__gamma.bundle.md"
+          ],
+          "after": [
+            "expected/guide__detail.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/boundary/a-code-example-a-list-reads-as-markup/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/boundary/a-nested-list-and-the-list-below-it/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/boundary/a-yaml-example-the-bundle-keeps-intact/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/boundary/the-file-heading-between-two-groups/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/boundary/two-lists-a-definition-separates/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/a-code-example-carried-byte-for-byte/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/a-definition-removed-beside-its-literal-example/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/a-selected-region-between-two-unselected-ones/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/crlf-lines-beside-a-rewritten-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/every-line-terminated-with-crlf/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/repeated-identical-prose-in-two-regions/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__rules+guide__notes.bundle.md"
+          ],
+          "after": [
+            "expected/guide__rules.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/tabs-beside-a-rewritten-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/candidate-validation/untouched-bytes-beside-a-rewritten-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/citation/a-reference-above-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-bare-fragment-is-invalid-usage/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-budget-entry-naming-no-budget-is-invalid-usage/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-budget-named-twice-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-bundle-written-into-the-folder-o-names/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-bundle-written-into-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-malformed-budget-entry-is-invalid-usage/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-markdown-link-is-no-entry-destination/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-nesting-budget-below-two-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/a-positional-entry-is-invalid-usage/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/abbreviated-entry-options-are-invalid-usage/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/an-author-folder-named-like-the-entry-is-left-untouched/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/an-empty-preset-list-selects-default/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": []
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/an-option-the-contract-does-not-declare/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/an-undeclared-tags-option-is-invalid-usage/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/an-unknown-budget-name-is-invalid-usage/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/an-unknown-fault-is-invalid-usage/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/diagnostics-format-unknown/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/informational-guide-response/manifest.toml",
+      "fields": [
+        "expected"
+      ],
+      "expected": {
+        "stdout_contains": {
+          "before": [
+            "pf -o <folder> <document>[#<section>]",
+            "-o <folder>      folder the run's bundles are written into",
+            "#<section>       one section of it, named by the slug of its heading",
+            "<document>       a document named from the working directory",
+            "1  a failure stopped the run: report its diagnostics and go no further",
+            "2  invalid usage or option combination",
+            "\u21b3  names a section to inline",
+            "keep it in context",
+            "\u21c9  names a bundle to hand on",
+            "\u2afd  marks a dispatch set",
+            "its section holds one set of bundles, listed as",
+            "\u21c9 items in the sub-section headed \u2afd <that section's title> dispatch",
+            "Give each bundle to its own sub-agent at once",
+            "step that led there, one per value where that step applies to",
+            "A failure cancels nothing; all failures return together."
+          ],
+          "after": [
+            "pf -o <folder> --entry <document>[#<section>]",
+            "-o <folder>         folder the run's bundles are written into",
+            "--presets PRESETS   the link title's comma-separated preset names;",
+            "--entry REF         one document, or document#section, named from the",
+            "1  a failure stopped the run: report its diagnostics and go no further",
+            "2  invalid usage or option combination",
+            "\u21b3  names a section to inline",
+            "keep it in context",
+            "\u21c9  names a bundle to hand on",
+            "\u2afd  marks a dispatch set",
+            "its section holds one set of bundles, listed as",
+            "\u21c9 items in the sub-section headed \u2afd <that section's title> dispatch",
+            "Give each bundle to its own sub-agent at once",
+            "step that led there, one per value where that step applies to",
+            "A failure cancels nothing; all failures return together."
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/informational-long-usage-response/manifest.toml",
+      "fields": [
+        "expected"
+      ],
+      "expected": {
+        "stdout_contains": {
+          "before": [
+            "pf [OPTIONS] REF [REF ...]",
+            "default 256",
+            "compilation, validation, or informational",
+            "dependency, policy, safety, or resource-limit failure",
+            "usage or option combination",
+            "publication or delivery failure",
+            "unexpected internal error"
+          ],
+          "after": [
+            "pf [OPTIONS] --entry REF [--presets PRESETS]",
+            "default 256",
+            "compilation, validation, or informational",
+            "dependency, policy, safety, or resource-limit failure",
+            "usage or option combination",
+            "publication or delivery failure",
+            "unexpected internal error"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/informational-usage-response/manifest.toml",
+      "fields": [
+        "expected"
+      ],
+      "expected": {
+        "stdout_contains": {
+          "before": [
+            "pf [OPTIONS] REF [REF ...]",
+            "default 256",
+            "compilation, validation, or informational",
+            "dependency, policy, safety, or resource-limit failure",
+            "usage or option combination",
+            "publication or delivery failure",
+            "unexpected internal error"
+          ],
+          "after": [
+            "pf [OPTIONS] --entry REF [--presets PRESETS]",
+            "default 256",
+            "compilation, validation, or informational",
+            "dependency, policy, safety, or resource-limit failure",
+            "usage or option combination",
+            "publication or delivery failure",
+            "unexpected internal error"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/output-naming-what-a-link-points-at/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/presets-without-an-entry-are-invalid-usage/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/repeated-entry-options-are-invalid-usage/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/repeated-presets-options-are-invalid-usage/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "error",
+              "code": "E_INVALID_USAGE"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 2
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/run-folder-holding-a-dependency-source/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/several-entries-joined-into-one-name/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/notes_rules+guide__run.bundle.md"
+          ],
+          "after": [
+            "expected/notes_rules.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/standard-output-named-as-the-output-folder/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/unknown-preset-names-select-default/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": []
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/validation-only-run-with-an-output-folder/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/cli/validation-only-run/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-blank-between-the-deferral-mark-and-an-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-blank-between-the-deferral-mark-and-the-composition-mark-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-blank-between-the-dispatch-mark-and-an-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-composed-contract-leaves-its-deferred-implementation-absent/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-composition-failing-in-a-check-run-publishes-nothing/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-composition-failing-in-a-dispatched-bundle-publishes-nothing/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-composition-failing-under-a-named-output-folder-publishes-nothing/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-composition-mark-with-no-space-after-it-opens-an-ordinary-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-contribution-composing-its-own-section-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-contribution-resolves-links-from-its-source-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-cycle-of-directives-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferral-whose-step-and-target-select-no-preset-is-kept/manifest.toml",
+      "fields": [
+        "clauses",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferral-whose-step-and-target-select-one-preset-is-kept/manifest.toml",
+      "fields": [
+        "clauses",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": [
+            {
+              "severity": "error",
+              "code": "E_UNSUPPORTED_CONSTRUCT",
+              "message_contains": [
+                "fetch.md#implementation",
+                "'Fetch the page offline', which selects 'offline'",
+                "'Implementation', which selects no preset"
+              ],
+              "reference": "fetch.md#implementation",
+              "source": "guide.md:8",
+              "chain": [
+                "guide.md",
+                "fetch.md#implementation"
+              ]
+            }
+          ],
+          "after": null
+        },
+        "exit_status": {
+          "before": 1,
+          "after": null
+        }
+      },
+      "new": false,
+      "removed": true
+    },
+    {
+      "path": "fixtures/composition/a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": [
+            {
+              "severity": "error",
+              "code": "E_UNSUPPORTED_CONSTRUCT",
+              "message_contains": [
+                "fetch.md#implementation-offline",
+                "'Fetch the page', which selects no preset",
+                "'Implementation offline', which selects 'offline'"
+              ],
+              "reference": "fetch.md#implementation-offline",
+              "source": "guide.md:8",
+              "chain": [
+                "guide.md",
+                "fetch.md#implementation-offline"
+              ]
+            }
+          ],
+          "after": null
+        },
+        "exit_status": {
+          "before": 1,
+          "after": null
+        }
+      },
+      "new": false,
+      "removed": true
+    },
+    {
+      "path": "fixtures/composition/a-deferred-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferred-body-that-fails-fails-when-activated/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferred-body-that-fails-is-deferred-without-failing/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferred-directive-is-activated-by-the-run-its-line-names/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-deferred-directive-naming-a-document-that-declares-nothing-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-diagnostic-inside-a-contribution-names-its-source/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-composing-a-section-of-its-own-document-by-fragment-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-composing-a-section-of-its-own-document-by-path-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-composing-its-own-section-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-composing-past-the-sixth-level-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-in-a-preamble-has-no-scope/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-in-a-title-above-the-selection-has-no-scope/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-in-an-absorbed-title-has-no-scope/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-inside-a-contribution-composes-beneath-it/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-is-a-hop-toward-the-expansion-depth/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-naming-a-document-that-declares-nothing-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-naming-a-missing-document-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-naming-a-missing-section-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-naming-a-remote-address-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-naming-a-resource-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-directive-naming-a-whole-document-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-dispatch-in-an-inline-only-contribution-publishes-inline/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-dispatch-mark-written-against-an-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-dispatch-mark-written-against-the-composition-mark-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-link-inside-a-contribution-includes-its-target/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-list-is-carried-as-written/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-mark-in-code-or-unresolved-brackets-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-multi-paragraph-body-is-carried-whole/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-multiplying-composition-crossing-the-output-budget/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-parallel-mark-written-against-an-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-parallel-mark-written-against-the-composition-mark-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-reference-style-directive-is-a-directive/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-repeated-directive-contributes-each-time/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-section-composed-and-deferred-in-one-step-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-selected-group-pair-places-no-contribution/manifest.toml",
+      "fields": [
+        "clauses",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-selected-preset-governs-the-contribution/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-supplementary-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-table-is-carried-as-written/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-tagged-deferral-with-different-target-heading/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": []
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-target-only-directives-reach-takes-no-group/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/a-target-with-no-parent-heading-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-arrow-label-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-authored-heading-equal-to-a-destination-section-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-entity-decoding-to-one-arrow-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-immediate-directive-is-held-to-no-target-heading/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-inclusion-of-another-section-keeps-only-that-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-inclusion-of-the-composed-section-keeps-its-group/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-ordinary-deferred-label-is-a-deferral/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/an-untagged-deferral-with-a-preset-word-in-its-target-heading/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": []
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/ascii-and-spaced-labels-are-ordinary-links/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/colliding-definitions-resolve-against-their-own-source/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/destination-sections-follow-first-reference-order/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/formatted-labels-are-ordinary-links/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/multi-scalar-labels-are-ordinary-links/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/nested-headings-keep-their-relative-depth/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/non-arrow-labels-are-ordinary-links/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/operator-marks-are-no-directive-label/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/ordinary-and-composing-links-to-one-section-each-keep-their-meaning/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/same-titled-parents-keep-a-contribution-each/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/sibling-steps-each-carry-their-own-destination-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/the-composition-mark-written-against-the-deferral-mark-is-a-deferred-directive/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/the-writers-subst-redirects-a-directive/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/titles-from-several-sources-share-one-destination-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/composition/titles-match-exactly-as-written/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-drive-path-inside-a-source/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-path-the-filesystem-cannot-open/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-root-relative-reference-inside-a-source/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-symlink-chain-below-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-symlink-to-a-document-inside-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-symlinked-directory-below-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/a-symlinked-source/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/confinement/an-entry-above-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/consolidation/a-child-then-its-whole-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/consolidation/a-subsection-and-its-section/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__detail+guide__alpha.bundle.md"
+          ],
+          "after": [
+            "expected/guide__detail.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferral-mark-with-no-space-after-it-opens-an-ordinary-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferral-stands-where-another-reference-carried-its-target/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-destination-named-from-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-fragment-of-its-own-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-image/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-link-naming-a-document-above-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-link-naming-a-remote-address/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-link-naming-a-resource/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-reference-naming-no-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-deferred-reference-naming-no-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/deferral/a-marked-reference-is-not-compiled/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/depth-overflow/a-source-heading-the-shift-places-at-the-sixth/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/destinations/a-heading-a-container-carries/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/article+guide__run.bundle.md"
+          ],
+          "after": [
+            "expected/article.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/destinations/a-whole-document-reference-to-a-titled-entry/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/destinations/source-heading-fragments/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/article+caf\u00e9-m\u00fcnster+notes+the-code-span-and-bold-text+whats-new-v10.bundle.md"
+          ],
+          "after": [
+            "expected/article.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/determinism/entry-references-in-another-order/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/middle__two+alpha+middle__one.bundle.md"
+          ],
+          "after": [
+            "expected/middle__two.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/determinism/entry-references-in-source-order/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/alpha+middle__one+middle__two.bundle.md"
+          ],
+          "after": [
+            "expected/alpha.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/determinism/groups-in-first-link-order/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/diagnostics/a-failure-two-hops-from-the-entry-reference/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/diagnostics/a-run-that-fails-in-itself/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/diagnostics/one-json-object-per-diagnostic-line/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide+notes.bundle.md"
+          ],
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-blank-between-the-marks-of-a-compound-operator/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-body-absent-from-final-placement-dispatches-nothing/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "old.md",
+              "resolved": "new.md"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/entry.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-chain-of-three-dispatches/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-chain-of-two-dispatches/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-cycle-of-dispatches-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-deferred-directive-in-a-dispatched-bundle-opens-with-the-run-pf-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-deferred-dispatch-in-a-dispatched-bundle-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-deferred-dispatch-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-deferred-dispatch-reached-through-a-chain-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-heading-publishes-beside-a-dispatch/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-in-a-level-six-section-publishes/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-in-a-nested-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-in-a-title-above-the-selection-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-in-an-absorbed-member-title-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-link-keeps-its-text-and-one-blank-after-its-mark/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-link-with-no-text-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-mark-with-no-space-after-it-opens-an-ordinary-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-of-a-section-of-its-own-document-by-fragment-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-of-a-section-of-its-own-document-by-path-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatch-of-its-own-whole-document-is-a-cycle/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-bundle-carrying-a-deferral-and-dispatching/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide.bundle.md",
+            "expected/steps.bundle.md",
+            "expected/checks.bundle.md"
+          ],
+          "after": [
+            "expected/checks.bundle.md",
+            "expected/guide.bundle.md",
+            "expected/steps.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-bundle-named-from-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-document-carrying-no-step/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-image/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-link-naming-a-document-above-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-link-naming-a-remote-address/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-link-naming-a-resource/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-section-carrying-steps/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-section-of-fields/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-section-of-the-entry-is-a-hop/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-target-crossing-the-file-budget/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-dispatched-target-is-a-bundle-of-its-own/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-fourth-dispatch-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-later-selection-publishes-only-the-substituted-dispatch/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "old.md",
+              "resolved": "new.md"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/entry.bundle.md",
+            "expected/new.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-link-carrying-two-dispatch-marks/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-mark-with-no-space-after-it-is-text-beside-one/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-parallel-heading-publishes-beside-a-dispatch-only/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-parallel-set-retains-distinct-preset-selections/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "body.md",
+              "resolved": "checked.md"
+            },
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "body.md",
+              "resolved": "drafted.md"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/entry.bundle.md",
+            "expected/task--p-46dbac18dd44ade7ab46ab6f42ed16b938b800a8c3608f3332f959c86cb848a0.bundle.md",
+            "expected/task--p-eef2db53f92cbf7f59c0c7f486b00da212facdba9204390d889a1790ea808a79.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-plain-deferral-in-a-dispatched-bundle-opens-with-the-run-pf-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-prosiform-heading-publishes-in-a-dispatching-bundle/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/a-prosiform-heading-publishes-where-nothing-is-dispatched/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/each-section-keeps-its-own-dispatch-link-inline/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/equivalent-preset-requests-share-one-parallel-member/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "body.md",
+              "resolved": "checked.md"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/entry.bundle.md",
+            "expected/task--p-13c9f40cda0225cb29b9fa2332a291e8950291238a73b75fed0cd1521986f6e8.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/several-joined-entries-each-dispatching/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide+mode.bundle.md",
+            "expected/plan.bundle.md",
+            "expected/review.bundle.md"
+          ],
+          "after": [
+            "expected/guide.bundle.md",
+            "expected/plan.bundle.md",
+            "expected/review.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/dispatch/two-preset-selections-of-one-target/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "body.md",
+              "resolved": "checked.md"
+            },
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "body.md",
+              "resolved": "drafted.md"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/entry.bundle.md",
+            "expected/task--p-46dbac18dd44ade7ab46ab6f42ed16b938b800a8c3608f3332f959c86cb848a0.bundle.md",
+            "expected/task--p-eef2db53f92cbf7f59c0c7f486b00da212facdba9204390d889a1790ea808a79.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/a-heading-a-blockquote-carries/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/a-heading-only-in-a-code-example/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/a-list-item-heading-as-a-target/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/a-section-the-document-outlasts/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/a-setext-heading-as-a-root/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/a-subsection-inside-the-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/an-unterminated-example-at-the-section-end/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/heading-like-text-in-a-code-example/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/nested-section-target/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/extraction/section-to-the-next-sibling/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/file-wide-safety/an-unselected-construct-crosses-a-safety-limit/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/a-metadata-field-carries-no-conversion-meaning/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/an-unknown-prosiform-key-fails/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/crlf-delimiters/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/delimiter-with-trailing-spaces/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/dot-terminated/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/indented-delimiter/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/invalid-conversion/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/invalid-yaml/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/leading-blank-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/optional-mark/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/toml-fence/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/unterminated-block/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/frontmatter/yaml-example-in-a-code-block/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-document-no-group-matches/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-file-places-its-own-sections/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-group-declaration-naming-group-heading-fails/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-group-emitting-no-merged-section/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/rules_agents+rules_common.bundle.md"
+          ],
+          "after": [
+            "expected/rules_agents.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-group-its-own-member-places-stands-at-the-top-level/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-group-name-carrying-no-word-fails/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-group-placed-by-a-document-in-two-groups/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-link-a-file-does-not-bundle-stays-its-content/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-linked-file-is-composed-before-its-parent-merges-it/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-member-carrying-one-heading-bundled-by-document/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/notes_bare+notes_kept.bundle.md"
+          ],
+          "after": [
+            "expected/notes_bare.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-member-named-by-the-title-it-absorbs/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-member-whose-name-carries-no-word-takes-its-path-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-nested-group-pushing-a-heading-past-the-sixth-fails/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-pooled-subset-keeps-group-member-names/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/g_a_notes+g_b_notes+g_c_other.bundle.md"
+          ],
+          "after": [
+            "expected/g_a_notes.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-reference-to-a-grouping-depth-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-reference-to-a-member-carrying-one-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-rule-matching-no-document-in-the-closure/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-section-shallower-than-the-grouping-depth/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/parts_one+parts_two.bundle.md"
+          ],
+          "after": [
+            "expected/parts_one.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-titled-parent-reached-as-a-whole-at-depth-one/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-titled-parent-reached-as-a-whole-at-depth-two/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-variant-drops-the-group-word/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/modes_plan-mode+modes_review-mode.bundle.md"
+          ],
+          "after": [
+            "expected/modes_plan-mode.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/a-whole-document-reference-to-a-member/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/an-entry-naming-a-member-carrying-one-heading/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/notes_bare+notes_kept.bundle.md"
+          ],
+          "after": [
+            "expected/notes_bare.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/an-intermediate-group-nests-inside-its-parent/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/conflicting-member-depths/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/member-names-distinguished-after-formatting/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/modes_a_plan+modes_b_plan-mode.bundle.md"
+          ],
+          "after": [
+            "expected/modes_a_plan.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/members-of-one-stem-in-different-directories/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/mixed-contributions-name-every-member/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/rules_agents+rules_common.bundle.md"
+          ],
+          "after": [
+            "expected/rules_agents.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/one-entry-bundled-by-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/one-entry-bundled-by-group/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/one-entry-under-a-group/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/modes_plan-mode+modes_review-mode.bundle.md"
+          ],
+          "after": [
+            "expected/modes_plan-mode.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/one-spelling-for-every-generated-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/structural-ancestors-inside-a-merged-group/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/subheadings-name-every-member/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/rules_agents+rules_common.bundle.md"
+          ],
+          "after": [
+            "expected/rules_agents.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/two-members-contributing-one-heading-text/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/rules_agents+rules_common.bundle.md"
+          ],
+          "after": [
+            "expected/rules_agents.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/two-members-sharing-a-name-beneath-an-entry/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/two-members-whose-paths-differ-only-by-suffix/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide+guide.bundle.md"
+          ],
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/two-whole-document-entries-in-one-group/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/docs_notes+docs_guide.bundle.md"
+          ],
+          "after": [
+            "expected/docs_notes.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/grouping/variant-headings-distinguished-at-more-than-one-segment/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/headings/a-heading-with-no-visible-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/headings/an-authored-heading-beside-a-generated-one/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/headings/an-entity-in-a-heading/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/article+caf\u00e9.bundle.md"
+          ],
+          "after": [
+            "expected/article.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/headings/collision-with-a-natural-suffix/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/article+run.bundle.md"
+          ],
+          "after": [
+            "expected/article.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/headings/image-alternative-text/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/article+the--overview.bundle.md"
+          ],
+          "after": [
+            "expected/article.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/a-preamble-before-a-kept-title/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/a-setext-heading-a-quote-carries/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/a-setext-heading-an-absorbed-title-leaves/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/a-setext-heading-becomes-atx/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/a-setext-heading-over-two-lines/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/a-shift-that-writes-a-level-only/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/every-level-moves-down-one/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/headings-a-container-carries/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/hierarchy/regions-the-source-separates/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__gamma+guide__alpha.bundle.md"
+          ],
+          "after": [
+            "expected/guide__gamma.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/a-path-ending-in-a-number-sign/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/a-second-h1-leaves-the-title/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/a-title-the-path-spells-with-a-space/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/a-title-the-path-spells-with-hyphens/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/an-h1-below-the-first-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/an-ordinal-names-no-source-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/path-needing-escaping/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/paths-differing-only-by-suffix/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide+guide.bundle.md"
+          ],
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/same-basename-in-two-directories/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/notes_note+docs_note.bundle.md"
+          ],
+          "after": [
+            "expected/notes_note.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/title-the-path-does-not-carry/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/two-documents-sharing-a-title/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/two-headings-sharing-a-slug/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/identity/whole-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-declared-root-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-declaring-target-above-the-working-directory-is-compiled/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-declaring-target-is-compiled/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-deferred-target-keeps-its-preset/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-dependencys-preset-comes-from-itself/manifest.toml",
+      "fields": [
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide.bundle.md"
+          ],
+          "after": [
+            "expected/guide--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-dispatched-bundle-reads-its-own-subst/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-duplicate-subst-entry-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-folder-subst-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-followed-deferral-reads-its-preset/manifest.toml",
+      "fields": [
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/noted__draft.bundle.md"
+          ],
+          "after": [
+            "expected/noted__draft--p-3af75e8d5faae013f8d899bb1815c235f31b766e51ffe46630e447bcbc32a0fc.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-fragment-naming-no-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-group-entry-keyed-by-a-number-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-later-title-selection-activates-a-direct-substitution/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_SUBST_USED",
+              "source": "old.md",
+              "resolved": "new.md"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/entry.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-link-naming-no-document-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-link-title-selecting-two-complete-preset-names/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": []
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_PRESET_UNUSED",
+              "source": "notes.md",
+              "message_contains": [
+                "the preset 'checks'"
+              ]
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-malformed-group-entry-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-pair-a-selected-preset-overrides-records-no-substitution/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-pair-one-reference-selects-reaches-every-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-pair-reached-only-outside-the-selection-is-unused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-preset-governs-its-own-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-preset-key-holding-a-scalar-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-preset-key-holds-a-mapping/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-preset-pair-resolves-from-its-file/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-preset-states-the-pair/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-presets-pairs-reach-the-reference-it-governs/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-probe-follows-no-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-section-matching-no-preset-selects-default/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-section-only-subst-key-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-section-title-selects-its-preset/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": [
+            {
+              "severity": "warning",
+              "code": "W_PRESET_UNUSED",
+              "source": "notes.md",
+              "message_contains": [
+                "the preset 'checks'"
+              ]
+            }
+          ],
+          "after": null
+        },
+        "exit_status": {
+          "before": 0,
+          "after": null
+        },
+        "bundles": {
+          "before": [
+            "expected/guide.bundle.md"
+          ],
+          "after": null
+        }
+      },
+      "new": false,
+      "removed": true
+    },
+    {
+      "path": "fixtures/inclusion/a-silent-target-above-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-silent-target-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-subst-entry-is-a-colon-pair/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-subst-key-naming-its-value-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-subst-pair-stays-in-its-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-subst-side-is-read-by-the-reference-grammar/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-target-above-the-writing-directory-is-compiled/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/a-title-matching-two-keywords-selects-both/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": [],
+          "after": null
+        },
+        "exit_status": {
+          "before": 0,
+          "after": null
+        },
+        "bundles": {
+          "before": [
+            "expected/guide.bundle.md"
+          ],
+          "after": null
+        }
+      },
+      "new": false,
+      "removed": true
+    },
+    {
+      "path": "fixtures/inclusion/a-whole-document-entry-selects-default/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-empty-block-declares/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-entry-is-not-substituted/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-entry-name-reads-its-documents-presets/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/docs_guide__checks.bundle.md"
+          ],
+          "after": [
+            "expected/docs_guide__checks--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-entry-naming-a-silent-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-oversized-declaring-target-fails/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-oversized-silent-target-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/an-unused-preset-warns/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/default-applies-in-every-section/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/every-stage-reads-one-selection/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/no-block-does-not-declare/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/no-preset-substitutes-nothing/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/one-document-two-presets/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/operators-keep-the-absent-target-refusal/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/two-documents-placing-one-document-in-two-groups/manifest.toml",
+      "fields": [
+        "clauses",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/two-presets-disagreeing-about-a-subst-key-are-refused/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/two-presets-disagreeing-are-refused/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/two-presets-stating-two-groups-are-refused/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/inclusion/two-references-disagreeing-about-a-subst-key-are-refused/manifest.toml",
+      "fields": [
+        "description",
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-file-count-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-link-budget-crossed-by-a-links-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-link-budget-crossed-by-diagram-clicks/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-link-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-named-budget-bounds-the-run/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-negative-override-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-nesting-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-source-byte-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-target-at-the-expansion-depth/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-target-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/a-zero-override-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/an-expansion-depth-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/an-input-byte-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/limits/an-output-byte-budget-crossed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/literal-bracket/a-bracket-another-source-defines/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/literal-bracket/brackets-in-examples-stay-as-written/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-citation-above-the-working-directory-is-redirected/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-deferred-target-is-redirected/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-document-key-and-a-section-key-together/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-fragment-key-redirects-one-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-key-naming-an-absent-document-is-substituted/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-mocked-check-publishes-nothing/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-mocked-dependency-is-compiled/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-substitute-above-the-working-directory-is-reachable/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-substitute-declaring-a-group-joins-it/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-substitute-that-is-a-key-is-not-redirected-again/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-substitution-warns-with-its-target/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/a-value-naming-no-markdown-document-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/mock/an-unused-key-warns-and-publishes/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-double-encoded-escape/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-drive-path/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-non-utf8-escape-sequence/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-parent-segment-and-a-fragment/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-parent-segment-reaching-the-working-directory/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-protocol-relative-url/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-reference-above-the-working-directory-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/a-scheme-and-an-authority-in-selected-content/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/an-empty-fragment/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/an-encoded-number-sign/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/an-encoded-path-separator/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/an-escaped-fragment/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/an-over-long-percent-escape/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/an-unencoded-number-sign/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/bare-text-paths/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/query-on-an-entry-reference/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/root-relative-entry-reference/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/normalization/two-spellings-of-one-document/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__stop+guide__run-it.bundle.md"
+          ],
+          "after": [
+            "expected/guide__stop.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/ownership/a-self-reference-after-consolidation/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/ownership/an-ancestor-reference-after-consolidation/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/ownership/an-ancestor-reference-with-the-child-selected/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-deferred-parallel-dispatch-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-dispatch-set-heading-is-refused-beside-a-set/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-link-carrying-the-parallel-mark-and-the-dispatch-operator/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-parallel-link-in-a-heading-of-a-set-of-one-publishes-as-a-dispatch/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-parallel-link-naming-a-remote-address/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-parallel-mark-with-no-space-after-it-opens-an-ordinary-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-section-carrying-both-operators/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-set-in-a-level-six-section-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-set-in-one-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-set-of-one-target-publishes-as-an-inline-dispatch/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-target-holding-a-numbered-list-publishes/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-target-holding-a-paragraph-publishes/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-target-holding-an-item-linking-no-document-publishes/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/a-target-named-twice-in-one-set-is-listed-once/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/an-in-parallel-heading-publishes-beside-a-set/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/parallel-link-text-is-listed-on-one-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parallel-dispatch/sets-in-sibling-and-nested-sections/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parser-limit/a-budget-spent-on-the-last-valid-reference/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parser-limit/a-lookup-suppressed-below-every-declared-budget/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/parser-limit/a-reference-lookup-the-parser-declines/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/entry-suffix-outside-the-profile/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/extension-lookalikes/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/html-in-a-code-example/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/invalid-byte-mid-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/markdown-suffixes-in-mixed-case/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/Guide+notes_Note.bundle.md"
+          ],
+          "after": [
+            "expected/Guide.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/raw-html-in-selected-content/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/source-not-utf8/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/task-markers-and-typography/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/task-markers-protected-from-definitions/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/the-constructs-the-profile-supports/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/unsupported-construct/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/profile/utf16-byte-order-mark/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/a-bundle-opening-on-a-file-heading-opens-with-the-run-pf-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/a-bundle-using-both-operators-carries-no-protocol/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/a-bundle-using-neither-operator-opens-with-the-run-pf-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/a-bundle-using-the-dispatch-operator-carries-no-protocol/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/a-bundle-using-the-parallel-mark-carries-no-protocol/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/an-authored-dispatch-heading-publishes-in-a-dispatching-bundle/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/an-authored-parallel-dispatch-heading-publishes-beside-a-set/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/prosiform/an-entry-opening-on-content-above-its-title-opens-with-the-run-pf-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/a-check-run-into-a-folder-that-does-not-exist-makes-it/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/a-failing-run-publishes-no-bundle/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/a-file-at-the-run-folder-s-path-is-refused/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/a-successful-run-writes-only-the-bundle/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/notes+guide.bundle.md"
+          ],
+          "after": [
+            "expected/notes.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/an-earlier-set-the-run-cannot-remove-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/an-output-folder-that-cannot-be-made-fails/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/publication/an-output-folder-that-does-not-exist-is-made/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/real-source/absorbed-title-and-self-references/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/real-source/frontmatter-and-a-shifted-group/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/real-source/heading-text-outside-ascii/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/real-source/markdown-inside-a-code-example/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/real-source/preamble-above-the-first-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/real-source/tables-and-brace-placeholders/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-click-naming-no-diagram-destination-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-declaring-document-is-a-dependency/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-definition-a-container-carries/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-definition-outside-the-selected-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-definition-spelled-across-two-lines/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-diagram-click-above-the-working-directory-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-kanban-ticket-naming-a-local-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-label-two-definitions-spell-in-different-case/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-link-inside-an-image-a-link-carries/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-link-inside-image-alternative-content/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-link-line-in-another-diagram-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-links-value-that-is-an-array/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-links-value-that-is-no-string/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-reference-naming-no-heading-of-a-declaring-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-reference-style-image-with-a-title/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/a-silent-target-above-the-writing-directory-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/an-html-anchor-in-a-node-label-naming-a-local-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/an-html-anchor-mermaid-draws-as-no-anchor-is-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/an-html-link-naming-a-local-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/an-unused-definition-is-removed/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/conflicting-labels-across-files/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/diagram-links-naming-remote-addresses-are-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/diagram-links-outside-the-forms-read/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/reference/diagram-tooltips-supply-no-preset-selection/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_PRESET_UNUSED",
+              "source": "rules.md",
+              "message_contains": [
+                "the preset 'checks'"
+              ]
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/resource/a-bundle-naming-no-resource-does-not-warn/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/resource/a-diagram-click-naming-a-resource/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/resource/an-image-naming-a-local-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/resource/resource-titles-supply-no-preset-selection/manifest.toml",
+      "fields": [
+        "clauses",
+        "description",
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "diagnostics": {
+          "before": null,
+          "after": [
+            {
+              "severity": "warning",
+              "code": "W_RESOURCE_PORTABILITY"
+            }
+          ]
+        },
+        "exit_status": {
+          "before": null,
+          "after": 0
+        },
+        "bundles": {
+          "before": null,
+          "after": [
+            "expected/guide.bundle.md"
+          ]
+        }
+      },
+      "new": true,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-class-diagram-click-in-each-form/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-class-diagram-link-destination/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-cross-group-reference/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-diagram-click-destination/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-diagram-link-keyword-in-any-case/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-diagram-reached-through-a-linked-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-diagram-short-click-destination/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-flowchart-click-in-each-form/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-fragment-only-dependency/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-gantt-diagram-click-destination/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-link-inside-a-heading/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-reference-style-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-destination-ending-at-a-semicolon/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-destination-naming-a-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-link-and-links-line-anchors/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-link-destination/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-links-line-destinations/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-links-line-repeating-a-key/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-sequence-diagram-menu-keywords-in-any-case/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-state-diagram-click-in-each-form/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/a-swimlanes-diagram-click-in-each-form/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/every-click-on-one-diagram-line/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/no-link-names-a-source-path/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/rewriting/two-targets-sharing-a-slug/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/self-reference/a-link-back-to-an-including-ancestor/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/self-reference/a-link-spelled-another-way-to-the-same-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/self-reference/a-link-to-another-section-of-the-same-file/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/self-reference/a-link-to-the-same-section/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/self-reference/a-preamble-link-to-its-own-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/self-reference/a-section-link-to-its-whole-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/source-consistency/a-source-that-changes-during-compilation/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/structural-ancestors/a-title-the-file-heading-already-names/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/structural-ancestors/an-ancestor-carries-no-body-or-sibling/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/structural-ancestors/an-ancestor-heading-is-literal-text/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/structural-ancestors/an-ancestor-two-selections-share/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__one+guide__two.bundle.md"
+          ],
+          "after": [
+            "expected/guide__one.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/structural-ancestors/an-outline-that-skips-a-level/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/structural-ancestors/disjoint-selections-keep-their-outline/manifest.toml",
+      "fields": [
+        "expected",
+        "invocation"
+      ],
+      "expected": {
+        "bundles": {
+          "before": [
+            "expected/guide__alpha+guide__detail.bundle.md"
+          ],
+          "after": [
+            "expected/guide__alpha.bundle.md"
+          ]
+        }
+      },
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/traversal/a-cycle-of-dependencies/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/traversal/a-declaring-reference-is-bundled/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/traversal/a-link-in-a-code-example/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/traversal/a-relative-resource-warns/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/traversal/a-second-reference-to-one-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/traversal/resources-are-not-dependencies/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/validation-scope/an-unselected-broken-link/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/validation-scope/an-unselected-refusal-in-a-named-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/validation-scope/an-unselected-refusal-in-a-reached-document/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    },
+    {
+      "path": "fixtures/validation-scope/the-sibling-once-closure-includes-it/manifest.toml",
+      "fields": [
+        "invocation"
+      ],
+      "expected": {},
+      "new": false,
+      "removed": false
+    }
+  ]
+}

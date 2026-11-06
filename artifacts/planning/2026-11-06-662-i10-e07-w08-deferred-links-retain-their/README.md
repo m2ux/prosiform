@@ -14,6 +14,9 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | --- | --- |
 | [w08.md](w08.md) | Component plan and required checks |
 | [todos.md](todos.md) | Unit delivery checklist |
+| [start-evidence.json](start-evidence.json) | Published record and verified dispatch start |
+| [reservation.json](reservation.json) | Live task-row hold readback |
+| [unit.json](unit.json) | Admitted branch, base and worktree identity |
 | [delivery-survey.txt](delivery-survey.txt) | Unit planning, delivery or verification evidence |
 | [dispatch-export.json](dispatch-export.json) | Unit planning, delivery or verification evidence |
 

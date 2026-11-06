@@ -9,6 +9,7 @@ These are inspected inputs, not a final revision review. W08, W09 and current-ti
 - The cumulative current Markdown documentation and installed-wheel smoke changes, plus renderer command/position changes and authoring/runner adapters.
 - The complete 345-line authoritative design diff at `6be6b74a3` against engineering: single entry, complete names, destination ownership, implicit default, occurrence selection retention, canonical variant names, dispatch/set identities, deferred activation and acceptance requirements.
 - W06/W07's complete implementation diff and observing tests were reviewed before the main update. Its integrated candidate/provenance/composition overlap is re-read at `98d44ee0a`: raw deferred titles and target/tag validation coexist with occurrence-to-variant mapping, captured conversions and generated-set validation.
+- Every changed fixture manifest is parsed and compared against merged E04 main in [fixture-audit.json](fixture-audit.json): 532 changed manifest paths, including 21 new paths and four removed paths. The four replaced paths are two heading-keyword preset cases and two obsolete heading-mismatch refusals, with explicit-tag successors. Among surviving fixture paths, exit statuses and diagnostic declarations are preserved; the only non-bundle expected changes are the three guide/help grammar assertions. W04's 55-case body-preservation evidence covers the non-mechanical single-entry arrangements.
 
 ## Behavior and failure paths
 

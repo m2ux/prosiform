@@ -2,5 +2,6 @@
   {"unit":"m2ux/prosiform#I10:E07:W02","session":"/root/i10_e07_w02","state":"completed"},
   {"unit":"m2ux/prosiform#I10:E07:W03","session":"/root/i10_e07_w03","state":"completed"},
   {"unit":"m2ux/prosiform#I10:E07:W04+W05","session":"/root/i10_e07_w04","state":"completed"},
-  {"unit":"m2ux/prosiform#I10:E07:W06+W07","session":"/root/i10_e07_w06","state":"running"}
+  {"unit":"m2ux/prosiform#I10:E07:W06+W07","session":"/root/i10_e07_w06","state":"completed"},
+  {"unit":"m2ux/prosiform#I10:E07:W08","session":"/root/i10_e07_w08","state":"running"}
 ]
