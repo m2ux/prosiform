@@ -13,6 +13,9 @@ This unit covers AC22 and AC23 and targets `i10/e07/main`. No paid evaluations o
 | Artifact | What it holds |
 | --- | --- |
 | [w10.md](w10.md) | Component plan, audit boundaries and verification requirements |
+| [audit.md](audit.md) | Complete maintained-surface review, claim-to-implementation mapping, contract coverage and explicit exclusions |
+| [inventory.txt](inventory.txt) | Exhaustive tracked documentation path inventory at the audited task head |
+| [audit-check.py](audit-check.py) | Exact-checkout inventory comparison and classification-completeness instrument |
 
 ## Links
 
