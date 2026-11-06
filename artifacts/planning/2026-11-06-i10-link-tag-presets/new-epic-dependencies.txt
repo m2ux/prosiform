@@ -1,0 +1,30 @@
+--- problems
+none
+
+--- joins: candidate units, rows of one epic extending one component
+E07:W04, E07:W05, E07:W06 extend main:src/prosiform/cli.py: split by rule, 9 criteria exceed the bound of 6
+
+--- advisory: numbering against start order
+none
+
+--- levels (0 = can start now)
+0 E07:W00 - The design states explicit preset selection
+1 E07:W01 - One reader interprets tag lists
+2 E07:W02 - Source links carry title tags
+3 E07:W03 - References carry effective selection identity
+4 E07:W04 - Entries select presets through tags
+4 E07:W05 - Guide and callers specify tagged compilation
+5 E07:W06 - Compilation schedules distinct selection variants
+5 E07:W07 - Dispatch links name their selected bundles
+6 E07:W08 - Deferred links retain their tag selection
+7 E07:W09 - Eval workflows exercise tagged command specifications
+
+--- component contention: rows of different epics extending one component
+none
+
+--- epic priority (epics sharing a number start together)
+1 E07
+
+--- longest chains: 1, each of 8 steps
+on every chain: E07:W00, E07:W01, E07:W02, E07:W03, E07:W04, E07:W07, E07:W08, E07:W09
+E07:W00 -> E07:W01 -> E07:W02 -> E07:W03 -> E07:W04 -> E07:W07 -> E07:W08 -> E07:W09

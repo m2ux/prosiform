@@ -1,0 +1,87 @@
+--- problems
+missing Lane data: E06:W02, E06:W03, E06:W04
+missing Lane data: E06:W05, E06:W08
+E00:W00: depends on E00:W04, not an earlier task in its epic
+E00:W02: depends on E00:W04, not an earlier task in its epic
+E05:W01: depends on E05:W03, not an earlier task in its epic
+E00:W02: E00:W01 is already implied by E00:W00
+E00:W02: E00:W04 is already implied by E00:W00
+E05:W01: E05:W00 is already implied by E05:W03
+E06:W10: E06:W03 is already implied by E06:W05
+
+--- joins: candidate units, rows of one epic extending one component
+none
+
+--- advisory: numbering against start order
+E00:W01 (level 0) is numbered after E00:W00 (level 2)
+E00:W04 (level 1) is numbered after E00:W03 (level 4)
+E01:W05 (level 1) is numbered after E01:W04 (level 2)
+E05:W03 (level 1) is numbered after E05:W02 (level 3)
+E06:W08 (level 2) is numbered after E06:W07 (level 3)
+
+--- levels (0 = can start now)
+0 E00:W01 - Scenarios reaching every failure class
+0 E01:W01 - The trigger reads the changed paths
+0 E01:W02 - The link check names each revision read
+0 E02:W01 - Every project-scope settings file refused
+0 E03:W00 - Design clause
+0 E04:W01 - Scenarios stating the `pf` runs a session makes
+0 E04:W02 - Compiled bundles with a limited `pf` shell
+0 E04:W03 - A session held to its stated runs
+0 E04:W04 - Sub-agent starts and commands at every depth
+0 E05:W00 - Write the runbook and triage rubric
+0 E06:W00 - Design clause
+1 E00:W04 - Shake down the baseline runbook
+1 E01:W03 - A skipped run states itself
+1 E01:W05 - Every Markdown document runs the checks
+1 E02:W02 - Managed settings hook recorded
+1 E03:W01 - A destination answers one member
+1 E04:W05 - A scenario bootstrapping a skill's `↳` link
+1 E04:W06 - Scenarios activating conditional and nested deferrals
+1 E04:W07 - A scenario deferring under matched presets
+1 E04:W08 - Scenarios composing under a conditional step
+1 E04:W09 - Composition, footnote and self-composition scenarios
+1 E04:W10 - Deferred composition reaching a dispatch
+1 E04:W11 - Scenarios dispatching three hops deep
+1 E04:W12 - Scenarios of a sub-agent's first `pf` run
+1 E04:W17 - Triage rubric entries for the run classes
+1 E04:W18 - Compiled Claude per-agent command evidence
+1 E05:W03 - Record managed configuration by count and fingerprint
+1 E06:W01 - A plain-text guide holding the rules
+1 E06:W02 - Every bundle opening with the run-pf line
+1 E06:W03 - A `⇉` link kept inline at its file
+1 E06:W04 - One `In parallel` section per set
+2 E00:W00 - The default matrix runs the user's model
+2 E01:W04 - The checks page states the trigger rule
+2 E02:W03 - The settings the preflight reads
+2 E03:W02 - The validation page states the invariant
+2 E04:W19 - Edge corpus using the declared bundle grammar
+2 E05:W01 - Run the live default-matrix proof
+2 E05:W04 - Count managed hooks from the transcripts
+2 E06:W05 - Deferred dispatch marks refused
+2 E06:W08 - `↳` composing, arrow labels refused
+3 E00:W02 - Every-form baseline over the hardened corpus
+3 E02:W04 - The check catalogue states every refused scope
+3 E05:W02 - State the proof on the eval page
+3 E06:W06 - The pages stating the guide and `⇉`
+3 E06:W07 - One compiled form carrying `pf`
+3 E06:W09 - The composition page stating `↳`
+3 E06:W10 - Dispatch refusals stating no link to publish
+4 E00:W03 - Harness criteria read from the baseline
+
+--- component contention: rows of different epics extending one component
+none
+not checked, no component read: E00:W00, E00:W01, E00:W02, E00:W03, E00:W04, E01:W01, E01:W02, E01:W03, E01:W04, E01:W05, E02:W01, E02:W02, E02:W03, E02:W04, E03:W00, E03:W01, E03:W02, E04:W01, E04:W02, E04:W03, E04:W04, E04:W05, E04:W06, E04:W07, E04:W08, E04:W09, E04:W10, E04:W11, E04:W12, E04:W17, E04:W18, E04:W19, E05:W00, E05:W01, E05:W02, E05:W03, E05:W04, E06:W00, E06:W01, E06:W02, E06:W03, E06:W04, E06:W05, E06:W06, E06:W07, E06:W08, E06:W09, E06:W10
+
+--- epic priority (epics sharing a number start together)
+1 E00
+1 E01
+1 E02
+1 E03
+1 E04
+1 E05
+1 E06
+
+--- longest chains: 1, each of 5 steps
+on every chain: E00:W00, E00:W01, E00:W02, E00:W03, E00:W04
+E00:W01 -> E00:W04 -> E00:W00 -> E00:W02 -> E00:W03
