@@ -63,6 +63,9 @@ def test_parsed_titles_and_shell_decoded_values_supply_the_same_list(
         for child in token.children or []
         if child.type == "link_open"
     ]
-    assert titles == [" Checks,Draft "]
+    assert len(titles) == 1
+    title = titles[0]
+    assert isinstance(title, str)
+    assert title == " Checks,Draft "
     argument = shlex.split("--presets ' Checks,Draft '")[1]
-    assert read(titles[0]) == read(argument) == {"checks", "draft"}
+    assert read(title) == read(argument) == {"checks", "draft"}
