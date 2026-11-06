@@ -89,3 +89,9 @@ Coordinator owns engineering publication, PR creation, task merge and tracker re
 | Final source state | Final head | Clean; plain push confirms origin at the exact source head. |
 
 The initial full-gate conformance failure remains in its original log. Focused final corpus, conformance and independence checks completely cover the correcting fixture-only commit; unchanged source and harness tests were not repeated. No open implementation finding or waived unit criterion remains. Coordinator publication, task PR, merge and tracker reconciliation are next.
+
+## Delivery Readback
+
+Task PR [#669](https://github.com/m2ux/prosiform/pull/669) merges at `6578295a1bd40899ab4286a8185203451e159554` after local and hosted checks pass. The exact merged revision passes the observing instrument `pytest src/tests/test_entry_presets.py src/tests/test_selection.py src/tests/test_closure.py src/tests/test_subst.py`, as [merged-check.txt](merged-check.txt) records. Current issue readback links every unit row to that merged PR and ticks its covered criteria and Done. The updated main integration remains a draft until the complete epic passes review.
+
+The coordinator continues with W06 + W07 under the epic-wide authorization. No further unit confirmation is required.

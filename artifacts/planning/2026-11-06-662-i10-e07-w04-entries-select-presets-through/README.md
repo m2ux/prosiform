@@ -27,6 +27,16 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | [final-contract-checks.log](final-contract-checks.log) | Passing final-head corpus, conformance and independence after the fixture-only correction |
 | [targeted-regressions.log](targeted-regressions.log) | External-build late-activation and final-dispatch placement regressions |
 | [source-result.json](source-result.json) | Pushed source identity, byte-equivalence attestation and coordinator handoff |
+| [delivery.json](delivery.json) | Unit planning, delivery or verification evidence |
+| [epic-readback.json](epic-readback.json) | Unit planning, delivery or verification evidence |
+| [hosted-checks.json](hosted-checks.json) | Unit planning, delivery or verification evidence |
+| [integration-readback.json](integration-readback.json) | Unit planning, delivery or verification evidence |
+| [merge-result.json](merge-result.json) | Unit planning, delivery or verification evidence |
+| [merged-check.txt](merged-check.txt) | Unit planning, delivery or verification evidence |
+| [merged-pr.json](merged-pr.json) | Unit planning, delivery or verification evidence |
+| [reviews.json](reviews.json) | Unit planning, delivery or verification evidence |
+| [target-protection.json](target-protection.json) | Unit planning, delivery or verification evidence |
+| [target-rules.json](target-rules.json) | Unit planning, delivery or verification evidence |
 
 ## Links
 
