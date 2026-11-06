@@ -1,0 +1,2850 @@
+absorbed-title/a-reference-naming-a-title-no-heading-absorbed: fail
+absorbed-title/a-reference-naming-an-absorbed-title: fail
+ancestor-promotion/a-link-to-a-heading-only-ancestor: fail
+ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies: fail
+ancestor-promotion/a-promotion-two-documents-out: fail
+boundary/a-code-example-a-list-reads-as-markup: fail
+boundary/a-nested-list-and-the-list-below-it: fail
+boundary/a-yaml-example-the-bundle-keeps-intact: fail
+boundary/the-file-heading-between-two-groups: fail
+boundary/two-lists-a-definition-separates: fail
+candidate-validation/a-code-example-carried-byte-for-byte: fail
+candidate-validation/a-definition-removed-beside-its-literal-example: fail
+candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere: fail
+candidate-validation/a-selected-region-between-two-unselected-ones: fail
+candidate-validation/crlf-lines-beside-a-rewritten-link: fail
+candidate-validation/every-line-terminated-with-crlf: fail
+candidate-validation/repeated-identical-prose-in-two-regions: fail
+candidate-validation/tabs-beside-a-rewritten-link: fail
+candidate-validation/untouched-bytes-beside-a-rewritten-link: fail
+citation/a-reference-above-the-root: fail
+cli/a-command-line-naming-no-allowed-source-root: pass
+cli/a-command-line-naming-no-entry-reference: pass
+cli/an-allowed-source-root-naming-no-directory: fail
+cli/an-option-the-contract-does-not-declare: pass
+cli/diagnostics-format-unknown: pass
+cli/fragment-only-reference-without-from: fail
+cli/informational-long-usage-response: fail
+cli/informational-long-version-response: fail
+cli/informational-usage-response: fail
+cli/informational-version-response: fail
+cli/output-naming-a-dependency-source: fail
+cli/output-naming-an-input-source: pass
+cli/output-naming-what-a-link-points-at: fail
+cli/validation-only-run: fail
+cli/validation-only-run-with-an-output-file: fail
+confinement/a-drive-path-inside-a-source: fail
+confinement/a-parent-segment-above-the-root: fail
+confinement/a-root-relative-reference-inside-a-source: fail
+confinement/a-root-the-filesystem-cannot-open: fail
+confinement/a-symlink-chain-below-the-root: fail
+confinement/a-symlink-to-a-document-inside-the-root: fail
+confinement/a-symlinked-directory-below-the-root: fail
+confinement/a-symlinked-source: fail
+consolidation/a-child-then-its-whole-document: fail
+consolidation/a-subsection-and-its-section: fail
+deferral/a-deferral-mark-with-no-space-after-it-opens-an-ordinary-link: fail
+deferral/a-deferral-stands-where-another-reference-carried-its-target: fail
+deferral/a-deferred-destination-named-from-the-root: fail
+deferral/a-deferred-fragment-of-its-own-document: fail
+deferral/a-deferred-image: fail
+deferral/a-deferred-link-naming-a-document-outside-the-root: fail
+deferral/a-deferred-link-naming-a-remote-address: fail
+deferral/a-deferred-link-naming-a-resource: fail
+deferral/a-deferred-reference-naming-no-document: fail
+deferral/a-deferred-reference-naming-no-heading: fail
+deferral/a-marked-reference-is-not-compiled: fail
+delivery/a-failing-run-publishes-no-bundle: fail
+delivery/a-successful-run-writes-only-the-bundle: fail
+delivery/an-output-destination-that-refuses-the-write: fail
+depth-overflow/a-source-heading-the-shift-places-at-the-sixth: fail
+depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth: fail
+depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth: fail
+destinations/a-heading-a-container-carries: fail
+destinations/source-heading-fragments: fail
+determinism/entry-references-in-another-order: fail
+determinism/entry-references-in-source-order: fail
+determinism/groups-in-first-link-order: fail
+diagnostics/a-failure-two-hops-from-the-entry-reference: fail
+diagnostics/a-run-that-fails-in-itself: fail
+diagnostics/one-json-object-per-diagnostic-line: fail
+dispatch/a-chain-of-three-dispatches: fail
+dispatch/a-cycle-of-dispatches-warns: fail
+dispatch/a-dispatch-mark-with-no-space-after-it-opens-an-ordinary-link: fail
+dispatch/a-dispatch-of-a-section-of-its-own-document-by-fragment-warns: fail
+dispatch/a-dispatch-of-a-section-of-its-own-document-by-path-warns: fail
+dispatch/a-dispatch-of-its-own-whole-document-warns-once: fail
+dispatch/a-dispatched-destination-named-from-the-root: fail
+dispatch/a-dispatched-document-whose-steps-are-code-warns: fail
+dispatch/a-dispatched-image: fail
+dispatch/a-dispatched-link-naming-a-document-outside-the-root: fail
+dispatch/a-dispatched-link-naming-a-remote-address: fail
+dispatch/a-dispatched-link-naming-a-resource: fail
+dispatch/a-dispatched-reference-is-not-compiled: fail
+dispatch/a-dispatched-section-carrying-steps: fail
+dispatch/a-dispatched-section-of-fields-warns: fail
+dispatch/a-dispatched-section-of-the-entry-is-a-hop: fail
+dispatch/a-fourth-dispatch-warns: fail
+dispatch/a-link-carrying-both-operators: fail
+extraction/a-fragment-alone-selects-from-the-referrer: fail
+extraction/a-heading-a-blockquote-carries: fail
+extraction/a-heading-only-in-a-code-example: fail
+extraction/a-list-item-heading-as-a-target: fail
+extraction/a-section-the-document-outlasts: fail
+extraction/a-setext-heading-as-a-root: fail
+extraction/a-subsection-inside-the-section: fail
+extraction/an-unterminated-example-at-the-section-end: fail
+extraction/heading-like-text-in-a-code-example: fail
+extraction/nested-section-target: fail
+extraction/section-to-the-next-sibling: fail
+file-wide-safety/an-unselected-construct-crosses-a-safety-limit: fail
+frontmatter/a-metadata-field-carries-no-conversion-meaning: fail
+frontmatter/an-unknown-prosiform-key-fails: fail
+frontmatter/crlf-delimiters: fail
+frontmatter/delimiter-with-trailing-spaces: fail
+frontmatter/dot-terminated: fail
+frontmatter/indented-delimiter: fail
+frontmatter/invalid-conversion: fail
+frontmatter/invalid-yaml: fail
+frontmatter/leading-blank-line: fail
+frontmatter/optional-mark: fail
+frontmatter/toml-fence: fail
+frontmatter/unterminated-block: fail
+frontmatter/yaml-example-in-a-code-block: fail
+grouping/a-document-no-group-matches: fail
+grouping/a-group-declaration-naming-group-heading-fails: fail
+grouping/a-group-emitting-no-merged-section: fail
+grouping/a-member-carrying-one-heading-bundled-by-document: fail
+grouping/a-member-named-by-the-title-it-absorbs: fail
+grouping/a-pooled-subset-keeps-group-member-names: fail
+grouping/a-reference-to-a-grouping-depth-heading: fail
+grouping/a-reference-to-a-member-carrying-one-heading: fail
+grouping/a-rule-matching-no-document-in-the-closure: fail
+grouping/a-section-shallower-than-the-grouping-depth: fail
+grouping/a-variant-drops-the-group-word: fail
+grouping/a-whole-document-reference-to-a-member: fail
+grouping/an-entry-naming-a-member-carrying-one-heading: fail
+grouping/conflicting-member-depths: fail
+grouping/member-names-distinguished-after-formatting: fail
+grouping/members-of-one-stem-in-different-directories: fail
+grouping/mixed-contributions-name-every-member: fail
+grouping/one-entry-bundled-by-document: fail
+grouping/one-entry-bundled-by-group: fail
+grouping/one-entry-under-a-group: fail
+grouping/one-spelling-for-every-generated-heading: fail
+grouping/structural-ancestors-inside-a-merged-group: fail
+grouping/subheadings-name-every-member: fail
+grouping/two-members-contributing-one-heading-text: fail
+grouping/two-members-sharing-a-name-beneath-an-entry: fail
+grouping/two-members-whose-paths-differ-only-by-suffix: fail
+grouping/two-whole-document-entries-in-one-group: fail
+grouping/variant-headings-distinguished-at-more-than-one-segment: fail
+headings/a-heading-with-no-visible-text: fail
+headings/an-authored-heading-beside-a-generated-one: fail
+headings/an-entity-in-a-heading: fail
+headings/collision-with-a-natural-suffix: fail
+headings/image-alternative-text: fail
+hierarchy/a-preamble-before-a-kept-title: fail
+hierarchy/a-setext-heading-a-quote-carries: fail
+hierarchy/a-setext-heading-an-absorbed-title-leaves: fail
+hierarchy/a-setext-heading-becomes-atx: fail
+hierarchy/a-setext-heading-over-two-lines: fail
+hierarchy/a-shift-that-writes-a-level-only: fail
+hierarchy/every-level-moves-down-one: fail
+hierarchy/headings-a-container-carries: fail
+hierarchy/regions-the-source-separates: fail
+identity/a-path-ending-in-a-number-sign: fail
+identity/a-second-h1-leaves-the-title: fail
+identity/a-title-the-path-spells-with-a-space: fail
+identity/a-title-the-path-spells-with-hyphens: fail
+identity/an-h1-below-the-first-heading: fail
+identity/an-ordinal-names-no-source-heading: fail
+identity/path-needing-escaping: fail
+identity/paths-differing-only-by-suffix: fail
+identity/same-basename-in-two-directories: fail
+identity/title-the-path-does-not-carry: fail
+identity/two-documents-sharing-a-title: fail
+identity/two-headings-sharing-a-slug: fail
+identity/whole-document: fail
+limits/a-file-count-budget-crossed: fail
+limits/a-link-budget-crossed: fail
+limits/a-link-budget-crossed-by-a-links-line: fail
+limits/a-link-budget-crossed-by-diagram-clicks: fail
+limits/a-negative-override-is-refused: pass
+limits/a-nesting-budget-crossed: fail
+limits/a-source-byte-budget-crossed: fail
+limits/a-target-at-the-expansion-depth: fail
+limits/a-target-budget-crossed: fail
+limits/a-zero-override-is-refused: pass
+limits/an-expansion-depth-budget-crossed: fail
+limits/an-input-byte-budget-crossed: fail
+limits/an-output-byte-budget-crossed: fail
+literal-bracket/a-bracket-another-source-defines: fail
+literal-bracket/brackets-in-examples-stay-as-written: fail
+normalization/a-double-encoded-escape: fail
+normalization/a-drive-path: fail
+normalization/a-non-utf8-escape-sequence: fail
+normalization/a-parent-segment-and-a-fragment: fail
+normalization/a-parent-segment-reaching-the-root-boundary: fail
+normalization/a-protocol-relative-url: fail
+normalization/a-scheme-and-an-authority-in-selected-content: fail
+normalization/an-empty-fragment: fail
+normalization/an-encoded-number-sign: fail
+normalization/an-encoded-path-separator: fail
+normalization/an-escaped-fragment: fail
+normalization/an-over-long-percent-escape: fail
+normalization/an-unencoded-number-sign: fail
+normalization/bare-text-paths: fail
+normalization/query-on-an-entry-reference: fail
+normalization/root-escape: fail
+normalization/root-relative-entry-reference: fail
+normalization/two-spellings-of-one-document: fail
+ownership/a-self-reference-after-consolidation: fail
+ownership/an-ancestor-reference-after-consolidation: fail
+ownership/an-ancestor-reference-with-the-child-selected: fail
+parser-limit/a-budget-spent-on-the-last-valid-reference: fail
+parser-limit/a-lookup-suppressed-below-every-declared-budget: fail
+parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches: fail
+parser-limit/a-reference-lookup-the-parser-declines: fail
+profile/entry-suffix-outside-the-profile: fail
+profile/extension-lookalikes: fail
+profile/html-in-a-code-example: fail
+profile/invalid-byte-mid-document: fail
+profile/markdown-suffixes-in-mixed-case: fail
+profile/raw-html-in-selected-content: fail
+profile/source-not-utf8: fail
+profile/task-markers-and-typography: fail
+profile/task-markers-protected-from-definitions: fail
+profile/the-constructs-the-profile-supports: fail
+profile/unsupported-construct: fail
+profile/utf16-byte-order-mark: fail
+real-source/absorbed-title-and-self-references: fail
+real-source/frontmatter-and-a-shifted-group: fail
+real-source/heading-text-outside-ascii: fail
+real-source/markdown-inside-a-code-example: fail
+real-source/preamble-above-the-first-heading: fail
+real-source/tables-and-brace-placeholders: fail
+reference/a-click-naming-no-diagram-destination-is-text: fail
+reference/a-definition-a-container-carries: fail
+reference/a-definition-outside-the-selected-section: fail
+reference/a-definition-spelled-across-two-lines: fail
+reference/a-diagram-click-outside-the-root-is-text: fail
+reference/a-document-outside-the-root-is-text: fail
+reference/a-document-under-the-root-is-a-dependency: fail
+reference/a-kanban-ticket-naming-a-local-document: fail
+reference/a-label-two-definitions-spell-in-different-case: fail
+reference/a-link-inside-an-image-a-link-carries: fail
+reference/a-link-inside-image-alternative-content: fail
+reference/a-link-line-in-another-diagram-is-text: fail
+reference/a-links-value-that-is-no-string: fail
+reference/a-reference-style-image-with-a-title: fail
+reference/a-reference-under-the-root-naming-no-document: fail
+reference/a-reference-under-the-root-naming-no-heading: fail
+reference/an-html-anchor-in-a-node-label-naming-a-local-document: fail
+reference/an-html-link-naming-a-document-under-the-root: fail
+reference/an-unused-definition-is-removed: fail
+reference/conflicting-labels-across-files: fail
+reference/diagram-links-naming-remote-addresses-are-text: fail
+reference/diagram-links-outside-the-forms-read: fail
+resource/a-bundle-naming-no-resource-does-not-warn: fail
+resource/a-diagram-click-naming-a-resource: fail
+resource/an-image-naming-a-document-under-the-root: fail
+rewriting/a-class-diagram-click-in-each-form: fail
+rewriting/a-class-diagram-link-destination: fail
+rewriting/a-cross-group-reference: fail
+rewriting/a-diagram-click-destination: fail
+rewriting/a-diagram-link-keyword-in-any-case: fail
+rewriting/a-diagram-reached-through-a-linked-document: fail
+rewriting/a-diagram-short-click-destination: fail
+rewriting/a-flowchart-click-in-each-form: fail
+rewriting/a-fragment-only-dependency: fail
+rewriting/a-gantt-diagram-click-destination: fail
+rewriting/a-link-inside-a-heading: fail
+rewriting/a-reference-style-link: fail
+rewriting/a-sequence-diagram-destination-ending-at-a-semicolon: fail
+rewriting/a-sequence-diagram-destination-naming-a-section: fail
+rewriting/a-sequence-diagram-link-and-links-line-anchors: fail
+rewriting/a-sequence-diagram-link-destination: fail
+rewriting/a-sequence-diagram-links-line-destinations: fail
+rewriting/a-sequence-diagram-links-line-repeating-a-key: fail
+rewriting/a-sequence-diagram-menu-keywords-in-any-case: fail
+rewriting/a-state-diagram-click-in-each-form: fail
+rewriting/a-swimlanes-diagram-click-in-each-form: fail
+rewriting/no-link-names-a-source-path: fail
+rewriting/two-targets-sharing-a-slug: fail
+run-set/a-link-carrying-the-run-set-mark-and-the-dispatch-operator: fail
+run-set/a-run-set-is-compiled-with-its-mark: fail
+run-set/a-run-set-item-linking-no-document-warns: fail
+run-set/a-run-set-link-naming-a-remote-address: fail
+run-set/a-run-set-mark-with-no-space-after-it-opens-an-ordinary-link: fail
+run-set/a-run-set-target-holding-a-numbered-list-warns: fail
+run-set/a-run-set-target-holding-a-paragraph-warns: fail
+run-set/nested-run-set-items-each-carrying-a-call: fail
+self-reference/a-link-back-to-an-including-ancestor: fail
+self-reference/a-link-spelled-another-way-to-the-same-section: fail
+self-reference/a-link-to-another-section-of-the-same-file: fail
+self-reference/a-link-to-the-same-section: fail
+self-reference/a-preamble-link-to-its-own-document: fail
+self-reference/a-section-link-to-its-whole-document: fail
+source-consistency/a-source-that-changes-during-compilation: fail
+structural-ancestors/a-title-the-file-heading-already-names: fail
+structural-ancestors/an-ancestor-carries-no-body-or-sibling: fail
+structural-ancestors/an-ancestor-heading-is-literal-text: fail
+structural-ancestors/an-ancestor-two-selections-share: fail
+structural-ancestors/an-outline-that-skips-a-level: fail
+structural-ancestors/disjoint-selections-keep-their-outline: fail
+traversal/a-cycle-of-dependencies: fail
+traversal/a-link-in-a-code-example: fail
+traversal/a-reference-under-the-root-is-bundled: fail
+traversal/a-relative-resource-warns: fail
+traversal/a-second-reference-to-one-document: fail
+traversal/resources-are-not-dependencies: fail
+usage-example/a-bare-fragment-and-its-referring-document: fail
+usage-example/a-mode-and-the-calls-it-runs-together: fail
+usage-example/a-mode-and-the-guidelines-it-defers: fail
+usage-example/a-procedure-and-everything-it-reaches: fail
+usage-example/artifacts-and-references-under-declared-groups: fail
+usage-example/two-selected-sections: fail
+usage-example/validation-without-publication: fail
+validation-scope/an-unselected-broken-link: fail
+validation-scope/an-unselected-refusal-in-a-named-document: fail
+validation-scope/an-unselected-refusal-in-a-reached-document: fail
+validation-scope/the-sibling-once-closure-includes-it: fail
+absorbed-title/a-reference-naming-a-title-no-heading-absorbed: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    218 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe scope is na'
+    produced b''
+    the run's output ends 218 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+absorbed-title/a-reference-naming-an-absorbed-title: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    133 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe labels are '
+    produced b''
+    the run's output ends 133 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+ancestor-promotion/a-link-to-a-heading-only-ancestor: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    174 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 174 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    241 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 241 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+ancestor-promotion/a-promotion-two-documents-out: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    247 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 247 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+boundary/a-code-example-a-list-reads-as-markup: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSAFE_BUNDLE_BOUNDARY expected, error E_INVALID_USAGE produced
+boundary/a-nested-list-and-the-list-below-it: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSAFE_BUNDLE_BOUNDARY expected, error E_INVALID_USAGE produced
+boundary/a-yaml-example-the-bundle-keeps-intact: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    124 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n## Run\n\n~~~yaml'
+    produced b''
+    the run's output ends 124 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+boundary/the-file-heading-between-two-groups: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    128 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 128 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+boundary/two-lists-a-definition-separates: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSAFE_BUNDLE_BOUNDARY expected, error E_INVALID_USAGE produced
+candidate-validation/a-code-example-carried-byte-for-byte: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    116 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA worked exampl'
+    produced b''
+    the run's output ends 116 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/a-definition-removed-beside-its-literal-example: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    158 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide names'
+    produced b''
+    the run's output ends 158 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/a-destination-a-coinciding-slug-would-reach-elsewhere: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    130 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n## Shared\n\nThe '
+    produced b''
+    the run's output ends 130 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/a-selected-region-between-two-unselected-ones: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    34 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Middle\n\nMid'
+    produced b''
+    the run's output ends 34 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/crlf-lines-beside-a-rewritten-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    212 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 212 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/every-line-terminated-with-crlf: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    157 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\r\n\nThe procedure '
+    produced b''
+    the run's output ends 157 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/repeated-identical-prose-in-two-regions: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    74 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Rules\n\nEach'
+    produced b''
+    the run's output ends 74 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/tabs-beside-a-rewritten-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    202 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 202 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+candidate-validation/untouched-bytes-beside-a-rewritten-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    137 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n   ---\n\nThe gui'
+    produced b''
+    the run's output ends 137 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+citation/a-reference-above-the-root: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    224 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure f'
+    produced b''
+    the run's output ends 224 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+cli/an-allowed-source-root-naming-no-directory: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_ROOT_NOT_FOUND expected, error E_INVALID_USAGE produced
+cli/fragment-only-reference-without-from: fail
+  expected.diagnostics: diagnostic 1's message does not carry 1 declared text
+    '-f' is absent
+    produced 'unrecognized arguments: #a-section'
+cli/informational-long-usage-response: fail
+  expected.stdout_contains: the output does not carry 1 declared text
+    'pf [OPTIONS] REF [REF ...]' is absent
+    produced b'usage: pf [OPTIONS] --entry REF [--presets PRESETS]\n\nBundle the local Markdown closure of one en' and 2014 bytes more
+cli/informational-long-version-response: fail
+  expected.stdout_contains: the output does not carry 1 declared text
+    '(skill-markdown-v3)' is absent
+    produced b'pf 0.16.0 (prosiform-markdown)\n'
+cli/informational-usage-response: fail
+  expected.stdout_contains: the output does not carry 1 declared text
+    'pf [OPTIONS] REF [REF ...]' is absent
+    produced b'usage: pf [OPTIONS] --entry REF [--presets PRESETS]\n\nBundle the local Markdown closure of one en' and 2014 bytes more
+cli/informational-version-response: fail
+  expected.stdout_contains: the output does not carry 1 declared text
+    '(skill-markdown-v3)' is absent
+    produced b'pf 0.16.0 (prosiform-markdown)\n'
+cli/output-naming-a-dependency-source: fail
+  expected.diagnostics: diagnostic 1's message does not carry 1 declared text
+    'note.md' is absent
+    produced 'unrecognized arguments: guide.md'
+cli/output-naming-what-a-link-points-at: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_SYMLINK expected, error E_INVALID_USAGE produced
+cli/validation-only-run: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+cli/validation-only-run-with-an-output-file: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+confinement/a-drive-path-inside-a-source: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    144 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure c'
+    produced b''
+    the run's output ends 144 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+confinement/a-parent-segment-above-the-root: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    45 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Secret\n\nA document the'
+    produced b''
+    the run's output ends 45 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+confinement/a-root-relative-reference-inside-a-source: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    141 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure c'
+    produced b''
+    the run's output ends 141 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+confinement/a-root-the-filesystem-cannot-open: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_ACCESS expected, error E_INVALID_USAGE produced
+confinement/a-symlink-chain-below-the-root: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_SYMLINK expected, error E_INVALID_USAGE produced
+confinement/a-symlink-to-a-document-inside-the-root: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_SYMLINK expected, error E_INVALID_USAGE produced
+confinement/a-symlinked-directory-below-the-root: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_SYMLINK expected, error E_INVALID_USAGE produced
+confinement/a-symlinked-source: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_SYMLINK expected, error E_INVALID_USAGE produced
+consolidation/a-child-then-its-whole-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    205 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n## Alpha\n\nAlpha'
+    produced b''
+    the run's output ends 205 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+consolidation/a-subsection-and-its-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    59 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 59 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+deferral/a-deferral-mark-with-no-space-after-it-opens-an-ordinary-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    105 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure f'
+    produced b''
+    the run's output ends 105 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+deferral/a-deferral-stands-where-another-reference-carried-its-target: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    213 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure d'
+    produced b''
+    the run's output ends 213 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+deferral/a-deferred-destination-named-from-the-root: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    98 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure d'
+    produced b''
+    the run's output ends 98 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+deferral/a-deferred-fragment-of-its-own-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    85 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nThe '
+    produced b''
+    the run's output ends 85 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+deferral/a-deferred-image: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+deferral/a-deferred-link-naming-a-document-outside-the-root: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+deferral/a-deferred-link-naming-a-remote-address: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+deferral/a-deferred-link-naming-a-resource: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+deferral/a-deferred-reference-naming-no-document: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+deferral/a-deferred-reference-naming-no-heading: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+deferral/a-marked-reference-is-not-compiled: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    80 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure d'
+    produced b''
+    the run's output ends 80 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+delivery/a-failing-run-publishes-no-bundle: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+delivery/a-successful-run-writes-only-the-bundle: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    145 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Notes\n\nWhat was observ'
+    produced b''
+    the run's output ends 145 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+delivery/an-output-destination-that-refuses-the-write: fail
+  expected.exit_status: expected 3, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_PUBLICATION_FAILED expected, error E_INVALID_USAGE produced
+depth-overflow/a-source-heading-the-shift-places-at-the-sixth: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    278 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nIt follows [the'
+    produced b''
+    the run's output ends 278 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+depth-overflow/a-source-heading-the-shift-pushes-past-the-sixth: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_HEADING_DEPTH_OVERFLOW expected, error E_INVALID_USAGE produced
+depth-overflow/a-structural-ancestor-the-arrangement-pushes-past-the-sixth: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_HEADING_DEPTH_OVERFLOW expected, error E_INVALID_USAGE produced
+destinations/a-heading-a-container-carries: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    388 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Article\n\nAn opening pa'
+    produced b''
+    the run's output ends 388 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+destinations/source-heading-fragments: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    793 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Article\n\nAn opening pa'
+    produced b''
+    the run's output ends 793 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+determinism/entry-references-in-another-order: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    165 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Middle\n\n### One\n\nOne b'
+    produced b''
+    the run's output ends 165 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+determinism/entry-references-in-source-order: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    165 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Alpha\n\nAlpha body, whi'
+    produced b''
+    the run's output ends 165 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+determinism/groups-in-first-link-order: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    117 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Zulu\n\nZulu body, which'
+    produced b''
+    the run's output ends 117 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+diagnostics/a-failure-two-hops-from-the-entry-reference: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+diagnostics/a-run-that-fails-in-itself: fail
+  expected.exit_status: expected 4, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNEXPECTED_INTERNAL_ERROR expected, error E_INVALID_USAGE produced
+diagnostics/one-json-object-per-diagnostic-line: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    99 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure n'
+    produced b''
+    the run's output ends 99 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+dispatch/a-chain-of-three-dispatches: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    68 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the nex'
+    produced b''
+    the run's output ends 68 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+dispatch/a-cycle-of-dispatches-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    63 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand plannin'
+    produced b''
+    the run's output ends 63 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_CYCLE expected, error E_INVALID_USAGE produced
+dispatch/a-dispatch-mark-with-no-space-after-it-opens-an-ordinary-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    115 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure f'
+    produced b''
+    the run's output ends 115 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+dispatch/a-dispatch-of-a-section-of-its-own-document-by-fragment-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    127 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the ste'
+    produced b''
+    the run's output ends 127 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_SELF expected, error E_INVALID_USAGE produced
+dispatch/a-dispatch-of-a-section-of-its-own-document-by-path-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    127 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the ste'
+    produced b''
+    the run's output ends 127 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_SELF expected, error E_INVALID_USAGE produced
+dispatch/a-dispatch-of-its-own-whole-document-warns-once: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    102 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Steps\n\n1. R'
+    produced b''
+    the run's output ends 102 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_SELF expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-destination-named-from-the-root: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    147 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure d'
+    produced b''
+    the run's output ends 147 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+dispatch/a-dispatched-document-whose-steps-are-code-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    76 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the exa'
+    produced b''
+    the run's output ends 76 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_NOT_PROCEDURAL expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-image: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-link-naming-a-document-outside-the-root: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-link-naming-a-remote-address: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-link-naming-a-resource: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-reference-is-not-compiled: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    83 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure d'
+    produced b''
+    the run's output ends 83 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+dispatch/a-dispatched-section-carrying-steps: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    74 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand plannin'
+    produced b''
+    the run's output ends 74 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+dispatch/a-dispatched-section-of-fields-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    78 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the fie'
+    produced b''
+    the run's output ends 78 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_NOT_PROCEDURAL expected, error E_INVALID_USAGE produced
+dispatch/a-dispatched-section-of-the-entry-is-a-hop: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    129 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the run'
+    produced b''
+    the run's output ends 129 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 2 diagnostics are expected
+    position 1: warning W_DISPATCH_SELF expected, error E_INVALID_USAGE produced
+    position 2: warning W_DISPATCH_DEPTH expected, the run emits none
+dispatch/a-fourth-dispatch-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    68 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Hand the nex'
+    produced b''
+    the run's output ends 68 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_DISPATCH_DEPTH expected, error E_INVALID_USAGE produced
+dispatch/a-link-carrying-both-operators: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+extraction/a-fragment-alone-selects-from-the-referrer: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    59 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Stop\n\nThe s'
+    produced b''
+    the run's output ends 59 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+extraction/a-heading-a-blockquote-carries: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    170 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run\n\nCarry '
+    produced b''
+    the run's output ends 170 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+extraction/a-heading-only-in-a-code-example: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+extraction/a-list-item-heading-as-a-target: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_NESTED_SECTION_TARGET expected, error E_INVALID_USAGE produced
+extraction/a-section-the-document-outlasts: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    108 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run\n\nCarry '
+    produced b''
+    the run's output ends 108 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+extraction/a-setext-heading-as-a-root: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    43 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run\n\nCarry '
+    produced b''
+    the run's output ends 43 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+extraction/a-subsection-inside-the-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    116 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run\n\nCarry '
+    produced b''
+    the run's output ends 116 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+extraction/an-unterminated-example-at-the-section-end: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSAFE_BUNDLE_BOUNDARY expected, error E_INVALID_USAGE produced
+extraction/heading-like-text-in-a-code-example: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    167 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run\n\nCarry '
+    produced b''
+    the run's output ends 167 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+extraction/nested-section-target: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_NESTED_SECTION_TARGET expected, error E_INVALID_USAGE produced
+extraction/section-to-the-next-sibling: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    80 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run\n\nCarry '
+    produced b''
+    the run's output ends 80 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+file-wide-safety/an-unselected-construct-crosses-a-safety-limit: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+frontmatter/a-metadata-field-carries-no-conversion-meaning: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    83 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure d'
+    produced b''
+    the run's output ends 83 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/an-unknown-prosiform-key-fails: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_CONVERSION_METADATA expected, error E_INVALID_USAGE produced
+frontmatter/crlf-delimiters: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    113 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nAn opening para'
+    produced b''
+    the run's output ends 113 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/delimiter-with-trailing-spaces: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    120 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'---  \n\n# Guide\n\nAn openi'
+    produced b''
+    the run's output ends 120 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/dot-terminated: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    113 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nAn opening para'
+    produced b''
+    the run's output ends 113 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/indented-delimiter: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    119 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b' ---\n\n# Guide\n\nAn openin'
+    produced b''
+    the run's output ends 119 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/invalid-conversion: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_CONVERSION_METADATA expected, error E_INVALID_USAGE produced
+frontmatter/invalid-yaml: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_FRONTMATTER expected, error E_INVALID_USAGE produced
+frontmatter/leading-blank-line: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    118 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'---\n\n# Guide\n\nAn opening'
+    produced b''
+    the run's output ends 118 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/optional-mark: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    113 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nAn opening para'
+    produced b''
+    the run's output ends 113 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/toml-fence: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    138 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'+++\ntitle = "Guide"\n+++\n'
+    produced b''
+    the run's output ends 138 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+frontmatter/unterminated-block: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNTERMINATED_FRONTMATTER expected, error E_INVALID_USAGE produced
+frontmatter/yaml-example-in-a-code-block: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    136 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n```yaml\n---\ntit'
+    produced b''
+    the run's output ends 136 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-document-no-group-matches: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    719 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nThe work starts'
+    produced b''
+    the run's output ends 719 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-group-declaration-naming-group-heading-fails: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_CONVERSION_METADATA expected, error E_INVALID_USAGE produced
+grouping/a-group-emitting-no-merged-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    73 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Rules\n\n## Agents\n\nName'
+    produced b''
+    the run's output ends 73 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-member-carrying-one-heading-bundled-by-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    107 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Bare\n\n# Kept\n\nWhat thi'
+    produced b''
+    the run's output ends 107 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-member-named-by-the-title-it-absorbs: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    167 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nThe member [Tit'
+    produced b''
+    the run's output ends 167 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-pooled-subset-keeps-group-member-names: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    222 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# G\n\n## Overview\n\n### A '
+    produced b''
+    the run's output ends 222 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-reference-to-a-grouping-depth-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    367 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nA name two docu'
+    produced b''
+    the run's output ends 367 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-reference-to-a-member-carrying-one-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    116 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nThe member [Bar'
+    produced b''
+    the run's output ends 116 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-rule-matching-no-document-in-the-closure: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    34 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nCarry the proce'
+    produced b''
+    the run's output ends 34 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-section-shallower-than-the-grouping-depth: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    227 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# One\n\nWhat the first pa'
+    produced b''
+    the run's output ends 227 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-variant-drops-the-group-word: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    147 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Modes\n\n## Overview\n\n##'
+    produced b''
+    the run's output ends 147 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/a-whole-document-reference-to-a-member: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    355 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nBoth members ar'
+    produced b''
+    the run's output ends 355 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/an-entry-naming-a-member-carrying-one-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    122 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Bare\n\n## Findings\n\nThe'
+    produced b''
+    the run's output ends 122 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/conflicting-member-depths: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_GROUP_DEPTH_CONFLICT expected, error E_INVALID_USAGE produced
+grouping/member-names-distinguished-after-formatting: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    159 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Modes\n\n## Overview\n\n##'
+    produced b''
+    the run's output ends 159 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/members-of-one-stem-in-different-directories: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    384 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nBoth runs are r'
+    produced b''
+    the run's output ends 384 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/mixed-contributions-name-every-member: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    97 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Rules\n\n## Style\n\n### A'
+    produced b''
+    the run's output ends 97 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/one-entry-bundled-by-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    488 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Plan Mode\n\n### Operati'
+    produced b''
+    the run's output ends 488 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/one-entry-bundled-by-group: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    497 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Modes\n\n## Overview\n\n##'
+    produced b''
+    the run's output ends 497 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/one-entry-under-a-group: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    628 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Plan Mode\n\nScopes the '
+    produced b''
+    the run's output ends 628 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/one-spelling-for-every-generated-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    471 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry Point\n\nThe work '
+    produced b''
+    the run's output ends 471 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/structural-ancestors-inside-a-merged-group: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    262 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Modes\n\n## Overview\n\n##'
+    produced b''
+    the run's output ends 262 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/subheadings-name-every-member: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    109 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Rules\n\n## Style\n\n### A'
+    produced b''
+    the run's output ends 109 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/two-members-contributing-one-heading-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    177 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Rules\n\n## Style\n\n### A'
+    produced b''
+    the run's output ends 177 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/two-members-sharing-a-name-beneath-an-entry: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    191 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nRead [the first'
+    produced b''
+    the run's output ends 191 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_COINCIDENT_HEADING expected, error E_INVALID_USAGE produced
+grouping/two-members-whose-paths-differ-only-by-suffix: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    120 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe document wh'
+    produced b''
+    the run's output ends 120 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_COINCIDENT_HEADING expected, error E_INVALID_USAGE produced
+grouping/two-whole-document-entries-in-one-group: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    156 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Docs\n\n## Notes\n\nWhat w'
+    produced b''
+    the run's output ends 156 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+grouping/variant-headings-distinguished-at-more-than-one-segment: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    272 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guides\n\n## Overview\n\n#'
+    produced b''
+    the run's output ends 272 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+headings/a-heading-with-no-visible-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    52 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Article\n\n### Run\n\nThe '
+    produced b''
+    the run's output ends 52 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+headings/an-authored-heading-beside-a-generated-one: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    198 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# the field guide\n\nWhat '
+    produced b''
+    the run's output ends 198 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+headings/an-entity-in-a-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    269 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Article\n\nAn opening pa'
+    produced b''
+    the run's output ends 269 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+headings/collision-with-a-natural-suffix: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    459 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Article\n\n### Run\n\nThe '
+    produced b''
+    the run's output ends 459 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+headings/image-alternative-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    224 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Article\n\n### The ![A d'
+    produced b''
+    the run's output ends 224 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+hierarchy/a-preamble-before-a-kept-title: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    148 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'An opening paragraph, ab'
+    produced b''
+    the run's output ends 148 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/a-setext-heading-a-quote-carries: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    117 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# The Standing Order\n\n##'
+    produced b''
+    the run's output ends 117 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/a-setext-heading-an-absorbed-title-leaves: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    85 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'Guide\n=====\n\nRun\n---\n\nCa'
+    produced b''
+    the run's output ends 85 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/a-setext-heading-becomes-atx: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    142 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'The Standing Order\n====='
+    produced b''
+    the run's output ends 142 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/a-setext-heading-over-two-lines: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    115 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'The Standing Order\n====='
+    produced b''
+    the run's output ends 115 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/a-shift-that-writes-a-level-only: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    130 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# The Standing Order\n\n  '
+    produced b''
+    the run's output ends 130 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/every-level-moves-down-one: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    351 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Entry\n\nFollow [the sta'
+    produced b''
+    the run's output ends 351 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/headings-a-container-carries: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    341 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# The Standing Order\n\n##'
+    produced b''
+    the run's output ends 341 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+hierarchy/regions-the-source-separates: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    87 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nThe '
+    produced b''
+    the run's output ends 87 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/a-path-ending-in-a-number-sign: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    75 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Notes/Draft \\#\n\nA docu'
+    produced b''
+    the run's output ends 75 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/a-second-h1-leaves-the-title: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    84 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nAn opening para'
+    produced b''
+    the run's output ends 84 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/a-title-the-path-spells-with-a-space: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    138 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# My Note\n\nAn opening pa'
+    produced b''
+    the run's output ends 138 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/a-title-the-path-spells-with-hyphens: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    44 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# My Note\n\n## Run\n\nCarry'
+    produced b''
+    the run's output ends 44 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/an-h1-below-the-first-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    95 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'## Run\n\nCarry the proced'
+    produced b''
+    the run's output ends 95 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/an-ordinal-names-no-source-heading: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+identity/path-needing-escaping: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    94 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Notes/\\[draft\\](page.m'
+    produced b''
+    the run's output ends 94 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/paths-differing-only-by-suffix: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    119 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe document wh'
+    produced b''
+    the run's output ends 119 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_COINCIDENT_HEADING expected, error E_INVALID_USAGE produced
+identity/same-basename-in-two-directories: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    106 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Note\n\nThe note the not'
+    produced b''
+    the run's output ends 106 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/title-the-path-does-not-carry: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    112 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# The Standing Order\n\nAn'
+    produced b''
+    the run's output ends 112 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+identity/two-documents-sharing-a-title: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    179 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nRead [the docum'
+    produced b''
+    the run's output ends 179 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_COINCIDENT_HEADING expected, error E_INVALID_USAGE produced
+identity/two-headings-sharing-a-slug: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_AMBIGUOUS_SOURCE_HEADING expected, error E_INVALID_USAGE produced
+identity/whole-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    99 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nAn opening para'
+    produced b''
+    the run's output ends 99 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+limits/a-file-count-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/a-link-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/a-link-budget-crossed-by-a-links-line: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/a-link-budget-crossed-by-diagram-clicks: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/a-nesting-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/a-source-byte-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/a-target-at-the-expansion-depth: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    120 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Alpha\n\nAlpha requires '
+    produced b''
+    the run's output ends 120 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+limits/a-target-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/an-expansion-depth-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/an-input-byte-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+limits/an-output-byte-budget-crossed: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RESOURCE_LIMIT expected, error E_INVALID_USAGE produced
+literal-bracket/a-bracket-another-source-defines: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    207 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA literal [runn'
+    produced b''
+    the run's output ends 207 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+literal-bracket/brackets-in-examples-stay-as-written: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    179 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide names'
+    produced b''
+    the run's output ends 179 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/a-double-encoded-escape: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    50 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# notes#draft\n\nA filenam'
+    produced b''
+    the run's output ends 50 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/a-drive-path: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_OUTSIDE_ROOT expected, error E_INVALID_USAGE produced
+normalization/a-non-utf8-escape-sequence: fail
+  expected.diagnostics: diagnostic 1 carries no reference
+    expected reference 'notes%FF.md'
+normalization/a-parent-segment-and-a-fragment: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    60 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run It\n\nThe'
+    produced b''
+    the run's output ends 60 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/a-parent-segment-reaching-the-root-boundary: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    8 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n'
+    produced b''
+    the run's output ends 8 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/a-protocol-relative-url: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_OUTSIDE_ROOT expected, error E_INVALID_USAGE produced
+normalization/a-scheme-and-an-authority-in-selected-content: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    275 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe [specificat'
+    produced b''
+    the run's output ends 275 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/an-empty-fragment: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    187 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 187 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/an-encoded-number-sign: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    50 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# notes\\#draft\n\n### Run\n'
+    produced b''
+    the run's output ends 50 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/an-encoded-path-separator: fail
+  expected.diagnostics: diagnostic 1 carries no reference
+    expected reference 'sub%2Fguide.md'
+normalization/an-escaped-fragment: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    60 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run It\n\nThe'
+    produced b''
+    the run's output ends 60 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/an-over-long-percent-escape: fail
+  expected.diagnostics: diagnostic 1 carries no reference
+    expected reference 'notes%C0%AF.md'
+normalization/an-unencoded-number-sign: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_ENTRY_SUFFIX expected, error E_INVALID_USAGE produced
+normalization/bare-text-paths: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    211 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe settings li'
+    produced b''
+    the run's output ends 211 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/query-on-an-entry-reference: fail
+  expected.diagnostics: diagnostic 1 carries no reference
+    expected reference 'guide.md?view=raw'
+normalization/root-escape: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    71 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 71 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+normalization/root-relative-entry-reference: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_OUTSIDE_ROOT expected, error E_INVALID_USAGE produced
+normalization/two-spellings-of-one-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    111 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Run It\n\nThe'
+    produced b''
+    the run's output ends 111 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+ownership/a-self-reference-after-consolidation: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    120 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n## Alpha\n\nAlpha'
+    produced b''
+    the run's output ends 120 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+ownership/an-ancestor-reference-after-consolidation: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    129 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Manual\n\n### Procedure\n'
+    produced b''
+    the run's output ends 129 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+ownership/an-ancestor-reference-with-the-child-selected: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    129 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Manual\n\n### Procedure\n'
+    produced b''
+    the run's output ends 129 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+parser-limit/a-budget-spent-on-the-last-valid-reference: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    151 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide cites'
+    produced b''
+    the run's output ends 151 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+parser-limit/a-lookup-suppressed-below-every-declared-budget: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_PARSER_REFERENCE_LIMIT expected, error E_INVALID_USAGE produced
+parser-limit/a-nesting-ceiling-the-last-valid-reference-reaches: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    88 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide cites'
+    produced b''
+    the run's output ends 88 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+parser-limit/a-reference-lookup-the-parser-declines: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_PARSER_REFERENCE_LIMIT expected, error E_INVALID_USAGE produced
+profile/entry-suffix-outside-the-profile: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_ENTRY_SUFFIX expected, error E_INVALID_USAGE produced
+profile/extension-lookalikes: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    345 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA code span nam'
+    produced b''
+    the run's output ends 345 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+profile/html-in-a-code-example: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    198 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nAn HTML example'
+    produced b''
+    the run's output ends 198 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+profile/invalid-byte-mid-document: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_ENCODING expected, error E_INVALID_USAGE produced
+profile/markdown-suffixes-in-mixed-case: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    134 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Reading the guide\n\nA d'
+    produced b''
+    the run's output ends 134 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+profile/raw-html-in-selected-content: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RAW_HTML expected, error E_INVALID_USAGE produced
+profile/source-not-utf8: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_ENCODING expected, error E_INVALID_USAGE produced
+profile/task-markers-and-typography: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    192 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA checklist, ca'
+    produced b''
+    the run's output ends 192 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+profile/task-markers-protected-from-definitions: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    39 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n- [x] done\n- [X'
+    produced b''
+    the run's output ends 39 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+profile/the-constructs-the-profile-supports: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    501 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA paragraph car'
+    produced b''
+    the run's output ends 501 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+profile/unsupported-construct: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+profile/utf16-byte-order-mark: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_INVALID_ENCODING expected, error E_INVALID_USAGE produced
+real-source/absorbed-title-and-self-references: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    1189 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Repository Labels\n\nThe'
+    produced b''
+    the run's output ends 1189 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+real-source/frontmatter-and-a-shifted-group: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    2657 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Impact Analysis with G'
+    produced b''
+    the run's output ends 2657 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+real-source/heading-text-outside-ascii: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    3172 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# GitNexus CLI Commands\n'
+    produced b''
+    the run's output ends 3172 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+real-source/markdown-inside-a-code-example: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    6013 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Architecture Overview\n'
+    produced b''
+    the run's output ends 6013 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+real-source/preamble-above-the-first-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    3144 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Design Flow\n\nHow a def'
+    produced b''
+    the run's output ends 3144 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+real-source/tables-and-brace-placeholders: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    2149 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Integration Review\n\n##'
+    produced b''
+    the run's output ends 2149 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-click-naming-no-diagram-destination-is-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    370 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\nAn example '
+    produced b''
+    the run's output ends 370 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-definition-a-container-carries: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    148 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n> The quoted pr'
+    produced b''
+    the run's output ends 148 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-definition-outside-the-selected-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    163 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Procedure\n\n'
+    produced b''
+    the run's output ends 163 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-definition-spelled-across-two-lines: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    202 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide names'
+    produced b''
+    the run's output ends 202 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-diagram-click-outside-the-root-is-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    141 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\n```mermaid\n'
+    produced b''
+    the run's output ends 141 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-document-outside-the-root-is-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    118 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure f'
+    produced b''
+    the run's output ends 118 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-document-under-the-root-is-a-dependency: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    210 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 210 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-kanban-ticket-naming-a-local-document: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+reference/a-label-two-definitions-spell-in-different-case: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    134 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 134 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-link-inside-an-image-a-link-carries: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    189 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA [picture ![of'
+    produced b''
+    the run's output ends 189 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+reference/a-link-inside-image-alternative-content: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    117 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nA picture ![of '
+    produced b''
+    the run's output ends 117 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+reference/a-link-line-in-another-diagram-is-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    118 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\n```mermaid\n'
+    produced b''
+    the run's output ends 118 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/a-links-value-that-is-no-string: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+reference/a-reference-style-image-with-a-title: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    200 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n![The architect'
+    produced b''
+    the run's output ends 200 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+reference/a-reference-under-the-root-naming-no-document: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+reference/a-reference-under-the-root-naming-no-heading: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+reference/an-html-anchor-in-a-node-label-naming-a-local-document: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+reference/an-html-link-naming-a-document-under-the-root: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_RAW_HTML expected, error E_INVALID_USAGE produced
+reference/an-unused-definition-is-removed: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    127 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide names'
+    produced b''
+    the run's output ends 127 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/conflicting-labels-across-files: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    325 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe guide names'
+    produced b''
+    the run's output ends 325 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/diagram-links-naming-remote-addresses-are-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    270 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n```mermaid\n%%{i'
+    produced b''
+    the run's output ends 270 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+reference/diagram-links-outside-the-forms-read: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    234 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n```mermaid\nC4Co'
+    produced b''
+    the run's output ends 234 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+resource/a-bundle-naming-no-resource-does-not-warn: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    212 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe command rea'
+    produced b''
+    the run's output ends 212 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+resource/a-diagram-click-naming-a-resource: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    137 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\n```mermaid\n'
+    produced b''
+    the run's output ends 137 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+resource/an-image-naming-a-document-under-the-root: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    100 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure f'
+    produced b''
+    the run's output ends 100 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+rewriting/a-class-diagram-click-in-each-form: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    273 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Model\n\n```mermaid\nclas'
+    produced b''
+    the run's output ends 273 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-class-diagram-link-destination: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    191 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Model\n\n```mermaid\nclas'
+    produced b''
+    the run's output ends 191 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-cross-group-reference: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    190 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 190 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-diagram-click-destination: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    135 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\n```mermaid\n'
+    produced b''
+    the run's output ends 135 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-diagram-link-keyword-in-any-case: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    174 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\n```mermaid\n'
+    produced b''
+    the run's output ends 174 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-diagram-reached-through-a-linked-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    691 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Ticket Guide\n\nA ticket'
+    produced b''
+    the run's output ends 691 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-diagram-short-click-destination: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    206 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lifecycle\n\n```mermaid\n'
+    produced b''
+    the run's output ends 206 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-flowchart-click-in-each-form: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    250 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Flow\n\n```mermaid\nflowc'
+    produced b''
+    the run's output ends 250 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-fragment-only-dependency: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    157 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Procedure\n\n'
+    produced b''
+    the run's output ends 157 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-gantt-diagram-click-destination: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    241 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Schedule\n\n```mermaid\ng'
+    produced b''
+    the run's output ends 241 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-link-inside-a-heading: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    164 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n## The step [th'
+    produced b''
+    the run's output ends 164 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-reference-style-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    148 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 148 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-destination-ending-at-a-semicolon: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    134 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 134 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-destination-naming-a-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    284 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 284 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-link-and-links-line-anchors: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    307 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 307 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-link-destination: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    202 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 202 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-links-line-destinations: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    254 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 254 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-links-line-repeating-a-key: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    144 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 144 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-sequence-diagram-menu-keywords-in-any-case: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    230 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Exchange\n\n```mermaid\ns'
+    produced b''
+    the run's output ends 230 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-state-diagram-click-in-each-form: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    180 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# States\n\n```mermaid\nsta'
+    produced b''
+    the run's output ends 180 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/a-swimlanes-diagram-click-in-each-form: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    410 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Lanes\n\n```mermaid\nswim'
+    produced b''
+    the run's output ends 410 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/no-link-names-a-source-path: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    295 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 295 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+rewriting/two-targets-sharing-a-slug: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    229 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 229 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+run-set/a-link-carrying-the-run-set-mark-and-the-dispatch-operator: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+run-set/a-run-set-is-compiled-with-its-mark: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    165 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Run [\xe2\xab\xbd the'
+    produced b''
+    the run's output ends 165 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+run-set/a-run-set-item-linking-no-document-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    161 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Run [\xe2\xab\xbd the'
+    produced b''
+    the run's output ends 161 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RUN_SET_SHAPE expected, error E_INVALID_USAGE produced
+run-set/a-run-set-link-naming-a-remote-address: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_UNSUPPORTED_CONSTRUCT expected, error E_INVALID_USAGE produced
+run-set/a-run-set-mark-with-no-space-after-it-opens-an-ordinary-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    106 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure f'
+    produced b''
+    the run's output ends 106 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+run-set/a-run-set-target-holding-a-numbered-list-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    171 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Run [\xe2\xab\xbd the'
+    produced b''
+    the run's output ends 171 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RUN_SET_SHAPE expected, error E_INVALID_USAGE produced
+run-set/a-run-set-target-holding-a-paragraph-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    163 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Run [\xe2\xab\xbd the'
+    produced b''
+    the run's output ends 163 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RUN_SET_SHAPE expected, error E_INVALID_USAGE produced
+run-set/nested-run-set-items-each-carrying-a-call: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    326 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n1. Run [\xe2\xab\xbd the'
+    produced b''
+    the run's output ends 326 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+self-reference/a-link-back-to-an-including-ancestor: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    116 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 116 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+self-reference/a-link-spelled-another-way-to-the-same-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    80 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 80 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+self-reference/a-link-to-another-section-of-the-same-file: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    111 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 111 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+self-reference/a-link-to-the-same-section: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    80 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nAlph'
+    produced b''
+    the run's output ends 80 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+self-reference/a-preamble-link-to-its-own-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    91 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe preamble re'
+    produced b''
+    the run's output ends 91 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+self-reference/a-section-link-to-its-whole-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    112 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n## Alpha\n\nAlpha'
+    produced b''
+    the run's output ends 112 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+source-consistency/a-source-that-changes-during-compilation: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_SOURCE_CHANGED expected, error E_INVALID_USAGE produced
+structural-ancestors/a-title-the-file-heading-already-names: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    65 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Procedure\n\n'
+    produced b''
+    the run's output ends 65 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+structural-ancestors/an-ancestor-carries-no-body-or-sibling: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    74 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\n####'
+    produced b''
+    the run's output ends 74 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+structural-ancestors/an-ancestor-heading-is-literal-text: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    63 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha \\& th'
+    produced b''
+    the run's output ends 63 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+structural-ancestors/an-ancestor-two-selections-share: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    61 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\n####'
+    produced b''
+    the run's output ends 61 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+structural-ancestors/an-outline-that-skips-a-level: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    67 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\n####'
+    produced b''
+    the run's output ends 67 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+structural-ancestors/disjoint-selections-keep-their-outline: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    93 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Alpha\n\nSele'
+    produced b''
+    the run's output ends 93 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+traversal/a-cycle-of-dependencies: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    184 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Alpha\n\nAlpha requires '
+    produced b''
+    the run's output ends 184 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+traversal/a-link-in-a-code-example: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    277 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 277 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+traversal/a-reference-under-the-root-is-bundled: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    283 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 283 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+traversal/a-relative-resource-warns: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    158 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n![The architect'
+    produced b''
+    the run's output ends 158 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: warning W_RESOURCE_PORTABILITY expected, error E_INVALID_USAGE produced
+traversal/a-second-reference-to-one-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    216 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\nThe procedure r'
+    produced b''
+    the run's output ends 216 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+traversal/resources-are-not-dependencies: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    416 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n![The architect'
+    produced b''
+    the run's output ends 416 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/a-bare-fragment-and-its-referring-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    12090 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Artifacts\n\n## Epic Iss'
+    produced b''
+    the run's output ends 12090 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/a-mode-and-the-calls-it-runs-together: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    59138 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Advance Mode\n\nDecides '
+    produced b''
+    the run's output ends 59138 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/a-mode-and-the-guidelines-it-defers: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    8960 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Revise Mode\n\nChanges t'
+    produced b''
+    the run's output ends 8960 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/a-procedure-and-everything-it-reaches: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    154287 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Plan Mode\n\nScopes the '
+    produced b''
+    the run's output ends 154287 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/artifacts-and-references-under-declared-groups: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    78502 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Hoist Mode\n\nBrings the'
+    produced b''
+    the run's output ends 78502 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/two-selected-sections: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    12090 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Artifacts\n\n## Epic Iss'
+    produced b''
+    the run's output ends 12090 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+usage-example/validation-without-publication: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+validation-scope/an-unselected-broken-link: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    51 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Procedure\n\n'
+    produced b''
+    the run's output ends 51 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+validation-scope/an-unselected-refusal-in-a-named-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    51 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Procedure\n\n'
+    produced b''
+    the run's output ends 51 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+validation-scope/an-unselected-refusal-in-a-reached-document: fail
+  expected.exit_status: expected 0, the run exited 2
+  expected.stdout: the bytes differ
+    139 bytes expected, 0 produced
+    first difference at byte 0, expected line 1 column 1
+    expected b'# Guide\n\n### Procedure\n\n'
+    produced b''
+    the run's output ends 139 bytes early
+  expected.diagnostics: the run emits 1 diagnostic where 0 diagnostics are expected
+    position 1: error E_INVALID_USAGE produced, which no expectation declares
+validation-scope/the-sibling-once-closure-includes-it: fail
+  expected.exit_status: expected 1, the run exited 2
+  expected.diagnostics: the run emits 1 diagnostic where 1 diagnostic is expected
+    position 1: error E_TARGET_NOT_FOUND expected, error E_INVALID_USAGE produced
+corpus check: 312 fixture(s), 7 pass, 305 fail, 0 awaited, 0 unexpected pass
