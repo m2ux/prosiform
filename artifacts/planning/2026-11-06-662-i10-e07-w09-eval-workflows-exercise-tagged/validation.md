@@ -17,7 +17,7 @@ AC20 observations:
 
 ## Callers at Exact Revision
 
-The detached `revision-check.py` run at `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493` passed all 1,650 harness tests. Its first corpus attempt inherited the detached uv environment while the configured build pointed to the task checkout; uv printed a mismatched `VIRTUAL_ENV` warning on diagnostic stderr, causing all corpus comparisons to fail. This is verification setup noise, not a compiler result. A clean-environment rerun of corpus and smoke is pending; it prefixes the configured build with `env -u VIRTUAL_ENV` and otherwise uses the same committed task build.
+The detached `revision-check.py` run at `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493` passed all 1,650 harness tests. Its first corpus attempt inherited the detached uv environment while the configured build pointed to the task checkout; uv printed a mismatched `VIRTUAL_ENV` warning on diagnostic stderr, causing all corpus comparisons to fail. This is verification setup noise, not a compiler result. The clean-environment detached rerun passed all 537 corpus fixtures and installed-wheel smoke, exit 0. It prefixes the configured build with `env -u VIRTUAL_ENV` and otherwise uses the same committed task build. AC19 is verified by those caller observations and the detached harness result.
 
 ## Full Configured Check
 
