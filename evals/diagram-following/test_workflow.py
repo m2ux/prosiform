@@ -1244,9 +1244,8 @@ def test_a_sub_agent_action_its_runs_do_not_alone_state_is_a_fault(
 ) -> None:
     """AC17: the action a trace entry states is the one its material writes.
 
-    A section states its own action, so the corpus no longer holds the fault
-    this test's second case described: the bundle stating an action its runs
-    do not compile is how main writes every dispatched section.
+    A dispatched section may state its action directly or in material its
+    deferred line compiles. The scenario's action must match that material.
     """
     workflow = broken(tmp_path, "subagent-first-run", path, old, new)
     first = next(item for item in workflow.scenarios if item.name == "first-hop-run")

@@ -939,7 +939,7 @@ def claude_message(owner: str | None, block: dict[str, object]) -> dict[str, obj
 def test_a_compiled_claude_record_holds_each_hops_runs(
     tmp_path: Path, ruling: list[str], failure: str | None
 ) -> None:
-    """AC12: `deep-hop-runs` is scored on the runs each nested start's sub-agent made.
+    """AC26: `deep-hop-runs` is scored on each nested start's sub-agent runs.
 
     The stream a compiled Claude session prints files each `Bash` call under
     the `Agent` call its sub-agent runs under, so the ruling's runs, three

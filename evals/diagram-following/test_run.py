@@ -361,7 +361,7 @@ def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
 
 
 def test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports() -> None:
-    """AC3, AC12: every compiled scenario reaches Claude; a nested one no other.
+    """AC3, AC26: every compiled scenario reaches Claude; a nested one no other.
 
     Cursor and opencode report no sub-agent's own calls, so they are given
     the compiled scenarios whose starts and runs the session makes itself,
@@ -437,7 +437,7 @@ def test_a_harness_reporting_only_the_sessions_starts_gets_those_scenarios() -> 
 def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
     tmp_path: Path, log: Path
 ) -> None:
-    """AC12: the nested scenarios take a Claude cell, scored on each start's runs.
+    """AC26: nested scenarios take a Claude cell, scored on each start's runs.
 
     The stub's compiled session carries `Bash`, so it makes each stated `pf`
     run under the start whose sub-agent makes it, and the record holds them

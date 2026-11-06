@@ -492,7 +492,7 @@ def test_the_claude_cli_is_capped_in_dollars_not_tokens(tmp_path: Path) -> None:
 def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
     tmp_path: Path,
 ) -> None:
-    """AC12: a `Bash` call is the session's or the start its parent names.
+    """AC5, AC26: a `Bash` call belongs to the session or its parent start.
 
     The session runs `pf` on its line, the review's sub-agent compiles its
     line and starts the ruling, and the ruling's sub-agent compiles its own
