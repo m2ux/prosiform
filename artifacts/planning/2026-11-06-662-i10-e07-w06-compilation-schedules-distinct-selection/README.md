@@ -15,6 +15,13 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | [w06.md](w06.md) | Component plan and required checks |
 | [w07.md](w07.md) | Component plan and required checks |
 | [todos.md](todos.md) | Unit delivery checklist |
+| [reservation.json](reservation.json) | Unit planning, delivery or verification evidence |
+| [start-evidence.json](start-evidence.json) | Unit planning, delivery or verification evidence |
+| [unit.json](unit.json) | Unit planning, delivery or verification evidence |
+| [validation.md](validation.md) | Exact-head criteria evidence, review findings and full gate result |
+| [source-result.json](source-result.json) | Clean pushed source head and coordinator handoff |
+| [make-check.log](make-check.log) | Passing complete repository gate at the delivered source revision |
+| [make-check-bf7f61592.log](make-check-bf7f61592.log) | Initial gate finding before the candidate renderer-identity repair |
 
 ## Links
 

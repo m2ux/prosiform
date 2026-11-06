@@ -1,0 +1,19 @@
+{
+  "unit": "m2ux/prosiform#I10:E07:W06+W07",
+  "head": "cd325d5c3f6c71ef8890c8910adad85cc2b7895c",
+  "base": "6578295a1bd40899ab4286a8185203451e159554",
+  "branch": "i10/e07/w06-compilation-schedules-distinct-selection",
+  "worktree_clean": true,
+  "remote_head_matches": true,
+  "required_checks": "passed",
+  "source_tests": 1850,
+  "deterministic_harness_tests": 1419,
+  "corpus_fixtures": 533,
+  "covered_criteria": ["AC12", "AC13", "AC14", "AC15", "AC16"],
+  "open_findings": [],
+  "applied_plan_changes": [],
+  "held_plan_changes": [],
+  "paid_sessions": 0,
+  "proposed_pr_body": "/tmp/e07-w06-pr-body.md",
+  "tracker_delivery": "pending coordinator publication and reconciliation"
+}
