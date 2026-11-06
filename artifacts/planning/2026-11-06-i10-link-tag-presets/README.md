@@ -12,6 +12,7 @@ Heading wording can serve presentation because the link states its settings dire
 
 | Artifact | What it holds |
 | --- | --- |
+| [Guide option values](guide-option-values.md) | Current design pin and leading-dash argument transport |
 | [baseline-dependencies.txt](baseline-dependencies.txt) | Plan and validation artifact |
 | [cli-preset-option.md](cli-preset-option.md) | User-confirmed CLI option and implementation contract |
 | [cli-preset-option.json](cli-preset-option.json) | Immutable amended design pin and exact tracker readback |

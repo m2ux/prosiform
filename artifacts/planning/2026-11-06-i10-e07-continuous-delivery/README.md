@@ -15,6 +15,8 @@ The coordinator publishes records, reserves units, dispatches implementation, ve
 | [authorization.json](authorization.json) | Epic-wide authorization and lane |
 | [todos.md](todos.md) | Successive units and integration handoff |
 | [decisions.md](decisions.md) | Confirmed execution boundary and prerequisites |
+| [main-rules.json](main-rules.json) | Main integration's active review requirement |
+| [engineering-rules.json](engineering-rules.json) | Design integration's active review requirement |
 
 ## Links
 
