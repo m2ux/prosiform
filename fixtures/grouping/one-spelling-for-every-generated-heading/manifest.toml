@@ -12,7 +12,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["entry-point.md"]
+arguments = ["--entry", "entry-point.md"]
 
 [expected]
 exit_status = 0

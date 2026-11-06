@@ -15,7 +15,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["gitnexus-cli/SKILL.md"]
+arguments = ["--entry", "gitnexus-cli/SKILL.md"]
 
 [expected]
 exit_status = 0

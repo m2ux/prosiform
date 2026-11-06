@@ -448,7 +448,7 @@ def composed(
         target.write_text(text)
     out, err = StringIO(), StringIO()
     with TemporaryDirectory() as folder, chdir(root):
-        status = main(["-o", folder, "-d", "json", entry], out, err)
+        status = main(["-o", folder, "-d", "json", "--entry", entry], out, err)
         written = sorted(Path(folder).glob("*.bundles/*.bundle.md"))
         bundle = written[0].read_text() if written else ""
     diagnostics = [json.loads(line) for line in err.getvalue().splitlines() if line]
@@ -576,8 +576,11 @@ def test_a_group_placed_by_a_document_in_two_groups_nests_in_the_first(
     status, bundle, _ = composed(
         tmp_path,
         {
-            "guide.md": DECLARED + "# Guide\n\n## Checks\n\nSee [rules](rules.md).\n\n"
-            "## Draft\n\nSee [rules](rules.md).\n",
+            "guide.md": DECLARED
+            + (
+                '# Guide\n\n## Checks\n\nSee [rules](rules.md "checks").\n\n'
+                '## Draft\n\nSee [rules](rules.md "draft").\n'
+            ),
             "rules.md": "---\nprosiform:\n  Checks:\n    group: {reviews: 1}\n"
             "  Draft:\n    group: {drafts: 1}\n---\n"
             "# Rules\n\nTo [the leaf](leaf.md).\n",

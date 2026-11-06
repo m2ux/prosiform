@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["docs/my-note.md"]
+arguments = ["--entry", "docs/my-note.md"]
 
 [expected]
 exit_status = 0

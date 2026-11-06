@@ -70,7 +70,7 @@ def write_fixture(
             "",
             "[invocation]",
             'cwd = "source"',
-            'arguments = ["guide.md"]',
+            'arguments = ["--entry", "guide.md"]',
             "",
             "[expected]",
             "exit_status = 0",

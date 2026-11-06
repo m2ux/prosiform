@@ -1,4 +1,4 @@
-description = "The run following a published deferral reads the presets of the document it names: the entry noted.md#draft names the section Draft, whose title selects the Draft preset of noted.md, so the section joins Drafts and no preset goes unused."
+description = "A later --entry noted.md#draft --presets Draft invocation selects the target document's Draft preset and places the section under Drafts. Its heading supplies no selection."
 
 clauses = [
   "Presets — A preset nothing selected warns",
@@ -8,9 +8,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["noted.md#draft"]
+arguments = ["--entry", "noted.md#draft", "--presets", "Draft"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/noted__draft.bundle.md"]
+bundles = ["expected/noted__draft--p-3af75e8d5faae013f8d899bb1815c235f31b766e51ffe46630e447bcbc32a0fc.bundle.md"]
 diagnostics = []

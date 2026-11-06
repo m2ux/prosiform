@@ -85,6 +85,8 @@ import tomllib
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
+from markdown_it import MarkdownIt
+
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
 INSTRUCTION = ROOT / "instruction.md"
@@ -287,8 +289,26 @@ BUNDLE_HEADING = re.compile(r"^(#{1,6}) (.+?)[ \t]*$", re.MULTILINE)
 SLUG_DISCARDED = re.compile("[\u0000-\u001f!-,./:-@[-^`{-~]")
 """The characters a renderer drops from a heading's text in making its slug."""
 
-FRAGMENT_LINK = re.compile(r"\[([^\]]+)\]\(#([^)]+)\)")
-"""A link a bundle rewrote to a heading of its own, with its text and fragment."""
+
+def fragment_links(text: str) -> list[tuple[str, str]]:
+    """Links naming bundle headings, with title attributes kept outside the href."""
+    found = []
+    for block in MarkdownIt("commonmark").parse(text):
+        children = block.children or []
+        for at, token in enumerate(children):
+            if token.type != "link_open":
+                continue
+            href = str(token.attrGet("href") or "")
+            if not href.startswith("#"):
+                continue
+            label = []
+            for child in children[at + 1 :]:
+                if child.type == "link_close":
+                    break
+                label.append(child.content)
+            found.append(("".join(label), href[1:]))
+    return found
+
 
 NEXT_PARAGRAPH = re.compile(rf"^{re.escape(NEXT)}(.+)$", re.MULTILINE)
 """A section's transition paragraph as a bundle carries it."""
@@ -883,7 +903,7 @@ def bundle(
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, workflow.entry, "-o", str(output)],
+        [command, "--entry", workflow.entry, "-o", str(output)],
         cwd=workflow.form(form),
         capture_output=True,
         check=False,
@@ -1072,9 +1092,7 @@ def bundle_walk(
                 return tuple(path), faults
             state = edges[0].target
             linked = [
-                target
-                for text, target in FRAGMENT_LINK.findall(section.text)
-                if text == state
+                target for text, target in fragment_links(section.text) if text == state
             ]
             fragment = (
                 linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")
@@ -1097,9 +1115,7 @@ def bundle_walk(
             return tuple(path), faults
         state = targets[0]
         linked = [
-            target
-            for text, target in FRAGMENT_LINK.findall(section.text)
-            if text == state
+            target for text, target in fragment_links(section.text) if text == state
         ]
         fragment = (
             linked[0] if linked else diagram.clicks.get(state, "").removeprefix("#")

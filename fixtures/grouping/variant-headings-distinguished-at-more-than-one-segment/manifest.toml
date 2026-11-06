@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guides/alpha/notes.md#findings"]
+arguments = ["--entry", "guides/alpha/notes.md#findings"]
 
 [expected]
 exit_status = 0

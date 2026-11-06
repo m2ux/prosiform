@@ -13,4 +13,7 @@ The section between them, which nothing selects.
 
 ## Gamma
 
+[Input](guide.md#alpha)
+
+
 The last selected section.

@@ -5,6 +5,9 @@ prosiform: {}
 
 ## Rules
 
+[Input](guide.md#notes)
+
+
 Each rule is a rule.
 
 ## Notes

@@ -10,7 +10,7 @@ Follow [the first rule](#one).
 
 ## Checks
 
-Follow [the second rule](#two).
+Follow [the second rule](#two "Checks").
 
 # Rules
 

@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Targets
 
-Follow [the rules](rules.md).
+Follow [the rules](rules.md "Targets").

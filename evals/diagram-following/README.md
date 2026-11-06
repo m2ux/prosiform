@@ -79,9 +79,9 @@ The six feature workflows each build on one bundling feature, and each scenario 
 
 | Workflow | Scenario | Permutation |
 | --- | --- | --- |
-| `preset-selection` | `default-alone` | A link whose section title selects no preset of its document, so the document's default places the state. |
-| `preset-selection` | `title-selected` | A section title selecting one preset of the document its link names. |
-| `preset-selection` | `two-presets-one-title` | A section title selecting two presets of one document together. |
+| `preset-selection` | `default-alone` | A link whose title selects no preset of its document, so the document's default places the state. |
+| `preset-selection` | `title-selected` | A link title selecting one preset of the document it names. |
+| `preset-selection` | `two-presets-one-title` | A link title selecting two presets of one document together. |
 | `group-placement` | `leaf-group` | Two states that link nothing, placed in one group. |
 | `group-placement` | `nested-intermediate` | A state placed in a group inside the group of the state linking it, and a second inside that. |
 | `group-placement` | `two-presets-one-document` | One document reached under its default and under a preset, so it stands in two groups. |

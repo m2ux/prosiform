@@ -6,3 +6,5 @@ prosiform:
 ## Style
 
 Name the harness.
+
+[Input](common.md)

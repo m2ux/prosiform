@@ -8,9 +8,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["middle.md#two", "alpha.md", "middle.md#one"]
+arguments = ["--entry", "middle.md#two"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/middle__two+alpha+middle__one.bundle.md"]
+bundles = ["expected/middle__two.bundle.md"]
 diagnostics = []

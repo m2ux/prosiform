@@ -104,7 +104,7 @@ Paths below are relative to `src/`.
 
 ### Command interface
 
-`tests/test_cli.py` checks option grammar, the guide a bare `pf` prints, output streams, exit statuses, implementation-specific responses, and write failures. A run's bundles are written into a folder of its own under the folder `-o` names, or the working directory, under their joined derived names; the folder is published through one rename, an existing run folder keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
+`tests/test_cli.py` checks option grammar, the guide a bare `pf` prints, output streams, exit statuses, implementation-specific responses, and write failures. A run's bundles are written into a folder of its own under the folder `-o` names, or the working directory, under the entry's derived name; the folder is published through one rename, an existing run folder keeps its bytes on failure, validation-only runs write nothing, and `-o -` is invalid usage.
 
 ### Candidate validation
 

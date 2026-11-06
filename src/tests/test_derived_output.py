@@ -40,7 +40,7 @@ def test_file_and_section_names_follow_the_working_directory_path(
 ) -> None:
     name = f"Skill/modes/Run_it{suffix}"
     written(tmp_path, name, declared("# Run\n\n## Part\n\nSelected.\n"))
-    run = invoke(tmp_path, name + fragment)
+    run = invoke(tmp_path, "--entry", name + fragment)
     output = "Skill_modes_Run_it" + ("__part" if fragment else "")
     assert run.status == 0 and run.stdout == ""
     assert "Selected." in bundle(tmp_path, output).read_text()
@@ -57,7 +57,9 @@ def test_equivalent_selections_share_one_derived_destination(
     tmp_path: Path, arguments: tuple[str, ...]
 ) -> None:
     written(tmp_path, "dir/a.md", DECLARED + "# A\n\n## Part\n\nContent.\n")
-    run = invoke(tmp_path, *arguments)
+    runs = [invoke(tmp_path, "--entry", argument) for argument in arguments]
+    run = runs[-1]
+    assert all(one.status == 0 for one in runs)
     assert run.status == 0 and run.stdout == ""
     assert len(list(tmp_path.glob("dir_a*.bundles/dir_a*.bundle.md"))) == 1
 
@@ -73,7 +75,7 @@ def test_equivalent_selections_share_one_derived_destination(
     ],
 )
 @pytest.mark.parametrize("check", [False, True])
-def test_distinct_selections_join_their_names_in_entry_order(
+def test_repeated_entry_groups_publish_nothing(
     tmp_path: Path, references: tuple[str, ...], name: str, check: bool
 ) -> None:
     written(
@@ -81,25 +83,29 @@ def test_distinct_selections_join_their_names_in_entry_order(
     )
     written(tmp_path, "b.md", DECLARED + "# B\n")
     flags = ["-c"] if check else []
-    run = invoke(tmp_path, *flags, *references)
-    assert run.status == 0 and run.stdout == ""
-    published = sorted(path.name for path in tmp_path.glob("*/*.bundle.md"))
-    assert published == ([] if check else [name])
+    run = invoke(
+        tmp_path,
+        *flags,
+        *[token for reference in references for token in ("--entry", reference)],
+    )
+    assert run.status == 2 and run.stdout == ""
+    assert "E_INVALID_USAGE" in run.stderr
+    assert list(tmp_path.glob("*/*.bundle.md")) == []
 
 
 def test_a_parent_relative_entry_s_name_is_filename_text(tmp_path: Path) -> None:
     written(tmp_path, "entries/a.md", DECLARED + "# A\n")
     (tmp_path / "work").mkdir()
-    run = invoke(tmp_path / "work", "../entries/a.md")
+    run = invoke(tmp_path / "work", "--entry", "../entries/a.md")
     assert run.status == 0
     assert bundle(tmp_path / "work", ".._entries_a").is_file()
 
 
 def test_a_section_entry_s_name_and_check_mode(tmp_path: Path) -> None:
     written(tmp_path, "dir/a.md", declared("# A\n\n## Part\n\nContent.\n"))
-    assert invoke(tmp_path, "-c", "dir/a.md#part").status == 0
+    assert invoke(tmp_path, "-c", "--entry", "dir/a.md#part").status == 0
     assert not (tmp_path / "dir_a__part.bundles").exists()
-    assert invoke(tmp_path, "dir/a.md#part").status == 0
+    assert invoke(tmp_path, "--entry", "dir/a.md#part").status == 0
     assert "Content." in bundle(tmp_path, "dir_a__part").read_text()
 
 
@@ -113,7 +119,7 @@ def test_derived_folder_cannot_hold_any_captured_source(
         tmp_path, "a.md", DECLARED + f"# A\n\n[{mark}Captured](a.bundles/a.bundle.md)\n"
     )
     written(tmp_path, "a.bundles/a.bundle.md", declared("# Captured\n\nPreserve.\n"))
-    run = invoke(tmp_path, *(["-c"] if check else []), "a.md")
+    run = invoke(tmp_path, *(["-c"] if check else []), "--entry", "a.md")
     assert run.status == 2 and run.stdout == ""
     assert bundle(tmp_path, "a").read_text() == declared("# Captured\n\nPreserve.\n")
 
@@ -131,7 +137,7 @@ def test_derived_publication_swaps_the_folder_in_whole(
         original(source, target)
 
     monkeypatch.setattr(os, "rename", rename)
-    assert invoke(tmp_path, "a.md").status == 0
+    assert invoke(tmp_path, "--entry", "a.md").status == 0
     [(aside, moved), (staged, placed)] = calls
     assert aside == "a.bundles" and moved.startswith(".pf.old.")
     assert staged.startswith(".pf.new.") and placed == "a.bundles"
@@ -152,7 +158,7 @@ def test_atomic_failure_preserves_existing_folder(
         original(source, target)
 
     monkeypatch.setattr(os, "rename", refuse)
-    run = invoke(tmp_path, "a.md")
+    run = invoke(tmp_path, "--entry", "a.md")
     assert run.status == 3 and run.stdout == ""
     assert bundle(tmp_path, "a").read_text() == "Existing."
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
@@ -171,7 +177,7 @@ def test_failed_validation_preserves_existing_derived_output(
         monkeypatch.setenv(cli.FAULT_VARIABLE, fault)
     written(tmp_path, "a.md", DECLARED + "# A\n")
     written(tmp_path, "a.bundles/a.bundle.md", "Existing.")
-    run = invoke(tmp_path, *flags, "a.md")
+    run = invoke(tmp_path, *flags, "--entry", "a.md")
     assert run.status == 1 and run.stdout == ""
     assert bundle(tmp_path, "a").read_text() == "Existing."
 
@@ -179,7 +185,7 @@ def test_failed_validation_preserves_existing_derived_output(
 def test_filename_length_failure_is_publication_failure(tmp_path: Path) -> None:
     name = "a" * 150 + "/" + "b" * 150 + ".md"
     written(tmp_path, name, DECLARED + "# A\n")
-    run = invoke(tmp_path, "-d", "json", name)
+    run = invoke(tmp_path, "-d", "json", "--entry", name)
     assert run.status == 3 and run.stdout == ""
     assert run.diagnostics()[0]["code"] == cli.PUBLICATION_FAILED
 
@@ -194,7 +200,7 @@ def test_a_link_at_the_run_folder_is_replaced_and_never_followed(
         written(tmp_path, "precious/data.txt", "Keep.\n")
     (tmp_path / "out").mkdir()
     (tmp_path / "out" / "a.bundles").symlink_to("../precious")
-    run = invoke(tmp_path, "-o", "out", "a.md")
+    run = invoke(tmp_path, "-o", "out", "--entry", "a.md")
     assert run.status == 0 and run.stdout == ""
     folder = tmp_path / "out" / "a.bundles"
     assert folder.is_dir() and not folder.is_symlink()
@@ -215,7 +221,7 @@ def test_a_file_at_the_run_folder_s_path_is_refused_and_left_untouched(
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     standing = tmp_path / "a.bundles"
     standing.write_text("unrelated bytes\n", encoding="utf-8")
-    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "a.md")
+    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "--entry", "a.md")
     assert run.status == 3 and run.stdout == ""
     [refused] = run.diagnostics()
     assert refused["code"] == cli.PUBLICATION_FAILED
@@ -229,14 +235,14 @@ def test_the_file_refusal_leaves_no_staged_folder_beside_it(tmp_path: Path) -> N
     """A refused run writes nothing, its staging folder included."""
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     (tmp_path / "a.bundles").write_text("unrelated bytes\n", encoding="utf-8")
-    assert invoke(tmp_path, "a.md").status == 3
+    assert invoke(tmp_path, "--entry", "a.md").status == 3
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.bundles", "a.md"]
 
 
 def test_a_run_folder_name_the_filesystem_accepts_publishes(tmp_path: Path) -> None:
     name = "n" * 240
     written(tmp_path, f"{name}.md", DECLARED + "# Long\n")
-    run = invoke(tmp_path, f"{name}.md")
+    run = invoke(tmp_path, "--entry", f"{name}.md")
     assert run.status == 0 and run.stdout == ""
     assert bundle(tmp_path, name).read_text() == f"{opening('Long')}# Long\n"
     assert sorted(path.name for path in tmp_path.iterdir()) == [
@@ -252,7 +258,7 @@ def test_two_targets_deriving_one_name_are_refused_naming_both(
     written(tmp_path, "e.md", DECLARED + "# E\n\n1. [⇉ x](a/b.md)\n2. [⇉ y](a_b.md)\n")
     written(tmp_path, "a/b.md", declared("# B\n"))
     written(tmp_path, "a_b.md", declared("# B too\n"))
-    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "e.md")
+    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "--entry", "e.md")
     assert run.status == 3 and run.stdout == ""
     [refused] = run.diagnostics()
     assert refused["code"] == cli.PUBLICATION_FAILED
@@ -267,7 +273,16 @@ def test_an_output_folder_that_does_not_exist_is_made_by_the_run(
 ) -> None:
     """A named folder the run can make is made, and a check makes it too."""
     written(tmp_path, "a.md", DECLARED + "# A\n")
-    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), "-o", "zz", "a.md")
+    run = invoke(
+        tmp_path,
+        "-d",
+        "json",
+        *(["-c"] if check else []),
+        "-o",
+        "zz",
+        "--entry",
+        "a.md",
+    )
     assert run.status == 0 and run.stdout == ""
     assert (tmp_path / "zz").is_dir()
     assert (tmp_path / "zz" / "a.bundles").is_dir() == (not check)
@@ -289,7 +304,7 @@ def test_a_source_changed_between_two_bundles_reads_publishes_nothing(
         return one
 
     monkeypatch.setattr(cli, "compiled", edit_after_the_entry)
-    run = invoke(tmp_path, "-d", "json", "a.md")
+    run = invoke(tmp_path, "-d", "json", "--entry", "a.md")
     assert reads == ["a.bundle.md", "plan.bundle.md"]
     assert run.status == 1 and run.stdout == ""
     [refused] = run.diagnostics()
@@ -303,7 +318,7 @@ def test_a_failing_run_under_the_cleanup_fault_writes_nothing(
 ) -> None:
     monkeypatch.setenv(cli.FAULT_VARIABLE, cli.CLEANUP_FAULT)
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
-    run = invoke(tmp_path, "--budget", "output-bytes=1", "a.md")
+    run = invoke(tmp_path, "--budget", "output-bytes=1", "--entry", "a.md")
     assert run.status == 1 and run.stdout == ""
     assert sorted(path.name for path in tmp_path.iterdir()) == ["a.md"]
 
@@ -314,7 +329,7 @@ def test_a_dangling_link_under_the_cleanup_fault_is_retained_and_warned(
     monkeypatch.setenv(cli.FAULT_VARIABLE, cli.CLEANUP_FAULT)
     written(tmp_path, "a.md", DECLARED + "# A\n\nComplete.\n")
     (tmp_path / "a.bundles").symlink_to("nowhere")
-    run = invoke(tmp_path, "-d", "json", "a.md")
+    run = invoke(tmp_path, "-d", "json", "--entry", "a.md")
     assert run.status == 0 and run.stdout == ""
     assert [one["code"] for one in run.diagnostics()] == [cli.EARLIER_SET_RETAINED]
     assert "Complete." in bundle(tmp_path, "a").read_text()
@@ -327,7 +342,9 @@ def test_a_derived_name_longer_than_the_filesystem_allows_names_its_selection(
 ) -> None:
     name = "n" * 247
     written(tmp_path, f"{name}.md", DECLARED + "# Long\n")
-    run = invoke(tmp_path, "-d", "json", *(["-c"] if check else []), f"{name}.md")
+    run = invoke(
+        tmp_path, "-d", "json", *(["-c"] if check else []), "--entry", f"{name}.md"
+    )
     assert run.status == 3 and run.stdout == ""
     [refused] = run.diagnostics()
     assert refused["code"] == cli.PUBLICATION_FAILED

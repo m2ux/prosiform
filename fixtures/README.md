@@ -117,7 +117,7 @@ chain = ["guide.md", "../guidelines.md"]
 | --- | --- |
 | `description` | What the fixture establishes. |
 | `clauses` | The design clauses it encodes, named as [The clause form](#the-clause-form) states, so every clause maps to the fixtures that cover it. |
-| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It bounds positional entries and the paths diagnostics name. |
+| `invocation.cwd` | Optional existing fixture-relative working directory; absent means the fixture directory. It resolves explicit entry references and the paths diagnostics name. |
 | `invocation.arguments` | The arguments of the invocation, in order. None declares the bare command. |
 | `expected.exit_status` | The process exit status: one of the five categories the contract declares. |
 | `expected.bundles` | Optional. The fixture-relative files under `expected/` holding the bytes of each bundle the run writes into its folder, each named as the run names the bundle. A run writing no bundle declares none. |
@@ -166,7 +166,7 @@ diagnostics = []
 
 ## Declarations
 
-A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and bounds positional entries and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
+A source declares `prosiform` in its leading frontmatter, and a link is compiled when its target declares and is text when it does not, wherever the target sits. An empty mapping declares, a document carrying none declares nothing, and a mapping carrying `root` fails with E_INVALID_CONVERSION_METADATA. The invocation working directory must exist and resolves explicit entry references and the paths diagnostics name. A parent-directory entry is authorized by bounded no-follow bootstrap capture.
 
 ## Text an output carries
 
@@ -289,7 +289,7 @@ An error decides a failing run.
 | `E_TARGET_NOT_FOUND` | Link classification, and Section composition, The eligible target — an operator's reference or a composition directive naming no document, or a reference naming no heading in the document it resolves to. |
 | `E_UNEXPECTED_INTERNAL_ERROR` | Exit status and JSON diagnostics — an unexpected internal error, which is no source-document defect. |
 | `E_UNSAFE_BUNDLE_BOUNDARY` | Block boundaries — a boundary merging content into an unintended container. |
-| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, a blank between two symbols, a deferral mark written against a dispatch mark, a dispatch mark written against the composition mark, an arrow label, or an operator naming no Markdown document or section; Dispatch links — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection; Section composition — a directive naming no eligible target, standing in no scope, naming a target with no parent heading or closing a cycle, a section one scope both composes and defers, or a deferred directive whose scope selects other presets of its target than the target's own heading. |
+| `E_UNSUPPORTED_CONSTRUCT` | Markdown and source-heading profile, Unsupported extensions — a recognized unsupported dependency or section-naming construct in selected content; Link classification and resource handling, Operators that combine and An operator's target — a link opening with two dispatch marks, a blank between two symbols, a deferral mark written against a dispatch mark, a dispatch mark written against the composition mark, an arrow label, or an operator naming no Markdown document or section; Dispatch links — a dispatched link with no text after its mark, or a dispatch in a heading the bundle emits as text alone: a title its file heading or a member's subsection absorbs, or a title above the selection; Section composition — a directive naming no eligible target, standing in no scope, naming a target with no parent heading or closing a cycle, a section one scope both composes and defers. |
 | `E_UNSUPPORTED_ENTRY_SUFFIX` | Markdown and source-heading profile, File suffixes — an explicit entry whose suffix is outside the profile. |
 | `E_UNTERMINATED_FRONTMATTER` | Frontmatter policy — a recognized opener with no closing delimiter. |
 

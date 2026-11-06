@@ -14,7 +14,7 @@ Follow [the steps](#checked-steps).
 
 ## Checks
 
-Follow [the rules](#rules).
+Follow [the rules](#rules "Checks").
 
 # Checked Steps
 

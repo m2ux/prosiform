@@ -6,7 +6,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Checks
 
-Read the path [Inputs](#read).
+Read the path [Inputs](#read "checks").
 
 ### Inputs
 

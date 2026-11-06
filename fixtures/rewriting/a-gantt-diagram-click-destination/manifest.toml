@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["schedule.md"]
+arguments = ["--entry", "schedule.md"]
 
 [expected]
 exit_status = 0

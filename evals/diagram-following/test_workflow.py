@@ -635,10 +635,10 @@ def test_the_feature_workflows_are_preset_selection_group_placement_and_subst() 
     assert all(named[name].forms == (DIAGRAM,) for name in FEATURES)
 
 
-def test_the_title_linking_a_document_selects_the_presets_placing_it(
+def test_the_link_title_tags_select_the_presets_placing_its_document(
     tmp_path: Path,
 ) -> None:
-    """AC23: default alone, one preset a title selects, and two one title selects.
+    """AC23: default alone, one preset selected by a tag, and two selected together.
 
     Proof's default places it, Patch selects Verify's `patch` preset, and
     `Security Review` selects both Audit's `security` group and its `review`
@@ -677,7 +677,7 @@ def test_subst_pairs_redirect_the_links_a_document_writes(tmp_path: Path) -> Non
 
     The entry's default sends the diagram's Approve to another document,
     Amend's default sends its Inspect link to one section of the handbook, and
-    the entry's title selects Stage's `release` preset, whose Gate pair holds
+    the link title selects Stage's `release` preset, whose Gate pair holds
     over the default's.
     """
     workflow = read_workflow(WORKFLOWS / "subst-redirect")

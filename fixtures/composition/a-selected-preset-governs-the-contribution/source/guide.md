@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Checks
 
-Read the path [↳ Inputs](read.md#inputs).
+Read the path [↳ Inputs](read.md#inputs "checks").

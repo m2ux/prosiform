@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Checks and Draft
 
-Follow [the rules](rules.md).
+Follow [the rules](rules.md "Checks,Draft").

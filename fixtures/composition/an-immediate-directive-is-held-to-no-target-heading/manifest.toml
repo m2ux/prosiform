@@ -1,15 +1,15 @@
-description = "An immediate directive composes its target in this run, under the presets its step selects, so its step is held to no target heading: Fetch the page offline selects fetch.md's offline preset for the Implementation section, whose own heading selects none, and the contribution is composed with its own directive redirected to the cache by that preset's subst."
+description = "The immediate directive carries the offline title tag. Its target preset redirects the contribution's outgoing directive to the cache. Scope and target heading words supply no selection."
 
 clauses = [
   "Section composition — Presets and subst",
   "Section composition — Deferred composition",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

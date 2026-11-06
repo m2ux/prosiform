@@ -1,0 +1,22 @@
+description = "A link title naming checks selects that preset of rules.md without regard to its heading or visible label. A second link carries no title tags, so notes.md keeps its own file group and its checks preset warns unused."
+
+clauses = [
+  "Presets — A preset nothing selected warns",
+  "Presets — Selection by tags",
+  "Grouping — Group membership",
+  "Grouping — Nested groups",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "notes.md"
+message_contains = ["the preset 'checks'"]

@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["flow.md"]
+arguments = ["--entry", "flow.md"]
 
 [expected]
 exit_status = 0

@@ -12,6 +12,7 @@ path as an output.
 """
 
 import re
+import shlex
 from pathlib import Path
 
 from documents import ROOT
@@ -25,14 +26,17 @@ SURFACES = (GUIDE, README)
 # Each authoring statement, beside the document that states it. The guide
 # keeps the command line; the architecture pages state the rules it links to.
 INSTRUCTIONS = (
-    (GUIDE, "pf [OPTIONS] REF [REF ...]"),
+    (GUIDE, "pf [OPTIONS] --entry REF [--presets PRESETS]"),
     (SOURCES, "Every key in `prosiform` is a **preset** name"),
     (SOURCES, "the target's own declaration then decides whether it is compiled"),
     (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
     (GUIDE, "`-o DIR`"),
     (GUIDE, "a section written as `document#fragment`"),
     (BUNDLES, "A section adds `__` and the fragment."),
-    (BUNDLES, "A run of several selections joins their names with `+`"),
+    (
+        BUNDLES,
+        "A selection includes the effective named presets its destination declares.",
+    ),
     (BUNDLES, "File and directory names use hyphens rather than underscores."),
 )
 
@@ -71,25 +75,25 @@ def commands(path: Path) -> list[tuple[Path, list[str]]]:
                 cwd = ROOT / line.removeprefix("cd ").strip()
                 continue
             if line == "pf" or line.startswith("pf "):
-                found.append((cwd, line.split()[1:]))
+                found.append((cwd, shlex.split(line)[1:]))
     return found
 
 
 def source_paths(argv: list[str]) -> list[str]:
-    """Positional entries, without output destinations."""
+    """The single entry destination, with operational option values excluded."""
     found: list[str] = []
-    index = 0
-    while index < len(argv):
-        token = argv[index]
-        assert not token.startswith("--"), token
-        if token in TAKES_VALUE:
-            index += 2
-            continue
-        assert token in SWITCH or not token.startswith("-"), token
-        bare = token.strip("'\"")
-        if token not in SWITCH:
-            found.append(bare.split("#", maxsplit=1)[0])
-        index += 1
+    tokens = iter(argv)
+    for token in tokens:
+        option, equal, value = token.partition("=")
+        if option == "--entry":
+            assert not found, "one entry per command"
+            reference = value if equal else next(tokens)
+            found.append(reference.partition("#")[0])
+        elif option in TAKES_VALUE or option == "--presets":
+            if not equal:
+                next(tokens)
+        else:
+            assert token in SWITCH, token
     return found
 
 

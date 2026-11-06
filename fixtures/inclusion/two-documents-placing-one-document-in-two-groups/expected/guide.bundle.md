@@ -20,7 +20,7 @@ The notice every reader receives.
 
 ## Announce
 
-Beta announces [the notice](#notice).
+Beta announces [the notice](#notice "Announce").
 
 ## Announcements
 

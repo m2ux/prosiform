@@ -5,4 +5,4 @@ prosiform: {}
 
 Write `actions/patch.txt` containing `patched`.
 
-The [Verify](verify.md) state checks the patch.
+The [Verify](verify.md "patch") state checks the patch.

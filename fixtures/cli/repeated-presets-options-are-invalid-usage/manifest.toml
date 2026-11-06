@@ -1,0 +1,14 @@
+description = "Repeated --presets options fail with E_INVALID_USAGE even when the first list is empty, without publication."
+
+clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md", "--presets", "", "--presets", "checks"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"

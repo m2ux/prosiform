@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["references/alpha.md#the-sixth", "references/beta.md#standards"]
+arguments = ["--entry", "references/alpha.md#the-sixth"]
 
 [expected]
 exit_status = 1

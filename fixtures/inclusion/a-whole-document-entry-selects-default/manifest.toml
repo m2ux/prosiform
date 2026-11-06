@@ -1,4 +1,4 @@
-description = "A whole-document entry reads the presets of the file it names against that file's own title: the title Guide names no preset, so guide.md is compiled under its default, which joins it to Modes. Its Checks section titles content of guide.md, not the entry, so the Checks preset stays out of force. No reference selects the Checks preset of guide.md, so the run warns that it governs nothing."
+description = "A whole-document --entry without --presets applies default. Heading words supply no selection, so its Checks preset remains unused and warns."
 
 clauses = [
   "Presets — A preset nothing selected warns",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

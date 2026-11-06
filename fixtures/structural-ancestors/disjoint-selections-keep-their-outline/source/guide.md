@@ -3,6 +3,9 @@ prosiform: {}
 ---
 ## Alpha
 
+[Input](guide.md#detail)
+
+
 Selected Alpha content.
 
 ## Beta

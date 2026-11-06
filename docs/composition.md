@@ -191,9 +191,9 @@ Design rule: *Budgets*. Fixtures:
 
 ## Presets and `subst`
 
-A directive is a reference, so its scope's title selects the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
+A directive is a reference, so its own title tags select the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
 
-An immediate directive is held to no heading of its target. A deferred one is compiled later under the presets its target's own heading selects, so a deferred directive whose scope title selects other presets of the target is refused with `E_UNSUPPORTED_CONSTRUCT`, naming both selections.
+An immediate directive and a later compilation of its deferred form use the same title tags. The deferred contribution preserves them for the later command's `--presets` argument. Scope and target headings supply no selection.
 
 Design rule: *Presets and `subst`*. Fixtures:
 
@@ -203,8 +203,8 @@ Design rule: *Presets and `subst`*. Fixtures:
 - [an-immediate-directive-is-held-to-no-target-heading](../fixtures/composition/an-immediate-directive-is-held-to-no-target-heading)
 - [a-deferral-whose-step-and-target-select-no-preset-is-kept](../fixtures/composition/a-deferral-whose-step-and-target-select-no-preset-is-kept)
 - [a-deferral-whose-step-and-target-select-one-preset-is-kept](../fixtures/composition/a-deferral-whose-step-and-target-select-one-preset-is-kept)
-- [a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused](../fixtures/composition/a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused)
-- [a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused](../fixtures/composition/a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused)
+- [a-tagged-deferral-with-different-target-heading](../fixtures/composition/a-tagged-deferral-with-different-target-heading)
+- [an-untagged-deferral-with-a-preset-word-in-its-target-heading](../fixtures/composition/an-untagged-deferral-with-a-preset-word-in-its-target-heading)
 
 ## Deferred directives
 

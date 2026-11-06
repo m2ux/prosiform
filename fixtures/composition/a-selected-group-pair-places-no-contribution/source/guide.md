@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Calls
 
-Read the path [↳ Inputs](read.md#inputs), then follow [the read step](read.md).
+Read the path [↳ Inputs](read.md#inputs "calls"), then follow [the read step](read.md "calls").

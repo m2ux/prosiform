@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["exchange.md"]
+arguments = ["--entry", "exchange.md"]
 
 [expected]
 exit_status = 0

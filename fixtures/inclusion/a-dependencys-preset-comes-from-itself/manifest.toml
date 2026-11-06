@@ -1,4 +1,4 @@
-description = "A linked document is governed by its own default and its own selected presets, never by the linking document's: the title `Release Checks` selects the Checks preset of guide.md, placing guide.md under Reviews, and the section Checks selects the Checks preset of rules.md, whose pair holds over its default to place rules.md under Checks and never under Reviews."
+description = "The entry command selects guide.md's Checks preset. A separately tagged outgoing link selects rules.md's own Checks preset, which governs rules.md's content independently."
 
 clauses = [
   "Presets — What a selection governs",
@@ -9,9 +9,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md", "--presets", "Checks"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide.bundle.md"]
+bundles = ["expected/guide--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"]
 diagnostics = []

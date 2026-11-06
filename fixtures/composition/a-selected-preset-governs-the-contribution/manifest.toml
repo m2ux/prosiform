@@ -1,8 +1,8 @@
-description = "A directive is a reference, so the title of its scope selects the target's presets: the guide's Checks section composes read.md's Inputs, which selects read.md's checks preset, and that preset's pair format.md: stub.md redirects the link the contribution writes, so the bundle carries the stub's Paths and not the format's, and the run states the substitution at the contribution's source line."
+description = "A composition directive's own title supplies checks. The selected target preset redirects format.md to stub.md inside the contribution and reports that substitution at its source line."
 
 clauses = [
   "Section composition — Presets and subst",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Presets — What a selection governs",
   "Section composition — The source of composed content",
   "Exit status and JSON diagnostics — 0",
@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

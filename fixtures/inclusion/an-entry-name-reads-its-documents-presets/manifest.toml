@@ -1,17 +1,17 @@
-description = "A section entry reads the presets of the file it names against the section it names, from a working directory declaring nothing: docs/guide.md#checks names the Checks section, so the Checks preset of guide.md is in force, its pair holds over the one its default states, and the section joins Reviews."
+description = "The entry command supplies Checks through --presets for its selected section. The target's own preset places the section, and the effective selection qualifies its output name."
 
 clauses = [
   "Presets — A command-line entry reads the file it names",
   "Presets — default always applies",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Grouping — Group membership",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["docs/guide.md#checks"]
+arguments = ["--entry", "docs/guide.md#checks", "--presets", "Checks"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/docs_guide__checks.bundle.md"]
+bundles = ["expected/docs_guide__checks--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"]
 diagnostics = []

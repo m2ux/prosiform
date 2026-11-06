@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md#detail"]
+arguments = ["--entry", "guide.md#detail"]
 
 [expected]
 exit_status = 0

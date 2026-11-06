@@ -7,9 +7,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["article.md", "café.md"]
+arguments = ["--entry", "article.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/article+café.bundle.md"]
+bundles = ["expected/article.bundle.md"]
 diagnostics = []
