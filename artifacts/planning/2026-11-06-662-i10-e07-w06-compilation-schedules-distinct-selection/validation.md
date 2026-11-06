@@ -73,3 +73,9 @@ The coordinator can observe this unit at the merged revision with:
 ```text
 uv run --project src --frozen pytest --config-file src/pyproject.toml src/tests/test_dispatch.py src/tests/test_dispatch_variants.py src/tests/test_dispatch_publication.py src/tests/test_variant_integrity.py src/tests/test_candidate.py src/tests/test_deferred_titles.py
 ```
+
+## Delivery Readback
+
+Task PR [#670](https://github.com/m2ux/prosiform/pull/670) merges at `d0444a092cd1c7ddfc27d0994578811748bd35ac` after local and hosted checks pass. The exact merged revision passes the observing instrument `pytest src/tests/test_dispatch.py src/tests/test_dispatch_variants.py src/tests/test_dispatch_publication.py src/tests/test_variant_integrity.py src/tests/test_candidate.py src/tests/test_deferred_titles.py`, as [merged-check.txt](merged-check.txt) records. Current issue readback links every unit row to that merged PR and ticks its covered criteria and Done. The updated main integration remains a draft until the complete epic passes review.
+
+The coordinator continues with W08 under the epic-wide authorization. No further unit confirmation is required.

@@ -19,6 +19,7 @@ The coordinator publishes records, reserves units, dispatches implementation, ve
 | [engineering-rules.json](engineering-rules.json) | Design integration's active review requirement |
 | [sessions.json](sessions.json) | Observed unit worker identities and execution states |
 | [changes.md](changes.md) | Applied plan corrections within the delivery allowance |
+| [review-notes.md](review-notes.md) | Inspected integration surfaces and remaining revision checks |
 
 ## Links
 
