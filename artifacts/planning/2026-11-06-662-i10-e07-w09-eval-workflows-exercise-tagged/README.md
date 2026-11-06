@@ -13,6 +13,7 @@ The task targets `i10/e07/main`. The existing user confirmation that issue auto-
 | Artifact | What it holds |
 | --- | --- |
 | [w09.md](w09.md) | Component plan, scope and observing checks |
+| [validation.md](validation.md) | Exact-revision verification, full checks and delivery evidence |
 
 ## Links
 

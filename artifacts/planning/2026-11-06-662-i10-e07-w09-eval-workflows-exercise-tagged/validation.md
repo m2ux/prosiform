@@ -1,0 +1,45 @@
+# W09 Validation
+
+## Revision
+
+Task head: `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493`, based on W08 merge `1f6070d6bc0842cf6d656b5c85a112146108d9d1`. Task pull request: [672](https://github.com/m2ux/prosiform/pull/672), targeting `i10/e07/main`.
+
+## Deterministic Workflow and Scorer
+
+Passed `revision-check.py --project <task-worktree> --revision d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493 -- uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . evals/diagram-following/test_workflow.py evals/diagram-following/test_score.py -q` in its detached checkout. All 508 collected tests passed, exit 0.
+
+AC20 observations:
+
+- The existing tagged preset-deferral workflow compiles its mirror selection and follows the stored-copy transition. Source mutation and scorer controls reject omitted and wrong tags; equivalent normalized selections pass.
+- Deferred dispatch activates two selections of `reference/crew.md#work`: lift and strap. Each publishes a distinct selection-qualified bundle with a distinct action.
+- Deterministic bundle checks follow the selected filenames and real published dispatch links. Removing or changing the strap selection leaves its expected bundle absent.
+- Scorer controls reject omitted, wrong, repeated and reversed bundle selections. Correct selections pass. Session records serialize normalized trace preset names, and a stub-runner integration test observes both selected dispatches.
+
+## Callers at Exact Revision
+
+The detached `revision-check.py` run at `d6fcb9b4e9c41bbef17e0647415efaaf5ab3b493` passed all 1,650 harness tests. Its first corpus attempt inherited the detached uv environment while the configured build pointed to the task checkout; uv printed a mismatched `VIRTUAL_ENV` warning on diagnostic stderr, causing all corpus comparisons to fail. This is verification setup noise, not a compiler result. A clean-environment rerun of corpus and smoke is pending; it prefixes the configured build with `env -u VIRTUAL_ENV` and otherwise uses the same committed task build.
+
+## Full Configured Check
+
+Passed `PROSIFORM_BUILD='uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w09-eval-workflows-exercise-tagged/src --frozen pf' make check` at the committed task head, exit 0. The task checkout is clean.
+
+- 1,901 source tests passed.
+- 1,650 harness tests passed.
+- 537 corpus fixtures passed.
+- Installed-wheel smoke passed, including tagged single-entry command execution outside the repository.
+- Lock, lint, format, strict typing, layout, command tables, online links, vocabulary, invocation, conformance and independence checks passed.
+- Conformance reports 0 declarations naming no real design clause and 0 implementation-name disagreements. Its broader design coverage observations are reported, not represented as newly resolved by this unit.
+
+The complete deterministic eval directory passed before the final runner test (695 tests); the added runner test passed separately. The final head collects 696 eval tests, all included in the passing full harness run (1,650 tests). No paid eval session ran.
+
+## Review and Limitations
+
+- Lint, formatting and strict typing passed; editor diagnostics reported no errors in the changed eval directory.
+- A local read-only peer-review invocation could not execute its installed wrapper: permission denied. No peer-review verdict is claimed; direct diff review and deterministic checks supply this unit's evidence.
+- The sandboxed uv attempt could not write its external cache, so validation runs outside `sbx`; wheel builds and online links also require host access.
+- Epic sync at the historical W08 base reports `config/branches` absent. Integration, target-route and review-body checks that depend on it remain explicitly unevaluated; this unit adds no configuration.
+- No plan expansion, production compiler change or unrelated debt was introduced. The only plan refinement is extending the existing deferred-dispatch workflow and serializing its selected trace identity.
+
+## CI and Delivery
+
+Pending exact-head CI success and task merge. Default-branch integration and draft review pull requests 664 and 666 remain with the coordinator.
