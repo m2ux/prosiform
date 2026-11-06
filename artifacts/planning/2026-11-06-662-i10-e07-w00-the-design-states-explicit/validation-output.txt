@@ -1,0 +1,21 @@
+ok   local      #grouping
+ok   local      #section-composition
+ok   local      #link-classification-and-resource-handling
+ok   local      #conversion-metadata
+ok   local      #presets
+ok   local      #file-scoped-hierarchy
+ok   local      #guide
+ok   local      #automatic-output-names
+ok   local      #source-local-reference-interpretation
+ok   local      #resource-limits
+ok   local      #validation-and-failure-contract
+Internal-link failures: 0
+Existing remote references not fetched: 6
+Marked contract terms: 47 undefined: 0
+Pinned terms absent from candidate: ['references']
+Candidate terms absent from pin: ['reference']
+Stale operative selection/CLI claims: 0
+Canonical preset digest: ["checks","draft"] 13c9f40cda0225cb29b9fa2332a291e8950291238a73b75fed0cd1521986f6e8
+Candidate clauses: 365 uncovered: 69 old fixture clause declarations needing migration: 1
+Candidate code mismatches: 0 0
+Expected fixture migration: Presets — Selection by keyword is declared by composition/a-deferral-whose-step-and-target-select-no-preset-is-kept, composition/a-deferral-whose-step-and-target-select-one-preset-is-kept, composition/a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused, composition/a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused, composition/a-selected-group-pair-places-no-contribution, composition/a-selected-preset-governs-the-contribution, composition/an-immediate-directive-is-held-to-no-target-heading, inclusion/a-presets-pairs-reach-the-reference-it-governs, inclusion/a-section-matching-no-preset-selects-default, inclusion/a-section-title-selects-its-preset, inclusion/a-title-matching-two-keywords-selects-both, inclusion/an-entry-name-reads-its-documents-presets, inclusion/default-applies-in-every-section, inclusion/one-document-two-presets, inclusion/two-documents-placing-one-document-in-two-groups and names no clause the design states
