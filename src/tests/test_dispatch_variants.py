@@ -262,13 +262,24 @@ def test_the_output_budget_applies_to_each_variant_bundle(tmp_path: Path) -> Non
 
 
 @pytest.mark.parametrize("check", [False, True])
+@pytest.mark.parametrize("placement", ["inline", "parallel", "heading"])
 def test_distinct_variants_colliding_on_a_filename_preserve_the_previous_set(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, check: bool
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, check: bool, placement: str
 ) -> None:
     tree(
         tmp_path,
         '[⇉ Checked](task.md "checks")\n\n[⇉ Draft](task.md "draft")',
     )
+    if placement != "inline":
+        heading = "## " if placement == "heading" else ""
+        written(
+            tmp_path,
+            "entry.md",
+            DECLARED
+            + "# Entry\n\n"
+            + heading
+            + '[⫽ Checked](task.md "checks") [⫽ Draft](task.md "draft")\n',
+        )
     output = tmp_path / "output"
     folder = output / "entry.bundles"
     folder.mkdir(parents=True)

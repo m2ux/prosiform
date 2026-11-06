@@ -901,6 +901,7 @@ def test_a_parallel_set_listing_the_other_preset_variant_twice_fails() -> None:
     with pytest.raises(Invalid) as raised:
         parallel_sets(
             tokens,
+            ["guide", "⫽-dispatch-set"],
             {("guide.md", 0): serving},
             lambda reference: next(iter(reference.tags)) + ".bundle.md",
         )

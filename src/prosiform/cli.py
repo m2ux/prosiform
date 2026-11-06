@@ -3322,7 +3322,7 @@ def publication(
     for one in bundles:
         earlier = named.setdefault(one.name, one)
         if earlier is not one:
-            raise colliding(earlier, one)
+            raise colliding(one.name, earlier.selection, one.selection)
     if not folder.parent.is_dir():
         try:
             folder.parent.mkdir(parents=True)
@@ -3400,14 +3400,14 @@ def overlong(one: Bundle, name: str, longest: int) -> Failure:
     )
 
 
-def colliding(earlier: Bundle, later: Bundle) -> Failure:
+def colliding(name: str, earlier: str, later: str) -> Failure:
     """Two bundles of one run whose selections derive one file name."""
     return Failure(
         PUBLICATION_FAILURE,
         Diagnostic(
             ERROR,
-            f"the bundles of {earlier.selection!r} and {later.selection!r} both "
-            f"derive the name {later.name!r}, so one would overwrite the other",
+            f"the bundles of {earlier!r} and {later!r} both "
+            f"derive the name {name!r}, so one would overwrite the other",
             code=PUBLICATION_FAILED,
             remedy="rename one of the two sources so their derived names differ",
         ),
@@ -3598,6 +3598,16 @@ def compiled(
         raise crossing(crossed) from crossed
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
+    named = {name: selected}
+
+    def dispatched_file(reference: Reference) -> str:
+        effective = bundle_selection(reference, read[reference.path].conversion)
+        file = bundle_file(effective)
+        earlier = named.setdefault(file, effective)
+        if earlier != effective:
+            raise colliding(file, selection_text(earlier), selection_text(effective))
+        return file
+
     pairs = governing(read, parsed, contributing(found), requested)
     bundled, coinciding, hops, itself = compose(
         read,
@@ -3606,9 +3616,7 @@ def compiled(
         requested,
         found,
         limits,
-        lambda reference: bundle_file(
-            bundle_selection(reference, read[reference.path].conversion)
-        ),
+        dispatched_file,
         declarations,
         governed(substitution, pairs),
     )

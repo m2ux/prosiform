@@ -215,7 +215,7 @@ class Range:
 class Instruction:
     """One block the bundle wrote itself, with no source range.
 
-    The run-pf line that opens every bundle is one: a paragraph. An
+    The run-pf line that opens every bundle is one: a paragraph. A
     dispatch-set sub-section carries the lines naming the bundles it
     hands out together. It carries no
     source range, so it can never stand in for selected body content a

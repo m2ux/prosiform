@@ -127,7 +127,6 @@ from prosiform.source import (
     opening_text,
     regions,
     runs,
-    section,
     shown,
     visible,
     within,
@@ -1282,10 +1281,16 @@ def dispatches(
 
 def parallel_sets(
     tokens: Sequence[Token],
+    assigned: Sequence[str],
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
     bundle_file: Callable[[Reference], str],
 ) -> None:
     """Each generated dispatch set lists exactly its effective selection files."""
+    openings = dict(
+        zip(assigned, (one for one, _inline in headings(tokens)), strict=True)
+    )
+    spans = list(regions(tokens))
+    positions = {id(span): at for at, span in enumerate(spans)}
     expected: dict[str, set[str]] = {}
     for served in dispatching.values():
         for (target, tags, _parallel), destination in served.items():
@@ -1296,13 +1301,16 @@ def parallel_sets(
                 quote(bundle_file(reference), safe="")
             )
     for destination, files in expected.items():
-        selected = section(tokens, destination.removeprefix(ANCHOR)) or ()
-        found = [
-            one.destination
-            for span in selected[1:]
-            for _children, _at, one in carried(tokens, span)
-            if one.kind == LINK
-        ]
+        opening = openings[destination.removeprefix(ANCHOR)]
+        found: list[str] = []
+        for span in spans[positions[id(opening)] + 1 :]:
+            if span.type == HEADING_OPEN:
+                break
+            found.extend(
+                one.destination
+                for _children, _at, one in carried(tokens, span)
+                if one.kind == LINK
+            )
         if len(found) != len(files) or set(found) != files:
             raise Invalid(
                 TARGET_INTEGRITY,
@@ -1398,7 +1406,7 @@ def validate(
     integrity(reached, targets)
     one_member(groups)
     dispatches(reached, served, bundle_file)
-    parallel_sets(tokens, served, bundle_file)
+    parallel_sets(tokens, assigned, served, bundle_file)
     contributing = {} if composing is None else composing
     contributions(reached, contributing)
     for record, part, span in paired:
