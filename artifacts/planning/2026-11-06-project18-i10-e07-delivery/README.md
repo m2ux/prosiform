@@ -12,19 +12,19 @@ The coordinator records sequencing, live selection evidence and task handoffs wh
 
 | Artifact | What it holds |
 | --- | --- |
-| [authorization.json](authorization.json) | Current delivery evidence |
-| [decisions.md](decisions.md) | Delivery decisions and validation |
-| [dispatch-batch.json](dispatch-batch.json) | Current delivery evidence |
-| [dispatch-plan.json](dispatch-plan.json) | Current delivery evidence |
-| [release-epic-body.md](release-epic-body.md) | Delivery decisions and validation |
-| [release-epic.json](release-epic.json) | Current delivery evidence |
-| [release-initiative-body.md](release-initiative-body.md) | Delivery decisions and validation |
-| [release-initiative.json](release-initiative.json) | Current delivery evidence |
-| [reserved-board-item.json](reserved-board-item.json) | Current delivery evidence |
-| [reserved-epic.json](reserved-epic.json) | Current delivery evidence |
-| [saved-release-epic.json](saved-release-epic.json) | Current delivery evidence |
-| [saved-release-initiative.json](saved-release-initiative.json) | Current delivery evidence |
-| [todos.md](todos.md) | Delivery decisions and validation |
+| [authorization.json](authorization.json) | Delivery and validation evidence |
+| [decisions.md](decisions.md) | Delivery and validation evidence |
+| [dispatch-batch.json](dispatch-batch.json) | Delivery and validation evidence |
+| [dispatch-plan.json](dispatch-plan.json) | Delivery and validation evidence |
+| [release-epic-body.md](release-epic-body.md) | Delivery and validation evidence |
+| [release-epic.json](release-epic.json) | Delivery and validation evidence |
+| [release-initiative-body.md](release-initiative-body.md) | Delivery and validation evidence |
+| [release-initiative.json](release-initiative.json) | Delivery and validation evidence |
+| [reserved-board-item.json](reserved-board-item.json) | Delivery and validation evidence |
+| [reserved-epic.json](reserved-epic.json) | Delivery and validation evidence |
+| [saved-release-epic.json](saved-release-epic.json) | Delivery and validation evidence |
+| [saved-release-initiative.json](saved-release-initiative.json) | Delivery and validation evidence |
+| [todos.md](todos.md) | Delivery and validation evidence |
 
 ## Links
 

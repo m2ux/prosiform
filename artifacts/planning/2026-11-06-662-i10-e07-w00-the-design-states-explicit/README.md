@@ -12,14 +12,24 @@ The contract supplies the selection and variant identities that later source, CL
 
 | Artifact | What it holds |
 | --- | --- |
-| [candidate-conformance.txt](candidate-conformance.txt) | Validation and delivery evidence |
-| [clause-review.md](clause-review.md) | Validation and delivery evidence |
-| [pinned-conformance.txt](pinned-conformance.txt) | Validation and delivery evidence |
-| [todos.md](todos.md) | Validation and delivery evidence |
-| [validation-output.txt](validation-output.txt) | Validation and delivery evidence |
-| [validation-replay.py](validation-replay.py) | Validation and delivery evidence |
-| [validation.md](validation.md) | Validation and delivery evidence |
-| [w00.md](w00.md) | Component plan |
+| [board-readback.json](board-readback.json) | Delivery and validation evidence |
+| [candidate-conformance.txt](candidate-conformance.txt) | Delivery and validation evidence |
+| [clause-review.md](clause-review.md) | Delivery and validation evidence |
+| [development-links.json](development-links.json) | Delivery and validation evidence |
+| [epic-readback.json](epic-readback.json) | Delivery and validation evidence |
+| [epic-sync.txt](epic-sync.txt) | Delivery and validation evidence |
+| [head-checks.json](head-checks.json) | Delivery and validation evidence |
+| [head-status.json](head-status.json) | Delivery and validation evidence |
+| [pinned-conformance.txt](pinned-conformance.txt) | Delivery and validation evidence |
+| [pull-request.json](pull-request.json) | Delivery and validation evidence |
+| [reviews.json](reviews.json) | Delivery and validation evidence |
+| [target-protection.json](target-protection.json) | Delivery and validation evidence |
+| [target-rules.json](target-rules.json) | Delivery and validation evidence |
+| [todos.md](todos.md) | Delivery and validation evidence |
+| [validation-output.txt](validation-output.txt) | Delivery and validation evidence |
+| [validation-replay.py](validation-replay.py) | Delivery and validation evidence |
+| [validation.md](validation.md) | Delivery and validation evidence |
+| [w00.md](w00.md) | Delivery and validation evidence |
 
 ## Links
 
@@ -29,3 +39,4 @@ The contract supplies the selection and variant identities that later source, CL
 | Confirmed design | [Link-tag presets](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/design.md) |
 | Theme board | [Project 18](https://github.com/users/m2ux/projects/18/views/4) |
 | Design pin | [W00 contract](https://github.com/m2ux/prosiform/blob/d6f95677d6dfa6d6b7b37f9106cb7e2a4fafabfd/artifacts/planning/2026-10-17-prosiform-v1/design.md) |
+| Task pull request | [W00 #663](https://github.com/m2ux/prosiform/pull/663) |

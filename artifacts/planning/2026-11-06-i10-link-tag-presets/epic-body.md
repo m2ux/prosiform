@@ -36,7 +36,7 @@ Each Markdown link selects its target document's presets through its comma-separ
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-662-i10-e07-w00-the-design-states-explicit/) | The design states explicit preset selection | AC1 | | | 1 | |
+| [W00](https://github.com/m2ux/prosiform/pull/663) | The design states explicit preset selection | AC1 | | | 1 | |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w01.md) | One reader interprets tag lists | AC2, AC3 | W00 | | 1 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w02.md) | Source links carry title tags | AC4, AC5 | W01 | | 1 | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w03.md) | References carry effective selection identity | AC6, AC7 | W02 | | 1 | |

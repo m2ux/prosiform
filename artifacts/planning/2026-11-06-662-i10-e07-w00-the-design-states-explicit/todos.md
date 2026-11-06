@@ -3,5 +3,6 @@
 - [x] Publish the unit record and confirm its reservation.
 - [x] Update the design contract in the isolated task worktree.
 - [x] Review the complete affected contract and run its observing checks.
-- [ ] In progress: commit and push the task; open its pull request.
-- [ ] Record the verified delivery and board state.
+- [x] Commit and push the task; open PR #663.
+- [x] Record the verified PR and In Progress board state.
+- [ ] Merge awaits confirmation that repository automatic issue closure is disabled; AC1 and W00 remain unticked.
