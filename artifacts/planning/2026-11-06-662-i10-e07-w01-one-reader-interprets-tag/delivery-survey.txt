@@ -1,0 +1,14 @@
+source: config/branches at 543e1a830c64d7bccd6a541e6c7db268b19ed842 in /home/mike1/projects/dev/md-composer/.git
+#525 Ready: [I11:E00]
+  blocked I11:E00:W01: depends on #462, #463, #464
+  blocked I11:E00:W02+W03+W04: depends on W01
+#579 In Progress: [I10:E04]
+#662 Ready: [I10:E07]
+  unit I10:E07:W01: lane 1, coverage AC2, record 2026-11-06-662-i10-e07-w01-one-reader-interprets-tag, branch i10/e07/w01-one-reader-interprets-tag, base i10/e07/main, worktree .worktrees/i10/e07/w01-one-reader-interprets-tag
+  blocked I10:E07:W02: depends on W01
+  blocked I10:E07:W03: depends on W02
+  blocked I10:E07:W04+W05: depends on W03
+  blocked I10:E07:W06+W07: depends on W04
+  blocked I10:E07:W08: depends on W07
+  blocked I10:E07:W09: depends on W08
+  available: 1, held: 0, blocked: 8, unresolvable: 0, undeclared: 0, merge: 0, unrecorded: 0, invalid: 0

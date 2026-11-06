@@ -1,0 +1,10 @@
+{
+  "id": "m2ux/prosiform#I10:E07:W02",
+  "tasks": [
+    "W02"
+  ],
+  "record": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-06-662-i10-e07-w02-source-links-carry-title",
+  "branch": "i10/e07/w02-source-links-carry-title",
+  "worktree": "/home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w02-source-links-carry-title",
+  "base": "i10/e07/main"
+}

@@ -1,0 +1,15 @@
+{
+  "epic": "https://github.com/m2ux/prosiform/issues/579",
+  "state": "closed",
+  "state_reason": "completed",
+  "board_status": "Done",
+  "expected_epic_bases": [
+    "i10/e04/main"
+  ],
+  "merged_base": "i10/e04/main",
+  "merge": "d8265c82e797355a55cf7ec7d921949b4d7eb6c0",
+  "validated_head": "8ca53994e89dab6657c2eea9eef72f74c48764e0",
+  "merge_tree_matches_validated_head": true,
+  "development_gate": "passed immediately before closure",
+  "initiative": "I10 remains open for E07 and any other incomplete epics"
+}

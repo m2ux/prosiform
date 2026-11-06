@@ -1,0 +1,222 @@
+[
+  {
+    "fixture": "fixtures/ancestor-promotion/a-link-to-a-heading-only-ancestor",
+    "diff": "--- \n+++ \n@@ -10,6 +10,8 @@\n \n #### Detail\n \n+[Input](#gamma)\n+\n Detail body, which needs [the note](#note).\n \n ### Beta\n"
+  },
+  {
+    "fixture": "fixtures/ancestor-promotion/a-promoted-ancestor-reaches-its-own-dependencies",
+    "diff": "--- \n+++ \n@@ -9,6 +9,8 @@\n Alpha body, which needs [the appendix](#appendix).\n \n #### Detail\n+\n+[Input](#gamma)\n \n Detail body, which needs [the note](#note).\n \n"
+  },
+  {
+    "fixture": "fixtures/ancestor-promotion/a-promotion-two-documents-out",
+    "diff": "--- \n+++ \n@@ -9,6 +9,8 @@\n Alpha body.\n \n #### Detail\n+\n+[Input](#gamma)\n \n Detail body, which needs [the first note](#first).\n \n"
+  },
+  {
+    "fixture": "fixtures/candidate-validation/repeated-identical-prose-in-two-regions",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n ### Rules\n \n+[Input](#notes)\n+\n Each rule is a rule.\n \n ### Notes\n"
+  },
+  {
+    "fixture": "fixtures/cli/several-entries-joined-into-one-name",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n Every rule this guide keeps.\n \n+[Input](#run) [Input](#rules)\n+\n # Guide\n \n ### Run\n"
+  },
+  {
+    "fixture": "fixtures/composition/a-deferral-whose-step-and-target-select-one-preset-is-kept",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Fetch the page offline\n \n-Its body is composed by a later run [Implementation offline](#fetch).\n+Its body is composed by a later run [Implementation offline](#fetch \"offline\").\n \n ### Implementation offline\n \n"
+  },
+  {
+    "fixture": "fixtures/composition/a-deferral-whose-step-selects-a-preset-its-target-does-not-is-refused",
+    "diff": "--- \n+++ \n@@ -0,0 +1,15 @@\n+# § Instructions\n+\n+Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n+\n+# Guide\n+\n+## Fetch the page offline\n+\n+Its body is composed by a later run [Implementation](#fetch \"offline\").\n+\n+### Implementation\n+\n+#### Fetch\n+\n+[↳ Implementation](fetch.md#implementation)\n"
+  },
+  {
+    "fixture": "fixtures/composition/a-deferral-whose-target-selects-a-preset-its-step-does-not-is-refused",
+    "diff": "--- \n+++ \n@@ -0,0 +1,15 @@\n+# § Instructions\n+\n+Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n+\n+# Guide\n+\n+## Fetch the page\n+\n+Its body is composed by a later run [Implementation offline](#fetch).\n+\n+### Implementation offline\n+\n+#### Fetch\n+\n+[↳ Implementation offline](fetch.md#implementation-offline)\n"
+  },
+  {
+    "fixture": "fixtures/composition/a-selected-group-pair-places-no-contribution",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Calls\n \n-Read the path [Inputs](#read), then follow [the read step](#read-1).\n+Read the path [Inputs](#read \"calls\"), then follow [the read step](#read-1 \"calls\").\n \n ### Inputs\n \n"
+  },
+  {
+    "fixture": "fixtures/composition/a-selected-preset-governs-the-contribution",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Checks\n \n-Read the path [Inputs](#read).\n+Read the path [Inputs](#read \"checks\").\n \n ### Inputs\n \n"
+  },
+  {
+    "fixture": "fixtures/composition/an-immediate-directive-is-held-to-no-target-heading",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Fetch the page offline\n \n-Its body is composed here [Implementation](#fetch).\n+Its body is composed here [Implementation](#fetch \"offline\").\n \n ### Implementation\n \n"
+  },
+  {
+    "fixture": "fixtures/consolidation/a-subsection-and-its-section",
+    "diff": "--- \n+++ \n@@ -10,4 +10,6 @@\n \n #### Detail\n \n+[Input](#alpha)\n+\n Detail body.\n"
+  },
+  {
+    "fixture": "fixtures/destinations/a-heading-a-container-carries",
+    "diff": "--- \n+++ \n@@ -16,6 +16,8 @@\n \n   A heading a retained list item carries, indexed beside the rest.\n \n+[Input](#run-2)\n+\n # Guide\n \n ### Run\n"
+  },
+  {
+    "fixture": "fixtures/determinism/entry-references-in-another-order",
+    "diff": "--- \n+++ \n@@ -10,16 +10,18 @@\n \n ### Two\n \n+[Input](#alpha) [Input](#one)\n+\n Two body.\n+\n+# Beta\n+\n+Beta body.\n \n # Alpha\n \n Alpha body, which needs [zeta](#zeta).\n \n-# Beta\n-\n-Beta body.\n-\n # Zeta\n \n Zeta body.\n"
+  },
+  {
+    "fixture": "fixtures/determinism/entry-references-in-source-order",
+    "diff": "--- \n+++ \n@@ -5,6 +5,12 @@\n # Alpha\n \n Alpha body, which needs [zeta](#zeta).\n+\n+[Input](#one) [Input](#two)\n+\n+# Zeta\n+\n+Zeta body.\n \n # Middle\n \n@@ -16,10 +22,6 @@\n \n Two body.\n \n-# Zeta\n-\n-Zeta body.\n-\n # Beta\n \n Beta body.\n"
+  },
+  {
+    "fixture": "fixtures/diagnostics/one-json-object-per-diagnostic-line",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n Require [the diagram](diagram.png).\n \n+[Input](#notes)\n+\n # Notes\n \n A note this guide refers to.\n"
+  },
+  {
+    "fixture": "fixtures/dispatch/a-dispatched-bundle-carrying-a-deferral-and-dispatching",
+    "diff": "--- \n+++ \n@@ -1,3 +1,11 @@\n+# § Instructions\n+\n+Run `pf`, then follow the guidance it prints. Follow [Checks](#checks) next.\n+\n+# Checks\n+\n+Every check.\n+\n # § Instructions\n \n Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.\n@@ -18,11 +26,3 @@\n \n 1. Defer [the rules](rules.md) to a later run.\n 2. Follow [⇉ Checks](checks.bundle.md).\n-\n-# § Instructions\n-\n-Run `pf`, then follow the guidance it prints. Follow [Checks](#checks) next.\n-\n-# Checks\n-\n-Every check.\n"
+  },
+  {
+    "fixture": "fixtures/dispatch/several-joined-entries-each-dispatching",
+    "diff": "--- \n+++ \n@@ -5,6 +5,8 @@\n # Guide\n \n 1. Apply: [⇉ plan](plan.bundle.md).\n+\n+[Input](#mode)\n \n # Mode\n \n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-group-emitting-no-merged-section",
+    "diff": "--- \n+++ \n@@ -8,6 +8,8 @@\n \n Name the harness.\n \n+[Input](#common)\n+\n ## Common\n \n Keep paragraphs short.\n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-group-its-own-member-places-stands-at-the-top-level",
+    "diff": "--- \n+++ \n@@ -12,7 +12,7 @@\n \n ## Announce\n \n-Alpha hands announcing to [the beta notes](#beta).\n+Alpha hands announcing to [the beta notes](#beta \"Announce\").\n \n ## Messages\n \n@@ -30,4 +30,4 @@\n \n ### Announce\n \n-Beta announces [the notice](#notice).\n+Beta announces [the notice](#notice \"Announce\").\n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-group-placed-by-a-document-in-two-groups",
+    "diff": "--- \n+++ \n@@ -6,11 +6,11 @@\n \n ## Checks\n \n-Review against [the rules](#rules).\n+Review against [the rules](#rules \"Checks\").\n \n ## Draft\n \n-Draft against [the rules](#rules).\n+Draft against [the rules](#rules \"Draft\").\n \n ## Reviews\n \n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-member-carrying-one-heading-bundled-by-document",
+    "diff": "--- \n+++ \n@@ -3,6 +3,8 @@\n Run `pf`, then follow the guidance it prints. Follow [Bare](#bare) next.\n \n # Bare\n+\n+[Input](#kept)\n \n # Kept\n \n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-pooled-subset-keeps-group-member-names",
+    "diff": "--- \n+++ \n@@ -22,6 +22,8 @@\n \n Only this member.\n \n+[Input](#bnotes) [Input](#cother)\n+\n ## Findings\n \n ### B/Notes\n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-section-shallower-than-the-grouping-depth",
+    "diff": "--- \n+++ \n@@ -16,6 +16,8 @@\n \n Carry the first part out.\n \n+[Input](#two-1)\n+\n ### Two\n \n Carry the second part out.\n"
+  },
+  {
+    "fixture": "fixtures/grouping/a-variant-drops-the-group-word",
+    "diff": "--- \n+++ \n@@ -20,6 +20,8 @@\n \n Plan the work.\n \n+[Input](#review)\n+\n ### Review\n \n Review the work.\n"
+  },
+  {
+    "fixture": "fixtures/grouping/an-entry-naming-a-member-carrying-one-heading",
+    "diff": "--- \n+++ \n@@ -3,6 +3,8 @@\n Run `pf`, then follow the guidance it prints. Follow [Bare](#bare) next.\n \n # Bare\n+\n+[Input](#kept)\n \n ## Findings\n \n"
+  },
+  {
+    "fixture": "fixtures/grouping/member-names-distinguished-after-formatting",
+    "diff": "--- \n+++ \n@@ -20,6 +20,8 @@\n \n First instruction.\n \n+[Input](#bplan)\n+\n ### B/Plan\n \n Second instruction.\n"
+  },
+  {
+    "fixture": "fixtures/grouping/mixed-contributions-name-every-member",
+    "diff": "--- \n+++ \n@@ -10,6 +10,8 @@\n \n Name the harness.\n \n+[Input](#common)\n+\n ### Common\n \n #### Draft\n"
+  },
+  {
+    "fixture": "fixtures/grouping/one-entry-under-a-group",
+    "diff": "--- \n+++ \n@@ -38,6 +38,8 @@\n \n Read the draft back against the goal.\n \n+[Input](#review-4)\n+\n ### Review\n \n #### Review\n"
+  },
+  {
+    "fixture": "fixtures/grouping/subheadings-name-every-member",
+    "diff": "--- \n+++ \n@@ -12,6 +12,8 @@\n \n Name the harness.\n \n+[Input](#common)\n+\n ### Common\n \n #### Draft\n"
+  },
+  {
+    "fixture": "fixtures/grouping/two-members-contributing-one-heading-text",
+    "diff": "--- \n+++ \n@@ -18,6 +18,8 @@\n \n List what it may call, then read [Common](#common).\n \n+[Input](#common)\n+\n ## Links\n \n Check every link.\n"
+  },
+  {
+    "fixture": "fixtures/grouping/two-members-whose-paths-differ-only-by-suffix",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n The document whose path ends in one of the two suffixes.\n \n+[Input](#guide-1)\n+\n ## Guide\n \n The document whose path ends in the other.\n"
+  },
+  {
+    "fixture": "fixtures/grouping/two-whole-document-entries-in-one-group",
+    "diff": "--- \n+++ \n@@ -8,6 +8,8 @@\n \n What was observed while running it.\n \n+[Input](#guide)\n+\n ## Guide\n \n An opening paragraph, above the first eligible heading.\n"
+  },
+  {
+    "fixture": "fixtures/headings/an-entity-in-a-heading",
+    "diff": "--- \n+++ \n@@ -14,6 +14,8 @@\n \n A heading naming itself with the characters it shows.\n \n+[Input](#café-1)\n+\n # Café\n \n A document whose path produces the slug the entity heading above already took.\n"
+  },
+  {
+    "fixture": "fixtures/headings/collision-with-a-natural-suffix",
+    "diff": "--- \n+++ \n@@ -24,6 +24,8 @@\n \n A second heading spelling an ordinal, which is numbered from its own slug.\n \n+[Input](#run-4)\n+\n # Run\n \n A document whose path produces a slug the headings above already took, with ordinals behind it.\n"
+  },
+  {
+    "fixture": "fixtures/headings/image-alternative-text",
+    "diff": "--- \n+++ \n@@ -12,6 +12,8 @@\n \n A heading carrying none.\n \n+[Input](#the--overview-1)\n+\n # The--Overview\n \n A document whose path produces the slug the heading above already took.\n"
+  },
+  {
+    "fixture": "fixtures/hierarchy/regions-the-source-separates",
+    "diff": "--- \n+++ \n@@ -10,4 +10,6 @@\n \n ### Gamma\n \n+[Input](#alpha)\n+\n The last selected section.\n"
+  },
+  {
+    "fixture": "fixtures/identity/paths-differing-only-by-suffix",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n The document whose path ends in one of the two suffixes.\n \n+[Input](#guide-1)\n+\n # Guide\n \n The document whose path ends in the other.\n"
+  },
+  {
+    "fixture": "fixtures/identity/same-basename-in-two-directories",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n The note the notes directory carries.\n \n+[Input](#docsnote)\n+\n # Docs/Note\n \n The note the documentation directory carries.\n"
+  },
+  {
+    "fixture": "fixtures/inclusion/a-dependencys-preset-comes-from-itself",
+    "diff": "--- \n+++ \n@@ -8,7 +8,7 @@\n \n ### Checks\n \n-Follow [the rules](#rules).\n+Follow [the rules](#rules \"Checks\").\n \n ## Checks\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/a-followed-deferral-reads-its-preset",
+    "diff": ""
+  },
+  {
+    "fixture": "fixtures/inclusion/a-pair-a-selected-preset-overrides-records-no-substitution",
+    "diff": "--- \n+++ \n@@ -14,7 +14,7 @@\n \n ## Checks\n \n-Follow [the rules](#rules).\n+Follow [the rules](#rules \"Checks\").\n \n # Checked Steps\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/a-pair-one-reference-selects-reaches-every-section",
+    "diff": "--- \n+++ \n@@ -10,7 +10,7 @@\n \n ## Checks\n \n-Follow [the second rule](#two).\n+Follow [the second rule](#two \"Checks\").\n \n # Rules\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/a-presets-pairs-reach-the-reference-it-governs",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Targets\n \n-Follow [the rules](#rules).\n+Follow [the rules](#rules \"Targets\").\n \n ## Targets\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/a-section-title-selects-its-preset",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Checks\n \n-Follow [the rules](#rules).\n+Follow [the rules](#rules \"checks\").\n \n ## Checklist\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/a-title-matching-two-keywords-selects-both",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Checks and Draft\n \n-Follow [the rules](#rules).\n+Follow [the rules](#rules \"Checks,Draft\").\n \n ## Reviews\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/an-entry-name-reads-its-documents-presets",
+    "diff": ""
+  },
+  {
+    "fixture": "fixtures/inclusion/default-applies-in-every-section",
+    "diff": "--- \n+++ \n@@ -6,7 +6,7 @@\n \n ## Checks\n \n-Follow [the rules](#rules).\n+Follow [the rules](#rules \"Checks\").\n \n ## Modes\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/one-document-two-presets",
+    "diff": "--- \n+++ \n@@ -6,11 +6,11 @@\n \n ## Checks\n \n-Review against [the rules](#rules).\n+Review against [the rules](#rules \"Checks\").\n \n ## Draft\n \n-Draft against [the rules](#rules).\n+Draft against [the rules](#rules \"Draft\").\n \n ## Reviews\n \n"
+  },
+  {
+    "fixture": "fixtures/inclusion/two-documents-placing-one-document-in-two-groups",
+    "diff": "--- \n+++ \n@@ -20,7 +20,7 @@\n \n ## Announce\n \n-Beta announces [the notice](#notice).\n+Beta announces [the notice](#notice \"Announce\").\n \n ## Announcements\n \n"
+  },
+  {
+    "fixture": "fixtures/normalization/two-spellings-of-one-document",
+    "diff": "--- \n+++ \n@@ -10,4 +10,6 @@\n \n ### Stop\n \n+[Input](#run-it)\n+\n The second section a reference selects.\n"
+  },
+  {
+    "fixture": "fixtures/profile/markdown-suffixes-in-mixed-case",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n A document whose suffix is spelled in capitals.\n \n+[Input](#notesnote)\n+\n # Notes/Note\n \n A document whose suffix is spelled in mixed case.\n"
+  },
+  {
+    "fixture": "fixtures/publication/a-successful-run-writes-only-the-bundle",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n What was observed while running it.\n \n+[Input](#guide)\n+\n # Guide\n \n An opening paragraph, above the first eligible heading.\n"
+  },
+  {
+    "fixture": "fixtures/structural-ancestors/an-ancestor-two-selections-share",
+    "diff": "--- \n+++ \n@@ -8,6 +8,8 @@\n \n #### One\n \n+[Input](#two)\n+\n One body.\n \n #### Two\n"
+  },
+  {
+    "fixture": "fixtures/structural-ancestors/disjoint-selections-keep-their-outline",
+    "diff": "--- \n+++ \n@@ -6,6 +6,8 @@\n \n ### Alpha\n \n+[Input](#detail)\n+\n Selected Alpha content.\n \n ### Beta\n"
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "behavior_head": "6b483919c4d9ca9339e39d73b3293e8d15efdcf4",
+  "head": "3711aabdd79de26de6de3a455ca562606e45f04f",
+  "files": [
+    {
+      "path": "evals/diagram-following/test_harness.py",
+      "same_ast_without_docstrings": true,
+      "ast_sha256": "f4fa0b6770143bf85464b0b8f63f8deb619d079a8e7583db6403e3be68946c2b"
+    },
+    {
+      "path": "evals/diagram-following/test_run.py",
+      "same_ast_without_docstrings": true,
+      "ast_sha256": "e5b04681bd4676bff1495f495919f1f70941a6963e67952623c4f1bcd730ba67"
+    },
+    {
+      "path": "evals/diagram-following/test_score.py",
+      "same_ast_without_docstrings": true,
+      "ast_sha256": "9e553259eb07d360fe48694912ceccccf77a3caadce105c88f28b2e5ac6342c7"
+    },
+    {
+      "path": "evals/diagram-following/test_workflow.py",
+      "same_ast_without_docstrings": true,
+      "ast_sha256": "9097366b2c46148131cd3317cfc6ab973bf1fa50c5c1a0729e0230fec55aaa3c"
+    }
+  ],
+  "other_files_changed": false
+}

@@ -1,0 +1,13 @@
+{
+  "unit": "m2ux/prosiform#I10:E07:W01",
+  "worker": "/root/i10_e07_w01",
+  "state": "completed",
+  "head": "27ad770d9f6157a720a0b9f95deda1b2c12d0fff",
+  "merge": "b0ec538dacc97ca546ad5d5d83748764f511e258",
+  "pull_request": "https://github.com/m2ux/prosiform/pull/665",
+  "main_integration": "https://github.com/m2ux/prosiform/pull/666",
+  "next": "W02",
+  "board_status": "Ready",
+  "scope_complete": true,
+  "i11": "blocked on I10 issue 464"
+}

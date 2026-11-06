@@ -4,7 +4,7 @@
 
 ## Executive Summary
 
-[PR 622](https://github.com/m2ux/prosiform/pull/622) contains main at `ba93ca608` and the verified composition-evaluation repair at `6b483919c4d9ca9339e39d73b3293e8d15efdcf4`. GitHub reports `MERGEABLE`. The pull request remains draft; its review handoff and board status are separate from conflict resolution.
+Conflict resolution produced the verified repair at `6b483919c4d9ca9339e39d73b3293e8d15efdcf4`, containing main at `ba93ca608`. The subsequent [review and completion](../2026-11-06-i10-e04-review-handoff/README.md) records the final admission fix, passing checks, human merge of PR622 and E04 Done readback.
 
 The published branch advances from `1076ef529` through integration merge `b93f6bf7a`, whose parents are the original PR head and current main, to the repair commit. A separate local repository and worktree carry that continuation so publishing cannot move the original checkout's branch reference. Publication uses plain `git push`.
 

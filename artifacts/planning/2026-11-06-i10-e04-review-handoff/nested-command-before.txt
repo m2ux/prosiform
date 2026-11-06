@@ -1,0 +1,28 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run ______
+
+    def test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run() -> None:
+        """AC22, AC26: a scenario stating a sub-agent's `pf` run needs its commands.
+    
+        Claude reports them in the compiled form, whose session carries a shell,
+        and in no form whose session carries none. Neither Cursor's stream nor
+        opencode's carries a sub-agent's own calls; a harness that did would be
+        given the scenario, and a run the session makes itself is given wherever
+        a shell is.
+        """
+        workflow = CORPUS["dispatch-set"]
+        [scenario] = workflow.scenarios
+        by_sub_agent = replace(scenario, compile=(Compile("review#tests", ()),))
+        by_session = replace(scenario, compile=(Compile(None, ()),))
+        assert observable(workflow, by_sub_agent, COMPILED_SET, Claude())
+        assert not observable(workflow, by_sub_agent, AUTHORED_SET, Claude())
+        for harness in (Cursor(), Opencode(), Codex()):
+>           assert not observable(workflow, by_sub_agent, COMPILED_SET, harness)
+E           AssertionError: assert not True
+E            +  where True = observable(Workflow(name='dispatch-set', directory=PosixPath('/home/mike1/projects/dev/md-composer/.worktrees/pr622-conflict-reso...ed'))), compile=(), answers=''),), transitions={}, conditions={}, nested=(), entry='workflow.md', warnings=frozenset()), Scenario(name='parallel-set', inputs={}, path=('Entry', 'Survey', 'Report', 'Exit'), trace=(Dispatch(section='review#s...ew#tests', together=True, action=('tests.txt', 'tested'))), compile=(Compile(by='review#tests', args=()),), answers=''), 'compiled', Codex(name='codex', config_variable='CODEX_HOME', scrubbed=('CODEX', 'OPENAI_'), default_agent='codex', prompt_on_argv=False, nested_starts=True, skill_home='.agents/skills'))
+
+evals/diagram-following/test_run.py:415: AssertionError
+=========================== short test summary info ============================
+FAILED src::test_a_harness_reporting_no_sub_agent_command_gets_no_sub_agent_run
+1 failed in 0.13s
