@@ -14,6 +14,13 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | --- | --- |
 | [w03.md](w03.md) | Component plan and required checks |
 | [todos.md](todos.md) | Unit delivery checklist |
+| [validation.md](validation.md) | Exact tested revision, observing checks and review findings |
+| [selection-check.txt](selection-check.txt) | Committed-head selection and retention instrument |
+| [make-check.txt](make-check.txt) | Full deterministic repository check |
+| [changes.md](changes.md) | Applied and held plan-change disposition |
+| [reservation.json](reservation.json) | Unit planning, delivery or verification evidence |
+| [start-evidence.json](start-evidence.json) | Unit planning, delivery or verification evidence |
+| [unit.json](unit.json) | Unit planning, delivery or verification evidence |
 
 ## Links
 
