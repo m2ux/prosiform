@@ -1,0 +1,8 @@
+8ca53994e89dab6657c2eea9eef72f74c48764e0	refs/heads/i10/e04/main
+cef5a2f845d8cc6c4300707d1a4bc405d48c6c1e	refs/heads/i10/e04/w01-scenarios-stating-the-pf
+52b302e1d9229d3d9f22fcb1100c2c3f0df974f7	refs/heads/i10/e04/w05-a-scenario-bootstrapping-a
+fa76aa0b93935b06e2d89a06bbbbf06e5a8823ac	refs/heads/i10/e04/w08-scenarios-composing-under-a
+00fd112ca6da153ff26d5c23d06a79b80dde19da	refs/heads/i10/e04/w10-a-scenario-compiling-a
+e226cd60ea9d786bfd810c5024c3edf0e21c9ab4	refs/heads/i10/e04/w17-triage-rubric-entries-for
+fb0bcad691908910ebbd0a14ab9c67c38e7fa535	refs/heads/i10/e04/w18-a-staged-claude-session
+68f78edb18064954824244de960f858b846504a7	refs/heads/i10/e04/w19-the-edge-corpus-test

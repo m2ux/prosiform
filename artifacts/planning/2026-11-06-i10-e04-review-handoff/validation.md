@@ -39,3 +39,7 @@ The original E04 checkout retains its recorded HEAD, status and all 65 dirty-fil
 ## Graph Evidence
 
 The final detached checkout is indexed at the reviewed head. All 360 changed-symbol contexts and 39 reported process traces were collected without tool errors or stale responses. Dynamic receiver and process-budget limitations remain explicit in the overview and index log. No embeddings or live evaluation calls ran.
+
+## Merged Closeout
+
+The user merged PR622 at `d8265c82e797355a55cf7ec7d921949b4d7eb6c0`. Its tree is byte-identical to the validated head, and the full remote epic-head list identifies main as the sole E04 base. A fresh complete Development-link gate passed immediately before closure. E04 is closed as completed and the single-item board readback confirms Done; [completion.json](completion.json) and the retained snapshots establish the result. I10 and E07 continue independently.
