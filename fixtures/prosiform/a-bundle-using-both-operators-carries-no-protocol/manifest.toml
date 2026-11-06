@@ -1,4 +1,4 @@
-description = "A bundle dispatching from one section and dispatching in parallel from another carries no protocol paragraph: it opens with the run-pf line, keeps its dispatch link inline and points its set at one In parallel sub-section."
+description = "A bundle dispatching from one section and dispatching in parallel from another carries no protocol paragraph: it opens with the run-pf line, keeps its dispatch link inline and points its set at one dispatch-set sub-section."
 
 clauses = [
   "Link classification and resource handling — The run-pf line",

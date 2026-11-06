@@ -359,26 +359,51 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
     )
 
 
-def _segments(command: str) -> list[str]:
-    """Shell command segments, preserving separators inside quoted values."""
-    found = []
-    start = 0
-    quote = ""
-    escaped = False
-    for at, character in enumerate(command):
-        if escaped:
-            escaped = False
-        elif character == "\\" and quote != "'":
-            escaped = True
-        elif quote:
-            if character == quote:
-                quote = ""
-        elif character in "\"'":
-            quote = character
-        elif character in ";|&\n":
-            found.append(command[start:at])
-            start = at + 1
-    found.append(command[start:])
+SHELL_TOKEN = re.compile(
+    r"(?P<space>[^\S\n]+)"
+    r"|(?P<redirect>[0-9]*(?:>>|>\||<>|[<>]&|[<>]))"
+    r"|(?P<separator>&&|\|\||[;|&\n])"
+    r"|(?P<word>(?:'[^']*'|\"(?:\\.|[^\"\\])*\"|\\.|[^\s;|&<>\"'\\])+)",
+)
+
+
+def _commands(command: str) -> list[list[str] | None]:
+    """Read literal shell words and redirects without evaluating shell input.
+
+    Redirection operators and their one operand belong to the shell, not
+    the compiler grammar. Quoted or escaped operators remain argument text.
+    An incomplete token or redirect invalidates its command segment.
+    """
+    found: list[list[str] | None] = []
+    words: list[str] = []
+    redirect = False
+    invalid = False
+    at = 0
+    while at < len(command):
+        token = SHELL_TOKEN.match(command, at)
+        if token is None:
+            invalid = True
+            break
+        at = token.end()
+        if token.lastgroup == "space":
+            continue
+        if token.lastgroup == "separator":
+            found.append(None if invalid or redirect else words)
+            words, redirect, invalid = [], False, False
+        elif token.lastgroup == "redirect":
+            invalid = invalid or redirect
+            redirect = True
+        else:
+            try:
+                [word] = shlex.split(token.group())
+            except ValueError:
+                invalid = True
+                break
+            if redirect:
+                redirect = False
+            else:
+                words.append(word)
+    found.append(None if invalid or redirect else words)
     return found
 
 
@@ -391,12 +416,9 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
     """
     runs: list[Compile | None] = []
     for command in commands:
-        for segment in _segments(command):
-            try:
-                words = shlex.split(segment)
-            except ValueError:
-                if re.match(r"^\s*(?:[^\s]*/)?pf(?:\s|$)", segment):
-                    runs.append(None)
+        for words in _commands(command):
+            if words is None:
+                runs.append(None)
                 continue
             if not words or words[0].rsplit("/", 1)[-1] != PF:
                 continue
@@ -407,9 +429,12 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 continue
             if parsed.help or parsed.version or parsed.codes:
                 continue
-            if parsed.presets is not None and parsed.entry is None:
-                runs.append(None)
-            elif parsed.entry is None and len(words) > 1:
+            if (
+                parsed.presets is not None
+                and parsed.entry is None
+                or parsed.entry is None
+                and len(words) > 1
+            ):
                 runs.append(None)
             else:
                 if parsed.entry is not None:

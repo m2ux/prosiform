@@ -290,7 +290,7 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "\u21c9 names a bundle to hand on",
         "\u2afd marks a dispatch set",
         "its section holds one set of bundles, listed as",
-        "\u21c9 items in the sub-section headed \u2afd <that section's title> dispatch",
+        "\u21c9 lines in the sub-section headed \u2afd Dispatch Set.",
         "Give each bundle to its own sub-agent at once",
         "step that led there, one per value where that step applies to",
         "A failure cancels nothing; all",

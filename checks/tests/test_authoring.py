@@ -149,7 +149,9 @@ def test_worked_commands_compile_from_their_documented_directory(
 
 @pytest.mark.parametrize(
     "block",
-    re.findall(r"```toml\n(.*?)```", (ROOT / "fixtures/README.md").read_text(), re.S),
+    re.findall(
+        r"```toml\n(.*?)```", (ROOT / "fixtures/README.md").read_text(), re.DOTALL
+    ),
 )
 def test_documented_manifest_invocations_use_the_compiler_grammar(block: str) -> None:
     """The fixture-authoring templates must reach compilation, not usage refusal."""
@@ -162,9 +164,29 @@ def test_documented_manifest_invocations_use_the_compiler_grammar(block: str) ->
         assert parsed.entry == "guide.md"
 
 
+@pytest.mark.parametrize(
+    "name",
+    [
+        "docs/dispatch.md",
+        "docs/glossary.md",
+        "docs/composition.md",
+        "evals/diagram-following/README.md",
+    ],
+)
+def test_dispatch_guidance_names_the_published_heading(name: str) -> None:
+    from prosiform.dispatch import PARALLEL
+
+    text = (ROOT / name).read_text()
+    assert PARALLEL in text
+    assert "<section title> dispatch set" not in text
+    assert "<title> dispatch set" not in text
+    assert "Give each of these to its own sub-agent" not in text
+    assert "under one instruction" not in text
+
+
 def test_architecture_module_inventory_matches_the_package() -> None:
     text = (ROOT / "docs/architecture.md").read_text()
-    documented = set(re.findall(r"^\| `([a-z]+)` \|", text, re.M))
+    documented = set(re.findall(r"^\| `([a-z]+)` \|", text, re.MULTILINE))
     implemented = {
         path.stem
         for path in (ROOT / "src/prosiform").glob("*.py")

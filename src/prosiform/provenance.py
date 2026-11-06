@@ -13,8 +13,8 @@ share: a sentence repeated in two sections is two ranges, so repeated
 identical prose is not duplication and a count of occurrences is not a
 coverage test. A *generated* record names a heading the bundle wrote
 itself — the filename wrapper, and the group, overview and variant
-headings a metadata-declared group produces, each `In parallel`
-sub-section with the instruction and list beneath it, and the
+headings a metadata-declared group produces, each dispatch-set
+sub-section with the bare dispatch-link lines beneath it, and the
 destination section and contribution heading a composition directive
 places its target beneath — which carries
 no source range and so can never stand in for selected body content a
@@ -63,7 +63,7 @@ MEMBER_OVERVIEW = "member overview"
 VARIANT_HEADING = "variant heading"
 STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
-PARALLEL_SECTION = "In parallel sub-section"
+PARALLEL_SECTION = "dispatch-set sub-section"
 DESTINATION_SECTION = "destination section"
 CONTRIBUTION_HEADING = "contribution heading"
 

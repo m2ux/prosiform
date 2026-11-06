@@ -118,7 +118,7 @@ Beneath the scope, one level down, each target title takes one **destination sec
 flowchart TD
   Scope["## Prepare<br/><i>the scope</i>"] --> Own["its own content"]
   Scope --> Dest["### Inputs<br/><i>a destination section</i>"]
-  Scope --> Disp["### ⫽ <title> dispatch set<br/><i>a set's sub-section</i>"]
+  Scope --> Disp["### ⫽ Dispatch Set<br/><i>a set's sub-section</i>"]
   Scope --> Child["### child sections"]
   Dest --> C1["#### Read<br/><i>a contribution</i>"]
   Dest --> C2["#### Write<br/><i>a contribution</i>"]

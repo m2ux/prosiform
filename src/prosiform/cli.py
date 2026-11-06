@@ -326,22 +326,16 @@ Usage:
 
 Compiling a link:
 
-  Resolve its destination from the document carrying the link, then name
-  that destination from the working directory used for the command.
-  Qualify a same-document fragment with that document's path. Supply
-  its title as one --presets argument, shell-quoted where needed:
+  Resolve the destination from the linking document, then express it
+  from the command's working directory; include the file for #fragments.
+  Pass title tags as one quoted --presets value, also for deferred links:
 
-    pf --entry guide.md#plan-report --presets checks,draft
     pf --entry modes/review.md#review --presets 'checks, final draft'
-    pf --entry guide.md#plan-report
 
-  Attach a value beginning with - to its option with =:
-
+  Omit --presets without tags; use = for values starting with -:
     pf --entry=-guide.md --presets=-checks
 
-  Tags select the target's own presets above default. Unknown tags
-  select nothing. Headings and visible link text select no presets.
-  Preserve the same tags when compiling a deferred link in a later run.
+  Tags layer the target's presets above default.
 
 Exit status:
 
@@ -356,8 +350,8 @@ Symbol grammar:
   ⇉  names a bundle to hand on: give it to a sub-agent with the inputs of
      the step that led there, and continue with its answer
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
-     ⇉ items in the sub-section headed ⫽ <that section's title> dispatch
-     set. Give each bundle to its own sub-agent at once, with the inputs of
+     ⇉ lines in the sub-section headed ⫽ Dispatch Set.
+     Give each bundle to its own sub-agent at once, with the inputs of
      the step that led there, one per value where that step applies to
      several. A failure cancels nothing; all failures return together.
 """
@@ -1958,7 +1952,7 @@ def dispatches(
     bundle of its own, so what is yielded is the target the link names,
     with the place the link is written: the hop a chain of dispatches
     takes from here. The links are those the bundle points at a bundle
-    file or an `In parallel` sub-section, read by the one reader that
+    file or a dispatch-set sub-section, read by the one reader that
     places them, so every hop the run follows has its file. A link with
     no text after its mark names nothing for its reader, so it is
     refused as the operator refusals are, naming the route.
@@ -3052,8 +3046,8 @@ def compose(
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the `In
-    parallel` sub-sections its sections need, inserted once the group
+    compiled link is rewritten through. Each build carries the dispatch-set
+    sub-sections its sections need, inserted once the group
     exists, and the run-pf line that opens the bundle, so the headings
     the map is built from are every heading the bundle emits. The
     second pass emits the same headings as the first, because a rewrite

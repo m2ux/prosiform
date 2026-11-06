@@ -585,7 +585,7 @@ def rewrite(
 
     A dispatched link takes the destination its region carries for its
     target, which the dispatch map holds by the region's first line: a
-    bundle file, or the `In parallel` sub-section of a set. A dispatch the
+    bundle file, or the dispatch-set sub-section of a set. A dispatch the
     map holds none for is refused, and the line the refusal names is the
     line of the file the source was read from, which the first line of its
     content states.
@@ -729,7 +729,7 @@ def target(
     path from the invocation working directory, so the run that
     compiles it later, from that directory, follows it as written. A
     dispatched one takes the destination its section carries for its
-    target, a bundle file or an `In parallel` sub-section, and a
+    target, a bundle file or a dispatch-set sub-section, and a
     dispatch the map holds none for is refused rather than published:
     the link states a handoff the bundle does not state. Neither is
     rewritten to the destination of the target's own heading, even where
