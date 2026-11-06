@@ -1,6 +1,6 @@
 description = "A later incoming tag activates a substitution on a dispatched link. The run publishes only the entry and effective new target, with the final dispatch destination and one substitution warning; the transient old target produces no bundle."
 
-clauses = ["Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections"]
+clauses = ["Link classification and resource handling — Dispatched bundles", "Link classification and resource handling — Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections"]
 
 [invocation]
 cwd = "source"
