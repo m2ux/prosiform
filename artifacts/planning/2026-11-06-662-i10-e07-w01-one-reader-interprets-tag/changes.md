@@ -14,3 +14,7 @@ These corrections are within Deliver's Migration allowance and keep every task a
 ## Design Integration
 
 The current engineering branch is merged into the design integration at `1a7ccc7daf3f8a30d781231b8ef7d698f1741562`. The one conflict in the saved epic body takes the current coverage assignments. The authoritative design is byte-identical to its `c67cf78f020923c4e5bd25d95497ced206be7161` preset-option revision. The merge is pushed normally on the existing PR #664 branch.
+
+## Queue Readback
+
+- Re-prioritisation — #662: after the W01 reservation is delivered, the refreshed queue places the inactive epic Ready for its eligible W02. The saved item confirms Ready. No priority, lane or dependency changes, and no I11 task starts.

@@ -26,6 +26,21 @@ The reader establishes the common interpretation consumed by the source and comm
 | [board-reservation-readback.json](board-reservation-readback.json) | Saved In Progress board state |
 | [target-protection.json](target-protection.json) | Target branch protection response |
 | [target-rules.json](target-rules.json) | Target branch active rules |
+| [board-completion-readback.json](board-completion-readback.json) | Saved Ready state for the next task |
+| [completed-epic.json](completed-epic.json) | Saved W01 and AC2 completion |
+| [design-integration.json](design-integration.json) | Draft design integration after conflict resolution |
+| [development-links.json](development-links.json) | Complete pull-request Development relations |
+| [epic-sync.txt](epic-sync.txt) | Completion findings and branch-configuration limitation |
+| [execution.json](execution.json) | Completed worker, delivery revision and next unit |
+| [head-checks.json](head-checks.json) | Successful hosted check at the task head |
+| [head-status.json](head-status.json) | Commit status evidence at the task head |
+| [main-integration.json](main-integration.json) | Draft main integration and its verified body |
+| [merge-result.json](merge-result.json) | Confirmed task merge result |
+| [merged-pr.json](merged-pr.json) | Merged task pull request and tested head |
+| [merged-reader-check.txt](merged-reader-check.txt) | Reader instrument at the exact merge commit |
+| [next-unit-dispatch.json](next-unit-dispatch.json) | Machine-readable next eligible task |
+| [next-unit-survey.txt](next-unit-survey.txt) | W02 eligibility and I11 dependency gate |
+| [reviews.json](reviews.json) | Task review snapshot before merge |
 
 ## Links
 
@@ -34,3 +49,6 @@ The reader establishes the common interpretation consumed by the source and comm
 | Epic | [I10 E07](https://github.com/m2ux/prosiform/issues/662) |
 | Board | [Project 18](https://github.com/users/m2ux/projects/18/views/4) |
 | Contract | [Preset selection](https://github.com/m2ux/prosiform/blob/c67cf78f020923c4e5bd25d95497ced206be7161/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) |
+| Task delivery | [Merged PR #665](https://github.com/m2ux/prosiform/pull/665) |
+| Main integration | [Draft PR #666](https://github.com/m2ux/prosiform/pull/666) |
+| Design integration | [Draft PR #664](https://github.com/m2ux/prosiform/pull/664) |
