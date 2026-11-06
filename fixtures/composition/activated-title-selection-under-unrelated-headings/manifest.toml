@@ -4,7 +4,6 @@ clauses = [
   "Section composition — Activation",
   "Section composition — Presets and subst",
   "Presets — A command-line entry reads the file it names",
-  "CLI contract — Automatic output names",
 ]
 
 [invocation]
