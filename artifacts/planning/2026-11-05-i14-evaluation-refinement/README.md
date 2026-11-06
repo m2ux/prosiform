@@ -16,6 +16,7 @@ This work is deferred beyond MVP release preparation. The corpus and harness imp
 | [Composition epic draft](e00-body.md) | The sequential task rows and observable criteria for the edge measurements |
 | [Matrix epic draft](e01-body.md) | The rows and criteria for the default matrix's baseline and harness records |
 | [Plan change](plan-change.md) | The deferral decision, I10's criterion disposition and the epic it created |
+| [I10 closure evidence](closure-464.md) | The closure gate, completion and board readbacks for the originating initiative |
 | [Shakedown work item](e00/w01.md) | The measured edge runbook and rubric exercise |
 | [Live-run work item](e00/w02.md) | The edge matrix's committed records |
 | [Publication work item](e00/w03.md) | The workflow inventory and measured pass rates |
