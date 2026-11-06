@@ -18,7 +18,7 @@ The entry's bundle keeps the link where its author wrote it, with its mark, and 
 
 A `⇉` or `⫽` link contributes nothing to the bundle that carries it: no content, no dependency through the link, no group membership. Its target is required to exist, to declare `prosiform` and to name the heading it names, because a sub-agent will follow it and the compilation must be able to succeed.
 
-The run compiles each distinct target once, transitively: a dispatched bundle's own dispatches are further bundles in the same run folder. Every dispatch naming one target names that one bundle file.
+The run compiles each distinct effective selection once, transitively: a dispatched bundle's own dispatches are further bundles in the same run folder. The selection comprises the canonical document, fragment and matching named presets. Two dispatches of one destination selecting different named presets produce distinct bundles, even if their settings happen to agree; reordered, repeated, differently cased and unknown tags add no variant. Every dispatch names its selection's bundle file, whose deterministic preset qualifier [Bundles](bundles.md#derived-names) defines.
 
 A dispatch is compiled up front, so a deferral mark has nothing to defer: `[¬⇉ the lift](lift.md)` and `[¬⫽ the lift](lift.md)` are refused, as [References](references.md#operators) states.
 
@@ -28,7 +28,7 @@ Each bundle is compiled under every rule an entry's is. Budgets hold per bundle,
 
 A `⇉` link publishes in place with its mark and the one blank after it, pointing at its target's bundle file. A section gains no generated structure for it, and a dispatch in a level-6 section publishes like any other.
 
-The `⫽` links in a section's own content are one **set**, and a child section's links form its own. A set of two or more distinct targets gains one dispatch-set sub-section, headed `⫽ <section title> dispatch set`, one level below the section, after the section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The set's links are published without their marks and point at it. A set of one distinct target is a single dispatch: each of its links is published as a `⇉` link to the target's bundle file, and the section gains no sub-section.
+The `⫽` links in a section's own content are one **set**, and a child section's links form its own. A set of two or more distinct effective selections gains one dispatch-set sub-section, headed `⫽ <section title> dispatch set`, one level below the section, after the section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The set's links are published without their marks and point at it. A set of one distinct effective selection is a single dispatch: each of its links is published as a `⇉` link to the target's bundle file, and the section gains no sub-section.
 
 ```mermaid
 flowchart TD
@@ -41,7 +41,7 @@ flowchart TD
 
 *Figure 1. A Set's Sub-Section Sits Between a Section's Own Content and Its Child Sections.*
 
-The sub-section's body is one line, `Give each of these to its own sub-agent at the same time, and continue when all have answered:`, and a list holding one item for each distinct target, in the order its first link is written: `- [⇉ the lift](lift__do.bundle.md)`, the first link's text without its mark. A set states no order. A set above a group's first heading takes that heading's level.
+The sub-section's body is one line, `Give each of these to its own sub-agent at the same time, and continue when all have answered:`, and a list holding one item for each distinct effective selection, in the order its first link is written: `- [⇉ the lift](lift__do.bundle.md)`, the first link's text without its mark. A set states no order. A set above a group's first heading takes that heading's level.
 
 A run carrying both kinds shows them together. Two `⫽` links form one set and publish one bundle each; a `⇉` link on its own publishes a third and stays where it was written:
 

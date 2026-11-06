@@ -45,6 +45,8 @@ pf -v
 
 Sources declare `prosiform` in [YAML frontmatter](docs/sources.md#frontmatter). Run `pf` with no arguments for the agent guide. Each run writes a `.bundles` folder containing the entry's bundle and any dispatched bundles; [Invocation](invocation.md) covers options and output names.
 
+A link such as `[Review](rules.md#tests "checks,draft")` selects the target document's `checks` and `draft` presets above its `default`. Compile that occurrence with `pf --entry rules.md#tests --presets checks,draft`, resolving the destination from the document carrying the link. Headings and link labels select no presets. [Selection](docs/selection.md#presets-in-force) states normalization and layering; [Invocation](invocation.md#examples) covers shell quoting and later compilation of deferred links; [Bundles](docs/bundles.md#derived-names) explains the filenames that distinguish dispatched selections.
+
 Start each example below from the repository root. Both use source trees from the [fixture corpus](fixtures/README.md). File and directory names use hyphens rather than underscores.
 
 ### Bundle a Source and its Dependencies

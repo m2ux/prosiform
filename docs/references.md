@@ -44,6 +44,8 @@ flowchart TD
 
 ## Selection by reference
 
+Each inline or reference-style Markdown link occurrence supplies its own comma-separated preset names through its parsed title, including preamble and operator-marked links. [Selection](selection.md#presets-in-force) defines complete-name matching and layering over the target's `default`. Substitution retains those tags and matches them against the substitute's own declarations. Image and external-reference titles supply no selection.
+
 A reference with no fragment, or an empty one, selects the whole document: its body, its preamble included, less frontmatter. A reference with a fragment selects one section — a document-level heading and its subsections, ending before the next heading of equal or higher level.
 
 Only a heading names a section. A fragment is looked up in the original document's own heading index, exactly as spelled, so `#Run` and `#run` name different things. A fragment naming no heading in its document fails with `E_TARGET_NOT_FOUND`, one naming a heading nested inside a list or a block quote with `E_NESTED_SECTION_TARGET`, and one naming a slug two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`.
@@ -108,4 +110,4 @@ A click naming a callback, a destination naming a document that declares nothing
 
 A Kanban ticket's link and an HTML anchor Mermaid draws in a label are links Mermaid renders and the reader does not follow; one naming a local Markdown document is refused, so its author writes it as a `click`. Mermaid draws no anchor in a `click` tooltip or a class diagram's `link` tooltip, nor in a sequence, pie, timeline, journey, Gantt, quadrant, Git, XY, Sankey, packet, radar, treemap or C4 diagram, whose labels it draws as text, so an anchor written there is carried as written.
 
-Every other byte of the fence is carried as written. A diagram link carries no operator, because a diagram gives it no link text to open with one.
+Every other byte of the fence is carried as written. A diagram link carries no operator, because a diagram gives it no link text to open with one. Its destination selects `default` alone: Mermaid tooltips and diagram labels supply no preset tags.

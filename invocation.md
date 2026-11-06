@@ -1,6 +1,6 @@
 # Invocation
 
-Compile one local Markdown entry and their dependencies into one validated bundle, and each target they dispatch into a bundle of its own.
+Compile one local Markdown entry and its dependencies into one validated bundle, and each effective selection it dispatches into a bundle of its own.
 
 ```text
 pf [OPTIONS] --entry REF [--presets PRESETS]
@@ -14,7 +14,7 @@ pf
 ## Options
 
 Flags are case-sensitive.
-`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
+`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
 | --- | --- |

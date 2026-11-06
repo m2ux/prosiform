@@ -1,5 +1,7 @@
 # The output budget, measured
 
+This page records a historical measurement against the source revision named below, not a measurement of the current compiler or skill. The figures and diagnostic are retained as evidence; the re-taking commands use the current single-entry grammar, and a fresh run must record its own compiler revision and results.
+
 The `output-bytes` budget defaults to 262,144. The figure is an engineering default, and
 the bundling it has to admit or refuse is the one the proposal used as its evidence:
 the closure of Plan Mode in the `work-planner` skill, 39 documents and 318,018 bytes
@@ -82,8 +84,8 @@ git archive acac858 skills/work-planner skills/guidelines.md | tar -x -C /tmp/cl
 sed -i 's|(SKILL.md#command-conventions)|(SKILL.md)|' /tmp/closure/skills/work-planner/guidelines.md
 cd /tmp/closure/skills
 find . -name '*.md' -print0 | xargs -0 perl -0pi -e 's/\A---\n/---\nprosiform: {}\n/ or s/\A/---\nprosiform: {}\n---\n/'
-<build> work-planner/modes/plan-mode.md
-<build> --budget output-bytes=1000000 work-planner/modes/plan-mode.md
+<build> --entry work-planner/modes/plan-mode.md
+<build> --budget output-bytes=1000000 --entry work-planner/modes/plan-mode.md
 ```
 
 The first run is refused. The run counts the bundle as it writes it and stops at the
