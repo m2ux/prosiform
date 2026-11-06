@@ -3,8 +3,8 @@
 A `⇉` link states that a sub-agent follows its target, and a `⫽` link
 that a sub-agent follows it together with the other `⫽` links of its
 section, so a run compiles every target either reaches, transitively,
-each distinct document and fragment once as its own entry, and
-publishes each as a bundle of its own beside the one that dispatches
+each distinct document, fragment and effective preset selection once as
+its own entry, and publishes each as a bundle beside the one that dispatches
 it. A *dispatch depth* is the number of dispatch hops along one chain
 of those bundles, counted from the run's entry: a dispatch the entry
 carries is the first hop, a dispatch that target's bundle carries is
@@ -12,11 +12,11 @@ the second, and so on.
 
 A `⇉` link publishes where its author wrote it, with its mark, pointing
 at the file its target was compiled to. The `⫽` links in a section's own
-content are one *set*. A set of two or more distinct targets points at
-the section's one `In parallel` sub-section: a heading one level below
+content are one *set*. A set of two or more distinct selections points at
+the section's one `⫽ Dispatch Set` sub-section: a heading one level below
 the section, after the section's own content and before its child
-sections, whose list holds each target once as a `⇉` link to its file.
-A set of one target publishes as that single `⇉` link and carries no
+sections, whose list holds each selection once as a `⇉` link to its file.
+A set of one selection publishes as that single `⇉` link and carries no
 sub-section. A set states no order. A set above the group's first
 heading takes that heading's level. Each section carrying a set
 carries its own sub-section. The sub-sections are inserted into a group
@@ -31,7 +31,7 @@ place, so three dispatches publish nothing:
   sub-agents would dispatch one another without end. A dispatch naming
   the run's own single selection closes the shortest one.
 - A set in a level-6 section leaves no level for its sub-section.
-- An authored heading whose text equals `In parallel` in a bundle that
+- An authored heading whose text equals `⫽ Dispatch Set` in a bundle that
   emits one would give two sections one name.
 
 A chain deeper than the limit still publishes, and warns: flattening it
@@ -43,8 +43,8 @@ shape is the corpus's convention, so a dispatch states no rule on it.
 A chain is deeper than the limit where it reaches a hop past it, and
 the search for one stops there. A target already on a chain is not
 followed again, so both searches terminate on any graph of dispatches.
-The dispatches a bundle carries name each target once, at the first
-link naming it, so each search follows each target once from a bundle.
+The dispatches a bundle carries name each effective selection once, at
+the first link naming it, so each search follows each selection once.
 
 A set member's link text is written with each run of whitespace, a line
 break among them, as one space.
@@ -69,6 +69,7 @@ from prosiform.closure import (
     DECLARING,
     DISPATCH_MARK,
     UNSUBSTITUTED,
+    BundleSelection,
     Declarations,
     Reference,
     Substitution,
@@ -155,8 +156,8 @@ Placed = dict[tuple[str, int], dict[Served, int | str]]
 """Where each dispatched link points, by the region and link it serves.
 
 A region is the document and the first line of content it opens on, so
-every link one region writes naming one target with one operator
-points at one place. The place is the position of an `In parallel`
+every link one region writes naming one target with the same requested
+tags and operator points at one place. The place is the position of a dispatch-set
 sub-section among every heading the bundle emits, or the destination of
 a bundle file.
 """
@@ -191,63 +192,75 @@ class Hop:
         return identity(self.target)
 
 
-Onward = Callable[[Reference], Sequence[Hop]]
-"""The dispatches the bundle of one target carries, each target once."""
+Onward = Callable[[BundleSelection], Mapping[BundleSelection, Hop]]
+"""The dispatches one bundle carries, keyed by effective destination selection."""
 
 
-def deepest(onward: Onward, first: Hop, entries: Collection[str]) -> list[Hop] | None:
+def deepest(
+    onward: Onward,
+    selection: BundleSelection,
+    first: Hop,
+    entries: Collection[BundleSelection],
+) -> list[Hop] | None:
     """The first chain from one hop that reaches a hop past the limit.
 
     A chain is followed in the order each bundle writes its dispatches,
     and only through targets not already on it, so a cycle adds no depth.
     """
-    chain = [first]
-    on = {*entries, first.name}
-    pending: list[Iterator[Hop]] = [iter(onward(first.target))]
+    chain = [(selection, first)]
+    on = {*entries, selection}
+    pending = [iter(onward(selection).items())]
     while pending:
         if len(chain) > LIMIT:
-            return chain
+            return [hop for _selection, hop in chain]
         following = next(pending[-1], None)
         if following is None:
             pending.pop()
-            on.discard(chain.pop().name)
+            on.discard(chain.pop()[0])
             continue
-        if following.name in on:
+        target, hop = following
+        if target in on:
             continue
-        chain.append(following)
-        on.add(following.name)
-        pending.append(iter(onward(following.target)))
+        chain.append((target, hop))
+        on.add(target)
+        pending.append(iter(onward(target).items()))
     return None
 
 
-def returning(onward: Onward, first: Hop, entries: Collection[str]) -> list[Hop] | None:
+def returning(
+    onward: Onward,
+    selection: BundleSelection,
+    first: Hop,
+    entries: Collection[BundleSelection],
+) -> list[Hop] | None:
     """The first chain from one hop whose last hop names a target already on it.
 
     The entries stand on every chain, so a dispatch naming the run's own
     selection closes a cycle. A target every chain through which was
     followed to its end without returning is not followed again.
     """
-    if first.name in entries:
+    if selection in entries:
         return [first]
-    chain = [first]
-    on = {*entries, first.name}
-    done: set[str] = set()
-    pending: list[Iterator[Hop]] = [iter(onward(first.target))]
+    chain = [(selection, first)]
+    on = {*entries, selection}
+    done: set[BundleSelection] = set()
+    pending = [iter(onward(selection).items())]
     while pending:
         following = next(pending[-1], None)
         if following is None:
             pending.pop()
-            name = chain.pop().name
-            on.discard(name)
-            done.add(name)
+            target = chain.pop()[0]
+            on.discard(target)
+            done.add(target)
             continue
-        if following.name in on:
-            return [*chain, following]
-        if following.name in done:
+        target, hop = following
+        if target in on:
+            return [*(one for _selection, one in chain), hop]
+        if target in done:
             continue
-        chain.append(following)
-        on.add(following.name)
-        pending.append(iter(onward(following.target)))
+        chain.append((target, hop))
+        on.add(target)
+        pending.append(iter(onward(target).items()))
     return None
 
 
@@ -281,14 +294,18 @@ def reported(
     )
 
 
-def cycle(hops: Sequence[Hop], entries: Collection[str], onward: Onward) -> None:
+def cycle(
+    hops: Mapping[BundleSelection, Hop],
+    entries: Collection[BundleSelection],
+    onward: Onward,
+) -> None:
     """Refuse the first chain of the run's dispatches returning to a target on it.
 
-    Each distinct target the entry dispatches is followed from the first
+    Each distinct selection the entry dispatches is followed from the first
     link naming it, in the order the entry's bundle wrote them.
     """
-    for first in hops:
-        loop = returning(onward, first, entries)
+    for selection, first in hops.items():
+        loop = returning(onward, selection, first, entries)
         if loop is None:
             continue
         entry = first.target.chain[0] if first.target.chain else first.name
@@ -307,17 +324,19 @@ def cycle(hops: Sequence[Hop], entries: Collection[str], onward: Onward) -> None
 
 
 def analysed(
-    hops: Sequence[Hop], entries: Collection[str], onward: Onward
+    hops: Mapping[BundleSelection, Hop],
+    entries: Collection[BundleSelection],
+    onward: Onward,
 ) -> list[Diagnostic]:
     """The depth warnings the dispatches the run's entry carries raise.
 
-    Each distinct target the entry dispatches is followed from the first
+    Each distinct selection the entry dispatches is followed from the first
     link naming it, and raises at most one warning: for the first chain
     from it reaching a hop past the limit.
     """
     found: list[Diagnostic] = []
-    for first in hops:
-        deep = deepest(onward, first, entries)
+    for selection, first in hops.items():
+        deep = deepest(onward, selection, first, entries)
         if deep is None:
             continue
         entry = first.target.chain[0] if first.target.chain else first.name
@@ -370,8 +389,8 @@ class Link:
 
     @property
     def served(self) -> Served:
-        """Where the link points, as its target and operator."""
-        return (self.target, self.parallel)
+        """Where the occurrence points, as its target, requested tags and operator."""
+        return (self.target, self.reference.tags, self.parallel)
 
 
 def link_text(children: Sequence[Token], at: int) -> str:
@@ -456,7 +475,7 @@ def region_of(tokens: Sequence[Token], part: Range) -> Token:
 
 
 class Placing:
-    """One bundle's groups rebuilt with the `In parallel` sub-sections its sets take.
+    """One bundle's groups rebuilt with the dispatch-set sub-sections its sets take.
 
     The grouped regions are those a group carries as its own, by the
     document and first line naming each. A dispatch a contribution
@@ -545,19 +564,24 @@ class Placing:
     ) -> None:
         """Say where one section's dispatched links point, emitting its set's section.
 
-        A `⇉` link, and the one `⫽` link of a set of one target, point at
-        their target's bundle file. A set of two or more targets points
-        at the sub-section emitted here, which takes its title from the
-        section holding the set.
+        A `⇉` link and every `⫽` link in a set of one effective selection
+        point at their target's bundle file. A set of two or more
+        selections points at the sub-section emitted here. Equivalent
+        requests share one member, retaining its first link's label.
         """
-        together = [link for link in pending.values() if link.parallel]
+        files = {
+            served: self.bundle_file(link.reference) for served, link in pending.items()
+        }
+        together: dict[str, Link] = {}
+        for served, link in pending.items():
+            if link.parallel:
+                together.setdefault(files[served], link)
         serving: dict[Served, int | str] = {
-            served: file_destination(self.bundle_file(link.reference))
-            for served, link in pending.items()
+            served: file_destination(file) for served, file in files.items()
         }
         if len(together) > 1:
             if depth > MAX_LEVEL:
-                first = together[0]
+                first = next(iter(together.values()))
                 raise Refused(
                     Diagnostic(
                         ERROR,
@@ -570,12 +594,12 @@ class Placing:
                         location=first.location,
                     )
                 )
-            listed = listing(
-                [(self.bundle_file(link.reference), link.text) for link in together]
-            )
+            listed = listing([(file, link.text) for file, link in together.items()])
             body: list[Instruction] = [Instruction(listed)]
             at = self.heading(PARALLEL, depth, body)
-            serving.update((link.served, at) for link in together)
+            serving.update(
+                (served, at) for served, link in pending.items() if link.parallel
+            )
         for key, served in links:
             self.placed.setdefault(key, {})[served] = serving[served]
 
@@ -672,7 +696,7 @@ def subsections(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[list[Group], Placed]:
-    """Every group with its `In parallel` sub-sections, and where each link points.
+    """Every group with its dispatch-set sub-sections, and where each link points.
 
     A group's sections are read in the order it emits them: a heading
     part closes the section above it, and the sub-section that section
