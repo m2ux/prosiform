@@ -8,10 +8,12 @@ Task head: `619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5`, based on W09 merged base 
 
 `revision-check.py --project <task-worktree> --revision 619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5 -- env -u VIRTUAL_ENV uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests/test_authoring.py src/tests/test_tags.py src/tests/test_source.py src/tests/test_selection.py src/tests/test_entry_presets.py src/tests/test_dispatch_variants.py src/tests/test_dispatch_publication.py src/tests/test_deferred_titles.py src/tests/test_deferred_presets.py evals/diagram-following/test_workflow.py evals/diagram-following/test_score.py -q` passed in its own detached checkout, exit 0: 954 tests. The checkout uses its own local `src` environment/build, not another worktree's build.
 
-- All 15 authoring tests pass, including executed README/invocation source-copy commands, parsed fixture templates, focused deferred/budget commands and complete module inventory.
+- All 15 [authoring tests](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/checks/tests/test_authoring.py) pass, including executed README/invocation source-copy commands, parsed fixture templates, focused deferred/budget commands and complete module inventory.
 - Shared tags/source/selection/entry tests observe normalization, defaults, occurrence locality, resources, substitution, grammar, paths, quoted guide examples and leading dashes.
 - Variant/publication/deferred tests observe equivalent and distinct dispatches, selected filenames, collisions, cycles/depth/budgets, title preservation and immediate/deferred parity.
-- All 508 deterministic workflow/scorer tests pass, including tagged deferrals and dispatch variants. No paid agent session runs.
+- All 508 deterministic [workflow](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/evals/diagram-following/test_workflow.py) and [scorer](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/evals/diagram-following/test_score.py) tests pass, including tagged deferrals and dispatch variants. No paid agent session runs.
+
+Feature observing sources are pinned with the tested revision: [normalization](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_tags.py), [source occurrences/resources](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_source.py), [selection identity/transport](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_selection.py), [entry/guide commands](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_entry_presets.py), [dispatch variants](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_dispatch_variants.py), [publication](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_dispatch_publication.py), [deferred titles](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_deferred_titles.py) and [deferred parity](https://github.com/m2ux/prosiform/blob/619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5/src/tests/test_deferred_presets.py).
 
 The human claim-to-implementation review is [audit.md](audit.md), not inferred from string-presence tests. AC22 draws on that recorded review and these executable observations.
 
@@ -32,7 +34,16 @@ Additional surfaces are the CLI help/guide, nine checked SVG examples and mainta
 
 ## Full Configured Check
 
-The final committed-head full check is in progress. Results are recorded before a passing pull-request Test Plan or merge is published.
+`PROSIFORM_BUILD='uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w10-all-documentation-is-accurate/src --frozen pf' make check` passed at final committed head `619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5`, exit 0. The checkout is clean.
+
+- 1,901 source tests passed.
+- 1,662 harness tests passed (12 additional documentation observations above W09's 1,650).
+- All 537 corpus fixtures passed; no awaiting fixture or failure.
+- Installed-wheel smoke passed, including tagged single-entry compilation outside the repository.
+- Lock, lint, formatting, strict typing, layout, tables, online links, vocabulary, invocation, conformance and independence passed. The link check resolved every reference in 398 documents, with no unreachable warning.
+- Conformance records 365 design clauses, 67 covered by no fixture, 16 clauses no run states, three nonbehavioral sections and three installation claims outside corpus observation; 0 declarations name nonexistent clauses and 0 declared/reported code disagreements. These pre-existing report observations are not represented as newly resolved by a documentation audit.
+
+This full check ran outside `sbx`, because wheel build/install and online links require network access.
 
 ## Review and Limitations
 
