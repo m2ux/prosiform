@@ -10,9 +10,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["article.md", "guide.md#run"]
+arguments = ["--entry", "article.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/article+guide__run.bundle.md"]
+bundles = ["expected/article.bundle.md"]
 diagnostics = []

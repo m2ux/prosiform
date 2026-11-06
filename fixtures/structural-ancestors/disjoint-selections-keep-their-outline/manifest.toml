@@ -9,9 +9,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md#alpha", "guide.md#detail"]
+arguments = ["--entry", "guide.md#alpha"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide__alpha+guide__detail.bundle.md"]
+bundles = ["expected/guide__alpha.bundle.md"]
 diagnostics = []

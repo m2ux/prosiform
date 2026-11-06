@@ -1,0 +1,18 @@
+description = "The comma-separated link title Checks,Draft selects both complete names in declaration order. Agreeing settings union, the document joins Reviews once and neither preset warns unused."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Presets — Selected presets union",
+  "Presets — A preset nothing selected warns",
+  "Grouping — Group membership",
+  "Grouping — Nested groups",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

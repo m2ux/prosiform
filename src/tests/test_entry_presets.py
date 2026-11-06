@@ -1,5 +1,6 @@
-"""Explicit entry grammar and occurrence selection through the installed command path."""
+"""Explicit entry grammar and occurrence selection through the command path."""
 
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -113,7 +114,7 @@ def test_both_consumers_call_the_shared_reader(
     written(tmp_path, "entry.md", DECLARED + '[Link](guide.md "checks,draft")\n')
     calls: list[tuple[str, str | None]] = []
 
-    def observe(consumer: str):
+    def observe(consumer: str) -> Callable[[str | None], frozenset[str]]:
         def reading(text: str | None) -> frozenset[str]:
             calls.append((consumer, text))
             return read(text)
@@ -171,3 +172,38 @@ def test_the_guide_specifies_resolution_and_shell_quoting() -> None:
         "Preserve the same tags when compiling a deferred link in a later run",
     ):
         assert rule in guide
+
+
+def test_leading_dash_values_attach_to_their_options(tmp_path: Path) -> None:
+    written(
+        tmp_path,
+        "-guide.md",
+        "---\nprosiform:\n  '-checks':\n    group: {reviews: 1}\n---\n"
+        "# Guide\n\nBody.\n",
+    )
+    run = invoke("--entry=-guide.md", "--presets=-checks", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "# Reviews\n\n## Guide\n\nBody." in run.bundle
+    assert list(run.bundles)[0].startswith("-guide--p-")
+    assert "pf --entry=-guide.md --presets=-checks" in cli.GUIDE
+
+
+@pytest.mark.parametrize("tagged_first", [False, True])
+def test_occurrences_union_explicit_group_pairs(
+    tmp_path: Path, tagged_first: bool
+) -> None:
+    links = ["[Plain](rules.md)", '[Checks](rules.md "checks")']
+    if tagged_first:
+        links.reverse()
+    written(tmp_path, "entry.md", DECLARED + "# Entry\n\n" + "\n\n".join(links))
+    written(
+        tmp_path,
+        "rules.md",
+        "---\nprosiform:\n  checks:\n    group: {reviews: 1}\n---\n"
+        "# Rules\n\nRules body.\n",
+    )
+    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "\n# Rules\n" not in run.bundle
+    assert "## Reviews\n\n### Rules\n\nRules body." in run.bundle
+    assert run.bundle.count("Rules body.") == 1

@@ -1,0 +1,14 @@
+description = "The single-entry command grammar refuses repeated entry options are invalid usage, returning E_INVALID_USAGE and publishing nothing."
+
+clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md", "--entry", "guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"

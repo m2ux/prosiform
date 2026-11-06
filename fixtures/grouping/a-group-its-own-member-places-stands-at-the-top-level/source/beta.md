@@ -7,4 +7,4 @@ prosiform:
 
 ## Announce
 
-Beta announces [the notice](notice.md).
+Beta announces [the notice](notice.md "Announce").

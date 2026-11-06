@@ -10,3 +10,5 @@ A heading naming itself with an entity.
 ## Run
 
 A heading naming itself with the characters it shows.
+
+[Input](café.md)

@@ -12,7 +12,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["artifacts/architecture-overview.md"]
+arguments = ["--entry", "artifacts/architecture-overview.md"]
 
 [expected]
 exit_status = 0

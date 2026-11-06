@@ -85,7 +85,7 @@ RUN_FOLDER = "guide.bundles"
 def write_fixture(
     directory: Path,
     *,
-    arguments: tuple[str, ...] = ("guide.md",),
+    arguments: tuple[str, ...] = ("--entry", "guide.md"),
     exit_status: int = 0,
     bundle: bytes | None = None,
     stdout_contains: tuple[str, ...] = (),
@@ -274,7 +274,8 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fixture = write_fixture(
-        tmp_path / "fixture", arguments=("guide.md#alpha", "other.md")
+        tmp_path / "fixture",
+        arguments=("--entry", "guide.md#alpha", "--presets", "checks,draft"),
     )
     record = tmp_path / "argv"
     configure(monkeypatch, recording(record))
@@ -282,8 +283,10 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     assert record.read_text(encoding="utf-8").splitlines() == [
         "-d",
         "json",
+        "--entry",
         "guide.md#alpha",
-        "other.md",
+        "--presets",
+        "checks,draft",
     ]
 
 
@@ -338,7 +341,9 @@ def test_a_run_writing_nothing_where_no_bundle_is_declared_holds(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A validation-only run declares no bundle, and writing none meets it."""
-    fixture = write_fixture(tmp_path / "fixture", arguments=("-c", "guide.md"))
+    fixture = write_fixture(
+        tmp_path / "fixture", arguments=("-c", "--entry", "guide.md")
+    )
     configure(monkeypatch, "/bin/true")
     result = run_fixture(fixture)
     assert result.passed, result.report()
@@ -348,7 +353,9 @@ def test_a_file_no_bundle_declares_names_the_expectation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """A run that writes when its manifest declares no bundle fails."""
-    fixture = write_fixture(tmp_path / "fixture", arguments=("-c", "guide.md"))
+    fixture = write_fixture(
+        tmp_path / "fixture", arguments=("-c", "--entry", "guide.md")
+    )
     configure(monkeypatch, publishing("../guide/bundle.md", "# Guide\n"))
     result = run_fixture(fixture)
     assert not result.passed
@@ -411,7 +418,9 @@ def test_a_bundle_is_matched_by_name_wherever_the_run_writes_it(
 ) -> None:
     """A run whose -o names a folder above its working directory writes there."""
     fixture = write_fixture(
-        tmp_path / "fixture", arguments=("-o", "..", "guide.md"), bundle=b"# Guide\n"
+        tmp_path / "fixture",
+        arguments=("-o", "..", "--entry", "guide.md"),
+        bundle=b"# Guide\n",
     )
     configure(monkeypatch, publishing(f"../{RUN_FOLDER}/{BUNDLE_NAME}", "# Guide\n"))
     result = run_fixture(fixture)
@@ -472,6 +481,7 @@ def test_a_fixture_naming_no_root_is_run_with_none(
     assert record.read_text(encoding="utf-8").splitlines() == [
         "-d",
         "json",
+        "--entry",
         "guide.md",
     ]
 
@@ -860,7 +870,7 @@ def test_the_run_receives_the_fault_the_manifest_names_through_its_environment(
     configure(monkeypatch, recording(record))
     run_fixture(fixture)
     written = record.read_text(encoding="utf-8").splitlines()
-    assert written[-3:] == ["-d", "json", "guide.md"]
+    assert written[-4:] == ["-d", "json", "--entry", "guide.md"]
 
 
 def test_a_run_meeting_no_fault_carries_no_variable(

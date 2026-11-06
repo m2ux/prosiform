@@ -7,6 +7,9 @@ Alpha body, which needs [the appendix](appendix.md).
 
 ### Detail
 
+[Input](guide.md#gamma)
+
+
 Detail body, which needs [the note](note.md).
 
 ## Beta

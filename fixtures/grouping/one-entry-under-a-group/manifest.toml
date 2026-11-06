@@ -14,9 +14,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["modes/plan-mode.md", "modes/review-mode.md"]
+arguments = ["--entry", "modes/plan-mode.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/modes_plan-mode+modes_review-mode.bundle.md"]
+bundles = ["expected/modes_plan-mode.bundle.md"]
 diagnostics = []

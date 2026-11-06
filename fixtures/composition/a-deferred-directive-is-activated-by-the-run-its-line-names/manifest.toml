@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["fetch.md#implementation"]
+arguments = ["--entry", "fetch.md#implementation"]
 
 [expected]
 exit_status = 0

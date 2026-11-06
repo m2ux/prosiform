@@ -6,7 +6,7 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Targets
 
-Follow [the rules](#rules).
+Follow [the rules](#rules "Targets").
 
 ## Targets
 

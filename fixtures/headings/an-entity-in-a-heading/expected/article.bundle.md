@@ -1,0 +1,21 @@
+# § Instructions
+
+Run `pf`, then follow the guidance it prints. Follow [Article](#article) next.
+
+# Article
+
+An opening paragraph, above the first heading.
+
+### Caf&eacute;
+
+A heading naming itself with an entity.
+
+### Run
+
+A heading naming itself with the characters it shows.
+
+[Input](#café-1)
+
+# Café
+
+A document whose path produces the slug the entity heading above already took.

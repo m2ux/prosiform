@@ -12,7 +12,7 @@ Alpha sends [the notice](#notice).
 
 ## Announce
 
-Alpha hands announcing to [the beta notes](#beta).
+Alpha hands announcing to [the beta notes](#beta "Announce").
 
 ## Messages
 
@@ -30,4 +30,4 @@ The notice every reader receives.
 
 ### Announce
 
-Beta announces [the notice](#notice).
+Beta announces [the notice](#notice "Announce").

@@ -1,15 +1,15 @@
 # Invocation
 
-Compile local Markdown entries and their dependencies into one validated bundle, and each target they dispatch into a bundle of its own.
+Compile one local Markdown entry and their dependencies into one validated bundle, and each target they dispatch into a bundle of its own.
 
 ```text
-pf [OPTIONS] REF [REF ...]
+pf [OPTIONS] --entry REF [--presets PRESETS]
 pf
 ```
 
 ## Guide
 
-`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <document>[#<section>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
+`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> --entry <document>[#<section>] [--presets <presets>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
 
 ## Options
 
@@ -18,7 +18,8 @@ Flags are case-sensitive.
 
 | Option | Effect |
 | --- | --- |
-| `REF` | document or document#fragment; paths from cwd |
+| `--entry REF` | one document or document#fragment; paths from cwd |
+| `--presets PRESETS` | comma-separated preset names for the entry; default: no named presets |
 | `-o DIR` | folder the run's own folder of bundles is written into, made if absent, swapped in whole; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
 | `-d {text,json}` | stderr diagnostics; default text |
@@ -27,7 +28,7 @@ Flags are case-sensitive.
 | `-v, --version` | tool version and profile identifier |
 | `-h, --help` | usage, defaults and exit statuses |
 
-A command line these tables do not admit, an undeclared option or an invalid option value among them, is invalid usage and exits `2`.
+Compilation requires exactly one `--entry` and accepts at most one `--presets`. Positional entries, repeated entry or preset options, `--presets` without an entry, and a complete Markdown-link expression as the entry are invalid usage and exit `2`. Informational invocations require no entry.
 
 ### Budgets
 
@@ -46,20 +47,31 @@ Each budget fails the run rather than truncating a bundle, and holds per bundle.
 
 ## Examples
 
-Run from the repository root, over the source tree of the [corpus fixture](fixtures/cli/several-entries-joined-into-one-name/manifest.toml) that records the joined run's bundle.
+An agent encountering `[Plan Report](guide.md#plan-report "checks,draft")` supplies:
+
+```text
+pf --entry guide.md#plan-report --presets checks,draft
+pf --entry modes/review.md#review --presets 'checks, final draft'
+pf --entry guide.md#plan-report
+pf --entry=-guide.md --presets=-checks
+pf -c --entry guide.md#plan-report --presets checks,draft
+```
+
+Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags.
+
+The following commands use the checked source tree of a [preset fixture](fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml):
 
 ```bash
-cd fixtures/cli/several-entries-joined-into-one-name/source
-pf notes/rules.md
-pf 'guide.md#run'
-pf -o build notes/rules.md
-pf notes/rules.md 'guide.md#run'
-pf -c notes/rules.md
+cd fixtures/inclusion/a-link-title-selects-its-preset/source
+pf --entry guide.md
+pf -c --entry guide.md
 ```
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter to be compiled. Every key of the mapping is a preset name holding a mapping of settings, and a key holding anything else is refused. The `default` preset is in force wherever the document is compiled. A preset whose name appears as a whole word, in any case, in the title of the section holding the link that reaches the document is in force above it; a command-line entry matches the title of the section it names, or the document's own title. The presets in force decide the one group the document joins and its depth (`group`), a selected preset's pair holding over `default`'s; [Sources](docs/sources.md) states what a `subst` entry holds. Selected presets union their settings: two that one title selects stating different `group` pairs, and two selected for one document, by one title or by several references reaching it, mapping one `subst` reference to different alternatives, are invalid usage naming both presets, as [Selection](docs/selection.md#presets-in-force) states. They govern the document's own content alone: a file's `group` pair places its own sections wherever a parent bundles it, and the parent's pair places the parent's sections where a further link bundles the parent in turn. `prosiform: {}` declares with no preset. A file whose presets in force name no group keeps a group of its own. A `root` key is refused. A preset no reference of the run selected warns with `W_PRESET_UNUSED`, and the run publishes.
+A document declares `prosiform` in leading YAML frontmatter. Every key is a preset name holding a mapping of settings. `default` applies wherever the document is compiled. A link's title supplies comma-separated complete preset names; `--presets` supplies the entry's names through the same grammar. Split on literal commas, trim surrounding Unicode whitespace, compare without case and ignore empty, repeated and unknown names. Headings and visible link labels select no presets.
+
+Matching presets layer over `default` in declaration order and govern the destination document's own content. A selected `group` pair holds over `default`'s; [Sources](docs/sources.md) states what `subst` holds. Selected presets union their settings. Different group pairs in one selection, or conflicting alternatives for one document's substitution key, fail with `E_INVALID_USAGE`, naming both presets. [Selection](docs/selection.md#presets-in-force) gives the full rules. `prosiform: {}` declares with no preset; a document with no group pair keeps its own file group. A preset no compiled reference selected warns with `W_PRESET_UNUSED` and the run publishes.
 
 ```yaml
 ---
@@ -72,7 +84,7 @@ prosiform:
 ---
 ```
 
-A link under a section titled `Release checks` puts `default` and `checks` in force: the `checks` pair holds over `default`'s, so the document joins `checks` at depth 1. Any other link puts `default` alone in force, joining the document to `rules` at depth 2.
+A link such as `[Review](rules.md "checks")` selects `checks` above `default`: the document joins `checks` at depth 1. A link carrying no matching tag applies `default` alone, joining `rules` at depth 2.
 
 A link places a document under one group. Two links selecting different pairs place it in each of their groups, and it is emitted under each. Contributing files declaring the same group must agree on depth.
 

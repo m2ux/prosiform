@@ -3,13 +3,13 @@ description = "An immediate directive composes its target in this run, under the
 clauses = [
   "Section composition — Presets and subst",
   "Section composition — Deferred composition",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Adversarial acceptance fixtures — Composition",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

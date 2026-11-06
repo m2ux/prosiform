@@ -5,6 +5,9 @@ prosiform: {}
 
 ## Run
 
+[Input](other.md)
+
+
 Carry the procedure out.
 
 ~~~markdown

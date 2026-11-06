@@ -334,6 +334,10 @@ Compiling a link:
     pf --entry modes/review.md#review --presets 'checks, final draft'
     pf --entry guide.md#plan-report
 
+  Attach a value beginning with - to its option with =:
+
+    pf --entry=-guide.md --presets=-checks
+
   Tags select the target's own presets above default. Unknown tags
   select nothing. Headings and visible link text select no presets.
   Preserve the same tags when compiling a deferred link in a later run.
@@ -700,7 +704,7 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
 def agreed(
     conversion: Conversion, tags: frozenset[str], reference: Reference, document: str
 ) -> None:
-    """Hold the presets one tag selection selects to agreeing about every setting they share.
+    """Hold the selected presets to agreeing about every shared setting.
 
     Selected presets union, so two stating one `group` pair, or mapping
     one `subst` key to one alternative, state one setting. Two stating
@@ -745,8 +749,7 @@ def agreed(
                     f"prosiform.{preset.name}.{SUBST}, both {selected}, map "
                     f"{pair.original!r} to {first_pair.alternative!r} and "
                     f"{pair.alternative!r}",
-                    "map the reference to one alternative in the presets one title "
-                    "selects",
+                    "map the reference to one alternative in the selected presets",
                     reference,
                     first_pair.location,
                     (
@@ -1910,9 +1913,8 @@ def withheld(
     The chain is the one a compiled reference in the same place would
     carry, because a refusal reports the route the run followed to the
     link whichever half of the rule the link falls under. Each target
-    holds the title of the section the link is written in, and a
-    deferred directive's states that it composes, so the run activating
-    it is held to the presets that title selects.
+    retains the occurrence's tags, and a deferred directive states
+    that it composes, so its later entry compilation uses that selection.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2340,8 +2342,8 @@ def joined(
     govern its content and no other document's. The presets one
     reference selects are held to agreeing before their pair is read,
     so one reference places the document under one pair at most. A
-    document carries the pair each reference reaching it put in force,
-    each once.
+    document carries every explicit pair its references put in force,
+    each once. It keeps an individual file group where that union is empty.
     """
     joins: dict[str, tuple[Membership, ...]] = {}
     for path, references in selected.items():
@@ -3483,31 +3485,11 @@ def unrestored(folder: Path, aside: Path, refused: OSError) -> Failure:
     )
 
 
-def selections(requested: Sequence[Reference]) -> tuple[Target, ...]:
-    """Each distinct selection the command line names, in first-named order."""
-    return tuple(dict.fromkeys((one.path, one.fragment) for one in requested))
-
-
-def run_name(selected: Sequence[Target]) -> str:
-    """The name the selections give a run: each selection's name, joined.
-
-    A selection is named by its working-directory path, its Markdown
-    extension removed and each separator written as an underscore, and a
-    section adds two underscores and its fragment. The names are joined
-    with a plus sign in the order given.
-    """
-    names = []
-    for path, fragment in selected:
-        name = str(Path(path).with_suffix("")).replace(os.sep, "_")
-        if fragment is not None:
-            name += f"__{fragment}"
-        names.append(name)
-    return "+".join(names)
-
-
 def selection_name(selection: BundleSelection) -> str:
     """One effective selection's path, fragment and canonical preset qualifier."""
-    name = run_name(((selection.path, selection.fragment),))
+    name = str(Path(selection.path).with_suffix("")).replace(os.sep, "_")
+    if selection.fragment is not None:
+        name += "__" + selection.fragment
     if selection.presets:
         encoded = json.dumps(
             sorted(selection.presets), ensure_ascii=False, separators=(",", ":")
@@ -3549,7 +3531,6 @@ def compiled(
     root: Path,
     requested: Sequence[Reference],
     options: argparse.Namespace,
-    folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
@@ -3634,7 +3615,8 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
             code=PRESET_UNUSED,
             source=path,
             remedy=(
-                "name the preset in the reaching link title or --presets, or drop the preset"
+                "name the preset in the reaching link title or --presets, "
+                "or drop the preset"
             ),
         )
         for path in sorted(left)
@@ -3679,7 +3661,6 @@ def dispatched_set(
     entry: Compiled,
     single: Collection[str],
     options: argparse.Namespace,
-    folder: Path,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> dict[str, Compiled]:
     """Every bundle the entry's dispatches reach, transitively, by target.
@@ -3695,7 +3676,7 @@ def dispatched_set(
         if hop.name in built or hop.name in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, folder, substitution)
+        one = compiled(root, [target], options, substitution)
         built[hop.name] = one
         pending.extend(one.hops)
     return built
@@ -3770,12 +3751,12 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     root = Path.cwd().resolve()
     requested = entered(requested)
 
-    selected = selections(requested)
+    selected = ((requested[0].path, requested[0].fragment),)
     output = Path(options.output).resolve()
-    first = compiled(root, requested, options, output, mapping)
+    first = compiled(root, requested, options, mapping)
     folder = output / (first.name.removesuffix(BUNDLE_SUFFIX) + RUN_FOLDER_SUFFIX)
-    single = {requested[0].chain[0]} if len(selected) == 1 else set()
-    built = dispatched_set(root, first, single, options, output, mapping)
+    single = {requested[0].chain[0]}
+    built = dispatched_set(root, first, single, options, mapping)
 
     def onward(target: Reference) -> Sequence[Hop]:
         name = identity(target)
@@ -3789,7 +3770,8 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     for held in sources(root, captured):
         if held == folder or folder in held.parents:
             raise usage_failure(
-                f"the output folder {str(folder)!r} holds the input source {str(held)!r}"
+                f"the output folder {str(folder)!r} holds the input source "
+                f"{str(held)!r}"
             )
     if fault == SOURCE_CHANGED_FAULT:
         rewrite_sources(root, captured)

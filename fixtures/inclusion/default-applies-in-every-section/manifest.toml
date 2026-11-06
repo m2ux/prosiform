@@ -1,15 +1,15 @@
-description = "A linked document's default stays in force beneath the preset a section title selects: the section Checks puts the Checks preset of rules.md in force above its default, and Checks states no group, so rules.md joins Modes, the group default pairs it with. The Checks pair is in force for the links rules.md writes, none of which names notes.md, so it warns unused."
+description = "The default preset applies beneath the title-selected Checks preset. Checks states no group, so default places the document under Modes; its unused substitution pair warns."
 
 clauses = [
   "Presets — default always applies",
-  "Presets — Selection by keyword",
+  "Presets — Selection by tags",
   "Grouping — Group membership",
   "Grouping — Nested groups",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["--entry", "guide.md"]
 
 [expected]
 exit_status = 0

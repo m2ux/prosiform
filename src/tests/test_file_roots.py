@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_cli import invoke, opening, written
+from test_cli import invoke, linked, opening, written
 
 from prosiform import cli
 from prosiform.access import read_source
@@ -20,7 +20,7 @@ def test_entries_and_linked_files_default_to_invocation_directory(
     written(tmp_path, "entry/a.md", declared("# A\n\n[B](../linked/b.md)\n"))
     written(tmp_path, "linked/b.md", declared("# B\n\n[C](../c.md)\n"))
     written(tmp_path, "c.md", declared("# C\n\nShared cwd.\n\n[Above](../c.md)\n"))
-    run = invoke("entry/a.md", cwd=tmp_path)
+    run = invoke("--entry", "entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Shared cwd." in run.bundle
     assert "[Above](../c.md)" in run.bundle
@@ -36,7 +36,7 @@ def test_links_resolve_from_their_own_file_and_a_fragment_names_its_document(
     )
     written(tmp_path, "library/b.md", declared("# B\n\n[C](../other/c.md)\n"))
     written(tmp_path, "other/c.md", declared("# C\n\nSeparate library.\n"))
-    run = invoke("entries/a.md", cwd=tmp_path)
+    run = invoke("--entry", "entries/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Separate library." in run.bundle
     assert "[Self](#a)" in run.bundle
@@ -45,7 +45,7 @@ def test_links_resolve_from_their_own_file_and_a_fragment_names_its_document(
 def test_a_parent_section_entry_bootstraps(tmp_path: Path) -> None:
     written(tmp_path, "a.md", declared("# A\n\n## Part\n\nParent content.\n"))
     (tmp_path / "caller").mkdir()
-    run = invoke("../a.md#part", cwd=tmp_path / "caller")
+    run = invoke("--entry", "../a.md#part", cwd=tmp_path / "caller")
     assert run.status == 0
     assert "Parent content." in run.bundle
 
@@ -57,8 +57,8 @@ def test_same_named_targets_in_distinct_directories_keep_a_stable_order(
     written(tmp_path, "one/x.md", declared("# X\n\nFirst target.\n"))
     written(tmp_path, "two/b.md", declared("# B\n\n[Target](x.md)\n"))
     written(tmp_path, "two/x.md", declared("# X\n\nSecond target.\n"))
-    forward = invoke("one/a.md", "two/b.md", cwd=tmp_path)
-    reverse = invoke("two/b.md", "one/a.md", cwd=tmp_path)
+    forward = invoke("--entry", linked(tmp_path, "one/a.md", "two/b.md"), cwd=tmp_path)
+    reverse = invoke("--entry", linked(tmp_path, "two/b.md", "one/a.md"), cwd=tmp_path)
     assert forward.status == reverse.status == 0
     # The entry documents lead in the order they are named, and each
     # target follows in the order the bundle first links to it.
@@ -78,10 +78,13 @@ def test_files_in_distinct_directories_are_headed_by_working_directory_paths(
 ) -> None:
     for name in ("one", "two"):
         written(tmp_path, f"{name}/same.md", declared("Body.\n"))
-    run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
+    run = invoke(
+        "--entry", linked(tmp_path, "one/same.md", "two/same.md"), cwd=tmp_path
+    )
     assert run.status == 0
     assert run.bundle == (
-        f"{opening('One/Same')}# One/Same\n\nBody.\n\n# Two/Same\n\nBody.\n"
+        f"{opening('One/Same')}# One/Same\n\nBody.\n\n[Input](#twosame)\n\n"
+        "# Two/Same\n\nBody.\n"
     )
 
 
@@ -93,7 +96,7 @@ def test_a_shared_target_cycle_is_captured_once(tmp_path: Path) -> None:
         "shared/c.md",
         declared("# C\n\n[A](../one/a.md) [B](../two/b.md)\n\nOnce.\n"),
     )
-    run = invoke("one/a.md", "two/b.md", cwd=tmp_path)
+    run = invoke("--entry", linked(tmp_path, "one/a.md", "two/b.md"), cwd=tmp_path)
     assert run.status == 0
     assert run.bundle.count("Once.") == 1
 
@@ -105,7 +108,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
         declared("# A\n\n[¬ Later](../library/b%20%25%23%3F.md)\n"),
     )
     written(tmp_path, "library/b %#?.md", declared("# B\n\nHidden.\n"))
-    run = invoke("entry/a.md", cwd=tmp_path)
+    run = invoke("--entry", "entry/a.md", cwd=tmp_path)
     assert run.status == 0
     assert "[Later](library/b%20%25%23%3F.md)" in run.bundle
     assert "Hidden." not in run.bundle
@@ -118,7 +121,7 @@ def test_bootstrap_checks_components_before_normalization(
     written(tmp_path, "a.md", declared("# A\n"))
     (tmp_path / "real").mkdir()
     (tmp_path / "alias").symlink_to("real", target_is_directory=True)
-    run = invoke("-d", "json", entry, cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", entry, cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
 
@@ -136,7 +139,7 @@ def test_a_replaced_source_directory_prevents_publication(
         return result
 
     monkeypatch.setattr(cli, "compose", replace_directory)
-    run = invoke("-d", "json", "library/a.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", "library/a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_CHANGED
@@ -155,7 +158,9 @@ def test_raw_limit_stops_before_complete_read(
         return data
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("--budget", "file-bytes=30", "-d", "json", "a.md", cwd=tmp_path)
+    run = invoke(
+        "--budget", "file-bytes=30", "-d", "json", "--entry", "a.md", cwd=tmp_path
+    )
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert sizes == [31]
@@ -171,24 +176,26 @@ def test_members_in_distinct_directories_are_named_by_their_paths(
             "---\nprosiform: {default: {group: {rules: 2}}}\n---\n"
             "# Same\n\n## Run\n\nContent.\n",
         )
-    run = invoke("one/same.md", "two/same.md", cwd=tmp_path)
+    run = invoke(
+        "--entry", linked(tmp_path, "one/same.md", "two/same.md"), cwd=tmp_path
+    )
     assert run.status == 0
     assert "### One/Same\n" in run.bundle and "Two/Same\n" in run.bundle
 
 
-@pytest.mark.parametrize("linked", [False, True])
+@pytest.mark.parametrize("through_link", [False, True])
 def test_a_cached_target_still_verifies_each_access_route(
-    tmp_path: Path, linked: bool
+    tmp_path: Path, through_link: bool
 ) -> None:
     written(tmp_path, "b.md", declared("# B\n"))
     (tmp_path / "real").mkdir()
     (tmp_path / "alias").symlink_to("real", target_is_directory=True)
-    if linked:
+    if through_link:
         written(tmp_path, "a.md", declared("# A\n\n[B](b.md) [Alias](alias/../b.md)\n"))
         entries = ["b.md", "a.md"]
     else:
         entries = ["b.md", "alias/../b.md"]
-    run = invoke("-d", "json", *entries, cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", linked(tmp_path, *entries), cwd=tmp_path)
     assert run.status == 1
     assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_SYMLINK
@@ -201,7 +208,7 @@ def test_a_declaring_target_above_the_writing_directory_is_compiled(
         tmp_path, "skill/modes/review.md", declared("# Review\n\n[R](../rules.md)\n")
     )
     written(tmp_path, "skill/rules.md", declared("# Rules\n\nEvery rule.\n"))
-    run = invoke("modes/review.md", cwd=tmp_path / "skill")
+    run = invoke("--entry", "modes/review.md", cwd=tmp_path / "skill")
     assert run.status == 0
     assert "Every rule." in run.bundle
     assert "[R](#rules)" in run.bundle
@@ -221,7 +228,7 @@ def test_a_replaced_directory_a_link_resolved_through_prevents_publication(
         return result
 
     monkeypatch.setattr(cli, "compose", replace_directory)
-    run = invoke("-d", "json", "modes/review.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", "modes/review.md", cwd=tmp_path)
     assert run.status == 1
     assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == cli.SOURCE_CHANGED
@@ -230,7 +237,7 @@ def test_a_replaced_directory_a_link_resolved_through_prevents_publication(
 def test_a_path_no_grammar_admits_is_refused_against_the_working_directory(
     tmp_path: Path,
 ) -> None:
-    run = invoke("-d", "json", "/outside.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", "/outside.md", cwd=tmp_path)
     assert run.status == 1
     refusal = run.diagnostics()[0]
     assert refusal["code"] == cli.SOURCE_OUTSIDE_ROOT

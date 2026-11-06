@@ -25,3 +25,5 @@ Write the first pass.
 ### Review
 
 Read the draft back against the goal.
+
+[Input](review-mode.md)

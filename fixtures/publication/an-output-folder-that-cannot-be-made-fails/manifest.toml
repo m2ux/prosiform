@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-o", "blocked/under", "guide.md"]
+arguments = ["-o", "blocked/under", "--entry", "guide.md"]
 
 [expected]
 exit_status = 3

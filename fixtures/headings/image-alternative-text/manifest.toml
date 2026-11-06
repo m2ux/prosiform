@@ -8,11 +8,11 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["article.md", "the--overview.md"]
+arguments = ["--entry", "article.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/article+the--overview.bundle.md"]
+bundles = ["expected/article.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"

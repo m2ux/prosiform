@@ -8,3 +8,5 @@ prosiform:
 ### Draft
 
 Name the harness.
+
+[Input](common.md)

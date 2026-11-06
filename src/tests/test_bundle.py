@@ -568,7 +568,9 @@ def compiled(
     (root / "out").mkdir()
     errors = StringIO()
     with chdir(root):
-        status = main(["-d", "json", "-o", "out", *entries], StringIO(), errors)
+        status = main(
+            ["-d", "json", "-o", "out", "--entry", *entries], StringIO(), errors
+        )
     folders = list((root / "out").iterdir())
     bundles = {
         one.name: one.read_text() for folder in folders for one in folder.iterdir()

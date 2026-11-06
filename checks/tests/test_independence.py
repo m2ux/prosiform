@@ -85,7 +85,7 @@ def manifest(description: str, clause: str = "Block boundaries") -> dict[str, An
     return {
         "description": description,
         "clauses": [clause],
-        "invocation": {"cwd": "source", "arguments": ["guide.md"]},
+        "invocation": {"cwd": "source", "arguments": ["--entry", "guide.md"]},
         "expected": {
             "exit_status": 0,
             "stdout": "expected/stdout.md",

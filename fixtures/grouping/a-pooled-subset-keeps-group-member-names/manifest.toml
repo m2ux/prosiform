@@ -11,9 +11,9 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["g/a/notes.md", "g/b/notes.md", "g/c/other.md"]
+arguments = ["--entry", "g/a/notes.md"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/g_a_notes+g_b_notes+g_c_other.bundle.md"]
+bundles = ["expected/g_a_notes.bundle.md"]
 diagnostics = []

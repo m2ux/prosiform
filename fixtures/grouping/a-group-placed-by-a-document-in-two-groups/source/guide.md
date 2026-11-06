@@ -5,8 +5,8 @@ prosiform: {}
 
 ## Checks
 
-Review against [the rules](rules.md).
+Review against [the rules](rules.md "Checks").
 
 ## Draft
 
-Draft against [the rules](rules.md).
+Draft against [the rules](rules.md "Draft").

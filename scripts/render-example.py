@@ -159,6 +159,7 @@ def overview_panel(
         rows.append(txt(x + 28, at, metadata, 21, MUTED))
         at += 58
     for raw in source.text.splitlines():
+        raw = raw.replace("`", "")
         if not raw:
             at += 18
             continue
@@ -189,7 +190,6 @@ def overview_panel(
             labels.append((start, len(shown), match[2]))
             end = match.end()
         shown += raw[end:]
-        shown = shown.replace("`", "")
         wrapped = []
         offset = 0
         for line in textwrap.wrap(
@@ -329,7 +329,7 @@ def draw_overview(root: Path, sources: list[str], bundle: str) -> str:
     blocks.extend(
         [
             f'<path d="M32 {footer - 12} H1768" stroke="{BORDER}" stroke-width="2"/>',
-            txt(32, footer + 34, "$ pf SKILL.md", 28, LINK),
+            txt(32, footer + 34, "$ pf --entry SKILL.md", 28, LINK),
             txt(
                 530,
                 footer + 34,
@@ -411,7 +411,7 @@ def render(name: str, case: dict, build: list[str], output: Path) -> int:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(body)
         result = subprocess.run(
-            [*build, case["entry"]], cwd=work, capture_output=True, text=True
+            [*build, "--entry", case["entry"]], cwd=work, capture_output=True, text=True
         )
         bundles = sorted(
             path.relative_to(work).as_posix() for path in work.rglob("*.bundle.md")

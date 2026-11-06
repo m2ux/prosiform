@@ -17,4 +17,7 @@ The conventions this document keeps.
 
 ###### The Sixth
 
+[Input](beta.md#standards)
+
+
 The note the sixth level carries.

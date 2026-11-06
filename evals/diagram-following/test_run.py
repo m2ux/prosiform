@@ -1747,7 +1747,7 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
         "---\nprosiform: {}\n---\n# Plan\n\n## Steps\n\nCount the files.\n"
     )
     compiled = subprocess.run(
-        [pf, "guide.md", "-o", str(tmp_path / "out")],
+        [pf, "--entry", "guide.md", "-o", str(tmp_path / "out")],
         cwd=workspace,
         capture_output=True,
         text=True,

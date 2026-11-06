@@ -7,4 +7,4 @@ Write `actions/harden.txt` containing `hardened`.
 
 ## Security Review
 
-The [Audit](audit.md) state reviews the hardened change.
+The [Audit](audit.md "security,review") state reviews the hardened change.

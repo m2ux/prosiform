@@ -14,7 +14,7 @@ Three files show what a run does. `SKILL.md` links a procedure; the procedure li
 
 ```mermaid
 flowchart TD
-  Run["pf modes/plan-mode.md"] --> Folder["modes_plan-mode.bundles/"]
+  Run["pf --entry modes/plan-mode.md"] --> Folder["modes_plan-mode.bundles/"]
   Folder --> Entry["modes_plan-mode.bundle.md"]
   Folder --> Disp["modes_sync-mode.bundle.md"]
 ```
@@ -25,21 +25,21 @@ flowchart TD
 
 A selection's name is its path relative to the working directory, without the Markdown suffix, with each separator written as `_`. A section adds `__` and the fragment.
 
-A run of several selections joins their names with `+`, in the order the command line first names each; equivalent references count once. The joined name names the run's folder with `.bundles` appended, and the entry's bundle with `.bundle.md` appended.
+A selection includes the effective named presets its destination declares. A nonempty set appends `--p-` and the lowercase SHA-256 digest of its canonical serialization: a UTF-8 JSON array of distinct matched names, preserving declaration spelling, sorted by Unicode code point, with no whitespace and without ASCII escaping. Unknown names, tag order, case and repetition do not change that effective set. An empty set adds no qualifier.
+
+The entry name with `.bundles` appended names the run folder; with `.bundle.md` appended it names the entry bundle. Each dispatched selection uses its own name inside that same folder.
 
 The example is a real run of a small skill: one mode that dispatches one protocol. Each panel's header is the file's path, so the bundle panels show the folder each one was written into.
 
 ![modes/review.md, rules.md and protocols/publish.md on the left. On the right, two panels titled modes_review.bundles/modes_review.bundle.md and modes_review.bundles/protocols_publish.bundle.md.](images/dispatch.svg)
 
-*The entry names the folder. The dispatched target sits beside it under its own selection's name, with no `+` in it.*
+*The entry names the folder. The dispatched target sits beside it under its own selection's name, with its own preset qualifier where selected.*
 
 Each dispatched target's bundle sits in the same folder under its own selection's name.
 
 Directories and group names never rename an output. Parent segments above the working directory are kept as filename text, never joined into the output path.
 
 File and directory names use hyphens rather than underscores. A path separator is written as `_` in that derived name, and an underscore in the source path is written as `_` there too, so a hyphen keeps a directory boundary visible in the filename. A source path that contains an underscore remains valid and compiles.
-
-Two entries whose paths derive one name, `a/b.md` and `a_b.md` among them, join into one name rather than colliding: the run publishes one folder, `a_b+a_b.bundles`, holding one bundle.
 
 Two bundles of one run that derive one name are refused with `E_PUBLICATION_FAILED`, naming both selections, before any bundle is written: an entry `a/b.md` dispatching `a_b.md` is one such run. So is a run folder or bundle name longer than the output folder's filesystem allows, naming the selection it derives from.
 

@@ -1,0 +1,14 @@
+description = "The single-entry command grammar refuses a markdown link is no entry destination, returning E_INVALID_USAGE and publishing nothing."
+
+clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "[Guide](guide.md \"checks\")"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"

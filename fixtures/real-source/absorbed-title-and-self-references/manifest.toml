@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["artifacts/repository-labels.md"]
+arguments = ["--entry", "artifacts/repository-labels.md"]
 
 [expected]
 exit_status = 0

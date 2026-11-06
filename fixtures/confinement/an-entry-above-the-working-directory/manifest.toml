@@ -4,7 +4,7 @@ clauses = ["Reference normalization and path identity", "No-symlink source polic
 
 [invocation]
 cwd = "source"
-arguments = ["../outside.md"]
+arguments = ["--entry", "../outside.md"]
 
 [expected]
 exit_status = 0

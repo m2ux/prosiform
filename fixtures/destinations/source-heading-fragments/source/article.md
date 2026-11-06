@@ -24,3 +24,5 @@ The first of two headings carrying one text.
 ## Notes
 
 The second, which the renderer numbers apart.
+
+[Input](café-münster.md) [Input](notes.md) [Input](the-code-span-and-bold-text.md) [Input](whats-new-v10.md)

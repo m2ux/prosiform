@@ -1,0 +1,18 @@
+description = "A deferred directive preserves its link-title selection for a later --entry and --presets command. Different scope and target headings select nothing and leave this handoff valid."
+
+clauses = [
+  "Section composition — Deferred composition",
+  "Section composition — Presets and subst",
+  "Presets — Selection by tags",
+  "Presets — A command-line entry reads the file it names",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--entry", "guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

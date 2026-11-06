@@ -98,7 +98,7 @@ def test_metadata_is_not_a_markdown_dependency(tmp_path: Path) -> None:
         '---\nprosiform: {}\ndescription: "# Hidden [!missing](missing.md)"\n'
         'metadata: {owner: "[!missing](missing.md)"}\n---\n# A\n\nBody.\n'
     )
-    run = invoke("a.md", cwd=tmp_path)
+    run = invoke("--entry", "a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Hidden" not in run.bundle
     assert "missing" not in run.bundle
@@ -114,7 +114,9 @@ def test_metadata_error_preserves_output_and_coordinates(
     )
     output = tmp_path / "a.bundle.md"
     output.write_text("existing\n")
-    run = invoke("-d", diagnostics, "-o", str(tmp_path), "a.md", cwd=tmp_path)
+    run = invoke(
+        "-d", diagnostics, "-o", str(tmp_path), "--entry", "a.md", cwd=tmp_path
+    )
     assert run.status == 1
     assert run.bundle == ""
     assert output.read_text() == "existing\n"
@@ -139,7 +141,7 @@ def test_raw_byte_budget_precedes_yaml_and_encoding(
     tmp_path: Path, name: str, raw: bytes
 ) -> None:
     (tmp_path / "a.md").write_bytes(raw)
-    run = invoke("-d", "json", "--budget", f"{name}=3", "a.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--budget", f"{name}=3", "--entry", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert name in run.diagnostics()[0]["message"]
@@ -147,7 +149,7 @@ def test_raw_byte_budget_precedes_yaml_and_encoding(
 
 def test_yaml_collection_depth_is_bounded(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text("---\na: {b: {c: value}}\n---\n# A\n")
-    run = invoke("-d", "json", "--budget", "nesting=2", "a.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--budget", "nesting=2", "--entry", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert run.diagnostics()[0]["location"]["line"] == 2
@@ -170,7 +172,7 @@ def test_deferred_source_is_captured_once_and_contributes_nothing(
         return original(root, name, **kwargs)
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("--budget", "files=2", "a.md", cwd=tmp_path)
+    run = invoke("--budget", "files=2", "--entry", "a.md", cwd=tmp_path)
     assert run.status == 0
     assert "Hidden." not in run.bundle
     # One discovery read and one publication recheck for each captured source.
@@ -186,7 +188,9 @@ def test_deferred_source_counts_towards_raw_budgets(tmp_path: Path, name: str) -
         "---\nprosiform: {}\nname: " + "x" * 100 + "\n---\n# B\n"
     )
     bound = "1" if name == "files" else str(len(a.encode()) + 1)
-    run = invoke("-d", "json", "--budget", f"{name}={bound}", "a.md", cwd=tmp_path)
+    run = invoke(
+        "-d", "json", "--budget", f"{name}={bound}", "--entry", "a.md", cwd=tmp_path
+    )
     assert run.status == 1
     assert run.diagnostics()[0]["code"] == "E_RESOURCE_LIMIT"
     assert name in run.diagnostics()[0]["message"]
@@ -195,7 +199,7 @@ def test_deferred_source_counts_towards_raw_budgets(tmp_path: Path, name: str) -
 def test_deferred_metadata_failure_is_an_input_failure(tmp_path: Path) -> None:
     (tmp_path / "a.md").write_text(DECLARED + "# A\n\n[¬ B](b.md)\n")
     (tmp_path / "b.md").write_text("---\na: [\n---\n# B\n")
-    run = invoke("-d", "json", "a.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.bundle == ""
     assert run.diagnostics()[0]["code"] == "E_INVALID_FRONTMATTER"
@@ -218,7 +222,7 @@ def test_deferred_metadata_change_is_rechecked_with_its_chain(
         return read_source(root, name, **kwargs)
 
     monkeypatch.setattr(cli, "read_source", read)
-    run = invoke("-d", "json", "a.md", cwd=tmp_path)
+    run = invoke("-d", "json", "--entry", "a.md", cwd=tmp_path)
     assert run.status == 1
     assert run.bundle == ""
     diagnostic = run.diagnostics()[0]
