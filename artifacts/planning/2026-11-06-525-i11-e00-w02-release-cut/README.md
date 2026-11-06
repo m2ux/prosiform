@@ -18,6 +18,7 @@ The annotated `contract/v0.17.0` and `python/v0.17.0` tags name that commit, and
 | [Pull request work item](w04.md) | The release pull request into `main` |
 | [Validation](checks.md) | `make check` and `uv lock --check` at the committed head |
 | [Pull request body](pr-body.md) | The body the release pull request carries |
+| [Publication readback](readback.md) | The branch, tag and pull request identities, and the check conclusions |
 
 ## Links
 
