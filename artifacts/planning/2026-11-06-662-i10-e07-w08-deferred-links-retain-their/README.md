@@ -13,6 +13,7 @@ This unit is one step in the epic's continuous delivery chain. Its confirmed mer
 | Artifact | What it holds |
 | --- | --- |
 | [w08.md](w08.md) | Component plan and required checks |
+| [validation.md](validation.md) | Tested revision, command parity, corpus, repository checks and delivery evidence |
 | [todos.md](todos.md) | Unit delivery checklist |
 | [start-evidence.json](start-evidence.json) | Published record and verified dispatch start |
 | [reservation.json](reservation.json) | Live task-row hold readback |
