@@ -65,6 +65,23 @@ AC1–AC6 all ticked
 
 The rows stay undelivered, and the epic stays open, until the pull request merges: `sync.py` reports `undelivered W02, W03, W04` because an open pull request does not deliver a task.
 
+## The `ticked early` finding
+
+`sync.py` reports each of AC2–AC6 as `ticked early`, because every tick was written while the row that covers it is undelivered. Each tick rests on the criterion's own named instrument, which was run and read:
+
+| Criterion | Instrument | What it showed |
+| --- | --- | --- |
+| AC2 | `git log main..release/v0.17.0`, `git diff --name-only`, `uv lock --check` | one commit, two files, lock resolves |
+| AC3 | `git tag -n contract/v0.17.0` | annotated, names the version commit, states subject, profile, corpus count and both previous corpora's results |
+| AC4 | `git tag -n python/v0.17.0` | annotated, names the same commit, states the contract, profile, package version and validation counts |
+| AC5 | the pull request's head, base and state | open, from `release/v0.17.0` into `main` |
+| AC6 | the pull request's check conclusions | `Checks` completed `success` at the head |
+
+None of those criteria is about the merge. AC5 states an *open* pull request and AC6 states its checks passing, so a merge would make neither more true. The `ticked early` finding is about row delivery, which the merge supplies.
+
+The alternative reading — that AC5 and AC6 mean the release reached `main` — would contradict their own wording, so the ticks stand and the finding is reported rather than silenced by unticking criteria whose instruments are observed.
+
+
 ## Left to the user
 
 - **The merge.** `main` carries a `pull_request` rule with `required_approving_review_count: 1`. This session supplies no approval and does not self-approve, so the pull request is handed over unmerged.
