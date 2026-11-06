@@ -20,6 +20,7 @@ The coordinator records sequencing, live selection evidence and task handoffs wh
 | [release-epic.json](release-epic.json) | Delivery and validation evidence |
 | [release-initiative-body.md](release-initiative-body.md) | Delivery and validation evidence |
 | [release-initiative.json](release-initiative.json) | Delivery and validation evidence |
+| [repository-prerequisite.json](repository-prerequisite.json) | Delivery and validation evidence |
 | [reserved-board-item.json](reserved-board-item.json) | Delivery and validation evidence |
 | [reserved-epic.json](reserved-epic.json) | Delivery and validation evidence |
 | [saved-release-epic.json](saved-release-epic.json) | Delivery and validation evidence |

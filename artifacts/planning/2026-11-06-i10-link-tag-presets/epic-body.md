@@ -36,7 +36,7 @@ Each Markdown link selects its target document's presets through its comma-separ
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/pull/663) | The design states explicit preset selection | AC1 | | | 1 | |
+| [W00](https://github.com/m2ux/prosiform/pull/663) | The design states explicit preset selection | AC1 | | | 1 | ✓ |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w01.md) | One reader interprets tag lists | AC2, AC3 | W00 | | 1 | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w02.md) | Source links carry title tags | AC4, AC5 | W01 | | 1 | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w03.md) | References carry effective selection identity | AC6, AC7 | W02 | | 1 | |
@@ -49,7 +49,7 @@ Each Markdown link selects its target document's presets through its comma-separ
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The pinned design defines the link-title and single-entry command contract, as design-to-fixture conformance review shows.
+- [x] **AC1.** The pinned design defines the link-title and single-entry command contract, as design-to-fixture conformance review shows.
 - [ ] **AC2.** Comma-separated tag lists normalize complete names independently of whitespace, case, repetition and ordering, as shared tag-reader unit tests show.
 - [ ] **AC3.** Authored links and CLI tag arguments use the same tag-list interpretation, as shared-reader integration tests show.
 - [ ] **AC4.** Inline and reference-style Markdown link occurrences expose their own title tags in preambles and sections, as source-reader tests show.

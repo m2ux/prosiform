@@ -9,8 +9,10 @@
 
 - E07 task-file links use blob/engineering so the delivery survey reads their declared components.
 
-- W00 uses task PR #663 into i10/e07/engineering. Its raw design and current-pin conformance reports are published in the W00 record. The task remains undelivered while the PR is open.
+- W00 uses task PR #663 into i10/e07/engineering. Its raw design and current-pin conformance reports are published in the W00 record. W00 is delivered by the confirmed merge at dfbcca186371e02d8be84514d8f4da25baec6b54.
 - Exact variant naming is --p- plus the full lowercase SHA-256 of canonical UTF-8 compact JSON: matched declared preset names, distinct, declared spelling retained, sorted by Unicode code point. The design supplies a fixed example.
 - Main's design pin and the old fixture clause identifiers are adopted together by the joined CLI/caller/fixture unit. W00's immutable candidate pin does not assert current compiler support.
 - Epic sync links W00 to its PR and reports missing config/branches at the engineering base, leaving automated base/target checks unevaluable. The target branch, SHA, protection and active rules were inspected directly; no full epic readiness is claimed.
-- Repository automatic issue closure is unexposed through REST and GraphQL. A native confirmation question is pending; no delivery merge or Development-link edit is attempted without that answer.
+- Repository automatic issue closure is unexposed through REST and GraphQL. The user confirms it is disabled on 2026-11-06. PR #663 merges after that confirmation; draft integration #664 is linked to #662 and verified from both ends.
+
+- W00 and AC1 read back complete. E07 remains In Progress; W01 is the next task. I11's W01 gate on #464 remains present.

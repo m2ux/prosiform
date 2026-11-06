@@ -15,11 +15,16 @@ The contract supplies the selection and variant identities that later source, CL
 | [board-readback.json](board-readback.json) | Delivery and validation evidence |
 | [candidate-conformance.txt](candidate-conformance.txt) | Delivery and validation evidence |
 | [clause-review.md](clause-review.md) | Delivery and validation evidence |
+| [completed-board.json](completed-board.json) | Delivery and validation evidence |
+| [completed-epic.json](completed-epic.json) | Delivery and validation evidence |
 | [development-links.json](development-links.json) | Delivery and validation evidence |
+| [engineering-integration.json](engineering-integration.json) | Delivery and validation evidence |
 | [epic-readback.json](epic-readback.json) | Delivery and validation evidence |
 | [epic-sync.txt](epic-sync.txt) | Delivery and validation evidence |
 | [head-checks.json](head-checks.json) | Delivery and validation evidence |
 | [head-status.json](head-status.json) | Delivery and validation evidence |
+| [merged-epic-sync.txt](merged-epic-sync.txt) | Delivery and validation evidence |
+| [merged-pr.json](merged-pr.json) | Delivery and validation evidence |
 | [pinned-conformance.txt](pinned-conformance.txt) | Delivery and validation evidence |
 | [pull-request.json](pull-request.json) | Delivery and validation evidence |
 | [reviews.json](reviews.json) | Delivery and validation evidence |
@@ -40,3 +45,4 @@ The contract supplies the selection and variant identities that later source, CL
 | Theme board | [Project 18](https://github.com/users/m2ux/projects/18/views/4) |
 | Design pin | [W00 contract](https://github.com/m2ux/prosiform/blob/d6f95677d6dfa6d6b7b37f9106cb7e2a4fafabfd/artifacts/planning/2026-10-17-prosiform-v1/design.md) |
 | Task pull request | [W00 #663](https://github.com/m2ux/prosiform/pull/663) |
+| Engineering integration | [Draft #664](https://github.com/m2ux/prosiform/pull/664) |
