@@ -1,5 +1,6 @@
 """Explicit entry grammar and occurrence selection through the command path."""
 
+import shlex
 from collections.abc import Callable
 from pathlib import Path
 
@@ -172,6 +173,36 @@ def test_the_guide_specifies_resolution_and_shell_quoting() -> None:
         "Preserve the same tags when compiling a deferred link in a later run",
     ):
         assert rule in guide
+
+
+@pytest.mark.parametrize(
+    ("destination", "section", "names"),
+    [
+        ("guide.md", "Plan Report", ("checks", "draft")),
+        ("modes/review.md", "Review", ("checks", "final draft")),
+    ],
+)
+def test_the_guides_relative_fragment_and_quoted_commands_compile(
+    tmp_path: Path, destination: str, section: str, names: tuple[str, str]
+) -> None:
+    metadata = (
+        "---\nprosiform:\n  checks:\n    group: {reviews: 1}\n"
+        f"  '{names[1]}': {{}}\n---\n"
+    )
+    written(
+        tmp_path, destination, metadata + f"# Manual\n\n## {section}\n\nSelected.\n"
+    )
+    command = next(
+        line.strip()
+        for line in cli.GUIDE.splitlines()
+        if line.strip().startswith("pf --entry " + destination) and "--presets" in line
+    )
+    arguments = shlex.split(command)
+    assert arguments[0] == "pf"
+    run = invoke(*arguments[1:], cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert run.stderr == ""
+    assert "# Reviews\n" in run.bundle and "Selected." in run.bundle
 
 
 def test_leading_dash_values_attach_to_their_options(tmp_path: Path) -> None:
