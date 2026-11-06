@@ -1,0 +1,55 @@
+{
+  "status": "ready_for_pr",
+  "head": "bcd7dc8d6eb3098a700e011b541520d22e1886a3",
+  "behavior_head": "734c06a6eaaaa04ebe31182dc0ade74aea62db6c",
+  "runtime_test_bytes_unchanged": true,
+  "branch": "i10/e07/w04-entries-select-presets-through",
+  "base": "i10/e07/main",
+  "worktree": "/home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through",
+  "planning_record": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-06-662-i10-e07-w04-entries-select-presets-through",
+  "worktree_clean": true,
+  "pushed": true,
+  "criteria": [
+    "AC3",
+    "AC8",
+    "AC9",
+    "AC10",
+    "AC11",
+    "AC21"
+  ],
+  "checks": {
+    "required_checks": "pass",
+    "source_tests": 1814,
+    "harness_tests": 1416,
+    "corpus_fixtures": 530,
+    "examples": 9,
+    "paid_sessions": 0,
+    "original_conformance": "failed: two short fixture clause names",
+    "final_corpus_conformance_independence": "pass"
+  },
+  "final_only_changes": [
+    "fixtures/dispatch/a-body-absent-from-final-placement-dispatches-nothing/manifest.toml",
+    "fixtures/dispatch/a-later-selection-publishes-only-the-substituted-dispatch/manifest.toml"
+  ],
+  "proposed_title": "[I10:E07] Explicit Preset Selection for Single Entries",
+  "pr_body_file": "/tmp/e07-w04-pr-body.md",
+  "open_findings": [],
+  "commits": [
+    "ad0332c74ab0a12967d12b6d32669631e3a1a75d",
+    "d23ff64f2e929bc449dd8412e48ec503b2ee1603",
+    "4df041e434f58214a6add64b285a94a9f3963774",
+    "addd8dfc77328dcbf2a761a4d45f4c0b7b071c99",
+    "1c8c9bdb77174a0d2cbb6b0a3d7a9203c95ccc63",
+    "734c06a6eaaaa04ebe31182dc0ade74aea62db6c",
+    "bcd7dc8d6eb3098a700e011b541520d22e1886a3"
+  ],
+  "plan_changes": {
+    "applied": [
+      "Folded guide clarification for leading-dash option values at design pin 795bbfb67c66b02193f0313138f59f18aa6c5274.",
+      "Atomic active-caller/corpus migration with preserved fixture invariants.",
+      "Review debt fixes for output-source safety, selection fixed point and final-provenance handoffs."
+    ],
+    "held": []
+  },
+  "remaining_unit_scope": "Coordinator publication, task PR, merge and tracker reconciliation; W06/W07 retain multiple-effective-variant scheduling and collision work."
+}

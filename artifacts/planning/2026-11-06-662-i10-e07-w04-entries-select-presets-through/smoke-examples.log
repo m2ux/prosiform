@@ -1,0 +1,56 @@
+Behavior head: 734c06a6eaaaa04ebe31182dc0ade74aea62db6c
+Runtime/caller/example bytes identical at final head bcd7dc8d6eb3098a700e011b541520d22e1886a3
+
+python3 checks/smoke.py
+ok   wheel        prosiform-0.16.0-py3-none-any.whl
+ok   installed    /tmp/pf-smoke-kiab3899/environment
+ok   resolved     pf — /tmp/pf-smoke-kiab3899/environment/bin/pf, outside the repository
+ok   version      pf 0.16.0 (prosiform-markdown)
+ok   bundled      guide.md from /tmp/pf-smoke-kiab3899/sources, run from /tmp/pf-smoke-kiab3899/elsewhere
+ok   glossary     glossary.md, shipped
+
+smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
+
+uv run --project src --frozen python checks/invocation.py
+ok   option      --entry REF
+ok   option      --presets PRESETS
+ok   option      -o DIR
+ok   option      -c
+ok   option      -d {text,json}
+ok   option      --budget NAME=VALUE
+ok   option      -C, --codes
+ok   option      -v, --version
+ok   option      -h, --help
+ok   status      0
+ok   status      1
+ok   status      2
+ok   status      3
+ok   status      4
+ok   budget      files
+ok   budget      file-bytes
+ok   budget      input-bytes
+ok   budget      output-bytes
+ok   budget      targets
+ok   budget      links
+ok   budget      nesting
+ok   budget      depth
+ok   profile     prosiform-markdown
+ok   statement   a bare command prints the guide
+ok   statement   a failed run stops the work
+ok   statement   reading the sources instead is unsupported
+ok   statement   which platforms are supported
+ok   statement   the support rests on no-follow access
+ok   statement   hyphens rather than underscores in source paths
+
+invocation check: 29 statement(s) of the documented invocation, each held to the build PROSIFORM_BUILD names
+
+uv run --project src --frozen python scripts/render-example.py --build 'uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/src --frozen pf'
+destinations: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/destinations.svg, exit 0, 1 bundle(s)
+dispatch: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/dispatch.svg, exit 0, 2 bundle(s)
+groups: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/groups.svg, exit 0, 1 bundle(s)
+parallel: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/parallel.svg, exit 0, 4 bundle(s)
+references: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/references.svg, exit 0, 1 bundle(s)
+refused: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/refused.svg, exit 1, 0 bundle(s)
+run: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/run.svg, exit 0, 1 bundle(s)
+sections: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/sections.svg, exit 0, 1 bundle(s)
+source: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/source.svg, exit 0, 1 bundle(s)

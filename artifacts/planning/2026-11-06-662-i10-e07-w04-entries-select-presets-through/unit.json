@@ -1,0 +1,11 @@
+{
+  "id": "m2ux/prosiform#I10:E07:W04+W05",
+  "tasks": [
+    "W04",
+    "W05"
+  ],
+  "record": "/home/mike1/projects/dev/md-composer/.engineering/artifacts/planning/2026-11-06-662-i10-e07-w04-entries-select-presets-through",
+  "branch": "i10/e07/w04-entries-select-presets-through",
+  "worktree": "/home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through",
+  "base": "i10/e07/main"
+}

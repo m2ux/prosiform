@@ -1,0 +1,10 @@
+uv run --project src --frozen python scripts/render-example.py --build 'uv run --project /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/src --frozen pf'
+destinations: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/destinations.svg, exit 0, 1 bundle(s)
+dispatch: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/dispatch.svg, exit 0, 2 bundle(s)
+groups: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/groups.svg, exit 0, 1 bundle(s)
+parallel: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/parallel.svg, exit 0, 4 bundle(s)
+references: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/references.svg, exit 0, 1 bundle(s)
+refused: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/refused.svg, exit 1, 0 bundle(s)
+run: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/run.svg, exit 0, 1 bundle(s)
+sections: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/sections.svg, exit 0, 1 bundle(s)
+source: /home/mike1/projects/dev/md-composer/.worktrees/i10/e07/w04-entries-select-presets-through/docs/images/source.svg, exit 0, 1 bundle(s)
