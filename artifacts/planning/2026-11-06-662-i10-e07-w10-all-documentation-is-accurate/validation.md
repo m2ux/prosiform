@@ -55,6 +55,10 @@ This full check ran outside `sbx`, because wheel build/install and online links 
 
 ## CI and Delivery
 
-[Checks CI run](https://github.com/m2ux/prosiform/actions/runs/42234017168) is associated with exact task head `619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5`; it must succeed before merge. Development relation to epic 662 is verified from both ends, with existing links preserved. W10 delivery and AC22/23 remain unrecorded until confirmed merge and merged-revision instruments.
+[Checks CI run](https://github.com/m2ux/prosiform/actions/runs/42234017168) succeeded at exact task head `619a9e7d6ef2bfa1ea6e5258f45fb671de0e39d5`. The published passing Test Plan was read back before merge. Fresh target protection returned Branch not protected (404), active branch rules returned `[]`, reviews returned `[]` and final mergeable state was `clean`. The user-authorized SHA-pinned merge-commit mutation succeeded as `3164e8a5c8f695f965a464d8cefef0847cff4a72` on `i10/e07/main`. REST readback confirmed merged=true, that head/base/merge SHA, and the task branch is preserved. `git diff --quiet` confirms the merged tree equals the fully validated task tree.
+
+Development relation to epic 662 is verified from both ends, with existing links preserved. Both exact-revision instruments were repeated at merged revision `3164e8a5c8f695f965a464d8cefef0847cff4a72`: the same 954 claim-observing tests passed, exit 0, and the inventory instrument passed over the same 1,964 classified paths, exit 0. The detached verification uses its own local `src` environment.
+
+The refreshed sync records W10 Done through merged pull request 673 and ticks AC22/AC23 from the passing published observations. It explicitly reports `config/branches` absent at the merged revision and seven integration/review checks not checked; it does not authorize epic closure or review readiness. All prior task rows and criteria remain intact.
 
 Default/engineering integration and draft review pull requests 664 and 666 remain with the coordinator. This task does not change their readiness or close the epic.

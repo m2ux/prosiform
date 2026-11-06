@@ -24,4 +24,5 @@ This unit covers AC22 and AC23 and targets `i10/e07/main`. No paid evaluations o
 | --- | --- |
 | Epic | [Link-Tag Presets](https://github.com/m2ux/prosiform/issues/662) |
 | Prerequisite | [W09 delivery](https://github.com/m2ux/prosiform/pull/672) |
+| Delivery | [W10 merged task pull request](https://github.com/m2ux/prosiform/pull/673) |
 | Original work item | [W10 plan](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-06-i10-link-tag-presets/w10.md) |
