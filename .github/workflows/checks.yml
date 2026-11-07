@@ -52,16 +52,17 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
           # Every path a check reads: the build, the corpus, the checks, the
-          # scripts they run, the documents they read, the Makefile that names
-          # them and this workflow. A pull request changing any of them runs
-          # the checks; a pull request changing none reports that they did not
-          # run. The evals are not among them: `make check` reads none, and
-          # the eval harness runs by hand through `make eval-harness` or this
-          # workflow's manual trigger.
+          # scripts they run, the evals, the documents they read, the Makefile
+          # that names them and this workflow. A pull request changing any of
+          # them runs the checks; a pull request changing none reports that
+          # they did not run. The evals are here because lint, format and type
+          # checking still read them, though their own tests run by hand
+          # through `make eval-harness` or this workflow's manual trigger.
           CHECKED_PATHS: |
             :(glob)src/**
             :(glob)fixtures/**
             :(glob)checks/**
+            :(glob)evals/**
             :(glob)scripts/**
             :(glob)docs/**
             :(glob)**/*.md
@@ -69,7 +70,9 @@ jobs:
             .github/workflows/checks.yml
         run: |
           set -f
-          if [ "$EVENT" = push ]; then
+          # A push is the merge commit and a dispatch is a revision asked for
+          # by hand, so neither is scoped by what it changed.
+          if [ "$EVENT" != pull_request ]; then
             echo "checked=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -121,5 +124,5 @@ jobs:
       # build's contract, so it is never part of `make check`. A manual
       # trigger runs it here, beside the checks, on the revision dispatched.
       - name: Run the eval harness
-        if: github.event_name == 'workflow_dispatch' && inputs.eval-harness
+        if: github.event_name == 'workflow_dispatch' && inputs.eval-harness == 'true'
         run: make eval-harness

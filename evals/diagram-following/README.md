@@ -294,7 +294,7 @@ A bootstrap skill is placed at `<workspace>/.opencode/skills/<name>`, which is t
 | --- | --- |
 | `make eval-diagrams` | The [runner](run.py) over the default matrix, then the report. Its token budget is `EVAL_BUDGET_TOKENS` and its harness `HARNESS`; `ARGS='...'` passes the runner's options through, a later `--budget-tokens` among them overriding the default. |
 
-Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make harness` holds the runner, scorer and report against a stub agent and recorded results instead. The runner's options, each passed through `ARGS`:
+Each live run follows its runbook in [`RUNBOOK.md`](RUNBOOK.md), which also holds the triage rubric every failing session is decided by. The command starts paid agent sessions, so no other target depends on it and `make check` never runs it; `make eval-harness` holds the runner, scorer and report against a stub agent and recorded results instead, and is dispatched by hand rather than run on every change. The runner's options, each passed through `ARGS`:
 
 A run id requires fresh results and workspaces. An existing `results/<run-id>` or `<eval-root>/workspaces/<run-id>` refuses the run before bundling or starting a session. The runbook's [rerun procedure](RUNBOOK.md#repeating-a-stopped-run) removes both.
 

@@ -14,7 +14,7 @@ One command runs every check in the sections below, from [Python](#python) to [T
 make check
 ```
 
-Three commands sit outside it, because each needs a tool or a budget the others do not. See [Outside `make check`](#outside-make-check).
+Three commands sit outside it, because each needs a tool or a budget the others do not; a fourth, `make eval-harness`, holds the diagram-following eval's own tests, which are dispatched by hand. See [Outside `make check`](#outside-make-check).
 
 ## When Continuous Integration Runs
 
@@ -126,6 +126,7 @@ These two checks keep the corpus tied to the design rather than to any one build
 | Command | Asserts |
 | --- | --- |
 | `make render` | Each diagram link form the corpus bundles renders under Mermaid as one followable link per link line. See [Rendering](#rendering). |
+| `make eval-harness` | The diagram-following eval's corpus, scorer, runner and report are well formed. Dispatched by hand, because it proves what a change to the eval changed and not what the build does. See [The eval harness](#the-eval-harness). |
 | `make examples` | Each case in [`scripts/examples.json`](scripts/examples.json) runs against the build, and its drawing under [`docs/images/`](docs/images/) shows the files the run read beside the bundles it wrote. |
 | `make eval-diagrams` | Real agents follow the diagram-following workflows over the default matrix, and the report gives each cell's pass rate. See [The Diagram-Following Eval](#the-diagram-following-eval). |
 
