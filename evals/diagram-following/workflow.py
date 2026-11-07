@@ -599,7 +599,7 @@ class Compile:
         if self.entry is None:
             return ()
         return (
-            f"--entry={self.entry}",
+            f"{self.entry}",
             *((f"--presets={','.join(sorted(self.presets))}",) if self.presets else ()),
         )
 

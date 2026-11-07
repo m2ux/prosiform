@@ -17,7 +17,7 @@ def test_dispatch_guide_names_the_structure_the_compiler_emits(tmp_path: Path) -
     )
     written(tmp_path, "a.md", DECLARED + "# A\n")
     written(tmp_path, "b.md", DECLARED + "# B\n")
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert f"sub-section headed {PARALLEL}." in " ".join(GUIDE.split())
     assert f"### {PARALLEL}\n\n[⇉ A](a.bundle.md)\n[⇉ B](b.bundle.md)" in run.bundle
@@ -54,7 +54,7 @@ def test_inline_dispatches_of_one_target_point_to_their_selected_contents(
         DECLARED + '# Guide\n\n[⇉ Checks](task.md "checks")\n\n'
         '[⇉ Draft](task.md "draft")\n',
     )
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     checked = next(name for name, body in run.bundles.items() if "CHECKED_BODY" in body)
     drafted = next(name for name, body in run.bundles.items() if "DRAFTED_BODY" in body)
@@ -82,7 +82,7 @@ def test_equivalent_parallel_occurrences_publish_single_direct_dispatches(
         DECLARED + f'# Guide\n\n[⫽ First](task.md "{first}")\n\n'
         f'[⫽ Second](task.md "{second}")\n',
     )
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert len(run.bundles) == 2
     name = next(name for name, body in run.bundles.items() if content in body)
@@ -103,7 +103,7 @@ def test_parallel_members_distinguish_variants_and_merge_equivalent_requests(
         '[⫽ Draft First](task.md "draft")\n\n'
         '[⫽ Draft Again](task.md "draft,default")\n',
     )
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert len(run.bundles) == 3
     checked = next(name for name, body in run.bundles.items() if "CHECKED_BODY" in body)
@@ -126,7 +126,7 @@ def test_equivalent_parallel_selection_in_an_h6_needs_no_subsection(
         DECLARED + '# Guide\n\n##### Last\n\n[⫽ First](task.md "checks")\n\n'
         '[⫽ Second](task.md "checks,unknown")\n',
     )
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert "E_HEADING_DEPTH_OVERFLOW" not in run.stderr
     assert PARALLEL not in run.bundle
@@ -142,7 +142,7 @@ def test_a_heading_inline_set_publishes_distinct_selection_members(
         DECLARED + '# Guide\n\n## [⫽ Checks](task.md "checks") and '
         '[⫽ Draft](task.md "draft")\n\nSection content.\n',
     )
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     checked = next(name for name, body in run.bundles.items() if "CHECKED_BODY" in body)
     drafted = next(name for name, body in run.bundles.items() if "DRAFTED_BODY" in body)
@@ -162,7 +162,7 @@ def test_a_heading_inline_set_collapses_equivalent_selection_members(
         DECLARED + '# Guide\n\n## [⫽ First](task.md "checks") and '
         '[⫽ Second](task.md "Checks,unknown,default")\n\nSection content.\n',
     )
-    run = invoke("--entry", "guide.md", cwd=tmp_path)
+    run = invoke("guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     checked = next(name for name, body in run.bundles.items() if "CHECKED_BODY" in body)
     assert f'[⇉ First]({checked} "checks")' in run.bundle

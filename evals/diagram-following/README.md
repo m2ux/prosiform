@@ -78,12 +78,12 @@ A scenario names each `pf` run a correct session and each of its sub-agents make
 | Field | Meaning |
 | --- | --- |
 | `by` | Optional. The section of the scenario's trace whose sub-agent makes the run, as `<document>#<heading>`; absent for the session's own run. |
-| `entry` | Optional. The one reference supplied to `--entry`, as `<document>` or `<document>#<fragment>`; absent for bare `pf`, which prints the guide. |
+| `entry` | Optional. The one reference supplied as the positional entry, as `<document>` or `<document>#<fragment>`; absent for bare `pf`, which prints the guide. |
 | `presets` | Optional. The comma-separated link-title names supplied to `--presets`; needs an entry. Complete names trim, case-fold and deduplicate. Only matching declarations contribute to the effective selection. |
 
 A reference resolves from the directory a shell form runs `pf` in: the skill's directory for `bootstrap`, as the guide states, and the workspace for `compiled`, which holds the compiled form's sources as they stand. The corpus test refuses a reference naming no document there, a `by` naming no section of the trace, and a run stated by a workflow written in neither form.
 
-For example, `entry = "reference/fetch.md#read-mirror"` with `presets = "mirror"` states `pf --entry=reference/fetch.md#read-mirror --presets=mirror`. Output and diagnostic options are the agent's to choose. A named selection's expected output includes the compiler's qualifier over its matching declared names. The scorer reads the compiler's command grammar and compares effective selections; missing or different matching presets fail the run check. Informational `--help`, `--version` and `--codes` calls satisfy neither a compile nor the bare guide run.
+For example, `entry = "reference/fetch.md#read-mirror"` with `presets = "mirror"` states `pf reference/fetch.md#read-mirror --presets=mirror`. Output and diagnostic options are the agent's to choose. A named selection's expected output includes the compiler's qualifier over its matching declared names. The scorer reads the compiler's command grammar and compares effective selections; missing or different matching presets fail the run check. Informational `--help`, `--version` and `--codes` calls satisfy neither a compile nor the bare guide run.
 
 A `compiled` session reads the bundle set `pf` compiled from the compiled form, so a `↳` line the bundle carries names its target from the workspace, and compiling it there is the run the scenario states where a step its path takes reaches the line, as [Deferral scenarios](#deferral-scenarios) states. The four dispatch scenarios compile nothing, so they state no run.
 
@@ -127,7 +127,7 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
 | `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches `reference/crew.md#work` with `lift`, then `strap`, each selection writing its own action. |
 | `deferred-dispatch` | `deferred-dispatch-passed` | Nothing: `Pack`'s step does not hold, so its line is passed and nothing is dispatched. |
-| `preset-deferral` | `stand-in-followed` | `pf --entry=reference/fetch.md#read-mirror --presets=mirror`. The deferral's title selects `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
+| `preset-deferral` | `stand-in-followed` | `pf reference/fetch.md#read-mirror --presets=mirror`. The deferral's title selects `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 
 ### Composition scenarios
 
@@ -209,7 +209,7 @@ A run passing them is then held to each sub-agent's stated `action`, whatever it
 
 ### Run checks
 
-A run that passes the dispatch checks and its sub-agents' actions is held to the `pf` runs its scenario states, wherever its harness reports the commands a session ran. A run is a command, split at `;`, `&&`, `||` and `|`, whose first word is `pf` or a path ending `/pf`; its single destination is the value of `--entry` and its selection is the optional `--presets` value, parsed with the compiler's grammar. The destination names a stated reference when it is that reference or ends `/` and that reference, and the destination's effective matching preset sets must agree. Malformed compile commands satisfy no stated run; informational calls satisfy neither a compile nor the bare guide run. The session's runs, and each sub-agent's from the commands of the starts naming its section, are held to those stated for it:
+A run that passes the dispatch checks and its sub-agents' actions is held to the `pf` runs its scenario states, wherever its harness reports the commands a session ran. A run is a command, split at `;`, `&&`, `||` and `|`, whose first word is `pf` or a path ending `/pf`; its single destination is the positional entry and its selection is the optional `--presets` value, parsed with the compiler's grammar. The destination names a stated reference when it is that reference or ends `/` and that reference, and the destination's effective matching preset sets must agree. Malformed compile commands satisfy no stated run; informational calls satisfy neither a compile nor the bare guide run. The session's runs, and each sub-agent's from the commands of the starts naming its section, are held to those stated for it:
 
 | Class | The session |
 | --- | --- |

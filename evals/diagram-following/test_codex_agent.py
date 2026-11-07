@@ -283,14 +283,14 @@ def test_pf_arguments_and_redirects_are_recorded_as_the_executed_command() -> No
     assert (
         pf_command(
             {
-                "args": ["--entry", "file with spaces.md", "-o", "build"],
+                "args": ["file with spaces.md", "-o", "build"],
                 "stdout": "guide.txt",
                 "stderr": None,
                 "append": False,
                 "stderr_to_stdout": True,
             }
         )
-        == "pf --entry 'file with spaces.md' -o build > guide.txt 2>&1"
+        == "pf 'file with spaces.md' -o build > guide.txt 2>&1"
     )
 
 
@@ -526,7 +526,7 @@ def test_a_bootstrap_compile_runs_pf_from_the_skill_directory(
     monkeypatch.setenv("STUB_CODEX_PF_CWD", str(skill.relative_to(tmp_path)))
     monkeypatch.setenv(
         "STUB_CODEX_PF_ARGS",
-        json.dumps(["--entry", "sources/workflow.md", "-o", str(tmp_path / "build")]),
+        json.dumps(["sources/workflow.md", "-o", str(tmp_path / "build")]),
     )
     argv = Codex().argv(
         [sys.executable, str(STUB_SERVER)],

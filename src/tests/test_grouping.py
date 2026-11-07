@@ -451,7 +451,7 @@ def composed(
         target.write_text(text)
     out, err = StringIO(), StringIO()
     with TemporaryDirectory() as folder, chdir(root):
-        status = main(["-o", folder, "-d", "json", "--entry", entry], out, err)
+        status = main(["-o", folder, "-d", "json", entry], out, err)
         written = sorted(Path(folder).glob("*.bundles/*.bundle.md"))
         bundle = written[0].read_text() if written else ""
     diagnostics = [json.loads(line) for line in err.getvalue().splitlines() if line]
