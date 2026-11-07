@@ -340,7 +340,7 @@ A standard error line that is not a JSON object is reported as one, because the 
 make corpus
 ```
 
-Every fixture in this tree runs against the build `PROSIFORM_BUILD` names, in path order, and each one's verdict is printed under its identity — its path under `fixtures/`. A fixture that differs from its manifest fails the run and its differences are printed under its name; one awaiting later work is reported as awaiting it; one awaiting work it already meets fails the run. The run ends on a count of the fixtures against each verdict, and returns a nonzero status when any fixture failed it or when no build is configured.
+Every fixture in this tree runs against the build `PROSIFORM_BUILD` names, and each one's verdict is printed under its identity — its path under `fixtures/` — in path order. Fixtures run a few at a time, as many as the host has cores; `PROSIFORM_CORPUS_WORKERS` says how many a machine may use. A fixture that differs from its manifest fails the run and its differences are printed under its name; one awaiting later work is reported as awaiting it; one awaiting work it already meets fails the run. The run ends on a count of the fixtures against each verdict, and returns a nonzero status when any fixture failed it or when no build is configured.
 
 ## Reading what a piece of work unblocks
 
@@ -356,4 +356,4 @@ The fixtures declaring they await the named work are printed by identity, with a
 make harness
 ```
 
-Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them. The same target holds the [diagram-following eval](../evals/diagram-following/README.md)'s corpus, scorer, runner and report.
+Every manifest in this tree is validated against the schema, every path a manifest names is required to exist, the schema's own cases run with it, and the runner's comparison runs with them. The [diagram-following eval](../evals/diagram-following/README.md)'s corpus, scorer, runner and report are held by `make eval-harness` instead, which runs by hand.
