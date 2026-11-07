@@ -1,4 +1,4 @@
-description = "An abbreviated --entry option fails with E_INVALID_USAGE without publication."
+description = "An undeclared option fails with E_INVALID_USAGE without publication, and an abbreviation of a declared one is undeclared."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 

@@ -1,10 +1,10 @@
-description = "A complete Markdown-link expression is no --entry destination and fails with E_INVALID_USAGE without publication."
+description = "A complete Markdown-link expression is no entry destination and fails with E_INVALID_USAGE without publication."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "[Guide](guide.md \"checks\")"]
+arguments = ["[Guide](guide.md \"checks\")"]
 
 [expected]
 exit_status = 2

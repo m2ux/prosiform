@@ -1,4 +1,4 @@
-description = "An --entry reference whose own default preset states subst: [{entry.md: stand-in.md}] compiles entry.md and the run is named for it, because an entry reference is written by no document and no pair redirects it; the pair names no reference the run resolved, so it warns as unused."
+description = "An entry reference whose own default preset states subst: [{entry.md: stand-in.md}] compiles entry.md and the run is named for it, because an entry reference is written by no document and no pair redirects it; the pair names no reference the run resolved, so it warns as unused."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "entry.md"]
+arguments = ["entry.md"]
 
 [expected]
 exit_status = 0

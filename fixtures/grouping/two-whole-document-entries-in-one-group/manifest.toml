@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "docs/notes.md"]
+arguments = ["docs/notes.md"]
 
 [expected]
 exit_status = 0

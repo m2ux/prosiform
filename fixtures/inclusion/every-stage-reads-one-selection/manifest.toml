@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md#keep"]
+arguments = ["guide.md#keep"]
 
 [expected]
 exit_status = 0

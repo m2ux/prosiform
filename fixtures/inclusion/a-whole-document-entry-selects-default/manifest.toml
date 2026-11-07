@@ -1,4 +1,4 @@
-description = "A whole-document --entry without --presets applies default. Heading words supply no selection, so its Checks preset remains unused and warns."
+description = "A whole-document entry without --presets applies default. Heading words supply no selection, so its Checks preset remains unused and warns."
 
 clauses = [
   "Presets — A preset nothing selected warns",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0

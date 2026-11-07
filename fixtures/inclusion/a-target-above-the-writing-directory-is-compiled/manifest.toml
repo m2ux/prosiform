@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "modes/review.md"]
+arguments = ["modes/review.md"]
 
 [expected]
 exit_status = 0

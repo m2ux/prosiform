@@ -12,7 +12,7 @@ arguments = ["--help"]
 [expected]
 exit_status = 0
 stdout_contains = [
-  "pf [OPTIONS] --entry REF [--presets PRESETS]",
+  "pf [OPTIONS] REF [--presets PRESETS]",
   "default 256",
   "compilation, validation, or informational",
   "dependency, policy, safety, or resource-limit failure",

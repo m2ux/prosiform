@@ -6,7 +6,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--budget", "file-bytes=16", "--entry", "alpha.md"]
+arguments = ["--budget", "file-bytes=16", "alpha.md"]
 
 [expected]
 exit_status = 1

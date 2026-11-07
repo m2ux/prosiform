@@ -1,4 +1,4 @@
-description = "A link naming a declaring document above the invocation working directory is compiled and its destination rewritten: the working directory resolves --entry references and the paths diagnostics name, and the target's declaration alone decides whether an authored link is compiled."
+description = "A link naming a declaring document above the invocation working directory is compiled and its destination rewritten: the working directory resolves entry references and the paths diagnostics name, and the target's declaration alone decides whether an authored link is compiled."
 
 clauses = [
   "Link classification and resource handling — Local Markdown document links",
@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0

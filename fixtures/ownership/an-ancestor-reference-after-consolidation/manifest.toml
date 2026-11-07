@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "manual.md#procedure"]
+arguments = ["manual.md#procedure"]
 
 [expected]
 exit_status = 0

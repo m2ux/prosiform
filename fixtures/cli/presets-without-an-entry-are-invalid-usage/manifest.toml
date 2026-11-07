@@ -1,4 +1,4 @@
-description = "A --presets argument without --entry fails with E_INVALID_USAGE without publication."
+description = "A --presets argument without an entry fails with E_INVALID_USAGE without publication."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 

@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "references/design-flow.md"]
+arguments = ["references/design-flow.md"]
 
 [expected]
 exit_status = 0

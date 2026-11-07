@@ -1,4 +1,4 @@
-description = "A deferred directive preserves its link-title selection for a later --entry and --presets command. Different scope and target headings select nothing and leave this handoff valid."
+description = "A deferred directive preserves its link-title selection for a later entry and --presets command. Different scope and target headings select nothing and leave this handoff valid."
 
 clauses = [
   "Section composition — Deferred composition",
@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0

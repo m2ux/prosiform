@@ -9,7 +9,7 @@ fault = "cleanup-refused"
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 0

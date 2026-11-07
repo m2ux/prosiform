@@ -4,7 +4,7 @@ clauses = ["CLI contract", "Presets — Selection by tags", "Presets — default
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md", "--presets", "unknown,default,,"]
+arguments = ["guide.md", "--presets", "unknown,default,,"]
 
 [expected]
 exit_status = 0

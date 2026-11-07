@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "article.md#run"]
+arguments = ["article.md#run"]
 
 [expected]
 exit_status = 0

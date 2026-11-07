@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "library/material.md#instructions", "--presets", " release candidate,CAFÉ,unknown,café "]
+arguments = ["library/material.md#instructions", "--presets", " release candidate,CAFÉ,unknown,café "]
 
 [expected]
 exit_status = 0
