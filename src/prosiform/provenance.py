@@ -60,6 +60,7 @@ FILENAME_WRAPPER = "filename wrapper"
 GROUP_HEADING = "group heading"
 OVERVIEW_SECTION = "overview section"
 MEMBER_OVERVIEW = "member overview"
+PREAMBLE_HEADING = "preamble subsection"
 VARIANT_HEADING = "variant heading"
 STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
@@ -193,7 +194,9 @@ class Range:
     the section writing it, and its placing names the directives whose
     compositions placed it. Every directive contributes its own copy, so
     a composed range stands outside the group's own coverage and its own
-    source order, and is held to its source's bytes alone.
+    source order, and is held to its source's bytes alone. A preamble
+    likewise stands in a folder group's arrangement rather than its
+    source's outline.
     """
 
     path: str
@@ -236,6 +239,11 @@ class Instruction:
         return INSTRUCTION
 
 
+@dataclass(frozen=True)
+class Preamble(Range):
+    """A source preamble grouped beside a partial section selection."""
+
+
 Part = Range | Ancestor | Generated | Instruction
 
 
@@ -259,6 +267,11 @@ class Record:
     merged: int | None
     headings: tuple[Emitted, ...]
     parts: tuple[Part, ...]
+
+    @property
+    def preamble(self) -> bool:
+        """Whether this group arranges source context beside partial selections."""
+        return False
 
     @property
     def ranges(self) -> tuple[Range, ...]:
@@ -301,3 +314,12 @@ class Record:
                 if origin.path not in found:
                     found.append(origin.path)
         return found
+
+
+@dataclass(frozen=True)
+class PreambleRecord(Record):
+    """The provenance of preambles arranged beneath their parent folder."""
+
+    @property
+    def preamble(self) -> bool:
+        return True

@@ -4,7 +4,7 @@ Following the links answers which files belong in the bundle. It does not yet an
 
 The command line asks for a document, or a section of one — that is the start, not the whole. Following its links adds more, which add more again, and two routes can arrive at the same section. The run settles all of that before arranging anything, and the settled result is the **selection**.
 
-An entry naming one section takes that section and nothing above it, so a heading that held it arrives with no body of its own.
+An entry naming one section takes that section and its source's title and introduction. Other unselected sections carry no body of their own. A document joined to a merged group by a fragment selection contributes that title and introduction once to a folder-named group, as [Hierarchy](hierarchy.md#preamble-groups) states; a document outside a merged group retains its own file-group arrangement.
 
 ![SKILL.md and rules.md on the left. On the right, the bundle: Entry with its link to Detail, then Rules, Beta as a heading alone, and Detail beneath it. Alpha's body is absent.](images/sections.svg)
 

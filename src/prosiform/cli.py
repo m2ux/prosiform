@@ -49,6 +49,7 @@ from prosiform.bundle import (
     Overflow,
     Unplaced,
     assemble,
+    carries_title,
     document_title,
     file_heading,
     group,
@@ -161,6 +162,7 @@ from prosiform.metadata import (
     Membership,
     Subst,
 )
+from prosiform.preamble import grouped as preamble_group
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -2504,6 +2506,8 @@ def coincident(
     conversions = {path: source.conversion for path, source in read.items()}
     for at, one in enumerate(groups):
         named = one.record.path
+        if one.record.preamble:
+            continue
         if one.record.merged is None:
             if named not in read:
                 # The `§ Instructions` group names no source document.
@@ -2700,7 +2704,14 @@ def holders(
         holder = (
             (placer, False)
             if not joins[placer]
-            else min(((one.group, True) for one in joins[placer]), key=rank.__getitem__)
+            else min(
+                (
+                    one
+                    for one in order
+                    if one[0] in {join.group for join in joins[placer]}
+                ),
+                key=rank.__getitem__,
+            )
         )
         enclosing: Division | None = holder
         while enclosing is not None and enclosing != division:
@@ -2845,13 +2856,43 @@ def assembled(
                 parent,
                 level((named, True), held),
             )
+        folders: dict[str, list[str]] = {}
+        for path in selected:
+            choice = selection(path, parsed[path], selected[path], entries)
+            if (
+                choice is not None
+                and all(one.fragment is not None for one in selected[path])
+                and joins[path]
+                and posixpath.dirname(path)
+                and not (path == parent and carries_title(parsed[path]))
+            ):
+                folders.setdefault(posixpath.dirname(path), []).append(path)
+        preamble_divisions = []
+        for paths in folders.values():
+            built_preamble = preamble_group(
+                paths,
+                parsed,
+                read,
+                defined,
+                {
+                    path: selection(path, parsed[path], selected[path], entries)
+                    for path in paths
+                },
+                assigned,
+                declarations,
+                substitution,
+                conversions=conversions,
+            )
+            if built_preamble is not None:
+                preamble_divisions.append(built_preamble)
         return compositions(
             [
                 one
                 for division in order
                 if division not in held
                 for one in composed(division, built, nested)
-            ],
+            ]
+            + preamble_divisions,
             parsed,
             read,
             defined,

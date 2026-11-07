@@ -536,12 +536,13 @@ def test_three_skill_links_are_independent_compilations(stack: Stack) -> None:
                 "### Payload",
                 "#### Leaf",
                 "#### Tail",
+                "## Alpha",
+                "### Rules",
             ],
             [
                 "REVIEW_MARKER",
                 "DEFAULTS_MARKER",
                 "BETA_RULES_MARKER",
-                "ALPHA_UNSELECTED_INTRO",
             ],
         ),
         "Review": (
@@ -634,6 +635,8 @@ def test_section_selection_keeps_the_entry_settings(stack: Stack) -> None:
             "### Payload",
             "#### Leaf",
             "#### Tail",
+            "## Alpha",
+            "### Rules",
         ],
     )
 

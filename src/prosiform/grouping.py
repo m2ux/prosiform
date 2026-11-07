@@ -702,14 +702,17 @@ def overview(
         member.path: [
             one
             for one in member.items
-            if (found := anchored(member, one.token, depth)) is None
-            or level(found) < depth
+            if not one.ancestor
+            and (
+                (found := anchored(member, one.token, depth)) is None
+                or level(found) < depth
+            )
         ]
         for member in members
     }
     named_here = {
         member.path: bool(above[member.path])
-        or not member.items
+        or not [one for one in member.items if not one.ancestor]
         or member.absorbing is not None
         for member in members
     }
@@ -726,6 +729,14 @@ def overview(
         into.part(text, recorded, [recorded])
     for member in members:
         if not named_here[member.path]:
+            continue
+        content = above[member.path]
+        if (
+            not content
+            and member.absorbing is not None
+            and id(member.absorbing) not in member.emitting
+            and any(not one.ancestor for one in member.items)
+        ):
             continue
         answers: list[Target] = []
         if member.path != parent:

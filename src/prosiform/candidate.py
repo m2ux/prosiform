@@ -373,6 +373,7 @@ def intended(
     declarations: Declarations = DECLARING,
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
+    contextual: bool = False,
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
@@ -415,6 +416,17 @@ def intended(
         return one
     opening = "" if one.kind == CLICK else opening_text(children, at)
     found = bundled(path, one.destination, opening, declarations, substitution)
+    if contextual and found is not None:
+        assigned = targets.get((found.path, found.fragment))
+        if assigned is None:
+            return one
+        anchor = f"{ANCHOR}{assigned}"
+        return Use(
+            one.kind,
+            one.text,
+            one.title,
+            anchor if one.kind == CLICK else normalizeLink(anchor),
+        )
     if found is None:
         withheld = withholding_target(
             path,
@@ -825,6 +837,8 @@ def placement(record: Record, parsed: Mapping[str, Sequence[Token]]) -> None:
                         f"none of the heading its source wrote at line {line}",
                     )
             emitted_at.add(at)
+        if record.preamble:
+            continue
     for one in record.ancestors():
         for origin in one.origins:
             if origin.line not in needed.get(origin.path, set()):
@@ -1132,6 +1146,7 @@ def references(
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
+    contextual: bool = False,
 ) -> None:
     """Hold one region's uses, diagram links among them, to those its source wrote.
 
@@ -1164,6 +1179,7 @@ def references(
                 declarations,
                 dispatched_to,
                 substitution,
+                contextual,
             )
             if anchor is None
             else Use(
@@ -1440,6 +1456,7 @@ def validate(
             served.get((carried.path, carried.lines[0]), {}),
             substitution,
             contributing.get(carried.placing, {}),
+            record.preamble,
         )
         preserved(
             carried.path,
