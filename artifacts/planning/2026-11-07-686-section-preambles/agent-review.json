@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/687",
+    "head": "a9abde5ec89df1877eab60f2ec25e2bacb5ff5b4",
+    "base": "f2c0b565641cdf81664bda77df4aa650344324ae",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-07-686-section-preambles/agent-review.json",
+    "reviewer": "Cursor agent",
+    "reviewed_at": "2026-11-07T16:33:09Z",
+    "scope": "The complete main-to-head diff, including fragment selection, folder grouping, preamble links, provenance, composition and dispatch walkers, candidate validation, unit and integration coverage, and the contract documentation.",
+    "criteria": "AC1 through AC5 verified by the grouping regression tests, shared-preamble corpus fixture and full repository check at the reviewed head.",
+    "validation": "make check passed: 1904 unit tests, 973 harness tests, 537 corpus fixtures, strict typing, packaging, documentation, invocation, conformance and independence checks.",
+    "findings": []
+  }
+]
