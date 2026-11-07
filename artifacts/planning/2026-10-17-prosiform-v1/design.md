@@ -107,6 +107,8 @@ pf
 
 `-c` accepts `-o DIR`, validating every bundle of the run without writing into that folder. Optional manifests and dependency explanations can be added later without changing the core invocation.
 
+An entry reference beginning with `-` is read as an option, so it is supplied after a `--` separator, as in `pf --presets=-checks -- -guide.md`. The separator ends the options and the one word after it is the entry.
+
 A command line the grammar above does not admit is refused with `E_INVALID_USAGE`: compilation without an entry, two entry references, repeated `--presets`, `--presets` without an entry, a complete Markdown-link expression as an entry, an undeclared option, an invalid option value, a budget entry Resource limits refuses, an entry reference naming a fragment alone, whose diagnostic names `document#fragment` as the remedy, `-o -`, or a run folder holding any captured source. These failures exit 2. Informational invocations, including bare `pf`, require no entry. Root declarations are source input and follow the diagnostics below. Check mode applies the same invocation and destination validation and publishes nothing.
 
 ### Guide
