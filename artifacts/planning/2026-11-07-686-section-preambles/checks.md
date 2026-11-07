@@ -2,7 +2,7 @@
 
 ## Full Repository Validation
 
-`make check` passed at `a9abde5ec89df1877eab60f2ec25e2bacb5ff5b4`, with the build under test configured to that checkout's `pf`.
+`make check` passed at `d71a9867a88f005b347d39473c158814f25ea1ac`, with the build under test configured to that checkout's `pf`.
 
 - 1,904 Python unit tests passed.
 - 973 harness tests passed.
@@ -11,7 +11,7 @@
 
 ## Work-Tracker Example
 
-`pf modes/plan-mode.md` exited 0 and emitted top-level `Artifacts` with `Epic-Issue-Body` and `Epic` preambles. The empty `Overview` member structure was absent.
+`pf modes/plan-mode.md` exited 0 and emitted H2 `Artifacts` with H3 `Epic-Issue-Body` and `Epic` preambles. The empty `Overview` member structure was absent.
 
 ## Independent Review
 
