@@ -70,7 +70,7 @@ from workflow import (
     workflows,
 )
 
-STUB = Path(__file__).resolve().parent / "stub_agent.py"
+STUB = Path(__file__).resolve().parent.parent / "stub_agent.py"
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 CALLER_VARIABLES = (
     "CLAUDECODE",

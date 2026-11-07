@@ -98,7 +98,7 @@ def test_no_harness_declares_a_field_nothing_reads() -> None:
     A field is read where its own class reads it as `self.<field>`, or where
     an eval module reads it from any harness as `harness.<field>`.
     """
-    here = Path(__file__).parent
+    here = Path(__file__).resolve().parent.parent
     modules = " ".join(
         path.read_text()
         for path in sorted(here.glob("*.py"))

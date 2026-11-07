@@ -2,6 +2,20 @@
 
 How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link the sections saying what to do in each state, follows that workflow to completion. The eval gives each workflow to headless agent sessions, scores the path each session took, and compares the pass rates with a committed baseline.
 
+## Layout
+
+| Path | Holds |
+| --- | --- |
+| [`README.md`](README.md), [`RUNBOOK.md`](RUNBOOK.md) | This page, and how each live run is carried out and triaged. |
+| [`workflows/`](workflows) | The corpus: each workflow's forms and scenarios. |
+| [`workflow.py`](workflow.py), [`harness.py`](harness.py), [`score.py`](score.py), [`run.py`](run.py), [`report.py`](report.py), [`codex_agent.py`](codex_agent.py) | The corpus's reader, the harnesses, the scorer, the runner, the report, and the Codex bridge. |
+| [`stub_agent.py`](stub_agent.py), [`stub_codex.py`](stub_codex.py) | The test doubles the runner and the bridge are held against. |
+| [`tests/`](tests) | The tests, which hold the corpus, the scorer, the runner and the report. |
+| [`instructions/`](instructions) | The task each session is given, one per form family. |
+| [`evidence/`](evidence) | The committed baseline and the MVP proof, each with its report. |
+
+A module imports another by name, so each runs as a script in this directory; [`tests/__init__.py`](tests/__init__.py) makes the tests a package whose modules reach them by that name.
+
 ## Forms
 
 Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the state the branch enters, the two dispatch forms a workflow dispatching a target is written in, and a skill handing over a workflow's sources to compile. A session receives one of the forms below; every form but `bootstrap` and `compiled` is entered at `workflow.md`:
@@ -22,7 +36,7 @@ The linked form's entry draws the diagram's flowchart with no branch label, and 
 
 Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
-Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to compile from the directory holding the sources. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
+Every session is given the same [instruction](instructions/instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instructions/instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instructions/instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to compile from the directory holding the sources. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
 
 | Field | Meaning |
 | --- | --- |
@@ -350,11 +364,11 @@ The [report](report.py) gives three tables: per model, per model and form across
 
 A refused run — one every started session of which took `errored` — has no row and no comparison. Its report gives the run's `refused` state and the reason `run.json` records, the reason being one session's own `result` text, so a reader sees the limit the agent reported rather than a pass rate. `--write-baseline` writes only from a run whose report holds a cell, so a refused run, or one that started nothing, leaves the committed baseline as it was.
 
-`baseline.json` beside this file is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. [`report.md`](report.md) beside it is that run's report. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
+[`evidence/baseline.json`](evidence/baseline.json) is the baseline, a reviewed default run's cells: each one's sessions, passes, pass rate and failure counts, with that run's id, date, models, repetitions and cost. [`evidence/report.md`](evidence/report.md) beside it is that run's report. With a baseline present, each row's Change is its pass rate less the baseline row's, in percentage points, and each failure count is followed by its change in brackets when it moved. A row the baseline lacks reads `new`, and the rows the baseline holds that the run lacks are listed under Baseline Only. With no baseline, Change reads `—`.
 
 ## MVP proof
 
-[`mvp-proof.json`](mvp-proof.json) records a live run of the [feature scenarios](#feature-scenarios), with its [report](mvp-proof.md) beside it: 150 sessions on the `claude` harness and `claude-haiku-5-5`, fifteen scenarios in `bundle` and `tree`, five repetitions each. It proves that an agent given a feature workflow in either form follows it to completion: 148 sessions pass, all 75 in `bundle` and 73 of 75 in `tree`. The two failures, in `section-composition`'s `nested-composition`, are triaged as misses in the file. The run measured USD 0.67671 over 19 268 512 tokens, so a rerun spends the same budget.
+[`evidence/mvp-proof.json`](evidence/mvp-proof.json) records a live run of the [feature scenarios](#feature-scenarios), with its [report](evidence/mvp-proof.md) beside it: 150 sessions on the `claude` harness and `claude-haiku-5-5`, fifteen scenarios in `bundle` and `tree`, five repetitions each. It proves that an agent given a feature workflow in either form follows it to completion: 148 sessions pass, all 75 in `bundle` and 73 of 75 in `tree`. The two failures, in `section-composition`'s `nested-composition`, are triaged as misses in the file. The run measured USD 0.67671 over 19 268 512 tokens, so a rerun spends the same budget.
 
 The managed platform configuration the sessions carried is recorded by count and fingerprint, as [Isolation](#isolation) states. [`RUNBOOK.md`](RUNBOOK.md#mvp-proof) states how the run is made.
 
@@ -362,12 +376,12 @@ The managed platform configuration the sessions carried is recorded by count and
 
 The committed baseline and MVP proof are historical live-run evidence at the revisions their records name. They do not measure the current link-tag preset implementation. The deterministic workflow and scorer tests exercise the current tagged deferrals and dispatched variants; a new paid run requires separate authorization.
 
-Run the default matrix, review its report, then write its cells as the baseline and commit `baseline.json` with the run's `report.md` beside it:
+Run the default matrix, review its report, then write its cells as the baseline and commit `evidence/baseline.json` with the run's `evidence/report.md`:
 
 ```bash
 make eval-diagrams
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --write-baseline
-cp evals/diagram-following/results/<run-id>/report.md evals/diagram-following/report.md
+cp evals/diagram-following/results/<run-id>/report.md evals/diagram-following/evidence/report.md
 ```
 
 The report written alongside is compared with the baseline being replaced, so it shows what the new baseline moves.

@@ -455,7 +455,7 @@ def test_codex_preflight_requires_auth_and_refuses_caller_context(
     assert "auth-only" in (harness.preflight(tmp_path, tmp_path, ()) or "")
 
 
-STUB_SERVER = Path(__file__).with_name("stub_codex.py")
+STUB_SERVER = Path(__file__).resolve().parent.parent / "stub_codex.py"
 
 
 def test_the_bridge_drives_native_stdio_and_sandboxed_pf_without_a_model(

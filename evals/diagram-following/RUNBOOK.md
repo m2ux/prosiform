@@ -105,7 +105,7 @@ The live proof of the feature workflows, run by [I10:E05](https://github.com/m2u
 | Session cap | 420 000 tokens: the shakedown's largest session, 206 458 tokens, doubled and rounded up to the next 10 000. |
 | Token budget | 63 000 000 tokens: 150 times the session cap. |
 | Cost cap | USD 2: 150 times the shakedown's mean session cost of USD 0.004123, doubled and rounded up to the next dollar. |
-| Committed | `report.json` as `evals/diagram-following/mvp-proof.json`, with its `dispositions.json` read into it. `baseline.json` is untouched. |
+| Committed | `report.json` as `evals/diagram-following/evidence/mvp-proof.json`, with its `dispositions.json` read into it. `evidence/baseline.json` is untouched. |
 
 ```bash
 make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows preset-selection,group-placement,subst-redirect,section-entry,section-composition,declared-inclusion --repetitions 5 --session-budget-tokens 420000 --budget-tokens 63000000 --run-id mvp-proof'
@@ -147,7 +147,7 @@ The baseline over the hardened corpus, run by [I10:E00](https://github.com/m2ux/
 | Session cap | Set by E00 W04's shakedown, by the proof's rule: its largest session tokens, doubled and rounded up to the next 10 000. |
 | Token budget | The sessions times the session cap. |
 | Cost cap | Set by E00 W04's shakedown: the sessions times its mean session cost, doubled and rounded up to the next dollar, USD 2 a session at the fifth run's USD 0.007449. The run starts only once the user approves it. |
-| Committed | `baseline.json`, written by `report.py --write-baseline`; the run's `report.md` as `evals/diagram-following/report.md`; and the run's measured cost in the README. |
+| Committed | `evidence/baseline.json`, written by `report.py --write-baseline`; the run's `report.md` as `evals/diagram-following/evidence/report.md`; and the run's measured cost in the README. |
 
 ```bash
 make eval-diagrams ARGS='--session-budget-tokens <session cap> --budget-tokens <token budget> --run-id baseline'
@@ -192,7 +192,7 @@ The edge workflows on every harness carrying a shell, run by [I10:E04](https://g
 | Session cap | Set by E04 W16's shakedown, by the proof's rule. |
 | Token budget | The sessions times the session cap, per harness. |
 | Cost cap | Set by E04 W16's shakedown, by the proof's rule, per harness. `cursor` reports no cost, so its run is held to its token budget. |
-| Committed | Each harness's `report.json` as `evals/diagram-following/composition-edges-<harness>.json` and its `report.md` beside it. `baseline.json` and `mvp-proof.json` are untouched. |
+| Committed | Each harness's `report.json` as `evals/diagram-following/evidence/composition-edges-<harness>.json` and its `report.md` beside it. `evidence/baseline.json` and `evidence/mvp-proof.json` are untouched. |
 
 ```bash
 make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms compiled,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'

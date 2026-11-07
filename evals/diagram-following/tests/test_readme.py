@@ -10,9 +10,9 @@ import re
 import tomllib
 from pathlib import Path
 
-HERE = Path(__file__).parent
+HERE = Path(__file__).resolve().parent.parent
 README = (HERE / "README.md").read_text()
-PROOF = json.loads((HERE / "mvp-proof.json").read_text())
+PROOF = json.loads((HERE / "evidence" / "mvp-proof.json").read_text())
 ROW = re.compile(r"^\| `([a-z-]+)` \| `([a-z-]+)` \|", re.MULTILINE)
 
 

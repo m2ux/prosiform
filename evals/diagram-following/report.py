@@ -31,7 +31,7 @@ A failing session the file does not name carries a null disposition, so an
 untriaged failure reads as one; a disposition outside the three, or an
 entry naming no failing session, is refused.
 
-The baseline is `baseline.json` beside this file, or the file `--baseline`
+The baseline is `evidence/baseline.json`, or the file `--baseline`
 names. It holds a reviewed run's id, date, models, repetitions and cost,
 and its `cells`, each with its key, `sessions`, `passed`, `pass_rate` and
 `failures`; its `by_form` and `by_model` rows are summed from those cells.
@@ -74,7 +74,7 @@ REPORT_JSON = "report.json"
 REPORT_MD = "report.md"
 DISPOSITIONS = "dispositions.json"
 DISPOSITION_NAMES = ("miss", "defect", "unclear")
-BASELINE = ROOT / "baseline.json"
+BASELINE = ROOT / "evidence" / "baseline.json"
 TIMEOUT = "timeout"
 
 FAILURES = tuple(str(failure) for failure in Failure)

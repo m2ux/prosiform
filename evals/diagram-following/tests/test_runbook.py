@@ -27,8 +27,8 @@ from run import (
 from score import Failure
 from workflow import baseline_workflows
 
-ROOT = Path(__file__).with_name("RUNBOOK.md")
-MAKEFILE = Path(__file__).parent.parent.parent / "Makefile"
+ROOT = Path(__file__).resolve().parent.parent / "RUNBOOK.md"
+MAKEFILE = Path(__file__).resolve().parent.parent.parent.parent / "Makefile"
 ROW = re.compile(r"^\| `([a-z_]+)` \|", re.MULTILINE)
 PASSED = re.compile(r"ARGS='([^']*)'")
 OPTION = re.compile(r"(?<!\S)(--[a-z][a-z-]*)")

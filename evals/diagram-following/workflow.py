@@ -143,9 +143,10 @@ one every form of the baseline is measured by. The edge workflows defer,
 compose and dispatch in ways only a harness carrying a shell can follow, and
 they are measured by their own run, committed per harness beside the baseline.
 """
-INSTRUCTION = ROOT / "instruction.md"
-INSTRUCTION_BOOTSTRAP = ROOT / "instruction-bootstrap.md"
-INSTRUCTION_COMPILED = ROOT / "instruction-compiled.md"
+INSTRUCTIONS = ROOT / "instructions"
+INSTRUCTION = INSTRUCTIONS / "instruction.md"
+INSTRUCTION_BOOTSTRAP = INSTRUCTIONS / "instruction-bootstrap.md"
+INSTRUCTION_COMPILED = INSTRUCTIONS / "instruction-compiled.md"
 
 ENTRY = "workflow.md"
 RUN_PF_LINE = "Run `pf`, then follow the guidance it prints."
