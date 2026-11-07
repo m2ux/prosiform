@@ -134,6 +134,7 @@ from prosiform.provenance import (
     Origin,
     Part,
     Placing,
+    Preamble,
     Range,
     Served,
 )
@@ -593,7 +594,7 @@ class Composing:
                     self.level = one.record.headings[at].level
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
-                if not part.composed:
+                if not part.composed and not isinstance(part, Preamble):
                     for found in self.directives(part.path, token):
                         self.pending.setdefault(found.title, []).append(found)
             self.emit(text)

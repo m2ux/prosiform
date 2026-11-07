@@ -181,6 +181,7 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 | `closure` | Normalises each reference from the file that writes it, classifies it by its target's declaration, and reads its operators and any directive label. |
 | `bundle` | Builds one file group per contributing source from its selected regions, under a file heading and with any structural ancestors, and joins the groups into the candidate. |
 | `grouping` | Merges the members of a declared group under one heading, with their overview and variants. |
+| `preamble` | Groups the title and introduction of each fragment-selected document beneath its parent folder, and resolves its preamble links to carried destinations. |
 | `composition` | Places each composition directive's target in a destination section beneath the section that writes it. |
 | `dispatch` | Inserts the dispatch-set sub-sections, and finds dispatch cycles, deep chains and self-dispatch. |
 | `rewrite` | Rewrites each compiled link to its destination, turns reference-style uses into inline links, and drops definitions. |

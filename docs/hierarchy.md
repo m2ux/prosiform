@@ -74,6 +74,18 @@ Entry                       ← the entry's file heading, H1
 
 Nesting spends depth. A heading a nested group pushes beyond H6 fails the run, as [the level shift](#the-level-shift) states; the run does not lift the group to the top level. A shared document linked from deep divisions is where this bites. The author places the group's first member through a shallower document, such as the entry, or keeps the members' headings shallow.
 
+## Preamble groups
+
+A document joined to a merged group only by fragment selections also contributes its **preamble**: its H1 title and the content between that title and its first H2. The preamble supplies the document's context without expanding the dependency closure beyond the references that selected its sections. A whole-document selection already carries this material in the document's own group.
+
+The parent folder's name, in title case, heads one **preamble group** at H2 for all such documents sharing that folder. Within it, each filename without its Markdown suffix, in title case, names an H3 subsection carrying that document's preamble once, however many of its sections are selected. Preamble groups follow the bundle's other groups in parent-folder first-contribution order; documents within each follow source placement order. A document at the working-directory root has no parent-folder group, and a titled entry fragment already situated in its own group contributes no duplicate preamble group.
+
+The filename subsection absorbs a title whose slug agrees with the filename stem, as a file heading does. A title that does not agree remains beneath the subsection. Links in the preamble resolve from their source document and point to targets the bundle already carries; a target absent from the bundle retains its readable source link. Preamble links create no dependency and open no composition or dispatch.
+
+Structural ancestors needed to place selected sections remain in the declared merged group. They do not count as member-overview content, and an unselected absorbed title does not create an empty member subsection there. The selected sections retain their declared grouping and variants.
+
+The fixture [partial-selections-share-folder-preambles](../fixtures/grouping/partial-selections-share-folder-preambles) holds this arrangement.
+
 ## Member names
 
 A member that contributes content above the grouping depth — its preamble, or a section shallower than the grouping depth — takes one subsection naming it.

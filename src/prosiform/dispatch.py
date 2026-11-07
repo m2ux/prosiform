@@ -96,6 +96,7 @@ from prosiform.provenance import (
     Generated,
     Instruction,
     Part,
+    Preamble,
     Range,
     Record,
     Served,
@@ -657,6 +658,7 @@ class Placing:
             elif isinstance(part, Range):
                 tokens = self.parsed[part.path]
                 region = region_of(tokens, part)
+                preamble = isinstance(part, Preamble)
                 held = len(carried_headings(tokens, region))
                 if region.type == HEADING_OPEN:
                     self.flush(one.record.headings[at].level)
@@ -665,6 +667,10 @@ class Placing:
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
                 key = (part.path, part.lines[0])
+                if preamble:
+                    self.emitted.append(text)
+                    self.parts.append(part)
+                    continue
                 for link in written_in(
                     part.path,
                     self.read[part.path],

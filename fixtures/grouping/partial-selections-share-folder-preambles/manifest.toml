@@ -1,0 +1,17 @@
+description = "Every partial selection of a grouped document contributes its title and introduction once to an H2 group named for its parent folder. Members sharing a folder share that group in placement order, and structural ancestors alone create no per-member Overview."
+
+clauses = [
+  "Grouping — Group structure",
+  "Grouping — Document content above the grouping depth",
+  "Heading-only structural ancestors",
+  "Grouping — The parent arrangement",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/plan-mode.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_plan-mode.bundle.md"]
+diagnostics = []

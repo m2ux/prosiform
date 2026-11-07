@@ -25,3 +25,13 @@ Walk the plan from the goal up.
 #### Draft
 
 Write the first pass.
+
+## Modes
+
+### Plan-Mode
+
+Scopes the solution before any work starts.
+
+### Review-Mode
+
+Reads a plan back against the goal it states.

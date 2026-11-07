@@ -491,6 +491,94 @@ def test_a_nested_group_moves_every_heading_down_one_level_per_division() -> Non
     assert nested.headings == top.headings
 
 
+def test_partial_selections_share_folder_grouped_preambles(tmp_path: Path) -> None:
+    documents = {
+        "guide.md": DECLARED
+        + "# Guide\n\nFollow [Populate](artifacts/epic-issue-body.md#populate), "
+        + "[Validate](artifacts/epic-issue-body.md#validate) and "
+        + "[Inspect](artifacts/epic.md#inspect).\n",
+        "artifacts/epic-issue-body.md": paired("operations", 3)
+        + "# Epic Issue Body\n\nPopulates an epic. Read [Epic](epic.md).\n\n"
+        + "## Operations\n\n### Populate\n\nPopulate it.\n\n"
+        + "### Validate\n\nValidate it.\n\n## Fields\n\nHeld separately.\n",
+        "artifacts/epic.md": paired("operations", 3)
+        + "# Epic\n\nTracks an epic.\n\n## Operations\n\n"
+        + "### Inspect\n\nInspect it.\n\n## Fields\n\nHeld separately.\n",
+    }
+    status, bundle, diagnostics = composed(tmp_path, documents)
+    assert status == 0, diagnostics
+    assert outline(bundle) == [
+        "# Guide",
+        "## Operations",
+        "### Populate",
+        "### Validate",
+        "### Inspect",
+        "## Artifacts",
+        "### Epic-Issue-Body",
+        "### Epic",
+    ]
+    assert bundle.count("Populates an epic. Read [Epic](#inspect).") == 1
+    assert bundle.count("Tracks an epic.") == 1
+    assert "Held separately." not in bundle
+    assert "## Overview" not in bundle
+
+
+def test_a_preamble_link_reaches_its_selected_target(tmp_path: Path) -> None:
+    documents = {
+        "guide.md": DECLARED
+        + "# Guide\n\nRead [Populate](artifacts/epic-issue-body.md#populate) "
+        + "and [Inspect](artifacts/epic.md#inspect).\n",
+        "artifacts/epic-issue-body.md": paired("operations", 3)
+        + "# Epic Issue Body\n\nRead [Epic](epic.md#inspect).\n\n"
+        + "## Operations\n\n### Populate\n\nPopulate it.\n",
+        "artifacts/epic.md": paired("operations", 3)
+        + "# Epic\n\nTracks an epic.\n\n## Operations\n\n"
+        + "### Inspect\n\nInspect it.\n\n### Unselected\n\nDo not include this.\n",
+    }
+    status, bundle, diagnostics = composed(tmp_path, documents)
+    assert status == 0, diagnostics
+    assert "Read [Epic](#inspect)." in bundle
+    assert "Do not include this." not in bundle
+
+
+def test_a_whole_document_selection_keeps_its_existing_group(tmp_path: Path) -> None:
+    documents = {
+        "guide.md": DECLARED + "# Guide\n\nRead [Epic](artifacts/epic.md).\n",
+        "artifacts/epic.md": paired("operations", 3)
+        + "# Epic\n\nTracks an epic.\n\n## Operations\n\n### Inspect\n\nInspect it.\n",
+    }
+    status, bundle, diagnostics = composed(tmp_path, documents)
+    assert status == 0, diagnostics
+    assert outline(bundle) == [
+        "# Guide",
+        "## Operations",
+        "### Overview",
+        "#### Epic",
+        "##### Operations",
+        "### Inspect",
+    ]
+    assert bundle.count("Tracks an epic.") == 1
+
+
+def test_a_whole_document_preamble_link_reaches_its_folder_subsection(
+    tmp_path: Path,
+) -> None:
+    documents = {
+        "guide.md": DECLARED
+        + "# Guide\n\nRead [Epic](artifacts/epic.md) and "
+        + "[Populate](artifacts/epic-issue-body.md#populate).\n",
+        "artifacts/epic-issue-body.md": paired("operations", 3)
+        + "# Epic Issue Body\n\nRead [Epic](epic.md).\n\n"
+        + "## Operations\n\n### Populate\n\nPopulate it.\n",
+        "artifacts/epic.md": paired("operations", 3)
+        + "# Epic\n\nTracks an epic.\n\n## Operations\n\n### Inspect\n\nInspect it.\n",
+    }
+    status, bundle, diagnostics = composed(tmp_path, documents)
+    assert status == 0, diagnostics
+    assert "Read [Epic](#epic)." in bundle
+    assert "## Artifacts\n\n### Epic-Issue-Body\n\nRead [Epic](#epic)." in bundle
+
+
 def test_a_file_s_pair_places_its_own_sections(tmp_path: Path) -> None:
     status, bundle, _ = composed(
         tmp_path,
