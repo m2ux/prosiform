@@ -3,22 +3,22 @@
 Compile one local Markdown entry and its dependencies into one validated bundle, and each effective selection it dispatches into a bundle of its own.
 
 ```text
-pf [OPTIONS] --entry REF [--presets PRESETS]
+pf [OPTIONS] REF [--presets PRESETS]
 pf
 ```
 
 ## Guide
 
-`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> --entry <document>[#<section>] [--presets <presets>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
+`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <document>[#<section>] [--presets <presets>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
 
 ## Options
 
 Flags are case-sensitive.
-`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
+`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/bf84b2ae6/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
 | --- | --- |
-| `--entry REF` | one document or document#fragment; paths from cwd |
+| `REF` | one document or document#fragment; paths from cwd |
 | `--presets PRESETS` | comma-separated preset names for the entry; default: no named presets |
 | `-o DIR` | folder the run's own folder of bundles is written into, made if absent, swapped in whole; default: the working directory |
 | `-c` | discover, bundle, validate; publish nothing; accepts -o |
@@ -28,7 +28,7 @@ Flags are case-sensitive.
 | `-v, --version` | tool version and profile identifier |
 | `-h, --help` | usage, defaults and exit statuses |
 
-Compilation requires exactly one `--entry` and accepts at most one `--presets`. Positional entries, repeated entry or preset options, `--presets` without an entry, and a complete Markdown-link expression as the entry are invalid usage and exit `2`. Informational invocations require no entry.
+Compilation requires exactly one `REF` and accepts at most one `--presets`. Two entry references, repeated preset options, `--presets` without an entry, and a complete Markdown-link expression as the entry are invalid usage and exit `2`. Informational invocations require no entry.
 
 ### Budgets
 
@@ -50,21 +50,21 @@ Each budget fails the run rather than truncating a bundle, and holds per bundle.
 An agent encountering `[Plan Report](guide.md#plan-report "checks,draft")` supplies:
 
 ```text
-pf --entry guide.md#plan-report --presets checks,draft
-pf --entry modes/review.md#review --presets 'checks, final draft'
-pf --entry guide.md#plan-report
-pf --entry=-guide.md --presets=-checks
-pf -c --entry guide.md#plan-report --presets checks,draft
+pf guide.md#plan-report --presets checks,draft
+pf modes/review.md#review --presets 'checks, final draft'
+pf guide.md#plan-report
+pf guide.md --presets=-checks
+pf -c guide.md#plan-report --presets checks,draft
 ```
 
-Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags.
+Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is invalid usage, since the grammar reads it as an option.
 
 The following commands use the checked source tree of a [preset fixture](fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml):
 
 ```bash
 cd fixtures/inclusion/a-link-title-selects-its-preset/source
-pf --entry guide.md
-pf -c --entry guide.md
+pf guide.md
+pf -c guide.md
 ```
 
 ## Conversion metadata

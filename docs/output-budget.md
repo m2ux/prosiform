@@ -84,8 +84,8 @@ git archive acac858 skills/work-planner skills/guidelines.md | tar -x -C /tmp/cl
 sed -i 's|(SKILL.md#command-conventions)|(SKILL.md)|' /tmp/closure/skills/work-planner/guidelines.md
 cd /tmp/closure/skills
 find . -name '*.md' -print0 | xargs -0 perl -0pi -e 's/\A---\n/---\nprosiform: {}\n/ or s/\A/---\nprosiform: {}\n---\n/'
-<build> --entry work-planner/modes/plan-mode.md
-<build> --budget output-bytes=1000000 --entry work-planner/modes/plan-mode.md
+<build> work-planner/modes/plan-mode.md
+<build> --budget output-bytes=1000000 work-planner/modes/plan-mode.md
 ```
 
 The first run is refused. The run counts the bundle as it writes it and stops at the
