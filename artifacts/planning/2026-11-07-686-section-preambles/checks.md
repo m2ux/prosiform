@@ -19,4 +19,4 @@ The Codex review invocation was refused by the workspace owner's spend cap and r
 
 ## Merge Boundary
 
-The `main` ruleset requires one approving review. The agent cannot approve its own pull request, so merge remains with the required reviewer.
+The `main` ruleset requires one approving review. The agent cannot approve its own pull request, so merge remains with the required reviewer. CI passed and PR 687 is ready for review; F04 is In Review on the Python board.
