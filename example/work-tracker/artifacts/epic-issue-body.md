@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    group: {artifacts: 2}
+    group: {operations: 3}
 ---
 # Epic Issue Body
 

@@ -11,7 +11,7 @@ Scopes the solution: the design, the criteria, and the breakdown of an initiativ
 ## Procedure
 
 1. **Populate the epics.**
-   Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) for each epic and each new task row.
+   Run [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body) and [Inspect Epic Delivery](../artifacts/epic.md#inspect-epic-delivery)for each epic and each new task row.
    - Register each returned file in the planning record.
    - Resolve Open Questions before work starts.
    - Return each epic draft and its format results to the review step.
