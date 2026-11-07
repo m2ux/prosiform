@@ -124,5 +124,5 @@ jobs:
       # build's contract, so it is never part of `make check`. A manual
       # trigger runs it here, beside the checks, on the revision dispatched.
       - name: Run the eval harness
-        if: github.event_name == 'workflow_dispatch' && inputs.eval-harness == 'true'
+        if: github.event_name == 'workflow_dispatch' && inputs.eval-harness
         run: make eval-harness
