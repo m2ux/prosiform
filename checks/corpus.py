@@ -2,9 +2,10 @@
 """Run every fixture the corpus holds against the build under test.
 
 `runner.py` decides one fixture. This module walks the corpus, runs each
-fixture through that runner in path order and decides the corpus's own
-verdict from the results, so the figure the corpus reports comes from a
-command rather than from a driver written for one run.
+fixture through that runner, and decides the corpus's own verdict from the
+results, so the figure the corpus reports comes from a command rather than
+from a driver written for one run. The fixtures are independent of each
+other, so they are run a few at a time and reported in path order.
 
 The corpus declares the contract in full, so a manifest may name the work
 that delivers behaviour the build does not yet meet:
@@ -45,9 +46,11 @@ is never reported as holding against a build that never ran.
 """
 
 import argparse
+import os
 import re
 import sys
 from collections.abc import Iterable
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -59,6 +62,30 @@ from ruamel.yaml.error import YAMLError
 from runner import BuildNotConfigured, Result, build_under_test, run_fixture
 
 AWAITING = "awaiting"
+WORKERS_VARIABLE = "PROSIFORM_CORPUS_WORKERS"
+
+
+def workers() -> int:
+    """How many fixtures run at once.
+
+    A fixture costs one process, and nearly all of that cost is the build's
+    own interpreter start, so the runs reach nothing of each other. Taking
+    them a few at a time is what turns that many runs into that much less
+    wall clock. The default is the cores this host has, and
+    `PROSIFORM_CORPUS_WORKERS` overrides it, which is how a machine sharing
+    its cores says how many it may use.
+    """
+    declared = os.environ.get(WORKERS_VARIABLE, "").strip()
+    if not declared:
+        return max(1, os.cpu_count() or 1)
+    try:
+        return max(1, int(declared))
+    except ValueError:
+        raise SystemExit(
+            f"corpus check: {WORKERS_VARIABLE} names no number of workers: {declared!r}"
+        ) from None
+
+
 DECLARATION = "prosiform"
 SETTINGS = frozenset({"group", "subst", "root"})
 REFUSED = "E_INVALID_CONVERSION_METADATA"
@@ -236,6 +263,18 @@ def requested(argv: list[str]) -> str | None:
     return named
 
 
+def run_all(found: list[Path]) -> list[Outcome]:
+    """Every fixture's outcome, in the corpus's own path order.
+
+    Each fixture runs in its own process and reads its own tree, so the runs
+    do not reach each other and the order they finish in says nothing. The
+    results are returned in the order the fixtures were found, so the report
+    is the same whichever machine and however many workers ran it.
+    """
+    with ThreadPoolExecutor(max_workers=workers()) as pool:
+        return list(pool.map(outcome, found))
+
+
 def main(corpus: Path = CORPUS, *, awaited: str | None = None) -> int:
     """Run the corpus, or report what one piece of work unblocks."""
     if awaited is not None:
@@ -251,7 +290,7 @@ def main(corpus: Path = CORPUS, *, awaited: str | None = None) -> int:
     if not found:
         print(f"corpus check: no fixture under {corpus}", file=sys.stderr)
         return 1
-    outcomes = [outcome(fixture) for fixture in found]
+    outcomes = run_all(found)
     for line in report(outcomes):
         print(line)
     return 1 if any(one.verdict.fails_the_run for one in outcomes) else 0

@@ -29,16 +29,26 @@
 # `make corpus` runs the corpus against a build named by configuration:
 # `PROSIFORM_BUILD` holds that build's command line, and the target fails
 # without one, so a fixture is never reported as holding against a build that
-# never ran. `make invocation` reads the documented invocation against that
+# never ran. A fixture is one independent run, so the corpus runs a few at a
+# time, as many as the host has cores unless `PROSIFORM_CORPUS_WORKERS` says
+# otherwise, and reports in path order either way. `make invocation` reads the
+# documented invocation against that
 # same build's own help output, `make conformance` reads the codes it reports
 # and `make independence` reads that report, and each fails without a build
 # for the same reason.
 #
-# `make harness` also holds the diagram-following eval's workflow corpus, its
+# `make harness` holds the checks' own tests: the manifest schema and its
+# cases, the corpus runner's comparison, the catalogue, the conformance report
+# and the documents the checks read. They need no configured build.
+#
+# `make eval-harness` holds the diagram-following eval's workflow corpus, its
 # scorer, its runner and its report. Its tests bundle each workflow form with
 # the `pf` the locked environment installs, score hand-made traces, run the
 # runner against a stub agent, and report over hand-made session records, so
-# they need no configured build and start no paid agent session.
+# they need no configured build and start no paid agent session. It is a
+# manual target: `make check` never runs it, because it is the evaluation's
+# own apparatus rather than the build's contract, and it costs minutes to
+# prove what changes to the eval only.
 #
 # `make eval-diagrams` runs that eval against real agents, which costs money,
 # so no other target depends on it and `make check` never starts it. It runs
@@ -63,7 +73,7 @@ HARNESS := opencode
 TOOL_CONFIG := src/pyproject.toml
 PYTHON_SOURCES := src/prosiform src/tests checks evals
 
-.PHONY: check test harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render examples eval-diagrams
+.PHONY: check test harness eval-harness corpus smoke lint format-check typecheck lock-check layout tables links vocabulary invocation conformance independence render examples eval-diagrams
 
 check: lock-check lint format-check typecheck test harness corpus smoke layout tables links vocabulary invocation conformance independence
 
@@ -71,7 +81,10 @@ test:
 	cd src && uv run --frozen pytest
 
 harness:
-	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests evals/diagram-following
+	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . checks/tests
+
+eval-harness:
+	$(UV_RUN) pytest --config-file $(TOOL_CONFIG) --rootdir . evals/diagram-following
 
 corpus:
 	$(UV_RUN) python checks/corpus.py

@@ -18,10 +18,11 @@ Three commands sit outside it, because each needs a tool or a budget the others 
 
 ## When Continuous Integration Runs
 
-The [`Checks` workflow](.github/workflows/checks.yml) starts on two events.
+The [`Checks` workflow](.github/workflows/checks.yml) starts on three events.
 
 - **Pull request.** One into `main`, or into an initiative or epic branch, runs `make check` when its change touches a path in the workflow's `CHECKED_PATHS`, the one place the path set is stated.
 - **Push to `main`.** The merge commit is checked whatever it changed.
+- **Manual dispatch.** Runs the checks and, unless the `eval-harness` input is cleared, `make eval-harness`. The eval harness is the evaluation's own apparatus, so it is dispatched by hand rather than run on every change.
 
 A pull request that touches none of those paths is reported as not checked: the job passes without running `make check`, raises a notice titled `Checks did not run`, and states the same in its run summary. A reader of a merge record reads that notice as an unchecked change, not a passing one.
 
@@ -41,9 +42,10 @@ A pull request that touches none of those paths is reported as not checked: the 
 
 | Command | Asserts |
 | --- | --- |
-| `make harness` | The corpus, its runner and the diagram-following eval are well formed. See [The harness](#the-harness). |
-| `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares, and every fixture source declares its settings in a preset. |
+| `make harness` | The corpus and its runner are well formed. See [The harness](#the-harness). |
+| `make corpus` | Every fixture in the corpus, run against the build under test, produces the result its manifest declares, and every fixture source declares its settings in a preset. Fixtures are independent runs of one process each, so they run a few at a time and the verdicts are reported in path order. |
 | `make smoke` | The build installs into an environment, and its entry point bundles a declaring reference. |
+| `make eval-harness` | The diagram-following eval's corpus, scorer, runner and report are well formed. Run by hand: `make check` never starts it. See [The eval harness](#the-eval-harness). |
 
 #### The Harness
 
@@ -54,6 +56,11 @@ A pull request that touches none of those paths is reported as not checked: the 
 - **Runner.** The runner decides a fixture's result from its manifest and files alone.
 - **Check readings.** Each check parses its own input correctly on cases written to be misread, and the heading-slug rule generates the anchors GitHub generated for a captured document.
 - **Authoring guidance.** Each worked compile command the [invocation guide](invocation.md) and the [README](README.md) show executes against a copy of its documented source directory. Manifest templates and focused activation/re-taking commands use the compiler's grammar; the architecture lists every package module. Both guides recommend hyphens rather than underscores in names.
+
+#### The Eval Harness
+
+`make eval-harness` checks the [diagram-following eval](evals/diagram-following/README.md), which is the evaluation's own apparatus rather than anything the build's contract states. It is a manual target: it proves what a change to the eval changed, and `make check` leaves it out so a build's checks do not wait on it.
+
 - **Diagram-following corpus.** The [corpus](evals/diagram-following/workflow.py) bundles cleanly in every form, reporting only the warnings a workflow declares, and its forms differ only in their transitions. Each scenario's path is the walk through the diagram that its inputs determine, and the walk the bundle `pf` compiles from the diagram form states.
 - **Scorer.** The [scorer](evals/diagram-following/score.py) passes a run that walks that path with every action done. It classifies each failing run by how it departs from the path.
 - **Eval runner.** The [runner](evals/diagram-following/run.py) is driven by a stub agent, and:
@@ -141,7 +148,7 @@ These two checks keep the corpus tied to the design rather than to any one build
 
 ### Tool Environments
 
-- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make corpus`, `make examples` and `make eval-diagrams`.
+- **Pinned by the lockfile.** [`src/uv.lock`](src/README.md) pins the tools for `make lock-check`, `make lint`, `make format-check`, `make typecheck`, `make test`, `make harness`, `make eval-harness`, `make corpus`, `make examples` and `make eval-diagrams`.
 - **Same environment.** `make invocation`, `make conformance` and `make independence` read the corpus through the same manifest reader and the build through the same runner, so they run from that environment too.
 - **Standard library only.** `make smoke`, `make layout`, `make tables`, `make links`, `make vocabulary` and `make render` are standard-library scripts in [`checks/`](checks/README.md), run under `python3` directly.
 

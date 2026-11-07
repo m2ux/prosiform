@@ -21,6 +21,13 @@ on:
   push:
     branches:
       - main
+  # A manual trigger runs the eval harness, which the checks leave out.
+  workflow_dispatch:
+    inputs:
+      eval-harness:
+        description: Run the diagram-following eval's own harness.
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -45,15 +52,16 @@ jobs:
           BASE: ${{ github.event.pull_request.base.sha }}
           HEAD: ${{ github.event.pull_request.head.sha }}
           # Every path a check reads: the build, the corpus, the checks, the
-          # evals and scripts they run, the documents they read, the Makefile
-          # that names them and this workflow. A pull request changing any of
-          # them runs the checks; a pull request changing none reports that
-          # they did not run.
+          # scripts they run, the documents they read, the Makefile that names
+          # them and this workflow. A pull request changing any of them runs
+          # the checks; a pull request changing none reports that they did not
+          # run. The evals are not among them: `make check` reads none, and
+          # the eval harness runs by hand through `make eval-harness` or this
+          # workflow's manual trigger.
           CHECKED_PATHS: |
             :(glob)src/**
             :(glob)fixtures/**
             :(glob)checks/**
-            :(glob)evals/**
             :(glob)scripts/**
             :(glob)docs/**
             :(glob)**/*.md
@@ -108,3 +116,10 @@ jobs:
           # or the documentation, which is what makes a green run a
           # statement.
           PROSIFORM_BUILD: uv run --project ${{ github.workspace }}/src --frozen pf
+
+      # The eval harness is the evaluation's own apparatus rather than the
+      # build's contract, so it is never part of `make check`. A manual
+      # trigger runs it here, beside the checks, on the revision dispatched.
+      - name: Run the eval harness
+        if: github.event_name == 'workflow_dispatch' && inputs.eval-harness
+        run: make eval-harness

@@ -29,6 +29,7 @@ from pathlib import Path
 
 import pytest
 from corpus import (
+    WORKERS_VARIABLE,
     Outcome,
     Verdict,
     awaiting,
@@ -36,10 +37,12 @@ from corpus import (
     outcome,
     report,
     requested,
+    run_all,
     summary,
     unblocked,
     unblocked_report,
     undeclared,
+    workers,
 )
 from manifests import MANIFEST_NAME, errors, missing_files, read
 from runner import BUILD, Difference, Result
@@ -263,6 +266,42 @@ def test_an_empty_corpus_fails_the_run(
     (tmp_path / "corpus").mkdir()
     monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
     assert main(tmp_path / "corpus") == 1
+
+
+def test_fixtures_run_at_once_are_reported_in_path_order(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    corpus = tmp_path / "corpus"
+    names = ("a", "b", "c", "d")
+    for name in names:
+        write_fixture(corpus / name)
+    monkeypatch.setenv(WORKERS_VARIABLE, "4")
+    monkeypatch.setenv(BUILD, replaying(tmp_path, BODY))
+    found = sorted(corpus.glob("*"))
+    ordered = run_all(found)
+    assert [one.result.fixture for one in ordered] == [
+        str(corpus / name) for name in names
+    ]
+
+
+def test_the_worker_count_follows_the_cores_and_the_declaration(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(WORKERS_VARIABLE, "3")
+    assert workers() == 3
+    monkeypatch.setenv(WORKERS_VARIABLE, "0")
+    assert workers() == 1
+    monkeypatch.delenv(WORKERS_VARIABLE)
+    assert workers() >= 1
+
+
+def test_a_worker_count_that_names_no_number_is_refused(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(WORKERS_VARIABLE, "many")
+    with pytest.raises(SystemExit) as raised:
+        workers()
+    assert WORKERS_VARIABLE in str(raised.value)
 
 
 def test_the_whole_corpus_runs_against_the_build(
