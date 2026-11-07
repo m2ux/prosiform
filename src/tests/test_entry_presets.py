@@ -203,7 +203,7 @@ def test_the_guides_relative_fragment_and_quoted_commands_compile(
     assert "# Reviews\n" in run.bundle and "Selected." in run.bundle
 
 
-def test_a_leading_dash_entry_is_refused_and_a_preset_value_attaches(
+def test_a_leading_dash_entry_needs_a_separator_and_a_preset_value_attaches(
     tmp_path: Path,
 ) -> None:
     written(
@@ -212,10 +212,13 @@ def test_a_leading_dash_entry_is_refused_and_a_preset_value_attaches(
         "---\nprosiform:\n  '-checks':\n    group: {reviews: 1}\n---\n"
         "# Guide\n\nBody.\n",
     )
-    run = invoke("-guide.md", "--presets=-checks", cwd=tmp_path)
-    assert run.status == 2
-    assert "E_INVALID_USAGE" in run.stderr
-    assert run.bundles == {}
+    refused = invoke("-guide.md", "--presets=-checks", cwd=tmp_path)
+    assert refused.status == 2
+    assert "E_INVALID_USAGE" in refused.stderr
+    assert refused.bundles == {}
+    run = invoke("--presets=-checks", "--", "-guide.md", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "# Reviews\n\n## Guide\n\nBody." in run.bundle
     assert "pf guide.md --presets=-checks" in cli.GUIDE
 
 

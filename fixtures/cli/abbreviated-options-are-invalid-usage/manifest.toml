@@ -1,10 +1,10 @@
-description = "An undeclared option fails with E_INVALID_USAGE without publication, and an abbreviation of a declared one is undeclared."
+description = "An abbreviation of a declared option is undeclared, so it fails with E_INVALID_USAGE without publication."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 
 [invocation]
 cwd = "source"
-arguments = ["--ent", "guide.md"]
+arguments = ["--pre", "checks", "guide.md"]
 
 [expected]
 exit_status = 2

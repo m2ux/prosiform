@@ -14,7 +14,7 @@ pf
 ## Options
 
 Flags are case-sensitive.
-`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/bf84b2ae6/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
+`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/96eb2b0f4/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
 | --- | --- |
@@ -57,7 +57,7 @@ pf guide.md --presets=-checks
 pf -c guide.md#plan-report --presets checks,draft
 ```
 
-Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is invalid usage, since the grammar reads it as an option.
+Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
 
 The following commands use the checked source tree of a [preset fixture](fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml):
 
