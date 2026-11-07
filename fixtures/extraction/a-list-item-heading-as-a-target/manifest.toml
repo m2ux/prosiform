@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md#listed"]
+arguments = ["guide.md#listed"]
 
 [expected]
 exit_status = 1

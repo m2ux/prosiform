@@ -67,7 +67,7 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
             DECLARED + f"# {name.title()}\n\n## Details\n\n{name.title()} payload.\n",
         )
 
-    deferred = invoke("--entry", "modes/guide.md", cwd=tmp_path)
+    deferred = invoke("modes/guide.md", cwd=tmp_path)
     assert deferred.status == 0, deferred.stderr
     assert "payload." not in deferred.bundle
     expected_destination = f"library/task%20notes.md#{quote(fragment)}"
@@ -79,7 +79,7 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
         if token.type == LINK_OPEN and token.attrGet("href") == expected_destination
     ]
     assert published.attrGet("title") == (title or None)
-    words = ["pf", "--entry", str(published.attrGet("href"))]
+    words = ["pf", str(published.attrGet("href"))]
     if (presets := published.attrGet("title")) is not None:
         words += ["--presets", str(presets)]
     command = shlex.join(words)
@@ -89,7 +89,7 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
     written(
         tmp_path, "modes/guide.md", source.replace(mark, "↳" if composition else "")
     )
-    immediate = invoke("--entry", "modes/guide.md", cwd=tmp_path)
+    immediate = invoke("modes/guide.md", cwd=tmp_path)
     assert immediate.status == 0, immediate.stderr
 
     def payloads(bundle: str) -> tuple[str, ...]:
@@ -103,7 +103,7 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
     assert payloads(activated.bundle) == payloads(immediate.bundle) == expected
     assert ("--p-" in next(iter(activated.bundles))) is selected
 
-    default = invoke("--entry", expected_destination, cwd=tmp_path)
+    default = invoke(expected_destination, cwd=tmp_path)
     assert default.status == 0, default.stderr
     assert payloads(default.bundle) == ("Live payload.", "Draft payload.")
     assert (payloads(default.bundle) != payloads(activated.bundle)) is selected

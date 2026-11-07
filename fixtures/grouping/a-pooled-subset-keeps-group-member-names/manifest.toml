@@ -11,7 +11,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "g/a/notes.md"]
+arguments = ["g/a/notes.md"]
 
 [expected]
 exit_status = 0

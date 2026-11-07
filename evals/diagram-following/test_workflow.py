@@ -653,9 +653,7 @@ def bootstrap_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     if [run.selection(root) for run in scenario.compile] != [
         run.selection(root) for run in (Compile(None), request)
     ]:
-        faults.append(
-            f"it states {scenario.compile}, not pf, then pf --entry {reference}"
-        )
+        faults.append(f"it states {scenario.compile}, not pf, then pf {reference}")
     headed = re.search(r"^# (.+)$", authored(root / reference), re.MULTILINE)
     if headed is None or headed.group(1) != title:
         faults.append(f"the line is titled {title!r}, not as {reference} is headed")
@@ -1010,7 +1008,7 @@ def test_a_bootstrap_scenario_omitting_the_guide_is_a_fault(tmp_path: Path) -> N
     assert bootstrap_faults(workflow, workflow.scenarios[0], output) == [
         "feature-tagged: it states (Compile(by=None, entry='sources/workflow.md', "
         "presets=frozenset()),),"
-        " not pf, then pf --entry sources/workflow.md"
+        " not pf, then pf sources/workflow.md"
     ]
 
 
@@ -1041,8 +1039,7 @@ def test_a_conditional_deferral_is_run_where_its_step_holds_and_nowhere_else() -
         (
             '"scope.txt" = "large", "history.txt" = "kept"',
             '"scope.txt" = "large", "history.txt" = "dropped"',
-            "nested-needed: the walk runs pf on "
-            "[('--entry=reference/migration.md#steps',)]",
+            "nested-needed: the walk runs pf on [('reference/migration.md#steps',)]",
         ),
     ],
     ids=["outer-passed", "nested-unneeded"],
@@ -1219,7 +1216,7 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
             '"order.txt" = "bulk"',
             [
                 "deferred-dispatch-passed: the walk runs pf on"
-                " [('--entry=reference/loading.md#crew',)]",
+                " [('reference/loading.md#crew',)]",
                 "deferred-dispatch-passed: the compiled form dispatches"
                 " ['reference/crew#work', 'reference/crew#work'], not the"
                 " [section, set] pairs the trace names: []",
@@ -1230,7 +1227,7 @@ def test_a_deferred_dispatch_is_compiled_where_reached_and_its_bundle_dispatches
             "",
             [
                 "deferred-dispatch-compiled: the walk runs pf on"
-                " [('--entry=reference/loading.md#crew',)]"
+                " [('reference/loading.md#crew',)]"
             ],
         ),
     ],
@@ -2433,7 +2430,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     stated = stated_commands(scenario)
     if stated:
         found.add(departing(path, commands=()))
-        found.add(departing(path, commands=("pf --entry absent.md#none", *stated)))
+        found.add(departing(path, commands=("pf absent.md#none", *stated)))
         if len(stated) > 1:
             found.add(departing(path, commands=tuple(reversed(stated))))
     for dispatch in scenario.trace:

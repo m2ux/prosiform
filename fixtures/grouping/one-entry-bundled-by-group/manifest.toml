@@ -13,7 +13,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "modes/plan-mode.md#operations"]
+arguments = ["modes/plan-mode.md#operations"]
 
 [expected]
 exit_status = 0

@@ -8,7 +8,7 @@ The work of producing it is a **run**: read the files, follow the links, arrange
 
 ```mermaid
 flowchart LR
-  Entry["Entry reference<br/><i>pf --entry SKILL.md</i>"] --> Capture["Capture each source"]
+  Entry["Entry reference<br/><i>pf SKILL.md</i>"] --> Capture["Capture each source"]
   Capture --> Closure["Resolve the closure"]
   Closure --> Arrange["Arrange groups<br/>and headings"]
   Arrange --> Validate["Validate<br/>the candidate"]

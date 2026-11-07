@@ -33,7 +33,7 @@ SURFACES = (GUIDE, README)
 # Each authoring statement, beside the document that states it. The guide
 # keeps the command line; the architecture pages state the rules it links to.
 INSTRUCTIONS = (
-    (GUIDE, "pf [OPTIONS] --entry REF [--presets PRESETS]"),
+    (GUIDE, "pf [OPTIONS] REF [--presets PRESETS]"),
     (SOURCES, "Every key in `prosiform` is a **preset** name"),
     (SOURCES, "the target's own declaration then decides whether it is compiled"),
     (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
@@ -92,15 +92,14 @@ def source_paths(argv: list[str]) -> list[str]:
     tokens = iter(argv)
     for token in tokens:
         option, equal, value = token.partition("=")
-        if option == "--entry":
-            assert not found, "one entry per command"
-            reference = value if equal else next(tokens)
-            found.append(reference.partition("#")[0])
-        elif option in TAKES_VALUE or option == "--presets":
+        if option in TAKES_VALUE or option == "--presets":
             if not equal:
                 next(tokens)
-        else:
+        elif token.startswith("-"):
             assert token in SWITCH, token
+        else:
+            assert not found, "one entry per command"
+            found.append(token.partition("#")[0])
     return found
 
 

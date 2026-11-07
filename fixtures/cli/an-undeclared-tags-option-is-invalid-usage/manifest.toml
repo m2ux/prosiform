@@ -4,7 +4,7 @@ clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI 
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md", "--tags", "checks"]
+arguments = ["guide.md", "--tags", "checks"]
 
 [expected]
 exit_status = 2

@@ -504,34 +504,34 @@ def test_claude_reads_each_shell_call_under_the_start_whose_sub_agent_made_it(
     held = transcript(
         tmp_path,
         [
-            under(None, shell_call("s", "pf --entry reference/loading.md#crew")),
+            under(None, shell_call("s", "pf reference/loading.md#crew")),
             under(None, claude_call("a", "hop/review#scan")),
-            under("a", shell_call("t", "pf --entry steps/weighing.md#weigh")),
+            under("a", shell_call("t", "pf steps/weighing.md#weigh")),
             under("a", claude_call("b", "steps/ruling#rule")),
-            under("b", shell_call("u", "pf -o out --entry steps/recording.md#file")),
+            under("b", shell_call("u", "pf -o out steps/recording.md#file")),
         ],
     )
-    assert Claude().commands(held) == ("pf --entry reference/loading.md#crew",)
+    assert Claude().commands(held) == ("pf reference/loading.md#crew",)
     assert Claude().starts(held) == (
         Start(
             "hop/review#scan",
             "done",
             False,
             None,
-            ("pf --entry steps/weighing.md#weigh",),
+            ("pf steps/weighing.md#weigh",),
         ),
         Start(
             "steps/ruling#rule",
             "done",
             False,
             0,
-            ("pf -o out --entry steps/recording.md#file",),
+            ("pf -o out steps/recording.md#file",),
         ),
     )
     compiled = tmp_path / "compiled"
     compiled.mkdir()
     record_calls(held, compiled, Claude(), COMPILED_FORM)
-    assert read_commands(compiled) == ("pf --entry reference/loading.md#crew",)
+    assert read_commands(compiled) == ("pf reference/loading.md#crew",)
     assert read_starts(compiled) == Claude().starts(held)
     authored = tmp_path / "authored"
     authored.mkdir()
@@ -736,14 +736,12 @@ def test_opencode_reports_the_commands_a_session_ran(tmp_path: Path) -> None:
                     "type": "tool",
                     "callID": "c1",
                     "tool": "bash",
-                    "state": {
-                        "input": {"command": "pf -o build --entry sources/workflow.md"}
-                    },
+                    "state": {"input": {"command": "pf -o build sources/workflow.md"}},
                 },
             }
         ],
     )
-    assert Opencode().commands(held) == ("pf -o build --entry sources/workflow.md",)
+    assert Opencode().commands(held) == ("pf -o build sources/workflow.md",)
 
 
 def test_opencode_reads_what_each_sub_agent_returned(tmp_path: Path) -> None:
@@ -923,7 +921,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
                         "returned": "done",
                         "together": False,
                         "parent": None,
-                        "commands": ["pf", "pf -o out --entry net.md#retry"],
+                        "commands": ["pf", "pf -o out net.md#retry"],
                     }
                 ],
             }
@@ -931,9 +929,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
     )
     assert read_commands(records) == ("pf",)
     assert read_starts(records) == (
-        Start(
-            "plan#work", "done", False, None, ("pf", "pf -o out --entry net.md#retry")
-        ),
+        Start("plan#work", "done", False, None, ("pf", "pf -o out net.md#retry")),
     )
     opencode = tmp_path / "opencode"
     opencode.mkdir()

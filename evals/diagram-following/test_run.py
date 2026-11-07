@@ -513,11 +513,11 @@ def test_a_compiled_claude_run_scores_each_nested_scenario_on_its_starts_runs(
         ("Follow hop/audit#sweep. Append each state you enter to trace-sweep.log.", ()),
         (
             "Follow hop/review#scan. Append each state you enter to trace-scan.log.",
-            ("pf '--entry=steps/weighing.md#weigh'",),
+            ("pf 'steps/weighing.md#weigh'",),
         ),
         (
             "Follow steps/ruling#rule. Append each state you enter to trace-rule.log.",
-            ("pf '--entry=steps/recording.md#file'",),
+            ("pf 'steps/recording.md#file'",),
         ),
     ]
     assert json.loads((deep / SUBAGENTS).read_text())["commands"] == ["pf"]
@@ -1975,7 +1975,7 @@ def test_a_compiled_session_runs_pf_bare_and_compiles_a_composition_line(
         "---\nprosiform: {}\n---\n# Plan\n\n## Steps\n\nCount the files.\n"
     )
     compiled = subprocess.run(
-        [pf, "--entry", "guide.md", "-o", str(tmp_path / "out")],
+        [pf, "guide.md", "-o", str(tmp_path / "out")],
         cwd=workspace,
         capture_output=True,
         text=True,

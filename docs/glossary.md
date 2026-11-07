@@ -12,7 +12,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **bundle** (n.) | One validated document a run produces: the entry's, or one dispatched target's. |
 | **candidate** | A bundle before it has passed validation. Nothing is published while a check fails. |
 | **profile** | The named, versioned Markdown grammar and option set a run declares. |
-| **guide** | What `pf` run with no arguments prints to standard output: the compile step, `pf -o <folder> --entry <destination> [--presets <presets>]` from the skill's directory; the rule that a link whose text opens with `↳` names an inline target, compiled, read whole and followed; that a `⇉` link names a bundle given to a sub-agent and a `⫽` link marks a dispatch set, the section whose members are given to their own sub-agents at once. It is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. |
+| **guide** | What `pf` run with no arguments prints to standard output: the compile step, `pf -o <folder> <destination> [--presets <presets>]` from the skill's directory; the rule that a link whose text opens with `↳` names an inline target, compiled, read whole and followed; that a `⇉` link names a bundle given to a sub-agent and a `⫽` link marks a dispatch set, the section whose members are given to their own sub-agents at once. It is the build's own text, so a skill's bootstrap is one instruction: run `pf` and follow it. |
 
 ## Sources
 
@@ -31,7 +31,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | Term | Definition |
 | --- | --- |
 | **reference** | An authored Markdown link to a local document or section, or a destination naming one that a `mermaid` diagram link writes: a `click` line, a class diagram's `link` line, or a sequence diagram's `link` or `links` participant menu, its keywords in any letter case. |
-| **entry reference** | The one document or document#fragment supplied through `--entry`. Traversal starts there, with the matching named presets its optional `--presets` list selects above `default`. |
+| **entry reference** | The one document or document#fragment the command line supplies as its positional argument. Traversal starts there, with the matching named presets its optional `--presets` list selects above `default`. |
 | **target** | The document or section a reference resolves to, after path and fragment normalization. |
 | **dependency** | A target a reference resolves to whose document declares `prosiform` in its leading frontmatter, where its author has not withheld it with a deferral, a dispatch operator or a parallel dispatch mark. It is resolved, bundled and rewritten wherever the document sits; a reference naming a document that declares nothing, or none, cites what it names and creates none. |
 | **deferral** | An author's statement that a reference is compiled in a run of its own rather than this one, written as a `¬` followed by a space opening the link's text, or written against the composition mark as `¬↳`; a mark followed directly by other text is link text like any other. The target is required to exist and is carried nowhere; the bundle emits the link's text with the mark and the blanks following it removed, and its destination is the target's URI-escaped path from the invocation working directory. The mark is authoring syntax rather than content, because the destination already states the deferral. A deferral naming anything but a Markdown document or section that declares `prosiform` is refused. |

@@ -42,7 +42,7 @@ SKILL = (
     "\n"
     "Resolve each link target relative to this SKILL.md file. Keep the "
     "caller's working directory: it bounds every source the run reads. "
-    'Invoke `pf -o "FOLDER" --entry "TARGET"` for each resolved target and '
+    'Invoke `pf -o "FOLDER" "TARGET"` for each resolved target and '
     "read the whole bundle it writes into that folder. Preserve a link's "
     "fragment when present. A failed "
     "command leaves that document's instructions unavailable; report its "
@@ -445,7 +445,7 @@ class Stack:
     def compiled(self, *arguments: str, cwd: Path | None = None) -> str:
         """The bundle one run writes into a fresh folder, with no decoy or metadata."""
         folder = Path(tempfile.mkdtemp(prefix="pf-bundles-"))
-        result = self.invoke("-o", str(folder), "--entry", *arguments, cwd=cwd)
+        result = self.invoke("-o", str(folder), *arguments, cwd=cwd)
         assert result.returncode == 0, result.stderr
         assert result.stdout == ""
         [run] = sorted(folder.iterdir())
@@ -645,16 +645,14 @@ def test_a_named_folder_and_the_working_directory_carry_one_bundle(
     target = stack.entry("Assemble")
     expected = stack.compiled(target)
     derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble")
-    published = stack.invoke("--entry", target, bundle=derived)
+    published = stack.invoke(target, bundle=derived)
     assert published.returncode == 0, published.stderr
     assert published.stdout == ""
     assert derived.read_text(encoding="utf-8") == expected
     fragment = run_bundle(
         stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble__steps"
     )
-    selected = stack.invoke(
-        "--entry", stack.entry("Assemble", "steps"), bundle=fragment
-    )
+    selected = stack.invoke(stack.entry("Assemble", "steps"), bundle=fragment)
     assert selected.returncode == 0, selected.stderr
     assert "ENTRY_INTRO" not in fragment.read_text(encoding="utf-8")
     assert "ASSEMBLE_MARKER" in fragment.read_text(encoding="utf-8")
@@ -667,7 +665,7 @@ def test_repeated_target_is_included_once(stack: Stack) -> None:
     assert output.count("DEFAULTS_MARKER") == 1
     assert output.count("RUN_LEAF_MARKER") == 1
     derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
-    result = stack.invoke("--entry", target, bundle=derived)
+    result = stack.invoke(target, bundle=derived)
     assert result.returncode == 0, result.stderr
     assert result.stdout == ""
     assert derived.read_text(encoding="utf-8").count("DEFAULTS_MARKER") == 1
@@ -761,7 +759,7 @@ def test_rewritten_destinations_are_stable(stack: Stack) -> None:
     derived = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_assemble")
     derived.parent.mkdir()
     derived.write_text("STALE\n", encoding="utf-8")
-    result = stack.invoke("--entry", target, bundle=derived)
+    result = stack.invoke(target, bundle=derived)
     assert result.returncode == 0, result.stderr
     assert derived.read_text(encoding="utf-8") == first
 
@@ -779,7 +777,7 @@ def test_depth_conflict_preserves_existing_output(stack: Stack) -> None:
     destination = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
     destination.parent.mkdir()
     destination.write_text("PRESERVE_ME\n", encoding="utf-8")
-    result = stack.invoke("--entry", stack.entry("Defaults"))
+    result = stack.invoke(stack.entry("Defaults"))
     assert result.returncode == 1, result.stderr
     assert result.stdout == ""
     assert destination.read_text(encoding="utf-8") == "PRESERVE_ME\n"
@@ -798,7 +796,7 @@ def test_invalid_metadata_publishes_nothing(stack: Stack, depth: Any) -> None:
     destination = run_bundle(stack.cwd, "skills_pf-bootstrap-specimen_modes_defaults")
     destination.parent.mkdir()
     destination.write_text("PRESERVE_ME\n", encoding="utf-8")
-    result = stack.invoke("--entry", stack.entry("Defaults"))
+    result = stack.invoke(stack.entry("Defaults"))
     assert result.returncode == 1, result.stderr
     assert result.stdout == ""
     assert destination.read_text(encoding="utf-8") == "PRESERVE_ME\n"

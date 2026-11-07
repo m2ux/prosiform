@@ -14,7 +14,7 @@ Three files show what a run does. `SKILL.md` links a procedure; the procedure li
 
 ```mermaid
 flowchart TD
-  Run["pf --entry modes/plan-mode.md"] --> Folder["modes_plan-mode.bundles/"]
+  Run["pf modes/plan-mode.md"] --> Folder["modes_plan-mode.bundles/"]
   Folder --> Entry["modes_plan-mode.bundle.md"]
   Folder --> Disp["modes_sync-mode.bundle.md"]
 ```

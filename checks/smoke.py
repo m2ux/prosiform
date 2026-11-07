@@ -209,7 +209,7 @@ def bundles(environment: Path, elsewhere: Path, sources: Path) -> None:
     entry = os.path.relpath(sources / ENTRY, elsewhere)
     folder = elsewhere.parent / "bundles"
     folder.mkdir(exist_ok=True)
-    run = invoke(environment, elsewhere, "-o", str(folder), "--entry", entry)
+    run = invoke(environment, elsewhere, "-o", str(folder), entry)
     if reported(run, f"{COMMAND} -o {folder} {entry}"):
         raise Failed("standard output carries text, and a run writes its bundle")
     named = run_folder(derived(entry))
@@ -243,43 +243,40 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
         (entry, name, BUNDLE),
         (entry + "#guide", f"{name}__guide", BUNDLE),
     ):
-        run = invoke(environment, elsewhere, "--entry", reference)
+        run = invoke(environment, elsewhere, reference)
         succeeded(run, reference)
         destination = elsewhere / run_folder(published) / f"{published}.bundle.md"
         if run.stdout or destination.read_text() != expected:
             raise Failed("derived output differs from the installed bundle")
         shutil.rmtree(elsewhere / run_folder(published))
-    run = invoke(environment, elsewhere, "-c", "--entry", entry)
+    run = invoke(environment, elsewhere, "-c", entry)
     succeeded(run, "check mode")
     if list(elsewhere.iterdir()) or run.stdout:
         raise Failed("check mode published a bundle")
     for arguments in (
-        (entry,),
-        ("--entry", entry, "--entry", entry + "#guide"),
-        ("--entry", entry, "--presets", "", "--presets", "checks"),
+        (entry, entry + "#guide"),
+        (entry, "--presets", "", "--presets", "checks"),
         ("--presets", "checks"),
     ):
         run = invoke(environment, elsewhere, *arguments)
         if run.returncode != 2 or run.stdout or list(elsewhere.iterdir()):
             raise Failed("the installed single-entry grammar accepts invalid usage")
-    run = invoke(
-        environment, elsewhere, "--entry", entry, "--presets", "unknown,default,,"
-    )
+    run = invoke(environment, elsewhere, entry, "--presets", "unknown,default,,")
     succeeded(run, "unknown preset selection")
     if run.stdout or run.stderr or not (elsewhere / run_folder(name)).is_dir():
         raise Failed("unknown presets change installed-command output")
     shutil.rmtree(elsewhere / run_folder(name))
-    run = invoke(environment, elsewhere, "-o", "-", "--entry", entry)
+    run = invoke(environment, elsewhere, "-o", "-", entry)
     if run.returncode != 2 or run.stdout or list(elsewhere.iterdir()):
         raise Failed("standard output named as the output folder is not refused")
     folder = elsewhere / "out"
     folder.mkdir()
-    run = invoke(environment, elsewhere, "-o", "out", "--entry", entry)
+    run = invoke(environment, elsewhere, "-o", "out", entry)
     succeeded(run, "-o out")
     if run.stdout or not (folder / run_folder(name) / f"{name}.bundle.md").is_file():
         raise Failed("the folder -o names does not hold the run's folder")
     shutil.rmtree(folder)
-    run = invoke(environment, elsewhere, "-o", "missing", "--entry", entry)
+    run = invoke(environment, elsewhere, "-o", "missing", entry)
     succeeded(run, "-o missing")
     if run.stdout or not (elsewhere / "missing" / run_folder(name)).is_dir():
         raise Failed("the folder -o names is not made, or holds no run's folder")
@@ -308,7 +305,6 @@ def selects_presets(environment: Path, elsewhere: Path, sources: Path) -> None:
     run = invoke(
         environment,
         elsewhere,
-        "--entry",
         entry,
         "--presets",
         " CHECKS,unknown,,checks ",

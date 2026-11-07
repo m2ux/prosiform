@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "zulu.md"]
+arguments = ["zulu.md"]
 
 [expected]
 exit_status = 0

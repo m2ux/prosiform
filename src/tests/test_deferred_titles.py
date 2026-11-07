@@ -45,7 +45,7 @@ def test_generated_deferred_line_preserves_the_parsed_title(
             and str(child.attrGet("href") or "") == "rules.md#steps"
         ]
 
-    result = invoke("--entry", "entry.md", cwd=tmp_path)
+    result = invoke("entry.md", cwd=tmp_path)
     assert result.status == 0, result.stderr
     assert titles(result.bundle) == titles(source.removeprefix(DECLARED))
     assert "Body." not in result.bundle

@@ -4,7 +4,7 @@ A procedure step often needs material stated elsewhere: the contract of a call i
 
 A directive is a link whose text opens with `↳` and a space, as in `[↳ Inputs](read.md#inputs)`. The mark requests placement and nothing else. Written `¬↳`, as in `[¬↳ Inputs](read.md#inputs)`, the directive is deferred: a later run composes the section, and the bundle publishes the link with its text unmarked. The link's text is the author's, and the run reads no meaning into it or into the title of the section it places.
 
-The design's [Section composition](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
+The design's [Section composition](https://github.com/m2ux/prosiform/blob/96eb2b0f4/artifacts/planning/2026-10-17-prosiform-v1/design.md#section-composition) section states every rule in full. This page outlines each one, names the design rule it summarises, and lists the [fixtures](../fixtures/README.md) that hold a build to it.
 
 ## What it looks like
 
@@ -73,7 +73,7 @@ The [operators](references.md#operators) and the composition mark share one rule
 | `[¬⇉ the rules](rules.md)` | refused: a dispatch is compiled up front, so no bundle publishes a deferred one |
 | `[¬ the rules](rules.md)` | a deferral, which withholds its target from this bundle |
 
-Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
+Design rules: *Operator marks*, and *Operators that combine* under [Link classification and resource handling](https://github.com/m2ux/prosiform/blob/96eb2b0f4/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling). Fixtures:
 
 - [an-arrow-label-is-refused](../fixtures/composition/an-arrow-label-is-refused)
 - [a-deferred-arrow-label-is-refused](../fixtures/composition/a-deferred-arrow-label-is-refused)
@@ -240,7 +240,7 @@ Takes a URL and returns the page it names.
 
 A scope composes a section or defers it: one scope holding an immediate and a deferred directive naming one section is refused.
 
-The `↳` line names the run that activates the target: `pf --entry fetch.md#implementation` compiles an untagged target as an entry; a line carrying title tags also supplies those tags as one `--presets` argument. It compiles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
+The `↳` line names the run that activates the target: `pf fetch.md#implementation` compiles an untagged target as an entry; a line carrying title tags also supplies those tags as one `--presets` argument. It compiles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
 
 Design rules: *Deferred composition* and *Activation*, and *The run-pf line*. Fixtures:
 

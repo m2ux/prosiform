@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "lifecycle.md"]
+arguments = ["lifecycle.md"]
 
 [expected]
 exit_status = 0

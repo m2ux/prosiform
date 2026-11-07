@@ -1,4 +1,4 @@
-description = "A later --entry noted.md#draft --presets Draft invocation selects the target document's Draft preset and places the section under Drafts. Its heading supplies no selection."
+description = "A later `noted.md#draft --presets Draft` invocation selects the target document's Draft preset and places the section under Drafts. Its heading supplies no selection."
 
 clauses = [
   "Presets — A preset nothing selected warns",
@@ -8,7 +8,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "noted.md#draft", "--presets", "Draft"]
+arguments = ["noted.md#draft", "--presets", "Draft"]
 
 [expected]
 exit_status = 0

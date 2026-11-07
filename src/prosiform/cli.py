@@ -315,11 +315,11 @@ bundles.
 
 Usage:
 
-  pf -o <folder> --entry <document>[#<section>] [--presets <presets>]
+  pf -o <folder> <document>[#<section>] [--presets <presets>]
 
   -o <folder>         folder the run's bundles are written into, made if absent;
                                default: the working directory
-  --entry REF         one document, or document#section, named from the
+  <document>          one document, or document#section, named from the
                                   working directory
   --presets PRESETS   the link title's comma-separated preset names;
                                   omit it when the title carries no tags
@@ -330,10 +330,10 @@ Compiling a link:
   from the command's working directory; include the file for #fragments.
   Pass title tags as one quoted --presets value, also for deferred links:
 
-    pf --entry modes/review.md#review --presets 'checks, final draft'
+    pf modes/review.md#review --presets 'checks, final draft'
 
-  Omit --presets without tags; use = for values starting with -:
-    pf --entry=-guide.md --presets=-checks
+  Omit --presets without tags; attach a value starting with - with =:
+    pf guide.md --presets=-checks
 
   Tags layer the target's presets above default.
 
@@ -882,7 +882,7 @@ def parser() -> Parser:
         prog=NAME,
         add_help=False,
         allow_abbrev=False,
-        usage=f"{NAME} [OPTIONS] --entry REF [--presets PRESETS]",
+        usage=f"{NAME} [OPTIONS] REF [--presets PRESETS]",
         description=(
             "Bundle the local Markdown closure of one entry reference, "
             "and of each target they dispatch, into validated bundles. Run with "
@@ -945,9 +945,9 @@ def parser() -> Parser:
         help="usage, defaults and exit statuses",
     )
     grammar.add_argument(
-        "--entry",
+        "entry",
         metavar="REF",
-        action=Once,
+        nargs="?",
         help="one document or document#fragment; paths from cwd",
     )
     grammar.add_argument(
@@ -994,7 +994,7 @@ def entry(text: str) -> Reference:
     """
     if re.fullmatch(r"\s*\[.*\]\(.*\)\s*", text, re.DOTALL):
         raise usage_failure(
-            "--entry accepts a destination, not a Markdown link", reference=text
+            "the entry accepts a destination, not a Markdown link", reference=text
         )
     try:
         found = resolve(text)
@@ -3791,7 +3791,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
 
     fault = conformance_fault(os.environ)
     if options.entry is None:
-        raise usage_failure("one --entry reference is required")
+        raise usage_failure("one entry reference is required")
     if options.output == STANDARD_OUTPUT:
         raise usage_failure(
             "-o - names standard output, which carries no bundle; -o names the "

@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "#stop"]
+arguments = ["#stop"]
 
 [expected]
 exit_status = 2

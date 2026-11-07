@@ -10,7 +10,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "article.md"]
+arguments = ["article.md"]
 
 [expected]
 exit_status = 0

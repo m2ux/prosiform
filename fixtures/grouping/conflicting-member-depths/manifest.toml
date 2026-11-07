@@ -4,7 +4,7 @@ clauses = ["Presets — default always applies", "Grouping", "Metadata failures"
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "a.md"]
+arguments = ["a.md"]
 
 [expected]
 exit_status = 1

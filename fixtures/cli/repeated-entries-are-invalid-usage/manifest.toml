@@ -1,10 +1,10 @@
-description = "Repeated --entry options fail with E_INVALID_USAGE without publication."
+description = "Two entry references fail with E_INVALID_USAGE without publication, since a run compiles one entry."
 
 clauses = ["CLI contract", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md", "--entry", "guide.md"]
+arguments = ["guide.md", "guide.md"]
 
 [expected]
 exit_status = 2

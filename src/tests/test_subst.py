@@ -264,7 +264,7 @@ def tree(tmp_path: Path) -> Path:
 def test_a_document_stating_no_pair_publishes_the_document_the_link_names(
     tree: Path,
 ) -> None:
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Rules" in published
     assert "# Stand-in" not in published
@@ -272,7 +272,7 @@ def test_a_document_stating_no_pair_publishes_the_document_the_link_names(
 
 def test_a_pair_publishes_the_substitute(tree: Path) -> None:
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Stand-in" in published
     assert "# Rules" not in published
@@ -295,7 +295,7 @@ def test_a_document_key_naming_an_absent_document_keeps_its_shape(tree: Path) ->
     (tree / "guide.md").write_text(
         DECLARED + "# Guide\n\nRun [\u21c9 the rules](absent.md).\n"
     )
-    _status, said = refused(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    _status, said = refused(tree, "-o", str(tree / "out"), "guide.md")
     assert [one["code"] for one in said] == ["E_TARGET_NOT_FOUND"]
     assert said[0]["reference"] == "absent.md"
     assert "subst" not in said[0]["message"]
@@ -307,7 +307,7 @@ def test_a_document_key_and_a_section_key_of_it_are_two_keys(tree: Path) -> None
     stating(
         tree / "guide.md", "[{rules.md: stand-in.md}, {rules.md#escalation: guide.md}]"
     )
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Stand-in" in published
 
@@ -332,7 +332,7 @@ def test_a_title_carrying_a_withheld_link_is_headed_by_the_text_it_emits(
     try:
         os.chdir(tree)
         status = main(
-            ["-d", "json", "--entry", linked(tree, "guide.md", "sibling.md")],
+            ["-d", "json", linked(tree, "guide.md", "sibling.md")],
             out,
             err,
         )
@@ -364,7 +364,7 @@ def test_a_substitution_warning_names_the_link_its_destination_and_the_substitut
 ) -> None:
     """The three fields that tell one substitution from another."""
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     voice = said[0]
@@ -384,7 +384,7 @@ def test_a_substitution_warning_states_the_identity_the_reference_would_have_nam
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
     stating(tree / "sibling.md", "[{other.md: stand-in.md}]")
     status, said = voices(
-        tree, "-o", str(tree / "out"), "--entry", linked(tree, "guide.md", "sibling.md")
+        tree, "-o", str(tree / "out"), linked(tree, "guide.md", "sibling.md")
     )
     assert status == 0
     assert [one["code"] for one in said] == [
@@ -400,10 +400,10 @@ def test_a_substitution_warning_states_the_identity_the_reference_would_have_nam
 def test_an_unused_key_warns_with_no_location_and_publishes(tree: Path) -> None:
     """A pair no link named has no link to point at."""
     stating(tree / "guide.md", "[{unrelated.md: stand-in.md}]")
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Rules" in published
-    status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_UNUSED"]
     assert said[0]["source"] == "unrelated.md"
@@ -413,7 +413,7 @@ def test_an_unused_key_warns_with_no_location_and_publishes(tree: Path) -> None:
 def test_a_served_key_warns_unused_for_nothing(tree: Path) -> None:
     """A pair a link named states no unused pair."""
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    _status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    _status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert SUBST_UNUSED not in [one["code"] for one in said]
 
 
@@ -422,7 +422,7 @@ def test_a_check_run_reports_the_substitution_and_publishes_nothing(
 ) -> None:
     """A pair applies under `-c`, which is how a substituted check runs in CI."""
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     assert said[0]["resolved"] == "stand-in.md"
@@ -431,7 +431,7 @@ def test_a_check_run_reports_the_substitution_and_publishes_nothing(
 
 def test_a_run_stating_no_pair_states_neither_warning(tree: Path) -> None:
     """A run whose documents state no pair raises neither: neither has a subject."""
-    status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert said == []
 
@@ -446,7 +446,7 @@ def test_a_section_key_leaves_the_rest_of_its_document_real(tree: Path) -> None:
         DECLARED + "# Stand-in\n\n## Escalation\n\nAsk the stand-in.\n"
     )
     stating(tree / "guide.md", "[{rules.md#escalation: stand-in.md}]")
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Rules" in published
     assert "Ask the stand-in." in published
@@ -471,7 +471,7 @@ def test_a_document_key_and_a_section_key_of_it_both_serve_their_references(
         tree / "guide.md",
         "[{rules.md: rules-copy.md}, {rules.md#escalation: escalation-copy.md}]",
     )
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert (tree / "out" / "guide.bundles" / "guide.bundle.md").is_file()
     for substitute in ("# Rules Copy", "# Escalation Copy"):
@@ -488,12 +488,12 @@ def test_a_substitute_that_is_also_a_key_is_read_from_disk(tree: Path) -> None:
         DECLARED + "# Guide\n\nRequire [the first](first.md) whole.\n"
     )
     stating(tree / "guide.md", "[{first.md: second.md}, {second.md: third.md}]")
-    status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED", "W_SUBST_UNUSED"]
     assert said[0]["resolved"] == "second.md"
     assert said[1]["source"] == "second.md"
-    _status, published = invoke(tree, "--entry", "guide.md")
+    _status, published = invoke(tree, "guide.md")
     assert "# Second" in published
     assert "# Third" not in published
 
@@ -536,7 +536,7 @@ def test_a_substitute_declaring_a_group_joins_it_under_its_own_member_heading(
     """The substitute's group and depth decide its membership, not its key's."""
     tree = group_tree(tmp_path)
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, published, _said = grouped(tree, "--entry", "guide.md")
+    status, published, _said = grouped(tree, "guide.md")
     assert status == 0
     assert published.startswith(f"{opening('Rules')}# Rules\n")
     assert "### Stand-In" in published
@@ -549,7 +549,7 @@ def test_a_substitute_declaring_no_group_joins_no_group(tmp_path: Path) -> None:
     tree = group_tree(tmp_path)
     (tree / "plain.md").write_text(DECLARED + "# Plain\n\nA plain stand-in.\n")
     stating(tree / "guide.md", "[{rules.md: plain.md}]")
-    status, published, _said = grouped(tree, "--entry", "guide.md")
+    status, published, _said = grouped(tree, "guide.md")
     assert status == 0
     assert "# Plain" in published
     assert "### Plain" not in published
@@ -565,7 +565,7 @@ def test_the_group_a_substitute_declares_is_the_one_the_bundle_merges(
         "# Rules\n\nEvery rule the tree under test holds.\n"
     )
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, published, _said = grouped(tree, "--entry", "guide.md")
+    status, published, _said = grouped(tree, "guide.md")
     assert status == 0
     assert published.startswith(f"{opening('Rules')}# Rules\n")
     assert "# Authored" not in published
@@ -581,7 +581,7 @@ def test_a_group_conflict_names_the_substitutes_own_declaration(
         "# Stand-in\n\nThe stand-in preamble.\n"
     )
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, _published, said = grouped(tree, "--entry", "guide.md")
+    status, _published, said = grouped(tree, "guide.md")
     assert status == 1
     assert [one["code"] for one in said] == ["E_GROUP_CONFLICT"]
     assert said[0]["related"][0]["file"] == "stand-in.md"
@@ -594,7 +594,7 @@ def test_a_substitutes_metadata_failure_names_the_substitute(tmp_path: Path) -> 
         "---\nprosiform:\n  default:\n    group: rules\n---\n# Stand-in\n\nStand-in.\n"
     )
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, _published, said = grouped(tree, "--entry", "guide.md")
+    status, _published, said = grouped(tree, "guide.md")
     assert status == 1
     assert [one["code"] for one in said] == ["E_INVALID_CONVERSION_METADATA"]
     assert said[0]["location"]["file"] == "stand-in.md"
@@ -613,7 +613,7 @@ def test_a_substitute_reached_by_two_routes_joins_the_group_once(
     )
     stating(tree / "notes.md", "[{rules.md: stand-in.md}]")
     stating(tree / "guide.md", "[{rules.md: stand-in.md}]")
-    status, published, _said = grouped(tree, "--entry", "guide.md")
+    status, published, _said = grouped(tree, "guide.md")
     assert status == 0
     # One overview subsection and one variant heading name the one member.
     assert published.count("### Stand-In") == 2
@@ -649,7 +649,7 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
     (above / "detail.md").write_text("# Detail\n\nBeside the stand-in.\n")
     (tree / "out").mkdir()
     stating(tree / "guide.md", "[{rules.md: ../above/entry.md}]")
-    status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tree / "out" / "guide.bundles"
@@ -687,7 +687,7 @@ def test_a_deferred_target_is_redirected_to_the_substitute(tmp_path: Path) -> No
     """
     tree = withheld_tree(tmp_path)
     stating(tree / "guide.md", "[{rules.md#escalation: stand-in.md#answers}]")
-    status, published, said = grouped(tree, "--entry", "guide.md")
+    status, published, said = grouped(tree, "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     assert "[the rules](stand-in.md#answers)" in published
@@ -709,16 +709,16 @@ def test_a_deferred_destination_publishes_the_section_the_substitution_names(
     tree = withheld_tree(tmp_path)
     the_run = tree / "out" / "guide.bundles" / "guide.bundle.md"
     stating(tree / "guide.md", "[{rules.md#escalation: stand-in.md#answers}]")
-    assert grouped(tree, "--entry", "guide.md")[0] == 0
+    assert grouped(tree, "guide.md")[0] == 0
     assert "[the rules](stand-in.md#answers)" in the_run.read_text()
     (tree / "later.md").write_text(
         DECLARED + "# Later\n\nFollow [the rules](stand-in.md#answers).\n"
     )
-    assert invoke(tree, "--entry", "later.md")[0] == 0
+    assert invoke(tree, "later.md")[0] == 0
     (tree / "later.md").write_text(
         DECLARED + "# Later\n\nFollow [the rules](stand-in.md#escalation).\n"
     )
-    assert invoke(tree, "--entry", "later.md")[0] == 1
+    assert invoke(tree, "later.md")[0] == 1
 
 
 def test_a_deferred_targets_heading_is_confirmed_of_the_substitute(
@@ -727,7 +727,7 @@ def test_a_deferred_targets_heading_is_confirmed_of_the_substitute(
     """The document the run confirms is the one the later run reads."""
     tree = withheld_tree(tmp_path)
     stating(tree / "guide.md", "[{rules.md#escalation: stand-in.md#elsewhere}]")
-    status, said = voices(tree, "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-o", str(tree / "out"), "guide.md")
     assert status == 1
     assert [one["code"] for one in said] == ["E_TARGET_NOT_FOUND"]
     assert said[0]["resolved"] == "stand-in.md"
@@ -748,7 +748,7 @@ def test_a_dispatched_target_is_redirected_and_its_bundle_compiled(
         DECLARED + "# Stand-in\n\nEvery rule the stand-in holds.\n"
     )
     stating(tmp_path / "guide.md", "[{rules.md: stand-in.md}]")
-    status, said = voices(tmp_path, "-o", str(tmp_path / "out"), "--entry", "guide.md")
+    status, said = voices(tmp_path, "-o", str(tmp_path / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tmp_path / "out" / "guide.bundles"
@@ -779,7 +779,7 @@ def test_a_parallel_dispatched_target_is_redirected_and_listed_once(
         DECLARED + "# Stand-in\n\nEvery rule the stand-in holds.\n"
     )
     stating(tmp_path / "guide.md", "[{rules.md: stand-in.md}]")
-    status, said = voices(tmp_path, "-o", str(tmp_path / "out"), "--entry", "guide.md")
+    status, said = voices(tmp_path, "-o", str(tmp_path / "out"), "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
     folder = tmp_path / "out" / "guide.bundles"
@@ -876,11 +876,11 @@ def presetted(tree: Path, presets: str) -> None:
 
 def test_a_default_pair_publishes_the_substitute_and_states_it(tree: Path) -> None:
     presetted(tree, "  default:\n    subst: [{rules.md: stand-in.md}]\n")
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Stand-in" in published
     assert "# Rules" not in published
-    _status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md")
+    _status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert [(one["code"], one["source"], one["resolved"]) for one in said] == [
         ("W_SUBST_USED", "rules.md", "stand-in.md")
     ]
@@ -896,7 +896,7 @@ def test_a_selected_presets_pair_holds_over_defaults(tree: Path) -> None:
         "  default:\n    subst: [{rules.md: other.md}]\n"
         "  Keep:\n    subst: [{rules.md: stand-in.md}]\n",
     )
-    status, published = invoke(tree, "--entry", "entry.md")
+    status, published = invoke(tree, "entry.md")
     assert status == 0
     assert "# Stand-in" in published
     assert "# Other" not in published
@@ -906,7 +906,7 @@ def test_a_document_under_no_subst_compiles_its_links_as_authored(
     tree: Path,
 ) -> None:
     presetted(tree, "  default:\n    group: {guides: 1}\n")
-    status, published = invoke(tree, "--entry", "guide.md")
+    status, published = invoke(tree, "guide.md")
     assert status == 0
     assert "# Rules" in published
     assert "# Stand-in" not in published
@@ -914,7 +914,7 @@ def test_a_document_under_no_subst_compiles_its_links_as_authored(
 
 def test_a_pair_no_link_names_warns_unused_naming_its_document(tree: Path) -> None:
     presetted(tree, "  default:\n    subst: [{unrelated.md: stand-in.md}]\n")
-    status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [(one["code"], one["source"]) for one in said] == [
         ("W_SUBST_UNUSED", "unrelated.md")
@@ -932,9 +932,7 @@ def test_a_pair_reached_only_by_a_heading_outside_the_selection_is_unused(
         "# Guide\n\n## Keep\n\nFollow the guide.\n\n## [\u00ac Rules](rules.md)\n\n"
         "Read the rules.\n"
     )
-    status, said = voices(
-        tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md#keep"
-    )
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md#keep")
     assert status == 0
     assert [(one["code"], one["source"]) for one in said] == [
         ("W_SUBST_UNUSED", "rules.md")
@@ -952,7 +950,7 @@ def test_two_tag_selections_selecting_disagreeing_pairs_are_refused(tree: Path) 
         "  Plan:\n    subst: [{rules.md: other.md}]\n"
         "  Review:\n    subst: [{rules.md: stand-in.md}]\n",
     )
-    status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "entry.md")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "entry.md")
     assert status == 2
     assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
     assert "prosiform.Plan.subst and prosiform.Review.subst" in said[0]["message"]
@@ -962,7 +960,7 @@ def test_a_pair_whose_alternative_names_no_markdown_document_is_refused(
     tree: Path,
 ) -> None:
     presetted(tree, "  default:\n    subst: [{rules.md: notes.txt}]\n")
-    status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert status == 2
     assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
     assert "names no Markdown document" in said[0]["message"]
@@ -981,8 +979,8 @@ def test_a_preset_pair_reads_the_same_from_any_working_directory(
     (tmp_path / "rules.md").write_text(DECLARED + "# Rules\n\nThe rules.\n")
     (tmp_path / "stand-in.md").write_text(DECLARED + "# Stand-in\n\nA stand-in.\n")
     (tmp_path / "modes" / "out").mkdir()
-    assert invoke(tmp_path / "modes", "--entry", "plan.md")[0] == 0
-    assert invoke(tmp_path, "--entry", "modes/plan.md")[0] == 0
+    assert invoke(tmp_path / "modes", "plan.md")[0] == 0
+    assert invoke(tmp_path, "modes/plan.md")[0] == 0
     from_modes = tmp_path / "modes" / "out" / "plan.bundles" / "plan.bundle.md"
     from_root = tmp_path / "out" / "modes_plan.bundles" / "modes_plan.bundle.md"
     assert from_root.read_text() == from_modes.read_text()
@@ -1007,7 +1005,7 @@ def test_two_documents_declaring_one_key_are_two_pairs(tree: Path) -> None:
     )
     (tree / "one.md").write_text(pair + "# One\n\nSee [the rules](rules.md).\n")
     (tree / "two.md").write_text(pair + "# Two\n\nNo link.\n")
-    status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert status == 0
     assert [(one["code"], one["source"]) for one in said] == [
         ("W_SUBST_USED", "rules.md"),
@@ -1019,7 +1017,7 @@ def test_two_documents_declaring_one_key_are_two_pairs(tree: Path) -> None:
 def test_a_folder_side_is_refused_naming_the_entry(tree: Path) -> None:
     """A pair names one document or one section, so a separator ending a side fails."""
     presetted(tree, "  default:\n    subst: [{rules/: stubs/}]\n")
-    status, said = voices(tree, "-c", "-o", str(tree / "out"), "--entry", "guide.md")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert status == 1
     assert [one["code"] for one in said] == ["E_INVALID_CONVERSION_METADATA"]
     assert "prosiform.default.subst[0] side 'rules/'" in said[0]["message"]

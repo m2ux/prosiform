@@ -64,7 +64,7 @@ wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
 own sub-agent ran. A command is a
 `pf` run in each segment `;`, `&&`, `||` or `|` separate whose first word is
-`pf` or a path ending `/pf`. The compiler's grammar reads one `--entry` and
+`pf` or a path ending `/pf`. The compiler's grammar reads one positional entry and
 optional `--presets`; titles and arguments share complete-name normalization.
 A reference names a stated one when it is that reference or ends `/` and
 that reference, and its effective matching named presets agree. Informational
@@ -412,7 +412,8 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
 
     A run is a command whose first word is `pf` or a path ending `/pf`, since
     a command may name the build by a directory. The compiler's own grammar
-    reads its entry and preset options, including attached values.
+    reads its positional entry and its preset option, including an attached
+    value.
     """
     runs: list[Compile | None] = []
     for command in commands:
@@ -429,12 +430,7 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 continue
             if parsed.help or parsed.version or parsed.codes:
                 continue
-            if (
-                parsed.presets is not None
-                and parsed.entry is None
-                or parsed.entry is None
-                and len(words) > 1
-            ):
+            if parsed.entry is None and len(words) > 1:
                 runs.append(None)
             else:
                 if parsed.entry is not None:

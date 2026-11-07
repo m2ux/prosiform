@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--budget", "nesting=1", "--entry", "guide.md"]
+arguments = ["--budget", "nesting=1", "guide.md"]
 
 [expected]
 exit_status = 2

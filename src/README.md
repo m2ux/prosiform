@@ -104,7 +104,7 @@ Paths below are relative to `src/`.
 
 ### Explicit preset selection
 
-`tests/test_tags.py`, `tests/test_source.py` and `tests/test_selection.py` observe complete-name normalization, inline and reference-style title occurrences, resource exclusions, substitution transport and effective selection identity. `tests/test_entry_presets.py` observes the single-entry grammar, default layering, title/CLI parity, shell quoting and leading-dash values. `tests/test_dispatch_variants.py` and `tests/test_dispatch_publication.py` observe distinct/equivalent variants, deterministic output names, collision refusal, parallel sets and variant-aware depth and cycles. `tests/test_deferred_titles.py` and `tests/test_deferred_presets.py` observe title preservation and immediate/deferred selection parity.
+`tests/test_tags.py`, `tests/test_source.py` and `tests/test_selection.py` observe complete-name normalization, inline and reference-style title occurrences, resource exclusions, substitution transport and effective selection identity. `tests/test_entry_presets.py` observes the single-entry grammar, default layering, title/CLI parity, shell quoting and a leading-dash entry behind a separator. `tests/test_dispatch_variants.py` and `tests/test_dispatch_publication.py` observe distinct/equivalent variants, deterministic output names, collision refusal, parallel sets and variant-aware depth and cycles. `tests/test_deferred_titles.py` and `tests/test_deferred_presets.py` observe title preservation and immediate/deferred selection parity.
 
 ### Command interface
 

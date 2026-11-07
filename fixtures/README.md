@@ -100,7 +100,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 1
@@ -130,7 +130,7 @@ The runner uses the working directory the manifest names and asks for diagnostic
 
 ## The clause form
 
-A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
+A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/96eb2b0f4/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
 
 ```toml
 clauses = [
@@ -157,7 +157,7 @@ A run's working directory is the fixture's own, so the folder a run writes its b
 ```toml
 [invocation]
 cwd = "source"
-arguments = ["-c", "-o", "..", "--entry", "guide.md"]
+arguments = ["-c", "-o", "..", "guide.md"]
 
 [expected]
 exit_status = 0
@@ -196,7 +196,7 @@ message_contains = ["#stop", "document#fragment"]
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the run folder that held an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
 
-The following fixtures illustrate invalid usage. The single-entry grammar also refuses positional entries, repeated `--entry` or `--presets`, presets without an entry, and complete Markdown-link expressions as entries. What the corpus covers under one code is read from the manifests rather than assumed from the code:
+The following fixtures illustrate invalid usage. The single-entry grammar also refuses two entry references, repeated `--presets`, presets without an entry, and complete Markdown-link expressions as entries. What the corpus covers under one code is read from the manifests rather than assumed from the code:
 
 | Fault | Fixture |
 | --- | --- |
@@ -224,14 +224,14 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/96eb2b0f4/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
 
 [invocation]
 cwd = "source"
-arguments = ["--entry", "guide.md"]
+arguments = ["guide.md"]
 
 [expected]
 exit_status = 1
@@ -323,7 +323,7 @@ export PROSIFORM_BUILD=pf
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/795bbfb67c66b02193f0313138f59f18aa6c5274/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/96eb2b0f4/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |

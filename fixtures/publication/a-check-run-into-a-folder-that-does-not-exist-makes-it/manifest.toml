@@ -7,7 +7,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-c", "-o", "no-such-directory", "--entry", "guide.md"]
+arguments = ["-c", "-o", "no-such-directory", "guide.md"]
 
 [expected]
 exit_status = 0

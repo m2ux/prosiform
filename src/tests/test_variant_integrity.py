@@ -28,7 +28,7 @@ def test_variant_substitutions_to_distinct_sections_report_each_pair(
         DECLARED
         + "# Alternatives\n\n## Checks\n\nCHECKED_BODY\n\n## Draft\n\nDRAFT_BODY\n",
     )
-    run = invoke("-d", "json", "--entry", "entry.md", cwd=tmp_path)
+    run = invoke("-d", "json", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     used = [one for one in run.diagnostics() if one["code"] == "W_SUBST_USED"]
     assert [one["resolved"] for one in used] == [
@@ -59,7 +59,7 @@ def test_a_pair_used_by_one_variant_leaves_another_variants_pair_unused(
     )
     written(tmp_path, "checked.md", DECLARED + "# Checked\n")
     written(tmp_path, "drafted.md", DECLARED + "# Drafted\n")
-    run = invoke("-d", "json", "--entry", "entry.md", cwd=tmp_path)
+    run = invoke("-d", "json", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     unused = [one for one in run.diagnostics() if one["code"] == "W_SUBST_UNUSED"]
     assert len(unused) == 1
@@ -79,7 +79,7 @@ def test_an_unselected_heading_with_parallel_links_needs_no_target_capture(
     written(
         tmp_path, "task.md", "---\nprosiform:\n  checks: {}\n  draft: {}\n---\n# Task\n"
     )
-    run = invoke("--entry", "guide.md#kept", cwd=tmp_path)
+    run = invoke("guide.md#kept", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert "Selected body." in run.bundle
     assert "Unselected." not in run.bundle
@@ -98,7 +98,7 @@ def test_a_parallel_link_in_an_unselected_title_is_refused_as_unplaced(
     written(
         tmp_path, "task.md", "---\nprosiform:\n  checks: {}\n  draft: {}\n---\n# Task\n"
     )
-    run = invoke("-d", "json", "--entry", "guide.md#kept", cwd=tmp_path)
+    run = invoke("-d", "json", "guide.md#kept", cwd=tmp_path)
     assert run.status == 1, run.stderr
     assert run.bundles == {}
     assert run.diagnostics()[0]["code"] == "E_UNSUPPORTED_CONSTRUCT"

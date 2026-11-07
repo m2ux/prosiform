@@ -35,7 +35,7 @@ def test_distinct_effective_selections_compile_distinct_bodies(tmp_path: Path) -
         tmp_path,
         '[⇉ Checked](task.md "checks")\n\n[⇉ Draft](task.md "draft")',
     )
-    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     checked, drafted = name("checks"), name("draft")
     assert set(run.bundles) == {"entry.bundle.md", checked, drafted}
@@ -79,7 +79,7 @@ def test_equivalent_requests_compile_once_under_the_contract_name(
         return result
 
     monkeypatch.setattr(cli, "compiled", observing)
-    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     expected = (
         "task--p-13c9f40cda0225cb29b9fa2332a291e8950291238a73b75fed0cd1521986f6e8"
@@ -100,7 +100,7 @@ def test_unmatched_and_default_requests_share_the_empty_effective_selection(
         tmp_path,
         '[⇉ First](task.md)\n\n[⇉ Second](task.md "default, unknown, ,DEFAULT")',
     )
-    run = invoke("--entry", "entry.md", cwd=tmp_path)
+    run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert set(run.bundles) == {"entry.bundle.md", "task.bundle.md"}
     assert run.bundle.count("](task.bundle.md") == 2
@@ -127,7 +127,7 @@ def branching(root: Path, ending: str) -> None:
 
 def test_a_distinct_variant_of_the_entry_is_a_new_hop(tmp_path: Path) -> None:
     branching(tmp_path, "Finished.\n")
-    run = invoke("-d", "json", "--entry", "task.md", cwd=tmp_path)
+    run = invoke("-d", "json", "task.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert set(run.bundles) == {
         "task.bundle.md",
@@ -143,7 +143,7 @@ def test_a_distinct_variant_of_the_entry_is_a_new_hop(tmp_path: Path) -> None:
 def test_depth_counts_distinct_variants_of_one_destination(tmp_path: Path) -> None:
     branching(tmp_path, "[⇉ Tail](tail.md)\n")
     written(tmp_path, "tail.md", DECLARED + "# Tail\n")
-    run = invoke("-d", "json", "--entry", "task.md", cwd=tmp_path)
+    run = invoke("-d", "json", "task.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     warnings = [one for one in run.diagnostics() if one["code"] == "W_DISPATCH_DEPTH"]
     assert len(warnings) == 1
@@ -159,7 +159,7 @@ def test_depth_counts_distinct_variants_of_one_destination(tmp_path: Path) -> No
 
 def test_a_return_to_an_equivalent_entry_selection_is_a_cycle(tmp_path: Path) -> None:
     branching(tmp_path, '[⇉ Return](task.md "default,unknown")\n')
-    run = invoke("-d", "json", "--entry", "task.md", cwd=tmp_path)
+    run = invoke("-d", "json", "task.md", cwd=tmp_path)
     assert run.status == 1, run.stderr
     assert run.bundles == {}
     [refusal] = run.diagnostics()
@@ -182,9 +182,7 @@ def test_a_named_entry_and_its_equivalent_dispatch_close_one_cycle(
         "---\nprosiform:\n  checks: {}\n---\n"
         '# Task\n\n[⇉ Same](./task.md# "CHECKS,unknown,default,checks")\n',
     )
-    run = invoke(
-        "-d", "json", "--entry", "task.md", "--presets", "checks", cwd=tmp_path
-    )
+    run = invoke("-d", "json", "task.md", "--presets", "checks", cwd=tmp_path)
     assert run.status == 1, run.stderr
     assert run.bundles == {}
     [refusal] = run.diagnostics()
@@ -213,7 +211,7 @@ def test_each_effective_entry_dispatch_can_raise_one_depth_warning(
             DECLARED + f"# {source.upper()}\n\n[⇉ Next]({target}.md)\n",
         )
     written(tmp_path, "c.md", DECLARED + "# C\n")
-    run = invoke("-d", "json", "--entry", "entry.md", cwd=tmp_path)
+    run = invoke("-d", "json", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     warnings = [one for one in run.diagnostics() if one["code"] == "W_DISPATCH_DEPTH"]
     assert len(warnings) == 2
@@ -232,12 +230,10 @@ def test_variants_count_the_file_budget_from_their_own_closures(tmp_path: Path) 
             DECLARED + f"# {source}\n\n[Leaf]({source}-leaf.md)\n",
         )
         written(tmp_path, source + "-leaf.md", DECLARED + "# Leaf\n")
-    within = invoke("--budget", "files=3", "--entry", "entry.md", cwd=tmp_path)
+    within = invoke("--budget", "files=3", "entry.md", cwd=tmp_path)
     assert within.status == 0, within.stderr
     assert len(within.bundles) == 3
-    crossed = invoke(
-        "-d", "json", "--budget", "files=2", "--entry", "entry.md", cwd=tmp_path
-    )
+    crossed = invoke("-d", "json", "--budget", "files=2", "entry.md", cwd=tmp_path)
     assert crossed.status == 1, crossed.stderr
     assert crossed.bundles == {}
     [refusal] = crossed.diagnostics()
@@ -249,14 +245,12 @@ def test_the_output_budget_applies_to_each_variant_bundle(tmp_path: Path) -> Non
         tmp_path,
         '[⇉ Checked](task.md "checks")\n\n[⇉ Draft](task.md "draft")',
     )
-    measured = invoke("--entry", "entry.md", cwd=tmp_path)
+    measured = invoke("entry.md", cwd=tmp_path)
     assert measured.status == 0, measured.stderr
     assert len(measured.bundles) == 3
     budget = max(len(text.encode("utf-8")) for text in measured.bundles.values())
     assert sum(len(text.encode("utf-8")) for text in measured.bundles.values()) > budget
-    run = invoke(
-        "--budget", f"output-bytes={budget}", "--entry", "entry.md", cwd=tmp_path
-    )
+    run = invoke("--budget", f"output-bytes={budget}", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.bundles == measured.bundles
 
@@ -296,9 +290,7 @@ def test_distinct_variants_colliding_on_a_filename_preserve_the_previous_set(
 
     monkeypatch.setattr(cli, "bundle_file", colliding)
     mode = ["-c"] if check else []
-    run = invoke(
-        "-d", "json", "-o", str(output), *mode, "--entry", "entry.md", cwd=tmp_path
-    )
+    run = invoke("-d", "json", "-o", str(output), *mode, "entry.md", cwd=tmp_path)
     assert run.status == 3, run.stderr
     [refusal] = run.diagnostics()
     assert refusal["code"] == "E_PUBLICATION_FAILED"

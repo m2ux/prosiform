@@ -53,5 +53,5 @@
 <path d="M1078 774 H1096 V762 L1124 790 L1096 818 V806 H1078Z" fill="#58a6ff"/>
 <text x="1058" y="854" font-size="21" fill="#b1c6df" font-weight="400">compile</text>
 <path d="M32 1395 H1768" stroke="#303b49" stroke-width="2"/>
-<text x="32" y="1441" font-size="28" fill="#58a6ff" font-weight="400">$ pf --entry SKILL.md</text>
+<text x="32" y="1441" font-size="28" fill="#58a6ff" font-weight="400">$ pf SKILL.md</text>
 <text x="530" y="1441" font-size="26" fill="#e6edf3" font-weight="400">3 source files → 1 validated bundle</text></g></svg>
