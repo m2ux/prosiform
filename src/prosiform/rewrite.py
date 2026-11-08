@@ -15,7 +15,9 @@ for the line that gained it. A caller slicing by the source's line
 count therefore slices the same lines whatever the spelling cost.
 
 A span is located in the lines an inline token occupies, because that is
-where the parser says inline content is. A code span is masked out
+where the parser says inline content is. Every cell of a table row
+occupies that row's line, so a cell's span is located in the stretch of
+the line its column was split from. A code span is masked out
 first, so a dependency written as an example inside backticks is text
 the bundle carries as written, and a fenced block carries no inline
 token at all.
@@ -75,7 +77,7 @@ from markdown_it.common.utils import normalizeReference
 from markdown_it.token import Token
 
 from prosiform.closure import filed, opened, published_text
-from prosiform.profile import MARKER, MARKER_LABELS
+from prosiform.profile import COLUMN, MARKER, MARKER_LABELS
 from prosiform.source import (
     HREF,
     LINK_OPEN,
@@ -95,6 +97,7 @@ TARGET_CLOSE = ")"
 ANGLE_OPEN = "<"
 ANGLE_CLOSE = ">"
 COLON = ":"
+PIPE = "|"
 
 SPACE = " "
 
@@ -202,6 +205,32 @@ def code_spans(text: str) -> list[tuple[int, int]]:
         else:
             continue
     return found
+
+
+def cell(row: str, column: int) -> tuple[int, int]:
+    """The extent one table cell's inline content is read from in its row's line.
+
+    The row is split as the profile splits it: after the container
+    markers and blanks the line opens with, at each pipe no backslash
+    directly precedes, with an empty stretch before a leading pipe or
+    after a trailing one dropped. A column the row writes no cell for
+    is the empty extent at the row's end.
+    """
+    opening = len(opening_markers(row))
+    closing = len(row.rstrip())
+    breaks = [
+        at
+        for at in range(opening, closing)
+        if row[at] == PIPE and (at == opening or row[at - 1] != ESCAPE)
+    ]
+    stretches = [
+        (start + 1, end) for start, end in pairwise([opening - 1, *breaks, closing])
+    ]
+    if stretches[0][0] == stretches[0][1]:
+        stretches.pop(0)
+    if stretches and stretches[-1][0] == stretches[-1][1]:
+        stretches.pop()
+    return stretches[column] if column < len(stretches) else (closing, closing)
 
 
 def masked(spans: Sequence[tuple[int, int]], at: int) -> bool:
@@ -593,8 +622,10 @@ def rewritten(
     link the bundle compiled points at the destination it assigned that
     link's target. One destination is supplied for each link the token
     carries, in written order, and a link the bundle did not compile is
-    supplied none. The spans are edited last to first, so an earlier
-    edit does not move the span the next one names.
+    supplied none. A table cell's uses are read from its own stretch of
+    the row's line, so each cell of one row is rewritten by its own call
+    and the others' links are text to it. The spans are edited last to
+    first, so an earlier edit does not move the span the next one names.
 
     The result holds one entry for each line given, so the published
     text of a source line is found where that line was. A replacement
@@ -604,7 +635,12 @@ def rewritten(
     end of it.
     """
     text = "".join(physical)
-    found = uses(text, defined, bool(inline.meta.get(MARKER)))
+    column = inline.meta.get(COLUMN)
+    scanned = text
+    if column is not None:
+        start, end = cell(text, column)
+        scanned = f"{SPACE * start}{text[start:end]}{SPACE * (len(text) - end)}"
+    found = uses(scanned, defined, bool(inline.meta.get(MARKER)))
     if len(found) != carried(inline.children):
         raise Unrewritable(
             f"the parser read {carried(inline.children)} use(s) against the "

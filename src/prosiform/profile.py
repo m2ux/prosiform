@@ -25,6 +25,10 @@ participant menu, its keywords in any letter case — names a destination
 a reader of the rendered diagram follows, so each such destination is a
 use although the parser reads the fence as text.
 
+Every cell of a table row shares that row's line, so the parse records
+on each cell's inline token the column it stands in, and a reader of
+the source text finds the stretch of the line that cell was read from.
+
 A reference definition can otherwise turn `[x]` at the head of a list item
 into a link, which would make a task marker a dependency. The parse
 recognizes those positions and returns the marker to the literal text it
@@ -103,6 +107,8 @@ INLINE = "inline"
 HEADING_OPEN = "heading_open"
 LIST_ITEM_OPEN = "list_item_open"
 PARAGRAPH_OPEN = "paragraph_open"
+ROW_OPEN = "tr_open"
+CELL_OPENS = ("th_open", "td_open")
 LINK_OPEN = "link_open"
 LINK_CLOSE = "link_close"
 HTML_BLOCK = "html_block"
@@ -121,6 +127,7 @@ MARKER_LENGTH = 3
 MARKER_LABELS = ("x", "X")
 MARKER = "marker"
 MARKER_CHILDREN = 3
+COLUMN = "column"
 
 UNESCAPED = r"(?<!\\)"
 WIKI_LINK = re.compile(rf"{UNESCAPED}(!?)\[\[[^\[\]\n]+\]\]")
@@ -313,6 +320,8 @@ def parse(
     for inline in item_openings(tokens):
         if linked_marker(inline):
             unlink_marker(inline)
+    for inline, column in cells(tokens):
+        inline.meta[COLUMN] = column
     return tokens
 
 
@@ -358,6 +367,25 @@ def item_openings(tokens: Sequence[Token]) -> Iterator[Token]:
         else:
             item = False
             paragraph = False
+
+
+def cells(tokens: Sequence[Token]) -> Iterator[tuple[Token, int]]:
+    """The inline token of each table cell, with the column it stands in.
+
+    Every cell of one row shares that row's line, so the column is what
+    says which stretch of the line a cell's inline content was read from.
+    """
+    column = 0
+    cell = False
+    for token in tokens:
+        if token.type == ROW_OPEN:
+            column = 0
+        elif token.type in CELL_OPENS:
+            cell = True
+        elif token.type == INLINE and cell:
+            yield token, column
+            column += 1
+            cell = False
 
 
 def linked_marker(inline: Token) -> bool:

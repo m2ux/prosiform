@@ -19,6 +19,7 @@ import pytest
 
 from prosiform.limits import NESTING
 from prosiform.profile import (
+    COLUMN,
     HEADROOM,
     Suppressed,
     is_markdown,
@@ -72,6 +73,12 @@ def test_task_markers_stay_source_text() -> None:
     assert "[ ]" in html
     assert "[x]" in html
     assert "[X]" in html
+
+
+def test_each_table_cell_records_the_column_it_stands_in() -> None:
+    tokens = parse("| x | y |\n| --- | --- |\n| a | b |\n\nprose\n")
+    columns = [token.meta.get(COLUMN) for token in tokens if token.type == "inline"]
+    assert columns == [0, 1, 0, 1, None]
 
 
 def test_typographic_substitution_is_off() -> None:
