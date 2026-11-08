@@ -6,10 +6,8 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Run the command.
 
-<big><pre>
-pf --out '[**&lt;folder&gt;**](#folder "○")' &#92;
-  [**&lt;entry&gt;**](#entry)
-</pre></big>
+pf --out '[<folder>](#folder "○")' \
+  [<entry>](#entry)
 
 ## Entry
 

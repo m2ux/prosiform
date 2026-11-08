@@ -66,7 +66,7 @@ Sources are parsed under one versioned grammar, `prosiform-markdown`, reported b
 
 Sources must be valid UTF-8 — a byte sequence that is not fails with `E_INVALID_ENCODING` rather than being decoded with replacement characters. One leading byte-order mark is tolerated and removed. `.md` and `.markdown` are recognized case-insensitively, and an entry naming any other suffix fails with `E_UNSUPPORTED_ENTRY_SUFFIX`.
 
-Raw HTML in selected content is refused with `E_RAW_HTML`: the bundle is Markdown and nothing else, with one exception. A command block is a paragraph, on one line or several and wherever a paragraph may stand, whose inline content opens with `<big><pre>` and closes with `</pre></big>`, spelled exactly so. The bundle carries the wrapper and the entities inside it as written, and the links inside it are followed and rewritten as any paragraph's are:
+Raw HTML in selected content is refused with `E_RAW_HTML`: the bundle is Markdown and nothing else, with one exception. A command block is a paragraph, on one line or several and wherever a paragraph may stand, whose inline content opens with `<big><pre>` and closes with `</pre></big>`, spelled exactly so. The links inside it are followed and rewritten as any paragraph's are, and the bundle emits the block in the form [Command blocks](bundles.md#command-blocks) states:
 
 ```markdown
 <big><pre>

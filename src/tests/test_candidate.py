@@ -933,3 +933,42 @@ def test_links_in_two_cells_of_one_row_are_located_apart() -> None:
         ("guide.md", 2, 0, 0),
         ("guide.md", 2, 1, 0),
     ]
+
+
+COMMAND = """# Guide
+
+<big><pre>
+pf --out '[**&lt;folder&gt;**](#folder)' &#92;
+  run
+</pre></big>
+
+## Folder
+
+The folder.
+"""
+
+
+def test_a_compacted_command_block_passes() -> None:
+    one = built({"guide.md": COMMAND}, ["guide.md"])
+    assert "pf --out '[<folder>](#folder)' \\\n  run\n" in one.bundled
+    one.validate()
+
+
+def test_a_compacted_command_block_showing_other_text_fails() -> None:
+    one = built({"guide.md": COMMAND}, ["guide.md"])
+    one.bundled = one.bundled.replace("  run\n", "  walk\n")
+    assert refused(one).invariant == PRESERVATION
+
+
+def test_a_compacted_command_block_link_showing_other_text_fails() -> None:
+    one = built({"guide.md": COMMAND}, ["guide.md"])
+    one.bundled = one.bundled.replace("[<folder>]", "[<file>]")
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_raw_tag_outside_a_command_block_is_not_read_as_text() -> None:
+    one = built(
+        {"guide.md": "# Guide\n\nSee [&lt;folder&gt;](#guide).\n"}, ["guide.md"]
+    )
+    one.bundled = one.bundled.replace("[&lt;folder&gt;]", "[<folder>]")
+    assert refused(one).invariant == REFERENCE_PRESERVATION

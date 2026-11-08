@@ -43,6 +43,17 @@ File and directory names use hyphens rather than underscores. A path separator i
 
 Two bundles of one run that derive one name are refused with `E_PUBLICATION_FAILED`, naming both selections, before any bundle is written: an entry `a/b.md` dispatching `a_b.md` is one such run. So is a run folder or bundle name longer than the output folder's filesystem allows, naming the selection it derives from.
 
+## Command blocks
+
+A [command block](sources.md#the-profile) is written for a renderer, and a bundle is read as text, so the bundle emits the block as its content. The `<big><pre>` and `</pre></big>` tags are dropped, and so is a line they leave holding nothing else. A strong emphasis enclosing a link's whole text is unwrapped, and each character reference the parser decodes as text is written as the character it names, such as `&lt;` as `<`, `&gt;` as `>` and `&#92;` as `\`, while one in a code span, a link's destination or title or an autolink, one after a backslash and one naming no character stay as written. Other emphasis stays, and the links are rewritten as any paragraph's are. The block the sources page shows reaches the bundle as:
+
+```markdown
+pf --out '[<folder>](#folder)' \
+  [<entry>](#entry)
+```
+
+A backslash ending a line is a hard line break, so the lines keep the breaks the source wrote. Character references and emphasis outside a command block are emitted as written. Validation reads the raw `<folder>` a decoded reference leaves as the text it spells.
+
 ## Publication
 
 The run folder is written whole beside the earlier one and renamed onto it. An earlier set standing there is renamed aside first and removed once the new folder stands, so a reader sees one run's set or the one before it, never a mixture.

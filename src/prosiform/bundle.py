@@ -143,7 +143,7 @@ from prosiform.closure import (
 )
 from prosiform.heading import title_cased
 from prosiform.metadata import Conversion
-from prosiform.profile import SUFFIXES
+from prosiform.profile import SUFFIXES, command_block
 from prosiform.provenance import (
     FILENAME_WRAPPER,
     Ancestor,
@@ -578,7 +578,8 @@ def rewrite(
     names is removed with the rest rather than published around it.
 
     A source declaring no definition carries no reference-style use, so
-    a token holding no link is the text its source wrote.
+    a token holding no link and standing as no command block is the text
+    its source wrote.
 
     A diagram's link destination is replaced in the one line it is
     written on, so the line count holds there too. Several destinations
@@ -606,7 +607,9 @@ def rewrite(
         here = served.get((path, (region.map or (0, 0))[0]), {})
         for inline in inlines(tokens, [region]):
             found = destinations(inline)
-            if inline.map is None or (not found and not defined):
+            if inline.map is None or (
+                not found and not defined and not command_block(inline.children or [])
+            ):
                 continue
             start, end = inline.map
             if composing is not None and id(inline) in titles:

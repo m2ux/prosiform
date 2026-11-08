@@ -444,3 +444,68 @@ def test_links_in_two_cells_of_one_row_are_each_rewritten_in_their_own_cell() ->
     for inline, assigned in zip(cells, ["#a", "#b"], strict=True):
         row = rewritten(row, inline, [assigned], {})
     assert row == ["| [a](#a) | [b](#b) |\n"]
+
+
+def compacted(text: str, assigned: list[str | None]) -> list[str]:
+    """One command block's lines, as the bundle publishes them."""
+    return rewritten(lines(text), inline_of(text), assigned, {})
+
+
+def test_a_command_block_is_published_as_its_content() -> None:
+    text = (
+        "<big><pre>\n"
+        'cd "[**&lt;dir&gt;**](a.md#dir "○")" && &#92;\n'
+        "  run [**&lt;entry&gt;**](#entry)\n"
+        "</pre></big>\n"
+    )
+    written = compacted(text, ["#dir", None])
+    assert len(written) == 4
+    assert "".join(written) == (
+        'cd "[<dir>](#dir "○")" && \\\n  run [<entry>](#entry)\n'
+    )
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("<big><pre>pf &lt;x&gt;</pre></big>\n", "pf <x>\n"),
+        ("> <big><pre>\n> pf &amp; run\n> </pre></big>\n", "> pf & run\n"),
+        ("- <big><pre>\n  pf &#x41;\n  </pre></big>\n", "- pf A\n"),
+        (
+            "<big><pre>\npf `&lt;x&gt;` \\&lt;y&gt; &bogus;\n</pre></big>\n",
+            "pf `&lt;x&gt;` \\&lt;y> &bogus;\n",
+        ),
+    ],
+)
+def test_a_command_block_decodes_the_references_the_parser_decodes(
+    text: str, expected: str
+) -> None:
+    assert "".join(compacted(text, [])) == expected
+
+
+@pytest.mark.parametrize(
+    ("label", "expected"),
+    [
+        ("**&lt;x&gt;**", "<x>"),
+        ("*x*", "*x*"),
+        ("**a** and **b**", "**a** and **b**"),
+        ("**a** b", "**a** b"),
+        ("__x__", "__x__"),
+    ],
+)
+def test_a_command_block_unwraps_only_strong_text_enclosing_a_whole_label(
+    label: str, expected: str
+) -> None:
+    text = f'<big><pre>\npf [{label}](a.md "&quot;t&quot;")\n</pre></big>\n'
+    assert "".join(compacted(text, [None])) == (
+        f'pf [{expected}](a.md "&quot;t&quot;")\n'
+    )
+
+
+def test_references_and_emphasis_outside_a_command_block_are_written_as_authored() -> (
+    None
+):
+    text = "Run [**&lt;dir&gt;**](a.md) &#92; **bold** &amp; on.\n"
+    assert rewritten(lines(text), inline_of(text), ["#dir"], {}) == [
+        "Run [**&lt;dir&gt;**](#dir) &#92; **bold** &amp; on.\n"
+    ]

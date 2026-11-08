@@ -46,6 +46,16 @@ before and after consolidation would therefore compare one lookup of a
 target with another lookup of the same target, and a check that cannot
 fail reports a guarantee nobody has.
 
+A command block is the one region content the bundle publishes in
+another form, and its comparisons read both forms as a reader of the
+bundle reads them. The source's block is recognised by its wrapper,
+and the block the candidate publishes is the inline content standing in
+its place among the region's. Its lines are lines the bundle edits, so
+it is held to what it shows and to the uses it carries: a raw `<name>`
+a decoded reference leaves is read as the text it spells, a line break
+inside either wrapper tag is not read, and a backslash ending a source
+line reads as the line break the published backslash makes.
+
 An unsafe boundary raises `Unsafe`, which names the source regions
 either side of it and the container that absorbed one into the other.
 Every other failure raises `Invalid`, which names the invariant and
@@ -53,7 +63,7 @@ what disagreed. Nothing is published while a check fails.
 """
 
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field, replace
 from pathlib import PurePosixPath
 from typing import Any
 from urllib.parse import quote
@@ -88,7 +98,7 @@ from prosiform.closure import (
     unmarked,
     withholding_target,
 )
-from prosiform.profile import REFERENCES, parse
+from prosiform.profile import HTML_INLINE, REFERENCES, command_block, parse
 from prosiform.provenance import (
     CONTRIBUTION_HEADING,
     FILENAME_WRAPPER,
@@ -114,6 +124,7 @@ from prosiform.source import (
     HREF,
     IMAGE,
     INLINE,
+    LINE_FEED,
     LINK_OPEN,
     SRC,
     Source,
@@ -136,6 +147,7 @@ from prosiform.tags import read as read_tags
 
 TITLE = "title"
 LINK_CLOSE = "link_close"
+ESCAPED_BREAK = "\\\n"
 CODE_BLOCKS = ("fence", "code_block")
 
 LINK = "link"
@@ -254,7 +266,12 @@ def attribute(token: Token, name: str) -> str:
     return "" if value is None else str(value)
 
 
-def label(children: Sequence[Token], at: int) -> str:
+def read(child: Token, compacted: bool) -> str:
+    """The part of one inline event a reader reads, a compacted tag read as text."""
+    return child.content if compacted and child.type == HTML_INLINE else shown(child)
+
+
+def label(children: Sequence[Token], at: int, compacted: bool = False) -> str:
     """The visible text one link shows, read from the events between its ends."""
     closing = next(
         (
@@ -264,10 +281,10 @@ def label(children: Sequence[Token], at: int) -> str:
         ),
         len(children),
     )
-    return "".join(shown(child) for child in children[at + 1 : closing])
+    return "".join(read(child, compacted) for child in children[at + 1 : closing])
 
 
-def alternative(image: Token) -> str:
+def alternative(image: Token, compacted: bool = False) -> str:
     """The text one image's alternative content shows, its own uses aside.
 
     The alternative content is a run of inline events, and a use
@@ -286,18 +303,21 @@ def alternative(image: Token) -> str:
         elif child.type == LINK_CLOSE:
             inside = False
         elif not inside:
-            carried.append(shown(child))
+            carried.append(read(child, compacted))
     return "".join(carried)
 
 
-def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
+def uses(
+    inline: Token, compacted: bool = False
+) -> Iterator[tuple[Sequence[Token], int, Use]]:
     """Every link and image use one inline token carries, with its position.
 
     Each use arrives with the run that carries it and its position in
     that run, which is where a mark is read from, so a use written
     inside an image's alternative content is compared on the run it
     was written in. Both sides of every comparison read the run the
-    same way.
+    same way, and a command block's compacted form reads a raw tag as
+    the text it spells.
     """
     for children, at, child in events(inline.children or []):
         if child.type == LINK_OPEN:
@@ -306,7 +326,7 @@ def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
                 at,
                 Use(
                     LINK,
-                    label(children, at),
+                    label(children, at, compacted),
                     attribute(child, TITLE),
                     attribute(child, HREF),
                 ),
@@ -317,7 +337,7 @@ def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
                 at,
                 Use(
                     IMAGE,
-                    alternative(child),
+                    alternative(child, compacted),
                     attribute(child, TITLE),
                     attribute(child, SRC),
                 ),
@@ -325,18 +345,18 @@ def uses(inline: Token) -> Iterator[tuple[Sequence[Token], int, Use]]:
 
 
 def carried(
-    tokens: Sequence[Token], span: Token
+    tokens: Sequence[Token], span: Token, compacted: Collection[int] = ()
 ) -> Iterator[tuple[Sequence[Token], int, Use]]:
     """Every use one region carries, in source order, with its position.
 
     An inline token's uses arrive as `uses` reads them. A diagram's link
     destinations arrive in the order its fence writes them, each on no
     run of inline events, because a diagram link carries no text for a
-    mark to open.
+    mark to open. The compacted inline tokens are named by identity.
     """
     for token in within(tokens, [span]):
         if token.type == INLINE:
-            yield from uses(token)
+            yield from uses(token, id(token) in compacted)
         elif token.type == FENCE:
             for click in clicks(token):
                 yield (), 0, Use(CLICK, "", "", click.destination)
@@ -479,19 +499,24 @@ def intended(
     )
 
 
-def carrying(tokens: Sequence[Token], span: Token) -> set[int]:
-    """Each line one region's link, image and diagram link uses occupy.
+def carrying(
+    tokens: Sequence[Token], span: Token, compacted: Collection[int] = ()
+) -> set[int]:
+    """Each line one region's uses and command blocks occupy.
 
     A line the bundle edits is a heading's line, a line of an inline
-    token carrying a link or an image, or a line a diagram's link
-    destination is written on: reference-use conversion and destination
-    rewriting reach nowhere else. Every other line of a selected region
+    token carrying a link or an image or standing as a command block,
+    or a line a diagram's link destination is written on:
+    reference-use conversion, destination rewriting and command block
+    compaction reach nowhere else. Every other line of a selected region
     is bytes the bundle carries as its source wrote them, which is what
     the preservation comparison holds it to.
     """
     held: set[int] = set()
     for inline in inlines(tokens, [span]):
-        if inline.map is not None and any(True for _ in uses(inline)):
+        if inline.map is not None and (
+            id(inline) in compacted or any(True for _ in uses(inline))
+        ):
             held.update(range(*inline.map))
     for fence in within(tokens, [span]):
         if fence.type == FENCE:
@@ -514,6 +539,7 @@ def body(
     tokens: Sequence[Token],
     span: Token,
     removed: Collection[int] = (),
+    compacted: Collection[int] = (),
 ) -> list[str]:
     """One region's untouched non-heading lines, in order and without blanks.
 
@@ -525,7 +551,7 @@ def body(
     bytes its source wrote, trailing spaces and indentation included.
     """
     start, end = span.map or (0, 0)
-    skipped = headed(tokens, span) | carrying(tokens, span) | set(removed)
+    skipped = headed(tokens, span) | carrying(tokens, span, compacted) | set(removed)
     return [
         bare(physical[at])
         for at in range(start, end)
@@ -1118,11 +1144,50 @@ def leakage(environment: Mapping[str, Any]) -> None:
 
 @dataclass(frozen=True)
 class Side:
-    """One side of a region comparison: its region's tokens, its lines, the region."""
+    """One side of a region comparison: its region's tokens, its lines, the region.
+
+    The compacted tokens are the inline tokens standing as command
+    blocks, named by identity: the source's wrapped blocks on its side,
+    and the forms the candidate publishes for them on the other.
+    """
 
     tokens: Sequence[Token]
     physical: Sequence[str]
     span: Token
+    compacted: frozenset[int] = field(default_factory=frozenset)
+
+
+def compaction(source: Side, published: Side) -> tuple[Side, Side]:
+    """Both sides of one region, each naming the command blocks it carries.
+
+    The bundle publishes a command block without its wrapper, so the
+    candidate's block is the inline content standing where the source's
+    stands among the region's inline content outside headings. A count
+    that differs pairs nothing reliably, and the preservation comparison
+    reports it.
+    """
+    pairs = [
+        (one, each)
+        for one, each in zip(
+            prose(source.tokens, source.span),
+            prose(published.tokens, published.span),
+            strict=False,
+        )
+        if command_block(one.children or [])
+    ]
+    return (
+        replace(source, compacted=frozenset(id(one) for one, _ in pairs)),
+        replace(published, compacted=frozenset(id(each) for _, each in pairs)),
+    )
+
+
+def content(written: str) -> str:
+    """What a command block's source shows, as its compacted form shows it.
+
+    The line breaks inside the wrapper tags are not read, and a
+    backslash ending a line reads as the line break a backslash makes.
+    """
+    return written.strip(LINE_FEED).replace(ESCAPED_BREAK, LINE_FEED)
 
 
 def located(tokens: Sequence[Token], at: tuple[int, int]) -> Token:
@@ -1166,7 +1231,7 @@ def references(
     contributing = {} if composing is None else composing
     expected: list[Use] = []
     for (children, at, one), written in zip(
-        carried(source.tokens, source.span),
+        carried(source.tokens, source.span, source.compacted),
         positions(path, source.tokens, source.span),
         strict=True,
     ):
@@ -1191,7 +1256,12 @@ def references(
                 normalizeLink(f"{ANCHOR}{anchor}"),
             )
         )
-    found = [one for _, _at, one in carried(published.tokens, published.span)]
+    found = [
+        one
+        for _, _at, one in carried(
+            published.tokens, published.span, published.compacted
+        )
+    ]
     if len(found) != len(expected):
         raise Invalid(
             NO_NEW_LINKS,
@@ -1225,8 +1295,13 @@ def preserved(
     is one the bundle rebased a destination for. Together they are the
     content of the region: nothing in it is reformatted or repaired.
     """
-    wrote = body(source.physical, source.tokens, source.span, removed)
-    carries = body(published.physical, published.tokens, published.span)
+    wrote = body(source.physical, source.tokens, source.span, removed, source.compacted)
+    carries = body(
+        published.physical,
+        published.tokens,
+        published.span,
+        compacted=published.compacted,
+    )
     if wrote != carries:
         raise Invalid(
             PRESERVATION,
@@ -1253,11 +1328,15 @@ def preserved(
         )
     for one, each in zip(written, shows, strict=True):
         shown = emitted_visible(path, one, declarations, substitution, dispatched_to)
-        if shown != visible(each):
+        compacted = id(each) in published.compacted
+        if compacted:
+            shown = content(shown)
+        shows_here = "".join(read(child, compacted) for child in each.children or [])
+        if shown != shows_here:
             raise Invalid(
                 PRESERVATION,
                 f"the region at lines {source.span.map} of {path!r} shows "
-                f"{shown!r} and the candidate shows {visible(each)!r}",
+                f"{shown!r} and the candidate shows {shows_here!r}",
             )
 
 
@@ -1448,7 +1527,7 @@ def validate(
             lines(read[carried.path].text),
             wrote,
         )
-        published = Side(emitted[id(span)], physical, span)
+        source, published = compaction(source, Side(emitted[id(span)], physical, span))
         references(
             carried.path,
             source,
