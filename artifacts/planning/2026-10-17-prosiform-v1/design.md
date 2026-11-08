@@ -65,7 +65,7 @@ Use the `prosiform-markdown` profile based on CommonMark, with pipe tables and d
 
 - **Core syntax:** Support ATX/Setext headings, paragraphs, lists, blockquotes, code spans and blocks, inline/reference links and images, thematic breaks, and ordinary CommonMark autolinks.
 - **Task lists:** Preserve `[ ]`, `[x]`, and `[X]` markers without generating checkbox HTML. Recognize marker positions so reference definitions cannot turn them into links.
-- **HTML:** Recognize HTML so it can be refused. Raw HTML in selected content fails with `E_RAW_HTML`; the bundle carries Markdown only.
+- **HTML:** Recognize HTML so it can be refused. Raw HTML in selected content fails with `E_RAW_HTML`; the bundle carries Markdown only, with one exception. A command block, a paragraph whose inline content opens with the inline tags `<big><pre>` and closes with `</pre></big>`, spelled exactly so, is carried as written, and the links inside it are followed and rewritten as any paragraph's are. `<pre>` or `<big>` alone, a wrapper left unclosed in its paragraph and a wrapper carrying an attribute fail with `E_RAW_HTML`.
 - **Typography:** Disable smart quotes, typographic substitutions, and formatting cleanup.
 - **Bare text:** Do not infer dependencies from ordinary paths in prose. Bare URLs may remain text; browser-specific rendering is outside the guaranteed profile.
 - **Unsupported extensions:** Footnotes, wiki links, heading-attribute syntax, and include/transclusion directives other than the *composition directive* [Section composition](#section-composition) states are not v1 bundling features. Reject recognized unsupported dependency or section-naming constructs in selected content with `E_UNSUPPORTED_CONSTRUCT`, but do not guess every possible extension from ordinary prose.
@@ -331,7 +331,7 @@ A source heading is the only thing that names a section. There is no supported s
 
 ### Source markup policy
 
-Raw HTML is outside the profile. A source carrying it in selected content fails rather than copying it into the bundle, which keeps the output free of identifiers and elements the tool neither created nor tracks.
+Raw HTML is outside the profile, the command block the profile's HTML rule names apart. A source carrying it in selected content fails rather than copying it into the bundle, which keeps the output free of identifiers and elements the tool neither created nor tracks.
 
 A source heading is the only thing that names a section. There is no supported syntax for attaching a second name to one, so a fragment resolves against the source-heading slugs alone.
 
