@@ -14,6 +14,7 @@
 - A `<pre>` line on its own opens a CommonMark HTML block whose content is not parsed, so the wrapper is recognised only as the `html_inline` pair `<big><pre>` and `</pre></big>` bounding one paragraph. A wrapper opened without being closed in the same paragraph, or one carrying attributes, is still refused.
 - Both defects reproduce on `pf 0.21.0` at `bdaa5d760`.
 - No existing fixture uses `<big>` or `<pre>`; the refusal fixtures use `<div>` and `<a href>` and stay unchanged. Fixtures are added and none fail, so the release is a minor, as the previous corpus run confirms.
-- The rewrite fault's trigger is not yet isolated. A minimal document with same-document titled links compiles, so the trigger lies in the section's closure (`lane.md`, `hotfix.md` or a reference-style definition). Isolating it to a minimal fixture is the first step of that half.
+- The rewrite fault's trigger is a table row with links in two cells. markdown-it maps every cell to the whole row line, so the rewrite counted the row's links against one cell's. Each cell's inline token records its column, the rewrite scans that cell's stretch, and a link's identity is `(path, line, column, position)` across composition, bundle and candidate code.
+- Review rejected, as edge cases: `|` in a reference definition's title inside a table cell, and command lines opening with `#` or `-` ending the paragraph early, as CommonMark does.
 - `docs/sources.md` states the accepted wrapper beside the raw HTML refusal; `docs/validation.md` keeps `E_RAW_HTML` for everything else.
 - One pull request into `main`, opened as a draft and marked ready once review clears.
