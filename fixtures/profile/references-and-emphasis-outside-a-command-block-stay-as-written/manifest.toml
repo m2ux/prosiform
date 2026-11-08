@@ -1,0 +1,14 @@
+description = "Character references and strong emphasis around a link's whole text, written outside a command block, reach the bundle as written, while the command block beside them is emitted as its content."
+
+clauses = [
+  "Markdown and source-heading profile — HTML, character references and emphasis outside a command block are emitted as written",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
