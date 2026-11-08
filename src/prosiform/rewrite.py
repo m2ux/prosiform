@@ -74,6 +74,7 @@ from itertools import accumulate, pairwise
 from typing import Any
 
 from markdown_it.common.utils import normalizeReference
+from markdown_it.rules_block.table import escapedSplit
 from markdown_it.token import Token
 
 from prosiform.closure import filed, opened, published_text
@@ -210,23 +211,23 @@ def code_spans(text: str) -> list[tuple[int, int]]:
 def cell(row: str, column: int) -> tuple[int, int]:
     """The extent one table cell's inline content is read from in its row's line.
 
-    The row is split as the profile splits it: after the container
-    markers and blanks the line opens with, at each pipe no backslash
-    directly precedes, with an empty stretch before a leading pipe or
-    after a trailing one dropped. A column the row writes no cell for
+    The row is split by the parser's own table splitter, after the
+    container markers and blanks the line opens with, and an empty cell
+    before a leading pipe or after a trailing one is dropped, as the
+    parser's table rule drops it. The splitter takes the backslash from
+    each escaped pipe, so a cell spans one source character more than it
+    holds for every pipe it holds. A column the row writes no cell for
     is the empty extent at the row's end.
     """
     opening = len(opening_markers(row))
     closing = len(row.rstrip())
-    breaks = [
-        at
-        for at in range(opening, closing)
-        if row[at] == PIPE and (at == opening or row[at - 1] != ESCAPE)
-    ]
-    stretches = [
-        (start + 1, end) for start, end in pairwise([opening - 1, *breaks, closing])
-    ]
-    if stretches[0][0] == stretches[0][1]:
+    stretches: list[tuple[int, int]] = []
+    at = opening
+    for held in escapedSplit(row[opening:closing]):
+        width = len(held) + held.count(PIPE)
+        stretches.append((at, at + width))
+        at += width + 1
+    if stretches and stretches[0][0] == stretches[0][1]:
         stretches.pop(0)
     if stretches and stretches[-1][0] == stretches[-1][1]:
         stretches.pop()
