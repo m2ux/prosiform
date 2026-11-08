@@ -8,7 +8,7 @@ Each page covers one part of a run, and they read in the order a run happens.
 
 | Page | Answers |
 | --- | --- |
-| [Contract design](https://github.com/m2ux/prosiform/blob/1cf88becc/artifacts/planning/2026-10-17-prosiform-v1/design.md) | The pinned contract implemented by this build, including explicit link-title preset selection |
+| [Contract design](https://github.com/m2ux/prosiform/blob/2f8d860e8/artifacts/planning/2026-10-17-prosiform-v1/design.md) | The pinned contract implemented by this build, including explicit link-title preset selection |
 | [Architecture](architecture.md) | The whole run, and where each of the pages below fits |
 | [Sources](sources.md) | What a source is, how its declaration and presets include it, and the boundary its links derive |
 | [References](references.md) | Which links are dependencies, which are text, and what an operator states |
