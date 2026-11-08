@@ -88,7 +88,7 @@ Each check below ends the run before anything is written, under the code it name
 | Two depths for one group | `E_GROUP_CONFLICT` | `1` |
 | A target, or a fragment's heading, that does not exist | `E_TARGET_NOT_FOUND` | `1` |
 | A fragment naming a heading two headings share, or one inside a container | `E_AMBIGUOUS_SOURCE_HEADING`, `E_NESTED_SECTION_TARGET` | `1` |
-| Raw HTML in selected content | `E_RAW_HTML` | `1` |
+| Raw HTML in selected content, outside a [command block](sources.md#the-profile) | `E_RAW_HTML` | `1` |
 | A construct the profile does not support, an operator or directive refused, a composition cycle | `E_UNSUPPORTED_CONSTRUCT` | `1` |
 | A parser limit suppressing a reference lookup | `E_PARSER_REFERENCE_LIMIT` | `1` |
 | A heading beyond H6 | `E_HEADING_DEPTH_OVERFLOW` | `1` |

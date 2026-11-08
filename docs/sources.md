@@ -66,7 +66,16 @@ Sources are parsed under one versioned grammar, `prosiform-markdown`, reported b
 
 Sources must be valid UTF-8 — a byte sequence that is not fails with `E_INVALID_ENCODING` rather than being decoded with replacement characters. One leading byte-order mark is tolerated and removed. `.md` and `.markdown` are recognized case-insensitively, and an entry naming any other suffix fails with `E_UNSUPPORTED_ENTRY_SUFFIX`.
 
-Raw HTML in selected content is refused with `E_RAW_HTML`: the bundle is Markdown and nothing else. Constructs the profile does not support — footnotes, wiki links, heading attributes — are refused with `E_UNSUPPORTED_CONSTRUCT` where they would name a dependency or a section.
+Raw HTML in selected content is refused with `E_RAW_HTML`: the bundle is Markdown and nothing else, with one exception. A command block is a paragraph whose first line opens with `<big><pre>` and whose last line closes with `</pre></big>`, spelled exactly so. The bundle carries the wrapper and the entities inside it as written, and the links inside it are followed and rewritten as any paragraph's are:
+
+```markdown
+<big><pre>
+pf --out '[**&lt;folder&gt;**](terms.md#folder)' &#92;
+  [**&lt;entry&gt;**](#entry)
+</pre></big>
+```
+
+`<pre>` or `<big>` alone, a wrapper left unclosed in its paragraph and a wrapper carrying an attribute are raw HTML and refused. Constructs the profile does not support — footnotes, wiki links, heading attributes — are refused with `E_UNSUPPORTED_CONSTRUCT` where they would name a dependency or a section.
 
 ## Text that is not a source
 
