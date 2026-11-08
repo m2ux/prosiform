@@ -1,0 +1,15 @@
+description = "A table row links a document in one cell and writes a directive in the next. Every cell of the row opens on the row's line, and each link is still its own: the directive's link points at the contribution it placed, and the link in the other cell points at its own document's destination."
+
+clauses = [
+  "Section composition — The directive's link",
+  "Link classification and resource handling — Local Markdown document links",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

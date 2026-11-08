@@ -158,6 +158,7 @@ from prosiform.provenance import (
     Record,
     Served,
     Target,
+    link_at,
 )
 from prosiform.rewrite import Definition, destinations, rewritten
 from prosiform.source import (
@@ -619,8 +620,8 @@ def rewrite(
                     substitution,
                 )
             targets = [
-                f"{ANCHOR}{contributing[(path, start, at)]}"
-                if (path, start, at) in contributing
+                f"{ANCHOR}{contributing[link_at(path, inline, start, at)]}"
+                if link_at(path, inline, start, at) in contributing
                 else target(
                     path,
                     one,
@@ -679,7 +680,7 @@ def unplaced(
         here = position
         position += 1
         opening = opening_text(children, at)
-        if (path, start, here) in contributing:
+        if link_at(path, inline, start, here) in contributing:
             continue
         if not directive(opening_text(children, at)):
             continue

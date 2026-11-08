@@ -105,6 +105,7 @@ from prosiform.provenance import (
     Range,
     Record,
     Served,
+    link_at,
 )
 from prosiform.source import (
     ANCHOR,
@@ -346,8 +347,9 @@ def positions(
 ) -> Iterator[Located | None]:
     """Where each use one region carries is written, in the order `carried` reads them.
 
-    A link is located by its inline block's first line and its position
-    among the links that block writes, which is how a composing link's
+    A link is located by its inline block's first line, the table column
+    that block stands in, and its position among the links that block
+    writes, which is how a composing link's
     contribution is held. An image and a diagram link compose nothing.
     """
     for token in within(tokens, [span]):
@@ -357,7 +359,7 @@ def positions(
                 if use.kind != LINK or token.map is None:
                     yield None
                     continue
-                yield (path, token.map[0], position)
+                yield link_at(path, token, token.map[0], position)
                 position += 1
         elif token.type == FENCE:
             for _click in clicks(token):
@@ -1345,7 +1347,7 @@ def contributions(
     composing link's destination is held to is the kind of heading it
     reaches.
     """
-    for (path, line, _at), destination in (
+    for (path, line, _column, _at), destination in (
         each for links in composing.values() for each in links.items()
     ):
         found = reached.get(destination)

@@ -37,6 +37,7 @@ from prosiform.candidate import (
     dispatches,
     one_member,
     parallel_sets,
+    positions,
     validate,
 )
 from prosiform.cli import (
@@ -923,3 +924,12 @@ def test_a_dispatch_pointing_at_no_in_parallel_sub_section_is_invalid(
     with pytest.raises(Invalid) as caught:
         pointing(destination)
     assert caught.value.invariant == TARGET_INTEGRITY
+
+
+def test_links_in_two_cells_of_one_row_are_located_apart() -> None:
+    tokens = parse("| x | y |\n| --- | --- |\n| [a](a.md) | [b](b.md) |\n")
+    table = next(token for token in tokens if token.type == "table_open")
+    assert list(positions("guide.md", tokens, table)) == [
+        ("guide.md", 2, 0, 0),
+        ("guide.md", 2, 1, 0),
+    ]
