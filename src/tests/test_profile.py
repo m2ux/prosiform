@@ -149,6 +149,38 @@ def test_prose_resembling_a_construct_passes_untouched(source: str) -> None:
     assert messages(source) == []
 
 
+COMMAND_BLOCK = (
+    "<big><pre>\npf --out '[**&lt;dir&gt;**](#dir \"○\")' &#92;\n</pre></big>\n"
+)
+
+
+def test_a_command_block_passes_and_its_links_are_uses() -> None:
+    assert messages(COMMAND_BLOCK) == []
+    assert messages(f"- {COMMAND_BLOCK}") == []
+    assert links(COMMAND_BLOCK) == ["#dir"]
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "<pre>\npf run\n</pre>\n",
+        "<big>\npf run\n</big>\n",
+        "<big><pre>\npf run\n",
+        "<big><pre>\npf run\n</pre>\n",
+        '<big><pre class="cmd">\npf run\n</pre></big>\n',
+        '<big class="cmd"><pre>\npf run\n</pre></big>\n',
+        "<BIG><PRE>\npf run\n</PRE></BIG>\n",
+        "<big> <pre>\npf run\n</pre> </big>\n",
+        "Run <big><pre>pf run</pre></big>\n",
+        "<big><pre>\npf <b>run</b>\n</pre></big>\n",
+        "# <big><pre>pf run</pre></big>\n",
+        "| head |\n| --- |\n| <big><pre>pf run</pre></big> |\n",
+    ],
+)
+def test_html_other_than_a_command_block_is_refused(source: str) -> None:
+    assert len(messages(source)) == 1
+
+
 def test_a_refusal_names_the_line_and_the_spelling_it_found() -> None:
     found = list(refusals(parse("# Guide\n\nSee [[page]] here.\n")))
     assert len(found) == 1

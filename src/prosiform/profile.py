@@ -9,6 +9,14 @@ holds the typographer off, `table` and `strikethrough` are core rules
 enabled by name, and leaving the task-list plugin out is what keeps a
 marker the three characters the source spelled.
 
+Raw HTML takes one form the profile accepts: the command block, a
+paragraph whose inline content opens with `<big><pre>` and closes with
+`</pre></big>`, spelled exactly so. The parser reads the four tags as
+inline HTML within the paragraph, so the links between them are uses
+like any paragraph's and the bundle carries the tags as written. A
+paragraph wrapped any other way, and every other piece of raw HTML,
+is refused.
+
 A link the parser produces is a use, and a code span or a code block
 carries none, with one exception the source model reads: a diagram link
 line in a fence whose info string opens with `mermaid` — a `click` line,
@@ -99,6 +107,9 @@ LINK_OPEN = "link_open"
 LINK_CLOSE = "link_close"
 HTML_BLOCK = "html_block"
 HTML_INLINE = "html_inline"
+
+COMMAND_OPEN = ("<big>", "<pre>")
+COMMAND_CLOSE = ("</pre>", "</big>")
 
 HREF = "href"
 LABEL_OPEN = "["
@@ -404,7 +415,7 @@ def recognized(pattern: re.Pattern[str], inline: Token) -> re.Match[str] | None:
 
 
 def html_refusal(spelling: str, at: int | None) -> Refusal:
-    """Raw HTML, which the bundle carries no form of."""
+    """Raw HTML the profile refuses: any but a command block's four tags."""
     return Refusal(
         code=RAW_HTML,
         message=(
@@ -416,12 +427,27 @@ def html_refusal(spelling: str, at: int | None) -> Refusal:
     )
 
 
-def inline_refusals(inline: Token, heading: bool) -> Iterator[Refusal]:
-    """Every construct one inline token carries that the profile refuses."""
-    at = line(inline)
-    markup = next(
-        (child for child in inline.children or [] if child.type == HTML_INLINE), None
+def command_block(children: Sequence[Token]) -> bool:
+    """Whether a paragraph's inline content is wrapped as a command block."""
+    tags = [child.content if child.type == HTML_INLINE else None for child in children]
+    return (
+        len(tags) >= len(COMMAND_OPEN) + len(COMMAND_CLOSE)
+        and tuple(tags[: len(COMMAND_OPEN)]) == COMMAND_OPEN
+        and tuple(tags[-len(COMMAND_CLOSE) :]) == COMMAND_CLOSE
     )
+
+
+def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[Refusal]:
+    """Every construct one inline token carries that the profile refuses.
+
+    A paragraph wrapped as a command block carries its four tags, and
+    raw HTML is refused only between them.
+    """
+    at = line(inline)
+    children = inline.children or []
+    if paragraph and command_block(children):
+        children = children[len(COMMAND_OPEN) : -len(COMMAND_CLOSE)]
+    markup = next((child for child in children if child.type == HTML_INLINE), None)
     if markup is not None:
         yield html_refusal(markup.content, at)
 
@@ -537,14 +563,15 @@ def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
     construct. A run narrowed to the regions one source contributes
     therefore reports what that content carries and nothing else.
     """
-    heading = False
+    heading = paragraph = False
     for token in tokens:
         if token.nesting == 1:
             heading = token.type == HEADING_OPEN
+            paragraph = token.type == PARAGRAPH_OPEN
         if token.type == HTML_BLOCK:
             opening = next(iter(token.content.strip().splitlines()), token.content)
             yield html_refusal(opening, line(token))
         elif token.type == FENCE:
             yield from diagram_refusals(token)
         elif token.type == INLINE:
-            yield from inline_refusals(token, heading)
+            yield from inline_refusals(token, heading, paragraph)
