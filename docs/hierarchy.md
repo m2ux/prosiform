@@ -34,7 +34,7 @@ flowchart TD
 
 ## The level shift
 
-Source headings move down one level beneath their file heading: H1 becomes H2, H2 becomes H3, and so on. Levels are shifted uniformly, not renormalized per selection, so the outline the author wrote keeps its shape.
+Source headings move down one level beneath their file heading: H1 becomes H2, H2 becomes H3, and so on. Within a file group, levels are shifted uniformly, not renormalized per selection, so the outline the author wrote keeps its shape. A merged group's member content is placed beneath its member subsection instead, as [Member names](#member-names) states.
 
 A group whose title the file heading absorbed is the exception: the file heading has already taken the level the shift would make room for, so its source levels stay as written.
 
@@ -96,7 +96,9 @@ That name is the shortest run of the member's path that distinguishes it from th
 
 The same name serves the member's subsection and every variant heading it carries, so a reader meets each member named one way.
 
-A member's subsection absorbs the member's own title where the title's slug agrees with the file's stem, as a file heading absorbs a document's title: `notes/titled.md` titled `Titled` takes the subsection `Titled`, and the title is not emitted again. A member whose title is absorbed takes its subsection even where everything else it carries sits at the grouping depth, and so does a member the group emits nothing else from; either subsection is the heading alone. A whole-document reference to the member, and a reference to the title its subsection absorbed, resolve to that subsection. A title above the grouping depth whose slug does not agree with the stem is that member's content, emitted beneath the subsection.
+A member's subsection absorbs the member's own title where the title's slug agrees with the file's stem, as a file heading absorbs a document's title: `notes/titled.md` titled `Titled` takes the subsection `Titled`, and the title is not emitted again. A member whose title is absorbed takes its subsection even where everything else it carries sits at the grouping depth, and so does a member the group emits nothing else from; either subsection is the heading alone. A whole-document reference to the member, and a reference to the title its subsection absorbed, resolve to that subsection. A title above the grouping depth whose slug does not agree with the stem is that member's content where a reference selects it, emitted beneath the subsection.
+
+A member's content sits one level below its subsection. The shallowest heading the member emits beneath the subsection takes the level directly beneath it, and every other heading keeps its distance from that one. A title the subsection absorbs, or one no reference selects, therefore claims no level, and content opening at H3 takes that level as content opening at H2 does. The fixtures [content-beneath-an-unselected-title-sits-one-level-below-its-subsection](../fixtures/grouping/content-beneath-an-unselected-title-sits-one-level-below-its-subsection) and [content-opening-below-h2-sits-one-level-below-its-subsection](../fixtures/grouping/content-opening-below-h2-sits-one-level-below-its-subsection) hold this arrangement.
 
 A member whose content all sits at the grouping depth, with no title for a subsection to absorb, takes no subsection: the merged sections it contributes to name it, and a whole-document reference to it resolves to the first heading the group emits from it that no other member shares.
 
