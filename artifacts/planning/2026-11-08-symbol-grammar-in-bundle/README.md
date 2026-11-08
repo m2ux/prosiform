@@ -6,7 +6,7 @@
 
 Every bundle opens with a `§ Instructions` section whose one line reads ``Run `pf`, then follow the guidance it prints.`` An agent following a bundle must therefore call `pf` with no arguments before it can read a `↳`, `⇉` or `⫽` mark. The marks are the only part of that guide a bundle depends on.
 
-This hot-fix writes the guide's **Symbol grammar** into the `§ Instructions` section of every bundle and drops the run-pf line. Bare `pf` keeps the rest of the guide (usage, compiling a link, exit status) and no longer prints the symbol grammar.
+This hot-fix pulls the guide's **Symbol grammar** out into one object in the code. Bare `pf` prints it as it does today, and every bundle's `§ Instructions` section carries it in place of the run-pf line.
 
 ## Artifacts
 
