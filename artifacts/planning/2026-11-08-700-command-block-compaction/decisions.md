@@ -18,3 +18,8 @@
 ## Collision
 
 - `2026-11-08-symbol-grammar-in-bundle` is an unraised hot-fix plan that rewrites `bundle.py`'s `§ Instructions` section and regenerates 432 expected bundles. It still names v0.21.0. Delivered together, the two contend for `bundle.py`, the expected bundles and the release number, so one lands and the other rebases.
+
+## Review
+
+- Fixed: the bundle doc's statement of which references decode, decoding through markdown-it's `UNESCAPE_ALL_RE` and `replaceEntityPattern`, and `LINE_FEED` imported from `source.py`.
+- Rejected, as no skill source writes them: doubled or escaped backslashes around `&#92;`, references decoding to Markdown syntax, decoded HTML comments, an indented first line, and a block opening with a list marker. Each fails the run or changes only rendered output.
