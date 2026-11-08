@@ -1,0 +1,16 @@
+description = "A member whose title no reference selects, and whose selected section above the grouping depth carries its own content, emits that section one level below the member subsection. No H1 is emitted beneath the subsection, so nothing claims the level a title would take and no level is left empty."
+
+clauses = [
+  "Grouping — A heading for every member",
+  "Grouping — The overview section",
+  "Grouping — Document content above the grouping depth",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

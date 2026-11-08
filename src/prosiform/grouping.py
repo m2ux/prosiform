@@ -260,13 +260,19 @@ class Member:
     def shift(self, at: int) -> int:
         """The levels the member's content above the grouping depth moves by.
 
-        The subsection naming the member sits at the level supplied, so
-        a title that heading absorbs leaves the member's own H1
-        unemitted and its sections one level below the subsection; a
-        title it does not absorb is emitted beneath the subsection and
-        takes the level that makes room.
+        The subsection naming the member sits at the level supplied, and
+        the member's content sits one level below it. An H1 the member
+        emits takes that level, with its sections beneath it; where the
+        member emits no H1, because the subsection absorbs its title or
+        no reference selects it, its sections take that level.
         """
-        return at - 1 if self.absorbing is not None else at
+        emits_title = any(
+            not one.ancestor
+            and one.token.type == HEADING_OPEN
+            and level(one.token) == 1
+            for one in self.items
+        )
+        return at if emits_title else at - 1
 
 
 def prepared(
