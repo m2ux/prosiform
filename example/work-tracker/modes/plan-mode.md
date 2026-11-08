@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    group: {modes: 2}
+    group: {artifacts: 2}
 ---
 
 # Plan Mode
