@@ -21,7 +21,7 @@ Validation compares the finished document with the provenance the run recorded w
 | One member per destination | each destination answers one member of a group, so no two members share a destination |
 | Uniqueness | each destination occurs once and resolves in the renderer that reads the bundle |
 | Boundaries | combining sections has absorbed nothing into an unintended container |
-| Preservation | selected wording and code survive the declared transformations unchanged |
+| Preservation | selected wording and code survive the declared transformations unchanged, a [command block's](bundles.md#command-blocks) compaction among them |
 | No new content | the bundle carries no link and no link-reference definition its sources did not write |
 | Coverage | each selected region appears exactly once, and the closure is complete |
 | Expansion | the only unselected content emitted is a required structural ancestor's heading |
