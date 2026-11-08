@@ -1,0 +1,18 @@
+description = "A <pre> block without the <big> wrapper is raw HTML and fails, naming the line that opens it."
+
+clauses = [
+  "Markdown and source-heading profile — HTML, raw HTML in selected content fails",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_RAW_HTML"
+source = "guide.md:8"
