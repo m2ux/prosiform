@@ -6,6 +6,7 @@
 - The bundle no longer tells its reader to run `pf` (user, 2026-11-08).
 - Bare `pf` prints the guide as it does today, Symbol grammar included (user, 2026-11-08).
 - The Symbol grammar is one object in the code, rendered by both the guide and the bundle (user, 2026-11-08).
+- Every bundle carries all three entries, whatever marks it holds (user, 2026-11-08).
 
 ## Implementation Details
 
@@ -40,5 +41,4 @@
 
 ## Open Questions
 
-1. Whether every bundle carries all three entries, or only the entries for marks it holds.
-2. The `↳` entry says "compile its destination with pf". How to build that command (path resolution, `--presets`) stays in bare `pf`, so an agent meeting a tagged `↳` still needs one bare call. Whether the bundle says so.
+1. The `↳` entry says "compile its destination with pf". How to build that command (path resolution, `--presets`) stays in bare `pf`, so an agent meeting a tagged `↳` still needs one bare call. Whether the bundle says so.
