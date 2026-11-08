@@ -84,11 +84,10 @@ from dataclasses import dataclass
 from itertools import accumulate, pairwise
 from typing import Any
 
-from markdown_it.common.entities import entities
 from markdown_it.common.utils import (
-    fromCodePoint,
-    isValidEntityCode,
+    UNESCAPE_ALL_RE,
     normalizeReference,
+    replaceEntityPattern,
 )
 from markdown_it.rules_block.table import escapedSplit
 from markdown_it.token import Token
@@ -104,6 +103,7 @@ from prosiform.profile import (
 )
 from prosiform.source import (
     HREF,
+    LINE_FEED,
     LINK_CLOSE,
     LINK_OPEN,
     TEXT,
@@ -126,17 +126,10 @@ COLON = ":"
 PIPE = "|"
 
 SPACE = " "
-LINE_FEED = "\n"
-
 STRONG_OPEN = "strong_open"
 STRONG_CLOSE = "strong_close"
 STRONG = "**"
 
-REPLACEMENT = 0xFFFD
-
-REFERENCE = re.compile(
-    r"&(?:#(x[0-9a-f]{1,6}|[0-9]{1,7})|([a-z][a-z0-9]{1,31}));", re.IGNORECASE
-)
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
 
@@ -698,33 +691,25 @@ def unwrapped(
     return [(start, start + len(STRONG), ""), (end - len(STRONG), end, "")]
 
 
-def decoded(written: re.Match[str]) -> str | None:
-    """The character one reference names, as the parser decodes it, or nothing.
-
-    A numeric reference names a code point, and one the parser holds
-    invalid is the replacement character. A named reference outside the
-    parser's table is the literal text it is.
-    """
-    numeric, name = written.groups()
-    if numeric is not None:
-        code = int(numeric[1:], 16) if numeric[0] in "xX" else int(numeric)
-        return fromCodePoint(code if isValidEntityCode(code) else REPLACEMENT)
-    return entities.get(name)
-
-
 def references(text: str, found: Sequence[Use]) -> list[tuple[int, int, str]]:
-    """Each character reference the parser decodes, as its span and its character."""
+    """Each character reference the parser decodes, as its span and its character.
+
+    The scan is the parser's own unescaping pattern, so a backslash
+    escape is read where it stands and the reference it escapes stays
+    text, and a reference naming no character is the text it is.
+    """
     spans = code_spans(text) + [
         (one.opening, one.end) if one.autolink else (one.label[1], one.end)
         for one in found
     ]
     held: list[tuple[int, int, str]] = []
-    for written in REFERENCE.finditer(text):
-        at = written.start()
-        character = decoded(written)
-        if character is None or escaped(text, at) or masked(spans, at):
+    for written in UNESCAPE_ALL_RE.finditer(text):
+        name = written.group(2)
+        if name is None or masked(spans, written.start()):
             continue
-        held.append((at, written.end(), character))
+        character = replaceEntityPattern(written.group(), name)
+        if character != written.group():
+            held.append((written.start(), written.end(), character))
     return held
 
 

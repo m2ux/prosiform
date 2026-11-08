@@ -124,6 +124,7 @@ from prosiform.source import (
     HREF,
     IMAGE,
     INLINE,
+    LINE_FEED,
     LINK_OPEN,
     SRC,
     Source,
@@ -146,7 +147,6 @@ from prosiform.tags import read as read_tags
 
 TITLE = "title"
 LINK_CLOSE = "link_close"
-LINE_FEED = "\n"
 ESCAPED_BREAK = "\\\n"
 CODE_BLOCKS = ("fence", "code_block")
 
