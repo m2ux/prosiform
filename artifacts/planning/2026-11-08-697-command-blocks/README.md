@@ -12,13 +12,15 @@ Skills write each command as a parameterised block whose parameters are links to
 
 | Artifact | What it holds |
 | --- | --- |
-| [Issue body](issue-body.md) | The hot-fix body, ready to raise |
+| [Issue body](issue-body.md) | The published hot-fix body |
 | [Decisions](decisions.md) | The confirmed scope, the release and the acceptance route |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
+| Hot-fix issue | https://github.com/m2ux/prosiform/issues/697 |
+| Python board | https://github.com/users/m2ux/projects/18 |
 | Profile refusal | `src/prosiform/profile.py`, `html_refusal` and `inline_refusals` |
 | Rewrite failure | `src/prosiform/rewrite.py`, the `Unrewritable` raised on a use-count mismatch |
 | Profile statement | `docs/sources.md#the-profile` |

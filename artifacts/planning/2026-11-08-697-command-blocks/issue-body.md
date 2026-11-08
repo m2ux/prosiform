@@ -27,3 +27,9 @@ Target: `main`
 - [ ] **AC3.** The minimal source that raised `Unrewritable` compiles, as `make corpus` shows.
 - [ ] **AC4.** A scratch copy of work-planner with `prosiform` frontmatter compiles `artifacts/board-queue.md#compute-board-queue` without a diagnostic.
 - [ ] **AC5.** `docs/sources.md` states the accepted wrapper beside the raw HTML refusal.
+
+## References
+
+- **R1.** [Compute Board Queue](https://github.com/m2ux/workflow-server/blob/workspace/skills/work-planner/artifacts/board-queue.md#compute-board-queue) — a command block as skills write it.
+- **R2.** [The profile](https://github.com/m2ux/prosiform/blob/bdaa5d760/docs/sources.md#the-profile) — the raw HTML refusal the wrapper is accepted beside.
+- **R3.** [What the numbers mean](https://github.com/m2ux/prosiform/blob/bdaa5d760/docs/versioning.md#what-the-numbers-mean) — why added fixtures make a minor.
