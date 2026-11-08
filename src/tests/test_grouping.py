@@ -554,7 +554,6 @@ def test_a_whole_document_selection_keeps_its_existing_group(tmp_path: Path) -> 
         "## Operations",
         "### Overview",
         "#### Epic",
-        "##### Operations",
         "### Inspect",
     ]
     assert bundle.count("Tracks an epic.") == 1

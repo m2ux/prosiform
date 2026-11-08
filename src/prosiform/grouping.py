@@ -500,6 +500,75 @@ def above_depth(member: Member, depth: int) -> list[Item]:
     ]
 
 
+def beneath(member: Member, token: Token, items: Sequence[Item]) -> list[Item]:
+    """The items one heading of a member holds, in source order."""
+    return [
+        one
+        for one in items
+        if any(held is token for held in member.chains[id(one.token)])
+    ]
+
+
+def overview_content(member: Member, depth: int) -> list[Item]:
+    """What one member carries beneath its overview subsection, in source order.
+
+    That is its selected content above the grouping depth. A structural
+    ancestor is outline, not content, and so is a heading holding no
+    content above that depth: its section's body sits in the merged
+    sections, which carry it.
+    """
+    selected = [one for one in above_depth(member, depth) if not one.ancestor]
+    return [
+        one
+        for one in selected
+        if one.token.type != HEADING_OPEN
+        or any(
+            other.token.type != HEADING_OPEN
+            for other in beneath(member, one.token, selected)
+        )
+    ]
+
+
+def outlined(member: Member, depth: int) -> list[Token]:
+    """Each selected heading above the grouping depth the overview leaves out."""
+    content = overview_content(member, depth)
+    return [
+        one.token
+        for one in above_depth(member, depth)
+        if not one.ancestor
+        and one.token.type == HEADING_OPEN
+        and all(kept is not one for kept in content)
+    ]
+
+
+def relocated(into: "Assembly", member: Member, depth: int) -> None:
+    """Where a reference to a heading the overview leaves out resolves.
+
+    Such a heading is answered by the first heading the group emits that
+    answers a heading of its section, so the reference reaches the
+    merged section carrying what it selected, and by the heading
+    answering the whole member where none does.
+    """
+    for token in outlined(member, depth):
+        held = {
+            (member.path, member.named[id(one.token)])
+            for one in beneath(member, token, member.items)
+            if one.token.type == HEADING_OPEN
+        }
+        found = next(
+            (at for at, one in enumerate(into.headings) if held & set(one.answers)),
+            next(
+                (
+                    at
+                    for at, one in enumerate(into.headings)
+                    if (member.path, None) in one.answers
+                ),
+                GROUP_AT,
+            ),
+        )
+        into.answer(found, (member.path, member.named[id(token)]))
+
+
 def situated(member: Member, depth: int) -> bool:
     """Whether the parent's own H1 can open the group."""
     return any(
@@ -600,6 +669,8 @@ def merged(
         direct(into, parent_member)
     for member in members:
         contributed(into, member)
+        if not kept or member is not parent_member:
+            relocated(into, member, depth)
     return Group(
         tuple(into.emitted),
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
@@ -698,18 +769,7 @@ def overview(
     the heading alone, or the group emits no merged section, the
     subsections sit directly beneath the group's heading.
     """
-    above = {
-        member.path: [
-            one
-            for one in member.items
-            if not one.ancestor
-            and (
-                (found := anchored(member, one.token, depth)) is None
-                or level(found) < depth
-            )
-        ]
-        for member in members
-    }
+    above = {member.path: overview_content(member, depth) for member in members}
     named_here = {
         member.path: bool(above[member.path])
         or not [one for one in member.items if not one.ancestor]
