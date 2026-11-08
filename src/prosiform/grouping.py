@@ -257,22 +257,17 @@ class Member:
     first_line: int = 1
     items: list[Item] = field(default_factory=list)
 
-    def shift(self, at: int) -> int:
-        """The levels the member's content above the grouping depth moves by.
+    def shift(self, at: int, content: Sequence[Item]) -> int:
+        """The levels the member's content beneath its subsection moves by.
 
-        The subsection naming the member sits at the level supplied, and
-        the member's content sits one level below it. An H1 the member
-        emits takes that level, with its sections beneath it; where the
-        member emits no H1, because the subsection absorbs its title or
-        no reference selects it, its sections take that level.
+        The subsection naming the member sits at the level supplied. The
+        shallowest heading the content carries takes the level directly
+        beneath it, and every other heading keeps its distance from that
+        one, so no level beneath the subsection stands empty. Content
+        carrying no heading has no level to place.
         """
-        emits_title = any(
-            not one.ancestor
-            and one.token.type == HEADING_OPEN
-            and level(one.token) == 1
-            for one in self.items
-        )
-        return at if emits_title else at - 1
+        levels = [level(one.token) for one in content if one.token.type == HEADING_OPEN]
+        return at + 1 - min(levels) if levels else at - 1
 
 
 def prepared(
@@ -830,8 +825,9 @@ def overview(
             headings[member.path], at, MEMBER_OVERVIEW, answers, member.path
         )
         into.part(text, recorded, [recorded])
-        for one in above[member.path]:
-            into.region(member, one.token, member.shift(at))
+        by = member.shift(at, content)
+        for one in content:
+            into.region(member, one.token, by)
 
 
 def contributions(

@@ -167,9 +167,13 @@ def grouped(
             member.path,
         )
         into.part(heading, record, [record])
-        for item in member.items:
-            if item.ancestor or item.token is member.absorbing:
-                continue
+        content = [
+            item
+            for item in member.items
+            if not item.ancestor and item.token is not member.absorbing
+        ]
+        by = member.shift(2, content)
+        for item in content:
             start, end = item.token.map or (0, 0)
             carried = carried_headings(member.tokens, item.token)
             into.part(
@@ -177,7 +181,7 @@ def grouped(
                     member.written,
                     member.tokens,
                     item.token,
-                    member.shift(2),
+                    by,
                     member.removed,
                 ),
                 Preamble(
@@ -187,9 +191,9 @@ def grouped(
                 ),
                 [
                     Carried(
-                        emitted_text(one, member.text[id(one)], member.shift(2)),
-                        level(one) + member.shift(2),
-                        (origin_of(member, one, member.shift(2)),),
+                        emitted_text(one, member.text[id(one)], by),
+                        level(one) + by,
+                        (origin_of(member, one, by),),
                         ((member.path, member.named[id(one)]),),
                     )
                     for one in carried

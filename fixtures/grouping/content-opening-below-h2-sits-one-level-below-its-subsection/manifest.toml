@@ -1,0 +1,16 @@
+description = "A member with no title, whose selected section above the grouping depth opens at H3 and carries its own content, emits that section one level below the member subsection. The shallowest heading the member emits beneath its subsection takes the level directly beneath it, whatever level its author wrote."
+
+clauses = [
+  "Grouping — A heading for every member",
+  "Grouping — The overview section",
+  "Grouping — Document content above the grouping depth",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
