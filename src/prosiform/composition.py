@@ -137,6 +137,7 @@ from prosiform.provenance import (
     Preamble,
     Range,
     Served,
+    link_at,
 )
 from prosiform.rewrite import Definition
 from prosiform.source import (
@@ -334,7 +335,7 @@ class Composing:
                     found,
                     written,
                     line,
-                    (path, inline.map[0], here),
+                    link_at(path, inline, inline.map[0], here),
                     single_line(shows[id(chosen[0])]),
                     deferred(opening_text(children, at)),
                     link_title,

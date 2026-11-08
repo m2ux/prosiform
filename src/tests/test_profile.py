@@ -19,6 +19,7 @@ import pytest
 
 from prosiform.limits import NESTING
 from prosiform.profile import (
+    COLUMN,
     HEADROOM,
     Suppressed,
     is_markdown,
@@ -72,6 +73,12 @@ def test_task_markers_stay_source_text() -> None:
     assert "[ ]" in html
     assert "[x]" in html
     assert "[X]" in html
+
+
+def test_each_table_cell_records_the_column_it_stands_in() -> None:
+    tokens = parse("| x | y |\n| --- | --- |\n| a | b |\n\nprose\n")
+    columns = [token.meta.get(COLUMN) for token in tokens if token.type == "inline"]
+    assert columns == [0, 1, 0, 1, None]
 
 
 def test_typographic_substitution_is_off() -> None:
@@ -147,6 +154,38 @@ def test_a_recognized_construct_is_refused(source: str) -> None:
 )
 def test_prose_resembling_a_construct_passes_untouched(source: str) -> None:
     assert messages(source) == []
+
+
+COMMAND_BLOCK = (
+    "<big><pre>\npf --out '[**&lt;dir&gt;**](#dir \"○\")' &#92;\n</pre></big>\n"
+)
+
+
+def test_a_command_block_passes_and_its_links_are_uses() -> None:
+    assert messages(COMMAND_BLOCK) == []
+    assert messages(f"- {COMMAND_BLOCK}") == []
+    assert links(COMMAND_BLOCK) == ["#dir"]
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "<pre>\npf run\n</pre>\n",
+        "<big>\npf run\n</big>\n",
+        "<big><pre>\npf run\n",
+        "<big><pre>\npf run\n</pre>\n",
+        '<big><pre class="cmd">\npf run\n</pre></big>\n',
+        '<big class="cmd"><pre>\npf run\n</pre></big>\n',
+        "<BIG><PRE>\npf run\n</PRE></BIG>\n",
+        "<big> <pre>\npf run\n</pre> </big>\n",
+        "Run <big><pre>pf run</pre></big>\n",
+        "<big><pre>\npf <b>run</b>\n</pre></big>\n",
+        "# <big><pre>pf run</pre></big>\n",
+        "| head |\n| --- |\n| <big><pre>pf run</pre></big> |\n",
+    ],
+)
+def test_html_other_than_a_command_block_is_refused(source: str) -> None:
+    assert len(messages(source)) == 1
 
 
 def test_a_refusal_names_the_line_and_the_spelling_it_found() -> None:

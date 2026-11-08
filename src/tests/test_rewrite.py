@@ -4,8 +4,9 @@ The corpus declares what a run publishes. These are the cases beneath
 it: the extents a code span masks, the definition environment a source
 declares, the uses that environment resolves, the inline form a
 reference-style use is published as, the bytes a deferred link keeps,
-the line each published entry answers to, and the refusal content the
-emission cannot edit raises.
+the line each published entry answers to, the stretch of a table row
+each cell is read from, and the refusal content the emission cannot
+edit raises.
 """
 
 from typing import Any
@@ -20,6 +21,7 @@ from prosiform.rewrite import (
     Definition,
     Unrewritable,
     carried,
+    cell,
     code_spans,
     definitions,
     destinations,
@@ -412,3 +414,33 @@ def test_a_link_whose_label_holds_an_autolink_is_the_link_it_is() -> None:
     text = "A [label holding <https://example.com> a link](b.md).\n"
     written = rewritten(lines(text), inline_of(text), ["#b", None], {})
     assert written == ["A [label holding <https://example.com> a link](#b).\n"]
+
+
+@pytest.mark.parametrize(
+    ("row", "column", "expected"),
+    [
+        ("| a | b |\n", 0, (1, 4)),
+        ("| a | b |\n", 1, (5, 8)),
+        ("a | b\n", 1, (3, 5)),
+        (r"| a \| b | c |" "\n", 0, (1, 9)),
+        ("> | a | b |\n", 1, (7, 10)),
+        ("| a |\n", 1, (5, 5)),
+    ],
+)
+def test_a_table_cell_is_the_stretch_of_its_row_the_profile_splits(
+    row: str, column: int, expected: tuple[int, int]
+) -> None:
+    assert cell(row, column) == expected
+
+
+def test_links_in_two_cells_of_one_row_are_each_rewritten_in_their_own_cell() -> None:
+    text = "| x | y |\n| --- | --- |\n| [a](a.md) | [b](b.md) |\n"
+    cells = [
+        token
+        for token in parse(text)
+        if token.type == INLINE and token.map is not None and token.map[0] == 2
+    ]
+    row = lines(text)[2:3]
+    for inline, assigned in zip(cells, ["#a", "#b"], strict=True):
+        row = rewritten(row, inline, [assigned], {})
+    assert row == ["| [a](#a) | [b](#b) |\n"]

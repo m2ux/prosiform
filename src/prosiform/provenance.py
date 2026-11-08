@@ -56,6 +56,10 @@ it rather than written twice.
 
 from dataclasses import dataclass, field
 
+from markdown_it.token import Token
+
+from prosiform.profile import COLUMN
+
 FILENAME_WRAPPER = "filename wrapper"
 GROUP_HEADING = "group heading"
 OVERVIEW_SECTION = "overview section"
@@ -75,9 +79,21 @@ Target = tuple[str, str | None]
 Served = tuple[Target, frozenset[str], bool]
 """A dispatched occurrence's destination, requested tags and parallel operator."""
 
-Located = tuple[str, int, int]
-"""One link, as its document, the line of content its inline block opens on and
-its position among the links that block writes."""
+Located = tuple[str, int, int, int]
+"""One link, as its document, the line of content its inline block opens on,
+the table column that block stands in, and its position among the links that
+block writes.
+
+Every cell of a table row opens on the row's line, so the column is what
+tells two cells' links apart; inline content outside a table stands in
+column 0.
+"""
+
+
+def link_at(path: str, inline: Token, start: int, position: int) -> Located:
+    """One link's identity, from the inline block it is written in."""
+    return (path, start, inline.meta.get(COLUMN, 0), position)
+
 
 Placing = tuple[Located, ...]
 """The composing links whose compositions placed a region, outermost first.

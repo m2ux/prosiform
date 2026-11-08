@@ -1,0 +1,15 @@
+description = "Links written in two cells of one table row are each rewritten to their target's destination, because each cell's inline content is read from its own stretch of the row's line."
+
+clauses = [
+  "Link classification and resource handling — Local Markdown document links",
+  "Source-local reference interpretation — step 3",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

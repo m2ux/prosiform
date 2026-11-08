@@ -1,0 +1,15 @@
+description = "A paragraph wrapped in <big><pre> and </pre></big> is a command block: the bundle carries the wrapper and its entities as written, and the links inside it are followed and rewritten as any paragraph's are."
+
+clauses = [
+  "Markdown and source-heading profile — HTML, a command block is carried as written",
+  "Bundle destinations — Internal links",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
