@@ -9,7 +9,7 @@ Target: `main`
 - **Every command block is refused.**
   117 blocks across the work-planner skill use the wrapper, and each fails with `E_RAW_HTML`. `<big>` opening the line makes CommonMark read the block as a paragraph, so the links inside already parse; only the profile's inline HTML refusal stops the run.
 - **The rewrite fails on the surrounding section.**
-  With the block removed, `artifacts/board-queue.md#compute-board-queue` fails with `E_UNEXPECTED_INTERNAL_ERROR`: `Unrewritable('the parser read 2 use(s) against the 3 the emission can edit in place')`. An internal error is a defect whatever the source.
+  With the block removed, `artifacts/board-queue.md#compute-board-queue` fails on `pf 0.21.0` with `E_UNEXPECTED_INTERNAL_ERROR`: `Unrewritable('the parser read 2 use(s) against the 3 the emission can edit in place')`. An internal error is a defect whatever the source.
 
 ## Proposal
 
@@ -18,7 +18,7 @@ Target: `main`
 - **The rewrite counts what it edits.**
   The trigger is isolated to a minimal fixture and the use count and the emission agree on it.
 - **The contract moves a minor.**
-  Fixtures are added and none change, so the release is `contract/v0.20.0` and `python/v0.20.0`, cut after merge.
+  Fixtures are added and none change, so the release is `contract/v0.22.0` and `python/v0.22.0`, cut after merge.
 
 ## Acceptance Criteria
 
