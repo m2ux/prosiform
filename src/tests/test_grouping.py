@@ -559,6 +559,27 @@ def test_a_whole_document_selection_keeps_its_existing_group(tmp_path: Path) -> 
     assert bundle.count("Tracks an epic.") == 1
 
 
+def test_an_empty_section_above_the_depth_stays_beneath_its_member(
+    tmp_path: Path,
+) -> None:
+    documents = {
+        "guide.md": DECLARED + "# Guide\n\nRead [Epic](artifacts/epic.md).\n",
+        "artifacts/epic.md": paired("operations", 3)
+        + "# Epic\n\nTracks an epic.\n\n## Notes\n\n"
+        + "## Operations\n\n### Inspect\n\nInspect it.\n",
+    }
+    status, bundle, diagnostics = composed(tmp_path, documents)
+    assert status == 0, diagnostics
+    assert outline(bundle) == [
+        "# Guide",
+        "## Operations",
+        "### Overview",
+        "#### Epic",
+        "##### Notes",
+        "### Inspect",
+    ]
+
+
 def test_a_whole_document_preamble_link_reaches_its_folder_subsection(
     tmp_path: Path,
 ) -> None:
