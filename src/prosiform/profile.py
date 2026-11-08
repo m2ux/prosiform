@@ -13,9 +13,9 @@ Raw HTML takes one form the profile accepts: the command block, a
 paragraph whose inline content opens with `<big><pre>` and closes with
 `</pre></big>`, spelled exactly so. The parser reads the four tags as
 inline HTML within the paragraph, so the links between them are uses
-like any paragraph's and the bundle carries the tags as written. A
-paragraph wrapped any other way, and every other piece of raw HTML,
-is refused.
+like any paragraph's, and the bundle publishes the block as its content
+without the tags. A paragraph wrapped any other way, and every other
+piece of raw HTML, is refused.
 
 A link the parser produces is a use, and a code span or a code block
 carries none, with one exception the source model reads: a diagram link

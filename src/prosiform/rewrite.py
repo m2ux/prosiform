@@ -65,6 +65,17 @@ following them are dropped from the label they open.
 A link the bundle took no destination for opens with no operator, because
 the run refuses an operator naming anything but a Markdown document or
 section under the root, and it is published as its author wrote it.
+
+A command block is published as its content. Its four wrapper tags go,
+and a line left holding nothing but a tag and the container markers
+opening it goes with them, so the block's first and last lines are its
+first and last content. A strong emphasis enclosing a link's whole text
+is unwrapped, and every character reference the parser decodes is
+written as the character it names. A reference in a code span, a link's
+target or an autolink is the parser's text rather than a reference, so
+it stays as written. The edits reach no span a link's own edits reach,
+because a tag stands outside every use, a strong delimiter inside a
+label, and a decoded reference outside every target.
 """
 
 import re
@@ -73,15 +84,29 @@ from dataclasses import dataclass
 from itertools import accumulate, pairwise
 from typing import Any
 
-from markdown_it.common.utils import normalizeReference
+from markdown_it.common.entities import entities
+from markdown_it.common.utils import (
+    fromCodePoint,
+    isValidEntityCode,
+    normalizeReference,
+)
 from markdown_it.rules_block.table import escapedSplit
 from markdown_it.token import Token
 
 from prosiform.closure import filed, opened, published_text
-from prosiform.profile import COLUMN, MARKER, MARKER_LABELS
+from prosiform.profile import (
+    COLUMN,
+    COMMAND_CLOSE,
+    COMMAND_OPEN,
+    MARKER,
+    MARKER_LABELS,
+    command_block,
+)
 from prosiform.source import (
     HREF,
+    LINK_CLOSE,
     LINK_OPEN,
+    TEXT,
     events,
     opening_markers,
     opening_text,
@@ -101,6 +126,17 @@ COLON = ":"
 PIPE = "|"
 
 SPACE = " "
+LINE_FEED = "\n"
+
+STRONG_OPEN = "strong_open"
+STRONG_CLOSE = "strong_close"
+STRONG = "**"
+
+REPLACEMENT = 0xFFFD
+
+REFERENCE = re.compile(
+    r"&(?:#(x[0-9a-f]{1,6}|[0-9]{1,7})|([a-z][a-z0-9]{1,31}));", re.IGNORECASE
+)
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
 
@@ -596,6 +632,115 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
     return found
 
 
+def wrapper(text: str) -> list[tuple[int, int, str]]:
+    """The spans a command block's four tags occupy, each edited to nothing.
+
+    The opening tags stand first in the block and the closing tags last.
+    Where nothing but blanks follows the opening tags on their line, the
+    deletion runs on through the line feed and the container markers
+    opening the next line, so that line's content takes the first line's
+    place beside any marker the first line opened with. Where nothing but
+    container markers precedes the closing tags on their line, the
+    deletion runs back to the line feed ending the line before, so the
+    content above ends the block.
+    """
+    opening = "".join(COMMAND_OPEN)
+    closing = "".join(COMMAND_CLOSE)
+    start = text.index(opening)
+    end = start + len(opening)
+    feed = text.find(LINE_FEED, end)
+    if feed != -1 and not text[end:feed].strip():
+        end = feed + 1 + len(opening_markers(text[feed + 1 :]))
+    close = text.rindex(closing)
+    after = close + len(closing)
+    line = text.rfind(LINE_FEED, 0, close)
+    if line >= end and len(opening_markers(text[line + 1 :])) >= close - line - 1:
+        close = line
+    return [(start, end, ""), (close, after, "")]
+
+
+def unwrapped(
+    text: str, one: Use, children: Sequence[Token], at: int
+) -> list[tuple[int, int, str]]:
+    """The spans of a strong emphasis enclosing one link's whole text, if it has one.
+
+    The parser says where the emphasis opens and closes: it encloses the
+    whole text when, empty text aside, it opens on the event after the
+    link opens and closes on the event before the link closes, and the
+    label opens and closes with its asterisks.
+    """
+    closing = next(
+        (
+            after
+            for after in range(at + 1, len(children))
+            if children[after].type == LINK_CLOSE
+        ),
+        len(children),
+    )
+    inside = [
+        child
+        for child in children[at + 1 : closing]
+        if child.type != TEXT or child.content
+    ]
+    start, end = one.label
+    if (
+        len(inside) < 2
+        or (inside[0].type, inside[-1].type) != (STRONG_OPEN, STRONG_CLOSE)
+        or not text.startswith(STRONG, start)
+        or not text.endswith(STRONG, start, end)
+    ):
+        return []
+    depth = 0
+    for child in inside[:-1]:
+        depth += {STRONG_OPEN: 1, STRONG_CLOSE: -1}.get(child.type, 0)
+        if depth == 0:
+            return []
+    return [(start, start + len(STRONG), ""), (end - len(STRONG), end, "")]
+
+
+def decoded(written: re.Match[str]) -> str | None:
+    """The character one reference names, as the parser decodes it, or nothing.
+
+    A numeric reference names a code point, and one the parser holds
+    invalid is the replacement character. A named reference outside the
+    parser's table is the literal text it is.
+    """
+    numeric, name = written.groups()
+    if numeric is not None:
+        code = int(numeric[1:], 16) if numeric[0] in "xX" else int(numeric)
+        return fromCodePoint(code if isValidEntityCode(code) else REPLACEMENT)
+    return entities.get(name)
+
+
+def references(text: str, found: Sequence[Use]) -> list[tuple[int, int, str]]:
+    """Each character reference the parser decodes, as its span and its character."""
+    spans = code_spans(text) + [
+        (one.opening, one.end) if one.autolink else (one.label[1], one.end)
+        for one in found
+    ]
+    held: list[tuple[int, int, str]] = []
+    for written in REFERENCE.finditer(text):
+        at = written.start()
+        character = decoded(written)
+        if character is None or escaped(text, at) or masked(spans, at):
+            continue
+        held.append((at, written.end(), character))
+    return held
+
+
+def compacted(
+    text: str, inline: Token, found: Sequence[Use]
+) -> list[tuple[int, int, str]]:
+    """The edits that publish one command block as its content."""
+    applied = wrapper(text) + references(text, found)
+    for one, (children, at, _child) in zip(
+        found, events(inline.children or []), strict=True
+    ):
+        if one.kind == LINK and not one.autolink:
+            applied.extend(unwrapped(text, one, children, at))
+    return applied
+
+
 def moved(at: int, start: int, end: int, width: int) -> int:
     """One offset into a text, as one edit to that text leaves it.
 
@@ -625,8 +770,9 @@ def rewritten(
     carries, in written order, and a link the bundle did not compile is
     supplied none. A table cell's uses are read from its own stretch of
     the row's line, so each cell of one row is rewritten by its own call
-    and the others' links are text to it. The spans are edited last to
-    first, so an earlier edit does not move the span the next one names.
+    and the others' links are text to it. A command block's content is
+    published as well as its links. The spans are edited last to first,
+    so an earlier edit does not move the span the next one names.
 
     The result holds one entry for each line given, so the published
     text of a source line is found where that line was. A replacement
@@ -662,6 +808,8 @@ def rewritten(
         for one in found
         for edit in edits(one, targets.get(id(one)), labels.get(id(one), ""))
     ]
+    if command_block(inline.children or []):
+        applied.extend(compacted(text, inline, found))
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
         bounds = [moved(at, start, end, len(replacement)) for at in bounds]
