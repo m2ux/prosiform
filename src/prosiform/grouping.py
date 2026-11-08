@@ -48,7 +48,12 @@ path which distinguishes it from the group's other
 members, in title case, measured after the leading segments they all
 share are dropped. A trailing word the group's heading states is
 omitted where qualification still distinguishes the displayed names. It
-carries the member's content above the grouping depth. That heading
+carries the member's content above the grouping depth. A section above
+that depth whose selected content sits at the grouping depth, with
+nothing above it but headings, is no such content: the merged sections
+carry its body, its heading is not emitted, and a reference to it
+resolves to the first heading the group emits for a section it holds.
+An empty section, or one holding nothing selected, is content. That heading
 absorbs the member's own H1 where their slugs agree, as a file heading
 absorbs the title it carries, and it is where a whole-document reference
 to a member other than the parent resolves. A member whose H1 the
@@ -500,6 +505,84 @@ def above_depth(member: Member, depth: int) -> list[Item]:
     ]
 
 
+def beneath(member: Member, token: Token, items: Sequence[Item]) -> list[Item]:
+    """The items one heading of a member holds, in source order."""
+    return [
+        one
+        for one in items
+        if any(held is token for held in member.chains[id(one.token)])
+    ]
+
+
+def merged_only(member: Member, token: Token, depth: int) -> bool:
+    """Whether a heading above the grouping depth holds only what the merge carries.
+
+    Its section holds a selected item at the grouping depth and no
+    content above that depth but headings.
+    """
+    held = [one for one in beneath(member, token, member.items) if not one.ancestor]
+    at_depth = [
+        (found := anchored(member, one.token, depth)) is not None
+        and level(found) == depth
+        for one in held
+    ]
+    return any(at_depth) and all(
+        merged or one.token.type == HEADING_OPEN
+        for one, merged in zip(held, at_depth, strict=True)
+    )
+
+
+def overview_content(member: Member, depth: int) -> list[Item]:
+    """What one member carries beneath its overview subsection, in source order.
+
+    That is its selected content above the grouping depth. A structural
+    ancestor is outline, not content, and so is a heading whose section
+    holds selected content at the grouping depth and none above it but
+    headings: the merged sections carry that section's body.
+    """
+    return [
+        one
+        for one in above_depth(member, depth)
+        if not one.ancestor
+        and (
+            one.token.type != HEADING_OPEN or not merged_only(member, one.token, depth)
+        )
+    ]
+
+
+def outlined(member: Member, depth: int) -> list[Token]:
+    """Each selected heading above the grouping depth the overview leaves out."""
+    content = overview_content(member, depth)
+    return [
+        one.token
+        for one in above_depth(member, depth)
+        if not one.ancestor
+        and one.token.type == HEADING_OPEN
+        and all(kept is not one for kept in content)
+    ]
+
+
+def relocated(into: "Assembly", member: Member, depth: int) -> None:
+    """Where a reference to a heading the overview leaves out resolves.
+
+    Such a heading is answered by the first heading the group emits that
+    answers a heading of its section, so the reference reaches the
+    merged section carrying what it selected. Its section holds a
+    selected section at the grouping depth, which the merged heading or
+    the variant naming the member answers, so that heading exists.
+    """
+    for token in outlined(member, depth):
+        held = {
+            (member.path, member.named[id(one.token)])
+            for one in beneath(member, token, member.items)
+            if one.token.type == HEADING_OPEN
+        }
+        found = next(
+            at for at, one in enumerate(into.headings) if held & set(one.answers)
+        )
+        into.answer(found, (member.path, member.named[id(token)]))
+
+
 def situated(member: Member, depth: int) -> bool:
     """Whether the parent's own H1 can open the group."""
     return any(
@@ -600,6 +683,8 @@ def merged(
         direct(into, parent_member)
     for member in members:
         contributed(into, member)
+        if not kept or member is not parent_member:
+            relocated(into, member, depth)
     return Group(
         tuple(into.emitted),
         Record(named, depth, tuple(into.headings), tuple(into.parts)),
@@ -629,8 +714,9 @@ def names_one(one: Emitted, path: str) -> bool:
 def contributed(into: "Assembly", member: Member) -> None:
     """Where a whole-document reference resolves for a member with no subsection.
 
-    A member whose content all sits at the grouping depth is named by
-    the merged sections it contributes to, so the document itself is
+    A member with no overview content, its selected content above the
+    grouping depth at most headings of sections the merge carries, is
+    named by the merged sections it contributes to, so the document itself is
     answered by the first heading the group emits from it that no other
     member shares: the variant heading naming the document where its
     contribution carries a heading text another member contributes too,
@@ -679,12 +765,14 @@ def overview(
 ) -> None:
     """The subsection each member is named by, and the `Overview` carrying them.
 
-    A member takes a subsection where it carries selected content above
-    the grouping depth, where its own H1 is absorbed into that heading,
-    and where the arrangement emits nothing else from it at all, so
-    every member the group merges is named by a heading the bundle
-    carries. A member whose selected content all sits at the grouping
-    depth takes none: the merged sections it contributes to name it.
+    A member takes a subsection where it carries overview content, where
+    its own H1 is absorbed into that heading, and where the arrangement
+    emits nothing else from it at all, so every member the group merges
+    is named by a heading the bundle carries. Overview content is the
+    selected content above the grouping depth less a heading whose
+    section holds selected content at that depth and none above it but
+    headings. A member meeting none of these takes no subsection: the
+    merged sections it contributes to name it.
 
     The heading naming a member carries the run of its path that tells
     it apart from the group's other members, measured against every
@@ -698,18 +786,7 @@ def overview(
     the heading alone, or the group emits no merged section, the
     subsections sit directly beneath the group's heading.
     """
-    above = {
-        member.path: [
-            one
-            for one in member.items
-            if not one.ancestor
-            and (
-                (found := anchored(member, one.token, depth)) is None
-                or level(found) < depth
-            )
-        ]
-        for member in members
-    }
+    above = {member.path: overview_content(member, depth) for member in members}
     named_here = {
         member.path: bool(above[member.path])
         or not [one for one in member.items if not one.ancestor]

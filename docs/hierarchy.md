@@ -90,6 +90,8 @@ The fixture [partial-selections-share-folder-preambles](../fixtures/grouping/par
 
 A member that contributes content above the grouping depth — its preamble, or a section shallower than the grouping depth — takes one subsection naming it.
 
+A section shallower than the grouping depth whose section holds selected content at that depth and nothing above it but headings is no such content: that content joins the merge, and its heading would name nothing beneath a subsection. An empty section, or one whose subsections are not selected, remains that member's content. A reference to a section the merge carries this way resolves to the first heading the group emits for a section it holds. The fixture [a-section-holding-only-merged-sections-opens-no-member-subsection](../fixtures/grouping/a-section-holding-only-merged-sections-opens-no-member-subsection) holds this arrangement.
+
 That name is the shortest run of the member's path that distinguishes it from the group's other members, in title case, after dropping segments they all share and a trailing word the group's heading already states. `artifacts/epic-issue-body.md` contributes `Epic-Issue-Body` under `Artifacts`; `guides/alpha/notes.md` beside `guides/beta/notes.md` contributes `Alpha/Notes`. A member whose name would carry no word, such as `rules/-.md`, is named by its path text instead: `Rules/-.md`.
 
 The same name serves the member's subsection and every variant heading it carries, so a reader meets each member named one way.
