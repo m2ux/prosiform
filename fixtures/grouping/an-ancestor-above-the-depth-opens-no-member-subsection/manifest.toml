@@ -1,0 +1,16 @@
+description = "A section selected at the grouping depth beneath a structural ancestor above that depth is merged at the grouping depth. The ancestor is outline, not member-overview content, so the group emits no Overview and no member subsection for that member."
+
+clauses = [
+  "Grouping — Document content above the grouping depth",
+  "Grouping — A heading for every member",
+  "Heading-only structural ancestors",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["modes/plan-mode.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/modes_plan-mode.bundle.md"]
+diagnostics = []
