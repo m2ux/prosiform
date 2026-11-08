@@ -6,7 +6,7 @@ prosiform:
 
 # Plan Mode
 
-Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands. Uses the [dispatch](../SKILL.md#dispatch) rule.
+Scopes the solution: the design, the criteria, and the breakdown of an initiative and its epics, and keeps them current as work lands.
 
 ## Procedure
 
