@@ -73,15 +73,19 @@ first and last content. A strong emphasis enclosing a link's whole text
 is unwrapped, and every character reference the parser decodes is
 written as the character it names. A reference in a code span, a link's
 target or an autolink is the parser's text rather than a reference, so
-it stays as written. The edits reach no span a link's own edits reach,
-because a tag stands outside every use, a strong delimiter inside a
-label, and a decoded reference outside every target.
+it stays as written. A line left opening with a character the parser
+reads as a block of its own takes a backslash before it, so every line
+stays the text of the block's paragraph. The edits reach no span a
+link's own edits reach, because a tag stands outside every use, a
+strong delimiter inside a label, and a decoded reference outside every
+target.
 """
 
 import re
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from itertools import accumulate, pairwise
+from string import punctuation
 from typing import Any
 
 from markdown_it.common.utils import (
@@ -97,9 +101,12 @@ from prosiform.profile import (
     COLUMN,
     COMMAND_CLOSE,
     COMMAND_OPEN,
+    INLINE,
     MARKER,
     MARKER_LABELS,
+    PARAGRAPH_OPEN,
     command_block,
+    reader,
 )
 from prosiform.source import (
     HREF,
@@ -129,6 +136,11 @@ SPACE = " "
 STRONG_OPEN = "strong_open"
 STRONG_CLOSE = "strong_close"
 STRONG = "**"
+
+PARAGRAPH = (PARAGRAPH_OPEN, INLINE, "paragraph_close")
+TEXT_LINE = "text"
+ESCAPABLE = re.compile(r"[ \t]*(?:\d{1,9}(?=[.)]))?")
+CONTINUING = re.compile(r"(?:[ \t]*>)*[ \t]*")
 
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
@@ -625,15 +637,26 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
     return found
 
 
+def continuing_markers(line: str) -> str:
+    """The quote markers and indent a later line of one paragraph opens with.
+
+    A list marker opens no later line of a paragraph: one that would
+    open an item interrupts the paragraph, and any other is its text.
+    """
+    written = CONTINUING.match(line)
+    assert written is not None
+    return written.group(0)
+
+
 def wrapper(text: str) -> list[tuple[int, int, str]]:
     """The spans a command block's four tags occupy, each edited to nothing.
 
     The opening tags stand first in the block and the closing tags last.
     Where nothing but blanks follows the opening tags on their line, the
-    deletion runs on through the line feed and the container markers
+    deletion runs on through the line feed and the quote markers and indent
     opening the next line, so that line's content takes the first line's
     place beside any marker the first line opened with. Where nothing but
-    container markers precedes the closing tags on their line, the
+    quote markers and indent precede the closing tags on their line, the
     deletion runs back to the line feed ending the line before, so the
     content above ends the block.
     """
@@ -643,11 +666,11 @@ def wrapper(text: str) -> list[tuple[int, int, str]]:
     end = start + len(opening)
     feed = text.find(LINE_FEED, end)
     if feed != -1 and not text[end:feed].strip():
-        end = feed + 1 + len(opening_markers(text[feed + 1 :]))
+        end = feed + 1 + len(continuing_markers(text[feed + 1 :]))
     close = text.rindex(closing)
     after = close + len(closing)
     line = text.rfind(LINE_FEED, 0, close)
-    if line >= end and len(opening_markers(text[line + 1 :])) >= close - line - 1:
+    if line >= end and len(continuing_markers(text[line + 1 :])) >= close - line - 1:
         close = line
     return [(start, end, ""), (close, after, "")]
 
@@ -726,6 +749,60 @@ def compacted(
     return applied
 
 
+def opens_block(content: str, first: bool) -> bool:
+    """Whether one line of a paragraph is read as anything but that paragraph's text.
+
+    The first line opens the paragraph and is read on its own; a later
+    line continues it and is read beneath a line of text, where a block
+    that cannot interrupt a paragraph is text as well.
+    """
+    read = content if first else f"{TEXT_LINE}{LINE_FEED}{content}"
+    return tuple(token.type for token in reader().parse(read)) != PARAGRAPH
+
+
+def kept_as_text(written: str, starts: Sequence[int]) -> list[int]:
+    """Where a compacted command block's lines take a backslash to stay its text.
+
+    Each start is where one line's content opens, past its container
+    markers. The tags a compaction drops and the references it decodes
+    can leave a line opening with a character the parser reads as a
+    block of its own, such as `>` opening a quote, `#` a heading or
+    `1.` a list. A backslash before that character, or before the
+    delimiter after a list number, is the Markdown escaping that keeps
+    the line its paragraph's text.
+    """
+    found: list[int] = []
+    first = True
+    for start in sorted(set(starts)):
+        feed = written.find(LINE_FEED, start)
+        content = written[start : len(written) if feed == -1 else feed]
+        if not content.strip():
+            continue
+        if opens_block(content, first):
+            at = ESCAPABLE.match(content)
+            assert at is not None
+            if content[at.end() : at.end() + 1] in tuple(punctuation):
+                found.append(start + at.end())
+        first = False
+    return found
+
+
+def paragraph_of(written: str, starts: Sequence[int]) -> str:
+    """One compacted command block as its paragraph's lines, past their markers.
+
+    Each start is where one line's content opens, so the lines read
+    together are what the block's container holds, and a line the
+    compaction emptied holds nothing of it.
+    """
+    held = []
+    for start in sorted(set(starts)):
+        feed = written.find(LINE_FEED, start)
+        content = written[start : len(written) if feed == -1 else feed]
+        if content.strip():
+            held.append(content)
+    return LINE_FEED.join(held)
+
+
 def moved(at: int, start: int, end: int, width: int) -> int:
     """One offset into a text, as one edit to that text leaves it.
 
@@ -793,9 +870,24 @@ def rewritten(
         for one in found
         for edit in edits(one, targets.get(id(one)), labels.get(id(one), ""))
     ]
+    starts: list[int] = []
     if command_block(inline.children or []):
         applied.extend(compacted(text, inline, found))
+        starts = [len(opening_markers(physical[0]))] + [
+            opening + len(continuing_markers(line))
+            for opening, line in zip(bounds, physical[1:], strict=False)
+        ]
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
         bounds = [moved(at, start, end, len(replacement)) for at in bounds]
+        starts = [moved(at, start, end, len(replacement)) for at in starts]
+    for at in sorted(kept_as_text(written, starts), reverse=True):
+        written = f"{written[:at]}{ESCAPE}{written[at:]}"
+        bounds = [moved(one, at, at, len(ESCAPE)) for one in bounds]
+        starts = [moved(one, at, at, len(ESCAPE)) for one in starts]
+    if starts and opens_block(paragraph_of(written, starts), True):
+        raise Unrewritable(
+            f"the command block {text!r} is read as more than its one paragraph "
+            f"once compacted"
+        )
     return [written[opening:closing] for opening, closing in pairwise([0, *bounds])]

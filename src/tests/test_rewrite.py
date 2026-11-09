@@ -484,6 +484,58 @@ def test_a_command_block_decodes_the_references_the_parser_decodes(
 
 
 @pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            "<big><pre>\necho hi &#92;\n  &gt; out.txt\n</pre></big>\n",
+            "echo hi \\\n  \\> out.txt\n",
+        ),
+        ("<big><pre># note\necho hi</pre></big>\n", "\\# note\necho hi\n"),
+        ("<big><pre>\n&#35; note\necho hi\n</pre></big>\n", "\\# note\necho hi\n"),
+        ("<big><pre>\necho hi\n&#49;. one\n</pre></big>\n", "echo hi\n1\\. one\n"),
+        ("<big><pre>\necho hi\n&#45;&#45;&#45;\n</pre></big>\n", "echo hi\n\\---\n"),
+        (
+            "> <big><pre>\n> echo &#92;\n> &gt; out\n> </pre></big>\n",
+            "> echo \\\n> \\> out\n",
+        ),
+        ("<big><pre>\necho hi\n2. two\n</pre></big>\n", "echo hi\n2. two\n"),
+    ],
+)
+def test_a_command_block_line_stays_its_paragraphs_text(
+    text: str, expected: str
+) -> None:
+    assert "".join(compacted(text, [])) == expected
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "<big><pre>\na | b\n&#45;&#45; | &#45;&#45;\n</pre></big>\n",
+        "<big><pre>\n&#32;&#32;&#32;&#32;code\necho\n</pre></big>\n",
+    ],
+)
+def test_a_command_block_compacted_to_more_than_its_paragraph_is_refused(
+    text: str,
+) -> None:
+    with pytest.raises(Unrewritable):
+        compacted(text, [])
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("<big><pre>\n2. two\necho\n</pre></big>\n", "2\\. two\necho\n"),
+        ("<big><pre>\necho\n2. </pre></big>\n", "echo\n2. \n"),
+        ("- <big><pre>\n  2. two\n  </pre></big>\n", "- 2\\. two\n"),
+    ],
+)
+def test_a_list_marker_on_a_later_command_block_line_is_its_text(
+    text: str, expected: str
+) -> None:
+    assert "".join(compacted(text, [])) == expected
+
+
+@pytest.mark.parametrize(
     ("label", "expected"),
     [
         ("**&lt;x&gt;**", "<x>"),
