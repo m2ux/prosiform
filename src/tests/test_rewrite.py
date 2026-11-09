@@ -508,6 +508,20 @@ def test_a_command_block_line_stays_its_paragraphs_text(
 
 
 @pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("<big><pre>\n2. two\necho\n</pre></big>\n", "2\\. two\necho\n"),
+        ("<big><pre>\necho\n2. </pre></big>\n", "echo\n2. \n"),
+        ("- <big><pre>\n  2. two\n  </pre></big>\n", "- 2\\. two\n"),
+    ],
+)
+def test_a_list_marker_on_a_later_command_block_line_is_its_text(
+    text: str, expected: str
+) -> None:
+    assert "".join(compacted(text, [])) == expected
+
+
+@pytest.mark.parametrize(
     ("label", "expected"),
     [
         ("**&lt;x&gt;**", "<x>"),

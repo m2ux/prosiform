@@ -1,0 +1,15 @@
+description = "A command block line opening with a list number other than one continues its paragraph in the source, and keeps its number when the dropped tags make it the block's first line, which takes a backslash before the delimiter so it stays the paragraph's text rather than opening a list."
+
+clauses = [
+  "Markdown and source-heading profile — HTML, a command block is emitted as its content",
+  "Validation and failure contract — Preservation, a compacted command block is held to what its source shows",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

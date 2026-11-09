@@ -140,6 +140,7 @@ STRONG = "**"
 PARAGRAPH = (PARAGRAPH_OPEN, INLINE, "paragraph_close")
 TEXT_LINE = "text"
 ESCAPABLE = re.compile(r"[ \t]*(?:\d{1,9}(?=[.)]))?")
+CONTINUING = re.compile(r"(?:[ \t]*>)*[ \t]*")
 
 
 TITLE_CLOSERS = {'"': '"', "'": "'", TARGET_OPEN: TARGET_CLOSE}
@@ -636,15 +637,26 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
     return found
 
 
+def continuing_markers(line: str) -> str:
+    """The quote markers and indent a later line of one paragraph opens with.
+
+    A list marker opens no later line of a paragraph: one that would
+    open an item interrupts the paragraph, and any other is its text.
+    """
+    written = CONTINUING.match(line)
+    assert written is not None
+    return written.group(0)
+
+
 def wrapper(text: str) -> list[tuple[int, int, str]]:
     """The spans a command block's four tags occupy, each edited to nothing.
 
     The opening tags stand first in the block and the closing tags last.
     Where nothing but blanks follows the opening tags on their line, the
-    deletion runs on through the line feed and the container markers
+    deletion runs on through the line feed and the quote markers and indent
     opening the next line, so that line's content takes the first line's
     place beside any marker the first line opened with. Where nothing but
-    container markers precedes the closing tags on their line, the
+    quote markers and indent precede the closing tags on their line, the
     deletion runs back to the line feed ending the line before, so the
     content above ends the block.
     """
@@ -654,11 +666,11 @@ def wrapper(text: str) -> list[tuple[int, int, str]]:
     end = start + len(opening)
     feed = text.find(LINE_FEED, end)
     if feed != -1 and not text[end:feed].strip():
-        end = feed + 1 + len(opening_markers(text[feed + 1 :]))
+        end = feed + 1 + len(continuing_markers(text[feed + 1 :]))
     close = text.rindex(closing)
     after = close + len(closing)
     line = text.rfind(LINE_FEED, 0, close)
-    if line >= end and len(opening_markers(text[line + 1 :])) >= close - line - 1:
+    if line >= end and len(continuing_markers(text[line + 1 :])) >= close - line - 1:
         close = line
     return [(start, end, ""), (close, after, "")]
 
@@ -845,9 +857,9 @@ def rewritten(
     starts: list[int] = []
     if command_block(inline.children or []):
         applied.extend(compacted(text, inline, found))
-        starts = [
-            opening + len(opening_markers(line))
-            for opening, line in zip([0, *bounds], physical, strict=False)
+        starts = [len(opening_markers(physical[0]))] + [
+            opening + len(continuing_markers(line))
+            for opening, line in zip(bounds, physical[1:], strict=False)
         ]
     for start, end, replacement in sorted(applied, reverse=True):
         written = f"{written[:start]}{replacement}{written[end:]}"
