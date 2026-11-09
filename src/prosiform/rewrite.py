@@ -787,6 +787,22 @@ def kept_as_text(written: str, starts: Sequence[int]) -> list[int]:
     return found
 
 
+def paragraph_of(written: str, starts: Sequence[int]) -> str:
+    """One compacted command block as its paragraph's lines, past their markers.
+
+    Each start is where one line's content opens, so the lines read
+    together are what the block's container holds, and a line the
+    compaction emptied holds nothing of it.
+    """
+    held = []
+    for start in sorted(set(starts)):
+        feed = written.find(LINE_FEED, start)
+        content = written[start : len(written) if feed == -1 else feed]
+        if content.strip():
+            held.append(content)
+    return LINE_FEED.join(held)
+
+
 def moved(at: int, start: int, end: int, width: int) -> int:
     """One offset into a text, as one edit to that text leaves it.
 
@@ -868,4 +884,10 @@ def rewritten(
     for at in sorted(kept_as_text(written, starts), reverse=True):
         written = f"{written[:at]}{ESCAPE}{written[at:]}"
         bounds = [moved(one, at, at, len(ESCAPE)) for one in bounds]
+        starts = [moved(one, at, at, len(ESCAPE)) for one in starts]
+    if starts and opens_block(paragraph_of(written, starts), True):
+        raise Unrewritable(
+            f"the command block {text!r} is read as more than its one paragraph "
+            f"once compacted"
+        )
     return [written[opening:closing] for opening, closing in pairwise([0, *bounds])]

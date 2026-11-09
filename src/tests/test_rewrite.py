@@ -508,6 +508,20 @@ def test_a_command_block_line_stays_its_paragraphs_text(
 
 
 @pytest.mark.parametrize(
+    "text",
+    [
+        "<big><pre>\na | b\n&#45;&#45; | &#45;&#45;\n</pre></big>\n",
+        "<big><pre>\n&#32;&#32;&#32;&#32;code\necho\n</pre></big>\n",
+    ],
+)
+def test_a_command_block_compacted_to_more_than_its_paragraph_is_refused(
+    text: str,
+) -> None:
+    with pytest.raises(Unrewritable):
+        compacted(text, [])
+
+
+@pytest.mark.parametrize(
     ("text", "expected"),
     [
         ("<big><pre>\n2. two\necho\n</pre></big>\n", "2\\. two\necho\n"),
