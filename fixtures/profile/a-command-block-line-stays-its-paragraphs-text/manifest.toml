@@ -1,0 +1,15 @@
+description = "A command block whose compaction leaves a line opening with a character the parser would read as a block of its own, here the `>` a decoded `&gt;` writes, is emitted with that character backslash-escaped, so the line stays the text of the block's paragraph."
+
+clauses = [
+  "Markdown and source-heading profile — HTML, a command block is emitted as its content",
+  "Validation and failure contract — Preservation, a compacted command block is held to what its source shows",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
