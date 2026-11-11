@@ -61,11 +61,14 @@ def test_no_document_inside_a_fixture_is_found() -> None:
 
 def test_no_tracked_bundle_is_found() -> None:
     bundles = {path for path in TRACKED if path.endswith(BUNDLE)}
-    assert bundles - {
+    outside = {
         path
         for path in bundles
-        if any(path.startswith(f"{fixture}/") for fixture in FIXTURES)
-    }, "no bundle is tracked outside the corpus, so the exception checks nothing"
+        if not any(path.startswith(f"{fixture}/") for fixture in FIXTURES)
+    }
+    assert outside, (
+        "no bundle is tracked outside the corpus, so the exception checks nothing"
+    )
     assert relative(FOUND) & bundles == set()
 
 
