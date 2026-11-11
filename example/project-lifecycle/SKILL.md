@@ -12,21 +12,18 @@ Project Lifecycle moves issues across a project board. Each mode is one transiti
 
 **Proposed** → **Planned** → **Ready** → **In Progress** → **In Review** → **Done**
 
-The board's engineering lifecycle (its SDLC) decides how the work inside an issue is planned, delivered and verified. Each mode leaves that to an SDLC hook.
+The board's engineering lifecycle (its SDLC) decides how the work inside an issue is planned, delivered and verified.
 
-## Configure
+## SDLC
 
-The board's description records its SDLC as one line, `SDLC: <name>`. A board recording none follows `ad-hoc`.
+The board's description records the SDLC it follows as one line, `SDLC: <name>`. A board recording none follows Ad Hoc. The SDLCs are:
 
-The SDLCs are `ad-hoc` and each preset the frontmatter of `sdlc/port.md` names other than `default`.
+- [¬ Ad Hoc](sdlc/port.md)
+- [¬ Waterfall](sdlc/port.md "waterfall")
 
-- When the board records no SDLC, list the SDLCs, ask the user which one the board follows, and record their answer.
-- When the user asks to change the board's SDLC, replace its line.
-- Refuse a name that is not an SDLC, listing the SDLCs there are.
+When the board records no SDLC, ask the user which of these it follows, and record their answer. When the user asks to change it, replace its line. Refuse any other name, listing these.
 
-## SDLC Hooks
-
-A link to `sdlc/port.md` names an SDLC hook. From the folder holding this skill's sources, compile it with `pf <the link's path> --presets <the board's SDLC>`, or with no `--presets` for `ad-hoc`, and follow the result in place of the link.
+Follow the board's SDLC for each practice a mode applies.
 
 ## Mode Selection
 

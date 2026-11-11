@@ -8,7 +8,7 @@ prosiform:
 
 # SDLC Port
 
-The hooks a board transition calls. Each places the practice of the SDLC its run selected.
+The practice an SDLC applies at each mode step asking for one.
 
 ## On Plan
 

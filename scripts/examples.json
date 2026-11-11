@@ -86,12 +86,12 @@
   },
   "lifecycle-ad-hoc": {
     "root": "example/project-lifecycle",
-    "entry": "sdlc/port.md#on-deliver",
+    "entry": "sdlc/port.md",
     "files": ["sdlc/port.md", "sdlc/ad-hoc.md", "sdlc/waterfall.md"]
   },
   "lifecycle-waterfall": {
     "root": "example/project-lifecycle",
-    "entry": "sdlc/port.md#on-deliver",
+    "entry": "sdlc/port.md",
     "args": ["--presets", "waterfall"],
     "files": ["sdlc/port.md", "sdlc/ad-hoc.md", "sdlc/waterfall.md"]
   }

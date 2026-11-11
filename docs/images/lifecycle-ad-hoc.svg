@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="2726" viewBox="0 0 2142 2726" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="2726" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="277" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="2689" viewBox="0 0 2142 2689" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="2689" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="277" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
 <path d="M32 134 H1032" stroke="#303b49"/>
 <text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
@@ -21,7 +21,7 @@
 <text x="70" y="826" font-size="20" fill="#e6edf3" font-weight="400">Build the task in the order that suits it.</text>
 <text x="44" y="880" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
 <text x="94" y="880" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
-<text x="70" y="928" font-size="20" fill="#e6edf3" font-weight="400">The pull request&#x27;s checks pass.</text><rect x="32" y="968" width="1000" height="944" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="70" y="928" font-size="20" fill="#e6edf3" font-weight="400">The pull request&#x27;s checks pass.</text><rect x="32" y="968" width="1000" height="907" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="56" y="1004" font-size="21" fill="#b1c6df" font-weight="400">sdlc/port.md</text>
 <path d="M32 1022 H1032" stroke="#303b49"/>
 <text x="70" y="1079" font-size="20" fill="#e6edf3" font-weight="400">---</text>
@@ -33,54 +33,72 @@
 <text x="70" y="1301" font-size="20" fill="#e6edf3" font-weight="400">---</text>
 <text x="44" y="1359" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
 <text x="82" y="1359" font-size="30" fill="#e6edf3" font-weight="500">SDLC Port</text>
-<text x="70" y="1407" font-size="20" fill="#e6edf3" font-weight="400">The hooks a board transition calls. Each places the practice of the SDLC</text>
-<text x="70" y="1444" font-size="20" fill="#e6edf3" font-weight="400">its run selected.</text>
-<text x="44" y="1498" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1498" font-size="26" fill="#e6edf3" font-weight="500">On Plan</text>
-<text x="70" y="1546" font-size="20" fill="#e6edf3" font-weight="400">What a plan holds before it is **Planned**.</text>
-<text x="70" y="1594" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
-<text x="44" y="1648" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1648" font-size="26" fill="#e6edf3" font-weight="500">On Deliver</text>
-<text x="70" y="1696" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
-<text x="70" y="1744" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
-<text x="44" y="1798" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1798" font-size="26" fill="#e6edf3" font-weight="500">On Verify</text>
-<text x="70" y="1846" font-size="20" fill="#e6edf3" font-weight="400">What work in **In Review** shows before it is **Done**.</text>
-<text x="70" y="1894" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text><rect x="32" y="1934" width="1000" height="752" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="1970" font-size="21" fill="#b1c6df" font-weight="400">sdlc/waterfall.md</text>
-<path d="M32 1988 H1032" stroke="#303b49"/>
-<text x="70" y="2045" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="2082" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
-<text x="70" y="2119" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="2177" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="2177" font-size="30" fill="#e6edf3" font-weight="500">Waterfall</text>
-<text x="44" y="2231" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="2231" font-size="26" fill="#e6edf3" font-weight="500">Plan</text>
-<text x="70" y="2279" font-size="20" fill="#e6edf3" font-weight="400">1. Record the requirements, and have them signed off.</text>
-<text x="70" y="2316" font-size="20" fill="#e6edf3" font-weight="400">2. Record the design against those requirements, and have it signed off.</text>
-<text x="44" y="2370" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="2370" font-size="26" fill="#e6edf3" font-weight="500">Deliver</text>
-<text x="70" y="2418" font-size="20" fill="#e6edf3" font-weight="400">1. Implement the signed-off design.</text>
-<text x="70" y="2455" font-size="20" fill="#e6edf3" font-weight="400">2. Integrate the work with the system it joins.</text>
-<text x="70" y="2492" font-size="20" fill="#e6edf3" font-weight="400">3. Hold any change to requirements or design until it is signed off</text>
-<text x="70" y="2529" font-size="20" fill="#e6edf3" font-weight="400">again.</text>
-<text x="44" y="2583" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="2583" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
-<text x="70" y="2631" font-size="20" fill="#e6edf3" font-weight="400">1. Run the system tests against the requirements.</text>
-<text x="70" y="2668" font-size="20" fill="#e6edf3" font-weight="400">2. Record the stakeholders&#x27; acceptance.</text><rect x="1110" y="80" width="1000" height="542" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">sdlc_port__on-deliver.bundles/sdlc_port__on-deliver.bundle.md</text>
+<text x="70" y="1407" font-size="20" fill="#e6edf3" font-weight="400">The practice an SDLC applies at each mode step asking for one.</text>
+<text x="44" y="1461" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1461" font-size="26" fill="#e6edf3" font-weight="500">On Plan</text>
+<text x="70" y="1509" font-size="20" fill="#e6edf3" font-weight="400">What a plan holds before it is **Planned**.</text>
+<text x="70" y="1557" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
+<text x="44" y="1611" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1611" font-size="26" fill="#e6edf3" font-weight="500">On Deliver</text>
+<text x="70" y="1659" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
+<text x="70" y="1707" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
+<text x="44" y="1761" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1761" font-size="26" fill="#e6edf3" font-weight="500">On Verify</text>
+<text x="70" y="1809" font-size="20" fill="#e6edf3" font-weight="400">What work in **In Review** shows before it is **Done**.</text>
+<text x="70" y="1857" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text><rect x="32" y="1897" width="1000" height="752" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="1933" font-size="21" fill="#b1c6df" font-weight="400">sdlc/waterfall.md</text>
+<path d="M32 1951 H1032" stroke="#303b49"/>
+<text x="70" y="2008" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="2045" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
+<text x="70" y="2082" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="2140" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="2140" font-size="30" fill="#e6edf3" font-weight="500">Waterfall</text>
+<text x="44" y="2194" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="2194" font-size="26" fill="#e6edf3" font-weight="500">Plan</text>
+<text x="70" y="2242" font-size="20" fill="#e6edf3" font-weight="400">1. Record the requirements, and have them signed off.</text>
+<text x="70" y="2279" font-size="20" fill="#e6edf3" font-weight="400">2. Record the design against those requirements, and have it signed off.</text>
+<text x="44" y="2333" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="2333" font-size="26" fill="#e6edf3" font-weight="500">Deliver</text>
+<text x="70" y="2381" font-size="20" fill="#e6edf3" font-weight="400">1. Implement the signed-off design.</text>
+<text x="70" y="2418" font-size="20" fill="#e6edf3" font-weight="400">2. Integrate the work with the system it joins.</text>
+<text x="70" y="2455" font-size="20" fill="#e6edf3" font-weight="400">3. Hold any change to requirements or design until it is signed off</text>
+<text x="70" y="2492" font-size="20" fill="#e6edf3" font-weight="400">again.</text>
+<text x="44" y="2546" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="2546" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
+<text x="70" y="2594" font-size="20" fill="#e6edf3" font-weight="400">1. Run the system tests against the requirements.</text>
+<text x="70" y="2631" font-size="20" fill="#e6edf3" font-weight="400">2. Record the stakeholders&#x27; acceptance.</text><rect x="1110" y="80" width="1000" height="1193" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">sdlc_port.bundles/sdlc_port.bundle.md</text>
 <path d="M1110 134 H2110" stroke="#303b49"/>
 <text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
 <text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">§ Instructions</text>
 <text x="1148" y="249" font-size="20" fill="#58a6ff" font-weight="400">Run `pf`, then follow the guidance it prints. Follow SDLC Port next.</text>
 <text x="1122" y="307" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
 <text x="1160" y="307" font-size="30" fill="#e6edf3" font-weight="500">SDLC Port</text>
-<text x="1122" y="358" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="1184" y="358" font-size="23" fill="#e6edf3" font-weight="500">On Deliver</text>
-<text x="1148" y="406" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
-<text x="1148" y="454" font-size="20" fill="#58a6ff" font-weight="400">Practice</text>
-<text x="1122" y="505" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
-<text x="1196" y="505" font-size="23" fill="#e6edf3" font-weight="500">Deliver</text>
-<text x="1122" y="556" font-size="11" fill="#b1c6df" font-weight="400">H5</text>
-<text x="1208" y="556" font-size="23" fill="#e6edf3" font-weight="500">Ad Hoc</text>
-<text x="1148" y="604" font-size="20" fill="#e6edf3" font-weight="400">Build the task in the order that suits it.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>
+<text x="1148" y="355" font-size="20" fill="#e6edf3" font-weight="400">The practice an SDLC applies at each mode step asking for one.</text>
+<text x="1122" y="409" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="409" font-size="26" fill="#e6edf3" font-weight="500">On Plan</text>
+<text x="1148" y="457" font-size="20" fill="#e6edf3" font-weight="400">What a plan holds before it is **Planned**.</text>
+<text x="1148" y="505" font-size="20" fill="#58a6ff" font-weight="400">Practice</text>
+<text x="1122" y="556" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="556" font-size="23" fill="#e6edf3" font-weight="500">Plan</text>
+<text x="1122" y="607" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="607" font-size="23" fill="#e6edf3" font-weight="500">Ad Hoc</text>
+<text x="1148" y="655" font-size="20" fill="#e6edf3" font-weight="400">Each task states its outcome.</text>
+<text x="1122" y="709" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="709" font-size="26" fill="#e6edf3" font-weight="500">On Deliver</text>
+<text x="1148" y="757" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
+<text x="1148" y="805" font-size="20" fill="#58a6ff" font-weight="400">Practice</text>
+<text x="1122" y="856" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="856" font-size="23" fill="#e6edf3" font-weight="500">Deliver</text>
+<text x="1122" y="907" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="907" font-size="23" fill="#e6edf3" font-weight="500">Ad Hoc</text>
+<text x="1148" y="955" font-size="20" fill="#e6edf3" font-weight="400">Build the task in the order that suits it.</text>
+<text x="1122" y="1009" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1009" font-size="26" fill="#e6edf3" font-weight="500">On Verify</text>
+<text x="1148" y="1057" font-size="20" fill="#e6edf3" font-weight="400">What work in **In Review** shows before it is **Done**.</text>
+<text x="1148" y="1105" font-size="20" fill="#58a6ff" font-weight="400">Practice</text>
+<text x="1122" y="1156" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="1156" font-size="23" fill="#e6edf3" font-weight="500">Verify</text>
+<text x="1122" y="1207" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="1207" font-size="23" fill="#e6edf3" font-weight="500">Ad Hoc</text>
+<text x="1148" y="1255" font-size="20" fill="#e6edf3" font-weight="400">The pull request&#x27;s checks pass.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>

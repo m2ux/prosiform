@@ -7,12 +7,12 @@ it documents cannot drift apart. A case's expected folder is the output of
 `pf -o expected/<case> <arguments>`, run from the example's folder.
 
 The SDLCs are read from the port's presets, so an adapter added to the port
-is compiled under every hook and needs an expected folder for each.
+is compiled and needs an expected folder of its own.
 
-The remaining cases hold the claims the example's README makes: the hook
-links the skill's bundle publishes are the port's hooks, an adapter missing
-a hook section fails the hook's build, and an adapter is added without
-changing the skill's bundle.
+The remaining cases hold the claims the example's README makes: the skill
+offers one link per SDLC, tagged with its preset, an adapter missing a
+practice fails its SDLC's build, and an adapter is added through one preset
+and one link, leaving the modes the skill's bundle carries as they were.
 """
 
 import json
@@ -35,8 +35,6 @@ EXPECTED = EXAMPLE / "expected"
 
 PORT = "sdlc/port.md"
 
-HOOKS = ("on-plan", "on-deliver", "on-verify")
-
 
 def presets(document: Path) -> list[str]:
     """The named presets a document's frontmatter declares, `default` aside."""
@@ -49,12 +47,8 @@ SDLCS = presets(EXAMPLE / PORT)
 
 CASES = {
     "skill": (("SKILL.md",), set()),
-    **{hook: ((f"{PORT}#{hook}",), {"W_PRESET_UNUSED"}) for hook in HOOKS},
-    **{
-        f"{hook}-{sdlc}": ((f"{PORT}#{hook}", "--presets", sdlc), {"W_SUBST_USED"})
-        for hook in HOOKS
-        for sdlc in SDLCS
-    },
+    "ad-hoc": ((PORT,), {"W_PRESET_UNUSED"}),
+    **{sdlc: ((PORT, "--presets", sdlc), {"W_SUBST_USED"}) for sdlc in SDLCS},
 }
 """Each case's arguments, and the diagnostic codes its run reports."""
 
@@ -86,8 +80,18 @@ def example_copy(tmp_path: Path) -> Path:
     return copy
 
 
+def offered(bundle: str) -> list[str]:
+    """The tags of each link to the port a bundle publishes, empty for none."""
+    return re.findall(rf'\]\({re.escape(PORT)}(?: "([^"]*)")?\)', bundle)
+
+
+def modes_of(bundle: str) -> str:
+    """The modes group of a skill's bundle, from its heading to the end."""
+    return bundle[bundle.index("\n## Modes\n") :]
+
+
 def test_the_port_declares_an_sdlc() -> None:
-    assert SDLCS, "the port declares no SDLC, so no hook is compiled under one"
+    assert SDLCS, "the port declares no SDLC, so no preset is compiled"
 
 
 @pytest.mark.parametrize("case", sorted(CASES))
@@ -103,27 +107,24 @@ def test_every_case_has_a_committed_folder_and_every_folder_a_case() -> None:
     assert {folder.name for folder in EXPECTED.iterdir()} == set(CASES)
 
 
-def test_the_hooks_the_skill_publishes_are_the_ports() -> None:
+def test_the_skill_offers_one_link_per_sdlc_tagged_with_its_preset() -> None:
     [bundle] = tree(EXPECTED / "skill").values()
-    published = re.findall(rf"\]\(({re.escape(PORT)}#[a-z-]+)\)", bundle.decode())
-    assert sorted(published) == sorted(f"{PORT}#{hook}" for hook in HOOKS)
+    assert sorted(offered(bundle.decode())) == sorted(["", *SDLCS])
 
 
-def test_an_adapter_missing_a_hook_section_fails_that_hook(tmp_path: Path) -> None:
+def test_an_adapter_missing_a_practice_fails_its_sdlc(tmp_path: Path) -> None:
     copy = example_copy(tmp_path)
     adapter = copy / "sdlc" / "waterfall.md"
     text = adapter.read_text()
     adapter.write_text(text[: text.index("## Verify")])
     status, diagnostics = compile_in(
-        copy, tmp_path / "out", f"{PORT}#on-verify", "--presets", "waterfall"
+        copy, tmp_path / "out", PORT, "--presets", "waterfall"
     )
     assert status == 1
     assert "E_TARGET_NOT_FOUND" in {one["code"] for one in diagnostics}
 
 
-def test_an_adapter_binds_through_one_preset_and_leaves_the_skill_as_it_was(
-    tmp_path: Path,
-) -> None:
+def test_an_adapter_binds_through_one_preset_and_one_link(tmp_path: Path) -> None:
     copy = example_copy(tmp_path)
     (copy / "sdlc" / "iterative.md").write_text(
         "---\nprosiform: {}\n---\n\n# Iterative\n\n"
@@ -139,14 +140,22 @@ def test_an_adapter_binds_through_one_preset_and_leaves_the_skill_as_it_was(
             "---\n\n# SDLC Port",
         )
     )
-    hook = tmp_path / "hook"
-    status, diagnostics = compile_in(
-        copy, hook, f"{PORT}#on-deliver", "--presets", "iterative"
+    link = f'- [¬ Iterative]({PORT} "iterative")\n'
+    skill = copy / "SKILL.md"
+    skill.write_text(
+        skill.read_text().replace(
+            f"- [¬ Ad Hoc]({PORT})\n", f"- [¬ Ad Hoc]({PORT})\n{link}"
+        )
     )
+    built = tmp_path / "skill"
+    status, diagnostics = compile_in(copy, built, "SKILL.md")
     assert status == 0, diagnostics
-    [bundle] = tree(hook).values()
-    assert "Build the increment." in bundle.decode()
-    skill = tmp_path / "skill"
-    status, diagnostics = compile_in(copy, skill, "SKILL.md")
+    [bundle] = tree(built).values()
+    assert sorted(offered(bundle.decode())) == sorted(["", "iterative", *SDLCS])
+    [committed] = tree(EXPECTED / "skill").values()
+    assert modes_of(bundle.decode()) == modes_of(committed.decode())
+    port_built = tmp_path / "port"
+    status, diagnostics = compile_in(copy, port_built, PORT, "--presets", "iterative")
     assert status == 0, diagnostics
-    assert tree(skill) == tree(EXPECTED / "skill")
+    [practice] = tree(port_built).values()
+    assert "Build the increment." in practice.decode()

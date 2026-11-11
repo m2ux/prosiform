@@ -8,21 +8,18 @@ Project Lifecycle moves issues across a project board. Each mode is one transiti
 
 **Proposed** → **Planned** → **Ready** → **In Progress** → **In Review** → **Done**
 
-The board's engineering lifecycle (its SDLC) decides how the work inside an issue is planned, delivered and verified. Each mode leaves that to an SDLC hook.
+The board's engineering lifecycle (its SDLC) decides how the work inside an issue is planned, delivered and verified.
 
-## Configure
+## SDLC
 
-The board's description records its SDLC as one line, `SDLC: <name>`. A board recording none follows `ad-hoc`.
+The board's description records the SDLC it follows as one line, `SDLC: <name>`. A board recording none follows Ad Hoc. The SDLCs are:
 
-The SDLCs are `ad-hoc` and each preset the frontmatter of `sdlc/port.md` names other than `default`.
+- [Ad Hoc](sdlc/port.md)
+- [Waterfall](sdlc/port.md "waterfall")
 
-- When the board records no SDLC, list the SDLCs, ask the user which one the board follows, and record their answer.
-- When the user asks to change the board's SDLC, replace its line.
-- Refuse a name that is not an SDLC, listing the SDLCs there are.
+When the board records no SDLC, ask the user which of these it follows, and record their answer. When the user asks to change it, replace its line. Refuse any other name, listing these.
 
-## SDLC Hooks
-
-A link to `sdlc/port.md` names an SDLC hook. From the folder holding this skill's sources, compile it with `pf <the link's path> --presets <the board's SDLC>`, or with no `--presets` for `ad-hoc`, and follow the result in place of the link.
+Follow the board's SDLC for each practice a mode applies.
 
 ## Mode Selection
 
@@ -68,7 +65,7 @@ Moves reviewed work from **In Review** to **Done**.
 #### Plan
 
 1. Break the proposal into epics and tasks.
-2. Apply the [Plan Practice](sdlc/port.md#on-plan).
+2. Apply the On Plan practice of the board's [SDLC](#sdlc).
 3. Move the proposal to **Planned**.
 
 #### Advance
@@ -80,12 +77,12 @@ Moves reviewed work from **In Review** to **Done**.
 #### Deliver
 
 1. Move the work to **In Progress**.
-2. Apply the [Deliver Practice](sdlc/port.md#on-deliver).
+2. Apply the On Deliver practice of the board's [SDLC](#sdlc).
 3. Open a pull request for the work.
 4. Move the work to **In Review**.
 
 #### Sync
 
-1. Apply the [Verify Practice](sdlc/port.md#on-verify).
+1. Apply the On Verify practice of the board's [SDLC](#sdlc).
 2. Merge the pull request.
 3. Move the work to **Done**.
