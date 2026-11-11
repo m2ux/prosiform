@@ -17,11 +17,11 @@ flowchart TD
   deliver -->|in review| sync["sync"]
   sync -->|done| done(["Done"])
   plan -.->|asks| planning[["planning practice"]]
-  deliver -.->|asks| building[["build practice"]]
+  deliver -.->|asks| implementing[["implementation practice"]]
   sync -.->|asks| verifying[["verification practice"]]
   subgraph sdlc["the SDLC the user chose"]
     planning
-    building
+    implementing
     verifying
   end
   sdlc -.->|user chose ad-hoc| adhoc["ad-hoc"]
