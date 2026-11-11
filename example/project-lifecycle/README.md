@@ -85,7 +85,7 @@ The SOLID principles follow from that shape:
 
 From this folder:
 
-| Command | Bundle |
+| Invocation | Bundle |
 | --- | --- |
 | `pf SKILL.md` | the skill: the board stages, the modes and the hook links |
 | `pf sdlc/port.md#on-deliver` | the delivery practice of a board recording no SDLC |
