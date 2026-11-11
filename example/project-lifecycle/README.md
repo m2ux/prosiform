@@ -95,6 +95,10 @@ A hook built without `--presets waterfall` warns `W_PRESET_UNUSED` for the prese
 
 [`expected/`](expected/) holds the folder each build writes, one per command, as `pf -o expected/<case> <arguments>` writes it. [The example's tests](../../src/tests/test_example_project_lifecycle.py) compile every hook with and without `waterfall`, and the skill, and hold each written folder to its committed one. The SDLCs they compile are read from the port's presets, so an adapter added to the port needs an expected folder for each hook. They also hold the claims below: the hook links the skill's bundle publishes are the port's hooks, an adapter missing a hook section fails, and an adapter binds without changing the skill's bundle.
 
+![SKILL.md, the five modes and the port on the left. On the right, the skill's bundle: the board stages, Configure, the SDLC hook rule, and the modes under one Modes group, each hook link pointing at sdlc/port.md.](../../docs/images/lifecycle-skill.svg)
+
+*The skill built from its entry point, `SKILL.md`. Each hook stays a link for its own build, so no SDLC's practice is in the bundle.*
+
 ![The port and both adapters on the left. On the right, the on-deliver bundle with the ad-hoc adapter's Deliver section composed beneath the hook.](../../docs/images/lifecycle-ad-hoc.svg)
 
 *The `on-deliver` hook built with no `--presets`.*

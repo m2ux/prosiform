@@ -71,6 +71,19 @@
     },
     "status": 1
   },
+  "lifecycle-skill": {
+    "root": "example/project-lifecycle",
+    "entry": "SKILL.md",
+    "files": [
+      "SKILL.md",
+      "modes/propose-mode.md",
+      "modes/plan-mode.md",
+      "modes/advance-mode.md",
+      "modes/deliver-mode.md",
+      "modes/sync-mode.md",
+      "sdlc/port.md"
+    ]
+  },
   "lifecycle-ad-hoc": {
     "root": "example/project-lifecycle",
     "entry": "sdlc/port.md#on-deliver",

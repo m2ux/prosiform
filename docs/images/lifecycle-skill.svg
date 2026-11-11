@@ -1,0 +1,240 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="6070" viewBox="0 0 2142 6070" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="6070" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="462" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
+<path d="M32 134 H1032" stroke="#303b49"/>
+<text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ advance-mode.md</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ deliver-mode.md</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ plan-mode.md</text>
+<text x="70" y="413" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ propose-mode.md</text>
+<text x="70" y="450" font-size="20" fill="#e6edf3" font-weight="400">│  └─ sync-mode.md</text>
+<text x="70" y="487" font-size="20" fill="#e6edf3" font-weight="400">└─ sdlc/</text>
+<text x="70" y="524" font-size="20" fill="#e6edf3" font-weight="400">   └─ port.md</text><rect x="32" y="564" width="1000" height="1595" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="600" font-size="21" fill="#b1c6df" font-weight="400">SKILL.md</text>
+<path d="M32 618 H1032" stroke="#303b49"/>
+<text x="70" y="675" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="712" font-size="20" fill="#e6edf3" font-weight="400">name: project-lifecycle</text>
+<text x="70" y="749" font-size="20" fill="#e6edf3" font-weight="400">description: &gt;-</text>
+<text x="70" y="786" font-size="20" fill="#e6edf3" font-weight="400">  Moves tracker issues across a project board, from proposal to done, under</text>
+<text x="70" y="823" font-size="20" fill="#e6edf3" font-weight="400">  the engineering lifecycle the board&#x27;s owner selects.</text>
+<text x="70" y="860" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
+<text x="70" y="897" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="955" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="955" font-size="30" fill="#e6edf3" font-weight="500">Project Lifecycle</text>
+<text x="70" y="1003" font-size="20" fill="#e6edf3" font-weight="400">Project Lifecycle moves issues across a project board. Each mode is one</text>
+<text x="70" y="1040" font-size="20" fill="#e6edf3" font-weight="400">transition between board stages:</text>
+<text x="70" y="1088" font-size="20" fill="#e6edf3" font-weight="400">**Proposed** → **Planned** → **Ready** → **In Progress** → **In Review**</text>
+<text x="70" y="1125" font-size="20" fill="#e6edf3" font-weight="400">→ **Done**</text>
+<text x="70" y="1173" font-size="20" fill="#e6edf3" font-weight="400">The board&#x27;s engineering lifecycle (its SDLC) decides how the work inside</text>
+<text x="70" y="1210" font-size="20" fill="#e6edf3" font-weight="400">an issue is planned, delivered and verified. Each mode leaves that to an</text>
+<text x="70" y="1247" font-size="20" fill="#e6edf3" font-weight="400">SDLC hook.</text>
+<text x="44" y="1301" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1301" font-size="26" fill="#e6edf3" font-weight="500">Configure</text>
+<text x="70" y="1349" font-size="20" fill="#e6edf3" font-weight="400">The board&#x27;s description records its SDLC as one line, `SDLC: &lt;name&gt;`. A</text>
+<text x="70" y="1386" font-size="20" fill="#e6edf3" font-weight="400">board recording none follows `ad-hoc`.</text>
+<text x="70" y="1434" font-size="20" fill="#e6edf3" font-weight="400">The SDLCs are `ad-hoc` and each preset the frontmatter of `sdlc/port.md`</text>
+<text x="70" y="1471" font-size="20" fill="#e6edf3" font-weight="400">names other than `default`.</text>
+<text x="70" y="1519" font-size="20" fill="#e6edf3" font-weight="400">• When the board records no SDLC, list the SDLCs, ask the user which one</text>
+<text x="70" y="1556" font-size="20" fill="#e6edf3" font-weight="400">the board follows, and record their answer.</text>
+<text x="70" y="1593" font-size="20" fill="#e6edf3" font-weight="400">• When the user asks to change the board&#x27;s SDLC, replace its line.</text>
+<text x="70" y="1630" font-size="20" fill="#e6edf3" font-weight="400">• Refuse a name that is not an SDLC, listing the SDLCs there are.</text>
+<text x="44" y="1684" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1684" font-size="26" fill="#e6edf3" font-weight="500">SDLC Hooks</text>
+<text x="70" y="1732" font-size="20" fill="#e6edf3" font-weight="400">A link to `sdlc/port.md` names an SDLC hook. From the folder holding</text>
+<text x="70" y="1769" font-size="20" fill="#e6edf3" font-weight="400">this skill&#x27;s sources, compile it with `pf &lt;the link&#x27;s path&gt; --presets</text>
+<text x="70" y="1806" font-size="20" fill="#e6edf3" font-weight="400">&lt;the board&#x27;s SDLC&gt;`, or with no `--presets` for `ad-hoc`, and follow the</text>
+<text x="70" y="1843" font-size="20" fill="#e6edf3" font-weight="400">result in place of the link.</text>
+<text x="44" y="1897" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1897" font-size="26" fill="#e6edf3" font-weight="500">Mode Selection</text>
+<text x="70" y="1945" font-size="20" fill="#e6edf3" font-weight="400">Select the mode the user&#x27;s request calls for:</text>
+<text x="70" y="1993" font-size="20" fill="#58a6ff" font-weight="400">• **Propose**  Raises a proposal on the board.</text>
+<text x="70" y="2030" font-size="20" fill="#58a6ff" font-weight="400">• **Plan**  Moves a proposal from Proposed to Planned.</text>
+<text x="70" y="2067" font-size="20" fill="#58a6ff" font-weight="400">• **Advance**  Moves planned work from Planned to Ready.</text>
+<text x="70" y="2104" font-size="20" fill="#58a6ff" font-weight="400">• **Deliver**  Moves ready work through In Progress to In Review.</text>
+<text x="70" y="2141" font-size="20" fill="#58a6ff" font-weight="400">• **Sync**  Moves reviewed work from In Review to Done.</text><rect x="32" y="2181" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="2217" font-size="21" fill="#b1c6df" font-weight="400">modes/advance-mode.md</text>
+<path d="M32 2235 H1032" stroke="#303b49"/>
+<text x="70" y="2292" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="2329" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="2366" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="2403" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="2440" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="2498" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="2498" font-size="30" fill="#e6edf3" font-weight="500">Advance Mode</text>
+<text x="70" y="2546" font-size="20" fill="#e6edf3" font-weight="400">Moves planned work from **Planned** to **Ready**.</text>
+<text x="44" y="2600" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="2600" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="2648" font-size="20" fill="#e6edf3" font-weight="400">1. Confirm each dependency of the work is in **Done**.</text>
+<text x="70" y="2685" font-size="20" fill="#e6edf3" font-weight="400">2. Confirm the work carries a priority.</text>
+<text x="70" y="2722" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Ready**.</text><rect x="32" y="2762" width="1000" height="596" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="2798" font-size="21" fill="#b1c6df" font-weight="400">modes/deliver-mode.md</text>
+<path d="M32 2816 H1032" stroke="#303b49"/>
+<text x="70" y="2873" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="2910" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="2947" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="2984" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="3021" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="3079" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="3079" font-size="30" fill="#e6edf3" font-weight="500">Deliver Mode</text>
+<text x="70" y="3127" font-size="20" fill="#e6edf3" font-weight="400">Moves ready work through **In Progress** to **In Review**.</text>
+<text x="44" y="3181" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="3181" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="3229" font-size="20" fill="#e6edf3" font-weight="400">1. Move the work to **In Progress**.</text>
+<text x="70" y="3266" font-size="20" fill="#e3b341" font-weight="400">2. Apply the ¬ Deliver Practice.</text>
+<text x="70" y="3303" font-size="20" fill="#e6edf3" font-weight="400">3. Open a pull request for the work.</text>
+<text x="70" y="3340" font-size="20" fill="#e6edf3" font-weight="400">4. Move the work to **In Review**.</text><rect x="32" y="3380" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="3416" font-size="21" fill="#b1c6df" font-weight="400">modes/plan-mode.md</text>
+<path d="M32 3434 H1032" stroke="#303b49"/>
+<text x="70" y="3491" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="3528" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="3565" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="3602" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="3639" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="3697" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="3697" font-size="30" fill="#e6edf3" font-weight="500">Plan Mode</text>
+<text x="70" y="3745" font-size="20" fill="#e6edf3" font-weight="400">Moves a proposal from **Proposed** to **Planned**.</text>
+<text x="44" y="3799" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="3799" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="3847" font-size="20" fill="#e6edf3" font-weight="400">1. Break the proposal into epics and tasks.</text>
+<text x="70" y="3884" font-size="20" fill="#e3b341" font-weight="400">2. Apply the ¬ Plan Practice.</text>
+<text x="70" y="3921" font-size="20" fill="#e6edf3" font-weight="400">3. Move the proposal to **Planned**.</text><rect x="32" y="3961" width="1000" height="522" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="3997" font-size="21" fill="#b1c6df" font-weight="400">modes/propose-mode.md</text>
+<path d="M32 4015 H1032" stroke="#303b49"/>
+<text x="70" y="4072" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="4109" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="4146" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="4183" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="4220" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="4278" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="4278" font-size="30" fill="#e6edf3" font-weight="500">Propose Mode</text>
+<text x="70" y="4326" font-size="20" fill="#e6edf3" font-weight="400">Raises a proposal on the board.</text>
+<text x="44" y="4380" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="4380" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="4428" font-size="20" fill="#e6edf3" font-weight="400">1. Raise an issue stating the problem and the outcome sought.</text>
+<text x="70" y="4465" font-size="20" fill="#e6edf3" font-weight="400">2. Place it in **Proposed**.</text><rect x="32" y="4505" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="4541" font-size="21" fill="#b1c6df" font-weight="400">modes/sync-mode.md</text>
+<path d="M32 4559 H1032" stroke="#303b49"/>
+<text x="70" y="4616" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="4653" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="4690" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="4727" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="4764" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="4822" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="4822" font-size="30" fill="#e6edf3" font-weight="500">Sync Mode</text>
+<text x="70" y="4870" font-size="20" fill="#e6edf3" font-weight="400">Moves reviewed work from **In Review** to **Done**.</text>
+<text x="44" y="4924" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="4924" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="4972" font-size="20" fill="#e3b341" font-weight="400">1. Apply the ¬ Verify Practice.</text>
+<text x="70" y="5009" font-size="20" fill="#e6edf3" font-weight="400">2. Merge the pull request.</text>
+<text x="70" y="5046" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Done**.</text><rect x="32" y="5086" width="1000" height="944" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="5122" font-size="21" fill="#b1c6df" font-weight="400">sdlc/port.md</text>
+<path d="M32 5140 H1032" stroke="#303b49"/>
+<text x="70" y="5197" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="5234" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="5271" font-size="20" fill="#e6edf3" font-weight="400">  default: {}</text>
+<text x="70" y="5308" font-size="20" fill="#e6edf3" font-weight="400">  waterfall:</text>
+<text x="70" y="5345" font-size="20" fill="#e6edf3" font-weight="400">    subst:</text>
+<text x="70" y="5382" font-size="20" fill="#e6edf3" font-weight="400">      - {ad-hoc.md: waterfall.md}</text>
+<text x="70" y="5419" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="5477" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="5477" font-size="30" fill="#e6edf3" font-weight="500">SDLC Port</text>
+<text x="70" y="5525" font-size="20" fill="#e6edf3" font-weight="400">The hooks a board transition calls. Each places the practice of the SDLC</text>
+<text x="70" y="5562" font-size="20" fill="#e6edf3" font-weight="400">its run selected.</text>
+<text x="44" y="5616" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5616" font-size="26" fill="#e6edf3" font-weight="500">On Plan</text>
+<text x="70" y="5664" font-size="20" fill="#e6edf3" font-weight="400">What a plan holds before it is **Planned**.</text>
+<text x="70" y="5712" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
+<text x="44" y="5766" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5766" font-size="26" fill="#e6edf3" font-weight="500">On Deliver</text>
+<text x="70" y="5814" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
+<text x="70" y="5862" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
+<text x="44" y="5916" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5916" font-size="26" fill="#e6edf3" font-weight="500">On Verify</text>
+<text x="70" y="5964" font-size="20" fill="#e6edf3" font-weight="400">What work in **In Review** shows before it is **Done**.</text>
+<text x="70" y="6012" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text><rect x="1110" y="80" width="1000" height="2984" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">SKILL.bundles/SKILL.bundle.md</text>
+<path d="M1110 134 H2110" stroke="#303b49"/>
+<text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="201" font-size="30" fill="#e6edf3" font-weight="500">§ Instructions</text>
+<text x="1148" y="249" font-size="20" fill="#e6edf3" font-weight="400">Run `pf`, then follow the guidance it prints. Follow Project Lifecycle</text>
+<text x="1148" y="286" font-size="20" fill="#58a6ff" font-weight="400">next.</text>
+<text x="1122" y="344" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="1160" y="344" font-size="30" fill="#e6edf3" font-weight="500">Project Lifecycle</text>
+<text x="1148" y="392" font-size="20" fill="#e6edf3" font-weight="400">Project Lifecycle moves issues across a project board. Each mode is one</text>
+<text x="1148" y="429" font-size="20" fill="#e6edf3" font-weight="400">transition between board stages:</text>
+<text x="1148" y="477" font-size="20" fill="#e6edf3" font-weight="400">**Proposed** → **Planned** → **Ready** → **In Progress** → **In Review**</text>
+<text x="1148" y="514" font-size="20" fill="#e6edf3" font-weight="400">→ **Done**</text>
+<text x="1148" y="562" font-size="20" fill="#e6edf3" font-weight="400">The board&#x27;s engineering lifecycle (its SDLC) decides how the work inside</text>
+<text x="1148" y="599" font-size="20" fill="#e6edf3" font-weight="400">an issue is planned, delivered and verified. Each mode leaves that to an</text>
+<text x="1148" y="636" font-size="20" fill="#e6edf3" font-weight="400">SDLC hook.</text>
+<text x="1122" y="690" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="690" font-size="26" fill="#e6edf3" font-weight="500">Configure</text>
+<text x="1148" y="738" font-size="20" fill="#e6edf3" font-weight="400">The board&#x27;s description records its SDLC as one line, `SDLC: &lt;name&gt;`. A</text>
+<text x="1148" y="775" font-size="20" fill="#e6edf3" font-weight="400">board recording none follows `ad-hoc`.</text>
+<text x="1148" y="823" font-size="20" fill="#e6edf3" font-weight="400">The SDLCs are `ad-hoc` and each preset the frontmatter of `sdlc/port.md`</text>
+<text x="1148" y="860" font-size="20" fill="#e6edf3" font-weight="400">names other than `default`.</text>
+<text x="1148" y="908" font-size="20" fill="#e6edf3" font-weight="400">• When the board records no SDLC, list the SDLCs, ask the user which one</text>
+<text x="1148" y="945" font-size="20" fill="#e6edf3" font-weight="400">the board follows, and record their answer.</text>
+<text x="1148" y="982" font-size="20" fill="#e6edf3" font-weight="400">• When the user asks to change the board&#x27;s SDLC, replace its line.</text>
+<text x="1148" y="1019" font-size="20" fill="#e6edf3" font-weight="400">• Refuse a name that is not an SDLC, listing the SDLCs there are.</text>
+<text x="1122" y="1073" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1073" font-size="26" fill="#e6edf3" font-weight="500">SDLC Hooks</text>
+<text x="1148" y="1121" font-size="20" fill="#e6edf3" font-weight="400">A link to `sdlc/port.md` names an SDLC hook. From the folder holding</text>
+<text x="1148" y="1158" font-size="20" fill="#e6edf3" font-weight="400">this skill&#x27;s sources, compile it with `pf &lt;the link&#x27;s path&gt; --presets</text>
+<text x="1148" y="1195" font-size="20" fill="#e6edf3" font-weight="400">&lt;the board&#x27;s SDLC&gt;`, or with no `--presets` for `ad-hoc`, and follow the</text>
+<text x="1148" y="1232" font-size="20" fill="#e6edf3" font-weight="400">result in place of the link.</text>
+<text x="1122" y="1286" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1286" font-size="26" fill="#e6edf3" font-weight="500">Mode Selection</text>
+<text x="1148" y="1334" font-size="20" fill="#e6edf3" font-weight="400">Select the mode the user&#x27;s request calls for:</text>
+<text x="1148" y="1382" font-size="20" fill="#58a6ff" font-weight="400">• **Propose**  Raises a proposal on the board.</text>
+<text x="1148" y="1419" font-size="20" fill="#58a6ff" font-weight="400">• **Plan**  Moves a proposal from Proposed to Planned.</text>
+<text x="1148" y="1456" font-size="20" fill="#58a6ff" font-weight="400">• **Advance**  Moves planned work from Planned to Ready.</text>
+<text x="1148" y="1493" font-size="20" fill="#58a6ff" font-weight="400">• **Deliver**  Moves ready work through In Progress to In Review.</text>
+<text x="1148" y="1530" font-size="20" fill="#58a6ff" font-weight="400">• **Sync**  Moves reviewed work from In Review to Done.</text>
+<text x="1122" y="1584" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="1172" y="1584" font-size="26" fill="#e6edf3" font-weight="500">Modes</text>
+<text x="1122" y="1635" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="1635" font-size="23" fill="#e6edf3" font-weight="500">Overview</text>
+<text x="1122" y="1686" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="1686" font-size="23" fill="#e6edf3" font-weight="500">Propose</text>
+<text x="1148" y="1734" font-size="20" fill="#e6edf3" font-weight="400">Raises a proposal on the board.</text>
+<text x="1122" y="1785" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="1785" font-size="23" fill="#e6edf3" font-weight="500">Plan</text>
+<text x="1148" y="1833" font-size="20" fill="#e6edf3" font-weight="400">Moves a proposal from **Proposed** to **Planned**.</text>
+<text x="1122" y="1884" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="1884" font-size="23" fill="#e6edf3" font-weight="500">Advance</text>
+<text x="1148" y="1932" font-size="20" fill="#e6edf3" font-weight="400">Moves planned work from **Planned** to **Ready**.</text>
+<text x="1122" y="1983" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="1983" font-size="23" fill="#e6edf3" font-weight="500">Deliver</text>
+<text x="1148" y="2031" font-size="20" fill="#e6edf3" font-weight="400">Moves ready work through **In Progress** to **In Review**.</text>
+<text x="1122" y="2082" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="2082" font-size="23" fill="#e6edf3" font-weight="500">Sync</text>
+<text x="1148" y="2130" font-size="20" fill="#e6edf3" font-weight="400">Moves reviewed work from **In Review** to **Done**.</text>
+<text x="1122" y="2181" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="1184" y="2181" font-size="23" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="1122" y="2232" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="2232" font-size="23" fill="#e6edf3" font-weight="500">Propose</text>
+<text x="1148" y="2280" font-size="20" fill="#e6edf3" font-weight="400">1. Raise an issue stating the problem and the outcome sought.</text>
+<text x="1148" y="2317" font-size="20" fill="#e6edf3" font-weight="400">2. Place it in **Proposed**.</text>
+<text x="1122" y="2368" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="2368" font-size="23" fill="#e6edf3" font-weight="500">Plan</text>
+<text x="1148" y="2416" font-size="20" fill="#e6edf3" font-weight="400">1. Break the proposal into epics and tasks.</text>
+<text x="1148" y="2453" font-size="20" fill="#58a6ff" font-weight="400">2. Apply the Plan Practice.</text>
+<text x="1148" y="2490" font-size="20" fill="#e6edf3" font-weight="400">3. Move the proposal to **Planned**.</text>
+<text x="1122" y="2541" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="2541" font-size="23" fill="#e6edf3" font-weight="500">Advance</text>
+<text x="1148" y="2589" font-size="20" fill="#e6edf3" font-weight="400">1. Confirm each dependency of the work is in **Done**.</text>
+<text x="1148" y="2626" font-size="20" fill="#e6edf3" font-weight="400">2. Confirm the work carries a priority.</text>
+<text x="1148" y="2663" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Ready**.</text>
+<text x="1122" y="2714" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="2714" font-size="23" fill="#e6edf3" font-weight="500">Deliver</text>
+<text x="1148" y="2762" font-size="20" fill="#e6edf3" font-weight="400">1. Move the work to **In Progress**.</text>
+<text x="1148" y="2799" font-size="20" fill="#58a6ff" font-weight="400">2. Apply the Deliver Practice.</text>
+<text x="1148" y="2836" font-size="20" fill="#e6edf3" font-weight="400">3. Open a pull request for the work.</text>
+<text x="1148" y="2873" font-size="20" fill="#e6edf3" font-weight="400">4. Move the work to **In Review**.</text>
+<text x="1122" y="2924" font-size="11" fill="#b1c6df" font-weight="400">H4</text>
+<text x="1196" y="2924" font-size="23" fill="#e6edf3" font-weight="500">Sync</text>
+<text x="1148" y="2972" font-size="20" fill="#58a6ff" font-weight="400">1. Apply the Verify Practice.</text>
+<text x="1148" y="3009" font-size="20" fill="#e6edf3" font-weight="400">2. Merge the pull request.</text>
+<text x="1148" y="3046" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Done**.</text><path d="M1052 180 H1070 V168 L1098 196 L1070 224 V212 H1052Z" fill="#58a6ff"/></g></svg>
