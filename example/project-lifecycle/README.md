@@ -67,7 +67,7 @@ The skill follows the ports and adapters pattern, with prosiform's link operator
 | call through the port | a mode step naming a hook | a deferral, `[¬ Deliver Practice](../sdlc/port.md#on-deliver)`, compiled by a run of its own |
 | adapter | [`sdlc/ad-hoc.md`](sdlc/ad-hoc.md), [`sdlc/waterfall.md`](sdlc/waterfall.md) | documents carrying `## Plan`, `## Deliver` and `## Verify` |
 | binding an adapter | the port's `waterfall` preset | `subst: [{ad-hoc.md: waterfall.md}]` |
-| selecting a binding | the board's recorded SDLC | `pf sdlc/port.md#on-deliver --presets waterfall` |
+| selecting a binding | the SDLC the user named | the agent's `pf sdlc/port.md#on-deliver --presets waterfall` |
 | default binding | `ad-hoc` | the `default` preset, which substitutes nothing |
 | the adapter's practice in the step | the hook's result | composition, `[↳ Practice](ad-hoc.md#deliver)` |
 | an adapter missing a hook | a build failure | `E_TARGET_NOT_FOUND` on the composed section |
@@ -81,31 +81,21 @@ The SOLID principles follow from that shape:
 - **Interface segregation.** A mode step names the one hook it calls, and the hook composes the one section of the adapter it needs.
 - **Dependency inversion.** Modes name the port and never an adapter; the preset selected at the hook's build supplies the adapter.
 
-## Building it
+## What the agent follows
 
-From this folder:
+The user asks for board work in their own words, and the agent reads the skill from its entry point, [`SKILL.md`](SKILL.md). Each stage's engineering practice is left as a link there, and the agent fetches it once the board's SDLC is known.
 
-| Invocation | Bundle |
-| --- | --- |
-| `pf SKILL.md` | the skill: the board stages, the modes and the hook links |
-| `pf sdlc/port.md#on-deliver` | the delivery practice of a board recording no SDLC |
-| `pf sdlc/port.md#on-deliver --presets waterfall` | the delivery practice of a waterfall board |
+![SKILL.md, the five modes and the port on the left. On the right, the skill the agent reads: the board stages, Configure, the SDLC rule, and the modes under one Modes group, each practice a link to sdlc/port.md.](../../docs/images/lifecycle-skill.svg)
 
-A hook built without `--presets waterfall` warns `W_PRESET_UNUSED` for the preset it left unselected, and publishes.
+*The skill as the agent reads it. No SDLC's practice is in it until the user has named one.*
 
-[`expected/`](expected/) holds the folder each build writes, one per command, as `pf -o expected/<case> <arguments>` writes it. [The example's tests](../../src/tests/test_example_project_lifecycle.py) compile every hook with and without `waterfall`, and the skill, and hold each written folder to its committed one. The SDLCs they compile are read from the port's presets, so an adapter added to the port needs an expected folder for each hook. They also hold the claims below: the hook links the skill's bundle publishes are the port's hooks, an adapter missing a hook section fails, and an adapter binds without changing the skill's bundle.
+![The port and both adapters on the left. On the right, the Deliver practice with the ad-hoc adapter's steps beneath it.](../../docs/images/lifecycle-ad-hoc.svg)
 
-![SKILL.md, the five modes and the port on the left. On the right, the skill's bundle: the board stages, Configure, the SDLC hook rule, and the modes under one Modes group, each hook link pointing at sdlc/port.md.](../../docs/images/lifecycle-skill.svg)
+*What the agent follows at Deliver on a board whose user has named no SDLC.*
 
-*The skill built from its entry point, `SKILL.md`. Each hook stays a link for its own build, so no SDLC's practice is in the bundle.*
+![The port and both adapters on the left. On the right, the Deliver practice with the waterfall adapter's steps beneath it.](../../docs/images/lifecycle-waterfall.svg)
 
-![The port and both adapters on the left. On the right, the on-deliver bundle with the ad-hoc adapter's Deliver section composed beneath the hook.](../../docs/images/lifecycle-ad-hoc.svg)
-
-*The `on-deliver` hook built with no `--presets`.*
-
-![The port and both adapters on the left. On the right, the on-deliver bundle with the waterfall adapter's Deliver section composed beneath the hook.](../../docs/images/lifecycle-waterfall.svg)
-
-*The same hook built with `--presets waterfall`: one link, the other adapter.*
+*What it follows at the same step once the user has said "we run waterfall".*
 
 ## Adding an SDLC
 
