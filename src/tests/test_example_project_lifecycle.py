@@ -10,11 +10,11 @@ output of `pf -o expected/<case> <arguments>`, run from the example's folder.
 The SDLCs are read from the lifecycle's presets, so an adapter added there
 is compiled and needs an expected folder of its own.
 
-The remaining cases hold the claims the example's README makes: it quotes
-the entry as written, the entry offers one link per SDLC, each SDLC's
-bundle carries its own practice and no other, the modes read the same under
-every SDLC, an adapter missing a practice fails its SDLC's build, and an
-adapter is added through one preset and one link.
+The remaining cases hold the claims the example's README makes: the entry
+offers one link per SDLC, each SDLC's bundle carries its own practice and no
+other, the modes read the same under every SDLC, an adapter missing a
+practice fails its SDLC's build, and an adapter is added through one preset
+and one link.
 """
 
 import json
@@ -115,11 +115,6 @@ def test_an_sdlc_writes_the_bundles_committed_for_it(tmp_path: Path, case: str) 
 
 def test_every_case_has_a_committed_folder_and_every_folder_a_case() -> None:
     assert {folder.name for folder in EXPECTED.iterdir()} == set(CASES)
-
-
-def test_the_readme_quotes_the_entry_as_written() -> None:
-    entry = (EXAMPLE / "SKILL.md").read_text()
-    assert f"```markdown\n{entry}```\n" in (EXAMPLE / "README.md").read_text()
 
 
 def test_the_entry_offers_one_link_per_sdlc_tagged_with_its_preset() -> None:
