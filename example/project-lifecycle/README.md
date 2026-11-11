@@ -93,6 +93,8 @@ From this folder:
 
 A hook built without `--presets waterfall` warns `W_PRESET_UNUSED` for the preset it left unselected, and publishes.
 
+[`expected/`](expected/) holds the folder each build writes, one per command, as `pf -o expected/<case> <arguments>` writes it. [The example's tests](../../src/tests/test_example_project_lifecycle.py) compile every hook with and without `waterfall`, and the skill, and hold each written folder to its committed one. They also hold the claims below: the hook links the skill's bundle publishes compile, an adapter missing a hook section fails, and an adapter binds with no mode changed.
+
 ![The port and both adapters on the left. On the right, the on-deliver bundle with the waterfall adapter's Deliver section composed beneath the hook.](../../docs/images/lifecycle-waterfall.svg)
 
 *The `on-deliver` hook built with `--presets waterfall`.*
