@@ -70,5 +70,16 @@
       "rules/quality.md": "---\nprosiform: {}\n---\n# Quality\n\n## Findings\n\nA review lands with its findings recorded.\n"
     },
     "status": 1
+  },
+  "lifecycle-ad-hoc": {
+    "root": "example/project-lifecycle",
+    "entry": "sdlc/port.md#on-deliver",
+    "files": ["sdlc/port.md", "sdlc/ad-hoc.md", "sdlc/waterfall.md"]
+  },
+  "lifecycle-waterfall": {
+    "root": "example/project-lifecycle",
+    "entry": "sdlc/port.md#on-deliver",
+    "args": ["--presets", "waterfall"],
+    "files": ["sdlc/port.md", "sdlc/ad-hoc.md", "sdlc/waterfall.md"]
   }
 }
