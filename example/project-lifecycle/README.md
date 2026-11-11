@@ -1,6 +1,6 @@
 # Project Lifecycle Example
 
-A skill whose project lifecycle and engineering lifecycle are independent of each other. The project lifecycle moves issues across a board, one [mode](modes/) per transition. The engineering lifecycle, the SDLC, decides how the work inside an issue is planned, delivered and verified, and the board's owner selects it. No mode names an SDLC: a mode calls a hook in the [port](sdlc/port.md), and the hook's build binds the SDLC the board records.
+A skill whose project lifecycle and engineering lifecycle are independent of each other. The project lifecycle moves issues across a board, one [mode](modes/) per transition. The engineering lifecycle, the SDLC, decides how the work inside an issue is planned, built and verified. The user tells the skill which SDLC the board follows, and each stage needing engineering practice takes it from that SDLC. How the skill does that is under [Ports and adapters](#ports-and-adapters).
 
 This file declares nothing, so no bundle carries it.
 
@@ -8,33 +8,33 @@ This file declares nothing, so no bundle carries it.
 
 ```mermaid
 flowchart TD
-  start(["start"]) --> configure["configure"]
-  configure -->|SDLC recorded| propose["propose"]
+  start(["start"]) --> choose["choose SDLC"]
+  choose -->|user names one| propose["propose"]
   propose -->|proposed| plan["plan"]
   plan -->|planned| advance["advance"]
   advance -->|dependency open| held(["stays Planned"])
   advance -->|ready| deliver["deliver"]
   deliver -->|in review| sync["sync"]
   sync -->|done| done(["Done"])
-  plan -.->|calls| onPlan[["on-plan"]]
-  deliver -.->|calls| onDeliver[["on-deliver"]]
-  sync -.->|calls| onVerify[["on-verify"]]
-  subgraph port["SDLC port: --presets selects the adapter"]
-    onPlan
-    onDeliver
-    onVerify
+  plan -.->|asks| planning[["planning practice"]]
+  deliver -.->|asks| building[["build practice"]]
+  sync -.->|asks| verifying[["verification practice"]]
+  subgraph sdlc["the SDLC the user chose"]
+    planning
+    building
+    verifying
   end
-  port -.->|default| adhoc["ad-hoc"]
-  port -.->|waterfall| waterfall["waterfall"]
+  sdlc -.->|user chose ad-hoc| adhoc["ad-hoc"]
+  sdlc -.->|user chose waterfall| waterfall["waterfall"]
 ```
 
-*Solid edges are board transitions, each labelled with the outcome that takes it. Dotted edges are hook calls and the adapter a hook's build binds.*
+*Solid edges are board transitions, each labelled with the outcome that takes it. Dotted edges are the practice a stage takes from the SDLC the user chose.*
 
 ## Stages
 
-### Configure
+### Choose SDLC
 
-The board records the SDLC it follows as one `SDLC: <name>` line in its description, asked of the user the first time the skill runs on it. The user picks from `ad-hoc` and the port's presets other than `default`, so the choices grow with the adapters, and a name outside them is refused rather than built as `ad-hoc`. A board recording none follows `ad-hoc`. The rule is [Configure](SKILL.md#configure).
+The first time the skill works on a board, it asks the user which SDLC the board follows and offers the ones it knows: `ad-hoc` and `waterfall`. The user answers in their own words, such as "we run waterfall", and the board keeps that choice. The user changes it by asking. A name the skill does not know is refused with the choices listed, and a board whose user has named none follows `ad-hoc`. The rule is [Configure](SKILL.md#configure).
 
 ### Propose
 
@@ -42,7 +42,7 @@ A proposal enters the board in **Proposed**, as [Propose Mode](modes/propose-mod
 
 ### Plan
 
-A proposal is broken into epics and tasks, and the `on-plan` hook states what that plan holds before it is **Planned**. The transition is [Plan Mode](modes/plan-mode.md), and the hook is [On Plan](sdlc/port.md#on-plan).
+A proposal is broken into epics and tasks, and the board's SDLC states what that plan holds before it is **Planned**: under waterfall, signed-off requirements and design. The transition is [Plan Mode](modes/plan-mode.md), and the practice is [On Plan](sdlc/port.md#on-plan).
 
 ### Advance
 
@@ -50,11 +50,11 @@ Planned work moves to **Ready** once each dependency is **Done** and it carries 
 
 ### Deliver
 
-Ready work moves to **In Progress**, is built as the `on-deliver` hook states, and moves to **In Review** with its pull request. The transition is [Deliver Mode](modes/deliver-mode.md), and the hook is [On Deliver](sdlc/port.md#on-deliver).
+Ready work moves to **In Progress**, is built as the board's SDLC prescribes, and moves to **In Review** with its pull request. Under waterfall it is implemented to the signed-off design and integrated, and any change to requirements or design waits for sign-off. The transition is [Deliver Mode](modes/deliver-mode.md), and the practice is [On Deliver](sdlc/port.md#on-deliver).
 
 ### Sync
 
-Reviewed work shows what the `on-verify` hook asks, merges, and moves to **Done**. The transition is [Sync Mode](modes/sync-mode.md), and the hook is [On Verify](sdlc/port.md#on-verify).
+Reviewed work shows what the board's SDLC asks, merges, and moves to **Done**. Under waterfall, that is passing system tests and the stakeholders' acceptance. The transition is [Sync Mode](modes/sync-mode.md), and the practice is [On Verify](sdlc/port.md#on-verify).
 
 ## Ports and adapters
 
