@@ -10,7 +10,9 @@ which is what the corpus check calls one, and a fixture's source deliberately
 carries references a run is meant to refuse, while its expected bundle is
 output rather than a document a reader follows. The corpus is discovered the
 same way the documents are, so a fixture added anywhere is excepted and a
-document added anywhere else is read.
+document added anywhere else is read. A tracked bundle outside the corpus,
+an example's expected output, is excepted on the same ground: its deferred
+links are spelled from the folder its run started in, not from the bundle.
 
 Literal content holds examples rather than content, so it is blanked out
 before a document is read. A fenced block goes before a document is read for
@@ -30,6 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 MANIFEST = "manifest.toml"
 MARKDOWN = (".md", ".markdown")
+BUNDLE = ".bundle.md"
 FENCE = re.compile(r"^(?:```|~~~)", re.MULTILINE)
 INDENTED = re.compile(r"^(?: {4}|\t)")
 LIST_ITEM = re.compile(r"^ {0,3}(?:[-*+]|\d{1,9}[.)])(?:\s|$)")
@@ -65,6 +68,7 @@ def documents() -> list[Path]:
         ROOT / path
         for path in paths
         if Path(path).suffix in MARKDOWN
+        and not path.endswith(BUNDLE)
         and not any(path.startswith(f"{fixture}/") for fixture in fixtures)
     )
 

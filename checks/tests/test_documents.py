@@ -6,7 +6,8 @@ expected bundle is output rather than a document a reader follows, so a
 check that resolved either would fail by design. The exception is the
 corpus itself rather than a list of names: a fixture is a directory
 holding a manifest, so one added anywhere is excepted and a document
-added anywhere else is read.
+added anywhere else is read. A tracked bundle outside the corpus is output
+on the same ground, and is excepted too.
 
 The reading the checks share is held to the input it would read wrongly: a
 code span and an indented block holding a link form, an opener that never
@@ -17,6 +18,7 @@ indented.
 from pathlib import Path
 
 from documents import (
+    BUNDLE,
     MARKDOWN,
     ROOT,
     corpus,
@@ -57,11 +59,22 @@ def test_no_document_inside_a_fixture_is_found() -> None:
     assert inside == set(), f"a fixture's own files entered the check: {sorted(inside)}"
 
 
+def test_no_tracked_bundle_is_found() -> None:
+    bundles = {path for path in TRACKED if path.endswith(BUNDLE)}
+    assert bundles - {
+        path
+        for path in bundles
+        if any(path.startswith(f"{fixture}/") for fixture in FIXTURES)
+    }, "no bundle is tracked outside the corpus, so the exception checks nothing"
+    assert relative(FOUND) & bundles == set()
+
+
 def test_every_tracked_document_outside_a_fixture_is_found() -> None:
     outside = {
         path
         for path in TRACKED
         if Path(path).suffix in MARKDOWN
+        and not path.endswith(BUNDLE)
         and not any(path.startswith(f"{fixture}/") for fixture in FIXTURES)
     }
     assert relative(FOUND) == outside
