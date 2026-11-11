@@ -75,6 +75,7 @@
     "root": "example/project-lifecycle",
     "entry": "lifecycle.md",
     "files": [
+      "SKILL.md",
       "lifecycle.md",
       "modes/propose-mode.md",
       "modes/plan-mode.md",
@@ -90,6 +91,7 @@
     "entry": "lifecycle.md",
     "args": ["--presets", "waterfall"],
     "files": [
+      "SKILL.md",
       "lifecycle.md",
       "modes/propose-mode.md",
       "modes/plan-mode.md",

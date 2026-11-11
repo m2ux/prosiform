@@ -1,166 +1,180 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="6281" viewBox="0 0 2142 6281" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="6281" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="499" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="2142" height="6845" viewBox="0 0 2142 6845" role="img" aria-labelledby="title desc"><title id="title">Authored sources and compiled bundles</title><desc id="desc">The files a run read, beside the bundles it wrote.</desc><rect width="2142" height="6845" fill="#0d1117"/><g font-family="IBM Plex Mono" xml:space="preserve"><rect x="32" y="80" width="1000" height="536" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="56" y="116" font-size="21" fill="#b1c6df" font-weight="400">Files</text>
 <path d="M32 134 H1032" stroke="#303b49"/>
 <text x="70" y="191" font-size="20" fill="#e6edf3" font-weight="400">skill/</text>
-<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ lifecycle.md</text>
-<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
-<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ advance-mode.md</text>
-<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ deliver-mode.md</text>
-<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ plan-mode.md</text>
-<text x="70" y="413" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ propose-mode.md</text>
-<text x="70" y="450" font-size="20" fill="#e6edf3" font-weight="400">│  └─ sync-mode.md</text>
-<text x="70" y="487" font-size="20" fill="#e6edf3" font-weight="400">└─ sdlc/</text>
-<text x="70" y="524" font-size="20" fill="#e6edf3" font-weight="400">   ├─ ad-hoc.md</text>
-<text x="70" y="561" font-size="20" fill="#e6edf3" font-weight="400">   └─ waterfall.md</text><rect x="32" y="601" width="1000" height="1372" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="637" font-size="21" fill="#b1c6df" font-weight="400">lifecycle.md</text>
-<path d="M32 655 H1032" stroke="#303b49"/>
-<text x="70" y="712" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="749" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="786" font-size="20" fill="#e6edf3" font-weight="400">  default: {}</text>
-<text x="70" y="823" font-size="20" fill="#e6edf3" font-weight="400">  waterfall:</text>
-<text x="70" y="860" font-size="20" fill="#e6edf3" font-weight="400">    subst:</text>
-<text x="70" y="897" font-size="20" fill="#e6edf3" font-weight="400">      - {sdlc/ad-hoc.md: sdlc/waterfall.md}</text>
+<text x="70" y="228" font-size="20" fill="#e6edf3" font-weight="400">├─ SKILL.md</text>
+<text x="70" y="265" font-size="20" fill="#e6edf3" font-weight="400">├─ lifecycle.md</text>
+<text x="70" y="302" font-size="20" fill="#e6edf3" font-weight="400">├─ modes/</text>
+<text x="70" y="339" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ advance-mode.md</text>
+<text x="70" y="376" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ deliver-mode.md</text>
+<text x="70" y="413" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ plan-mode.md</text>
+<text x="70" y="450" font-size="20" fill="#e6edf3" font-weight="400">│  ├─ propose-mode.md</text>
+<text x="70" y="487" font-size="20" fill="#e6edf3" font-weight="400">│  └─ sync-mode.md</text>
+<text x="70" y="524" font-size="20" fill="#e6edf3" font-weight="400">└─ sdlc/</text>
+<text x="70" y="561" font-size="20" fill="#e6edf3" font-weight="400">   ├─ ad-hoc.md</text>
+<text x="70" y="598" font-size="20" fill="#e6edf3" font-weight="400">   └─ waterfall.md</text><rect x="32" y="638" width="1000" height="505" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="674" font-size="21" fill="#b1c6df" font-weight="400">SKILL.md</text>
+<path d="M32 692 H1032" stroke="#303b49"/>
+<text x="70" y="749" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="786" font-size="20" fill="#e6edf3" font-weight="400">name: project-lifecycle</text>
+<text x="70" y="823" font-size="20" fill="#e6edf3" font-weight="400">description: &gt;-</text>
+<text x="70" y="860" font-size="20" fill="#e6edf3" font-weight="400">  Moves tracker issues across a project board, from proposal to done, under</text>
+<text x="70" y="897" font-size="20" fill="#e6edf3" font-weight="400">  the engineering lifecycle the user names.</text>
 <text x="70" y="934" font-size="20" fill="#e6edf3" font-weight="400">---</text>
 <text x="44" y="992" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
 <text x="82" y="992" font-size="30" fill="#e6edf3" font-weight="500">Project Lifecycle</text>
-<text x="70" y="1040" font-size="20" fill="#e6edf3" font-weight="400">Moves issues across a project board. Each mode is one transition between</text>
-<text x="70" y="1077" font-size="20" fill="#e6edf3" font-weight="400">board stages:</text>
-<text x="70" y="1125" font-size="20" fill="#e6edf3" font-weight="400">**Proposed** → **Planned** → **Ready** → **In Progress** → **In Review**</text>
-<text x="70" y="1162" font-size="20" fill="#e6edf3" font-weight="400">→ **Done**</text>
-<text x="44" y="1216" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1216" font-size="26" fill="#e6edf3" font-weight="500">Mode Selection</text>
-<text x="70" y="1264" font-size="20" fill="#e6edf3" font-weight="400">Select the mode the user&#x27;s request calls for:</text>
-<text x="70" y="1312" font-size="20" fill="#58a6ff" font-weight="400">• **Propose**  Raises a proposal on the board.</text>
-<text x="70" y="1349" font-size="20" fill="#58a6ff" font-weight="400">• **Plan**  Moves a proposal from Proposed to Planned.</text>
-<text x="70" y="1386" font-size="20" fill="#58a6ff" font-weight="400">• **Advance**  Moves planned work from Planned to Ready.</text>
-<text x="70" y="1423" font-size="20" fill="#58a6ff" font-weight="400">• **Deliver**  Moves ready work through In Progress to In Review.</text>
-<text x="70" y="1460" font-size="20" fill="#58a6ff" font-weight="400">• **Sync**  Moves reviewed work from In Review to Done.</text>
-<text x="44" y="1514" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="1514" font-size="26" fill="#e6edf3" font-weight="500">Practices</text>
-<text x="44" y="1565" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="106" y="1565" font-size="23" fill="#e6edf3" font-weight="500">Planning Practice</text>
-<text x="70" y="1613" font-size="20" fill="#e6edf3" font-weight="400">What a plan holds before it is **Planned**.</text>
-<text x="70" y="1661" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
-<text x="44" y="1712" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="106" y="1712" font-size="23" fill="#e6edf3" font-weight="500">Implementation Practice</text>
-<text x="70" y="1760" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
-<text x="70" y="1808" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
-<text x="44" y="1859" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
-<text x="106" y="1859" font-size="23" fill="#e6edf3" font-weight="500">Verification Practice</text>
-<text x="70" y="1907" font-size="20" fill="#e6edf3" font-weight="400">What work in **In Review** shows before it is **Done**.</text>
-<text x="70" y="1955" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text><rect x="32" y="1995" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="2031" font-size="21" fill="#b1c6df" font-weight="400">modes/advance-mode.md</text>
-<path d="M32 2049 H1032" stroke="#303b49"/>
-<text x="70" y="2106" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="2143" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="2180" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="2217" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
-<text x="70" y="2254" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="2312" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="2312" font-size="30" fill="#e6edf3" font-weight="500">Advance Mode</text>
-<text x="70" y="2360" font-size="20" fill="#e6edf3" font-weight="400">Moves planned work from **Planned** to **Ready**.</text>
-<text x="44" y="2414" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="2414" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="70" y="2462" font-size="20" fill="#e6edf3" font-weight="400">1. Confirm each dependency of the work is in **Done**.</text>
-<text x="70" y="2499" font-size="20" fill="#e6edf3" font-weight="400">2. Confirm the work carries a priority.</text>
-<text x="70" y="2536" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Ready**.</text><rect x="32" y="2576" width="1000" height="596" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="2612" font-size="21" fill="#b1c6df" font-weight="400">modes/deliver-mode.md</text>
-<path d="M32 2630 H1032" stroke="#303b49"/>
-<text x="70" y="2687" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="2724" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="2761" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="2798" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
-<text x="70" y="2835" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="2893" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="2893" font-size="30" fill="#e6edf3" font-weight="500">Deliver Mode</text>
-<text x="70" y="2941" font-size="20" fill="#e6edf3" font-weight="400">Moves ready work through **In Progress** to **In Review**.</text>
-<text x="44" y="2995" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="2995" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="70" y="3043" font-size="20" fill="#e6edf3" font-weight="400">1. Move the work to **In Progress**.</text>
-<text x="70" y="3080" font-size="20" fill="#58a6ff" font-weight="400">2. Apply the Implementation Practice.</text>
-<text x="70" y="3117" font-size="20" fill="#e6edf3" font-weight="400">3. Open a pull request for the work.</text>
-<text x="70" y="3154" font-size="20" fill="#e6edf3" font-weight="400">4. Move the work to **In Review**.</text><rect x="32" y="3194" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="3230" font-size="21" fill="#b1c6df" font-weight="400">modes/plan-mode.md</text>
-<path d="M32 3248 H1032" stroke="#303b49"/>
-<text x="70" y="3305" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="3342" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="3379" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="3416" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
-<text x="70" y="3453" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="3511" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="3511" font-size="30" fill="#e6edf3" font-weight="500">Plan Mode</text>
-<text x="70" y="3559" font-size="20" fill="#e6edf3" font-weight="400">Moves a proposal from **Proposed** to **Planned**.</text>
-<text x="44" y="3613" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="3613" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="70" y="3661" font-size="20" fill="#e6edf3" font-weight="400">1. Break the proposal into epics and tasks.</text>
-<text x="70" y="3698" font-size="20" fill="#58a6ff" font-weight="400">2. Apply the Planning Practice.</text>
-<text x="70" y="3735" font-size="20" fill="#e6edf3" font-weight="400">3. Move the proposal to **Planned**.</text><rect x="32" y="3775" width="1000" height="522" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="3811" font-size="21" fill="#b1c6df" font-weight="400">modes/propose-mode.md</text>
-<path d="M32 3829 H1032" stroke="#303b49"/>
-<text x="70" y="3886" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="3923" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="3960" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="3997" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
-<text x="70" y="4034" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="4092" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="4092" font-size="30" fill="#e6edf3" font-weight="500">Propose Mode</text>
-<text x="70" y="4140" font-size="20" fill="#e6edf3" font-weight="400">Raises a proposal on the board.</text>
-<text x="44" y="4194" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="4194" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="70" y="4242" font-size="20" fill="#e6edf3" font-weight="400">1. Raise an issue stating the problem and the outcome sought.</text>
-<text x="70" y="4279" font-size="20" fill="#e6edf3" font-weight="400">2. Place it in **Proposed**.</text><rect x="32" y="4319" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="4355" font-size="21" fill="#b1c6df" font-weight="400">modes/sync-mode.md</text>
-<path d="M32 4373 H1032" stroke="#303b49"/>
-<text x="70" y="4430" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="4467" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
-<text x="70" y="4504" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
-<text x="70" y="4541" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
-<text x="70" y="4578" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="4636" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="4636" font-size="30" fill="#e6edf3" font-weight="500">Sync Mode</text>
-<text x="70" y="4684" font-size="20" fill="#e6edf3" font-weight="400">Moves reviewed work from **In Review** to **Done**.</text>
-<text x="44" y="4738" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="4738" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
-<text x="70" y="4786" font-size="20" fill="#58a6ff" font-weight="400">1. Apply the Verification Practice.</text>
-<text x="70" y="4823" font-size="20" fill="#e6edf3" font-weight="400">2. Merge the pull request.</text>
-<text x="70" y="4860" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Done**.</text><rect x="32" y="4900" width="1000" height="567" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="4936" font-size="21" fill="#b1c6df" font-weight="400">sdlc/ad-hoc.md</text>
-<path d="M32 4954 H1032" stroke="#303b49"/>
-<text x="70" y="5011" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="5048" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
-<text x="70" y="5085" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="5143" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="5143" font-size="30" fill="#e6edf3" font-weight="500">Ad Hoc</text>
-<text x="44" y="5197" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="5197" font-size="26" fill="#e6edf3" font-weight="500">Plan</text>
-<text x="70" y="5245" font-size="20" fill="#e6edf3" font-weight="400">Each task states its outcome.</text>
-<text x="44" y="5299" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="5299" font-size="26" fill="#e6edf3" font-weight="500">Deliver</text>
-<text x="70" y="5347" font-size="20" fill="#e6edf3" font-weight="400">Build the task in the order that suits it.</text>
-<text x="44" y="5401" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="5401" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
-<text x="70" y="5449" font-size="20" fill="#e6edf3" font-weight="400">The pull request&#x27;s checks pass.</text><rect x="32" y="5489" width="1000" height="752" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
-<text x="56" y="5525" font-size="21" fill="#b1c6df" font-weight="400">sdlc/waterfall.md</text>
-<path d="M32 5543 H1032" stroke="#303b49"/>
-<text x="70" y="5600" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="70" y="5637" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
-<text x="70" y="5674" font-size="20" fill="#e6edf3" font-weight="400">---</text>
-<text x="44" y="5732" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
-<text x="82" y="5732" font-size="30" fill="#e6edf3" font-weight="500">Waterfall</text>
-<text x="44" y="5786" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="5786" font-size="26" fill="#e6edf3" font-weight="500">Plan</text>
-<text x="70" y="5834" font-size="20" fill="#e6edf3" font-weight="400">1. Record the requirements, and have them signed off.</text>
-<text x="70" y="5871" font-size="20" fill="#e6edf3" font-weight="400">2. Record the design against those requirements, and have it signed off.</text>
-<text x="44" y="5925" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="5925" font-size="26" fill="#e6edf3" font-weight="500">Deliver</text>
-<text x="70" y="5973" font-size="20" fill="#e6edf3" font-weight="400">1. Implement the signed-off design.</text>
-<text x="70" y="6010" font-size="20" fill="#e6edf3" font-weight="400">2. Integrate the work with the system it joins.</text>
-<text x="70" y="6047" font-size="20" fill="#e6edf3" font-weight="400">3. Hold any change to requirements or design until it is signed off</text>
-<text x="70" y="6084" font-size="20" fill="#e6edf3" font-weight="400">again.</text>
-<text x="44" y="6138" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
-<text x="94" y="6138" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
-<text x="70" y="6186" font-size="20" fill="#e6edf3" font-weight="400">1. Run the system tests against the requirements.</text>
-<text x="70" y="6223" font-size="20" fill="#e6edf3" font-weight="400">2. Record the stakeholders&#x27; acceptance.</text><rect x="1110" y="80" width="1000" height="3433" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="70" y="1040" font-size="20" fill="#e6edf3" font-weight="400">Run `pf` for the user&#x27;s SDLC.</text>
+<text x="70" y="1088" font-size="20" fill="#58a6ff" font-weight="400">• ↳ Ad Hoc</text>
+<text x="70" y="1125" font-size="20" fill="#58a6ff" font-weight="400">• ↳ Waterfall</text><rect x="32" y="1165" width="1000" height="1372" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="1201" font-size="21" fill="#b1c6df" font-weight="400">lifecycle.md</text>
+<path d="M32 1219 H1032" stroke="#303b49"/>
+<text x="70" y="1276" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="1313" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="1350" font-size="20" fill="#e6edf3" font-weight="400">  default: {}</text>
+<text x="70" y="1387" font-size="20" fill="#e6edf3" font-weight="400">  waterfall:</text>
+<text x="70" y="1424" font-size="20" fill="#e6edf3" font-weight="400">    subst:</text>
+<text x="70" y="1461" font-size="20" fill="#e6edf3" font-weight="400">      - {sdlc/ad-hoc.md: sdlc/waterfall.md}</text>
+<text x="70" y="1498" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="1556" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="1556" font-size="30" fill="#e6edf3" font-weight="500">Project Lifecycle</text>
+<text x="70" y="1604" font-size="20" fill="#e6edf3" font-weight="400">Moves issues across a project board. Each mode is one transition between</text>
+<text x="70" y="1641" font-size="20" fill="#e6edf3" font-weight="400">board stages:</text>
+<text x="70" y="1689" font-size="20" fill="#e6edf3" font-weight="400">**Proposed** → **Planned** → **Ready** → **In Progress** → **In Review**</text>
+<text x="70" y="1726" font-size="20" fill="#e6edf3" font-weight="400">→ **Done**</text>
+<text x="44" y="1780" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="1780" font-size="26" fill="#e6edf3" font-weight="500">Mode Selection</text>
+<text x="70" y="1828" font-size="20" fill="#e6edf3" font-weight="400">Select the mode the user&#x27;s request calls for:</text>
+<text x="70" y="1876" font-size="20" fill="#58a6ff" font-weight="400">• **Propose**  Raises a proposal on the board.</text>
+<text x="70" y="1913" font-size="20" fill="#58a6ff" font-weight="400">• **Plan**  Moves a proposal from Proposed to Planned.</text>
+<text x="70" y="1950" font-size="20" fill="#58a6ff" font-weight="400">• **Advance**  Moves planned work from Planned to Ready.</text>
+<text x="70" y="1987" font-size="20" fill="#58a6ff" font-weight="400">• **Deliver**  Moves ready work through In Progress to In Review.</text>
+<text x="70" y="2024" font-size="20" fill="#58a6ff" font-weight="400">• **Sync**  Moves reviewed work from In Review to Done.</text>
+<text x="44" y="2078" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="2078" font-size="26" fill="#e6edf3" font-weight="500">Practices</text>
+<text x="44" y="2129" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="106" y="2129" font-size="23" fill="#e6edf3" font-weight="500">Planning Practice</text>
+<text x="70" y="2177" font-size="20" fill="#e6edf3" font-weight="400">What a plan holds before it is **Planned**.</text>
+<text x="70" y="2225" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
+<text x="44" y="2276" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="106" y="2276" font-size="23" fill="#e6edf3" font-weight="500">Implementation Practice</text>
+<text x="70" y="2324" font-size="20" fill="#e6edf3" font-weight="400">How work in **In Progress** is built.</text>
+<text x="70" y="2372" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text>
+<text x="44" y="2423" font-size="11" fill="#b1c6df" font-weight="400">H3</text>
+<text x="106" y="2423" font-size="23" fill="#e6edf3" font-weight="500">Verification Practice</text>
+<text x="70" y="2471" font-size="20" fill="#e6edf3" font-weight="400">What work in **In Review** shows before it is **Done**.</text>
+<text x="70" y="2519" font-size="20" fill="#58a6ff" font-weight="400">↳ Practice</text><rect x="32" y="2559" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="2595" font-size="21" fill="#b1c6df" font-weight="400">modes/advance-mode.md</text>
+<path d="M32 2613 H1032" stroke="#303b49"/>
+<text x="70" y="2670" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="2707" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="2744" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="2781" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="2818" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="2876" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="2876" font-size="30" fill="#e6edf3" font-weight="500">Advance Mode</text>
+<text x="70" y="2924" font-size="20" fill="#e6edf3" font-weight="400">Moves planned work from **Planned** to **Ready**.</text>
+<text x="44" y="2978" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="2978" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="3026" font-size="20" fill="#e6edf3" font-weight="400">1. Confirm each dependency of the work is in **Done**.</text>
+<text x="70" y="3063" font-size="20" fill="#e6edf3" font-weight="400">2. Confirm the work carries a priority.</text>
+<text x="70" y="3100" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Ready**.</text><rect x="32" y="3140" width="1000" height="596" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="3176" font-size="21" fill="#b1c6df" font-weight="400">modes/deliver-mode.md</text>
+<path d="M32 3194 H1032" stroke="#303b49"/>
+<text x="70" y="3251" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="3288" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="3325" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="3362" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="3399" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="3457" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="3457" font-size="30" fill="#e6edf3" font-weight="500">Deliver Mode</text>
+<text x="70" y="3505" font-size="20" fill="#e6edf3" font-weight="400">Moves ready work through **In Progress** to **In Review**.</text>
+<text x="44" y="3559" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="3559" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="3607" font-size="20" fill="#e6edf3" font-weight="400">1. Move the work to **In Progress**.</text>
+<text x="70" y="3644" font-size="20" fill="#58a6ff" font-weight="400">2. Apply the Implementation Practice.</text>
+<text x="70" y="3681" font-size="20" fill="#e6edf3" font-weight="400">3. Open a pull request for the work.</text>
+<text x="70" y="3718" font-size="20" fill="#e6edf3" font-weight="400">4. Move the work to **In Review**.</text><rect x="32" y="3758" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="3794" font-size="21" fill="#b1c6df" font-weight="400">modes/plan-mode.md</text>
+<path d="M32 3812 H1032" stroke="#303b49"/>
+<text x="70" y="3869" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="3906" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="3943" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="3980" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="4017" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="4075" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="4075" font-size="30" fill="#e6edf3" font-weight="500">Plan Mode</text>
+<text x="70" y="4123" font-size="20" fill="#e6edf3" font-weight="400">Moves a proposal from **Proposed** to **Planned**.</text>
+<text x="44" y="4177" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="4177" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="4225" font-size="20" fill="#e6edf3" font-weight="400">1. Break the proposal into epics and tasks.</text>
+<text x="70" y="4262" font-size="20" fill="#58a6ff" font-weight="400">2. Apply the Planning Practice.</text>
+<text x="70" y="4299" font-size="20" fill="#e6edf3" font-weight="400">3. Move the proposal to **Planned**.</text><rect x="32" y="4339" width="1000" height="522" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="4375" font-size="21" fill="#b1c6df" font-weight="400">modes/propose-mode.md</text>
+<path d="M32 4393 H1032" stroke="#303b49"/>
+<text x="70" y="4450" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="4487" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="4524" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="4561" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="4598" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="4656" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="4656" font-size="30" fill="#e6edf3" font-weight="500">Propose Mode</text>
+<text x="70" y="4704" font-size="20" fill="#e6edf3" font-weight="400">Raises a proposal on the board.</text>
+<text x="44" y="4758" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="4758" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="4806" font-size="20" fill="#e6edf3" font-weight="400">1. Raise an issue stating the problem and the outcome sought.</text>
+<text x="70" y="4843" font-size="20" fill="#e6edf3" font-weight="400">2. Place it in **Proposed**.</text><rect x="32" y="4883" width="1000" height="559" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="4919" font-size="21" fill="#b1c6df" font-weight="400">modes/sync-mode.md</text>
+<path d="M32 4937 H1032" stroke="#303b49"/>
+<text x="70" y="4994" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="5031" font-size="20" fill="#e6edf3" font-weight="400">prosiform:</text>
+<text x="70" y="5068" font-size="20" fill="#e6edf3" font-weight="400">  default:</text>
+<text x="70" y="5105" font-size="20" fill="#e6edf3" font-weight="400">    group: {modes: 2}</text>
+<text x="70" y="5142" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="5200" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="5200" font-size="30" fill="#e6edf3" font-weight="500">Sync Mode</text>
+<text x="70" y="5248" font-size="20" fill="#e6edf3" font-weight="400">Moves reviewed work from **In Review** to **Done**.</text>
+<text x="44" y="5302" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5302" font-size="26" fill="#e6edf3" font-weight="500">Procedure</text>
+<text x="70" y="5350" font-size="20" fill="#58a6ff" font-weight="400">1. Apply the Verification Practice.</text>
+<text x="70" y="5387" font-size="20" fill="#e6edf3" font-weight="400">2. Merge the pull request.</text>
+<text x="70" y="5424" font-size="20" fill="#e6edf3" font-weight="400">3. Move the work to **Done**.</text><rect x="32" y="5464" width="1000" height="567" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="5500" font-size="21" fill="#b1c6df" font-weight="400">sdlc/ad-hoc.md</text>
+<path d="M32 5518 H1032" stroke="#303b49"/>
+<text x="70" y="5575" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="5612" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
+<text x="70" y="5649" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="5707" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="5707" font-size="30" fill="#e6edf3" font-weight="500">Ad Hoc</text>
+<text x="44" y="5761" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5761" font-size="26" fill="#e6edf3" font-weight="500">Plan</text>
+<text x="70" y="5809" font-size="20" fill="#e6edf3" font-weight="400">Each task states its outcome.</text>
+<text x="44" y="5863" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5863" font-size="26" fill="#e6edf3" font-weight="500">Deliver</text>
+<text x="70" y="5911" font-size="20" fill="#e6edf3" font-weight="400">Build the task in the order that suits it.</text>
+<text x="44" y="5965" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="5965" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
+<text x="70" y="6013" font-size="20" fill="#e6edf3" font-weight="400">The pull request&#x27;s checks pass.</text><rect x="32" y="6053" width="1000" height="752" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
+<text x="56" y="6089" font-size="21" fill="#b1c6df" font-weight="400">sdlc/waterfall.md</text>
+<path d="M32 6107 H1032" stroke="#303b49"/>
+<text x="70" y="6164" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="70" y="6201" font-size="20" fill="#e6edf3" font-weight="400">prosiform: {}</text>
+<text x="70" y="6238" font-size="20" fill="#e6edf3" font-weight="400">---</text>
+<text x="44" y="6296" font-size="11" fill="#b1c6df" font-weight="400">H1</text>
+<text x="82" y="6296" font-size="30" fill="#e6edf3" font-weight="500">Waterfall</text>
+<text x="44" y="6350" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="6350" font-size="26" fill="#e6edf3" font-weight="500">Plan</text>
+<text x="70" y="6398" font-size="20" fill="#e6edf3" font-weight="400">1. Record the requirements, and have them signed off.</text>
+<text x="70" y="6435" font-size="20" fill="#e6edf3" font-weight="400">2. Record the design against those requirements, and have it signed off.</text>
+<text x="44" y="6489" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="6489" font-size="26" fill="#e6edf3" font-weight="500">Deliver</text>
+<text x="70" y="6537" font-size="20" fill="#e6edf3" font-weight="400">1. Implement the signed-off design.</text>
+<text x="70" y="6574" font-size="20" fill="#e6edf3" font-weight="400">2. Integrate the work with the system it joins.</text>
+<text x="70" y="6611" font-size="20" fill="#e6edf3" font-weight="400">3. Hold any change to requirements or design until it is signed off</text>
+<text x="70" y="6648" font-size="20" fill="#e6edf3" font-weight="400">again.</text>
+<text x="44" y="6702" font-size="11" fill="#b1c6df" font-weight="400">H2</text>
+<text x="94" y="6702" font-size="26" fill="#e6edf3" font-weight="500">Verify</text>
+<text x="70" y="6750" font-size="20" fill="#e6edf3" font-weight="400">1. Run the system tests against the requirements.</text>
+<text x="70" y="6787" font-size="20" fill="#e6edf3" font-weight="400">2. Record the stakeholders&#x27; acceptance.</text><rect x="1110" y="80" width="1000" height="3433" rx="12" fill="#161b22" stroke="#303b49" stroke-width="2"/>
 <text x="1134" y="116" font-size="21" fill="#b1c6df" font-weight="400">lifecycle--p-ba688bc7e408ca95ed1d860b9e2785e4c9e0024b5d4b724affb4499c5a78efc8.bundles/lifecycle--p-ba688bc7e408ca95ed1d860b9e2785e4c9e0024b5d4b724affb4499c5a78efc8.bundle.md</text>
 <path d="M1110 134 H2110" stroke="#303b49"/>
 <text x="1122" y="201" font-size="11" fill="#b1c6df" font-weight="400">H1</text>

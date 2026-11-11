@@ -85,15 +85,15 @@ The SOLID principles follow from that shape:
 
 ## What the agent follows
 
-The agent reads one instruction set: the lifecycle compiled for the SDLC the user named. It holds the modes and that SDLC's practice, and the modes read the same under every SDLC.
+The agent reads one instruction set: the lifecycle compiled from the entry's link for the SDLC the user named. It holds the modes and that SDLC's practice, and the modes read the same under every SDLC.
 
-![The lifecycle, the five modes and both adapters on the left. On the right, the instructions: the board stages, the three practices each holding ad hoc's steps, and the modes under one Modes group.](../../docs/images/lifecycle-ad-hoc.svg)
+![On the left, SKILL.md with its Ad Hoc and Waterfall links, then the lifecycle, the five modes and both adapters. On the right, the instructions: the board stages, the three practices each holding ad hoc's steps, and the modes under one Modes group.](../../docs/images/lifecycle-ad-hoc.svg)
 
-*What the agent follows when the user names ad hoc.*
+*What the agent follows when the user names ad hoc, from the entry's Ad Hoc link.*
 
-![The lifecycle, the five modes and both adapters on the left. On the right, the instructions: the board stages, the three practices each holding waterfall's steps, and the modes under one Modes group.](../../docs/images/lifecycle-waterfall.svg)
+![On the left, SKILL.md with its Ad Hoc and Waterfall links, then the lifecycle, the five modes and both adapters. On the right, the instructions: the board stages, the three practices each holding waterfall's steps, and the modes under one Modes group.](../../docs/images/lifecycle-waterfall.svg)
 
-*What it follows when the user names waterfall.*
+*What it follows when the user names waterfall, from the entry's Waterfall link.*
 
 ## Adding an SDLC
 
