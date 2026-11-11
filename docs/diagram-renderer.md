@@ -8,7 +8,7 @@ The scripts draw bundles for a reader of these pages. How a Mermaid diagram's ow
 
 ## The architecture examples
 
-`scripts/examples.json` declares one case per picture: an entry and the files around it. The build runs for real over a copy of that tree, and the drawing shows what it read beside what it wrote, so a picture cannot state a result the build does not produce.
+`scripts/examples.json` declares one case per picture: an entry and the files around it. A case's `files` map each path to its text, or, where the case names a repository folder as `root`, list the paths read from that folder, so a case can draw an example kept under [`example/`](../example/). A case's `args` follow the entry on the build's command line, `--presets` among them. The build runs for real over a copy of that tree, and the drawing shows what it read beside what it wrote, so a picture cannot state a result the build does not produce.
 
 ```bash
 make examples
