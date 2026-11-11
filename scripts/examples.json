@@ -71,28 +71,33 @@
     },
     "status": 1
   },
-  "lifecycle-skill": {
+  "lifecycle-ad-hoc": {
     "root": "example/project-lifecycle",
-    "entry": "SKILL.md",
+    "entry": "lifecycle.md",
     "files": [
-      "SKILL.md",
+      "lifecycle.md",
       "modes/propose-mode.md",
       "modes/plan-mode.md",
       "modes/advance-mode.md",
       "modes/deliver-mode.md",
       "modes/sync-mode.md",
-      "sdlc/port.md"
+      "sdlc/ad-hoc.md",
+      "sdlc/waterfall.md"
     ]
-  },
-  "lifecycle-ad-hoc": {
-    "root": "example/project-lifecycle",
-    "entry": "sdlc/port.md",
-    "files": ["sdlc/port.md", "sdlc/ad-hoc.md", "sdlc/waterfall.md"]
   },
   "lifecycle-waterfall": {
     "root": "example/project-lifecycle",
-    "entry": "sdlc/port.md",
+    "entry": "lifecycle.md",
     "args": ["--presets", "waterfall"],
-    "files": ["sdlc/port.md", "sdlc/ad-hoc.md", "sdlc/waterfall.md"]
+    "files": [
+      "lifecycle.md",
+      "modes/propose-mode.md",
+      "modes/plan-mode.md",
+      "modes/advance-mode.md",
+      "modes/deliver-mode.md",
+      "modes/sync-mode.md",
+      "sdlc/ad-hoc.md",
+      "sdlc/waterfall.md"
+    ]
   }
 }

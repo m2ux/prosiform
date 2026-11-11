@@ -1,18 +1,20 @@
 """Compile the project-lifecycle example and hold what it writes.
 
-Each case runs the build over `example/project-lifecycle/` where it stands
+The skill's entry is read as written: one link per SDLC to the lifecycle,
+tagged with the preset that binds the SDLC's adapter. Each case compiles the
+lifecycle under one SDLC from `example/project-lifecycle/` where it stands
 and compares the folder the run writes with the one committed under the
-example's `expected/` folder, byte for byte, so the example and the bundles
-it documents cannot drift apart. A case's expected folder is the output of
-`pf -o expected/<case> <arguments>`, run from the example's folder.
+example's `expected/` folder, byte for byte. A case's expected folder is the
+output of `pf -o expected/<case> <arguments>`, run from the example's folder.
 
-The SDLCs are read from the port's presets, so an adapter added to the port
+The SDLCs are read from the lifecycle's presets, so an adapter added there
 is compiled and needs an expected folder of its own.
 
-The remaining cases hold the claims the example's README makes: the skill
-offers one link per SDLC, tagged with its preset, an adapter missing a
+The remaining cases hold the claims the example's README makes: the entry
+offers one link per SDLC, each SDLC's bundle carries its own practice and no
+other, the modes read the same under every SDLC, an adapter missing a
 practice fails its SDLC's build, and an adapter is added through one preset
-and one link, leaving the modes the skill's bundle carries as they were.
+and one link.
 """
 
 import json
@@ -33,7 +35,10 @@ EXAMPLE = Path(__file__).resolve().parents[2] / "example" / "project-lifecycle"
 EXPECTED = EXAMPLE / "expected"
 """One folder per case, holding what that case's run writes."""
 
-PORT = "sdlc/port.md"
+LIFECYCLE = "lifecycle.md"
+
+DEFAULT = "ad-hoc"
+"""The SDLC the untagged link names: the adapter the lifecycle's links name."""
 
 
 def presets(document: Path) -> list[str]:
@@ -43,14 +48,13 @@ def presets(document: Path) -> list[str]:
     return [name for name in declared if name != "default"]
 
 
-SDLCS = presets(EXAMPLE / PORT)
+SDLCS = presets(EXAMPLE / LIFECYCLE)
 
 CASES = {
-    "skill": (("SKILL.md",), set()),
-    "ad-hoc": ((PORT,), {"W_PRESET_UNUSED"}),
-    **{sdlc: ((PORT, "--presets", sdlc), {"W_SUBST_USED"}) for sdlc in SDLCS},
+    DEFAULT: ((LIFECYCLE,), {"W_PRESET_UNUSED"}),
+    **{sdlc: ((LIFECYCLE, "--presets", sdlc), {"W_SUBST_USED"}) for sdlc in SDLCS},
 }
-"""Each case's arguments, and the diagnostic codes its run reports."""
+"""Each SDLC's arguments, and the diagnostic codes its run reports."""
 
 
 def compile_in(
@@ -73,6 +77,12 @@ def tree(folder: Path) -> dict[str, bytes]:
     }
 
 
+def bundle_of(folder: Path) -> str:
+    """The one bundle a run wrote beneath `folder`."""
+    [bundle] = tree(folder).values()
+    return bundle.decode()
+
+
 def example_copy(tmp_path: Path) -> Path:
     """A copy of the example's sources, without its expected bundles."""
     copy = tmp_path / "project-lifecycle"
@@ -80,22 +90,22 @@ def example_copy(tmp_path: Path) -> Path:
     return copy
 
 
-def offered(bundle: str) -> list[str]:
-    """The tags of each link to the port a bundle publishes, empty for none."""
-    return re.findall(rf'\]\({re.escape(PORT)}(?: "([^"]*)")?\)', bundle)
+def offered(entry: str) -> list[str]:
+    """The tags of each link to the lifecycle an entry writes, empty for none."""
+    return re.findall(rf'\]\({re.escape(LIFECYCLE)}(?: "([^"]*)")?\)', entry)
 
 
 def modes_of(bundle: str) -> str:
-    """The modes group of a skill's bundle, from its heading to the end."""
+    """The modes group of a lifecycle's bundle, from its heading to the end."""
     return bundle[bundle.index("\n## Modes\n") :]
 
 
-def test_the_port_declares_an_sdlc() -> None:
-    assert SDLCS, "the port declares no SDLC, so no preset is compiled"
+def test_the_lifecycle_declares_an_sdlc() -> None:
+    assert SDLCS, "the lifecycle declares no SDLC, so no preset is compiled"
 
 
 @pytest.mark.parametrize("case", sorted(CASES))
-def test_a_case_writes_the_bundles_committed_for_it(tmp_path: Path, case: str) -> None:
+def test_an_sdlc_writes_the_bundles_committed_for_it(tmp_path: Path, case: str) -> None:
     arguments, codes = CASES[case]
     status, diagnostics = compile_in(EXAMPLE, tmp_path, *arguments)
     assert status == 0, diagnostics
@@ -107,9 +117,23 @@ def test_every_case_has_a_committed_folder_and_every_folder_a_case() -> None:
     assert {folder.name for folder in EXPECTED.iterdir()} == set(CASES)
 
 
-def test_the_skill_offers_one_link_per_sdlc_tagged_with_its_preset() -> None:
-    [bundle] = tree(EXPECTED / "skill").values()
-    assert sorted(offered(bundle.decode())) == sorted(["", *SDLCS])
+def test_the_entry_offers_one_link_per_sdlc_tagged_with_its_preset() -> None:
+    entry = (EXAMPLE / "SKILL.md").read_text()
+    assert sorted(offered(entry)) == sorted(["", *SDLCS])
+
+
+@pytest.mark.parametrize("case", sorted(CASES))
+def test_an_sdlcs_bundle_names_no_other_sdlc(case: str) -> None:
+    bundle = bundle_of(EXPECTED / case).lower()
+    adapters = {DEFAULT: "ad hoc", **{sdlc: sdlc for sdlc in SDLCS}}
+    assert adapters[case] in bundle
+    assert [
+        name for other, name in adapters.items() if other != case and name in bundle
+    ] == []
+
+
+def test_the_modes_read_the_same_under_every_sdlc() -> None:
+    assert len({modes_of(bundle_of(EXPECTED / case)) for case in CASES}) == 1
 
 
 def test_an_adapter_missing_a_practice_fails_its_sdlc(tmp_path: Path) -> None:
@@ -118,7 +142,7 @@ def test_an_adapter_missing_a_practice_fails_its_sdlc(tmp_path: Path) -> None:
     text = adapter.read_text()
     adapter.write_text(text[: text.index("## Verify")])
     status, diagnostics = compile_in(
-        copy, tmp_path / "out", PORT, "--presets", "waterfall"
+        copy, tmp_path / "out", LIFECYCLE, "--presets", "waterfall"
     )
     assert status == 1
     assert "E_TARGET_NOT_FOUND" in {one["code"] for one in diagnostics}
@@ -132,30 +156,20 @@ def test_an_adapter_binds_through_one_preset_and_one_link(tmp_path: Path) -> Non
         "## Deliver\n\nBuild the increment.\n\n"
         "## Verify\n\nDemonstrate the increment.\n"
     )
-    port = copy / PORT
-    port.write_text(
-        port.read_text().replace(
-            "---\n\n# SDLC Port",
-            "  iterative:\n    subst:\n      - {ad-hoc.md: iterative.md}\n"
-            "---\n\n# SDLC Port",
+    lifecycle = copy / LIFECYCLE
+    lifecycle.write_text(
+        lifecycle.read_text().replace(
+            "---\n\n# Project Lifecycle",
+            "  iterative:\n    subst:\n      - {sdlc/ad-hoc.md: sdlc/iterative.md}\n"
+            "---\n\n# Project Lifecycle",
         )
     )
-    link = f'- [¬ Iterative]({PORT} "iterative")\n'
-    skill = copy / "SKILL.md"
-    skill.write_text(
-        skill.read_text().replace(
-            f"- [¬ Ad Hoc]({PORT})\n", f"- [¬ Ad Hoc]({PORT})\n{link}"
-        )
-    )
-    built = tmp_path / "skill"
-    status, diagnostics = compile_in(copy, built, "SKILL.md")
+    entry = copy / "SKILL.md"
+    entry.write_text(entry.read_text() + f'- [↳ Iterative]({LIFECYCLE} "iterative")\n')
+    assert sorted(offered(entry.read_text())) == sorted(["", "iterative", *SDLCS])
+    folder = tmp_path / "out"
+    status, diagnostics = compile_in(copy, folder, LIFECYCLE, "--presets", "iterative")
     assert status == 0, diagnostics
-    [bundle] = tree(built).values()
-    assert sorted(offered(bundle.decode())) == sorted(["", "iterative", *SDLCS])
-    [committed] = tree(EXPECTED / "skill").values()
-    assert modes_of(bundle.decode()) == modes_of(committed.decode())
-    port_built = tmp_path / "port"
-    status, diagnostics = compile_in(copy, port_built, PORT, "--presets", "iterative")
-    assert status == 0, diagnostics
-    [practice] = tree(port_built).values()
-    assert "Build the increment." in practice.decode()
+    bundle = bundle_of(folder)
+    assert "Build the increment." in bundle
+    assert modes_of(bundle) == modes_of(bundle_of(EXPECTED / DEFAULT))

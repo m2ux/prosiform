@@ -1,6 +1,8 @@
 # Project Lifecycle Example
 
-A skill whose project lifecycle and engineering lifecycle are independent of each other. The project lifecycle moves issues across a board, one [mode](modes/) per transition. The engineering lifecycle, the SDLC, decides how the work inside an issue is planned, built and verified. The user tells the skill which SDLC the board follows, and each stage needing engineering practice takes it from that SDLC. How the skill does that is under [Ports and adapters](#ports-and-adapters).
+A skill whose project lifecycle and engineering lifecycle are independent of each other. The project lifecycle moves issues across a board, one [mode](modes/) per transition. The engineering lifecycle, the SDLC, decides how the work inside an issue is planned, implemented and verified.
+
+The user names the SDLC as they invoke the skill. That one choice is made once, in the skill's entry, and yields the instructions the agent follows: the board's modes and that SDLC's practice, with nothing of any other SDLC. The agent never weighs an SDLC. How the skill does that is under [Ports and adapters](#ports-and-adapters).
 
 This file declares nothing, so no bundle carries it.
 
@@ -8,33 +10,33 @@ This file declares nothing, so no bundle carries it.
 
 ```mermaid
 flowchart TD
-  start(["start"]) --> choose["choose SDLC"]
-  choose -->|user names one| propose["propose"]
+  start(["start"]) --> name["user names the SDLC"]
+  name -->|instructions for that SDLC| propose["propose"]
   propose -->|proposed| plan["plan"]
   plan -->|planned| advance["advance"]
   advance -->|dependency open| held(["stays Planned"])
   advance -->|ready| deliver["deliver"]
   deliver -->|in review| sync["sync"]
   sync -->|done| done(["Done"])
-  plan -.->|asks| planning[["planning practice"]]
-  deliver -.->|asks| implementing[["implementation practice"]]
-  sync -.->|asks| verifying[["verification practice"]]
-  subgraph sdlc["the SDLC the user chose"]
+  plan -.->|applies| planning[["planning practice"]]
+  deliver -.->|applies| implementing[["implementation practice"]]
+  sync -.->|applies| verifying[["verification practice"]]
+  subgraph sdlc["the named SDLC's practice"]
     planning
     implementing
     verifying
   end
-  sdlc -.->|user chose ad-hoc| adhoc["ad-hoc"]
-  sdlc -.->|user chose waterfall| waterfall["waterfall"]
+  sdlc -.->|user named ad hoc| adhoc["ad-hoc"]
+  sdlc -.->|user named waterfall| waterfall["waterfall"]
 ```
 
-*Solid edges are board transitions, each labelled with the outcome that takes it. Dotted edges are the practice a stage takes from the SDLC the user chose.*
+*Solid edges are board transitions, each labelled with the outcome that takes it. Dotted edges are the practice a stage applies, which comes from the SDLC the user named.*
 
 ## Stages
 
-### Choose SDLC
+### Name the SDLC
 
-The first time the skill works on a board, it asks the user which SDLC the board follows and offers the ones it knows: `ad-hoc` and `waterfall`. The user answers in their own words, such as "we run waterfall", and the board keeps that choice. The user changes it by asking. A name the skill does not know is refused with the choices listed, and a board whose user has named none follows `ad-hoc`. The rule is [SDLC](SKILL.md#sdlc).
+The user names the SDLC as they invoke the skill: ad hoc or waterfall. The skill's entry, [`SKILL.md`](SKILL.md), turns that name into the instructions the agent follows, and those instructions hold that SDLC's practice and no other. A different SDLC is a different set of instructions, not a choice the agent makes along the way.
 
 ### Propose
 
@@ -42,7 +44,7 @@ A proposal enters the board in **Proposed**, as [Propose Mode](modes/propose-mod
 
 ### Plan
 
-A proposal is broken into epics and tasks, and the board's SDLC states what that plan holds before it is **Planned**: under waterfall, signed-off requirements and design. The transition is [Plan Mode](modes/plan-mode.md), and the practice is [On Plan](sdlc/port.md#on-plan).
+A proposal is broken into epics and tasks, and the SDLC's planning practice states what that plan holds before it is **Planned**: under waterfall, signed-off requirements and design. The transition is [Plan Mode](modes/plan-mode.md), and the practice is [Planning Practice](lifecycle.md#planning-practice).
 
 ### Advance
 
@@ -50,55 +52,51 @@ Planned work moves to **Ready** once each dependency is **Done** and it carries 
 
 ### Deliver
 
-Ready work moves to **In Progress**, is built as the board's SDLC prescribes, and moves to **In Review** with its pull request. Under waterfall it is implemented to the signed-off design and integrated, and any change to requirements or design waits for sign-off. The transition is [Deliver Mode](modes/deliver-mode.md), and the practice is [On Deliver](sdlc/port.md#on-deliver).
+Ready work moves to **In Progress**, is implemented as the SDLC prescribes, and moves to **In Review** with its pull request. Under waterfall it is implemented to the signed-off design and integrated, and any change to requirements or design waits for sign-off. The transition is [Deliver Mode](modes/deliver-mode.md), and the practice is [Implementation Practice](lifecycle.md#implementation-practice).
 
 ### Sync
 
-Reviewed work shows what the board's SDLC asks, merges, and moves to **Done**. Under waterfall, that is passing system tests and the stakeholders' acceptance. The transition is [Sync Mode](modes/sync-mode.md), and the practice is [On Verify](sdlc/port.md#on-verify).
+Reviewed work shows what the SDLC's verification practice asks, merges, and moves to **Done**. Under waterfall, that is passing system tests and the stakeholders' acceptance. The transition is [Sync Mode](modes/sync-mode.md), and the practice is [Verification Practice](lifecycle.md#verification-practice).
 
 ## Ports and adapters
 
-The skill follows the ports and adapters pattern, with prosiform's link operators as the language it is written in.
+The skill follows the ports and adapters pattern, with prosiform's link operators as the language it is written in. Every decision the pattern needs is made once, in the skill's entry, so none of it reaches the agent.
 
 | Pattern | Here | prosiform |
 | --- | --- | --- |
 | core | the board transitions in [`modes/`](modes/) | documents gathered by `group: {modes: 2}` |
-| port | [`sdlc/port.md`](sdlc/port.md), one section per practice | a document whose presets each name an adapter |
-| call through the port | a mode step applying a practice | a link to the skill's [SDLC](SKILL.md#sdlc) section |
+| port | the practices of [`lifecycle.md`](lifecycle.md), one section each | a document whose presets each name an adapter |
+| call through the port | a mode step applying a practice | a link to that practice's section of the lifecycle |
 | adapter | [`sdlc/ad-hoc.md`](sdlc/ad-hoc.md), [`sdlc/waterfall.md`](sdlc/waterfall.md) | documents carrying `## Plan`, `## Deliver` and `## Verify` |
-| binding an adapter | the port's `waterfall` preset | `subst: [{ad-hoc.md: waterfall.md}]` |
-| selecting a binding | the SDLC the user named | the deferred link tagged with its preset, `[¬ Waterfall](sdlc/port.md "waterfall")` |
-| default binding | `ad-hoc` | the untagged link, `[¬ Ad Hoc](sdlc/port.md)`, under the `default` preset |
-| the adapter's practice in the port | each practice's section | composition, `[↳ Practice](ad-hoc.md#deliver)` |
+| binding an adapter | the lifecycle's `waterfall` preset | `subst: [{sdlc/ad-hoc.md: sdlc/waterfall.md}]` |
+| selecting a binding | the SDLC the user names, once, in the entry | the entry's link tagged with the preset, `[↳ Waterfall](lifecycle.md "waterfall")` |
+| default binding | ad hoc | the entry's untagged link, `[↳ Ad Hoc](lifecycle.md)`, under the `default` preset |
+| the adapter's practice in the port | each practice's section | composition, `[↳ Practice](sdlc/ad-hoc.md#deliver)` |
 | an adapter missing a practice | a build failure | `E_TARGET_NOT_FOUND` on the composed section |
 | which adapter was bound | the run's diagnostics | `W_SUBST_USED` |
 
 The SOLID principles follow from that shape:
 
-- **Single responsibility.** A mode moves an issue between stages, an adapter states one SDLC's practice, and the port binds one to the other.
-- **Open–closed.** An SDLC is added as one adapter, one preset in the port and one link in the skill. No mode changes.
-- **Liskov substitution.** Every adapter carries every section the port composes, so any one stands in for `ad-hoc`; a missing section fails its SDLC's build.
-- **Interface segregation.** A mode step names the one practice it applies, and each of the port's sections composes the one section of the adapter it needs.
-- **Dependency inversion.** Modes name the skill's SDLC and never an adapter; the link the user's SDLC selects supplies the adapter.
+- **Single responsibility.** A mode moves an issue between stages, an adapter states one SDLC's practice, the lifecycle binds one to the other, and the entry selects the binding.
+- **Open–closed.** An SDLC is added as one adapter, one preset in the lifecycle and one link in the entry. No mode changes.
+- **Liskov substitution.** Every adapter carries every section the lifecycle composes, so any one stands in for ad hoc; a missing section fails its SDLC's build.
+- **Interface segregation.** A mode step names the one practice it applies, and each practice composes the one section of the adapter it needs.
+- **Dependency inversion.** Modes name the lifecycle's practices and never an adapter; the entry's tagged link supplies the adapter.
 
 ## What the agent follows
 
-The user asks for board work in their own words, and the agent reads the skill from its entry point, [`SKILL.md`](SKILL.md). The skill offers each SDLC as a link, and the agent follows the one the user named.
+The agent reads one instruction set: the lifecycle compiled for the SDLC the user named. It holds the modes and that SDLC's practice, and the modes read the same under every SDLC.
 
-![SKILL.md, the five modes and the port on the left. On the right, the skill the agent reads: the board stages, the SDLC section offering Ad Hoc and Waterfall, and the modes under one Modes group.](../../docs/images/lifecycle-skill.svg)
+![The lifecycle, the five modes and both adapters on the left. On the right, the instructions: the board stages, the three practices each holding ad hoc's steps, and the modes under one Modes group.](../../docs/images/lifecycle-ad-hoc.svg)
 
-*The skill as the agent reads it. No SDLC's practice is in it until the user has named one.*
+*What the agent follows when the user names ad hoc.*
 
-![The port and both adapters on the left. On the right, the port's three practices, each with the ad-hoc adapter's steps beneath it.](../../docs/images/lifecycle-ad-hoc.svg)
+![The lifecycle, the five modes and both adapters on the left. On the right, the instructions: the board stages, the three practices each holding waterfall's steps, and the modes under one Modes group.](../../docs/images/lifecycle-waterfall.svg)
 
-*What the agent follows on a board whose user has named no SDLC.*
-
-![The port and both adapters on the left. On the right, the port's three practices, each with the waterfall adapter's steps beneath it.](../../docs/images/lifecycle-waterfall.svg)
-
-*What it follows once the user has said "we run waterfall".*
+*What it follows when the user names waterfall.*
 
 ## Adding an SDLC
 
 1. Write `sdlc/<name>.md` with `## Plan`, `## Deliver` and `## Verify` sections.
-2. Add a `<name>` preset to [`sdlc/port.md`](sdlc/port.md) substituting `ad-hoc.md` with `<name>.md`.
-3. Offer it in the skill's [SDLC](SKILL.md#sdlc) section as `[¬ <Name>](sdlc/port.md "<name>")`.
+2. Add a `<name>` preset to [`lifecycle.md`](lifecycle.md) substituting `sdlc/ad-hoc.md` with `sdlc/<name>.md`.
+3. Offer it in [`SKILL.md`](SKILL.md) as `[↳ <Name>](lifecycle.md "<name>")`.
