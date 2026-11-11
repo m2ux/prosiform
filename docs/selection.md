@@ -45,7 +45,7 @@ A document declares its presets, as [Sources](sources.md#frontmatter) states, an
 
 ## The substitution mapping
 
-A `subst` pair states that a link names something else, so a bundle can be built against stand-in material without the tree under test being edited. A preset's `subst` is the only channel a substitution has, and a document whose presets in force state none compiles its links as authored.
+A `subst` pair states that a link names something else, so a bundle can be built against stand-in material without the tree under test being edited. A preset's `subst` is the only channel a substitution has, and a document whose presets in force state none compiles its links as authored. The [project-lifecycle example](../example/project-lifecycle/README.md) binds a skill's engineering lifecycle this way: one document's presets each substitute a different lifecycle for the default its links name.
 
 A document's links are written once, so they resolve through the `subst` pairs of every preset in force for it, by whichever reference reached it: a pair one reference selects redirects a link in content another reference bundled. Two of those presets mapping one key to two alternatives fail the run with `E_INVALID_USAGE` and exit status 2. The pairs reach only the links that document writes; a document it links, a substitute and a dispatched target each resolve their links under their own presets, so a substitute's fragment-only link names a section of that substitute.
 
