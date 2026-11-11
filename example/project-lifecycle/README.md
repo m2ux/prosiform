@@ -34,7 +34,7 @@ flowchart TD
 
 ### Configure
 
-The board records the SDLC it follows, asked of the user the first time the skill runs on it. A board recording none follows `ad-hoc`. The rule is [Configure](SKILL.md#configure).
+The board records the SDLC it follows as one `SDLC: <name>` line in its description, asked of the user the first time the skill runs on it. The user picks from `ad-hoc` and the port's presets, so the choices grow with the adapters, and a name outside them is refused rather than built as `ad-hoc`. A board recording none follows `ad-hoc`. The rule is [Configure](SKILL.md#configure).
 
 ### Propose
 

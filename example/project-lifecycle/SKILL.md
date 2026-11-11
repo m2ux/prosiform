@@ -16,11 +16,17 @@ The board's engineering lifecycle (its SDLC) decides how the work inside an issu
 
 ## Configure
 
-Read the SDLC the board's description records. When it records none, ask the user which SDLC the board follows, and record their answer in the board's description. A board recording no SDLC follows `ad-hoc`.
+The board's description records its SDLC as one line, `SDLC: <name>`. A board recording none follows `ad-hoc`.
+
+The SDLCs are `ad-hoc` and each preset the frontmatter of `sdlc/port.md` names other than `default`.
+
+- When the board records no SDLC, list the SDLCs, ask the user which one the board follows, and record their answer.
+- When the user asks to change the board's SDLC, replace its line.
+- Refuse a name that is not an SDLC, listing the SDLCs there are.
 
 ## SDLC Hooks
 
-A link to `sdlc/port.md` names an SDLC hook. Compile it with `pf <the link's path> --presets <the board's SDLC>`, and follow the result in place of the link.
+A link to `sdlc/port.md` names an SDLC hook. Compile it with `pf <the link's path> --presets <the board's SDLC>`, or with no `--presets` for `ad-hoc`, and follow the result in place of the link.
 
 ## Mode Selection
 
