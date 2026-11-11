@@ -4,7 +4,8 @@
 The documents are found rather than listed, so a document added later comes
 into the check by being committed. The fixture corpus is excepted: a fixture's
 source carries references a run is meant to refuse, and its expected bundle is
-output rather than a document a reader follows. Naming documents on the command
+output rather than a document a reader follows, as is any bundle tracked
+outside the corpus. Naming documents on the command
 line checks those instead, which is for reading one document while editing it.
 
 A link form written inside literal content — a code span, a fenced block or

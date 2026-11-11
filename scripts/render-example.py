@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Draw authored sources and the bundles a run of them produces.
 
-Each case in `examples.json` names an entry and the files around it. The
-build runs for real over a copy of that tree, and the drawing shows the
-files it opened beside the bundles it published, so a picture cannot state
-a result the build does not produce.
+Each case in `examples.json` names an entry and the files around it: a
+mapping of each path to its text, or, beside a `root` folder of the
+repository, a list of paths read from that folder. A case's `args` follow
+the entry on the build's command line. The build runs for real over a copy
+of that tree, and the drawing shows the files it opened beside the bundles
+it published, so a picture cannot state a result the build does not produce.
 
 Each drawing sets a dark panel per file and draws links in blue. The README's
 run example traces links between source documents and within the bundle;
@@ -406,12 +408,21 @@ def render(name: str, case: dict, build: list[str], output: Path) -> int:
     """Run one case's build over its tree, and write its drawing."""
     work = Path(tempfile.mkdtemp())
     try:
-        for path, body in case["files"].items():
+        root = HERE.parent / case["root"] if "root" in case else None
+        files = (
+            {path: (root / path).read_text() for path in case["files"]}
+            if root
+            else case["files"]
+        )
+        for path, body in files.items():
             target = work / path
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(body)
         result = subprocess.run(
-            [*build, case["entry"]], cwd=work, capture_output=True, text=True
+            [*build, case["entry"], *case.get("args", [])],
+            cwd=work,
+            capture_output=True,
+            text=True,
         )
         bundles = sorted(
             path.relative_to(work).as_posix() for path in work.rglob("*.bundle.md")
