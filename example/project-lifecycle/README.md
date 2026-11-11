@@ -34,7 +34,7 @@ flowchart TD
 
 ### Configure
 
-The board records the SDLC it follows as one `SDLC: <name>` line in its description, asked of the user the first time the skill runs on it. The user picks from `ad-hoc` and the port's presets, so the choices grow with the adapters, and a name outside them is refused rather than built as `ad-hoc`. A board recording none follows `ad-hoc`. The rule is [Configure](SKILL.md#configure).
+The board records the SDLC it follows as one `SDLC: <name>` line in its description, asked of the user the first time the skill runs on it. The user picks from `ad-hoc` and the port's presets other than `default`, so the choices grow with the adapters, and a name outside them is refused rather than built as `ad-hoc`. A board recording none follows `ad-hoc`. The rule is [Configure](SKILL.md#configure).
 
 ### Propose
 
@@ -93,11 +93,15 @@ From this folder:
 
 A hook built without `--presets waterfall` warns `W_PRESET_UNUSED` for the preset it left unselected, and publishes.
 
-[`expected/`](expected/) holds the folder each build writes, one per command, as `pf -o expected/<case> <arguments>` writes it. [The example's tests](../../src/tests/test_example_project_lifecycle.py) compile every hook with and without `waterfall`, and the skill, and hold each written folder to its committed one. They also hold the claims below: the hook links the skill's bundle publishes compile, an adapter missing a hook section fails, and an adapter binds with no mode changed.
+[`expected/`](expected/) holds the folder each build writes, one per command, as `pf -o expected/<case> <arguments>` writes it. [The example's tests](../../src/tests/test_example_project_lifecycle.py) compile every hook with and without `waterfall`, and the skill, and hold each written folder to its committed one. The SDLCs they compile are read from the port's presets, so an adapter added to the port needs an expected folder for each hook. They also hold the claims below: the hook links the skill's bundle publishes are the port's hooks, an adapter missing a hook section fails, and an adapter binds without changing the skill's bundle.
+
+![The port and both adapters on the left. On the right, the on-deliver bundle with the ad-hoc adapter's Deliver section composed beneath the hook.](../../docs/images/lifecycle-ad-hoc.svg)
+
+*The `on-deliver` hook built with no `--presets`.*
 
 ![The port and both adapters on the left. On the right, the on-deliver bundle with the waterfall adapter's Deliver section composed beneath the hook.](../../docs/images/lifecycle-waterfall.svg)
 
-*The `on-deliver` hook built with `--presets waterfall`.*
+*The same hook built with `--presets waterfall`: one link, the other adapter.*
 
 ## Adding an SDLC
 

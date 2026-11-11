@@ -22,7 +22,7 @@ The SDLCs are `ad-hoc` and each preset the frontmatter of `sdlc/port.md` names o
 
 ## SDLC Hooks
 
-A link to `sdlc/port.md` names an SDLC hook. Compile it with `pf <the link's path> --presets <the board's SDLC>`, or with no `--presets` for `ad-hoc`, and follow the result in place of the link.
+A link to `sdlc/port.md` names an SDLC hook. From the folder holding this skill's sources, compile it with `pf <the link's path> --presets <the board's SDLC>`, or with no `--presets` for `ad-hoc`, and follow the result in place of the link.
 
 ## Mode Selection
 
