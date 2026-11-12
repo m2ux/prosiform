@@ -102,6 +102,14 @@ ran it starts them. A state may defer its transition, so its document writes
 no transition paragraph and the material its deferral compiles states the
 edge taken.
 
+A deferral whose title carries the pick token `?` leaves the pick among its
+target's alternatives to the agent: the run on its line answers with the
+alternatives and their choice lines, and the walk reruns it with `?`
+replaced by the alternative whose choice line an input holds, or by the one
+the target declares last where no input holds one, which stands for any
+other work. The step writing the deferral names, as `inputs/<file>`, the
+input describing the work it picks for.
+
 A document under an `undeclared/` directory declares no `prosiform`, so a
 link to it is left as written rather than followed; a skill's `SKILL.md`,
 which its agent CLI reads rather than `pf`, may declare nothing; every
@@ -122,11 +130,13 @@ from markdown_it import MarkdownIt
 
 from prosiform.closure import matching_presets
 from prosiform.source import declaration
+from prosiform.tags import PICK, picks
 from prosiform.tags import read as read_tags
 
 ROOT = Path(__file__).resolve().parent
 WORKFLOWS = ROOT / "workflows"
 EDGE_WORKFLOWS = (
+    "agent-pick",
     "conditional-composition",
     "deferred-composition",
     "deferred-dispatch",
@@ -345,6 +355,12 @@ FEWER = re.compile(
 )
 DIAGNOSTIC = re.compile(r"^([EW]_[A-Z_]+):", re.MULTILINE)
 """The code opening each diagnostic `pf` writes to its standard error."""
+UNRESOLVED = "E_ALTERNATIVE_UNRESOLVED"
+"""The refusal a run on a `?` line answers with, listing the alternatives."""
+ALTERNATIVE = re.compile(r"^  (\S+) {2,}(\S.*)$", re.MULTILINE)
+"""One alternative of the listing, beside its choice line."""
+NAMED_INPUT = re.compile(r"`inputs/([^`]+)`")
+"""An input file a step names."""
 
 BUNDLE_HEADING = re.compile(r"^(#{1,6}) (.+?)[ \t]*$", re.MULTILINE)
 """A heading of a bundle, at any level, with its text."""
@@ -1460,7 +1476,9 @@ def compiled_walk(
     The walk reads the entry's bundle `pf` compiles from the compiled sources,
     and runs `pf` from them on each `↳` line a state's steps reach, as a
     session does, so the runs are the ones a correct
-    session makes and the path is the one the bundles they write state. Each
+    session makes and the path is the one the bundles they write state. A
+    line leaving the pick to the agent takes two runs: the one its title
+    states, which lists the alternatives, then the one `picked` makes. Each
     run writes under `output`, and one failing is a fault.
     """
     entry = output / "entry"
@@ -1468,14 +1486,24 @@ def compiled_walk(
     if run.returncode != 0:
         return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
     runs: list[Compile] = []
+    root = workflow.form(COMPILED_FORM)
+
+    def compiled(request: Compile) -> subprocess.CompletedProcess[bytes]:
+        runs.append(request)
+        assert request.entry is not None
+        return compile_reference(
+            root, request.entry, output / f"run-{len(runs)}", request.presets
+        )
 
     def activate(request: Compile) -> str:
-        runs.append(request)
+        made = compiled(request)
+        if picks(request.presets):
+            pick = picked(request, made, inputs)
+            request = replace(request, presets=request.presets - {PICK} | {pick})
+            made = compiled(request)
         reference = request.entry
         assert reference is not None
         folder = output / f"run-{len(runs)}"
-        root = workflow.form(COMPILED_FORM)
-        made = compile_reference(root, reference, folder, request.presets)
         if made.returncode != 0:
             raise CorpusError(
                 f"pf {reference} exited {made.returncode}: {made.stderr.decode()}"
@@ -1491,6 +1519,40 @@ def compiled_walk(
     except CorpusError as error:
         return (), tuple(runs), [str(error)]
     return path, tuple(runs), faults
+
+
+def picked(
+    request: Compile, made: subprocess.CompletedProcess[bytes], inputs: dict[str, str]
+) -> str:
+    """The alternative a run on a `?` line leaves to the agent, as its inputs pick.
+
+    The run answers with the target's alternatives and their choice lines, in
+    declaration order. The pick is the alternative whose choice line, less its
+    closing stop, an input holds, letter case aside; where no input holds one,
+    it is the alternative listed last, which stands for any other work. A
+    listing absent, or two choice lines held, is a fault.
+    """
+    stderr = made.stderr.decode()
+    if made.returncode != 2 or UNRESOLVED not in reported(made.stderr):
+        raise CorpusError(
+            f"pf {request.entry} --presets ? lists no alternatives: {stderr}"
+        )
+    listed: list[tuple[str, str]] = ALTERNATIVE.findall(
+        stderr.partition(f"{UNRESOLVED}:")[2]
+    )
+    if not listed:
+        raise CorpusError(f"pf {request.entry} --presets ? lists no alternatives")
+    held = [
+        name
+        for name, choice in listed
+        if any(
+            choice.rstrip(".").casefold() in value.casefold()
+            for value in inputs.values()
+        )
+    ]
+    if len(held) > 1:
+        raise CorpusError(f"the inputs hold the choice lines of {held}, not one")
+    return held[0] if held else listed[-1][0]
 
 
 def section_body(directory: Path, document: str, heading: str) -> str:
@@ -1743,20 +1805,24 @@ def inputs_read(workflow: Workflow, form: str) -> set[str]:
 
 
 def deferral_inputs(workflow: Workflow, form: str) -> set[str]:
-    """The inputs a form's conditional deferrals read, in any document of it.
+    """The inputs a form's conditional deferrals and picks read, in any document.
 
     A deferred directive under a conditional step is reached only where its
     condition holds, and an activated target's own steps decide on inputs
-    too, so each document the form holds is read, not only its states.
+    too, so each document the form holds is read, not only its states. A
+    step deferring a pick names the input describing the work it picks for.
     """
     if form not in workflow.forms:
         return set()
-    return {
-        input_read(step.group(1))
-        for path in sorted(workflow.form(form).rglob("*.md"))
-        for line in authored(path).splitlines()
-        if deferred_links(line) and (step := CONDITIONAL_STEP.match(line))
-    }
+    found: set[str] = set()
+    for path in sorted(workflow.form(form).rglob("*.md")):
+        for line in authored(path).splitlines():
+            links = deferred_links(line)
+            if links and (step := CONDITIONAL_STEP.match(line)):
+                found.add(input_read(step.group(1)))
+            if any(picks(link.tags) for link in links):
+                found |= set(NAMED_INPUT.findall(line))
+    return found
 
 
 def sections_of(workflow: Workflow, form: str) -> dict[str, Section]:

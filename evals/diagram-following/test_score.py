@@ -1226,6 +1226,107 @@ def test_quoted_preset_separators_and_leading_dashes_are_values() -> None:
     ]
 
 
+PICKED = (
+    "pf",
+    "pf reference/work-kind.md#route --presets '?'",
+    "pf reference/work-kind.md#route --presets task",
+)
+"""The runs a session picking `task` for its work makes: the guide, the listing,
+the pick."""
+
+
+def picking(
+    tmp_path: Path,
+    commands: tuple[str, ...] | None,
+    reads: list[str] | None,
+    trace: list[str] | None = None,
+) -> Verdict:
+    """The verdict on an agent-pick session whose work fits one pull request."""
+    workflow = CORPUS["agent-pick"]
+    item = scenario("agent-pick", "task-picked")
+    held = workspace(tmp_path, workflow, list(item.path) if trace is None else trace)
+    (held / SUBAGENTS).write_text(
+        json.dumps(
+            {
+                "commands": None if commands is None else list(commands),
+                "reads": reads,
+                "starts": [],
+            }
+        )
+    )
+    return score(workflow, item, held)
+
+
+@pytest.mark.parametrize(
+    ("commands", "reads", "failure"),
+    [
+        (PICKED, [], None),
+        (
+            PICKED,
+            [
+                "/eval/ws/workflow.bundles/workflow.bundle.md",
+                "/eval/ws/inputs/work.txt",
+                "reference_work-kind__route--p-1.bundles/x.bundle.md",
+            ],
+            None,
+        ),
+        (PICKED, None, None),
+        (PICKED, ["/eval/ws/reference/work-kind.md"], Failure.READ_SOURCE),
+        (PICKED, ["./states/classify.md"], Failure.READ_SOURCE),
+        (PICKED, ["reference/change.md"], Failure.READ_SOURCE),
+        (PICKED[:2], [], Failure.UNCOMPILED),
+        ((PICKED[0], PICKED[2]), [], Failure.UNCOMPILED),
+        (
+            (*PICKED[:2], "pf reference/work-kind.md#route --presets epic", PICKED[2]),
+            [],
+            Failure.OVERCOMPILED,
+        ),
+        ((PICKED[0], PICKED[2], PICKED[1]), [], Failure.MISORDERED_COMPILE),
+        (PICKED[:2], ["/eval/ws/reference/work-kind.md"], Failure.UNCOMPILED),
+    ],
+    ids=[
+        "picked",
+        "bundles-and-inputs-read",
+        "reads-unreported",
+        "router-read",
+        "state-read",
+        "route-read",
+        "pick-unmade",
+        "listing-unmade",
+        "wrong-pick-beside",
+        "pick-before-listing",
+        "source-read-in-place-of-the-pick",
+    ],
+)
+def test_an_agent_pick_session_is_held_to_its_runs_and_its_reads(
+    tmp_path: Path,
+    commands: tuple[str, ...],
+    reads: list[str] | None,
+    failure: Failure | None,
+) -> None:
+    """AC7: a pick passes only after the listing and the rerun, reading no source.
+
+    A read of a bundle `pf` wrote or of an input is no source read, and a
+    record naming no reads holds the session to none. A run check a session
+    fails takes precedence over a source it read.
+    """
+    verdict = picking(tmp_path, commands, reads)
+    assert (verdict.passed, verdict.failure) == (failure is None, failure)
+
+
+def test_an_agent_pick_session_entering_another_kind_fails_its_branch(
+    tmp_path: Path,
+) -> None:
+    """AC7: entering the state of a kind the input does not describe is a branch."""
+    verdict = picking(
+        tmp_path,
+        (*PICKED[:2], "pf reference/work-kind.md#route --presets epic"),
+        [],
+        ["Entry", "Classify", "Breakdown", "Exit"],
+    )
+    assert (verdict.failure, verdict.divergence) == (Failure.WRONG_BRANCH, 2)
+
+
 def test_the_record_holds_the_files_a_shell_session_read(tmp_path: Path) -> None:
     """The record lists each `Read` call's file, and none for a form with no shell."""
     stream = tmp_path / "transcript.jsonl"
