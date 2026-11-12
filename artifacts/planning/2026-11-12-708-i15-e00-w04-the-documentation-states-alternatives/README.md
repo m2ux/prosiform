@@ -1,6 +1,6 @@
 # The Documentation States Alternatives — November 2026
 
-> I15 E00 W04 delivery · Created 2026-11-12
+> I15 E00 W04 delivery · Created 2026-11-12 · Revised 2026-11-12
 
 ## Executive Summary
 
@@ -12,7 +12,9 @@ The task targets `i15/e00/main`. Once it merges, every row of the epic is delive
 
 | Artifact | What it holds |
 | --- | --- |
-| [w04.md](../2026-11-12-preset-alternatives/e00/w04.md) | Component plan, scope and observing checks |
+| [w04.md](w04.md) | Component plan, scope and observing checks |
+| [test-results.md](test-results.md) | The test plan's results, with the revision tested |
+| [changes.md](changes.md) | The plan changes this delivery applied and held |
 
 ## Links
 
@@ -20,3 +22,4 @@ The task targets `i15/e00/main`. Once it merges, every row of the epic is delive
 | --- | --- |
 | Epic | [Declared Alternatives](https://github.com/m2ux/prosiform/issues/708) |
 | Prerequisites | [W02 delivery](https://github.com/m2ux/prosiform/pull/715), [W03 delivery](https://github.com/m2ux/prosiform/pull/714) |
+| Pull request | [The documentation states alternatives](https://github.com/m2ux/prosiform/pull/716) |
