@@ -14,6 +14,7 @@ The task targets `i15/e00/engineering`, since the design lives on the engineerin
 | --- | --- |
 | [w00.md](w00.md) | Component plan, scope and observing checks |
 | [test-results.md](test-results.md) | The test plan's results, with the revision tested |
+| [changes.md](changes.md) | The plan changes the delivery session applied and held |
 
 ## Links
 

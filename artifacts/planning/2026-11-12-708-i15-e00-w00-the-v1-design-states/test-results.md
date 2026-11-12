@@ -1,6 +1,6 @@
 # Test Results
 
-Revision tested: `6cb914b30` on `i15/e00/w00-the-v1-design-states`, the v1 design at `artifacts/planning/2026-10-17-prosiform-v1/design.md`.
+Revision tested: `c04f5d8e6` on `i15/e00/w00-the-v1-design-states`, the v1 design at `artifacts/planning/2026-10-17-prosiform-v1/design.md`.
 
 ## T1 Link Check
 
@@ -36,3 +36,4 @@ Consistency read:
 - **Selection by tags** and **`default` always applies** name the exactly-one rule where an unmatched name or an empty selection meets a document declaring alternatives.
 - A `subst` value is called its *substitute* in Conversion metadata and Presets, so *alternative* names one thing.
 - The refusal code for a misplaced `?` and a deferral's pick checks, which the record leaves open, is `E_UNSUPPORTED_CONSTRUCT` with exit 1, as the operator refusals take; the record's Defaults Taken lists it.
+- One review round found one contradiction: **`default` is implicit** left `default` alone in force for an unmatched tag list without naming the exactly-one rule. `c04f5d8e6` names it there; T1 and T2 were re-run at that revision.
