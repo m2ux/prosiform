@@ -15,6 +15,7 @@ The task targets `i15/e00/main`. Once it merges, every row of the epic is delive
 | [w04.md](w04.md) | Component plan, scope and observing checks |
 | [test-results.md](test-results.md) | The test plan's results, with the revision tested |
 | [changes.md](changes.md) | The plan changes this delivery applied and held |
+| [review-fixes.md](review-fixes.md) | The fixes for review findings #717 and #718, with their test results |
 
 ## Links
 
