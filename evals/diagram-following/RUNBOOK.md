@@ -198,3 +198,42 @@ The edge workflows on every harness carrying a shell, run by [I10:E04](https://g
 ```bash
 make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms compiled,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'
 ```
+
+## Agent-Pick Run
+
+The `agent-pick` [deferral scenarios](README.md#deferral-scenarios) on the baseline's harness and model, run and shaken down by [I15:E01](https://github.com/m2ux/prosiform/issues/709) W06.
+
+| Item | Value |
+| --- | --- |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
+| Workflows | `agent-pick` |
+| Forms | `compiled`, the one form the workflow is written in. |
+| Repetitions | 5 |
+| Sessions | 20: four scenarios, one form, five repetitions. |
+| Session cap | Set by the shakedown below, by the proof's rule. |
+| Token budget | 20 times the session cap. |
+| Cost cap | Set by the shakedown below, by the proof's rule. The run starts only once the user approves it. |
+| Committed | `report.json` as `evals/diagram-following/agent-pick.json`, with its `dispositions.json` read into it, and its `report.md` as `evals/diagram-following/agent-pick.md`; the run's measured cost in the README. `baseline.json`, `report.md` and `mvp-proof.json` are untouched. |
+
+```bash
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 5 --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id agent-pick'
+```
+
+### Shakedown
+
+One repetition of each agent-pick scenario, on the run's harness and model, at the baseline's session cap. Its measured tokens and cost set the run's session cap, token budget and cost cap above.
+
+| Item | Value |
+| --- | --- |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
+| Spending cap | USD 1 for every live run of the shakedown together. |
+| Sessions | 4: four scenarios, one form, one repetition. |
+| Session cap | 2 830 000 tokens: the baseline's session cap. |
+| Token budget | 11 320 000 tokens: 4 times the session cap. |
+| Estimate | USD 0.03: 4 sessions at the baseline shakedown's mean of USD 0.007449 a session. |
+
+```bash
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 1 --session-budget-tokens 2830000 --budget-tokens 11320000 --run-id agent-pick-shakedown'
+```
