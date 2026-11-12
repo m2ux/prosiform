@@ -1,6 +1,6 @@
 # Routing Pairs Route Quietly — November 2026
 
-> I15 E00 W03 delivery · Created 2026-11-12
+> I15 E00 W03 delivery · Created 2026-11-12 · Revised 2026-11-12
 
 ## Executive Summary
 
@@ -14,6 +14,7 @@ The task targets `i15/e00/main`, beside W02, which also extends `cli.py`; whiche
 | --- | --- |
 | [w03.md](w03.md) | Component plan, scope and observing checks |
 | [test-results.md](test-results.md) | The test plan's results, with the revision tested |
+| [changes.md](changes.md) | The plan changes the delivery session applied and held |
 
 ## Links
 
@@ -21,3 +22,5 @@ The task targets `i15/e00/main`, beside W02, which also extends `cli.py`; whiche
 | --- | --- |
 | Epic | [Declared Alternatives](https://github.com/m2ux/prosiform/issues/708) |
 | Prerequisite | [W01 delivery](https://github.com/m2ux/prosiform/pull/712) |
+| Pull request | [Routing pairs route quietly](https://github.com/m2ux/prosiform/pull/714) |
+| Epic review | [Declared Alternatives](https://github.com/m2ux/prosiform/pull/713) |
