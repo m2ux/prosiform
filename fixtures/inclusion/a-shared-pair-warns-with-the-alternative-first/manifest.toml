@@ -1,0 +1,27 @@
+description = "The link title epic, mock picks the one alternative of work-kind.md beside its ordinary mock preset, and both state the pair that stands epic-body.md in for body.md, the alternative declared first. An ordinary preset states the pair, so it stands in for material under test and warns W_SUBST_USED at the link it redirected, as it does with the ordinary preset declared first."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Presets — Selected presets union",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "body.md"
+resolved = "epic-body.md"
+
+[expected.diagnostics.location]
+file = "work-kind.md"
+line = 11
+column = 1

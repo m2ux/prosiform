@@ -3209,6 +3209,38 @@ def test_a_stand_in_beside_a_routing_pair_still_warns(root: Path) -> None:
     ] == [(SUBST_USED, "checklist.md#steps", "stub.md#steps")]
 
 
+@pytest.mark.parametrize("order", [("epic", "mock"), ("mock", "epic")])
+def test_a_pair_an_ordinary_preset_shares_warns_in_either_order(
+    root: Path, order: tuple[str, str]
+) -> None:
+    """An alternative and an ordinary preset stating one pair stand it in."""
+    stated = {
+        "epic": "  epic:\n    choice: Lists its tasks.\n",
+        "mock": "  mock:\n",
+    }
+    written(
+        root,
+        "guide.md",
+        f'{DECLARED}# Guide\n\nSee [kind](work-kind.md "epic, mock").\n',
+    )
+    written(
+        root,
+        "work-kind.md",
+        "---\nprosiform:\n"
+        + "".join(
+            stated[name] + "    subst: [{body.md: epic-body.md}]\n" for name in order
+        )
+        + "---\n# Work Kind\n\nPopulate [the body](body.md).\n",
+    )
+    for name in ("body", "epic-body"):
+        written(root, f"{name}.md", f"{DECLARED}# {name.title()}\n\nText.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [
+        (one["code"], one["source"], one.get("resolved")) for one in run.diagnostics()
+    ] == [(SUBST_USED, "body.md", "epic-body.md")]
+
+
 def test_a_stand_in_no_selected_link_uses_still_warns_unused(root: Path) -> None:
     """A stand-in is weighed against the run's references, not the document's links."""
     routed(root, "{body.md: epic-body.md}", "#populate", "mock")
