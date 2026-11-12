@@ -13,6 +13,13 @@ Settled in the design interview (user, 2026-11-12). Each names the options set a
 7. **Delivery is a new initiative** planned through work-planner. Set aside: one hot-fix pull request; a record with nothing raised.
 8. **work-kind is the motivating case.** work-planner is pre-migration, so a fixture shaped like a kind router proves the pattern.
 9. **The exactly-one failure has its own code**, `E_ALTERNATIVE_UNRESOLVED`, with exit 2, so a harness matches the pick step by code. Set aside: reusing `E_INVALID_USAGE`, as group and `subst` conflicts do.
+10. **A misplaced `?` and a failed deferral pick check refuse with `E_UNSUPPORTED_CONSTRUCT`** and exit 1, as the operator refusals do, since the defect is in the source the run read. Taken as a default in W00 and confirmed in Deliver (user, 2026-11-12). Set aside: a dedicated pick code.
+
+## Delivery
+
+Settled in Deliver mode (user, 2026-11-12).
+
+- **I15 delivers alone.** I12 moves to Backlog with its priority labels removed, so no Advance re-places it. Set aside: I12 alongside I15.
 
 ## Planning
 
