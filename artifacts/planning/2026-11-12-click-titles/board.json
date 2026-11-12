@@ -1,19 +1,123 @@
 {
   "board": "https://github.com/users/m2ux/projects/18",
   "options_added": {
-    "Initiative": [{"id": "7ba18b8d", "name": "I17 Click Titles"}],
+    "Initiative": [
+      {
+        "id": "7ba18b8d",
+        "name": "I17 Click Titles"
+      }
+    ],
     "Epic": [
-      {"id": "3d633441", "name": "I17 Initiative"},
-      {"id": "bc1b1f74", "name": "I17:E00 Click Titles"},
-      {"id": "13850884", "name": "I17:E01 Click Titles Release"}
+      {
+        "id": "3d633441",
+        "name": "I17 Initiative"
+      },
+      {
+        "id": "bc1b1f74",
+        "name": "I17:E00 Click Titles"
+      },
+      {
+        "id": "13850884",
+        "name": "I17:E01 Click Titles Release"
+      }
     ]
   },
   "options_preserved_by_id": true,
   "items_before": 150,
   "items_unchanged_by_option_update": true,
   "placed": [
-    {"issue": 738, "item": "PVTI_lAHOCotKsc4BnhDMzhIMYWk", "Status": "Backlog", "Initiative": "I17 Click Titles", "Epic": "I17 Initiative"},
-    {"issue": 739, "item": "PVTI_lAHOCotKsc4BnhDMzhIMYd4", "Status": "Backlog", "Initiative": "I17 Click Titles", "Epic": "I17:E00 Click Titles"},
-    {"issue": 740, "item": "PVTI_lAHOCotKsc4BnhDMzhIMYj0", "Status": "Backlog", "Initiative": "I17 Click Titles", "Epic": "I17:E01 Click Titles Release"}
-  ]
+    {
+      "issue": 738,
+      "item": "PVTI_lAHOCotKsc4BnhDMzhIMYWk",
+      "Status": "Backlog",
+      "Initiative": "I17 Click Titles",
+      "Epic": "I17 Initiative"
+    },
+    {
+      "issue": 739,
+      "item": "PVTI_lAHOCotKsc4BnhDMzhIMYd4",
+      "Status": "Backlog",
+      "Initiative": "I17 Click Titles",
+      "Epic": "I17:E00 Click Titles"
+    },
+    {
+      "issue": 740,
+      "item": "PVTI_lAHOCotKsc4BnhDMzhIMYj0",
+      "Status": "Backlog",
+      "Initiative": "I17 Click Titles",
+      "Epic": "I17:E01 Click Titles Release"
+    }
+  ],
+  "fields_filled_2026_11_12": {
+    "options_added": {
+      "Initiative": [
+        {
+          "id": "e7f4f7d3",
+          "name": "I16 Real-Use Eval"
+        }
+      ],
+      "Epic": [
+        {
+          "id": "494c0af3",
+          "name": "I15:E02 Agent Pick in Real Use"
+        },
+        {
+          "id": "bb6373cf",
+          "name": "I16 Initiative"
+        },
+        {
+          "id": "7c6d8699",
+          "name": "I16:E00 Skill Entry"
+        },
+        {
+          "id": "5fd259de",
+          "name": "I16:E01 Skill Variants"
+        },
+        {
+          "id": "62f33af4",
+          "name": "I16:E02 Real-Use Baseline"
+        }
+      ]
+    },
+    "options_preserved_by_id": true,
+    "items_before": 153,
+    "items_unchanged_by_option_update": true,
+    "set": [
+      {
+        "issue": 733,
+        "Initiative": "I15 Preset Alternatives",
+        "Epic": "I15:E02 Agent Pick in Real Use"
+      },
+      {
+        "issue": 734,
+        "Initiative": "I16 Real-Use Eval",
+        "Epic": "I16 Initiative"
+      },
+      {
+        "issue": 735,
+        "Initiative": "I16 Real-Use Eval",
+        "Epic": "I16:E00 Skill Entry"
+      },
+      {
+        "issue": 736,
+        "Initiative": "I16 Real-Use Eval",
+        "Epic": "I16:E01 Skill Variants"
+      },
+      {
+        "issue": 737,
+        "Initiative": "I16 Real-Use Eval",
+        "Epic": "I16:E02 Real-Use Baseline"
+      }
+    ],
+    "other_items_unchanged": true
+  },
+  "advance_2026_11_12": {
+    "sync": "no delivery recorded on I01, I12, I15, I16 or I17",
+    "queue": "current: 43, to do: 0",
+    "rank": [
+      "I12 E00",
+      "I15 E02",
+      "I16 E00, E01, E02"
+    ]
+  }
 }

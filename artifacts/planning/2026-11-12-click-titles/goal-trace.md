@@ -16,7 +16,7 @@ The marked sources are the record's [decisions](decisions.md) and [Cutting a rel
 
 Ranked; the flagged ones most threaten the goal.
 
-1. **Flagged: the tooltip carries operator and tags.** The goal reads the tooltip "as a link title", but a Markdown link's operator sits in its text, not its title; Defaults Taken 1 reads both from the tooltip. Put to the user.
+1. **Resolved: the tooltip carries operator and tags.** The goal reads the tooltip "as a link title", but a Markdown link's operator sits in its text, not its title; Defaults Taken 1 reads both from the tooltip, confirmed by the user.
 2. **Flagged: the build alone turns the corpus red.** The retired fixture fails once the build reads tooltips; Defaults Taken 8 joins the build and fixture rows.
 3. **Resolved.** The release cannot sit inside the feature epic, whose merge it waits on; Defaults Taken 7 gives it its own epic.
 4. **Noted: existing descriptive tooltips.** A tooltip of plain words is read as tags; unknown tags are ignored, so the bytes of every existing click fixture stand, except on a document declaring alternatives, which a diagram link alone could not reach before either.
@@ -31,4 +31,4 @@ Ranked; the flagged ones most threaten the goal.
 ## Checks
 
 - Format: the initiative and both epic drafts report nothing to fix, apply or decide.
-- Dependencies: no problems, no open candidate unit, no cross-epic contention; longest chain four steps, E00 W00 through E00 W03 to E01 W01. The check proposes E00 2, E01 1; no priority is applied.
+- Dependencies: no problems, no open candidate unit, no cross-epic contention; longest chain four steps, E00 W00 through E00 W03 to E01 W01. The check proposes E00 2, E01 1, applied as the epics' priority labels.

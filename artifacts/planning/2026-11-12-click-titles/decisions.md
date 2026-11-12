@@ -7,12 +7,12 @@ Approved by the user, 2026-11-12, as a new initiative: a Mermaid `click` line's 
 ## Confirmed
 
 1. **A new initiative.** Feature-scale work, raised straight as an initiative with no proposal. Approved by the user, 2026-11-12.
-2. **Plan only.** No delivery is dispatched; the initiative and its epics are placed at Backlog with no priority label, and the user decides priority and Advance.
+2. **Plan only.** No delivery is dispatched from planning; the user dispatches the rows.
 3. **The release follows the project's procedure.** [Cutting a release](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#cutting-a-release): a release branch, one version commit, the number chosen by the previous contract tag's corpus, the release merged into `main`, and the paired tags on that merge.
 
 ## Defaults Taken
 
-Settled in Plan mode without a question, 2026-11-12; each is put to the user in the planning report and can be reopened.
+Taken in Plan mode, 2026-11-12, and confirmed by the user the same day: 1 and 3 (with 4) as the tooltip design, 7 as the epic shape.
 
 1. **The tooltip carries the operator and the tags.** A Markdown link carries its operator at the start of its text and its preset tags in its title; a click has one quoted string beside its destination, so the tooltip carries both. Marks opening the tooltip, followed by a blank or by the tooltip's end, state the operator under the [Operators](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/references.md#operators) rules, combinations and refusals alike. The rest of the tooltip is read as a Markdown link's title is, `?` included. So `"⇉"` is a dispatch, `"¬ ?"` a deferral leaving the pick to an agent, and `"checks"` an ordinary link selecting `checks`. Set aside: the tooltip as tags alone, which cannot carry `⇉`; the tooltip as the operator alone, which leaves a deferral no way to pick an alternative.
 2. **A mark needs no text after it in a tooltip.** A link's text needs a blank and text after its marks, because the text is what the reader sees; a tooltip `"⇉"` is all mark. A mark followed directly by text, `"⇉Intake"`, opens no operator and is an unknown tag, as `[⇉Sync](sync.md)` is an ordinary link.
@@ -30,7 +30,12 @@ Taken in Plan mode, 2026-11-12; each can be reopened.
 - **The initiative takes I17**, I16 being the highest of any state.
 - **No lanes.** Five rows, landing one unit at a time.
 - **Five rows and twelve criteria.** The initiative three criteria; E00 four rows and six criteria; E01 one row and three criteria.
-- **No priority.** The dependency check proposes E00 2, E01 1; none is applied, by Confirmed 2.
+- **Epic priority.** E00 `priority: 2`, E01 `priority: 1`, the map the dependency check proposes, applied by the user's decision, 2026-11-12. The initiative carries no priority label, so Advance leaves it at Backlog.
+
+## Board
+
+- **I15 E02 and I16 take their board fields.** By the user's decision, 2026-11-12, the Python board's Initiative and Epic fields gained I16's options and `I15:E02 Agent Pick in Real Use`, and #733 to #737 carry them; recorded in [board placement](board.json).
+- **Advance after planning.** Run on the Python board, 2026-11-12: Sync found no delivery to record on I01, I12, I15, I16 or I17, and the queue proposed no move. Its `rank` lines name I12 E00, I15 E02 and I16 E00 to E02 as unranked epics.
 
 ## Joins
 

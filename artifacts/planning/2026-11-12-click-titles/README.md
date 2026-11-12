@@ -22,7 +22,7 @@ This initiative reads a click's tooltip as its link's title: marks opening it st
 | [Fixtures work item](e00/w02.md) | One corpus fixture per rule and the retired fixture removed |
 | [Documentation work item](e00/w03.md) | Diagram links stating the rule and the pages linking it |
 | [Release work item](e01/w01.md) | The release branch, version, pull request and tags |
-| [Board placement](board.json) | The Initiative and Epic options added on the Python board and each item placed at Backlog |
+| [Board placement](board.json) | The Initiative and Epic options added on the Python board, each item placed at Backlog, the I15 E02 and I16 field fill and the Advance result |
 
 ## Links
 
