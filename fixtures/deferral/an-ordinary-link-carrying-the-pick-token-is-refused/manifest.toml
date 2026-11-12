@@ -1,0 +1,21 @@
+description = "An ordinary link to a declaring document carries the pick token ?, but this run compiles its target and no agent is left to pick, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming it, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["pick token '?'", "no agent is left to pick"]
+reference = "Populate the body"
+source = "guide.md:8"
+chain = ["guide.md", "work-kind.md"]
