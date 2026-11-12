@@ -1,0 +1,9 @@
+# § Instructions
+
+Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
+
+# Guide
+
+## Plan
+
+[Populate the body](work-kind.md "task, checks").

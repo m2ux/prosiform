@@ -1,0 +1,23 @@
+description = "A deferred link carries the pick token ? to a document declaring no alternative, so there is nothing to pick, and the run refuses the link with E_UNSUPPORTED_CONSTRUCT and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Link classification and resource handling — A withheld link's target",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["carries the pick token '?'", "declares no alternative to pick"]
+reference = "body.md"
+resolved = "body.md"
+source = "guide.md:8"
+chain = ["guide.md", "body.md"]
