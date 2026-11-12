@@ -20,3 +20,8 @@ The checks the task pull request's Test Plan records, run against task branch `i
 
 - **Procedure.** `grep -rn -i "three symbols\|three marks\|skill's directory\|skill's bootstrap\|absent pick and a name\|title tags as written\|compiled as written" --include=*.md .`, excluding `fixtures/`.
 - **Observation.** No statement the `?` rules contradict. The remaining hits name a skill's directory as a boundary example (`docs/sources.md`) or as an eval's working directory (`evals/diagram-following/README.md`), neither a statement about title tags. The glossary's stale guide row (`<destination>` from the skill's directory) is corrected to the guide's compile step.
+
+## T4 Checks Workflow
+
+- **Procedure.** The repository's Checks workflow, which runs `make check`, on pull request [#724](https://github.com/m2ux/prosiform/pull/724) at head `5a8b6c21b`.
+- **Observation.** The `Checks` run completed with conclusion success: [run 43199498667](https://github.com/m2ux/prosiform/actions/runs/43199498667/job/131118873435).
