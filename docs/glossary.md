@@ -25,6 +25,10 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **preamble** | Content above a source document's first heading. It belongs to no section, so only a whole-document selection carries it. |
 | **frontmatter** | A leading delimited YAML block, validated and retained as source metadata, excluded from Markdown content and dependency discovery. |
 | **preset** | A named mapping of conversion settings a document declares in `prosiform` to govern its own content. `default` always applies; the reaching link's title supplies comma-separated complete names selecting matching presets above it. `--presets` supplies the entry's names through that same grammar. Headings and visible labels select no presets. Distinct from the profile, the grammar a run implements. |
+| **alternative** | A preset holding `choice`: one of a set a document serving several kinds of work declares, one per kind, for the reference reaching it to pick from. It is a preset in every other respect. Exactly one of a document's alternatives is in force for it in each bundle, counted on every reference reaching it there; none or several fail the run with `E_ALTERNATIVE_UNRESOLVED`. |
+| **choice line** | The one-line string an alternative's `choice` holds, stating when to pick it. A run finding none or several alternatives in force lists each beside its choice line. |
+| **pick** | The alternative a reference's title tags, or an entry's `--presets`, name. A diagram link selects no preset, so it picks none. |
+| **routing pair** | A `subst` pair an alternative states. It routes its document's links to the picked kind's material rather than standing in for material under test. |
 
 ## References
 
