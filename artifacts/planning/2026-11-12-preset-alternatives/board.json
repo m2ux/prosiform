@@ -6,20 +6,20 @@
       "fields": {
         "Initiative": "I15 Preset Alternatives",
         "Epic": "I15 Initiative",
-        "Status": "Backlog"
+        "Status": "In Progress"
       },
       "item": 302215812,
-      "assignees": []
+      "assignees": ["m2ux"]
     },
     {
       "issue": 708,
       "fields": {
         "Initiative": "I15 Preset Alternatives",
         "Epic": "I15:E00 Declared Alternatives",
-        "Status": "Backlog"
+        "Status": "Ready"
       },
       "item": 302215824,
-      "assignees": []
+      "assignees": ["m2ux"]
     },
     {
       "issue": 709,

@@ -98,6 +98,10 @@ Every clause has a criterion, every criterion is covered by an epic row, and eve
 - **Joins.** No candidate unit: no two rows of one epic declare one component. E00 W03 and W04 are joined by choice, two components in one pull request, since the documentation index links a page that W03 creates.
 - **Advisory numbering.** None.
 - **Longest chains.** Four steps, each through E00 W05: E00 W01 or W02 → E00 W05 → a family page → that family's index row.
+
+## Board Ranking
+
+I12 takes priority 1 on the Python board, Ready behind I15 at priority 2 (user, Advance 2026-11-12), so the polymorphism family follows the preset alternatives its pages cite.
 - **Contention.** `main:docs/patterns/README.md` is declared by E00 W03 and by each family's index row (E01 W06, E02 W08, E03 W05, E04 W06).
   - E00 W03 never runs beside them: each family's index row depends on it.
   - The four family rows write disjoint sections — each family's own heading and table — and none edits the SOLID map, so they are independent regions of one file and may share a priority set.
