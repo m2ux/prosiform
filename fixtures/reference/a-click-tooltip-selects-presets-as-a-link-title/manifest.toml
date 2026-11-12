@@ -1,0 +1,17 @@
+description = "A Mermaid click's tooltip naming checks and draft selects the checks preset of rules.md as a link title naming them does, so checks places rules.md under its group; draft names no preset and is ignored, and only the click's destination is rewritten."
+
+clauses = [
+  "Presets — Selection belongs to the link",
+  "Presets — Selection by tags",
+  "Link classification and resource handling — Examples",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

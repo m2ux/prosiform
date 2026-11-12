@@ -4,12 +4,10 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 # Guide
 
+## Flow
+
 ```mermaid
 flowchart LR
-    A[checks] --> B[draft]
-    click A "#rules" "checks,draft"
+    Intake[Intake] --> Plan[Plan]
+    click Intake href "intake.bundle.md" "⇉"
 ```
-
-# Rules
-
-Use the default settings.

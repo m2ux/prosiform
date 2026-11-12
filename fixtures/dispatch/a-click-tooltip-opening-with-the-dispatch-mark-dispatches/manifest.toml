@@ -1,0 +1,17 @@
+description = "A Mermaid click whose tooltip is the dispatch mark alone dispatches its destination: the target is compiled to a bundle of its own, the click's destination is rewritten to that bundle's file, and its tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch links",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/intake.bundle.md"]
+diagnostics = []
