@@ -163,13 +163,13 @@ The build names no requirement that a source document be a skill: any Markdown d
     ⇉  names a bundle to hand on: give it to a sub-agent with the inputs of
        the step that led there, and continue with its answer
     ⫽  marks a dispatch set: its section holds one set of bundles, listed as
-       ⇉ items in the sub-section headed ⫽ <that section's title> dispatch
-       set. Give each bundle to its own sub-agent at once, with the inputs of
+       ⇉ lines in the sub-section headed ⫽ Dispatch Set.
+       Give each bundle to its own sub-agent at once, with the inputs of
        the step that led there, one per value where that step applies to
        several. A failure cancels nothing; all failures return together.
-    ?  in a link's title, a preset you pick: pass the title as --presets
-       as usual and pf lists the alternatives and when to pick each;
-       rerun with ? replaced by the one that fits your task
+    ?  among a link's title tags leaves the pick to you: pass the title as
+       --presets as usual, read the alternatives pf lists, and rerun with ?
+       replaced by the one that fits your task
   ```
 
 - **The returned question:** A returned question belongs to the agent conversation and not to the compiled form, so the guide states no marker and no protocol for it. What a run carries is the dispatched target's bundle, and what a sub-agent answers is the dispatching session's to read.

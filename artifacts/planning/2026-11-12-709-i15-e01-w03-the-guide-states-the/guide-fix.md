@@ -36,3 +36,12 @@ Run against `i15/e01/fix-guide-link-resolution` at `f5623b01c`, on `i15/e01/main
 
 - **Procedure.** `make check` with `PROSIFORM_BUILD="uv run --project <unit checkout>/src --frozen pf"`.
 - **Observation.** Exit 0. Lint clean; `make test` 2039 passed; `make harness` 1022 passed, the guide fixture among them; corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence pass.
+
+## Design guide text
+
+The design's Guide clause states that bare `pf` prints exactly the text it reproduces. Outside "Compiling a link", that text differed from the `GUIDE` constant in `src/prosiform/cli.py` at `i15/e01/main` `7a7256a4e`. The design now reproduces the build byte for byte:
+
+- **`⫽` entry.** "⇉ items in the sub-section headed ⫽ <that section's title> dispatch set." reads "⇉ lines in the sub-section headed ⫽ Dispatch Set.", with "Give each bundle …" opening the next line.
+- **`?` entry.** "in a link's title, a preset you pick: pass the title as --presets as usual and pf lists the alternatives and when to pick each; rerun with ? replaced by the one that fits your task" reads "among a link's title tags leaves the pick to you: pass the title as --presets as usual, read the alternatives pf lists, and rerun with ? replaced by the one that fits your task".
+
+Both build texts agree with the design's other rules: **Parallel dispatch sub-sections** heads the sub-section `⫽ Dispatch Set` and lists bare `⇉` lines, and **The agent's pick** places `?` among a link's title tags. No other clause changes. No document on `i15/e01/main` or `main` links the Guide clause by anchor; the whole-document and section pins there stand at `c04f5d8e6`, which predates both this change and `ab6b9833a`.
