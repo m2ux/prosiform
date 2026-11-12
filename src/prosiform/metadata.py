@@ -100,14 +100,14 @@ class Membership:
 
 @dataclass(frozen=True)
 class Subst:
-    """One `subst` entry: an original reference mapped to its alternative.
+    """One `subst` entry: an original reference mapped to its substitute.
 
     Each side is held as written, a reference the reference grammar
     reads. The location is the entry's.
     """
 
     original: str
-    alternative: str
+    substitute: str
     location: Location
 
 
@@ -629,15 +629,15 @@ def _subst(name: str, entry: _Node) -> Subst:
     YAML delivers it.
     """
     shape = (
-        "a mapping holding one original reference and its alternative, "
+        "a mapping holding one original reference and its substitute, "
         "as {rules.md: stub.md}"
     )
-    original, alternative = _pair(name, entry, shape, "original reference")
-    if alternative.kind != "str" or not original.value or not alternative.value:
+    original, substitute = _pair(name, entry, shape, "original reference")
+    if substitute.kind != "str" or not original.value or not substitute.value:
         raise _fail(
             INVALID_CONVERSION_METADATA,
             f"{name} must map a nonempty original reference to a nonempty "
-            "alternative written as a string",
+            "substitute written as a string",
             entry.location,
         )
-    return Subst(original.value, alternative.value, entry.location)
+    return Subst(original.value, substitute.value, entry.location)

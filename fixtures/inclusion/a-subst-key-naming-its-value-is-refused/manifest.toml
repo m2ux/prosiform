@@ -1,4 +1,4 @@
-description = "A subst entry whose key and value normalise to one identity stands the alternative in for itself: rules.md and ./rules.md name one document, so the run fails with E_INVALID_USAGE at the entry and publishes nothing."
+description = "A subst entry whose key and value normalise to one identity stands the substitute in for itself: rules.md and ./rules.md name one document, so the run fails with E_INVALID_USAGE at the entry and publishes nothing."
 
 clauses = [
   "Presets — Selected presets union",

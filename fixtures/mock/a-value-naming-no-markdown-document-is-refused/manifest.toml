@@ -1,4 +1,4 @@
-description = "A subst alternative naming no Markdown document is refused as invalid usage, because the substitute becomes the target outright and every stage of the run would publish the reference it redirects as text."
+description = "A subst substitute naming no Markdown document is refused as invalid usage, because the substitute becomes the target outright and every stage of the run would publish the reference it redirects as text."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",

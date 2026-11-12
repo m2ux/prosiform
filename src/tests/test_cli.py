@@ -1468,7 +1468,7 @@ def test_two_selected_presets_mapping_one_key_two_ways_are_refused(
 
 
 def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
-    """One group pair, and one key to one alternative, state one setting."""
+    """One group pair, and one key to one substitute, state one setting."""
     written(
         root,
         "guide.md",
