@@ -1,6 +1,6 @@
 # A Choice Line Declares an Alternative — November 2026
 
-> I15 E00 W01 delivery · Created 2026-11-12
+> I15 E00 W01 delivery · Created 2026-11-12 · Revised 2026-11-12
 
 ## Executive Summary
 
@@ -14,6 +14,7 @@ The task targets `i15/e00/main`. The rules it implements are stated in the v1 de
 | --- | --- |
 | [w01.md](w01.md) | Component plan, scope and observing checks |
 | [test-results.md](test-results.md) | The test plan's results, with the revision tested |
+| [changes.md](changes.md) | The plan changes the delivery session applied and held |
 
 ## Links
 
@@ -21,3 +22,5 @@ The task targets `i15/e00/main`. The rules it implements are stated in the v1 de
 | --- | --- |
 | Epic | [Declared Alternatives](https://github.com/m2ux/prosiform/issues/708) |
 | Design row | [W00 delivery](https://github.com/m2ux/prosiform/pull/710) |
+| Pull request | [A choice line declares an alternative](https://github.com/m2ux/prosiform/pull/712) |
+| Epic review | [Declared Alternatives](https://github.com/m2ux/prosiform/pull/713) |
