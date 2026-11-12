@@ -1,0 +1,832 @@
+{
+  "run_id": "agent-pick",
+  "date": "2026-11-12T12:43:01+00:00",
+  "state": "completed",
+  "reason": null,
+  "models": [
+    "openrouter/deepseek/deepseek-v4.1-flash-1017"
+  ],
+  "repetitions": 5,
+  "sessions": 20,
+  "started": 20,
+  "harness": "opencode",
+  "managed": {
+    "plugins": 0,
+    "environment": 0,
+    "hooks": 0,
+    "fingerprint": null
+  },
+  "tokens": 5037116,
+  "cost_usd": 0.158708,
+  "not_started": [],
+  "failing": [
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/1",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, states/classify.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/2",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, states/classify.md, reference/kind.md, reference/breakdown.md, states/breakdown.md, reference/charter.md, reference/change.md, reference/hold.md, states/entry.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/3",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, workflow.md, reference/kind.md, reference/breakdown.md, reference/charter.md, reference/change.md, reference/hold.md, states/classify.md, states/entry.md, states/exit.md, states/breakdown.md, states/charter.md, states/change.md, states/hold.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/4",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, reference/charter.md, reference/change.md, reference/breakdown.md, reference/hold.md, workflow.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/epic-picked/compiled/5",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, reference/charter.md, reference/breakdown.md, reference/change.md, reference/hold.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming epic, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/1",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, sources of the compiled form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/2",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, reference/charter.md, reference/breakdown.md, reference/hold.md, reference/change.md, states/classify.md, states/entry.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/3",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, states/classify.md, workflow.md, states/charter.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming initiative, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/4",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's shell calls run pf on workflow.md, reference/work-kind.md without its fragment, states/classify.md and states/classify.md --presets initiative, none of which the bundle states on the path; it also made the listing and the rerun with initiative and traced the scenario's path"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/5",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "after the stated listing the transcript's shell calls run pf reference/kind.md --presets change and reference/work-kind.md#route --presets change, a transition's label rather than an alternative, before the rerun with initiative; the bundle states neither run"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/1",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open workflow.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, reference/work-kind.md, reference/charter.md, reference/change.md, reference/breakdown.md, reference/kind.md, reference/hold.md, sources of the compiled form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/2",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, states/classify.md, states/entry.md, states/exit.md, reference/kind.md, sources of the compiled form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/3",
+      "failure": "uncompiled",
+      "disposition": "miss",
+      "evidence": "the bundle's Classify states a \u21b3 Route line deferring reference/work-kind.md#route with title ? on the path; the transcript's shell calls make only the rerun with task, never the listing with ?, after its read calls opened reference/work-kind.md, the router's source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/4",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's shell calls run pf workflow.bundles/workflow.bundle.md, pf workflow.md, pf . and pf --presets x before the stated listing and rerun with task; the bundle states none of those references"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/5",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/kind.md, sources of the compiled form; its runs pass the run checks, the rerun naming task, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/1",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, reference/charter.md, reference/hold.md, reference/breakdown.md, reference/change.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/2",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "between the stated listing and the rerun with other, the transcript's shell calls run pf states/classify.md, a reference the bundle states on no line of the path"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/3",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, reference/kind.md, workflow.md, states/classify.md, states/hold.md, reference/hold.md, reference/change.md, reference/charter.md, reference/breakdown.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/4",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open workflow.md, reference/work-kind.md, reference/charter.md, reference/change.md, reference/kind.md, reference/breakdown.md, reference/hold.md, states/entry.md, states/classify.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/unknown-kind-held/compiled/5",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open reference/work-kind.md, states/classify.md, states/entry.md, reference/kind.md, states/charter.md, states/breakdown.md, states/change.md, states/hold.md, states/exit.md, sources of the compiled form; its runs pass the run checks, the rerun naming other, and it traced the scenario's path, and the instruction names no source"
+    }
+  ],
+  "baseline": {
+    "run_id": "baseline",
+    "date": "2026-11-05T05:49:46+00:00"
+  },
+  "baseline_only": {
+    "cells": [
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored",
+        "workflow": "dispatch-beside",
+        "scenario": "set-beside-a-dispatch"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored",
+        "workflow": "dispatch-question",
+        "scenario": "returned-question"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored",
+        "workflow": "dispatch-set",
+        "scenario": "parallel-set"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "declared-inclusion",
+        "scenario": "declared-link-followed"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "declared-inclusion",
+        "scenario": "undeclared-link-as-text"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "group-placement",
+        "scenario": "leaf-group"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "group-placement",
+        "scenario": "nested-intermediate"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "group-placement",
+        "scenario": "two-presets-one-document"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "preset-selection",
+        "scenario": "default-alone"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "preset-selection",
+        "scenario": "title-selected"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "preset-selection",
+        "scenario": "two-presets-one-title"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-composition",
+        "scenario": "deferred-occurrence"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-composition",
+        "scenario": "merged-sources"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-composition",
+        "scenario": "nested-composition"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-entry",
+        "scenario": "document-fragment"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "subst-redirect",
+        "scenario": "document-redirect"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "subst-redirect",
+        "scenario": "preset-over-default"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "subst-redirect",
+        "scenario": "section-redirect"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "compiled",
+        "workflow": "dispatch-beside",
+        "scenario": "set-beside-a-dispatch"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "compiled",
+        "workflow": "dispatch-question",
+        "scenario": "returned-question"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "compiled",
+        "workflow": "dispatch-set",
+        "scenario": "parallel-set"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "declared-inclusion",
+        "scenario": "declared-link-followed"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "declared-inclusion",
+        "scenario": "undeclared-link-as-text"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "group-placement",
+        "scenario": "leaf-group"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "group-placement",
+        "scenario": "nested-intermediate"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "group-placement",
+        "scenario": "two-presets-one-document"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "preset-selection",
+        "scenario": "default-alone"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "preset-selection",
+        "scenario": "title-selected"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "preset-selection",
+        "scenario": "two-presets-one-title"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-composition",
+        "scenario": "deferred-occurrence"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-composition",
+        "scenario": "merged-sources"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-composition",
+        "scenario": "nested-composition"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-entry",
+        "scenario": "document-fragment"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "subst-redirect",
+        "scenario": "document-redirect"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "subst-redirect",
+        "scenario": "preset-over-default"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "subst-redirect",
+        "scenario": "section-redirect"
+      }
+    ],
+    "by_form": [
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree"
+      }
+    ],
+    "by_model": []
+  },
+  "cells": [
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "workflow": "agent-pick",
+      "scenario": "epic-picked",
+      "sessions": 5,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "uncompiled": 0,
+        "overcompiled": 0,
+        "misordered_compile": 0,
+        "read_source": 5,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 237362.4,
+      "cost_usd": 0.010276,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "workflow": "agent-pick",
+      "scenario": "initiative-picked",
+      "sessions": 5,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "uncompiled": 0,
+        "overcompiled": 2,
+        "misordered_compile": 0,
+        "read_source": 3,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 278327.4,
+      "cost_usd": 0.007729,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "workflow": "agent-pick",
+      "scenario": "task-picked",
+      "sessions": 5,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "uncompiled": 1,
+        "overcompiled": 1,
+        "misordered_compile": 0,
+        "read_source": 3,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 279647.8,
+      "cost_usd": 0.006756,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "workflow": "agent-pick",
+      "scenario": "unknown-kind-held",
+      "sessions": 5,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "uncompiled": 0,
+        "overcompiled": 1,
+        "misordered_compile": 0,
+        "read_source": 4,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 212085.6,
+      "cost_usd": 0.006981,
+      "in_baseline": false,
+      "difference": null
+    }
+  ],
+  "by_form": [
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "sessions": 20,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "uncompiled": 1,
+        "overcompiled": 4,
+        "misordered_compile": 0,
+        "read_source": 15,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 251855.8,
+      "cost_usd": 0.007935,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": -0.7333,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 0,
+          "unfinished": 0,
+          "undispatched": -4,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "uncompiled": 1,
+          "overcompiled": 4,
+          "misordered_compile": 0,
+          "read_source": 15,
+          "errored": 0
+        }
+      }
+    }
+  ],
+  "by_model": [
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "sessions": 20,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "uncompiled": 1,
+        "overcompiled": 4,
+        "misordered_compile": 0,
+        "read_source": 15,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 251855.8,
+      "cost_usd": 0.007935,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": -0.9472,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 0,
+          "unfinished": 0,
+          "undispatched": -19,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "uncompiled": 1,
+          "overcompiled": 4,
+          "misordered_compile": 0,
+          "read_source": 15,
+          "errored": 0
+        }
+      }
+    }
+  ]
+}
