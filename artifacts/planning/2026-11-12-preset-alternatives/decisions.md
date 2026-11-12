@@ -24,6 +24,7 @@ Settled in Plan mode (user, 2026-11-12).
 - E00:W02 and E00:W03 stay split: each states one rule with its own fixtures, and the second rebases on the first on the epic base.
 - **E01 W01 and W02 are joined** into one pull request for the `?` link grammar, dropping the edge between them.
 - **E00 W00 states the whole design**, the agent's pick included, so each epic's documentation pins one design commit.
+- **Backlog placement only.** I15 and its epics join the Python board as Backlog; a later Advance run syncs the board's initiatives and ranks them. Set aside: a full Advance run now.
 - **No ordering edge with the symbol-grammar hot-fix.** Whichever lands second absorbs the other; E01 W03 is re-planned only if the hot-fix lands first. Set aside: landing the hot-fix first; folding it into E01.
 
 ## Dependency Check

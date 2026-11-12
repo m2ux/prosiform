@@ -15,6 +15,7 @@ This initiative lets a document declare one preset per kind as an alternative, a
 | [Design](design.md) | Alternatives, the `?` tag, the pick, routing pairs, the guide entry and the change surface |
 | [Decisions](decisions.md) | Decisions from the design interview and Plan mode, the dependency check, defaults taken and open questions |
 | [Goal trace](goal-trace.md) | The goal clauses traced to criteria, epics and the design, with the ranked gaps |
+| [Board placement](board.json) | Backlog placement on the Python board and the field options added, existing ones preserved |
 | [Initiative draft](initiative-body.md) | The initiative goal, criteria and epic coverage |
 | [Declared Alternatives epic draft](e00-body.md) | E00's rows and criteria for alternatives, the exactly-one rule and routing pairs |
 | [Agent Pick epic draft](e01-body.md) | E01's rows and criteria for the `?` tag, the guide entry and the router fixture |

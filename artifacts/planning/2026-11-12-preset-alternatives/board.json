@@ -1,0 +1,59 @@
+{
+  "board": 18,
+  "items": [
+    {
+      "issue": 707,
+      "fields": {
+        "Initiative": "I15 Preset Alternatives",
+        "Epic": "I15 Initiative",
+        "Status": "Backlog"
+      },
+      "item": 302215812,
+      "assignees": []
+    },
+    {
+      "issue": 708,
+      "fields": {
+        "Initiative": "I15 Preset Alternatives",
+        "Epic": "I15:E00 Declared Alternatives",
+        "Status": "Backlog"
+      },
+      "item": 302215824,
+      "assignees": []
+    },
+    {
+      "issue": 709,
+      "fields": {
+        "Initiative": "I15 Preset Alternatives",
+        "Epic": "I15:E01 Agent Pick",
+        "Status": "Backlog"
+      },
+      "item": 302215838,
+      "assignees": []
+    }
+  ],
+  "existing_options_and_assignments_preserved": true,
+  "options_added": [
+    {
+      "field": "PVTSSF_lAHOCotKsc4BnhDMzhnYDpQ",
+      "option": "3171616b",
+      "name": "I15 Preset Alternatives"
+    },
+    {
+      "field": "PVTSSF_lAHOCotKsc4BnhDMzhnYDrE",
+      "option": "dac37b6f",
+      "name": "I15 Initiative"
+    },
+    {
+      "field": "PVTSSF_lAHOCotKsc4BnhDMzhnYDrE",
+      "option": "ac6ee0c7",
+      "name": "I15:E00 Declared Alternatives"
+    },
+    {
+      "field": "PVTSSF_lAHOCotKsc4BnhDMzhnYDrE",
+      "option": "78aefa1a",
+      "name": "I15:E01 Agent Pick"
+    }
+  ],
+  "readback_verified": true
+}
