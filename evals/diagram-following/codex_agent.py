@@ -201,6 +201,7 @@ def summarize(events: list[dict[str, Any]], root: str) -> dict[str, Any]:
     usage: dict[str, dict[str, Any]] = {}
     raw_usage: dict[tuple[str, str], int] = {}
     commands = []
+    reads = []
     final = ""
     status = None
     turn_error = None
@@ -218,6 +219,8 @@ def summarize(events: list[dict[str, Any]], root: str) -> dict[str, Any]:
                 turn_done[turn_key] = index
         if event.get("type") == "pf":
             commands.append(event["command"])
+        elif event.get("type") == "read":
+            reads.append(event["path"])
         elif method == "rawResponseItem/completed":
             item = params.get("item", {})
             if item.get("type") in {"function_call", "custom_tool_call"}:
@@ -374,6 +377,7 @@ def summarize(events: list[dict[str, Any]], root: str) -> dict[str, Any]:
         "tokens": tokens,
         "starts": made,
         "commands": commands,
+        "reads": reads,
     }
 
 
@@ -465,6 +469,14 @@ class Bridge:
         try:
             if params["tool"] != "pf":
                 text = file_tool(self.root, params["tool"], arguments)
+                if params["tool"] == "read_file":
+                    self.emit(
+                        {
+                            "type": "read",
+                            "threadId": params.get("threadId"),
+                            "path": arguments["path"],
+                        }
+                    )
                 self.tool_result(event["id"], text, True)
                 return
             if not isinstance(arguments.get("args"), list) or not all(

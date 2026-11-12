@@ -888,6 +888,7 @@ def test_the_record_lists_each_sub_agents_starts_and_commands(tmp_path: Path) ->
     written = json.loads((records / SUBAGENTS).read_text())
     assert written == {
         "commands": [],
+        "reads": [],
         "starts": [
             {
                 "target": "plan#work",
@@ -960,3 +961,64 @@ def test_each_harness_declares_whether_a_sub_agents_calls_reach_its_stream() -> 
     assert Opencode().nested_commands is False
     assert Codex().nested_starts is True
     assert Codex().nested_commands is False
+
+
+def test_each_harness_reads_the_files_its_read_tool_opened(tmp_path: Path) -> None:
+    """Each stream's file-reading call names its file, and no other call is a read."""
+    for name in ("claude", "cursor", "opencode"):
+        (tmp_path / name).mkdir()
+    claude = transcript(
+        tmp_path / "claude",
+        [
+            {
+                "type": "assistant",
+                "message": {
+                    "content": [
+                        {
+                            "type": "tool_use",
+                            "name": "Read",
+                            "input": {"file_path": "a"},
+                        },
+                        {
+                            "type": "tool_use",
+                            "name": "Bash",
+                            "input": {"command": "pf"},
+                        },
+                    ]
+                },
+            }
+        ],
+    )
+    cursor = transcript(
+        tmp_path / "cursor",
+        [
+            {
+                "type": "tool_call",
+                "subtype": subtype,
+                "tool_call": {"readToolCall": {"args": {"path": "/ws/a.md"}}},
+            }
+            for subtype in ("started", "completed")
+        ],
+    )
+    opencode = transcript(
+        tmp_path / "opencode",
+        [
+            {
+                "type": "tool_use",
+                "part": {
+                    "type": "tool",
+                    "tool": "read",
+                    "state": {"input": {"filePath": "/ws/states/a.md"}},
+                },
+            },
+            opencode_part(tool="task", description="a#b"),
+        ],
+    )
+    codex = tmp_path / "codex.jsonl"
+    codex.write_text(
+        json.dumps({"type": "result", "harness": "codex", "reads": ["inputs/a"]}) + "\n"
+    )
+    assert Claude().reads(claude) == ("a",)
+    assert Cursor().reads(cursor) == ("/ws/a.md",)
+    assert Opencode().reads(opencode) == ("/ws/states/a.md",)
+    assert Codex().reads(codex) == ("inputs/a",)

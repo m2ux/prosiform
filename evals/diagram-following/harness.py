@@ -26,6 +26,8 @@ them. Each start names the start whose sub-agent made it and the shell
 commands its own sub-agent ran, wherever the stream attributes a call to a
 sub-agent. `nested_starts` declares child-dispatch observation and
 `nested_commands` declares per-child command attribution, as each CLI reports.
+`reads()` returns the paths a stream records its file-reading tool opening,
+as the call named them, every agent's that the stream carries.
 """
 
 from __future__ import annotations
@@ -69,6 +71,8 @@ PARENT = "parent_tool_use_id"
 """The `Agent` call a Claude message runs under, null for the session's own."""
 SHELL_TOOL = "Bash"
 """The Claude Code tool that runs a command line."""
+READ_TOOL = "Read"
+"""The Claude Code tool that reads a file, naming it as `file_path`."""
 RESULT = "result"
 IS_ERROR = "is_error"
 USAGE = "usage"
@@ -79,6 +83,8 @@ STARTED = "started"
 COMPLETED = "completed"
 TASK_CALL = "taskToolCall"
 SHELL_CALL = "shellToolCall"
+READ_CALL = "readToolCall"
+"""The Cursor call that reads a file, naming it as its args' `path`."""
 COMMAND = "command"
 OPENCODE_PART = "part"
 OPENCODE_TOOL = "tool"
@@ -101,6 +107,8 @@ CACHE_KINDS = ("write", "read")
 OPENCODE_CALL_ID = "callID"
 OPENCODE_MESSAGE_ID = "messageID"
 BASH = "bash"
+OPENCODE_READ = "read"
+"""The opencode tool that reads a file, naming it as its input's `filePath`."""
 TASK_TOOL = "task"
 """The opencode tool whose call hands a section to a sub-agent."""
 MODEL_CALL = "model_call_id"
@@ -577,6 +585,27 @@ class Claude:
             command for owner, command in _shell_calls(transcript) if owner is None
         )
 
+    def reads(self, transcript: Path) -> tuple[str, ...]:
+        """The files a `Read` call opened, the session's and each sub-agent's."""
+        found: list[str] = []
+        for held in messages(transcript):
+            if held.get("type") != ASSISTANT:
+                continue
+            carried = held.get(MESSAGE)
+            content = carried.get("content") if isinstance(carried, dict) else None
+            for block in content if isinstance(content, list) else []:
+                if not isinstance(block, dict) or block.get("type") != TOOL_USE:
+                    continue
+                carried_input = block.get("input")
+                path = (
+                    carried_input.get("file_path")
+                    if isinstance(carried_input, dict)
+                    else None
+                )
+                if block.get("name") == READ_TOOL and isinstance(path, str):
+                    found.append(path)
+        return tuple(found)
+
     def tokens(self, result: dict[str, object] | None) -> int | None:
         """The tokens one session processed, its sub-agents' among them.
 
@@ -800,6 +829,20 @@ class Cursor:
             command = args.get(COMMAND) if isinstance(args, dict) else None
             if held.get("subtype") == STARTED and isinstance(command, str):
                 found.append(command)
+        return tuple(found)
+
+    def reads(self, transcript: Path) -> tuple[str, ...]:
+        """The files the session's started `readToolCall`s opened, in order."""
+        found: list[str] = []
+        for held in messages(transcript):
+            if held.get("type") != TOOL_CALL or held.get("subtype") != STARTED:
+                continue
+            held_call = held.get(TOOL_CALL)
+            tool = held_call.get(READ_CALL) if isinstance(held_call, dict) else None
+            args = tool.get(ARGS) if isinstance(tool, dict) else None
+            path = args.get("path") if isinstance(args, dict) else None
+            if isinstance(path, str):
+                found.append(path)
         return tuple(found)
 
     def tokens(self, result: dict[str, object] | None) -> int | None:
@@ -1152,6 +1195,26 @@ class Opencode:
                 found.append(command)
         return tuple(found)
 
+    def reads(self, transcript: Path) -> tuple[str, ...]:
+        """The files the session's `read` tool parts opened, in order."""
+        found: list[str] = []
+        for held in messages(transcript):
+            part = held.get(OPENCODE_PART)
+            if not isinstance(part, dict) or part.get("type") != OPENCODE_TOOL:
+                continue
+            if part.get("tool") != OPENCODE_READ:
+                continue
+            state = part.get(STATE)
+            carried_input = state.get(INPUT) if isinstance(state, dict) else None
+            path = (
+                carried_input.get("filePath")
+                if isinstance(carried_input, dict)
+                else None
+            )
+            if isinstance(path, str):
+                found.append(path)
+        return tuple(found)
+
     def tokens(self, result: dict[str, object] | None) -> int | None:
         """The tokens one session processed, every kind of its summed steps."""
         if result is None:
@@ -1331,6 +1394,16 @@ class Codex:
         held = result.get("commands") if result else None
         return (
             tuple(command for command in held if isinstance(command, str))
+            if isinstance(held, list)
+            else ()
+        )
+
+    def reads(self, transcript: Path) -> tuple[str, ...]:
+        """The workspace files the bridge's `read_file` tool opened, every thread's."""
+        result = self.result(transcript)
+        held = result.get("reads") if result else None
+        return (
+            tuple(path for path in held if isinstance(path, str))
             if isinstance(held, list)
             else ()
         )

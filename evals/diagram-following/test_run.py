@@ -2016,3 +2016,50 @@ def test_a_run_naming_the_staged_form_is_refused_as_an_unknown_form(
     with pytest.raises(CorpusError, match="unknown form staged"):
         eval_run(tmp_path, "--forms", "staged", "--budget-tokens", "4000")
     assert not list(log.iterdir())
+
+
+AGENT_PICK_DEPARTURES: dict[str, tuple[str | None, str | None, Failure | None]] = {
+    "picked": (None, None, None),
+    "wrong-pick": ("STUB_AGENT_SCENARIO", "unknown-kind-held", Failure.WRONG_BRANCH),
+    "source-read": ("STUB_AGENT_READ", "reference/work-kind.md", Failure.READ_SOURCE),
+    "pick-unmade": ("STUB_AGENT_RUNS", "1", Failure.UNCOMPILED),
+}
+"""Each agent-pick departure the stub states: its script, its value, its class.
+
+`unknown-kind-held` is the one scenario whose input names no choice line, so
+taking its path and runs is a pick the others' inputs do not call for; the
+departure is not run on it.
+"""
+
+
+@pytest.mark.parametrize("departure", list(AGENT_PICK_DEPARTURES))
+def test_a_stub_run_of_each_agent_pick_scenario_passes_only_its_own_pick(
+    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, departure: str
+) -> None:
+    """AC7: a compiled session passes on its kind's state, its pick and no source.
+
+    The stub walks each scenario's path and makes its stated runs: the guide,
+    the listing `?` draws and the rerun naming the pick. A session taking
+    another kind's path and runs fails its branch, one reading the router's
+    source fails `read_source`, and one never rerunning the listing leaves
+    its pick uncompiled.
+    """
+    script, value, failure = AGENT_PICK_DEPARTURES[departure]
+    if script is not None and value is not None:
+        monkeypatch.setenv(script, value)
+    eval_run(
+        tmp_path,
+        *("--workflows", "agent-pick", "--forms", COMPILED_SET),
+        *("--repetitions", "1", "--budget-tokens", "4000"),
+    )
+    cells = {record["scenario"]: record["verdict"] for record in records(tmp_path)}
+    assert set(cells) == {scenario.name for scenario in CORPUS["agent-pick"].scenarios}
+    for name, verdict in cells.items():
+        due = None if name == value else failure
+        assert (verdict["passed"], verdict["failure"]) == (
+            due is None,
+            None if due is None else str(due),
+        ), name
+    for entry in seen(log):
+        argv = entry["argv"]
+        assert argv[argv.index("--tools") + 1].endswith(",Bash")

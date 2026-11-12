@@ -90,6 +90,8 @@ from workflow import (
     workflows,
 )
 
+from prosiform.source import declaration
+
 BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 RUN_PF = "Run `pf`, then follow the guidance it prints."
 """The instruction `pf` writes under every bundle's `§ Instructions` heading."""
@@ -704,6 +706,7 @@ def broken(
 
 def test_the_corpus_holds_the_graded_workflows() -> None:
     assert [workflow.name for workflow in CORPUS] == [
+        "agent-pick",
         "bootstrap-audit",
         "branching",
         "conditional-composition",
@@ -892,6 +895,7 @@ def test_no_edge_workflow_source_writes_a_retired_mark() -> None:
         )
     }
     assert composing == {
+        "agent-pick",
         "conditional-composition",
         "deferred-composition",
         "deferred-dispatch",
@@ -1136,6 +1140,107 @@ def test_equivalent_scenario_preset_requests_name_the_same_compiled_run(
         'presets = " UNKNOWN, MIRROR,mirror,default "',
     )
     assert compiled_faults(workflow, workflow.scenarios[0], tmp_path / "out") == []
+
+
+AGENT_PICK = next(item for item in CORPUS if item.name == "agent-pick")
+ROUTER = "reference/work-kind.md"
+"""The kind router the agent-pick workflow's `Classify` defers with `?`."""
+
+
+def router_choices(workflow: Workflow) -> dict[str, str]:
+    """Each alternative the kind router declares, by name, beside its choice line."""
+    path = workflow.form(COMPILED_FORM) / ROUTER
+    return {
+        preset.name: preset.choice
+        for preset in declaration(path.read_text(), file=str(path)).presets
+        if preset.choice is not None
+    }
+
+
+def held_choices(workflow: Workflow, scenario: Scenario) -> list[str]:
+    """The alternatives whose choice line, less its stop, a scenario's input holds."""
+    return [
+        name
+        for name, choice in router_choices(workflow).items()
+        if any(
+            choice.rstrip(".").casefold() in value.casefold()
+            for value in scenario.inputs.values()
+        )
+    ]
+
+
+def test_each_agent_pick_scenario_lists_then_reruns_with_its_pick() -> None:
+    """AC7: the run on `?` lists the router, and the rerun names the input's pick.
+
+    Work no choice line describes takes the alternative declared last, which
+    stands for any other work.
+    """
+    last = list(router_choices(AGENT_PICK))[-1]
+    for scenario in AGENT_PICK.scenarios:
+        held = held_choices(AGENT_PICK, scenario)
+        pick = held[0] if held else last
+        assert scenario.compile == (
+            Compile(None, f"{ROUTER}#route", frozenset({"?"})),
+            Compile(None, f"{ROUTER}#route", frozenset({pick})),
+        ), scenario.name
+    assert inputs_read(AGENT_PICK, COMPILED_FORM) == {"work.txt"}
+    assert AGENT_PICK.sections[COMPILED_FORM]["Classify"].deferred
+
+
+def test_each_choice_line_is_held_by_one_input_naming_no_alternative() -> None:
+    """AC7: each input describes one kind in its choice line's words alone.
+
+    Every choice line but the one for any other work is held by exactly one
+    scenario's input, one input holds none, and no input names an
+    alternative, so only the listing `pf` prints turns an input into a pick.
+    """
+    choices = router_choices(AGENT_PICK)
+    last = list(choices)[-1]
+    held = [held_choices(AGENT_PICK, scenario) for scenario in AGENT_PICK.scenarios]
+    assert sorted(name for names in held for name in names) == sorted(
+        name for name in choices if name != last
+    )
+    assert [len(names) for names in held].count(0) == 1
+    assert all(len(names) <= 1 for names in held)
+    for scenario in AGENT_PICK.scenarios:
+        words = set(re.findall(r"[a-z]+", " ".join(scenario.inputs.values()).lower()))
+        assert words.isdisjoint(choices), scenario.name
+
+
+def test_an_agent_pick_scenario_stating_another_pick_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    """AC7: the rerun a scenario states is the one its input's choice line picks."""
+    workflow = broken(
+        tmp_path, "agent-pick", "scenarios.toml", 'presets = "task"', 'presets = "epic"'
+    )
+    [scenario] = [item for item in workflow.scenarios if item.name == "task-picked"]
+    faults = compiled_faults(workflow, scenario, tmp_path / "out")
+    assert faults == [
+        "task-picked: the walk runs pf on "
+        "[('reference/work-kind.md#route', '--presets=?'), "
+        "('reference/work-kind.md#route', '--presets=task')]"
+    ]
+
+
+def test_an_agent_pick_input_holding_two_choice_lines_is_a_fault(
+    tmp_path: Path,
+) -> None:
+    """AC7: an input describing two kinds leaves the pick undecided."""
+    workflow = broken(
+        tmp_path,
+        "agent-pick",
+        "scenarios.toml",
+        "Fits in one pull request: ",
+        "Fits in one pull request and delivers one feature in several pull requests: ",
+    )
+    [scenario] = [item for item in workflow.scenarios if item.name == "task-picked"]
+    faults = compiled_faults(workflow, scenario, tmp_path / "out")
+    assert faults == [
+        "task-picked: the inputs hold the choice lines of ['epic', 'task'], not one",
+        "task-picked: the walk runs pf on "
+        "[('reference/work-kind.md#route', '--presets=?')]",
+    ]
 
 
 def test_compile_reference_selects_declared_presets_and_reads_qualified_output(
@@ -2348,13 +2453,15 @@ def scored(
     undone: str = "",
     commands: tuple[str, ...] | None = None,
     withholds: str = "",
+    reads: tuple[str, ...] | None = None,
 ) -> Failure | None:
     """The class a workspace holding one trace and its actions is scored.
 
     `commands` is what the workspace's record says the session ran, and a
     record naming none says the harness reports no command, as a form given
-    no shell does. `withholds` names an action file the workspace leaves
-    unwritten, whichever agent would have written it.
+    no shell does; `reads` is likewise the files it says were read.
+    `withholds` names an action file the workspace leaves unwritten,
+    whichever agent would have written it.
     """
     workspace.mkdir(parents=True)
     (workspace / TRACE).write_text("".join(f"{state}\n" for state in trace))
@@ -2369,6 +2476,8 @@ def scored(
     held: dict[str, object] = {"starts": [start.record() for start in starts]}
     if commands is not None:
         held["commands"] = list(commands)
+    if reads is not None:
+        held["reads"] = list(reads)
     (workspace / SUBAGENTS).write_text(json.dumps(held))
     for due in scenario.trace:
         if due.action is not None and due.action[0] != withholds:
@@ -2388,9 +2497,10 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     A session is given the scenario's path with one departure each: an action
     left undone, the last state left out, a state the diagram does not hold,
     any diagram state entered at any index of the path or after its end, the
-    sources followed without compiling them in a form that must, and a
-    dispatch record missing, split or answered in a sub-agent's place. A
-    session whose agent reported an error is `errored` on any scenario.
+    sources followed without compiling them in a form that must, or read
+    beside the runs that compile them, and a dispatch record missing, split
+    or answered in a sub-agent's place. A session whose agent reported an
+    error is `errored` on any scenario.
     """
     path = scenario.path
     correct = tuple(Start(due.section, "done", due.together) for due in scenario.trace)
@@ -2402,6 +2512,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
         undone: str = "",
         commands: tuple[str, ...] | None = None,
         withholds: str = "",
+        reads: tuple[str, ...] | None = None,
     ) -> Failure | None:
         return scored(
             workflow,
@@ -2412,6 +2523,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
             undone,
             commands,
             withholds,
+            reads,
         )
 
     found = {
@@ -2433,6 +2545,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
         found.add(departing(path, commands=("pf absent.md#none", *stated)))
         if len(stated) > 1:
             found.add(departing(path, commands=tuple(reversed(stated))))
+        found.add(departing(path, commands=tuple(stated), reads=(ENTRY,)))
     for dispatch in scenario.trace:
         if dispatch.action is not None:
             found.add(departing(path, withholds=dispatch.action[0]))
@@ -2478,6 +2591,7 @@ def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
             Failure.UNCOMPILED,
             Failure.OVERCOMPILED,
             Failure.MISORDERED_COMPILE,
+            Failure.READ_SOURCE,
         )
     ]
 
