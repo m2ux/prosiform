@@ -75,8 +75,9 @@ Each form is read in the diagram that writes it, the diagram's type
 read as Mermaid detects it, and each is read where Mermaid's lexer
 ends it, so a line holding several `;`-ended statements names the
 destination of each. Each destination is a use, on the line it is
-written, and opens with nothing, because a diagram gives a link no
-text to carry a mark. A
+written. A `click` line or a class diagram's `link` line may carry a
+quoted tooltip, which states the use's operator and title as the marks
+module reads it; a destination carrying none opens with nothing. A
 click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
 is a use.
@@ -116,6 +117,7 @@ from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
 from prosiform.limits import FILE_BYTES, NESTING
+from prosiform.marks import tooltip
 from prosiform.metadata import (
     INVALID_CONVERSION_METADATA,
     INVALID_FRONTMATTER,
@@ -157,11 +159,13 @@ INLINE = "inline"
 FENCE = "fence"
 DIAGRAM = "mermaid"
 QUOTED = (
-    r'"(?P<destination>[^"]*)"(?:\s+"[^"]*")?(?:\s+(?:_self|_blank|_parent|_top))?'
-    r"\s*;?\s*"
+    r'"(?P<destination>[^"]*)"(?:\s+"(?P<tooltip>[^"]*)")?'
+    r"(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*"
 )
-CLICK_LINE = re.compile(rf'\s*click\s+[^\s"]+\s+(?:href\s+)?{QUOTED}', re.IGNORECASE)
-CLASS_LINK = re.compile(rf'\s*link\s+[^\s"]+\s+{QUOTED}', re.IGNORECASE)
+CLICK_LINE = re.compile(
+    rf'\s*click\s+(?P<node>[^\s"]+)\s+(?:href\s+)?{QUOTED}', re.IGNORECASE
+)
+CLASS_LINK = re.compile(rf'\s*link\s+(?P<node>[^\s"]+)\s+{QUOTED}', re.IGNORECASE)
 CLICK_STATEMENT = re.compile(r"\s*click\s", re.IGNORECASE)
 CLASS_STATEMENT = re.compile(r"\s*(?:link|callback)\s", re.IGNORECASE)
 QUOTE = '"'
@@ -635,8 +639,9 @@ class Use:
     for a use in the preamble, which lies in no section.
 
     The tags are the complete preset names in a local link's parsed
-    title attribute. Each occurrence carries its own immutable selection;
-    an image, an external link and a diagram destination carry none.
+    title attribute, or in the title a diagram link's tooltip states.
+    Each occurrence carries its own immutable selection; an image and an
+    external link carry none.
 
     The label is a link's whole text where that text is plain: text
     events alone, entities and escapes already decoded. It is absent
@@ -741,6 +746,14 @@ class Click:
     opens with. A quoted destination writes `#`. A sequence diagram's
     menu entry writes `#35;`, because its lexer reads a bare `#` on that
     line as opening a comment, which takes the destination with it.
+
+    The node is the diagram element a `click` or class diagram `link`
+    line is drawn on, which names the link to its reader. The opening
+    and the title are what that line's quoted tooltip states, as the
+    marks module reads a tooltip: the opening holds its operator marks,
+    and the title its preset tags. A sequence diagram's `link` and
+    `links` carry no tooltip, so they open with nothing and carry no
+    title.
     """
 
     destination: str
@@ -748,6 +761,9 @@ class Click:
     offset: int
     anchor: str
     written: str
+    node: str = ""
+    opening: str = ""
+    title: str | None = None
 
 
 @dataclass(frozen=True)
@@ -868,9 +884,10 @@ def read_diagram(fence: Token) -> Diagram:
       the JSON object being one destination.
 
     A quoted destination may be followed by a quoted tooltip and a link
-    target. A line may hold several statements, each ended by a `;`
-    outside a quoted string, and each `click` or class `link` statement
-    among them names its own destination. A click naming a callback, or
+    target; the tooltip states the link's operator and title. A line may
+    hold several statements, each ended by a `;` outside a quoted string,
+    and each `click` or class `link` statement among them names its own
+    destination. A click naming a callback, or
     a `call` form, runs script and names no destination, so it yields
     nothing, and neither does any line of a fence holding no diagram.
 
@@ -899,13 +916,25 @@ def read_diagram(fence: Token) -> Diagram:
         except ListedMenu:
             listed.append(first + at)
             continue
-        for written, offset, anchor in named:
+        for written, offset, anchor, node, tip in named:
             destination = (
                 written.replace(ENTITY_ANCHOR, ANCHOR)
                 if anchor == ENTITY_ANCHOR
                 else written
             )
-            found.append(Click(destination, first + at, offset, anchor, written))
+            stated = tooltip(tip)
+            found.append(
+                Click(
+                    destination,
+                    first + at,
+                    offset,
+                    anchor,
+                    written,
+                    node,
+                    stated.opening,
+                    stated.title,
+                )
+            )
     return Diagram(tuple(found), tuple(broken), tuple(listed), tuple(unfollowed))
 
 
@@ -1013,12 +1042,14 @@ def external(path: str) -> bool:
     return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
 
 
-def linked(line: str, form: str) -> list[tuple[str, int, str]]:
+def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None]]:
     """Each destination one line of a diagram of one type names, in written order.
 
-    Each comes as written, with its offset and the anchor spelling its
-    form writes. A quoted destination is read from each statement the
-    line holds.
+    Each comes as written, with its offset, the anchor spelling its form
+    writes, the node its line is drawn on and the tooltip it carries. A
+    quoted destination is read from each statement the line holds, with
+    its node and its tooltip where it writes one; a sequence diagram's
+    entry names no node and carries no tooltip.
     """
     found = []
     for statement, start in statements(line):
@@ -1027,7 +1058,15 @@ def linked(line: str, form: str) -> list[tuple[str, int, str]]:
             quoted = CLASS_LINK.fullmatch(statement)
         if quoted is not None:
             offset = start + quoted.start("destination")
-            found.append((quoted.group("destination"), offset, ANCHOR))
+            found.append(
+                (
+                    quoted.group("destination"),
+                    offset,
+                    ANCHOR,
+                    quoted.group("node"),
+                    quoted.group("tooltip"),
+                )
+            )
     if found or form != SEQUENCE_DIAGRAM:
         return found
     entry = MENU_ENTRY.match(line)
@@ -1037,13 +1076,16 @@ def linked(line: str, form: str) -> list[tuple[str, int, str]]:
         if at < 0:
             return []
         start, stop = trimmed(line, at + 1, end)
-        return [] if start == stop else [(line[start:stop], start, ENTITY_ANCHOR)]
+        if start == stop:
+            return []
+        return [(line[start:stop], start, ENTITY_ANCHOR, "", None)]
     menu = MENU.match(line)
     if menu is None:
         return []
     start, stop = trimmed(line, menu.end(), statement_end(line, menu.end()))
     return [
-        (value, offset, ENTITY_ANCHOR) for value, offset in entries(line, start, stop)
+        (value, offset, ENTITY_ANCHOR, "", None)
+        for value, offset in entries(line, start, stop)
     ]
 
 
@@ -1187,12 +1229,13 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     position.
 
     A diagram's link destination is written on its own line of the
-    fence, so it is located at that line and opens with nothing.
+    fence, so it is located at that line, and opens with the marks its
+    tooltip opens with.
 
     A local link's title attribute supplies its tags through the shared
-    list reader. Images, external links and diagram destinations supply
-    no tags; neither the visible label nor a surrounding heading supplies
-    them.
+    list reader, and so does the title a diagram link's tooltip states.
+    Images and external links supply no tags; neither the visible label
+    nor a surrounding heading supplies them.
 
     Each use carries the title of the section holding it, read against
     the whole document, since the heading rooting a selected region's
@@ -1210,7 +1253,15 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
             for click in clicks(token):
                 heading, title = holding(click.line)
                 yield Use(
-                    click.destination, "", click.line, False, title, heading=heading
+                    click.destination,
+                    click.opening,
+                    click.line,
+                    False,
+                    title,
+                    heading=heading,
+                    tags=frozenset()
+                    if external(click.destination)
+                    else read_tags(click.title),
                 )
             continue
         if token.type != INLINE:

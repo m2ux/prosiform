@@ -65,11 +65,7 @@ from prosiform.candidate import (
 )
 from prosiform.closure import (
     DECLARING,
-    DEFERRAL_MARK,
-    DISPATCH_MARK,
     DRIVE,
-    INLINE_MARK,
-    PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
     BundleSelection,
@@ -154,6 +150,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
+from prosiform.marks import DEFERRAL_MARK, DISPATCH_MARK, INLINE_MARK, PARALLEL_MARK
 from prosiform.metadata import (
     DEFAULT,
     GROUP,
@@ -807,7 +804,7 @@ def picked(
 
     They are the union every reference reaching the document selects: the
     set its `subst` pairs resolve through. A name the document does not
-    declare, `?` and a diagram link's empty selection pick none.
+    declare, `?` and a diagram link carrying no tooltip pick none.
     """
     names = {
         preset.name

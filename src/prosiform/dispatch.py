@@ -67,7 +67,6 @@ from prosiform.bundle import (
 )
 from prosiform.closure import (
     DECLARING,
-    DISPATCH_MARK,
     UNSUBSTITUTED,
     BundleSelection,
     Declarations,
@@ -86,6 +85,7 @@ from prosiform.diagnostics import (
     Location,
     RelatedLocation,
 )
+from prosiform.marks import DISPATCH_MARK
 from prosiform.provenance import (
     COMPOSED_HEADINGS,
     FILENAME_WRAPPER,
@@ -104,13 +104,16 @@ from prosiform.provenance import (
 )
 from prosiform.source import (
     ANCHOR,
+    FENCE,
+    INLINE,
     LINK_OPEN,
     Source,
+    clicks,
     events,
-    inlines,
     opening_text,
     regions,
     shown,
+    within,
 )
 from prosiform.tags import read as read_tags
 
@@ -417,39 +420,86 @@ def written_in(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Link]:
-    """Every dispatched link one region writes, in written order."""
+    """Every dispatched link one region writes, diagram links among them, in order.
+
+    A link's text is what its reader reads in it, its marks taken off. A
+    diagram link's text is the node it is drawn on, which is what names
+    it to its reader, however few characters its tooltip holds.
+    """
     found: list[Link] = []
-    for inline in inlines(tokens, [region]):
-        line = source.line(None if inline.map is None else inline.map[0] + 1)
-        for children, at, child in events(inline.children or []):
+    for block in within(tokens, [region]):
+        if block.type == FENCE:
+            found.extend(
+                link
+                for click in clicks(block)
+                if (
+                    link := dispatched_link(
+                        path,
+                        click.destination,
+                        click.opening,
+                        click.title,
+                        click.node,
+                        source.line(click.line),
+                        declarations,
+                        substitution,
+                    )
+                )
+                is not None
+            )
+            continue
+        if block.type != INLINE:
+            continue
+        line = source.line(None if block.map is None else block.map[0] + 1)
+        for children, at, child in events(block.children or []):
             if child.type != LINK_OPEN:
                 continue
-            opening = opening_text(children, at)
-            if not dispatched(opening):
-                continue
-            destination = str(child.attrGet("href") or "")
             title = child.attrGet("title")
-            target = withheld(
+            link = dispatched_link(
                 path,
-                destination,
-                opening,
+                str(child.attrGet("href") or ""),
+                opening_text(children, at),
+                None if title is None else str(title),
+                " ".join(unmarked(link_text(children, at)).split()),
+                line,
                 declarations,
                 substitution,
-                tags=read_tags(None if title is None else str(title)),
             )
-            if target is None:
-                continue
-            found.append(
-                Link(
-                    target,
-                    " ".join(unmarked(link_text(children, at)).split()),
-                    destination,
-                    Location(path, 1 if line is None else line, 1),
-                    parallel(opening),
-                    opening,
-                )
-            )
+            if link is not None:
+                found.append(link)
     return found
+
+
+def dispatched_link(
+    path: str,
+    destination: str,
+    opening: str,
+    title: str | None,
+    text: str,
+    line: int | None,
+    declarations: Declarations,
+    substitution: Substitution,
+) -> Link | None:
+    """The dispatched link one use states, where its operator dispatches a target."""
+    if not dispatched(opening):
+        return None
+    target = withheld(
+        path,
+        destination,
+        opening,
+        declarations,
+        substitution,
+        tags=read_tags(title),
+    )
+    if target is None:
+        return None
+    return Link(
+        target,
+        text,
+        destination,
+        Location(path, 1 if line is None else line, 1),
+        parallel(opening),
+        opening,
+    )
 
 
 def file_destination(bundle_file: str) -> str:

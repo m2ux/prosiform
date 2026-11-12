@@ -59,6 +59,7 @@ from dataclasses import dataclass, field
 from markdown_it.token import Token
 
 from prosiform.profile import COLUMN
+from prosiform.source import Click
 
 FILENAME_WRAPPER = "filename wrapper"
 GROUP_HEADING = "group heading"
@@ -86,13 +87,20 @@ block writes.
 
 Every cell of a table row opens on the row's line, so the column is what
 tells two cells' links apart; inline content outside a table stands in
-column 0.
+column 0. A diagram link is located by the line of content it is written
+on, which no inline block opens on, column 0, and the offset of its
+destination in that line, which tells apart two links one line writes.
 """
 
 
 def link_at(path: str, inline: Token, start: int, position: int) -> Located:
     """One link's identity, from the inline block it is written in."""
     return (path, start, inline.meta.get(COLUMN, 0), position)
+
+
+def click_at(path: str, click: Click) -> Located:
+    """One diagram link's identity, from the line of its fence it is written on."""
+    return (path, click.line - 1, 0, click.offset)
 
 
 Placing = tuple[Located, ...]

@@ -109,7 +109,6 @@ from prosiform.bundle import (
 )
 from prosiform.closure import (
     DECLARING,
-    INLINE_MARK,
     UNSUBSTITUTED,
     Declarations,
     Reference,
@@ -121,6 +120,7 @@ from prosiform.closure import (
 )
 from prosiform.dispatch import region_of
 from prosiform.limits import OUTPUT_BYTES, Limits
+from prosiform.marks import INLINE_MARK
 from prosiform.provenance import (
     CONTRIBUTION_HEADING,
     DESTINATION_SECTION,
@@ -137,20 +137,24 @@ from prosiform.provenance import (
     Preamble,
     Range,
     Served,
+    click_at,
     link_at,
 )
 from prosiform.rewrite import Definition
 from prosiform.source import (
     ENCODING,
+    FENCE,
     HREF,
+    INLINE,
     LINK_OPEN,
     Source,
+    clicks,
     events,
-    inlines,
     level,
     lines,
     opening_text,
     section,
+    within,
 )
 from prosiform.tags import read as read_tags
 
@@ -294,52 +298,82 @@ class Composing:
         self.level: int | None = None
 
     def directives(self, path: str, token: Token) -> Iterator[Directive]:
-        """Every composing link one region writes, in written order."""
+        """Every composing link one region writes, diagram links included, in order."""
         tokens = self.parsed[path]
-        for inline in inlines(tokens, [token]):
-            if inline.map is None:
+        for block in within(tokens, [token]):
+            if block.type == FENCE:
+                for click in clicks(block):
+                    if directive(click.opening):
+                        yield from self.directive(
+                            path,
+                            click.destination,
+                            self.read[path].line(click.line),
+                            click_at(path, click),
+                            click.opening,
+                            click.title,
+                        )
                 continue
-            line = self.read[path].line(inline.map[0] + 1)
+            if block.type != INLINE or block.map is None:
+                continue
+            line = self.read[path].line(block.map[0] + 1)
             position = 0
-            for children, at, child in events(inline.children or []):
+            for children, at, child in events(block.children or []):
                 if child.type != LINK_OPEN:
                     continue
                 here = position
                 position += 1
-                if not directive(opening_text(children, at)):
+                opening = opening_text(children, at)
+                if not directive(opening):
                     continue
-                written = str(child.attrGet(HREF) or "")
                 raw_title = child.attrGet("title")
-                link_title = None if raw_title is None else str(raw_title)
-                found = resolvable(
+                yield from self.directive(
                     path,
-                    written,
-                    self.declarations,
-                    self.substitution,
-                    tags=read_tags(link_title),
-                )
-                if found is None or found.fragment is None:
-                    continue
-                named = self.parsed[found.path]
-                chosen = section(named, found.fragment)
-                if not chosen:
-                    continue
-                shows = shown_text(
-                    found.path,
-                    named,
-                    self.declarations,
-                    self.substitution,
-                    conversions=self.conversions,
-                )
-                yield Directive(
-                    found,
-                    written,
+                    str(child.attrGet(HREF) or ""),
                     line,
-                    link_at(path, inline, inline.map[0], here),
-                    single_line(shows[id(chosen[0])]),
-                    deferred(opening_text(children, at)),
-                    link_title,
+                    link_at(path, block, block.map[0], here),
+                    opening,
+                    None if raw_title is None else str(raw_title),
                 )
+
+    def directive(
+        self,
+        path: str,
+        written: str,
+        line: int | None,
+        at: Located,
+        opening: str,
+        link_title: str | None,
+    ) -> Iterator[Directive]:
+        """The directive one composing link states, where it names a section."""
+        found = resolvable(
+            path,
+            written,
+            self.declarations,
+            self.substitution,
+            tags=read_tags(link_title),
+        )
+        if found is None or found.fragment is None:
+            return
+        named = self.parsed[found.path]
+        chosen = section(named, found.fragment)
+        if not chosen:
+            return
+        shows = shown_text(
+            found.path,
+            named,
+            self.declarations,
+            self.substitution,
+            conversions=self.conversions,
+        )
+        yield Directive(
+            found,
+            written,
+            line,
+            at,
+            single_line(shows[id(chosen[0])]),
+            deferred(opening),
+            link_title,
+        )
 
     def emit(self, text: str, generated: bool = False) -> None:
         """Emit one part's text, holding the output budget against it.

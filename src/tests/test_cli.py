@@ -84,6 +84,7 @@ from prosiform.cli import (
     Bundle,
     Failure,
     budgets,
+    bundle_file,
     entry,
     main,
     names,
@@ -94,7 +95,7 @@ from prosiform.cli import (
     read_document,
     recheck,
 )
-from prosiform.closure import Probed, resolve
+from prosiform.closure import BundleSelection, Probed, resolve
 from prosiform.diagnostics import WARNING, Diagnostic, Location, Reporter
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
@@ -4736,6 +4737,157 @@ def test_every_click_on_one_line_is_followed(root: Path) -> None:
     assert '    click A "#one"; click B href "#two" "Two"\n' in run.bundle
     assert "\n# One\n" in run.bundle
     assert "\n# Two\n" in run.bundle
+
+
+def flow(root: Path, *clicks: str, name: str = "guide.md") -> None:
+    """One declaring guide whose Flow section holds a flowchart of these clicks."""
+    lines = "".join(f"    {one}\n" for one in clicks)
+    written(
+        root,
+        name,
+        DECLARED + f"# Guide\n\n## Flow\n\n```mermaid\nflowchart LR\n{lines}```\n",
+    )
+
+
+@pytest.mark.parametrize("form", ["click Intake href", "click Intake"])
+def test_a_dispatching_click_points_at_its_target_s_bundle_file(
+    root: Path, form: str
+) -> None:
+    written(root, "intake.md", DECLARED + "# Intake\n\n1. Take it in.\n")
+    flow(root, f'{form} "intake.md" "⇉"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert f'    {form} "intake.bundle.md" "⇉"\n' in run.bundle
+    assert "# Intake" not in run.bundle
+    assert run.bundles["intake.bundle.md"] == (
+        f"{opening('Intake')}# Intake\n\n1. Take it in.\n"
+    )
+
+
+def test_a_dispatching_click_s_tooltip_tags_select_its_bundle_s_presets(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "intake.md",
+        "---\nprosiform:\n  checks:\n    subst: [{form.md: stub.md}]\n---\n"
+        "# Intake\n\nFill [the form](form.md).\n",
+    )
+    written(root, "form.md", DECLARED + "# Form\n\nThe full form.\n")
+    written(root, "stub.md", DECLARED + "# Stub\n\nThe short form.\n")
+    flow(root, 'click Intake "intake.md" "⇉ checks"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    file = bundle_file(BundleSelection("intake.md", presets=frozenset({"checks"})))
+    assert f'    click Intake "{file}" "⇉ checks"\n' in run.bundle
+    assert "The short form." in run.bundles[file]
+
+
+def test_a_deferring_click_points_at_its_target_s_path(root: Path) -> None:
+    written(root, "topic/review.md", DECLARED + "# Review\n\nReview it.\n")
+    flow(root, 'click Review "review.md" "¬"', name="topic/guide.md")
+    run = invoke("topic/guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click Review "topic/review.md" "¬"\n' in run.bundle
+    assert "# Review" not in run.bundle
+
+
+def test_a_deferring_click_carries_the_pick_token(root: Path) -> None:
+    written(
+        root,
+        "kinds.md",
+        "---\nprosiform:\n  epic:\n    choice: An epic.\n"
+        "  task:\n    choice: A task.\n---\n# Kinds\n\nKinds.\n",
+    )
+    flow(root, 'click Kind "kinds.md" "¬ ?"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click Kind "kinds.md" "¬ ?"\n' in run.bundle
+
+
+def test_a_dispatching_click_carrying_the_pick_token_is_refused(root: Path) -> None:
+    written(
+        root,
+        "kinds.md",
+        "---\nprosiform:\n  epic:\n    choice: An epic.\n"
+        "  task:\n    choice: A task.\n---\n# Kinds\n\nKinds.\n",
+    )
+    flow(root, 'click Kind "kinds.md" "⇉ ?"')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert "pick token" in reported["message"]
+
+
+def test_parallel_clicks_join_their_section_s_set(root: Path) -> None:
+    written(root, "intake.md", DECLARED + "# Intake\n\nTake it in.\n")
+    written(root, "review.md", DECLARED + "# Review\n\nReview it.\n")
+    flow(
+        root,
+        'click Intake href "intake.md" "⫽"',
+        'click Review "review.md" "⫽"',
+    )
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click Intake href "#⫽-dispatch-set" "⫽"\n' in run.bundle
+    assert '    click Review "#⫽-dispatch-set" "⫽"\n' in run.bundle
+    assert run.bundle.endswith(
+        "### ⫽ Dispatch Set\n\n"
+        "[⇉ Intake](intake.bundle.md)\n[⇉ Review](review.bundle.md)\n"
+    )
+
+
+def test_a_composing_click_points_at_its_contribution(root: Path) -> None:
+    written(root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nStep one.\n")
+    flow(root, 'click Plan "plan.md#steps" "↳"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click Plan "#plan" "↳"\n' in run.bundle
+    assert run.bundle.endswith("```\n\n### Steps\n\n#### Plan\n\nStep one.\n")
+
+
+def test_a_click_tooltip_selects_presets_as_a_link_title(root: Path) -> None:
+    written(
+        root,
+        "rules.md",
+        "---\nprosiform:\n  checks:\n    subst: [{form.md: stub.md}]\n---\n"
+        "# Rules\n\nFill [the form](form.md).\n",
+    )
+    written(root, "form.md", DECLARED + "# Form\n\nThe full form.\n")
+    written(root, "stub.md", DECLARED + "# Stub\n\nThe short form.\n")
+    flow(root, 'click Rules "rules.md" "checks, draft"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click Rules "#rules" "checks, draft"\n' in run.bundle
+    assert "The short form." in run.bundle
+    assert "The full form." not in run.bundle
+
+
+def test_a_tooltip_mark_followed_by_text_opens_an_ordinary_click(root: Path) -> None:
+    written(root, "intake.md", DECLARED + "# Intake\n\nTake it in.\n")
+    flow(root, 'click Intake "intake.md" "⇉Intake"')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '    click Intake "#intake" "⇉Intake"\n' in run.bundle
+    assert "# Intake\n\nTake it in.\n" in run.bundle
+    assert run.diagnostics() == []
+
+
+@pytest.mark.parametrize("marks", ["¬ ⇉", "¬⇉", "⇉⫽", "⇉↳", "⫽↳"])
+def test_a_click_tooltip_stating_a_refused_combination_is_refused(
+    root: Path, marks: str
+) -> None:
+    written(root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nStep one.\n")
+    flow(root, f'click Plan "plan.md#steps" "{marks}"')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["source"] == "guide.md:10"
+    assert reported["chain"] == ["guide.md", "plan.md#steps"]
 
 
 def test_a_cycle_of_directives_names_each_earlier_directive_as_related(

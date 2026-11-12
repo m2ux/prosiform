@@ -96,7 +96,8 @@ from markdown_it.common.utils import (
 from markdown_it.rules_block.table import escapedSplit
 from markdown_it.token import Token
 
-from prosiform.closure import filed, opened, published_text
+from prosiform.closure import filed, published_text
+from prosiform.marks import opened
 from prosiform.profile import (
     COLUMN,
     COMMAND_CLOSE,
