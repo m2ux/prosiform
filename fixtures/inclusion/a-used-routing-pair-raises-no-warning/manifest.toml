@@ -1,0 +1,16 @@
+description = "The link title epic picks the one alternative of work-kind.md, whose subst pair routes the document's link to body.md to epic-body.md. The pair is the route its author declared, so the run raises no W_SUBST_USED and no W_SUBST_UNUSED."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
