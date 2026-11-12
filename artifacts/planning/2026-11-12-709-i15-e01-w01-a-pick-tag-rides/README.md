@@ -14,6 +14,7 @@ The task targets `i15/e01/main`, cut from `main` once Declared Alternatives merg
 | --- | --- |
 | [w01.md](w01.md) | W01 component plan, scope and observing checks |
 | [w02.md](w02.md) | W02 component plan, scope and observing checks |
+| [validation.md](validation.md) | Each Test Plan check's procedure, tested revision and observation |
 
 ## Links
 
