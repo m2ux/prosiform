@@ -1,0 +1,18 @@
+description = "The agent reruns the published command with ? replaced by initiative, one alternative the listing names. The kind router compiles with initiative in force, its routing pair stands initiative-body.md in for body.md with no warning, and the bundle carries the pick's preset qualifier. The last step of a pick, for the initiative alternative."
+
+clauses = [
+  "Presets — The agent's pick",
+  "Presets — Alternatives",
+  "Link classification and resource handling — The substitution mapping",
+  "Automatic output names, a selection is named by its path",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["work-kind.md#populate-body", "--presets", "initiative"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/work-kind__populate-body--p-cd0a2b9352272cfa9c842b7f502d8fd05370c2f6b404fc3e9e3f5a7e5ab5dd7b.bundle.md"]
+diagnostics = []
