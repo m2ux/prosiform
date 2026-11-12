@@ -1,0 +1,16 @@
+description = "The link title epic picks the one alternative of work-kind.md and selects its section work-kind.md#populate-body. The epic alternative routes body.md and checklist.md; only the section work-kind.md#review, which the run does not compile, links checklist.md. A link of the document names that key, so the unused route raises no W_SUBST_UNUSED, and the used route raises no W_SUBST_USED."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
