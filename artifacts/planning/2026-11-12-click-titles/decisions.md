@@ -37,6 +37,14 @@ Taken in Plan mode, 2026-11-12; each can be reopened.
 - **I15 E02 and I16 take their board fields.** By the user's decision, 2026-11-12, the Python board's Initiative and Epic fields gained I16's options and `I15:E02 Agent Pick in Real Use`, and #733 to #737 carry them; recorded in [board placement](board.json).
 - **Advance after planning.** Run on the Python board, 2026-11-12: Sync found no delivery to record on I01, I12, I15, I16 or I17, and the queue proposed no move. Its `rank` lines name I12 E00, I15 E02 and I16 E00 to E02 as unranked epics.
 
+- **I17 ranked and started.** The user labelled I17 `priority: 2`, beside I15, 2026-11-12. Advance then moved I17 to In Progress and E00 to Ready, each assigned to the user.
+
+## Delivery Branches
+
+- **E00's bases.** `i17/e00/engineering` and `i17/e00/main`, cut 2026-11-12 from `engineering` at `f90d0cf` and `main` at `4cb6b5c`. `config/branches` is absent at both; the names come from `workspace`, which states `engineering`, `main` and `workspace`.
+- **E00's review pull requests open with the first task merge.** GitHub refuses a pull request between a base and the branch it was cut from, since there are no commits between them.
+- **E01 releases from `release/vX.Y.Z`.** By the user's decision, 2026-11-12, the release row follows [Cutting a release](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#cutting-a-release): a `release/vX.Y.Z` branch from `main`, pull-requested into `main`, with no `i17/e01/main` base. Set aside: an epic base for the release.
+
 ## Joins
 
 - E00:W01 and E00:W02 join: the build change fails the retired fixture until the fixtures change with it.
