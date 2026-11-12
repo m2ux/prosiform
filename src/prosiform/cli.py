@@ -767,7 +767,7 @@ class Governed:
 
     `preset` names the preset stating it, `pair` the entry as written and
     `substitute` the reference the entry's substitute resolves to from the
-    declaring document. A pair is `routing` where an alternative states
+    declaring document. A pair is `routing` where only alternatives state
     it: it routes the document's links to the picked kind's material,
     and a pair of `default` or of an ordinary preset stands in for
     material under test.
@@ -872,6 +872,11 @@ def governing(
     across the traversal's rounds, so several in force in any round are
     several at its fixed point.
 
+    A pair an alternative and an ordinary preset both state, agreeing,
+    stands in for material under test whichever the document declares
+    first: it is a routing pair only where every preset stating it is an
+    alternative.
+
     A key is the identity its original names from the declaring document,
     and only documents stating a pair in force appear.
     """
@@ -897,9 +902,12 @@ def governing(
                         subst_reference(pair.substitute, path),
                         preset.choice is not None,
                     )
-                    first = above.setdefault(subst_identity(pair.original, path), one)
+                    key = subst_identity(pair.original, path)
+                    first = above.setdefault(key, one)
                     if identity(first.substitute) != identity(one.substitute):
                         raise disagreeing(first, one, path, reference)
+                    if first.routing and not one.routing:
+                        above[key] = one
         in_force.update(above)
         if in_force:
             table[path] = in_force
