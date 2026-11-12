@@ -1,0 +1,14 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/742",
+    "head": "9209d6ba9a1c8d6c5a4528d429919938252d436c",
+    "base": "93e33924ac92ced57aab708d04137327c961edf5",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-742-click-titles/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-12T16:00:00Z",
+    "scope": "Diff: git diff 93e33924ac92ced57aab708d04137327c961edf5...9209d6ba9a1c8d6c5a4528d429919938252d436c: one file, artifacts/planning/2026-10-17-prosiform-v1/design.md, 9 insertions and 9 deletions at L451, L459, L520, L779-L783 and L811-L812 (Presets, Link classification Examples, fixture families). The file at head is identical to 9f1a8e2b5, the W00 head its validation covers. Callers: The design carries no code. gitnexus (index built at head) reports 6 touched Section symbols, 0 affected processes and no relationships. Its dependents were read instead: the build on i17/e00/main 722e849a99b81f0c69e9f24521d3f63b2f37b85f (src/prosiform/marks.py tooltip, src/prosiform/source.py QUOTED and uses, docs/references.md Diagram links) against each changed clause, and the corpus fixtures W02 added cite these clauses. Consistency: the tooltip rule has one home, Link classification Examples; Presets and the fixture families point at it. No statement that a Mermaid tooltip selects no preset or that a diagram link carries no operator survives, beyond the qualified no-tooltip and sequence-diagram cases.",
+    "criteria": "AC1 met: read at head: Selection belongs to the link (L451), Exactly one alternative (L459), Examples (L520), Deferral, Dispatch, Parallel dispatch, Composition fixture families (L779-L783), Presets and Alternatives rows (L811-L812). W00 Validation (e00/w00.md) section read and review search at 9f1a8e2b5.",
+    "validation": "make conformance and make vocabulary against the design at 9f1a8e2b5: pass (e00/w03.md Make check at 47a1efe3: 373 clauses, 68 covered by no fixture, 0 declarations naming no clause; 51 contract terms). make check at 47a1efe3: pass. gitnexus change surface: 1 file, 6 Section symbols, 0 processes, risk low (detect-changes compare against 93e33924a in the review worktree at head).",
+    "findings": []
+  }
+]
