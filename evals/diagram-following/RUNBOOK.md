@@ -213,7 +213,7 @@ The `agent-pick` [deferral scenarios](README.md#deferral-scenarios) on the basel
 | Sessions | 20: four scenarios, one form, five repetitions. |
 | Session cap | 820 000 tokens: the fourth shakedown run's largest session, 408 196 tokens, doubled and rounded up to the next 10 000. |
 | Token budget | 16 400 000 tokens: 20 times the session cap. |
-| Cost cap | USD 1: 20 times the fourth shakedown run's mean session cost of USD 0.007211, doubled and rounded up to the next dollar. The run starts only once the user approves it. |
+| Cost cap | USD 1: 20 times the fourth shakedown run's mean session cost of USD 0.007211, doubled and rounded up to the next dollar. Approved by the user on 2026-11-12. |
 | Committed | `report.json` as `evals/diagram-following/agent-pick.json`, with its `dispositions.json` read into it, and its `report.md` as `evals/diagram-following/agent-pick.md`; the run's measured cost in the README. `baseline.json`, `report.md` and `mvp-proof.json` are untouched. |
 
 ```bash
