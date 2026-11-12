@@ -12,8 +12,8 @@ The task targets `i15/e01/main`, cut from `main` once Declared Alternatives merg
 
 | Artifact | What it holds |
 | --- | --- |
-| [w01.md](../2026-11-12-preset-alternatives/e01/w01.md) | W01 component plan, scope and observing checks |
-| [w02.md](../2026-11-12-preset-alternatives/e01/w02.md) | W02 component plan, scope and observing checks |
+| [w01.md](w01.md) | W01 component plan, scope and observing checks |
+| [w02.md](w02.md) | W02 component plan, scope and observing checks |
 
 ## Links
 
