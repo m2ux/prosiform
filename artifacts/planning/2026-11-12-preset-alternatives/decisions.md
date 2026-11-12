@@ -48,6 +48,7 @@ Details settled without a question; each can be reopened.
 - `?` selects no preset, in a title or in `--presets`; the listing is the exactly-one failure.
 - The run publishing a deferral refuses a link to alternatives that names none, names two, or names one beside `?`, since the later run would fail.
 - A diagram link selects no preset, so a document with alternatives reached through diagram links alone fails the exactly-one rule.
+- A misplaced `?` and a failed deferral pick check refuse with `E_UNSUPPORTED_CONSTRUCT` and exit 1, as the operator refusals do, since the defect is in the source the run read.
 
 ## Open Questions
 
