@@ -35,7 +35,7 @@ The task graph and the row numbers it permits, checked and renumbered across the
 - Search prose for references the script cannot see.
 - After each edge or numbering change, Run [Check Dependencies](#check-dependencies "ƒ") with the refreshed initiative and epic bodies and every supplied work-item and split-unit record file. Repeat that operation until it reports no problem.
 - Record the printed longest chains and each printed contending pair in the planning record.
-- Provide [Graph Result](#graph-result) with the checked bodies, proposed [Epic Priority](#epic-priority) map and unresolved findings; do not publish a failed renumbering.
+- Provide [Graph Result](#graph-result) with the checked bodies, proposed [Epic Priority](work-priority.md#epic-priority) map and unresolved findings; do not publish a failed renumbering.
 
 ## Commands
 
@@ -55,16 +55,17 @@ cd "[**&lt;workspace&gt;**](#workspace "○")" && &#92;
 - Initiative edges must follow the [whole-epic prerequisite rule](initiative-issue-body.md#work-breakdown); narrower dependencies stay in the task graph.
 - It also reports dependencies listed twice or already implied, Joins pairs that do not name each other or that a dependency links, and a joined unit covering more than six criteria.
 - It refuses a joined unit that fails the [lane condition](#joins), naming each row and its lane, and exits nonzero.
-- It prints each candidate unit its rows do not join and no `R=` record line names exactly, with both resolutions and each direct edge a join drops, and each candidate split by rule with its reason, as [Joins](#joins) states. An `R=` file it cannot read is a problem.
-- An entry it cannot resolve is a problem naming the entry as written, as [Edges](#edges) states. Its second clause says what this run could not find, which is the epics it was given.
-- It prints each pair of rows in different epics whose work items declare one component, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
+- It prints each open [candidate unit](#joins), one its rows do not join and no `R=` record line names exactly, with both resolutions, so neither is the cheaper answer, and each direct edge a join drops. An `R=` file it cannot read is a problem.
+- It prints each candidate split by rule with its reason, and asks no record line for it.
+- An entry that [cannot resolve](#edges) is a problem naming the entry as written, and the run exits nonzero. Its second clause says what this run could not find, which is the epics it was given.
+- It prints each pair of rows in different epics whose work items share a declared file, with the files they share, meeting [Component Contention](#component-contention), and names the rows it was given no work item for, so a partial report says what it passed over.
 - A task row naming an epic rather than the rows it consumes is a problem, as [Edges](#edges) states. That row still reaches the epic's rows, so a body carrying the retired form is reported once rather than taking its initiative's gates down with it.
-- It reads a declared component without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
-- It reports a work item declaring a directory: a path ending in `/`, carrying a glob, or naming a directory under `<workspace>`.
-- It prints the proposed [Epic Priority](#epic-priority) of each epic, largest first.
+- It reads each declared file without its link, a wrapping code span, a trailing full stop or a leading `./`, and reports a work item it cannot read.
+- It reports a work item declaring a directory among its files: a path ending in `/`, carrying a glob, or naming a directory under `<workspace>`.
+- It prints the proposed [Epic Priority](work-priority.md#epic-priority) of each epic, largest first.
 - Its supplied inputs are published body text or local drafts.
 
-- The map proposes one positive integer for each epic supplied, derived from the whole-epic edges and the components its rows declare. Epics sharing a number start together, so the number asserts they can run in parallel, and it holds a set only where both of these do.
+- The map proposes one positive integer for each epic supplied, derived from the whole-epic edges and the files its rows declare. Epics sharing a number form one of the [Priority Sets](work-priority.md#priority-sets), so the number asserts they can run in parallel, and it holds a set only where both of these do.
 
 - **Prerequisite depth establishes when an epic may start.**
   An epic with no prerequisite epic, one whose tasks are not yet written among them, carries the largest number, and each other epic takes one less than the smallest its prerequisites carry.
@@ -127,39 +128,35 @@ The collection of producer-to-consumer task-row references. A task edge names th
 - **An edge to another epic's row waits for that row's outputs.**
   The dependent row starts once the producing row is delivered and its outputs are available at the dependent epic's base, as [Producer Outputs](delivery-branches.md#producer-outputs) states; the producing epic's other rows and its closure gate nothing.
 - **An entry that cannot resolve is a permanent condition, not a prerequisite to come.**
-  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. Every tool reading the cell names the entry as written, leaves the row where it stands rather than placing it as work still to come, and exits nonzero.
+  An entry naming no row and linking no issue, naming an issue the run was not given, or naming a row the epic it points to does not carry, cannot resolve. No delivery makes it resolvable. [Unresolvable Entries](#unresolvable-entries) states what each reader of the cell does with it.
 
 ### Whole-Epic Edges
 
 The collection of initiative-table epic dependency references. An initiative Depends on cell takes the epics it derives, as [Work Breakdown](initiative-issue-body.md#work-breakdown) states. It derives one only where every row of the dependent epic requires every row of the prerequisite, through the task edges alone: a task row names rows, so no cell can assert a whole epic that the rows do not already establish.
 
 - **The edge is the coarsest gate the plan has.**
-  It holds the dependent epic until the prerequisite closes, not until the row it consumes merges, and it drops the dependent a [priority](#epic-priority) number, so the board keeps it out of Ready while the prerequisite runs.
+  It holds the dependent epic until the prerequisite closes, not until the row it consumes merges, and it drops the dependent a [priority](work-priority.md#epic-priority) number, so the board keeps it out of Ready while the prerequisite runs.
 - **Its cost is why it is derived and never written.**
   A narrower dependency stays in the task graph, where it gates the row that consumes the output rather than the epic around it.
 
-### Epic Priority
-
-A map from each supplied epic id to one positive integer priority, ordered largest first in the report. Equal priorities identify epics that may run in parallel under the derived dependency and component constraints.
-
 ### Joins
 
-The candidate joined units, each a set of task ids in one epic. The undelivered rows of one epic whose work items declare one [component](work-item.md#component) are a candidate unit: one pull request writes that file once, where separate ones each rebase on the last. Rows declaring different components need no accounting.
+The candidate joined units, each a set of task ids in one epic. The undelivered rows of one epic whose work items declare one [file](work-item.md#component) are a candidate unit, named once with every file its rows all declare: one pull request writes that file once, where separate ones each rebase on the last. Rows sharing no declared file need no accounting.
 
 - **A joined unit has one lane.**
   Joined rows must meet [Unit Consistency](lane.md#unit-consistency).
 - **A candidate is answered once.**
   Its rows name each other in Joins, or one line of a record names exactly its rows and why they stay split. A line naming only some of its rows, or rows besides, accounts for none.
-- **Both resolutions are stated where the candidate is reported.**
-  Naming the rows in Joins asserts one pull request; the record line says why there are several. A report naming only the first makes the assertion the cheaper answer.
+- **Each resolution asserts its own outcome.**
+  Naming the rows in Joins asserts one pull request; the record line says why there are several.
 - **A direct edge inside a candidate is the edge a join drops.**
-  The report names it, since the joined pull request orders the commits.
+  The joined pull request orders the commits that edge ordered.
 - **Some candidates are split by rule.**
-  A candidate whose rows cover more than six criteria, or with a path between two of them through a row outside it, cannot join. The report names the reason, and no record line is asked for.
+  A candidate whose rows cover more than six criteria, or with a path between two of them through a row outside it, cannot join and needs no record line.
 
 ### Numbering Map
 
-A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. A source absent from the supplied files, or a duplicate destination, is refused.
+A comma-separated list of `<old-number>:<new-number>` pairs assigning each old number one distinct new number. A number a pull request already names is preserved, and a row a pull request names is not renumbered. Every source is present in the supplied files, and no two sources share a destination.
 
 ### Graph Inputs
 
@@ -179,7 +176,7 @@ The supplied current complete pull request records, one JSON object per nonempty
 
 ### Graph Result
 
-The checked bodies, proposed epic-priority map and unresolved dependency, numbering, component or lane findings, including the printed chains and contending pairs.
+The checked bodies, proposed [Epic Priority](work-priority.md#epic-priority) map and unresolved dependency, numbering, component or lane findings, including the printed chains and contending pairs.
 
 ### Rewritten Bodies
 
@@ -193,7 +190,15 @@ The absolute supplied checkout path holding the installed Work Planner scripts a
 
 ### Component Contention
 
-Two task rows in different epics whose work items declare one [component](work-item.md#component) contend. Concurrent epics are two bases and two pull requests, so one component written from both is a merge conflict.
+Two task rows in different epics whose work items share any declared [file](work-item.md#component) contend. Concurrent epics are two bases and two pull requests, so one file written from both is a merge conflict.
 
-- Rows of one epic are out of scope: they land on one base, in the order Depends on and [Joins](#joins) set, so one component written twice is a rebase on that base rather than a conflict between two of them. [Joins](#joins) proposes them as one unit.
+- Rows of one epic are out of scope: they land on one base, in the order Depends on and [Joins](#joins) set, so one file written twice is a rebase on that base rather than a conflict between two of them. [Joins](#joins) proposes them as one unit.
 - A contending pair is answered by the number that separates its epics, or by moving the rows into one epic.
+
+### Unresolvable Entries
+
+Each reader of a `Depends on` cell names an [entry that cannot resolve](#edges) as written, keeps the row it gates where it stands rather than placing it as work still to come, and exits nonzero. Each states that outcome in its own contract:
+
+- [Check Dependencies](#check-dependencies "ƒ") reports it as a problem.
+- [Compute Board Queue](board-queue.md#compute-board-queue "ƒ") proposes no move for the row, as [Unresolvable Dependencies](board-queue.md#unresolvable-dependencies) states.
+- [Compute Available Work](delivery-plan.md#compute-available-work "ƒ") prints it on an `unresolvable` [report line](delivery-plan.md#report-lines).

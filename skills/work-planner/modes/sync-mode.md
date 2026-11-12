@@ -25,7 +25,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 - Apply [Repair Issue Format](../artifacts/issue-body.md#repair-issue-format "ƒ") for the selected issue against its kind’s template and field conditions.
 - When it returns, fetch the saved body again.
-- Validate that saved body before continuing to the fetch step.
+- Validate that saved body before continuing to [Fetch](#2-fetch).
 - Provide a remaining format failure as a blocker.
 
 ### 2. Fetch
@@ -66,13 +66,13 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 ### 6. Sync Each Epic
 
-- Run [Sync Epic](../artifacts/epic-issue-body.md#sync-epic "ƒ"), linking every match from the match step, open or merged, with the task issues, the project checkout and the fetched epic bases its long-lived branch names are read at. Linking a pull request replaces the planning-record link on that task.
+- Run [Sync Epic](../artifacts/epic-issue-body.md#sync-epic "ƒ"), linking every match from [Match Pull Requests to Tasks](#4-match-pull-requests-to-tasks), open or merged, with the task issues, the project checkout and the fetched epic bases its long-lived branch names are read at. Linking a pull request replaces the planning-record link on that task.
 
 - Handle the provided delivery findings:
 
 **Normalized.**
 
-- The patch step publishes the corrected table.
+- [Patch](#9-patch) publishes the corrected table.
 
 **Retitle.**
 
@@ -84,11 +84,11 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 **Unmatched.**
 
-- Match them as in the match step.
+- Match them as in [Match Pull Requests to Tasks](#4-match-pull-requests-to-tasks).
 
 **In flight.**
 
-- Match them as in the match step.
+- Match them as in [Match Pull Requests to Tasks](#4-match-pull-requests-to-tasks).
 
 **Draft.**
 
@@ -97,11 +97,11 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 **Unmerged.**
 
-- The close step opens or merges that pull request.
+- [Close](#10-close) opens or merges that pull request.
 
 **Target.**
 
-- Confirm the base it names against its work item's [Component](../artifacts/work-item.md#component): the confirmed base is the epic base of the long-lived branch that Component names, whether the finding names that base, another, or one of several.
+- Confirm the base it names against its work item's [Component](../artifacts/work-item.md#component): the confirmed bases are the epic bases of the long-lived branches its declared files name, whether the finding names one of them, another base, or several.
 
 - A unit whose work items name several long-lived branches takes each task branch's base from the long-lived branch its last slug word names.
 
@@ -119,7 +119,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 **No epic.**
 
-- Give it the epic it works on as the unnamed-deliveries step does, once the user confirms which.
+- Give it the epic it works on as [Unnamed Deliveries](#3-unnamed-deliveries) does, once the user confirms which.
 
 **Uncited.**
 
@@ -128,7 +128,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 **Note.**
 
-- Link the pull request as in the match step.
+- Link the pull request as in [Match Pull Requests to Tasks](#4-match-pull-requests-to-tasks).
 
 **Unplaced.**
 
@@ -146,17 +146,17 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 **Open questions.**
 
-- Return to the select step for this epic.
+- Return to [Select](#1-select) for this epic.
 - Resolve the questions there.
 - Fetch the saved body, then Run [Sync Epic](../artifacts/epic-issue-body.md#sync-epic "ƒ") again with the same epic bases.
 
 **Ready to verify.**
 
-- The verify step settles them.
+- [Verify](#7-verify) settles them.
 
 **Unmet.**
 
-- The verify step settles the unticked criteria, planning a gap task for any that need further work.
+- [Verify](#7-verify) settles the unticked criteria, planning a gap task for any that need further work.
 
 **Ticked early.**
 
@@ -187,7 +187,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 - Apply [Verify Selected Criteria](../artifacts/acceptance-criteria.md#verify-selected-criteria "ƒ") for the selected criterion ids against current delivery evidence in the project checkout.
 
-- Retain the provided verified criterion ids and evidence for the tick step.
+- Retain the provided verified criterion ids and evidence for [Tick](#8-tick).
 
 - For an unresolved epic criterion requiring further work:
 
@@ -239,7 +239,7 @@ Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue "ƒ") with e
 
 ### 12. Sync the Board
 
-- Apply [Select Project Board](../artifacts/board.md#select-project-board "ƒ") for the initiative's theme.
+- Apply [Select Project Board](../artifacts/board.md#select-project-board "ƒ") for the initiative's theme, or Apply [Select Proposals Board](../artifacts/proposals-board.md#select-proposals-board "ƒ") when the board synced is the [proposals board](../artifacts/proposals-board.md).
 
 - When the board is absent:
 
@@ -251,7 +251,7 @@ Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue "ƒ") with e
 
 ##### 1. Create Absent Proposals Board
 
-When [Selected Kind](../artifacts/board.md#selected-kind) is proposals and no open board under [Board Owner](../artifacts/board.md#board-owner) has the [proposals title](../configuration.md#proposals-board), Apply [Create Proposals Board](../artifacts/board.md#create-proposals-board "ƒ"). The copy source and the title must meet [Proposals](../artifacts/board.md#proposals).
+When the absent board is the [proposals board](../artifacts/proposals-board.md), Apply [Create Proposals Board](../artifacts/proposals-board.md#create-proposals-board "ƒ").
 
 ##### 2. Create Absent Theme Board
 
@@ -273,7 +273,7 @@ When [Selected Kind](../artifacts/board.md#selected-kind) is proposals and no op
 - Retain the [Copied Board](../artifacts/board.md#copied-board) after linking succeeds.
 - Require the new theme's label and board before an initiative takes that theme.
 
-- The theme board must hold the theme's initiatives, epics, task issues and hot-fixes.
+- The theme board must hold the theme's initiatives, epics, task issues and each issue its [registered kind](../artifacts/work-kind.md#registration) places on it.
 
 ##### 3. Retain Copied Board
 
@@ -297,9 +297,9 @@ Retain the [Copied Board](../artifacts/board.md#copied-board) after the selected
 
 ##### 2. Plan Delivery Changes
 
-- Run [Compute Board Changes](../artifacts/board-delivery.md#compute-board-changes "ƒ") to the captured evidence.
+- Run [Compute Board Changes](../artifacts/board-status.md#compute-board-changes "ƒ") to the captured evidence.
 - Fetch each unresolved issue.
-- Run [Compute Board Changes](../artifacts/board-delivery.md#compute-board-changes "ƒ") again, adding the fetched off-board issue records to the retained evidence.
+- Run [Compute Board Changes](../artifacts/board-status.md#compute-board-changes "ƒ") again, adding the fetched off-board issue records to the retained evidence.
 
 ##### 3. Apply and Confirm Calls
 
@@ -314,7 +314,7 @@ Retain the [Copied Board](../artifacts/board.md#copied-board) after the selected
 
 - Fetch the issues and items again.
 - Refresh the pull request metadata and linked published agent review records before recomputing statuses; either tip may have changed during the writes.
-- Run [Compute Board Changes](../artifacts/board-delivery.md#compute-board-changes "ƒ") to the refreshed evidence, retaining every resolved off-board issue record.
+- Run [Compute Board Changes](../artifacts/board-status.md#compute-board-changes "ƒ") to the refreshed evidence, retaining every resolved off-board issue record.
 - Stop when it emits no further call and every changed item has been confirmed. An issue added in one pass gets its status in the next.
 
 ##### 5. Retain Confirmed Board Statuses
@@ -323,10 +323,10 @@ Retain [Confirmed Statuses](../artifacts/board-delivery.md#confirmed-statuses) a
 
 ### 13. Explain Each Change Entering Review
 
-- For each epic newly confirmed In Review by the board step:
+- For each epic newly confirmed In Review by [Sync the Board](#12-sync-the-board):
 
 - Follow [Understand Mode](understand-mode.md "ƒ") with each epic review pull request, one run per base.
-- Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where the board step confirms an epic In Review that integration did not already explain.
+- Complete each overview before continuing; an initiative has no overview of its own. An issue already In Review when the sync began keeps the overview it has: the pull request it explains is the one already reviewed. A reviewer meets the overview on the pull request it explains. The run that integrates an epic base owns that epic's overview; this step writes one only where [Sync the Board](#12-sync-the-board) confirms an epic In Review that integration did not already explain.
 
 ### 14. Report
 
@@ -351,7 +351,7 @@ Retain [Confirmed Statuses](../artifacts/board-delivery.md#confirmed-statuses) a
 
 #### Per-Issue Report
 
-- Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, test plan disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](../artifacts/issue-body.md#coverage-reports).
+- Report per issue: tasks linked, criteria ticked, rows marked done, criteria left unticked and why, conflicts, [test plan](../artifacts/test-plan.md) disagreements, what was closed, each board and assignee change, and each overview written. What the report names about criteria is [Coverage Reports](../artifacts/issue-body.md#coverage-reports).
 
 ## Outcomes
 

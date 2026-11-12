@@ -6,16 +6,18 @@ description: >-
 
 # Work Planner
 
-Work Planner plans work as GitHub issues and keeps the plan current until the work is delivered. The issues are the plan:
+Work Planner plans work as GitHub issues and keeps the plan current until the work is delivered. The issues are the plan, each of one kind of work:
 
-- **Proposal**  States the problem and the goal, with no Work Breakdown.
-- **Initiative**  States a goal and lists its epics.
-- **Epic**  Lists its tasks in a Work Breakdown table.
-- **Task**  One pull request's worth of work.
-- **Standalone issue**  Work outside any initiative.
-- **[Hot-fix](artifacts/hotfix-body.md)**  A fix to a long-lived branch beside all queued work.
+- Proposal
+- Initiative
+- Epic
+- Task
+- Standalone issue
+- Hot-fix
 
-Each theme's project board shows where its items stand. The [proposals board](configuration.md#proposals-board) holds proposals. A planning record holds what an initiative leaves out: the evidence, the decisions and each review.
+[Work Kind](artifacts/work-kind.md) registers each kind with what it is, the artifacts holding it and the interface operations each supplies.
+
+Each theme's project board shows where its items stand. The [proposals board](artifacts/proposals-board.md) holds proposals. A planning record holds what an initiative leaves out: the evidence, the decisions and each review.
 
 Read [Rules](rules.md) and [Conventions](conventions.md) before selecting a mode.
 

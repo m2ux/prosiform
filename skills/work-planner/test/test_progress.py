@@ -1,16 +1,28 @@
 """progress.py: one test per rule its docstring states.
 """
+import io
+import json
 import sys
 import tempfile
+import types
 import unittest
+from contextlib import redirect_stdout
 from datetime import date, datetime, timezone
 from pathlib import Path
+from unittest import mock
 
 from fixtures import (SCRIPTS, epic_body, hotfix, initiative_body, issue, item, links, pr, progress, run,
                       section, url)
 
 sys.path.insert(0, str(SCRIPTS))
+import board  # noqa: E402
+import format  # noqa: E402
+import kinds  # noqa: E402
+import priority  # noqa: E402
+import progress as summarised  # noqa: E402
+import sync  # noqa: E402
 from progress import week_before  # noqa: E402
+from test_kinds import kind_mentions  # noqa: E402
 
 SINCE = '2026-09-25'
 IN = '2026-09-26T08:00:00Z'
@@ -207,6 +219,12 @@ class Next(unittest.TestCase):
         items = [self.initiative(1), self.ready(10, 0, labels=('priority: 1',)),
                  self.ready(11, 1), self.ready(12, 2, labels=('priority: 5',))]
         self.assertEqual(refs(summary(items)), ['I01:E02', 'I01:E00', 'I01:E01'])
+
+    def test_equally_ranked_initiatives_keep_their_epics_grouped_in_issue_order(self):
+        items = [self.initiative(1, 1, ['priority: 3']), self.initiative(2, 2, ['priority: 3']),
+                 self.ready(10, 0, 1, labels=('priority: 1',)), self.ready(11, 1, 1, labels=('priority: 5',)),
+                 self.ready(12, 0, 2, labels=('priority: 9',))]
+        self.assertEqual(refs(summary(items)), ['I01:E01', 'I01:E00', 'I02:E00'])
 
     def test_an_epic_named_in_an_initiative_row_dependency_is_ranked_ahead(self):
         items = [self.initiative(1, 1, (), (f"[E01]({url('issues', 11)})", 'E02'),
@@ -568,6 +586,51 @@ class HotFixes(unittest.TestCase):
         initiative = issue(1, '[I01] Shipped: All', body=initiative_body())
         out = summary([item(initiative, 'In Progress'), item(self.hotfix(4), 'Ready')], (), '--initiative', 'I01')
         self.assertNotIn('F04', out)
+
+
+def summary_here(items: list[dict]) -> str:
+    """The summary progress.py prints from a run in this process, with no pull requests."""
+    printed = io.StringIO()
+    with tempfile.TemporaryDirectory() as tmp:
+        items_path, prs_path, links_path = Path(tmp, 'items.json'), Path(tmp, 'prs.json'), Path(tmp, 'links.json')
+        items_path.write_text(json.dumps(items))
+        prs_path.write_text('')
+        links_path.write_text('[]')
+        argv = ['progress.py', '--items', str(items_path), '--prs', str(prs_path), '--links', str(links_path),
+                '--since', SINCE]
+        with redirect_stdout(printed), mock.patch.object(sys, 'argv', argv):
+            summarised.main()
+    return printed.getvalue()
+
+
+class KindRegistry(unittest.TestCase):
+    def test_progress_names_no_kind_and_imports_only_the_registry(self):
+        self.assertEqual(kind_mentions((SCRIPTS / 'progress.py').read_text()), [])
+
+    def test_a_stand_in_kind_is_summarised_and_keyed_through_the_registry(self):
+        stand_in = types.ModuleType('stand_in')
+        stand_in.tag = lambda found: 'Z01' if (found.get('title') or '').startswith('[Z01]') else None
+        stand_in.letter = lambda: 'Z'
+        stand_in.target = lambda found: 'main'
+        stand_in.delivering_pulls = lambda prs, key, found: []
+        items = [item(issue(6, '[Z01] Stand In: Work'), 'Ready')]
+        self.assertNotIn('Z01', summary_here(items))
+        with mock.patch.dict(sys.modules, {'stand_in': stand_in}), \
+                mock.patch.dict(kinds.KINDS, {'stand-in': 'stand_in'}):
+            out = summary_here(items)
+        self.assertEqual(section(out, 'Next'), [f"▶️ *Z01 Stand In* — {url('issues', 6)}"])
+        self.assertIn('I=Initiative, E=Epic, W=Work Item, F=Hot-fix, Z=Stand-in', out)
+
+
+class SharedRules(unittest.TestCase):
+    def test_tags_identity_priority_and_untagging_come_from_their_single_homes(self):
+        self.assertIs(summarised.tags, board.tags)
+        self.assertIs(summarised.issue_key, sync.issue_key)
+        self.assertIs(summarised.execution_key, priority.execution_key)
+        self.assertIs(summarised.untagged, format.untagged)
+        for copy in ('key_of', 'HOTFIX', 'KEY'):
+            with self.subTest(copy=copy):
+                self.assertFalse(hasattr(summarised, copy))
 
 
 if __name__ == '__main__':

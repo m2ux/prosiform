@@ -24,7 +24,7 @@ Provide [Autonomy Result](#autonomy-result) as automatic where the supplied allo
 
 - A new initiative is outside every allowance. The work stays where it is, open and unplaced, until the user decides where it belongs.
 
-- A new hot-fix is outside every allowance, since it runs ahead of all queued work. The work stays where it is until the user decides it is a hot-fix.
+- A new issue of a [registered kind](work-kind.md#registration) that runs ahead of all queued work is outside every allowance. The work stays where it is until the user decides it is of that kind.
 
 ### Record Plan Change
 
@@ -51,7 +51,7 @@ A supplied set of [Change Kinds](#change-kinds) the run may apply without asking
 | Task creation | A new task row |
 | Epic creation | A new epic, and the initiative row that carries it |
 | Migration | Work moved from one issue to another, with the renumbering that move forces |
-| Re-prioritisation | A priority label, a queue order or a board status |
+| Re-prioritisation | A [priority label](work-priority.md#priority-label), a queue order or a board status |
 | Folded work | Criteria, scope or design added to an existing issue because the work in hand needs it |
 
 ### Change List

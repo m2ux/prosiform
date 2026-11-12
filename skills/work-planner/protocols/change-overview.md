@@ -8,7 +8,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 ### 1. Prepare the Evidence
 
-- Apply [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state "ƒ") for the supplied pull request to obtain its identity, title, base and verified head.
+- Apply [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state "ƒ") for the supplied pull request to obtain its identity, title, base commit and verified head.
 - Apply [Create Pull Request Worktree](../artifacts/delivery-branches.md#create-pull-request-worktree "ƒ") with the project checkout, pull request number and verified head.
 
 #### Changed Head
@@ -21,8 +21,8 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 - Continue to measurement only when the worktree matches that head.
 - Apply [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state "ƒ") for its changed paths.
-- Apply [Measure Repository Change](../artifacts/repository-graph.md#measure-repository-change "ƒ") with the review checkout it returns, head and base.
-- On stale index evidence, Apply [Measure Repository Change](../artifacts/repository-graph.md#measure-repository-change "ƒ") again with the review checkout, head and base after its index update.
+- Apply [Measure Repository Change](../artifacts/repository-graph.md#measure-repository-change "ƒ") with the review checkout it returns, verified head and base commit.
+- On stale index evidence, Apply [Measure Repository Change](../artifacts/repository-graph.md#measure-repository-change "ƒ") again with the review checkout, verified head and base commit after its index update.
 
 #### Changed Revision
 
@@ -39,7 +39,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 - Locate any existing overview record for this pull request number before creating a record.
 - Reuse its folder identity when one exists; otherwise choose a planning-folder identity whose reference is the pull request number and whose slug comes from its title.
 - Apply [Populate Planning Record](../artifacts/planning-record.md#populate-planning-record "ƒ") to prepare that folder.
-- Take the graph [measurements](../artifacts/architecture-overview.md#measurements) from the evidence step and check the proposed diagrams.
+- Take the graph [measurements](../artifacts/architecture-overview.md#measurements) from [Prepare the Evidence](#1-prepare-the-evidence) and check the proposed diagrams.
 - The diagrams must meet [Diagrams](../artifacts/architecture-overview.md#diagrams).
 
 - Populate the overview from the [Template](../artifacts/architecture-overview.md#template) at the destination in [Overview File](../artifacts/architecture-overview.md#overview-file).

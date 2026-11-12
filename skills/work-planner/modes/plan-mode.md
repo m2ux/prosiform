@@ -8,13 +8,18 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 ### 1. Take the Proposal
 
-- When the user names a proposal, its associated issue body defines the problem scope.
+- When the user names a proposal:
+
+- Apply [Select Proposals Board](../artifacts/proposals-board.md#select-proposals-board "ƒ"), then Apply [Read Board State](../artifacts/board.md#read-board-state "ƒ") for that board, and read the Status of the proposal's item.
+- At [Approved](../artifacts/proposal.md#proposal-status), the proposal's issue body defines the problem scope.
+- At any other [Proposal Status](../artifacts/proposal.md#proposal-status), or with no item on the board, the proposal blocks initiative drafting; report the Status read or the missing item.
+
 - When the user names an initiative that already exists, Apply [Read Tracker Issue](../artifacts/issue.md#read-tracker-issue "ƒ") for its body. That body defines the problem scope, and no proposal is raised for work it already carries.
 
 - When neither a proposal nor an existing initiative is named:
 
-- Follow [Propose Mode](propose-mode.md "ƒ") with the user's goal.
-- Resume this selection step with its published proposal; an unresolved proposal blocks initiative drafting.
+- Follow [Propose Mode](propose-mode.md "ƒ") with the user's goal and [Requested Status](propose-mode.md#requested-status) Approved; the user's confirmation of the goal approves the proposal.
+- Resume this selection step with its published proposal, placed at Approved; an unresolved proposal blocks initiative drafting.
 
 ### 2. Prepare the Planning Record
 
@@ -32,11 +37,11 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 - Ask once per initiative whether it uses lanes as an [Interview](../guidelines.md#modes), recommending a choice from its proposed parallel delivery. Reuse the initiative's recorded decision when it has one.
 - For an initiative using lanes, propose each task row's [Lane](../artifacts/lane.md#index) index as a map for the user to confirm, assigning joined rows together as [Unit Consistency](../artifacts/lane.md#unit-consistency) requires. Record the confirmed map in the planning record. For an initiative without lanes, leave the row lanes empty.
 - Apply [Populate Epic Issue Body](../artifacts/epic-issue-body.md#populate-epic-issue-body "ƒ") for each epic and each new task row, passing each confirmed optional lane index with the row and an output path in the record's folder.
-- Apply [Populate Work Item](../artifacts/work-item.md#populate-work-item "ƒ") for each task with its scope, design, the component its implementation extends, criteria, test requirements and an output file in the record's folder.
+- Apply [Populate Work Item](../artifacts/work-item.md#populate-work-item "ƒ") for each task with its scope, design, each file its implementation changes, criteria, test requirements and an output file in the record's folder.
 - Register each draft body and provided work-item file in the planning record.
 - Resolve Open Questions before work starts.
 - Apply [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering "ƒ") across the drafts and the provided work-item files.
-- Provide each epic draft and its format results to the review step.
+- Provide each epic draft and its format results to [Review the Drafts](#5-review-the-drafts).
 
 ### 5. Review the Drafts
 
@@ -60,10 +65,10 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 ### 6. Publish
 
-- Put the proposed [Epic Priority](../artifacts/dependency-graph.md#epic-priority) map for the reviewed epics to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer.
+- Put the proposed [Epic Priority](../artifacts/work-priority.md#epic-priority) map for the reviewed epics to the user as an [Interview](../guidelines.md#modes), the proposal the recommended answer.
 
 - Take the positive integer the user confirms for each epic.
-- Apply [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels "ƒ") with the required definitions, the priority label each confirmed number names among them, before saving the issues.
+- Apply [Ensure Repository Labels](../artifacts/repository-labels.md#ensure-repository-labels "ƒ") with the required definitions, the [priority label](../artifacts/work-priority.md#priority-label) each confirmed number names among them, before saving the issues.
 
 #### Parent Identity
 
@@ -108,9 +113,9 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 - Repeat that review until clear.
 - After each round, Apply [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits "ƒ") on affected bodies.
 
-- Whenever tasks, edges or a work item's component change, Apply [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering "ƒ") again.
+- Whenever tasks, edges or a work item's declared files change, Apply [Check Dependencies and Numbering](../artifacts/dependency-graph.md#check-dependencies-and-numbering "ƒ") again.
 
-- Put the proposed Epic Priority map to the user again where the edges or the contention moved an epic's number.
+- Put the proposed [Epic Priority](../artifacts/work-priority.md#epic-priority) map to the user again where the edges or the contention moved an epic's number.
 - Save each confirmed change as that epic's priority label.
 
 - Apply [Save Tracker Issue](../artifacts/issue.md#save-tracker-issue "ƒ") with affected bodies, matching titles to current numbers and Coverage to current criteria.

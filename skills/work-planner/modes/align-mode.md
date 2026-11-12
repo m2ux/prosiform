@@ -1,6 +1,6 @@
 # Align Mode
 
-Brings one or more existing proposal, initiative, epic, task, and standalone issues and/or pull requests into line with the plan they belong to and structurally aligns them with the guidelines they are held to.
+Brings one or more existing issues of any [registered kind](../artifacts/work-kind.md#registration), and/or pull requests, into line with the plan they belong to and structurally aligns them with the guidelines they are held to.
 
 Alignment checks conformity to work-planning rules; judgement of content fitness belongs to goal review.
 
@@ -13,7 +13,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 - Scope: issues the user names, an initiative with its open epics or a board with it's complete set of initiatives and epics.
 - Open issues only. A closed issue is aligned only when named.
 - Naming another initiative's issue approves format edits to it.
-- An open standalone issue that an aligned initiative, epic, or task cites is aligned with it.
+- An open issue outside any initiative that an aligned issue cites is aligned with it.
 
 ### 2. Fetch Each Issue
 
@@ -25,8 +25,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 ### 3. Validate the Bodies
 
-- Apply [Validate Proposal Body](../artifacts/proposal-body.md#validate-proposal-body "ƒ"), Apply [Validate Initiative Body](../artifacts/initiative-issue-body.md#validate-initiative-body "ƒ") or Apply [Validate Epic Body](../artifacts/epic-issue-body.md#validate-epic-body "ƒ") for that kind.
-- Apply [Validate Issue Body](../artifacts/issue-body.md#validate-issue-body "ƒ") with [task field conditions](../artifacts/task-body.md#fields) or [standalone field conditions](../artifacts/standalone-body.md#fields) for those bodies.
+- Apply [Validate Body](../artifacts/work-kind.md#validate-body "ƒ") for the issue's [registered kind](../artifacts/work-kind.md#registration).
 - Supply the fetched context and output files.
 
 #### Reference Visibility
@@ -41,7 +40,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 - Retain [Visibility Findings](../artifacts/issue-body.md#visibility-findings) identifying each private reference on a public issue and each unavailable visibility. A private destination has no public-reference restriction; deciding how to replace or remove a private reference belongs to the requester.
 
-- Carry the visibility findings to the content-decisions step.
+- Carry the visibility findings to [Resolve Content Decisions](#6-resolve-content-decisions).
 
 #### Validation Findings
 
@@ -56,7 +55,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 ### 5. Review the Goal
 
 - For initiative or epic scope, Apply [Review Initiative Goal](../artifacts/goal-trace.md#review-initiative-goal "ƒ") with the current initiative and epic evidence, confirmed goal clauses and marked sources.
-- For proposal, task or standalone scope, Apply [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits "ƒ") with the selected body, its kind's field conditions and format inputs; skip initiative goal review when no initiative is in scope.
+- For any other scope, Apply [Check Round of Edits](../artifacts/issue-body.md#check-round-of-edits "ƒ") with the selected body, its kind's field conditions and format inputs.
 - Apply [Report Review Finding](../artifacts/review-finding.md#report-review-finding "ƒ") with each finding. Numbering changes affect only rows no pull request names.
 
 ### 6. Resolve Content Decisions
@@ -64,21 +63,21 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 - Decide each non-mechanical finding with the user.
 
 - Apply [Apply Body Corrections](../artifacts/issue-body.md#apply-body-corrections "ƒ") with confirmed local resolutions, using the selected kind's template and field conditions.
-- Move initiative boundaries found as Non-Goals in an epic or task into the initiative's Non-Goals.
+- Move Non-Goals found in a body whose kind's template has no Non-Goals section into its initiative's Non-Goals, or, outside any initiative, into the boundary below.
 - Remove the misplaced section.
 
-#### Standalone Boundary
+#### Boundary Outside an Initiative
 
-- For a standalone body:
+- For such a body outside any initiative:
 
-- Apply [Populate Standalone Body](../artifacts/standalone-body.md#populate-standalone-body "ƒ") to [Current Body](../artifacts/standalone-body.md#current-body) with [Confirmed Boundary](../artifacts/standalone-body.md#confirmed-boundary), folding any Non-Goals into Proposal as a closing boundary and writing to [Output Body](../artifacts/standalone-body.md#output-body).
+- Apply [Populate Body](../artifacts/work-kind.md#populate-body "ƒ") for the body's [registered kind](../artifacts/work-kind.md#registration) to the current body with the confirmed boundary, folding any Non-Goals into Proposal as a closing boundary and writing to that operation's output body.
 
-- Retain the revised [Output Body](../artifacts/standalone-body.md#output-body) for publication.
+- Retain the revised output body for publication.
 
 #### Other Content Corrections
 
 - Apply [Revise Epic Rows](../artifacts/epic-issue-body.md#revise-epic-rows "ƒ") with confirmed task splits and Coverage corrections.
-- Replace an epic a task row names with the rows it consumes when correcting dependencies through the dependency step.
+- Replace an epic a task row names with the rows it consumes when correcting dependencies through [Check Dependencies](#8-check-dependencies).
 
 - For a wrong-kind body:
 
@@ -120,12 +119,12 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 
 ### 9. Coverage
 
-- For a pull request explicitly selected for alignment, Apply [Repair Test Plan](../artifacts/pull-request-body.md#repair-test-plan "ƒ"), Apply [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request "ƒ") with a converted body, and report its URL. When no initiative or epic is selected, continue at step 13, Re-run.
+- For a pull request explicitly selected for alignment, Apply [Read Pull Request State](../artifacts/pull-request.md#read-pull-request-state "ƒ") for it, then Run [Check Test Plan](../artifacts/test-plan.md#check-test-plan "ƒ") with its saved record and report each [Plan Finding](../artifacts/test-plan.md#plan-finding). When no initiative or epic is selected, continue at [Re-Run](#13-re-run).
 
 - For initiative or epic scope, Apply [Read Delivery Evidence](../artifacts/delivery-evidence.md#read-delivery-evidence "ƒ") with the fetched initiative, epic and task issue JSON.
 - Continue with its provided records.
-- For each task pull request in those records, Apply [Repair Test Plan](../artifacts/pull-request-body.md#repair-test-plan "ƒ"), then Apply [Publish Pull Request](../artifacts/pull-request.md#publish-pull-request "ƒ") with each converted body. Report each converted pull request by URL and refresh its record before recording coverage.
-- An epic review carries no task test plan.
+- For each task pull request in those records, Run [Check Test Plan](../artifacts/test-plan.md#check-test-plan "ƒ") with its own record, saved from the collection as one [Pull Request Record](../artifacts/test-plan.md#pull-request-record), and report each [Plan Finding](../artifacts/test-plan.md#plan-finding). An epic review carries no Test Plan, as [Review Body](../artifacts/pull-request-body.md#review-body) states.
+- An unreadable plan stays a finding until its pull request's Test Plan is written as [Plan Table](../artifacts/test-plan.md#plan-table) defines, from the checks the work ran.
 
 - For each epic being aligned, Run [Sync Epic](../artifacts/epic-issue-body.md#sync-epic "ƒ") for the current epic in the project checkout with the fetched epic bases, retaining the confirmed task-to-pull-request matches:
 
@@ -203,7 +202,7 @@ Follow the [Procedure](#procedure "ƒ"), adhering to [Rules](../rules.md) and [C
 - After a published correction:
 
 - Fetch the changed bodies.
-- Repeat steps 3–12 for the affected issues with refreshed delivery evidence.
+- Repeat [Validate the Bodies](#3-validate-the-bodies) through [Review Pull Requests](#12-review-pull-requests) for the affected issues with refreshed delivery evidence.
 - Stop when the checks are clear or every remaining finding is one the user chose to keep. A finding from the criteria check is not one the user keeps. The alignment is not clear while a criterion that fails [Requirement Characteristics](../references/requirement-characteristics.md) remains.
 
 - With or without a correction:
