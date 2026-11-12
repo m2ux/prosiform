@@ -1,0 +1,25 @@
+description = "A preset named ?, the title token leaving the pick to an agent, fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
+
+clauses = [
+  "Conversion metadata — The admitted keys",
+  "Metadata failures",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.?"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 5
+column = 3
