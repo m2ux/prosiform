@@ -1,6 +1,6 @@
 # Guide Fix
 
-The guide told an agent to resolve every link from the document carrying it, and a bundle's deferred links are already named from the working directory. Escalation [#728](https://github.com/m2ux/prosiform/issues/728); pull request into `i15/e01/main` named in this folder's [README](README.md).
+The guide told an agent to resolve every link from the document carrying it, and a bundle's deferred links are already named from the working directory. Escalation [#728](https://github.com/m2ux/prosiform/issues/728); pull request [#729](https://github.com/m2ux/prosiform/pull/729) into `i15/e01/main`.
 
 ## Defect
 
