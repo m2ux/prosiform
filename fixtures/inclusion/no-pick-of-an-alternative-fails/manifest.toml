@@ -1,0 +1,22 @@
+description = "The link names work-kind.md with no title, so none of its three alternatives is in force. The run fails with E_ALTERNATIVE_UNRESOLVED, listing each alternative beside its choice line in declaration order."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Metadata failures — E_ALTERNATIVE_UNRESOLVED",
+  "Presets — default always applies",
+  "Presets — default is implicit",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ALTERNATIVE_UNRESOLVED"
+source = "work-kind.md"
+message_contains = ["work-kind.md needs one alternative in force:\n  initiative  States a goal and lists its epics.\n  epic        Lists its tasks in a Work Breakdown table.\n  task        One pull request's worth of work."]

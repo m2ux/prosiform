@@ -1,0 +1,21 @@
+description = "A Mermaid click is the one link reaching work-kind.md, and a diagram link selects no preset, so none of its alternatives is in force and the run fails with E_ALTERNATIVE_UNRESOLVED, listing them."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Metadata failures — E_ALTERNATIVE_UNRESOLVED",
+  "Presets — Selection belongs to the link",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ALTERNATIVE_UNRESOLVED"
+source = "work-kind.md"
+message_contains = ["work-kind.md needs one alternative in force:\n  initiative  States a goal and lists its epics.\n  epic        Lists its tasks in a Work Breakdown table.\n  task        One pull request's worth of work."]

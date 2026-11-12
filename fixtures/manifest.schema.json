@@ -262,6 +262,7 @@
     "errorCode": {
       "description": "The error catalogue: the stable error codes the design declares, each prefixed E_. Each is the name of a failure the contract defines, so a fixture cannot expect one it does not. A diagnostic whose severity is error draws its code from here.",
       "enum": [
+        "E_ALTERNATIVE_UNRESOLVED",
         "E_AMBIGUOUS_SOURCE_HEADING",
         "E_DISPATCH_CYCLE",
         "E_HEADING_COLLISION",
