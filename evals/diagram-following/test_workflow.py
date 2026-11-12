@@ -1908,6 +1908,25 @@ def test_a_shell_form_instruction_points_at_no_source() -> None:
         assert not re.search(r"\bsources\b|compiled from", text), form
 
 
+def test_every_form_states_the_same_tracing_rule() -> None:
+    """Each form's instruction states which nodes trace.log records.
+
+    The scorer reads a diagram's clicked start and stop markers as states and
+    a decision's diamond and branch conditions as none, so a form whose
+    instruction left either out would fail its sessions for following it.
+    """
+    rule = (
+        "Append only a state: a step the workflow takes, never the diamond it"
+        " weighs a decision in, the condition beside one of that decision's"
+        " branches, a section heading, or any other name the entry document"
+        " carries. A marker the diagram clicks is a state like any other:"
+        " entering the one it opens with and the one it closes on is a step,"
+        " and each is appended."
+    )
+    for form in FORMS:
+        assert rule in " ".join(instruction(ENTRY, form).split()), form
+
+
 def test_every_dispatching_form_names_the_sub_agent_trace() -> None:
     """AC25: each instruction tells the session the sub-agent trace to hand on.
 
