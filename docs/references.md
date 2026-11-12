@@ -44,7 +44,7 @@ flowchart TD
 
 ## Selection by reference
 
-Each inline or reference-style Markdown link occurrence supplies its own comma-separated preset names through its parsed title, including preamble and operator-marked links. [Selection](selection.md#presets-in-force) defines complete-name matching and layering over the target's `default`. Substitution retains those tags and matches them against the substitute's own declarations. Image and external-reference titles supply no selection. The pick token `?` among those names selects no preset and leaves the pick to an agent, as [The pick token](#the-pick-token) states.
+Each inline or reference-style Markdown link occurrence supplies its own comma-separated preset names through its parsed title, including preamble and operator-marked links. [Selection](selection.md#presets-in-force) defines complete-name matching and layering over the target's `default`. Substitution retains those tags and matches them against the substitute's own declarations. A diagram link's title is the part of its tooltip its operator marks leave, as [Diagram links](#diagram-links) states. Image and external-reference titles supply no selection. The pick token `?` among those names selects no preset and leaves the pick to an agent, as [The pick token](#the-pick-token) states.
 
 A reference with no fragment, or an empty one, selects the whole document: its body, its preamble included, less frontmatter. A reference with a fragment selects one section — a document-level heading and its subsections, ending before the next heading of equal or higher level.
 
@@ -52,7 +52,7 @@ Only a heading names a section. A fragment is looked up in the original document
 
 ## Operators
 
-An operator is a mark opening a link's text, followed by a space. It states how the target is compiled, in place of the default.
+An operator is a mark opening a link's text, followed by a space, or opening a diagram link's tooltip, as [Diagram links](#diagram-links) states. It states how the target is compiled, in place of the default.
 
 | Mark | Name | States |
 | --- | --- | --- |
@@ -99,7 +99,7 @@ A run cannot pick for a link it compiles, so the token is accepted on a deferral
 
 The run publishing a deferral reads its target's declaration and checks the deferral's pick against it, since every other form fails the later run. A deferral naming a document that declares alternatives names exactly one of them or carries `?`, never both and never neither, and a `?` deferral whose target declares no alternative is refused. Each refusal publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT` and exit status `1`, naming the link and its source location, as the operator refusals do, because the defect is in the source the run read.
 
-The design's [Presets](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
+The design's [Presets](https://github.com/m2ux/prosiform/blob/9f1a8e2b5/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/9f1a8e2b5/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
 
 ## Diagram links
 
@@ -120,4 +120,6 @@ A click naming a callback, a destination naming a document that declares nothing
 
 A Kanban ticket's link and an HTML anchor Mermaid draws in a label are links Mermaid renders and the reader does not follow; one naming a local Markdown document is refused, so its author writes it as a `click`. Mermaid draws no anchor in a `click` tooltip or a class diagram's `link` tooltip, nor in a sequence, pie, timeline, journey, Gantt, quadrant, Git, XY, Sankey, packet, radar, treemap or C4 diagram, whose labels it draws as text, so an anchor written there is carried as written.
 
-Every other byte of the fence is carried as written. A diagram link carries no operator, because a diagram gives it no link text to open with one. Its destination selects `default` alone: Mermaid tooltips and diagram labels supply no preset tags.
+A `click` line's or a class diagram `link` line's quoted tooltip, written after its destination, states the diagram link's operator and title. Marks opening the tooltip, followed by a blank or by the tooltip's end, state its operator as [Operators](#operators) states, the combinations it accepts accepted and those it refuses refused. The rest of the tooltip, or the whole of it where no mark opens it, is the link's title, whose tags select presets as [Selection by reference](#selection-by-reference) states, the [pick token](#the-pick-token) among them. So `click Intake href "activities/intake.md" "⇉"` is a dispatch, `click Intake "activities/intake.md" "¬ ?"` a deferral leaving the pick to the agent, and `click Intake "activities/intake.md" "checks"` an ordinary link selecting `checks`. A tooltip may be all marks, because the node it is drawn on names the link to its reader. A mark followed directly by text, as in `"⇉Intake"`, opens no operator: the whole tooltip is the title.
+
+A diagram link carrying no tooltip carries no operator and selects `default` alone, and so do a sequence diagram's `link` and `links`, which carry none; diagram labels supply no preset tags. The destination is published as its operator publishes a link's destination, and the tooltip and every other byte of the fence are carried as written.
