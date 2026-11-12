@@ -13,12 +13,14 @@ A preset holding `choice` is an **alternative**. `choice` holds one line stating
 prosiform:
   Initiative:
     choice: States a goal and lists its epics.
+    subst:
+      - general-body.md#populate-body: initiative-issue-body.md#populate-initiative-issue-body
   Epic:
     choice: Lists its tasks in a Work Breakdown table.
-  Hot-fix:
-    choice: A fix to a long-lived branch beside all queued work.
     subst:
-      - board-delivery.md#record-dispatch-status: hotfix.md#record-hot-fix-dispatch-status
+      - general-body.md#populate-body: epic-issue-body.md#populate-epic-issue-body
+  Task:
+    choice: One pull request's worth of work.
 ---
 ```
 
@@ -34,7 +36,7 @@ prosiform:
 `?` in a link title hands the pick to the agent. It stands beside fixed tags as one more comma-separated token, as in `"checks, ?"`.
 
 ```markdown
-Record the status [¬ Record Dispatch Status](../artifacts/work-kind.md#record-dispatch-status "?").
+Populate the body [¬ Populate Body](../artifacts/work-kind.md#populate-body "?").
 ```
 
 - **Deferred links only.** A run cannot pick for a link it compiles, so `?` is accepted on a `¬` or `¬↳` link and refused on an ordinary, `↳`, `⇉` or `⫽` link.
@@ -43,7 +45,7 @@ Record the status [¬ Record Dispatch Status](../artifacts/work-kind.md#record-d
 - **The bundle carries `?`.** The deferral publishes its title as authored, beside the destination spelled from the working directory:
 
 ```markdown
-Record the status [Record Dispatch Status](artifacts/work-kind.md#record-dispatch-status "?").
+Populate the body [Populate Body](artifacts/work-kind.md#populate-body "?").
 ```
 
 ## The Pick
@@ -51,34 +53,34 @@ Record the status [Record Dispatch Status](artifacts/work-kind.md#record-dispatc
 The agent passes the title as `--presets`, as it does for every deferred link. `?` selects no preset, so the run finds no alternative in force and answers with the list:
 
 ```text
-$ pf -o out artifacts/work-kind.md#record-dispatch-status --presets '?'
+$ pf -o out artifacts/work-kind.md#populate-body --presets '?'
 error: artifacts/work-kind.md needs one alternative in force:
   Initiative  States a goal and lists its epics.
   Epic        Lists its tasks in a Work Breakdown table.
-  Hot-fix     A fix to a long-lived branch beside all queued work.
+  Task        One pull request's worth of work.
 remedy: rerun with --presets naming the alternative that fits your task
 exit 2
 
-$ pf -o out artifacts/work-kind.md#record-dispatch-status --presets Hot-fix
+$ pf -o out artifacts/work-kind.md#populate-body --presets Epic
 exit 0
 ```
 
 - One diagnostic answers `?`, a mistyped name and an absent `--presets`, so no flag lists alternatives.
 - Exit status 2 publishes nothing, as every failed run does; exit 0 still means the bundles were written.
 - The pick's bundle carries its preset qualifier (`--p-<digest>`), so each kind's bundle has its own name.
-- A fixed title or `--presets` naming one alternative is a pick its author made: `[Record Dispatch Status](work-kind.md#record-dispatch-status "Hot-fix")`.
+- A fixed title or `--presets` naming one alternative is a pick its author made: `[Populate Body](work-kind.md#populate-body "Epic")`.
 
 ## Routing
 
 A pick reaches its own document alone; each link that document writes selects for itself. The pick's `subst` pairs route the document's links to the picked kind's sections, and a link no pair redirects keeps its general route:
 
 ```markdown
-### Record Dispatch Status
+### Populate Body
 
-Apply [Record Dispatch Status](board-delivery.md#record-dispatch-status).
+Apply [Populate Body](general-body.md#populate-body) with the operation inputs.
 ```
 
-Under `Hot-fix` that link compiles `hotfix.md#record-hot-fix-dispatch-status`; under `Epic` it compiles the general route as written.
+Under `Epic` that link compiles `epic-issue-body.md#populate-epic-issue-body`; under `Task` it compiles the general route as written.
 
 A pair of an alternative is **routing**, not a stand-in:
 
@@ -98,19 +100,16 @@ The guide's symbol grammar gains one entry. **Compiling a link** keeps its wordi
 
 ## Change Surface
 
-Expected modules, confirmed when the epics are cut.
-
 ### Source (`src/prosiform/`)
 
 - `metadata.py` — the `choice` key, a `choice` in `default`, and a preset named `?`.
+- `cli.py` — the exactly-one rule and its `E_ALTERNATIVE_UNRESOLVED` diagnostic, listed by `-C`; `W_PRESET_UNUSED` skipping alternatives; routing pairs in `W_SUBST_USED` and `W_SUBST_UNUSED`; the `GUIDE` entry.
 - `tags.py` — `?` read as the pick token, matching no preset.
 - `closure.py` — `?` on deferred links only, and the pick checks on a deferred link to alternatives.
-- `cli.py` — the exactly-one rule and its `E_ALTERNATIVE_UNRESOLVED` diagnostic, listed by `-C`; `W_PRESET_UNUSED` skipping alternatives; routing pairs in `W_SUBST_USED` and `W_SUBST_UNUSED`; the `GUIDE` entry.
-- Title readers (`candidate.py`, `bundle.py`, `composition.py`, `dispatch.py`, `rewrite.py`) — `?` carried through `tags.read`.
 
 ### Corpus
 
-A work-kind-shaped fixture proves the pattern end to end: a router with three alternatives, a mode linking it with `?`, and each pick's bundle. Further fixtures hold one rule each:
+A fixture shaped like a kind router proves the pattern end to end: a router with three alternatives, a mode linking it with `?`, the listing, and each pick's bundle. Further fixtures hold one rule each:
 
 - an entry naming no alternative, an unknown one, or two, fails listing them
 - two links picking different alternatives of one document in one bundle are refused

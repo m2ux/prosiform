@@ -11,8 +11,30 @@ Settled in the design interview (user, 2026-11-12). Each names the options set a
 5. **`?` is accepted on deferred links only** (`¬`, `¬↳`). Set aside: compiling every alternative of a dispatch up front; publishing a dispatch for the agent to compile and hand on.
 6. **An alternative's `subst` pairs route quietly**: no `W_SUBST_USED`, and `W_SUBST_UNUSED` only for a pair no link of its document names. Set aside: relaxing both warnings for every pair; keeping them.
 7. **Delivery is a new initiative** planned through work-planner. Set aside: one hot-fix pull request; a record with nothing raised.
-8. **work-kind is the motivating case.** work-planner is pre-migration, so a work-kind-shaped fixture proves the pattern.
+8. **work-kind is the motivating case.** work-planner is pre-migration, so a fixture shaped like a kind router proves the pattern.
 9. **The exactly-one failure has its own code**, `E_ALTERNATIVE_UNRESOLVED`, with exit 2, so a harness matches the pick step by code. Set aside: reusing `E_INVALID_USAGE`, as group and `subst` conflicts do.
+
+## Planning
+
+Settled in Plan mode (user, 2026-11-12).
+
+- **I15 takes the next initiative number**, `I14` being the highest of any state.
+- **Two layered epics.** E00 Declared Alternatives leaves main working with author picks; E01 Agent Pick adds `?` on it. Set aside: one epic.
+- **No lanes.** Every row extends `cli.py`, `closure.py` or the same pages, so rows run one at a time.
+- E00:W02 and E00:W03 stay split: each states one rule with its own fixtures, and the second rebases on the first on the epic base.
+- **E01 W01 and W02 are joined** into one pull request for the `?` link grammar, dropping the edge between them.
+- **E00 W00 states the whole design**, the agent's pick included, so each epic's documentation pins one design commit.
+
+## Dependency Check
+
+- **Epic priority.** E00 takes 2 and E01 takes 1: no whole-epic edge separates them, and their rows contend.
+- **Contending pairs.** E00 W02 and E01 W03, and E00 W03 and E01 W03, extend `cli.py`; E00 W04 and E01 W04 extend `invocation.md` and `docs/glossary.md`.
+- **Longest chains.** Five of five steps, each from E00 W00 through E00 W01 to E01 W04.
+
+## Context
+
+- **work-kind moved during planning.** Commit `93a2ce585` on workflow-server moved the single-implementer operations to their callers, leaving Populate Body and Validate Body; the design's examples use Populate Body.
+- **The pattern catalogue overlaps.** The design-patterns initiative's polymorphism family states call-site dispatch, where the author picks; once alternatives land, its pages can cite them. That initiative is on this board, so the initiative body records the overlap as a Non-Goal rather than a reference.
 
 ## Defaults Taken
 
