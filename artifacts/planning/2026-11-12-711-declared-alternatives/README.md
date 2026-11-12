@@ -13,7 +13,7 @@ The review found no blocking defect. One nonblocking wording finding in Metadata
 | Artifact | What it holds |
 | --- | --- |
 | [architecture-overview.md](architecture-overview.md) | The design sections the change states and the build rows each binds |
-| [agent-review.json](agent-review.json) | The agent review record as first written; the current record, naming the engineering tip the review PR targets, is a comment on #711, since every commit to engineering moves that tip |
+| [agent-review.json](agent-review.json) | The agent review record for the reviewed head and base |
 
 ## Links
 
