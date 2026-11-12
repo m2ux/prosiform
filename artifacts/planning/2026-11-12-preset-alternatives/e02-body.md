@@ -10,7 +10,7 @@ An agent that reaches a `?` pick in real use keeps to what `pf` prints and write
 ## Proposal
 
 - **A real-use measurement.**
-  Agent-pick runs on the eval reworked to start each session from a skill, with the disclosure strategy in the agent's harness, and its record replaces the bare-prompt one.
+  Agent-pick runs on the eval reworked to start each session from a skill the agent's CLI discovers, and its record replaces the bare-prompt one.
 
 ## Work Breakdown
 
