@@ -12,7 +12,7 @@ The task targets `i15/e01/main`, after the agent-pick workflow (W05). It is the 
 
 | Artifact | What it holds |
 | --- | --- |
-| [w06.md](../2026-11-12-preset-alternatives/e01/w06.md) | Component plan, scope and observing checks |
+| [w06.md](w06.md) | Component plan, scope and observing checks |
 
 ## Links
 
@@ -20,3 +20,10 @@ The task targets `i15/e01/main`, after the agent-pick workflow (W05). It is the 
 | --- | --- |
 | Epic | [Agent Pick](https://github.com/m2ux/prosiform/issues/709) |
 | Prerequisites | [W05 delivery](https://github.com/m2ux/prosiform/pull/725) |
+
+## Run State
+
+| Run | State |
+| --- | --- |
+| `agent-pick-shakedown`, 2026-11-12 | 4 sessions, none passed, each failure `miss`; USD 0.03219 over 908 675 tokens, the largest session 413 537. It sets the run's session cap of 830 000 tokens, token budget of 16 600 000 and cost cap of USD 1, recorded in the [runbook](https://github.com/m2ux/prosiform/blob/i15/e01/w06-a-measured-agent-pick/evals/diagram-following/RUNBOOK.md#agent-pick-run). |
+| `agent-pick`, 20 sessions | Held for the user's approval of the cost cap. |
