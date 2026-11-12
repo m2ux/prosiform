@@ -14,6 +14,7 @@ The task targets `i15/e01/main`, after the `?` link grammar (W01+W02).
 | --- | --- |
 | [w03.md](w03.md) | Component plan, scope and observing checks |
 | [validation.md](validation.md) | Each Test Plan check's procedure, tested revision and observation |
+| [guide-fix.md](guide-fix.md) | The guide fix for bundle link resolution: defect, fix and test evidence |
 
 ## Links
 
