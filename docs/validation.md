@@ -73,18 +73,19 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 ## What a run refuses
 
-Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the design clause behind each code.
+Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
 
 | Check | Code | Exit |
 | --- | --- | --- |
 | A command line the grammar does not admit, a preset disagreement, a `subst` rule within one preset | `E_INVALID_USAGE` | `2` |
+| A document declaring [alternatives](selection.md#presets-in-force) with none, or several, in force in a bundle | `E_ALTERNATIVE_UNRESOLVED` | `2` |
 | An entry outside the profile's suffixes | `E_UNSUPPORTED_ENTRY_SUFFIX` | `1` |
 | An entry written as an absolute or drive path, or with a scheme or authority | `E_SOURCE_OUTSIDE_ROOT` | `1` |
 | A symbolic link on a source's path | `E_SOURCE_SYMLINK` | `1` |
 | A source that cannot be opened or read | `E_SOURCE_ACCESS` | `1` |
 | A source that is not UTF-8 | `E_INVALID_ENCODING` | `1` |
 | Frontmatter that is not one safe YAML mapping, or has no closer | `E_INVALID_FRONTMATTER`, `E_UNTERMINATED_FRONTMATTER` | `1` |
-| A `prosiform` declaration outside its grammar | `E_INVALID_CONVERSION_METADATA` | `1` |
+| A `prosiform` declaration outside its grammar, a malformed `choice`, a `choice` in `default` and a preset named `?` among them | `E_INVALID_CONVERSION_METADATA` | `1` |
 | Two depths for one group | `E_GROUP_CONFLICT` | `1` |
 | A target, or a fragment's heading, that does not exist | `E_TARGET_NOT_FOUND` | `1` |
 | A fragment naming a heading two headings share, or one inside a container | `E_AMBIGUOUS_SOURCE_HEADING`, `E_NESTED_SECTION_TARGET` | `1` |
