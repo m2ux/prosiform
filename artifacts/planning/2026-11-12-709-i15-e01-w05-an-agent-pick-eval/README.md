@@ -23,3 +23,9 @@ The task targets `i15/e01/main`, after the guide entry and router fixtures (W03)
 | Prerequisites | [W03 delivery](https://github.com/m2ux/prosiform/pull/723) |
 | Pull request | [[I15:E01] An agent-pick eval workflow](https://github.com/m2ux/prosiform/pull/725) |
 | Epic review | [[I15:E01] Agent Pick](https://github.com/m2ux/prosiform/pull/722) |
+
+## Plan Changes
+
+| Change | State |
+| --- | --- |
+| W05's work item declares the scorer, harness, Codex bridge, stub agent, runbook and their tests beside the workflow and README, since AC7's "reading no source" needs a check the scorer lacked | Applied |
