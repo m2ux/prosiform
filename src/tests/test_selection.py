@@ -249,3 +249,44 @@ def test_dispatch_targets_keep_occurrence_tags_before_variant_scheduling(
     )
     assert len(captured) == 2
     assert [hop.target.tags for hop in hops] == [{"checks"}, {"draft"}]
+
+
+ROUTER = Conversion(
+    declared=True,
+    presets=(
+        Preset("Initiative", choice="States a goal and lists its epics."),
+        Preset("checks"),
+        Preset("Epic", choice="Lists its tasks in a Work Breakdown table."),
+        Preset("Task", choice="One pull request's worth of work."),
+    ),
+)
+
+
+def test_the_alternatives_in_force_are_every_pick_in_declaration_order() -> None:
+    reaching = [
+        resolve("work-kind.md", tags=read("task, checks")),
+        resolve("work-kind.md", tags=read("EPIC")),
+        resolve("work-kind.md"),
+    ]
+    assert [one.name for one in cli.picked(ROUTER, reaching)] == ["Epic", "Task"]
+
+
+@pytest.mark.parametrize("names", [None, "saga", "?", "checks", "default"])
+def test_a_selection_naming_no_alternative_picks_none(names: str | None) -> None:
+    assert cli.picked(ROUTER, [resolve("work-kind.md", tags=read(names))]) == ()
+
+
+def test_the_unresolved_failure_lists_each_alternative_beside_its_choice_line() -> None:
+    failure = cli.unresolved("work-kind.md", ROUTER)
+    assert failure.status == cli.USAGE_FAILURE
+    assert failure.diagnostic.code == cli.ALTERNATIVE_UNRESOLVED
+    assert failure.diagnostic.source == "work-kind.md"
+    assert failure.diagnostic.message == (
+        "work-kind.md needs one alternative in force:\n"
+        "  Initiative  States a goal and lists its epics.\n"
+        "  Epic        Lists its tasks in a Work Breakdown table.\n"
+        "  Task        One pull request's worth of work."
+    )
+    assert failure.diagnostic.remedy == (
+        "rerun with --presets naming the alternative that fits your task"
+    )

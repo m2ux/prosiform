@@ -109,6 +109,7 @@ from prosiform.composition import (
 from prosiform.diagnostics import (
     ERROR,
     FORMATS,
+    INDENT,
     TEXT,
     WARNING,
     Diagnostic,
@@ -160,6 +161,7 @@ from prosiform.metadata import (
     Conversion,
     InvalidMetadata,
     Membership,
+    Preset,
     Subst,
 )
 from prosiform.preamble import grouped as preamble_group
@@ -226,6 +228,7 @@ BUNDLE_SUFFIX = ".bundle.md"
 RUN_FOLDER_SUFFIX = ".bundles"
 CURRENT_FOLDER = "."
 
+ALTERNATIVE_UNRESOLVED = "E_ALTERNATIVE_UNRESOLVED"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_CONFLICT = "E_GROUP_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
@@ -256,6 +259,7 @@ OPERATOR_NAMES = {
 CODES = tuple(
     sorted(
         {
+            ALTERNATIVE_UNRESOLVED,
             INVALID_ENCODING,
             GROUP_CONFLICT,
             INVALID_USAGE,
@@ -789,6 +793,62 @@ def subst_reference(text: str, document: str) -> Reference:
     return replace(found, walk=posixpath.join(base, found.walk or found.path))
 
 
+def picked(
+    conversion: Conversion, references: Iterable[Reference]
+) -> tuple[Preset, ...]:
+    """The alternatives in force for one document, in declaration order.
+
+    They are the union every reference reaching the document selects: the
+    set its `subst` pairs resolve through. A name the document does not
+    declare, `?` and a diagram link's empty selection pick none.
+    """
+    names = {
+        preset.name
+        for reference in references
+        for preset in matching_presets(conversion, reference.tags)
+    }
+    return tuple(one for one in conversion.alternatives if one.name in names)
+
+
+def unresolved(path: str, conversion: Conversion) -> Failure:
+    """A document declaring alternatives compiled with none, or several, in force.
+
+    The document's links are written once, so they follow one kind's
+    routes. The message lists each alternative beside its choice line in
+    declaration order, so its reader reruns naming the one that fits.
+    """
+    width = max(len(one.name) for one in conversion.alternatives)
+    rows = "".join(
+        f"\n{INDENT}{one.name.ljust(width)}  {one.choice}"
+        for one in conversion.alternatives
+    )
+    return Failure(
+        USAGE_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"{path} needs one alternative in force:{rows}",
+            code=ALTERNATIVE_UNRESOLVED,
+            source=path,
+            remedy="rerun with --presets naming the alternative that fits your task",
+        ),
+    )
+
+
+def resolved(
+    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
+) -> None:
+    """Hold every carried document declaring alternatives to exactly one in force.
+
+    The count is taken on the references one bundle carries, so a
+    dispatched bundle counts the references reaching the document within
+    it.
+    """
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        if conversion.alternatives and len(picked(conversion, references)) != 1:
+            raise unresolved(path, conversion)
+
+
 def governing(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
@@ -806,12 +866,20 @@ def governing(
     document's links are written once, so the union would leave nothing
     saying which alternative they resolve to.
 
+    Several alternatives in force are refused before their pairs are
+    compared, since alternatives route one key to different kinds'
+    material by design: the references reaching a document only grow
+    across the traversal's rounds, so several in force in any round are
+    several at its fixed point.
+
     A key is the identity its original names from the declaring document,
     and only documents stating a pair in force appear.
     """
     table: dict[str, dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
         conversion = read[path].conversion
+        if len(picked(conversion, references)) > 1:
+            raise unresolved(path, conversion)
         in_force = {
             subst_identity(pair.original, path): Governed(
                 DEFAULT, pair, subst_reference(pair.alternative, path)
@@ -2310,9 +2378,11 @@ def unselected(
     """The presets of each carried document that no reference reaching it selected.
 
     `default` is in force wherever its document is compiled, so it is
-    never among them. The names keep the order the document declares
-    them in. A document reached only through a deferral is carried by
-    no bundle, so its presets are weighed by none.
+    never among them. A set of alternatives leaves all but one unpicked
+    wherever its document is compiled, so no alternative is among them
+    either. The names keep the order the document declares them in. A
+    document reached only through a deferral is carried by no bundle, so
+    its presets are weighed by none.
     """
     left: dict[str, tuple[str, ...]] = {}
     for path, references in selected.items():
@@ -2325,7 +2395,9 @@ def unselected(
         left[path] = tuple(
             preset.name
             for preset in conversion.presets
-            if preset.name != DEFAULT and preset.name not in chosen
+            if preset.name != DEFAULT
+            and preset.choice is None
+            and preset.name not in chosen
         )
     return left
 
@@ -3647,6 +3719,7 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    resolved(read, contributing(found))
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
     named = {name: selected}
