@@ -21,3 +21,5 @@ The task targets `i15/e01/main`, after the `?` link grammar (W01+W02).
 | --- | --- |
 | Epic | [Agent Pick](https://github.com/m2ux/prosiform/issues/709) |
 | Prerequisites | [W01+W02 delivery](https://github.com/m2ux/prosiform/pull/721) |
+| Pull request | [[I15:E01] The guide states the pick end to end](https://github.com/m2ux/prosiform/pull/723) |
+| Epic review | [[I15:E01] Agent Pick](https://github.com/m2ux/prosiform/pull/722) |
