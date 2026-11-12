@@ -2348,13 +2348,15 @@ def scored(
     undone: str = "",
     commands: tuple[str, ...] | None = None,
     withholds: str = "",
+    reads: tuple[str, ...] | None = None,
 ) -> Failure | None:
     """The class a workspace holding one trace and its actions is scored.
 
     `commands` is what the workspace's record says the session ran, and a
     record naming none says the harness reports no command, as a form given
-    no shell does. `withholds` names an action file the workspace leaves
-    unwritten, whichever agent would have written it.
+    no shell does; `reads` is likewise the files it says were read.
+    `withholds` names an action file the workspace leaves unwritten,
+    whichever agent would have written it.
     """
     workspace.mkdir(parents=True)
     (workspace / TRACE).write_text("".join(f"{state}\n" for state in trace))
@@ -2369,6 +2371,8 @@ def scored(
     held: dict[str, object] = {"starts": [start.record() for start in starts]}
     if commands is not None:
         held["commands"] = list(commands)
+    if reads is not None:
+        held["reads"] = list(reads)
     (workspace / SUBAGENTS).write_text(json.dumps(held))
     for due in scenario.trace:
         if due.action is not None and due.action[0] != withholds:
@@ -2388,9 +2392,10 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     A session is given the scenario's path with one departure each: an action
     left undone, the last state left out, a state the diagram does not hold,
     any diagram state entered at any index of the path or after its end, the
-    sources followed without compiling them in a form that must, and a
-    dispatch record missing, split or answered in a sub-agent's place. A
-    session whose agent reported an error is `errored` on any scenario.
+    sources followed without compiling them in a form that must, or read
+    beside the runs that compile them, and a dispatch record missing, split
+    or answered in a sub-agent's place. A session whose agent reported an
+    error is `errored` on any scenario.
     """
     path = scenario.path
     correct = tuple(Start(due.section, "done", due.together) for due in scenario.trace)
@@ -2402,6 +2407,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
         undone: str = "",
         commands: tuple[str, ...] | None = None,
         withholds: str = "",
+        reads: tuple[str, ...] | None = None,
     ) -> Failure | None:
         return scored(
             workflow,
@@ -2412,6 +2418,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
             undone,
             commands,
             withholds,
+            reads,
         )
 
     found = {
@@ -2433,6 +2440,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
         found.add(departing(path, commands=("pf absent.md#none", *stated)))
         if len(stated) > 1:
             found.add(departing(path, commands=tuple(reversed(stated))))
+        found.add(departing(path, commands=tuple(stated), reads=(ENTRY,)))
     for dispatch in scenario.trace:
         if dispatch.action is not None:
             found.add(departing(path, withholds=dispatch.action[0]))
@@ -2478,6 +2486,7 @@ def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
             Failure.UNCOMPILED,
             Failure.OVERCOMPILED,
             Failure.MISORDERED_COMPILE,
+            Failure.READ_SOURCE,
         )
     ]
 

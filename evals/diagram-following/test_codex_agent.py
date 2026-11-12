@@ -558,3 +558,41 @@ def test_a_bootstrap_compile_runs_pf_from_the_skill_directory(
     command = json.loads((tmp_path / "command-request.json").read_text())
     assert command["cwd"] == str(skill)
     assert command["sandboxPolicy"] == policy(tmp_path)
+
+
+def test_each_file_the_bridge_read_is_recorded_in_order() -> None:
+    """A `read_file` call's path reaches the result, any thread's, in order."""
+    events = [
+        {"type": "read", "threadId": "root", "path": "workflow.bundles/a.bundle.md"},
+        {"type": "read", "threadId": "child", "path": "reference/work-kind.md"},
+        usage("root", 100),
+        *finished("root", "Done."),
+    ]
+    result = summarize(events, "root")
+    assert result["reads"] == ["workflow.bundles/a.bundle.md", "reference/work-kind.md"]
+
+
+def test_the_bridge_records_each_file_its_read_tool_opened(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "work.md").write_text("held")
+    bridge = Bridge(["codex"], "gpt-6.1-sol", "medium", 1000)
+    replies = []
+    monkeypatch.setattr(bridge, "tool_result", lambda *args: replies.append(args))
+    for tool in ("read_file", "list_files"):
+        bridge.handle_tool(
+            {
+                "id": 5,
+                "params": {
+                    "tool": tool,
+                    "threadId": "root",
+                    "arguments": {"path": "work.md"},
+                },
+            }
+        )
+    assert [reply[1] for reply in replies] == ["held", "work.md"]
+    assert [event for event in bridge.events if event["type"] == "read"] == [
+        {"type": "read", "threadId": "root", "path": "work.md"}
+    ]
+    assert summarize(bridge.events, "root")["reads"] == ["work.md"]

@@ -24,12 +24,21 @@ from score import (
     compiles,
     names,
     pf_runs,
+    read_reads,
     read_starts,
     read_trace,
     record_calls,
     score,
 )
-from workflow import COMPILED_FORM, Compile, Scenario, Workflow, entry_bundle, workflows
+from workflow import (
+    AUTHORED_FORM,
+    COMPILED_FORM,
+    Compile,
+    Scenario,
+    Workflow,
+    entry_bundle,
+    workflows,
+)
 
 CORPUS = {workflow.name: workflow for workflow in workflows()}
 
@@ -1215,3 +1224,22 @@ def test_quoted_preset_separators_and_leading_dashes_are_values() -> None:
     assert pf_runs(("pf guide.md --presets='-checks,semi;colon,pipe|name'",)) == [
         Compile(None, "guide.md", frozenset({"-checks", "semi;colon", "pipe|name"}))
     ]
+
+
+def test_the_record_holds_the_files_a_shell_session_read(tmp_path: Path) -> None:
+    """The record lists each `Read` call's file, and none for a form with no shell."""
+    stream = tmp_path / "transcript.jsonl"
+    lines = [
+        claude_message(None, {"id": "r", "name": "Read", "input": {"file_path": "a"}}),
+        claude_message("x", {"id": "s", "name": "Read", "input": {"file_path": "b"}}),
+        claude_message(None, {"id": "g", "name": "Grep", "input": {"pattern": "c"}}),
+    ]
+    stream.write_text("".join(json.dumps(line) + "\n" for line in lines))
+    compiled = tmp_path / "compiled"
+    compiled.mkdir()
+    record_calls(stream, compiled, Claude(), COMPILED_FORM)
+    assert read_reads(compiled) == ("a", "b")
+    authored = tmp_path / "authored"
+    authored.mkdir()
+    record_calls(stream, authored, Claude(), AUTHORED_FORM)
+    assert read_reads(authored) is None
