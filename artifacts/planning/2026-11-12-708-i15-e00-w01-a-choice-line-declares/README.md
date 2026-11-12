@@ -12,7 +12,7 @@ The task targets `i15/e00/main`. The rules it implements are stated in the v1 de
 
 | Artifact | What it holds |
 | --- | --- |
-| [w01.md](../2026-11-12-preset-alternatives/e00/w01.md) | Component plan, scope and observing checks |
+| [w01.md](w01.md) | Component plan, scope and observing checks |
 
 ## Links
 
