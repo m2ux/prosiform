@@ -470,6 +470,58 @@ def test_an_added_diagram_click_fails() -> None:
     assert refused(one).invariant == NO_NEW_LINKS
 
 
+DEFERRING_CLICK = """# Guide
+
+```mermaid
+flowchart LR
+    Open([Open]) --> Note([Note])
+    click Note "note.md" "¬"
+```
+"""
+
+
+def test_a_deferring_click_carrying_its_tooltip_as_written_validates() -> None:
+    one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
+    one.validate()
+    assert 'click Note "note.md" "¬"' in one.bundled
+
+
+def test_a_click_whose_tooltip_the_bundle_changed_fails() -> None:
+    one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('"note.md" "¬"', '"note.md" "checks"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_deferring_click_pointing_at_its_target_s_heading_fails() -> None:
+    one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace('"note.md" "¬"', '"#note" "¬"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+COMPOSING_CLICK = """# Guide
+
+## First step
+
+```mermaid
+flowchart LR
+    Read([Read]) --> Detail([Detail])
+    click Detail "note.md#detail" "↳"
+```
+"""
+
+
+def test_a_composing_click_pointing_at_its_contribution_validates() -> None:
+    one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
+    one.validate()
+    assert 'click Detail "#note" "↳"' in one.bundled
+
+
+def test_a_composing_click_pointing_at_its_target_section_fails() -> None:
+    one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
+    one.bundled = one.bundled.replace('"#note" "↳"', '"#detail" "↳"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
 SEQUENCED = """# Guide
 
 ```mermaid
@@ -932,6 +984,15 @@ def test_links_in_two_cells_of_one_row_are_located_apart() -> None:
     assert list(positions("guide.md", tokens, table)) == [
         ("guide.md", 2, 0, 0),
         ("guide.md", 2, 1, 0),
+    ]
+
+
+def test_two_clicks_on_one_line_are_located_apart() -> None:
+    tokens = parse('```mermaid\nflowchart LR\nclick A "a.md"; click B "b.md"\n```\n')
+    fence = next(token for token in tokens if token.type == "fence")
+    assert list(positions("guide.md", tokens, fence)) == [
+        ("guide.md", 2, 0, 9),
+        ("guide.md", 2, 0, 25),
     ]
 
 

@@ -1,0 +1,17 @@
+description = "A Mermaid click's tooltip epic picks the epic alternative of work-kind.md, the one document with alternatives it reaches, so the epic subst pair routes its link to epic-body.md and the unpicked alternatives stay out of force without a warning."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Presets — Selection belongs to the link",
+  "Presets — Alternatives",
+  "Link classification and resource handling — Examples",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -1,4 +1,4 @@
-description = "A Mermaid click is the one link reaching work-kind.md, and a diagram link selects no preset, so none of its alternatives is in force and the run fails with E_ALTERNATIVE_UNRESOLVED, listing them."
+description = "A Mermaid click carrying no tooltip is the one link reaching work-kind.md, and a diagram link carrying no tooltip selects no preset, so none of its alternatives is in force and the run fails with E_ALTERNATIVE_UNRESOLVED, listing them."
 
 clauses = [
   "Presets — Exactly one alternative",

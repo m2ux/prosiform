@@ -23,7 +23,9 @@ line in a fence whose info string opens with `mermaid` — a `click` line,
 a class diagram's `link` line, or a sequence diagram's `link` or `links`
 participant menu, its keywords in any letter case — names a destination
 a reader of the rendered diagram follows, so each such destination is a
-use although the parser reads the fence as text.
+use although the parser reads the fence as text, and a quoted tooltip a
+`click` or class diagram `link` line carries states that use's operator
+and title.
 
 Every cell of a table row shares that row's line, so the parse records
 on each cell's inline token the column it stands in, and a reader of

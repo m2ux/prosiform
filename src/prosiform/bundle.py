@@ -158,6 +158,7 @@ from prosiform.provenance import (
     Record,
     Served,
     Target,
+    click_at,
     link_at,
 )
 from prosiform.rewrite import Definition, destinations, rewritten
@@ -639,24 +640,34 @@ def rewrite(
                 for at, (one, opening, tags) in enumerate(found)
             ]
             written[start:end] = rewritten(written[start:end], inline, targets, defined)
-    for fence in within(tokens, selected):
-        if fence.type != FENCE:
-            continue
-        held = lines(fence.content)
-        first = 0 if fence.map is None else fence.map[0] + 1
-        for click in clicks(fence):
-            given = target(
-                path,
-                click.destination,
-                "",
-                assigned,
-                declarations,
-                click.anchor,
-                substitution=substitution,
-            )
-            if given is not None:
-                at = click.line - 1
-                written[at] = clicked(written[at], held[at - first], click, given)
+    for region in selected:
+        here = served.get((path, (region.map or (0, 0))[0]), {})
+        for fence in within(tokens, [region]):
+            if fence.type != FENCE:
+                continue
+            held = lines(fence.content)
+            first = 0 if fence.map is None else fence.map[0] + 1
+            for click in clicks(fence):
+                located = click_at(path, click)
+                given = (
+                    f"{click.anchor}{contributing[located]}"
+                    if located in contributing
+                    else target(
+                        path,
+                        click.destination,
+                        click.opening,
+                        assigned,
+                        declarations,
+                        click.anchor,
+                        dispatched_to=here,
+                        line=click.line - 1 + first_line,
+                        substitution=substitution,
+                        tags=read_tags(click.title),
+                    )
+                )
+                if given is not None:
+                    at = click.line - 1
+                    written[at] = clicked(written[at], held[at - first], click, given)
     return written
 
 
