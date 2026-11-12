@@ -29,3 +29,4 @@ Ranked; the flagged ones most threaten the goal.
 
 - Format: the initiative and both epic drafts report nothing to fix, apply or decide.
 - Dependencies: no problems and no open candidate unit; E00 W02 and W03 stay split on a recorded line, and E01 W01 and W02 are joined.
+- Saved: #707, #708 and #709 read back with the intended title, labels and body, and the format check of each saved body, with its saved parent or epics, reports nothing to fix, apply or decide.

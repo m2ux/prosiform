@@ -32,4 +32,7 @@ This initiative lets a document declare one preset per kind as an alternative, a
 
 | Resource | Link |
 | --- | --- |
+| Initiative: [I15] Preset Alternatives | [#707](https://github.com/m2ux/prosiform/issues/707) |
+| Epic: [I15:E00] Declared Alternatives | [#708](https://github.com/m2ux/prosiform/issues/708) |
+| Epic: [I15:E01] Agent Pick | [#709](https://github.com/m2ux/prosiform/issues/709) |
 | Motivating case: work-planner `work-kind.md` | [workflow-server `workspace`](https://github.com/m2ux/workflow-server/blob/workspace/skills/work-planner/artifacts/work-kind.md) |

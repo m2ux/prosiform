@@ -30,10 +30,10 @@ A `?` tag in a deferred link's title leaves the pick of its target's alternative
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w01.md) | A pick tag rides a deferred link | AC1, AC2 | [E00:W00](https://github.com/m2ux/prosiform/issues/{{E00}}) | W02 | | |
-| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w02.md) | A deferred link states its pick | AC3 | [E00:W01](https://github.com/m2ux/prosiform/issues/{{E00}}) | W01 | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w03.md) | The guide states the pick end to end | AC4, AC5 | W02, [E00:W02](https://github.com/m2ux/prosiform/issues/{{E00}}), [E00:W03](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
-| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w04.md) | The documentation states the pick | AC6 | W03, [E00:W04](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w01.md) | A pick tag rides a deferred link | AC1, AC2 | [E00:W00](https://github.com/m2ux/prosiform/issues/708) | W02 | | |
+| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w02.md) | A deferred link states its pick | AC3 | [E00:W01](https://github.com/m2ux/prosiform/issues/708) | W01 | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w03.md) | The guide states the pick end to end | AC4, AC5 | W02, [E00:W02](https://github.com/m2ux/prosiform/issues/708), [E00:W03](https://github.com/m2ux/prosiform/issues/708) | | | |
+| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w04.md) | The documentation states the pick | AC6 | W03, [E00:W04](https://github.com/m2ux/prosiform/issues/708) | | | |
 
 ## Acceptance Criteria
 

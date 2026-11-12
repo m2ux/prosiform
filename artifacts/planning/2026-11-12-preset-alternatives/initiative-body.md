@@ -34,8 +34,8 @@ A link's presets are fixed when its author writes the link, so a document generi
 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
-| [E00](https://github.com/m2ux/prosiform/issues/{{E00}}) | Declared Alternatives | AC1, AC2, AC3, AC4, AC5 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/{{E01}}) | Agent Pick | AC1, AC2, AC4, AC5 | | |
+| [E00](https://github.com/m2ux/prosiform/issues/708) | Declared Alternatives | AC1, AC2, AC3, AC4, AC5 | | |
+| [E01](https://github.com/m2ux/prosiform/issues/709) | Agent Pick | AC1, AC2, AC4, AC5 | | |
 
 ## Acceptance Criteria
 
