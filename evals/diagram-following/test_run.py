@@ -357,7 +357,7 @@ def test_a_compiled_session_receives_its_sources_the_bundle_set_and_the_build(
     assert Path(entry["which_pf"]).resolve() == Path(shutil.which("pf") or "").resolve()
     assert not Path(entry["which_pf"]).is_relative_to(workspace)
     assert f"{workflow.entry_bundle.as_posix()} describes a workflow" in entry["prompt"]
-    assert "run each compile from this directory" in " ".join(entry["prompt"].split())
+    assert "Run each pf command from this directory." in entry["prompt"]
 
 
 def test_a_run_gives_each_harness_the_compiled_scenarios_its_stream_reports() -> None:

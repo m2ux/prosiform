@@ -22,7 +22,7 @@ The linked form's entry draws the diagram's flowchart with no branch label, and 
 
 Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
-Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to compile from the directory holding the sources. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
+Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to run each `pf` command from its working directory. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
 
 | Field | Meaning |
 | --- | --- |
@@ -226,6 +226,8 @@ A run that passes the dispatch checks and its sub-agents' actions is held to the
 The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade. A harness reporting no command, as the Claude harness does in every form but `compiled` and `bootstrap`, holds a session to none of them.
 
 A session given a shell follows what `pf` prints and writes, so a run passing the run checks is then held to its record's `reads`: each path the stream records a file-reading call opening, the session's and every sub-agent's the stream carries. A path naming a document of the form's sources, as that document or a path ending `/` and its path within them, fails the session; a bundle `pf` wrote, an input and the session's own files are no source.
+
+The sources sit in the session's directory on purpose, as they would beside a real agent, and the session's instruction neither names nor forbids them, so the check finds whether an agent that comes across them keeps to what `pf` gave it.
 
 | Class | The session |
 | --- | --- |
