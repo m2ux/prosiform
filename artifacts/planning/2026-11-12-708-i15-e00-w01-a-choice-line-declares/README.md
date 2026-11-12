@@ -13,6 +13,7 @@ The task targets `i15/e00/main`. The rules it implements are stated in the v1 de
 | Artifact | What it holds |
 | --- | --- |
 | [w01.md](w01.md) | Component plan, scope and observing checks |
+| [test-results.md](test-results.md) | The test plan's results, with the revision tested |
 
 ## Links
 
