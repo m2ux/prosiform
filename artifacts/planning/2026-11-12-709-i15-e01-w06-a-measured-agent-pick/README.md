@@ -13,6 +13,7 @@ The task targets `i15/e01/main`, after the agent-pick workflow (W05). It is the 
 | Artifact | What it holds |
 | --- | --- |
 | [w06.md](w06.md) | Component plan, scope and observing checks |
+| [validation.md](validation.md) | Each Test Plan check's procedure, tested revision and observation |
 
 ## Links
 
@@ -20,6 +21,8 @@ The task targets `i15/e01/main`, after the agent-pick workflow (W05). It is the 
 | --- | --- |
 | Epic | [Agent Pick](https://github.com/m2ux/prosiform/issues/709) |
 | Prerequisites | [W05 delivery](https://github.com/m2ux/prosiform/pull/725) |
+| Pull request | [[I15:E01] A measured agent-pick run](https://github.com/m2ux/prosiform/pull/732) |
+| Epic review | [[I15:E01] Agent Pick](https://github.com/m2ux/prosiform/pull/722) |
 
 ## Run State
 
@@ -29,4 +32,4 @@ The task targets `i15/e01/main`, after the agent-pick workflow (W05). It is the 
 | `agent-pick-shakedown-2`, 2026-11-12 | On #727's instruction: stopped on a `defect` of `pf`'s guide: `unknown-kind-held` resolved the bundle's link from the bundle's folder, found no file and opened the router's source, escalated as [#728](https://github.com/m2ux/prosiform/issues/728) and corrected by [#729](https://github.com/m2ux/prosiform/pull/729); `epic-picked`, `initiative-picked` (`read_source`) and `task-picked` (`unfinished`) are each `miss`. USD 0.025455 over 808 191 tokens. It sets no cap. |
 | `agent-pick-shakedown-3`, 2026-11-12 | On #729's guide: stopped on a `defect` of the instruction: `epic-picked` and `unknown-kind-held` omitted `Entry`, the bundle's clicked start marker, while the compiled instruction lacked the clicked-marker tracing rule, escalated as [#730](https://github.com/m2ux/prosiform/issues/730) and corrected by [#731](https://github.com/m2ux/prosiform/pull/731); `initiative-picked` and `task-picked` (`read_source`) are each `miss`. USD 0.025175 over 790 926 tokens. It sets no cap. |
 | `agent-pick-shakedown-4`, 2026-11-12 | On #731's instruction: 4 sessions, none passed, each failure `miss` (three `read_source`, one `uncompiled`), every session on the scenario's path; USD 0.028844 over 1 010 089 tokens, the largest session 408 196. It sets the run's session cap of 820 000 tokens, token budget of 16 400 000 and cost cap of USD 1, recorded in the [runbook](https://github.com/m2ux/prosiform/blob/i15/e01/w06-a-measured-agent-pick/evals/diagram-following/RUNBOOK.md#agent-pick-run). |
-| `agent-pick`, 20 sessions | Held for the user's approval of the cost cap. |
+| `agent-pick`, 2026-11-12 | On the USD 1 cost cap the user approved: 20 sessions, none passed, every one on its scenario's path; `read_source` 15, `overcompiled` 4, `uncompiled` 1, each `miss`; USD 0.158708 over 5 037 116 tokens. Committed as `agent-pick.json` and `agent-pick.md` by [#732](https://github.com/m2ux/prosiform/pull/732). |
