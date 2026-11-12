@@ -1,0 +1,19 @@
+{
+  "board": "https://github.com/users/m2ux/projects/18",
+  "options_added": {
+    "Initiative": [{"id": "7ba18b8d", "name": "I17 Click Titles"}],
+    "Epic": [
+      {"id": "3d633441", "name": "I17 Initiative"},
+      {"id": "bc1b1f74", "name": "I17:E00 Click Titles"},
+      {"id": "13850884", "name": "I17:E01 Click Titles Release"}
+    ]
+  },
+  "options_preserved_by_id": true,
+  "items_before": 150,
+  "items_unchanged_by_option_update": true,
+  "placed": [
+    {"issue": 738, "item": "PVTI_lAHOCotKsc4BnhDMzhIMYWk", "Status": "Backlog", "Initiative": "I17 Click Titles", "Epic": "I17 Initiative"},
+    {"issue": 739, "item": "PVTI_lAHOCotKsc4BnhDMzhIMYd4", "Status": "Backlog", "Initiative": "I17 Click Titles", "Epic": "I17:E00 Click Titles"},
+    {"issue": 740, "item": "PVTI_lAHOCotKsc4BnhDMzhIMYj0", "Status": "Backlog", "Initiative": "I17 Click Titles", "Epic": "I17:E01 Click Titles Release"}
+  ]
+}
