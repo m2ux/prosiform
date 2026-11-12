@@ -13,6 +13,7 @@ The task targets `i15/e01/main`, after the guide entry and router fixtures (W03)
 | Artifact | What it holds |
 | --- | --- |
 | [w05.md](w05.md) | Component plan, scope and observing checks |
+| [validation.md](validation.md) | Each Test Plan check's procedure, tested revision and observation |
 
 ## Links
 
