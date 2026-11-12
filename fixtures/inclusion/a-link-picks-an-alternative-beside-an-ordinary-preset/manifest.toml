@@ -1,4 +1,4 @@
-description = "The link title epic, checks picks the epic alternative of work-kind.md beside its ordinary checks preset. The epic subst pair routes work-kind.md's link to epic-body.md without a W_SUBST_USED, checks places the document under Reviews, and the initiative route stays out of force."
+description = "The link title epic, checks picks the epic alternative of work-kind.md beside its ordinary checks preset. The epic subst pair routes work-kind.md's link to epic-body.md without a W_SUBST_USED, checks places the document under Reviews, and the unpicked initiative alternative stays out of force without a W_PRESET_UNUSED."
 
 clauses = [
   "Presets — Selection by tags",
@@ -16,9 +16,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_PRESET_UNUSED"
-source = "work-kind.md"
-message_contains = ["the preset 'initiative'"]
+diagnostics = []

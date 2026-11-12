@@ -1,0 +1,21 @@
+description = "Two links of one bundle pick the epic and the task alternatives of work-kind.md. Its links are written once, so two in force fail with E_ALTERNATIVE_UNRESOLVED, listing them."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Metadata failures — E_ALTERNATIVE_UNRESOLVED",
+  "Presets — One document under several selections",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ALTERNATIVE_UNRESOLVED"
+source = "work-kind.md"
+message_contains = ["work-kind.md needs one alternative in force:\n  initiative  States a goal and lists its epics.\n  epic        Lists its tasks in a Work Breakdown table.\n  task        One pull request's worth of work."]
