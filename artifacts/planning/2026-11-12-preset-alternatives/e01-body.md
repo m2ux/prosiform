@@ -25,6 +25,8 @@ A `?` tag in a deferred link's title leaves the pick of its target's alternative
   One symbol-grammar entry: pass the title as usual, read the list, rerun with `?` replaced by the alternative that fits.
 - **A router fixture proves the flow.**
   A kind router with alternatives, a mode linking it with `?`, the listing, and each pick's bundle.
+- **An agent proves the pick.**
+  The diagram-following eval gains an agent-pick workflow in its `compiled` form, where a headless session resolves a `?` pick from what the bundle and `pf` print, and a live run records how often it picks correctly.
 
 ## Work Breakdown
 
@@ -34,6 +36,8 @@ A `?` tag in a deferred link's title leaves the pick of its target's alternative
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w02.md) | A deferred link states its pick | AC3 | [E00:W01](https://github.com/m2ux/prosiform/issues/708) | W01 | | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w03.md) | The guide states the pick end to end | AC4, AC5 | W02, [E00:W02](https://github.com/m2ux/prosiform/issues/708), [E00:W03](https://github.com/m2ux/prosiform/issues/708) | | | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w04.md) | The documentation states the pick | AC6 | W03, [E00:W04](https://github.com/m2ux/prosiform/issues/708) | | | |
+| [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w05.md) | An agent-pick eval workflow | AC7 | W03 | | | |
+| [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w06.md) | A measured agent-pick baseline | AC8 | W05 | | | |
 
 ## Acceptance Criteria
 
@@ -43,6 +47,8 @@ A `?` tag in a deferred link's title leaves the pick of its target's alternative
 - [ ] **AC4.** The guide's symbol grammar states how an agent resolves `?`, as the bare-command test shows.
 - [ ] **AC5.** A kind router reached through a `?` link compiles, from the published bundle's command, to the listing and then to each pick's bundle, as the router fixtures show.
 - [ ] **AC6.** The references, invocation and glossary pages state the `?` tag and its refusals and pin the design stating them, as `make links` and a read of those pages show.
+- [ ] **AC7.** The diagram-following eval holds an agent-pick workflow whose scenarios pass only a session that enters the picked kind's states alone, after running `pf` with `?` replaced by that alternative and reading no source, as `make harness` and a stub-agent run of each scenario show.
+- [ ] **AC8.** The eval's baseline records the agent-pick workflow's pass rates from a live run, each failing session with its disposition, as the committed run record shows.
 
 ## References
 

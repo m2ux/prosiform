@@ -20,6 +20,7 @@ Settled in the design interview (user, 2026-11-12). Each names the options set a
 Settled in Deliver mode (user, 2026-11-12).
 
 - **I15 delivers alone.** I12 moves to Backlog with its priority labels removed, so no Advance re-places it. Set aside: I12 alongside I15.
+- **An agent proves the pick end to end.** E01 gains W05, an agent-pick workflow in the diagram-following eval's `compiled` form, and W06, its live run under `RUNBOOK.md` with the model the user chooses; initiative AC4 cites the eval. Set aside: a design row alone; fixtures and the bare-command test alone.
 - **E01 depends on E00.** E01's `?` builds on E00's alternatives, which reach main only when E00's review pull requests merge, so E01 starts from main after them. Set aside: cutting E01's bases from E00's; holding E01 without a plan edit.
 
 ## Planning

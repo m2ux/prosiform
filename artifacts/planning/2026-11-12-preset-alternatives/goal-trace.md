@@ -5,7 +5,7 @@
 | Goal clause | Initiative criteria | Epics | Epic criteria | Source requirement |
 | --- | --- | --- | --- | --- |
 | A link leaves the preset to the agent at compile time | AC1, AC4 | E01 | E01 AC1, AC5 | The `?` Tag: deferred links only; the bundle carries `?` |
-| The agent sees the target's alternatives and when to pick each | AC4 | E00, E01 | E00 AC5; E01 AC4, AC5 | The Pick: one diagnostic answers `?` |
+| The agent sees the target's alternatives and when to pick each | AC4 | E00, E01 | E00 AC5; E01 AC4, AC5, AC7, AC8 | The Pick: one diagnostic answers `?` |
 | A document generic over a kind compiles for the one kind picked | AC1 | E00, E01 | E00 AC2; E01 AC5 | Alternatives; Routing |
 | A missing or wrong pick fails rather than compiling the wrong route | AC2 | E00, E01 | E00 AC3, AC4; E01 AC2, AC3 | Alternatives: exactly one is in force; The `?` Tag: its refusals |
 | Routing raises no stand-in warning | AC3 | E00 | E00 AC6, AC7, AC8 | Routing; Alternatives: an unpicked alternative is silent |
