@@ -211,13 +211,13 @@ The `agent-pick` [deferral scenarios](README.md#deferral-scenarios) on the basel
 | Forms | `compiled`, the one form the workflow is written in. |
 | Repetitions | 5 |
 | Sessions | 20: four scenarios, one form, five repetitions. |
-| Session cap | Set by the shakedown below, by the proof's rule. |
-| Token budget | 20 times the session cap. |
-| Cost cap | Set by the shakedown below, by the proof's rule. The run starts only once the user approves it. |
+| Session cap | 650 000 tokens: the second shakedown run's largest session, 323 888 tokens, doubled and rounded up to the next 10 000. |
+| Token budget | 13 000 000 tokens: 20 times the session cap. |
+| Cost cap | USD 1: 20 times the second shakedown run's mean session cost of USD 0.006364, doubled and rounded up to the next dollar. The run starts only once the user approves it. |
 | Committed | `report.json` as `evals/diagram-following/agent-pick.json`, with its `dispositions.json` read into it, and its `report.md` as `evals/diagram-following/agent-pick.md`; the run's measured cost in the README. `baseline.json`, `report.md` and `mvp-proof.json` are untouched. |
 
 ```bash
-make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 5 --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id agent-pick'
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 5 --session-budget-tokens 650000 --budget-tokens 13000000 --run-id agent-pick'
 ```
 
 ### Shakedown
@@ -234,6 +234,8 @@ One repetition of each agent-pick scenario, on the run's harness and model, at t
 | Token budget | 11 320 000 tokens: 4 times the session cap. |
 | Estimate | USD 0.03: 4 sessions at the baseline shakedown's mean of USD 0.007449 a session. |
 | Run | `agent-pick-shakedown`, 2026-11-12: all 4 sessions started, none passed, USD 0.03219 spent over 908 675 tokens, on a `defect` of the instruction: `epic-picked` and `unknown-kind-held` took `read_source` after the instruction told them the documents the entry was compiled from sat in their directory, escalated as [#726](https://github.com/m2ux/prosiform/issues/726) and corrected by [#727](https://github.com/m2ux/prosiform/pull/727). `initiative-picked`, tracing from `Classify` though the bundle draws `Entry` first, and `task-picked`, compiling `states/classify.md#classify`, which no line states, are each a `miss`. It sets no cap. |
+| Second run | `agent-pick-shakedown-2`, 2026-11-12, on #727's instruction: `completed`, all 4 sessions started, none passed, each failure triaged `miss`. `epic-picked`, `initiative-picked` and `unknown-kind-held` took `read_source`, opening the router's or the states' sources beside the stated listing and rerun, each picking the scenario's kind; `task-picked` took `unfinished`, ending after one step whose only output was a read written as text, with no tool call. |
+| Measured | USD 0.025455 in all, USD 0.006364 a session; 808 191 tokens, 202 048 a session, the largest 323 888. These set the run's session cap, token budget and cost cap above. |
 
 ```bash
 make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 1 --session-budget-tokens 2830000 --budget-tokens 11320000 --run-id agent-pick-shakedown-2'
