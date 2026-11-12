@@ -57,7 +57,7 @@ pf guide.md --presets=-checks
 pf -c guide.md#plan-report --presets checks,draft
 ```
 
-Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
+Run a link in a bundle as written, from the directory `pf` compiled that bundle in. Resolve a link in a source document from that document, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
 
 The following commands use the checked source tree of a [preset fixture](fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml):
 

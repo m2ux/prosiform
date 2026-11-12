@@ -165,7 +165,7 @@ def test_the_guide_specifies_resolution_and_shell_quoting() -> None:
     assert run.status == 2
     guide = " ".join(cli.GUIDE.split())
     for rule in (
-        "Resolve the destination from the linking document",
+        "Resolve a link in a source document from that document",
         "include the file for #fragments",
         "Pass title tags as one quoted --presets value, also for deferred links",
         "pf modes/review.md#review --presets 'checks, final draft'",
