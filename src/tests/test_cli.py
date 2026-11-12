@@ -287,6 +287,10 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "named from the working directory",
         "1 a failure stopped the run: report its diagnostics and go no further",
         "2 invalid usage or option combination",
+        "Run a link in a bundle as written, "
+        "from the directory pf compiled that bundle in.",
+        "Resolve a link in a source document from that document, "
+        "then express it from the working directory",
         "\u21b3 names a section to inline",
         "keep it in context",
         "\u21c9 names a bundle to hand on",

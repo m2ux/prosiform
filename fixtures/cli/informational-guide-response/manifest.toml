@@ -1,4 +1,4 @@
-description = "A command line holding no argument prints the guide: how to run pf, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, how a ? among title tags is resolved, the inputs a dispatch carries, and that failures return together. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
+description = "A command line holding no argument prints the guide: how to run pf, that a link in a bundle runs as written while one in a source document is resolved from that document, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, how a ? among title tags is resolved, the inputs a dispatch carries, and that failures return together. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
 
 clauses = [
   "Guide",
@@ -18,6 +18,8 @@ stdout_contains = [
   "<document>          one document, or document#section, named from the",
   "1  a failure stopped the run: report its diagnostics and go no further",
   "2  invalid usage or option combination",
+  "Run a link in a bundle as written, from the directory pf compiled that",
+  "bundle in. Resolve a link in a source document from that document,",
   "↳  names a section to inline",
   "keep it in context",
   "⇉  names a bundle to hand on",

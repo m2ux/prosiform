@@ -334,9 +334,11 @@ Usage:
 
 Compiling a link:
 
-  Resolve the destination from the linking document, then express it
-  from the command's working directory; include the file for #fragments.
-  Pass title tags as one quoted --presets value, also for deferred links:
+  Run a link in a bundle as written, from the directory pf compiled that
+  bundle in. Resolve a link in a source document from that document,
+  then express it from the working directory; include the file for
+  #fragments. Pass title tags as one quoted --presets value, also for
+  deferred links:
 
     pf modes/review.md#review --presets 'checks, final draft'
 
