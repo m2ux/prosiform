@@ -297,6 +297,9 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "step that led there, one per value where that step applies to",
         "A failure cancels nothing; all",
         "failures return together.",
+        "? among a link's title tags leaves the pick to you",
+        "pass the title as --presets as usual, read the alternatives pf lists,",
+        "and rerun with ? replaced by the one that fits your task",
     ):
         assert rule in " ".join(GUIDE.split())
 

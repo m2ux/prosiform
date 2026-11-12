@@ -362,6 +362,9 @@ Symbol grammar:
      Give each bundle to its own sub-agent at once, with the inputs of
      the step that led there, one per value where that step applies to
      several. A failure cancels nothing; all failures return together.
+  ?  among a link's title tags leaves the pick to you: pass the title as
+     --presets as usual, read the alternatives pf lists, and rerun with ?
+     replaced by the one that fits your task
 """
 
 
