@@ -28,6 +28,7 @@ from ruamel.yaml.scanner import Scanner, ScannerError
 from prosiform.diagnostics import ERROR, Diagnostic, Location, RelatedLocation
 from prosiform.heading import worded
 from prosiform.limits import FILE_BYTES, NESTING, SCALAR_DIGITS
+from prosiform.tags import PICK
 
 INVALID_FRONTMATTER = "E_INVALID_FRONTMATTER"
 INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
@@ -39,8 +40,6 @@ FIELDS = (GROUP, SUBST, CHOICE)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
-PICK = "?"
-"""The title token leaving the pick to an agent, so no preset carries it as a name."""
 ROOT = "root"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {

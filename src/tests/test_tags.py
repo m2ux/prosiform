@@ -6,7 +6,7 @@ from itertools import permutations
 import pytest
 
 from prosiform.profile import parse
-from prosiform.tags import read
+from prosiform.tags import PICK, picks, read
 
 
 @pytest.mark.parametrize("text", [None, "", " \t\r\n", ",", " , , \t,\n"])
@@ -69,3 +69,15 @@ def test_parsed_titles_and_shell_decoded_values_supply_the_same_list(
     assert title == " Checks,Draft "
     argument = shlex.split("--presets ' Checks,Draft '")[1]
     assert read(title) == read(argument) == {"checks", "draft"}
+
+
+@pytest.mark.parametrize("text", ["?", " ? ", "checks, ?", "?,draft"])
+def test_the_pick_token_is_read_apart_from_the_names_beside_it(text: str) -> None:
+    tags = read(text)
+    assert picks(tags)
+    assert tags - {PICK} == read(text.replace("?", ""))
+
+
+@pytest.mark.parametrize("text", [None, "", "checks", "checks?", "why?,draft"])
+def test_a_list_without_the_whole_pick_token_leaves_no_pick(text: str | None) -> None:
+    assert not picks(read(text))

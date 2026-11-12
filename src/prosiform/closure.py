@@ -53,6 +53,7 @@ from markdown_it.token import Token
 from prosiform.metadata import DEFAULT, Conversion, Preset
 from prosiform.profile import is_markdown
 from prosiform.source import ANCHOR, ENCODING, external, regions, uses
+from prosiform.tags import picks
 
 DEFERRAL_MARK = "¬"
 DISPATCH_MARK = "⇉"
@@ -162,6 +163,9 @@ class Reference:
     A reference a composition directive writes, naming a section, states
     that it composes: it places that section beneath the directive's
     scope, and is no inclusion of the document it names.
+
+    A reference a deferral writes states that it defers: a later run
+    compiles its target with the deferral's title as its selection.
     """
 
     original: str
@@ -175,6 +179,7 @@ class Reference:
     title: str | None = None
     composes: bool = False
     tags: frozenset[str] = frozenset()
+    defers: bool = False
 
 
 def matching_presets(
@@ -651,6 +656,17 @@ def conflicting(opening: str) -> bool:
 def deferred(opening: str) -> bool:
     """Whether a link states that a later run compiles its material."""
     return DEFERRAL_MARK in operators(opening)
+
+
+def compiled_pick(opening: str, tags: frozenset[str]) -> bool:
+    """Whether a link carries the pick token where no agent compiles its target.
+
+    The pick token leaves the pick among alternatives to the agent that
+    compiles a deferral in a later run. Every other link names a target
+    a run compiles from what the link states — inline, composed or as
+    a dispatched bundle — so no agent is there to pick.
+    """
+    return picks(tags) and not deferred(opening)
 
 
 def dispatched(opening: str) -> bool:
