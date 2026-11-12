@@ -136,6 +136,100 @@ def test_subst_holds_a_list() -> None:
     assert "prosiform.default.subst must be a list" in str(caught.value)
 
 
+def test_a_choice_line_declares_an_alternative() -> None:
+    text = (
+        "prosiform:\n"
+        "  default: {group: {rules: 2}}\n"
+        "  Epic: {choice: Lists its tasks., subst: [{body.md: epic.md}]}\n"
+        "  checks: {group: {reviews: 1}}\n"
+        '  Task: {choice: "One pull request\'s worth of work."}'
+    )
+    result = parse(text)
+    assert [one.choice for one in result.presets] == [
+        None,
+        "Lists its tasks.",
+        None,
+        "One pull request's worth of work.",
+    ]
+    assert [one.name for one in result.alternatives] == ["Epic", "Task"]
+    assert result.alternatives[0].substs == (
+        Subst("body.md", "epic.md", Location("rules/a.md", 4, 44)),
+    )
+
+
+def test_ordinary_presets_declare_no_alternative() -> None:
+    result = parse("prosiform: {default: {group: {rules: 2}}, checks: {}}")
+    assert result.alternatives == ()
+    assert result.presets == (
+        Preset("default", result.default.membership),
+        Preset("checks"),
+    )
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        '""',
+        '"a\\nb"',
+        '"a\\rb"',
+        '"a\\u2028b"',
+        '"a\\u0085b"',
+        '"line\\n"',
+        "1",
+        "true",
+        "null",
+        "[a]",
+        "{a: b}",
+    ],
+)
+def test_a_malformed_choice_is_refused_at_its_value(value: str) -> None:
+    text = "prosiform:\n  Epic: {choice: " + value + "}"
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(text)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert (
+        "prosiform.Epic.choice must be a non-empty string holding no line break"
+        in diagnostic.message
+    )
+    assert diagnostic.location == Location("rules/a.md", 3, 18)
+
+
+def test_a_block_scalar_choice_holds_a_line_break() -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform:\n  Epic:\n    choice: |\n      Lists its\n      tasks.")
+    assert caught.value.diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.Epic.choice must be" in caught.value.diagnostic.message
+
+
+@pytest.mark.parametrize("name", ["default", "Default"])
+def test_a_choice_in_default_is_refused_at_its_key(name: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse(f"prosiform:\n  {name}:\n    choice: Every task.")
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert f"prosiform.{name}.choice is refused" in diagnostic.message
+    assert diagnostic.location == Location("rules/a.md", 4, 5)
+
+
+@pytest.mark.parametrize("value", ["{}", "{choice: Every task.}"])
+def test_a_preset_named_the_pick_token_is_refused_at_its_key(value: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse('prosiform:\n  default: {}\n  "?": ' + value)
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.? is refused" in diagnostic.message
+    assert diagnostic.location == Location("rules/a.md", 4, 3)
+
+
+def test_a_choice_outside_its_preset_names_a_named_preset() -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform: {choice: x}")
+    message = caught.value.diagnostic.message
+    assert "prosiform.choice must be a mapping" in message
+    assert "prosiform.<alternative>.choice" in message
+
+
 def test_group_and_marks() -> None:
     result = parse(
         'prosiform:\r\n  default:\r\n    group:\r\n      " règles ": 2\r\n',

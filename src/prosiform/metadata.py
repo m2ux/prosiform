@@ -34,10 +34,13 @@ INVALID_CONVERSION_METADATA = "E_INVALID_CONVERSION_METADATA"
 RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 SUBST = "subst"
-FIELDS = (GROUP, SUBST)
+CHOICE = "choice"
+FIELDS = (GROUP, SUBST, CHOICE)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
+PICK = "?"
+"""The title token leaving the pick to an agent, so no preset carries it as a name."""
 ROOT = "root"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
@@ -115,12 +118,14 @@ class Preset:
     `membership` holds the `group` pair, the one group the declaring
     document joins; a preset stating none leaves the document its
     individual file group. `substs` holds each `subst` entry in written
-    order.
+    order. `choice` holds the choice line of an alternative, stating
+    when to pick it; a preset holding none is an ordinary preset.
     """
 
     name: str
     membership: Membership | None = None
     substs: tuple[Subst, ...] = ()
+    choice: str | None = None
 
 
 @dataclass(frozen=True)
@@ -148,6 +153,11 @@ class Conversion:
             (preset for preset in self.presets if preset.name == DEFAULT),
             Preset(DEFAULT),
         )
+
+    @property
+    def alternatives(self) -> tuple[Preset, ...]:
+        """Each preset holding a choice line, in declaration order."""
+        return tuple(preset for preset in self.presets if preset.choice is not None)
 
 
 class InvalidMetadata(Exception):
@@ -447,9 +457,18 @@ def decode(
         name = "prosiform." + key.value
         if key.value == ROOT:
             raise _refused_root(name, key.location)
+        if key.value == PICK:
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} is refused: {PICK} is the title token leaving the pick "
+                "to an agent, so no reference could select the preset; "
+                "rename the preset",
+                key.location,
+            )
         if value.kind != "map":
+            within = "<alternative>" if key.value == CHOICE else DEFAULT
             remedy = (
-                f"; write the field within a preset, as prosiform.{DEFAULT}.{key.value}"
+                f"; write the field within a preset, as prosiform.{within}.{key.value}"
                 if key.value in FIELDS
                 else ""
             )
@@ -493,6 +512,21 @@ def _preset(preset: str, mapping: _Node) -> Preset:
             raise _fail(
                 INVALID_CONVERSION_METADATA, f"{name} must be a list", value.location
             )
+        if key.value == CHOICE and preset.casefold() == DEFAULT:
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} is refused: {DEFAULT} is in force wherever its document "
+                "is compiled, so it is no alternative a reference picks; write "
+                "the choice within a named preset",
+                key.location,
+            )
+        if key.value == CHOICE and not _one_line(value):
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} must be a non-empty string holding no line break, "
+                "since it is printed beside its alternative as one row",
+                value.location,
+            )
         fields[key.value] = value
     named = f"prosiform.{preset}."
 
@@ -501,7 +535,13 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         preset,
         _membership(preset, named + GROUP, fields[GROUP]) if GROUP in fields else None,
         tuple(_subst(f"{named}{SUBST}[{at}]", entry) for at, entry in enumerate(held)),
+        fields[CHOICE].value if CHOICE in fields else None,
     )
+
+
+def _one_line(node: _Node) -> bool:
+    """Whether one value is a non-empty string holding no line break."""
+    return node.kind == "str" and node.value.splitlines() == [node.value]
 
 
 def _single_line(text: str) -> bool:
