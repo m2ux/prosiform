@@ -372,6 +372,10 @@ A refused run — one every started session of which took `errored` — has no r
 
 The managed platform configuration the sessions carried is recorded by count and fingerprint, as [Isolation](#isolation) states. [`RUNBOOK.md`](RUNBOOK.md#mvp-proof) states how the run is made.
 
+## Agent-pick run
+
+[`agent-pick.json`](agent-pick.json) records a live run of the [`agent-pick` scenarios](#deferral-scenarios), with its [report](agent-pick.md) beside it: 20 sessions on the `opencode` harness and the baseline's model, four scenarios in `compiled`, five repetitions each. Every session traced its scenario's path, the picked kind's state alone, and none passed: 15 opened a source of the form beside compiling, `read_source`; 4 compiled a reference no line on the path states, `overcompiled`; and 1 never ran the listing, `uncompiled`. Each failure is triaged as a miss in the file. The run measured USD 0.158708 over 5 037 116 tokens, so a rerun spends the same budget. [`RUNBOOK.md`](RUNBOOK.md#agent-pick-run) states how the run is made.
+
 ## Refreshing the baseline
 
 The committed baseline and MVP proof are historical live-run evidence at the revisions their records name. They do not measure the current link-tag preset implementation. The deterministic workflow and scorer tests exercise the current tagged deferrals and dispatched variants; a new paid run requires separate authorization.
