@@ -25,5 +25,6 @@ The task targets `i15/e01/main`, after the agent-pick workflow (W05). It is the 
 
 | Run | State |
 | --- | --- |
-| `agent-pick-shakedown`, 2026-11-12 | 4 sessions, none passed, each failure `miss`; USD 0.03219 over 908 675 tokens, the largest session 413 537. It sets the run's session cap of 830 000 tokens, token budget of 16 600 000 and cost cap of USD 1, recorded in the [runbook](https://github.com/m2ux/prosiform/blob/i15/e01/w06-a-measured-agent-pick/evals/diagram-following/RUNBOOK.md#agent-pick-run). |
+| `agent-pick-shakedown`, 2026-11-12 | Stopped on a `defect` of the instruction: `epic-picked` and `unknown-kind-held` took `read_source` after the instruction told them the sources sat in their directory, escalated as [#726](https://github.com/m2ux/prosiform/issues/726) and corrected by [#727](https://github.com/m2ux/prosiform/pull/727); `initiative-picked` (`wrong_branch`) and `task-picked` (`overcompiled`) are each `miss`. USD 0.03219 over 908 675 tokens. It sets no cap. |
+| `agent-pick-shakedown-2`, 2026-11-12 | On #727's instruction: 4 sessions, none passed, each failure `miss` (three `read_source`, one `unfinished`); USD 0.025455 over 808 191 tokens, the largest session 323 888. It sets the run's session cap of 650 000 tokens, token budget of 13 000 000 and cost cap of USD 1, recorded in the [runbook](https://github.com/m2ux/prosiform/blob/i15/e01/w06-a-measured-agent-pick/evals/diagram-following/RUNBOOK.md#agent-pick-run). |
 | `agent-pick`, 20 sessions | Held for the user's approval of the cost cap. |
