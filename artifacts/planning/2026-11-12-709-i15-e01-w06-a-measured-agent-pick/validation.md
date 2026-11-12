@@ -1,6 +1,6 @@
 # Validation
 
-The checks the task pull request's Test Plan records, run against task branch `i15/e01/w06-a-measured-agent-pick` at `87c1141c7`, on `i15/e01/main` at `5ed17e5c4`, from the unit checkout with the locked development environment (`uv sync --frozen`).
+The checks the task pull request's Test Plan records, run against task branch `i15/e01/w06-a-measured-agent-pick` at `57aeda9e6`, on `i15/e01/main` at `5ed17e5c4`, from the unit checkout with the locked development environment (`uv sync --frozen`).
 
 ## T1 Agent-Pick Run
 
@@ -27,9 +27,9 @@ The checks the task pull request's Test Plan records, run against task branch `i
 ## T4 Repository Checks
 
 - **Procedure.** `make check` with `PROSIFORM_BUILD="uv run --project <unit checkout>/src --frozen pf"`.
-- **Observation.** Exit 0: lint clean, `make test` 2039 passed, `make harness` 1022 passed, corpus 583 fixtures, and the remaining targets pass.
+- **Observation.** Exit 0 with the record committed: lint clean, `make test` 2039 passed, `make harness` 1022 passed, corpus 583 fixtures, and `make links` and the remaining targets pass. A first Checks run at `87c1141c7` failed `make links` on a disposition quoting the bundle line as a Markdown link; the disposition states the line in words and the record commit carries the fix.
 
 ## T5 Checks Workflow
 
-- **Procedure.** The repository's Checks workflow, which runs `make check`, on the task pull request at head `87c1141c7`.
-- **Observation.** Pending.
+- **Procedure.** The repository's Checks workflow, which runs `make check`, on the task pull request at head `57aeda9e6`.
+- **Observation.** The `Checks` run completed with conclusion success: [run 43222899463](https://github.com/m2ux/prosiform/actions/runs/43222899463/job/131198681573).
