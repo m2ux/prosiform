@@ -44,7 +44,7 @@ flowchart TD
 
 ## Selection by reference
 
-Each inline or reference-style Markdown link occurrence supplies its own comma-separated preset names through its parsed title, including preamble and operator-marked links. [Selection](selection.md#presets-in-force) defines complete-name matching and layering over the target's `default`. Substitution retains those tags and matches them against the substitute's own declarations. Image and external-reference titles supply no selection.
+Each inline or reference-style Markdown link occurrence supplies its own comma-separated preset names through its parsed title, including preamble and operator-marked links. [Selection](selection.md#presets-in-force) defines complete-name matching and layering over the target's `default`. Substitution retains those tags and matches them against the substitute's own declarations. Image and external-reference titles supply no selection. The pick token `?` among those names selects no preset and leaves the pick to an agent, as [The pick token](#the-pick-token) states.
 
 A reference with no fragment, or an empty one, selects the whole document: its body, its preamble included, less frontmatter. A reference with a fragment selects one section — a document-level heading and its subsections, ending before the next heading of equal or higher level.
 
@@ -90,6 +90,16 @@ flowchart TD
 ```
 
 *Figure 2. How a Mark at the Start of Link Text Is Read, and Where It Is Refused.*
+
+## The pick token
+
+`?` among a link's title tags is the [pick token](glossary.md#references), alone as in `[¬ Populate Body](work-kind.md#populate-body "?")` or beside fixed tags as in `"checks, ?"`. It names no preset: it leaves the [pick](glossary.md#sources) among the target's alternatives to the agent compiling the link in a later run, which resolves it as the [guide](../invocation.md#guide) states.
+
+A run cannot pick for a link it compiles, so the token is accepted on a deferral, `¬` and `¬↳` alike, and refused on an ordinary link, a composition directive, a dispatch and a parallel dispatch naming a document that declares `prosiform`. A deferral publishes its title tags as authored, the token among them, so the command its destination and title spell carries it.
+
+The run publishing a deferral reads its target's declaration and checks the deferral's pick against it, since every other form fails the later run. A deferral naming a document that declares alternatives names exactly one of them or carries `?`, never both and never neither, and a `?` deferral whose target declares no alternative is refused. Each refusal publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT` and exit status `1`, naming the link and its source location, as the operator refusals do, because the defect is in the source the run read.
+
+The design's [Presets](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
 
 ## Diagram links
 
