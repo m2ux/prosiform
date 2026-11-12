@@ -16,7 +16,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_INVALID_CONVERSION_METADATA"
-message_contains = ["prosiform.default.subst[0] must be a mapping holding one original reference and its alternative, as {rules.md: stub.md}"]
+message_contains = ["prosiform.default.subst[0] must be a mapping holding one original reference and its substitute, as {rules.md: stub.md}"]
 reference = "guide.md"
 chain = ["guide.md"]
 

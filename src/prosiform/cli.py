@@ -109,6 +109,7 @@ from prosiform.composition import (
 from prosiform.diagnostics import (
     ERROR,
     FORMATS,
+    INDENT,
     TEXT,
     WARNING,
     Diagnostic,
@@ -160,6 +161,7 @@ from prosiform.metadata import (
     Conversion,
     InvalidMetadata,
     Membership,
+    Preset,
     Subst,
 )
 from prosiform.preamble import grouped as preamble_group
@@ -226,6 +228,7 @@ BUNDLE_SUFFIX = ".bundle.md"
 RUN_FOLDER_SUFFIX = ".bundles"
 CURRENT_FOLDER = "."
 
+ALTERNATIVE_UNRESOLVED = "E_ALTERNATIVE_UNRESOLVED"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_CONFLICT = "E_GROUP_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
@@ -256,6 +259,7 @@ OPERATOR_NAMES = {
 CODES = tuple(
     sorted(
         {
+            ALTERNATIVE_UNRESOLVED,
             INVALID_ENCODING,
             GROUP_CONFLICT,
             INVALID_USAGE,
@@ -570,7 +574,7 @@ def substs(conversion: Conversion) -> None:
     """
     for preset in conversion.presets:
         for at, pair in enumerate(preset.substs):
-            for side in (pair.original, pair.alternative):
+            for side in (pair.original, pair.substitute):
                 try:
                     refusal = (
                         "carries a scheme or an authority, so it names no local "
@@ -643,11 +647,11 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
     """Hold each preset a document declares to stating each of its rules once.
 
     A preset mapping two `subst` keys that normalise to one identity,
-    mapping a key to an alternative of its own identity, or writing a key
+    mapping a key to a substitute of its own identity, or writing a key
     naming a section alone states a rule the run cannot apply as written,
     so each is invalid usage at the entry. A key names the document whose
-    references it redirects, which a section alone does not. An
-    alternative naming no Markdown document is refused the same way,
+    references it redirects, which a section alone does not. A
+    substitute naming no Markdown document is refused the same way,
     because the reference it redirects could only be published as text.
     Identities are read from the declaring document, the reference that
     opened it being `found`.
@@ -665,20 +669,20 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
                     pair.location,
                 )
             key = subst_identity(pair.original, found.path)
-            if not is_markdown(subst_identity(pair.alternative, found.path)[0]):
+            if not is_markdown(subst_identity(pair.substitute, found.path)[0]):
                 raise preset_refusal(
-                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
+                    f"{entry} maps {pair.original!r} to {pair.substitute!r}, which "
                     f"names no Markdown document, so the reference it redirects "
                     f"could only be published as text",
-                    "name a Markdown document or section as the alternative",
+                    "name a Markdown document or section as the substitute",
                     found,
                     pair.location,
                 )
-            if key == subst_identity(pair.alternative, found.path):
+            if key == subst_identity(pair.substitute, found.path):
                 raise preset_refusal(
-                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
-                    f"name one identity, so the alternative stands in for itself",
-                    "name an alternative other than the reference it replaces",
+                    f"{entry} maps {pair.original!r} to {pair.substitute!r}, which "
+                    f"name one identity, so the substitute stands in for itself",
+                    "name a substitute other than the reference it replaces",
                     found,
                     pair.location,
                 )
@@ -704,15 +708,15 @@ def agreed(
     """Hold the selected presets to agreeing about every shared setting.
 
     Selected presets union, so two stating one `group` pair, or mapping
-    one `subst` key to one alternative, state one setting. Two stating
-    different `group` pairs, or mapping one key to two alternatives,
+    one `subst` key to one substitute, state one setting. Two stating
+    different `group` pairs, or mapping one key to two substitutes,
     leave nothing saying which would take effect, so the reference
     selecting them is invalid usage naming both presets and the setting.
     `default` lies beneath every selection rather than beside it, so it
     disagrees with none. The declaring document is `document`.
     """
     stated: Membership | None = None
-    alternatives: dict[tuple[str, str | None], tuple[str, Subst]] = {}
+    substitutes: dict[tuple[str, str | None], tuple[str, Subst]] = {}
     selected = f"selected by tags {sorted(tags)!r}"
     for preset in matching_presets(conversion, tags):
         one = preset.membership
@@ -737,22 +741,22 @@ def agreed(
             )
         for pair in preset.substs:
             key = subst_identity(pair.original, document)
-            named_first, first_pair = alternatives.setdefault(key, (preset.name, pair))
-            if subst_identity(first_pair.alternative, document) != subst_identity(
-                pair.alternative, document
+            named_first, first_pair = substitutes.setdefault(key, (preset.name, pair))
+            if subst_identity(first_pair.substitute, document) != subst_identity(
+                pair.substitute, document
             ):
                 raise preset_refusal(
                     f"prosiform.{named_first}.{SUBST} and "
                     f"prosiform.{preset.name}.{SUBST}, both {selected}, map "
-                    f"{pair.original!r} to {first_pair.alternative!r} and "
-                    f"{pair.alternative!r}",
-                    "map the reference to one alternative in the selected presets",
+                    f"{pair.original!r} to {first_pair.substitute!r} and "
+                    f"{pair.substitute!r}",
+                    "map the reference to one substitute in the selected presets",
                     reference,
                     first_pair.location,
                     (
                         pair.location,
                         f"prosiform.{preset.name}.{SUBST} maps {pair.original!r} "
-                        f"to {pair.alternative!r}",
+                        f"to {pair.substitute!r}",
                     ),
                 )
 
@@ -762,17 +766,21 @@ class Governed:
     """One `subst` pair in force for the links a document writes.
 
     `preset` names the preset stating it, `pair` the entry as written and
-    `substitute` the reference its alternative resolves to from the
-    declaring document.
+    `substitute` the reference the entry's substitute resolves to from the
+    declaring document. A pair is `routing` where only alternatives state
+    it: it routes the document's links to the picked kind's material,
+    and a pair of `default` or of an ordinary preset stands in for
+    material under test.
     """
 
     preset: str
     pair: Subst
     substitute: Reference
+    routing: bool = False
 
 
 def subst_reference(text: str, document: str) -> Reference:
-    """One `subst` alternative as the reference the run reads, from its document.
+    """One `subst` substitute as the reference the run reads, from its document.
 
     It resolves as a link the document writes resolves: from the
     document's directory, a section alone naming a section of the
@@ -783,6 +791,62 @@ def subst_reference(text: str, document: str) -> Reference:
     if not components(text).path:
         return replace(found, path=document, walk=document)
     return replace(found, walk=posixpath.join(base, found.walk or found.path))
+
+
+def picked(
+    conversion: Conversion, references: Iterable[Reference]
+) -> tuple[Preset, ...]:
+    """The alternatives in force for one document, in declaration order.
+
+    They are the union every reference reaching the document selects: the
+    set its `subst` pairs resolve through. A name the document does not
+    declare, `?` and a diagram link's empty selection pick none.
+    """
+    names = {
+        preset.name
+        for reference in references
+        for preset in matching_presets(conversion, reference.tags)
+    }
+    return tuple(one for one in conversion.alternatives if one.name in names)
+
+
+def unresolved(path: str, conversion: Conversion) -> Failure:
+    """A document declaring alternatives compiled with none, or several, in force.
+
+    The document's links are written once, so they follow one kind's
+    routes. The message lists each alternative beside its choice line in
+    declaration order, so its reader reruns naming the one that fits.
+    """
+    width = max(len(one.name) for one in conversion.alternatives)
+    rows = "".join(
+        f"\n{INDENT}{one.name.ljust(width)}  {one.choice}"
+        for one in conversion.alternatives
+    )
+    return Failure(
+        USAGE_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"{path} needs one alternative in force:{rows}",
+            code=ALTERNATIVE_UNRESOLVED,
+            source=path,
+            remedy="rerun with --presets naming the alternative that fits your task",
+        ),
+    )
+
+
+def resolved(
+    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
+) -> None:
+    """Hold every carried document declaring alternatives to exactly one in force.
+
+    The count is taken on the references one bundle carries, so a
+    dispatched bundle counts the references reaching the document within
+    it.
+    """
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        if conversion.alternatives and len(picked(conversion, references)) != 1:
+            raise unresolved(path, conversion)
 
 
 def governing(
@@ -798,9 +862,20 @@ def governing(
     so a selected preset's pair holds over `default`'s for one key. The
     presets one reference selects are held to agreeing first, and two
     presets selected by different references reaching the document,
-    mapping one key to two alternatives, are refused the same way: the
+    mapping one key to two substitutes, are refused the same way: the
     document's links are written once, so the union would leave nothing
-    saying which alternative they resolve to.
+    saying which substitute they resolve to.
+
+    Several alternatives in force are refused before their pairs are
+    compared, since alternatives route one key to different kinds'
+    material by design: the references reaching a document only grow
+    across the traversal's rounds, so several in force in any round are
+    several at its fixed point.
+
+    A pair an alternative and an ordinary preset both state, agreeing,
+    stands in for material under test whichever the document declares
+    first: it is a routing pair only where every preset stating it is an
+    alternative.
 
     A key is the identity its original names from the declaring document,
     and only documents stating a pair in force appear.
@@ -808,9 +883,11 @@ def governing(
     table: dict[str, dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
         conversion = read[path].conversion
+        if len(picked(conversion, references)) > 1:
+            raise unresolved(path, conversion)
         in_force = {
             subst_identity(pair.original, path): Governed(
-                DEFAULT, pair, subst_reference(pair.alternative, path)
+                DEFAULT, pair, subst_reference(pair.substitute, path)
             )
             for pair in conversion.default.substs
         }
@@ -820,11 +897,17 @@ def governing(
             for preset in matching_presets(conversion, reference.tags):
                 for pair in preset.substs:
                     one = Governed(
-                        preset.name, pair, subst_reference(pair.alternative, path)
+                        preset.name,
+                        pair,
+                        subst_reference(pair.substitute, path),
+                        preset.choice is not None,
                     )
-                    first = above.setdefault(subst_identity(pair.original, path), one)
+                    key = subst_identity(pair.original, path)
+                    first = above.setdefault(key, one)
                     if identity(first.substitute) != identity(one.substitute):
                         raise disagreeing(first, one, path, reference)
+                    if first.routing and not one.routing:
+                        above[key] = one
         in_force.update(above)
         if in_force:
             table[path] = in_force
@@ -834,18 +917,18 @@ def governing(
 def disagreeing(
     first: Governed, later: Governed, document: str, reference: Reference
 ) -> Failure:
-    """Two presets selected for one document mapping one key to two alternatives."""
+    """Two presets selected for one document mapping one key to two substitutes."""
     return preset_refusal(
         f"prosiform.{first.preset}.{SUBST} and prosiform.{later.preset}.{SUBST}, "
         f"both selected for {document!r}, map {later.pair.original!r} to "
-        f"{first.pair.alternative!r} and {later.pair.alternative!r}",
-        "map the reference to one alternative in the presets selected for one document",
+        f"{first.pair.substitute!r} and {later.pair.substitute!r}",
+        "map the reference to one substitute in the presets selected for one document",
         reference,
         first.pair.location,
         (
             later.pair.location,
             f"prosiform.{later.preset}.{SUBST} maps {later.pair.original!r} to "
-            f"{later.pair.alternative!r}",
+            f"{later.pair.substitute!r}",
         ),
     )
 
@@ -2303,9 +2386,11 @@ def unselected(
     """The presets of each carried document that no reference reaching it selected.
 
     `default` is in force wherever its document is compiled, so it is
-    never among them. The names keep the order the document declares
-    them in. A document reached only through a deferral is carried by
-    no bundle, so its presets are weighed by none.
+    never among them. A set of alternatives leaves all but one unpicked
+    wherever its document is compiled, so no alternative is among them
+    either. The names keep the order the document declares them in. A
+    document reached only through a deferral is carried by no bundle, so
+    its presets are weighed by none.
     """
     left: dict[str, tuple[str, ...]] = {}
     for path, references in selected.items():
@@ -2318,7 +2403,9 @@ def unselected(
         left[path] = tuple(
             preset.name
             for preset in conversion.presets
-            if preset.name != DEFAULT and preset.name not in chosen
+            if preset.name != DEFAULT
+            and preset.choice is None
+            and preset.name not in chosen
         )
     return left
 
@@ -3249,8 +3336,10 @@ def resourced(bundled: str, budget: int) -> bool:
     )
 
 
-def substituted(mapping: Substitution) -> list[Diagnostic]:
-    """One warning for each `subst` pair a reference named.
+def substituted(
+    mapping: Substitution, quiet: Collection[tuple[str, tuple[str, str | None]]]
+) -> list[Diagnostic]:
+    """One warning for each `subst` pair other than a routing pair a reference named.
 
     A key names one substitution, so the references it served state one
     warning at the first of them. The warning names that link as
@@ -3258,6 +3347,8 @@ def substituted(mapping: Substitution) -> list[Diagnostic]:
     the author wrote as `source`, and the substitute's identity as
     `resolved`; its message states the identity the reference would have
     resolved to, which is what tells two keys naming one stand-in apart.
+    A quiet pair, as `routes` names one, is the route its author
+    declared, so a reference using it raises nothing.
     """
     return [
         Diagnostic(
@@ -3270,6 +3361,7 @@ def substituted(mapping: Substitution) -> list[Diagnostic]:
             location=None if one.origin is None else located(one.origin),
         )
         for one in mapping.redirects.targets()
+        if one.pair not in quiet
     ]
 
 
@@ -3593,6 +3685,9 @@ class Compiled:
     carries, which the run weighs against its other bundles'. The pairs
     are those `governing` puts in force for the documents the bundle
     carries, which the run weighs against every reference it resolved.
+    The linked identities are those `linked` reads from each document
+    a routing pair is in force for, which a routing pair is weighed
+    against.
     """
 
     text: str
@@ -3604,6 +3699,7 @@ class Compiled:
     captured: Mapping[str, Capture]
     unselected: Mapping[str, tuple[str, ...]]
     pairs: Mapping[str, Mapping[tuple[str, str | None], Governed]]
+    linked: Mapping[str, frozenset[tuple[str, str | None]]]
 
 
 def compiled(
@@ -3631,6 +3727,7 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    resolved(read, contributing(found))
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
     named = {name: selected}
@@ -3685,6 +3782,41 @@ def compiled(
         captured,
         unselected(read, parsed, contributing(found), requested),
         pairs,
+        {
+            path: linked(path, parsed[path])
+            for path, held in pairs.items()
+            if any(one.routing for one in held.values())
+        },
+    )
+
+
+def linked(document: str, tokens: Sequence[Token]) -> frozenset[tuple[str, str | None]]:
+    """The document and section each link of one document names, wherever it sits.
+
+    Every region is read, so a link in a section the run did not select
+    names its target as one in the selection does. An identity is the
+    one the link was written to name, before any `subst` pair redirects
+    it, and a link naming no local Markdown document names none.
+    """
+    return frozenset(
+        (found.path, found.fragment)
+        for use in uses(tokens, tuple(regions(tokens)))
+        if not use.resource and (found := named(document, use.destination)) is not None
+    )
+
+
+def names(
+    identities: Collection[tuple[str, str | None]], key: tuple[str, str | None]
+) -> bool:
+    """Whether a link naming one of these identities names a `subst` key.
+
+    A key carrying a section is named by a link to that section, and a
+    key naming a whole document by a link to the document or any of
+    its sections.
+    """
+    path, fragment = key
+    return key in identities or (
+        fragment is None and any(one == path for one, _ in identities)
     )
 
 
@@ -3720,20 +3852,40 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
     ]
 
 
+def routes(bundles: Iterable[Compiled]) -> set[tuple[str, tuple[str, str | None]]]:
+    """The pairs, as declaring document and key, only alternatives put in force.
+
+    A pair a `default` or an ordinary preset states in any bundle of the
+    run stands in for material under test there, so it is no route.
+    """
+    routing: set[tuple[str, tuple[str, str | None]]] = set()
+    standing: set[tuple[str, tuple[str, str | None]]] = set()
+    for one in bundles:
+        for path, pairs in one.pairs.items():
+            for key, pair in pairs.items():
+                (routing if pair.routing else standing).add((path, key))
+    return routing - standing
+
+
 def unused_pairs(
     bundles: Iterable[Compiled], mapping: Substitution
 ) -> list[Diagnostic]:
     """One warning for each `subst` pair in force that no reference used.
 
     A pair is in force for the links its declaring document writes, so
-    one no reference of the run named substitutes nothing. The warning
+    one no reference of the run named substitutes nothing. A routing
+    pair routes whatever the document is compiled for, so it is unused
+    only where no link of its document names its key, a link outside
+    the selection naming it as one inside does. The warning
     carries the key as its author wrote it as `source`, names the
     declaring document and preset in its message, and carries no
     location: bundle by bundle, each bundle's documents by path, and each
     document's pairs in the order its presets are read.
     """
     held: dict[tuple[str, str, tuple[str, str | None]], Governed] = {}
+    written: dict[str, frozenset[tuple[str, str | None]]] = {}
     for one in bundles:
+        written.update(one.linked)
         for path in sorted(one.pairs):
             for key, pair in one.pairs[path].items():
                 held.setdefault((path, pair.preset, key), pair)
@@ -3741,14 +3893,23 @@ def unused_pairs(
         Diagnostic(
             WARNING,
             f"the subst key {one.pair.original!r} of prosiform.{one.preset} in "
-            f"{path!r} names no reference the run resolved, so it substitutes "
-            f"nothing",
+            f"{path!r} names "
+            + (
+                "no link its document writes"
+                if one.routing
+                else "no reference the run resolved"
+            )
+            + ", so it substitutes nothing",
             code=SUBST_UNUSED,
             source=one.pair.original,
             remedy="name an identity the declaring document links, or drop the pair",
         )
         for (path, _preset, key), one in held.items()
-        if not mapping.redirects.served((path, key), one.substitute)
+        if not (
+            names(written[path], key)
+            if one.routing
+            else mapping.redirects.served((path, key), one.substitute)
+        )
     ]
 
 
@@ -3903,7 +4064,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         options.check,
         fault == CLEANUP_FAULT,
         [
-            *substituted(mapping),
+            *substituted(mapping, routes((first, *built.values()))),
             *unused_pairs((first, *built.values()), mapping),
             *unused_presets((first, *built.values())),
         ],

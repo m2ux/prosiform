@@ -1,0 +1,20 @@
+description = "The link title epic, checks picks the epic alternative of work-kind.md beside its ordinary checks preset. The epic subst pair routes work-kind.md's link to epic-body.md without a W_SUBST_USED, checks places the document under Reviews, and the unpicked initiative alternative stays out of force without a W_PRESET_UNUSED."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Presets — Alternatives",
+  "Presets — Selected presets union",
+  "Presets — A preset nothing selected warns",
+  "Link classification and resource handling — The substitution mapping",
+  "Grouping — Group membership",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

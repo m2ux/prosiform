@@ -53,6 +53,7 @@ from prosiform.candidate import (
     UNSAFE_BUNDLE_BOUNDARY,
 )
 from prosiform.cli import (
+    ALTERNATIVE_UNRESOLVED,
     CODES,
     COINCIDENT_HEADING,
     COMPOSE_SELF,
@@ -85,6 +86,7 @@ from prosiform.cli import (
     budgets,
     entry,
     main,
+    names,
     pair,
     parser,
     probe,
@@ -332,6 +334,7 @@ def test_the_codes_response_names_every_code_the_build_can_emit() -> None:
 
 def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
     declared = {
+        ALTERNATIVE_UNRESOLVED,
         GROUP_CONFLICT,
         INVALID_ENCODING,
         INVALID_USAGE,
@@ -1465,7 +1468,7 @@ def test_two_selected_presets_mapping_one_key_two_ways_are_refused(
 
 
 def test_selected_presets_agreeing_about_a_setting_union(root: Path) -> None:
-    """One group pair, and one key to one alternative, state one setting."""
+    """One group pair, and one key to one substitute, state one setting."""
     written(
         root,
         "guide.md",
@@ -1696,6 +1699,125 @@ def test_a_document_both_deferred_and_compiled_is_weighed(root: Path) -> None:
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert [source for source, _ in unused_presets_of(run)] == ["noted.md"]
+
+
+WORK_KIND = (
+    "---\nprosiform:\n"
+    "  Epic:\n    choice: Lists its tasks.\n    subst: [{body.md: epic-body.md}]\n"
+    "  Task:\n    choice: One pull request.\n    subst: [{body.md: task-body.md}]\n"
+    "  Checks:\n    group: {reviews: 1}\n"
+    "---\n# Work Kind\n\nPopulate [the body](body.md).\n"
+)
+"""Two alternatives routing one link apart, beside one ordinary preset."""
+
+
+@pytest.fixture
+def kinds(root: Path) -> Path:
+    """A source root holding the work-kind document and each body it routes to."""
+    written(root, "work-kind.md", WORK_KIND)
+    for name in ("body", "epic-body", "task-body"):
+        written(root, f"{name}.md", DECLARED + f"# {name.title()}\n\nText.\n")
+    return root
+
+
+def unresolved_of(run: Run) -> dict[str, Any]:
+    """The one diagnostic a run refused for its alternatives carries."""
+    assert run.status == USAGE_FAILURE, run.stderr
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == ALTERNATIVE_UNRESOLVED
+    assert diagnostic["source"] == "work-kind.md"
+    assert diagnostic["message"] == (
+        "work-kind.md needs one alternative in force:\n"
+        "  Epic  Lists its tasks.\n"
+        "  Task  One pull request."
+    )
+    return diagnostic
+
+
+@pytest.mark.parametrize("title", ["", ' "saga"', ' "checks"', ' "?"'])
+def test_a_document_with_no_alternative_in_force_is_refused(
+    kinds: Path, title: str
+) -> None:
+    """An absent pick, an unknown name and `?` meet one diagnostic."""
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + f"# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md{title}).\n",
+    )
+    unresolved_of(invoke("-d", "json", "guide.md", cwd=kinds))
+
+
+def test_an_entry_naming_no_alternative_is_refused_with_its_remedy(kinds: Path) -> None:
+    diagnostic = unresolved_of(invoke("-d", "json", "work-kind.md", cwd=kinds))
+    assert diagnostic["remedy"] == (
+        "rerun with --presets naming the alternative that fits your task"
+    )
+
+
+def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:
+    run = invoke("-d", "json", "work-kind.md", "--presets", "task", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Task-Body" in run.bundle
+    assert unused_presets_of(run) == [
+        (
+            "work-kind.md",
+            "the preset 'Checks' of 'work-kind.md' is selected by no reference "
+            "the run compiled, so it governs nothing",
+        )
+    ]
+
+
+def test_two_alternatives_in_force_are_refused_before_their_pairs_compare(
+    kinds: Path,
+) -> None:
+    """Alternatives route one key apart, so the count speaks before the pairs."""
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + (
+            '# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md "epic").\n\n'
+            '## Deliver\n\nPopulate [the body](work-kind.md "task").\n'
+        ),
+    )
+    unresolved_of(invoke("-d", "json", "guide.md", cwd=kinds))
+
+
+def test_a_pick_without_a_title_beside_it_is_one_in_force(kinds: Path) -> None:
+    """A reference picking nothing adds nothing to another reference's pick."""
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + (
+            '# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md "epic").\n\n'
+            "## Deliver\n\nPopulate [the body](work-kind.md).\n"
+        ),
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Epic-Body" in run.bundle
+
+
+def test_a_dispatched_bundle_counts_the_references_within_it(kinds: Path) -> None:
+    """Each bundle picks its own alternative, and neither pick is unused."""
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + (
+            '# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md "epic").\n\n'
+            '## Deliver\n\nHand [⇉ the task](work-kind.md "task") off.\n'
+        ),
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert len(run.bundles) == 2
+    assert [name for _, name in unused_presets_of(run)] == [
+        "the preset 'Checks' of 'work-kind.md' is selected by no reference "
+        "the run compiled, so it governs nothing"
+    ]
 
 
 TWO_SECTIONS = DECLARED + (
@@ -2993,6 +3115,160 @@ def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> Non
         ("W_SUBST_UNUSED", "a%20b.md"),
         ("W_SUBST_UNUSED", "rules.md#Step 1: Setup"),
     ]
+
+
+def routed(root: Path, pairs: str, fragment: str = "", ordinary: str = "") -> None:
+    """A work-kind document whose one alternative states the given pairs.
+
+    The guide's link names the document, or its `fragment`, and picks
+    the alternative beside any `ordinary` preset, which stands `stub.md`
+    in for `checklist.md`. Every target a pair or a link names declares.
+    """
+    selection = ", ".join(["epic", *([ordinary] if ordinary else [])])
+    written(
+        root,
+        "guide.md",
+        f'{DECLARED}# Guide\n\nSee [kind](work-kind.md{fragment} "{selection}").\n',
+    )
+    written(
+        root,
+        "work-kind.md",
+        "---\nprosiform:\n  epic:\n    choice: Lists its tasks.\n"
+        f"    subst: [{pairs}]\n"
+        + (
+            f"  {ordinary}:\n    subst: [{{checklist.md: stub.md}}]\n"
+            if ordinary
+            else ""
+        )
+        + "---\n# Work Kind\n\n## Populate\n\nPopulate [the body](body.md).\n\n"
+        "## Review\n\nReview against [the checklist](checklist.md#steps).\n",
+    )
+    for name in ("body", "epic-body", "checklist", "epic-checklist", "stub"):
+        title = name.replace("-", " ").title()
+        written(root, f"{name}.md", f"{DECLARED}# {title}\n\n## Steps\n\nEach step.\n")
+
+
+def test_a_used_routing_pair_raises_no_warning(root: Path) -> None:
+    routed(root, "{body.md: epic-body.md}")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Epic Body" in run.bundle
+    assert run.diagnostics() == []
+
+
+def test_a_routing_pair_whose_link_sits_outside_the_selection_stays_quiet(
+    root: Path,
+) -> None:
+    """Only the unselected Review section links checklist.md, which still names it."""
+    routed(
+        root,
+        "{body.md: epic-body.md}, {checklist.md: epic-checklist.md}",
+        "#populate",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "Epic Checklist" not in run.bundle
+    assert run.diagnostics() == []
+
+
+def test_a_routing_pair_naming_a_section_is_named_by_a_link_to_it(root: Path) -> None:
+    routed(
+        root,
+        '{body.md: epic-body.md}, {"checklist.md#steps": epic-checklist.md}',
+        "#populate",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.diagnostics() == []
+
+
+def test_a_routing_pair_no_link_of_its_document_names_warns_unused(
+    root: Path,
+) -> None:
+    routed(
+        root,
+        "{body.md: epic-body.md}, {retired.md: epic-body.md}, "
+        '{"checklist.md#other": epic-checklist.md}',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        (SUBST_UNUSED, "retired.md"),
+        (SUBST_UNUSED, "checklist.md#other"),
+    ]
+    assert "names no link its document writes" in run.diagnostics()[0]["message"]
+    assert "'work-kind.md'" in run.diagnostics()[0]["message"]
+
+
+def test_a_stand_in_beside_a_routing_pair_still_warns(root: Path) -> None:
+    routed(root, "{body.md: epic-body.md}", ordinary="mock")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [
+        (one["code"], one["source"], one.get("resolved")) for one in run.diagnostics()
+    ] == [(SUBST_USED, "checklist.md#steps", "stub.md#steps")]
+
+
+@pytest.mark.parametrize("order", [("epic", "mock"), ("mock", "epic")])
+def test_a_pair_an_ordinary_preset_shares_warns_in_either_order(
+    root: Path, order: tuple[str, str]
+) -> None:
+    """An alternative and an ordinary preset stating one pair stand it in."""
+    stated = {
+        "epic": "  epic:\n    choice: Lists its tasks.\n",
+        "mock": "  mock:\n",
+    }
+    written(
+        root,
+        "guide.md",
+        f'{DECLARED}# Guide\n\nSee [kind](work-kind.md "epic, mock").\n',
+    )
+    written(
+        root,
+        "work-kind.md",
+        "---\nprosiform:\n"
+        + "".join(
+            stated[name] + "    subst: [{body.md: epic-body.md}]\n" for name in order
+        )
+        + "---\n# Work Kind\n\nPopulate [the body](body.md).\n",
+    )
+    for name in ("body", "epic-body"):
+        written(root, f"{name}.md", f"{DECLARED}# {name.title()}\n\nText.\n")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [
+        (one["code"], one["source"], one.get("resolved")) for one in run.diagnostics()
+    ] == [(SUBST_USED, "body.md", "epic-body.md")]
+
+
+def test_a_stand_in_no_selected_link_uses_still_warns_unused(root: Path) -> None:
+    """A stand-in is weighed against the run's references, not the document's links."""
+    routed(root, "{body.md: epic-body.md}", "#populate", "mock")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        (SUBST_UNUSED, "checklist.md")
+    ]
+
+
+@pytest.mark.parametrize(
+    ("key", "identities", "expected"),
+    [
+        (("rules.md", None), {("rules.md", None)}, True),
+        (("rules.md", None), {("rules.md", "steps")}, True),
+        (("rules.md", "steps"), {("rules.md", "steps")}, True),
+        (("rules.md", "steps"), {("rules.md", None)}, False),
+        (("rules.md", "steps"), {("rules.md", "other")}, False),
+        (("rules.md", None), {("docs/rules.md", None)}, False),
+        (("rules.md", None), set(), False),
+    ],
+)
+def test_a_link_names_a_key_for_its_section_or_its_whole_document(
+    key: tuple[str, str | None],
+    identities: set[tuple[str, str | None]],
+    expected: bool,
+) -> None:
+    assert names(identities, key) is expected
 
 
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:

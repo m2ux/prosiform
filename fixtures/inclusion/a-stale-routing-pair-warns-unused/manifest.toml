@@ -1,0 +1,21 @@
+description = "The link title epic picks the one alternative of work-kind.md, whose subst pairs route body.md and retired.md. No link of work-kind.md names retired.md, so that stale route warns W_SUBST_UNUSED naming its key, while the used route to epic-body.md raises nothing."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "retired.md"
+message_contains = ["work-kind.md"]

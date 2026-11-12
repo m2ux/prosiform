@@ -1,0 +1,25 @@
+description = "A choice written as a block scalar holds a line break, so it fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing."
+
+clauses = [
+  "Conversion metadata — choice holds one line",
+  "Metadata failures",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.Epic.choice"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 13
