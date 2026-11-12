@@ -12,7 +12,7 @@ The task targets `i15/e00/engineering`, since the design lives on the engineerin
 
 | Artifact | What it holds |
 | --- | --- |
-| [w00.md](../2026-11-12-preset-alternatives/e00/w00.md) | Component plan, scope and observing checks |
+| [w00.md](w00.md) | Component plan, scope and observing checks |
 
 ## Links
 
