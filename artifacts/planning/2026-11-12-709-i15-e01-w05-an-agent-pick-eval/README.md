@@ -14,6 +14,7 @@ The task targets `i15/e01/main`, after the guide entry and router fixtures (W03)
 | --- | --- |
 | [w05.md](w05.md) | Component plan, scope and observing checks |
 | [validation.md](validation.md) | Each Test Plan check's procedure, tested revision and observation |
+| [instruction-fix.md](instruction-fix.md) | The `compiled` instruction's defect the W06 shakedown found, its fix and test evidence |
 
 ## Links
 
@@ -22,6 +23,7 @@ The task targets `i15/e01/main`, after the guide entry and router fixtures (W03)
 | Epic | [Agent Pick](https://github.com/m2ux/prosiform/issues/709) |
 | Prerequisites | [W03 delivery](https://github.com/m2ux/prosiform/pull/723) |
 | Pull request | [[I15:E01] An agent-pick eval workflow](https://github.com/m2ux/prosiform/pull/725) |
+| Instruction fix | [[I15:E01] The compiled instruction names no sources](https://github.com/m2ux/prosiform/pull/727) |
 | Epic review | [[I15:E01] Agent Pick](https://github.com/m2ux/prosiform/pull/722) |
 
 ## Plan Changes
