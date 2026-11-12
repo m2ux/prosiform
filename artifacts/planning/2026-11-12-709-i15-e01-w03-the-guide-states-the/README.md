@@ -1,6 +1,6 @@
 # The Guide States the Pick End to End — November 2026
 
-> I15 E01 W03 delivery · Created 2026-11-12
+> I15 E01 W03 delivery · Created 2026-11-12 · Revised 2026-11-12
 
 ## Executive Summary
 
@@ -12,7 +12,8 @@ The task targets `i15/e01/main`, after the `?` link grammar (W01+W02).
 
 | Artifact | What it holds |
 | --- | --- |
-| [w03.md](../2026-11-12-preset-alternatives/e01/w03.md) | Component plan, scope and observing checks |
+| [w03.md](w03.md) | Component plan, scope and observing checks |
+| [validation.md](validation.md) | Each Test Plan check's procedure, tested revision and observation |
 
 ## Links
 
