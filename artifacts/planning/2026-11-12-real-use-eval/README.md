@@ -38,3 +38,6 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 | Eval as planned against | [`evals/diagram-following` at `d6072b2`](https://github.com/m2ux/prosiform/tree/d6072b20cfd5541b3edfa561e15677404e0f4cf6/evals/diagram-following) |
 | Agent-pick run | [#732](https://github.com/m2ux/prosiform/pull/732) |
 | Downstream epic: [I15:E02] Agent Pick in Real Use | [#733](https://github.com/m2ux/prosiform/issues/733) |
+| Initiative | [#734](https://github.com/m2ux/prosiform/issues/734) |
+| Epics | [E00 #735](https://github.com/m2ux/prosiform/issues/735), [E01 #736](https://github.com/m2ux/prosiform/issues/736), [E02 #737](https://github.com/m2ux/prosiform/issues/737) |
+| Superseded | [I14 #660](https://github.com/m2ux/prosiform/issues/660) |

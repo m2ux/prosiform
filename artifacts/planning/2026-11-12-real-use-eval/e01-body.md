@@ -32,11 +32,11 @@ Every workflow of the eval becomes skill variants, so each comparison the eval d
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w01.md) | Diagram workflows as skill variants | AC1 | [E00:W03](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
-| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w02.md) | Dispatch workflows as skill variants | AC2 | [E00:W03](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w03.md) | Deferral workflows as skills | AC3 | [E00:W03](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
-| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w04.md) | Composition workflows as skills | AC4 | [E00:W03](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
-| [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w05.md) | Feature workflows as skill variants | AC5 | [E00:W03](https://github.com/m2ux/prosiform/issues/{{E00}}) | | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w01.md) | Diagram workflows as skill variants | AC1 | [E00:W03](https://github.com/m2ux/prosiform/issues/735) | | | |
+| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w02.md) | Dispatch workflows as skill variants | AC2 | [E00:W03](https://github.com/m2ux/prosiform/issues/735) | | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w03.md) | Deferral workflows as skills | AC3 | [E00:W03](https://github.com/m2ux/prosiform/issues/735) | | | |
+| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w04.md) | Composition workflows as skills | AC4 | [E00:W03](https://github.com/m2ux/prosiform/issues/735) | | | |
+| [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w05.md) | Feature workflows as skill variants | AC5 | [E00:W03](https://github.com/m2ux/prosiform/issues/735) | | | |
 | [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e01/w06.md) | The bare-prompt path retired | AC6 | W01, W02, W03, W04, W05 | | | |
 
 ## Acceptance Criteria

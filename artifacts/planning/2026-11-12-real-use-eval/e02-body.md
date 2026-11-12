@@ -24,7 +24,7 @@ The eval's committed records measure real use: the bare-prompt records leave, an
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w01.md) | Bare-prompt records and sections deleted | AC1 | [E01:W06](https://github.com/m2ux/prosiform/issues/{{E01}}) | | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w01.md) | Bare-prompt records and sections deleted | AC1 | [E01:W06](https://github.com/m2ux/prosiform/issues/736) | | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w02.md) | Real-use baseline runbook and shakedown | AC2 | W01 | | | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w03.md) | The real-use baseline run and record | AC3 | W02 | | | |
 

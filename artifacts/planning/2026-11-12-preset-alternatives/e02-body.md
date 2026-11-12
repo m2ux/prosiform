@@ -16,7 +16,7 @@ An agent that reaches a `?` pick in real use keeps to what `pf` prints and write
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| W00 | A real-use agent-pick run | AC1 | [E01](https://github.com/m2ux/prosiform/issues/709) | | | |
+| W00 | A real-use agent-pick run | AC1 | [I16:E02:W02](https://github.com/m2ux/prosiform/issues/737) | | | |
 
 ## Acceptance Criteria
 
