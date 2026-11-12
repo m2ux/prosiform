@@ -47,6 +47,7 @@ from workflow import (
     LINKED_FORM,
     MARKED_FORMS,
     PROSE,
+    SHELL_FORMS,
     SKILL_ENTRY,
     STATES,
     STEP_ONE,
@@ -1893,6 +1894,18 @@ def test_the_instruction_names_the_entry_and_nothing_else_varies() -> None:
         "workflow.bundle.md"
     )
     assert instruction("a.md").replace("a.md", "b.md") == instruction("b.md")
+
+
+def test_a_shell_form_instruction_points_at_no_source() -> None:
+    """A shell-form session follows what `pf` prints and writes.
+
+    The scorer fails a session that opens a document of its form's sources,
+    so the instruction names neither those documents nor where they sit: a
+    session that opens one does so unprompted.
+    """
+    for form in SHELL_FORMS:
+        text = " ".join(instruction(ENTRY, form).split())
+        assert not re.search(r"\bsources\b|compiled from", text), form
 
 
 def test_every_dispatching_form_names_the_sub_agent_trace() -> None:
