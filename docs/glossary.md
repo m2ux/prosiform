@@ -1,6 +1,6 @@
 # Glossary
 
-Every term the contract uses, defined once. A term defined here means this and nothing else in the [design](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md), the acceptance criteria, the fixture corpus and the tool's own diagnostics. The design italicises a term where it first uses it, and the vocabulary check holds this file to defining each one.
+Every term the contract uses, defined once. A term defined here means this and nothing else in the [design](https://github.com/m2ux/prosiform/blob/9f1a8e2b5/artifacts/planning/2026-10-17-prosiform-v1/design.md), the acceptance criteria, the fixture corpus and the tool's own diagnostics. The design italicises a term where it first uses it, and the vocabulary check holds this file to defining each one.
 
 The tool is `prosiform`. It bundles; what it produces is a bundle.
 
@@ -27,7 +27,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **preset** | A named mapping of conversion settings a document declares in `prosiform` to govern its own content. `default` always applies; the reaching link's title supplies comma-separated complete names selecting matching presets above it. `--presets` supplies the entry's names through that same grammar. Headings and visible labels select no presets. Distinct from the profile, the grammar a run implements. |
 | **alternative** | A preset holding `choice`: one of a set a document serving several kinds of work declares, one per kind, for the reference reaching it to pick from. It is a preset in every other respect. Exactly one of a document's alternatives is in force for it in each bundle, counted on every reference reaching it there; none or several fail the run with `E_ALTERNATIVE_UNRESOLVED`, as [Selection](selection.md#presets-in-force) states. |
 | **choice line** | The one-line string an alternative's `choice` holds, stating when to pick it. A run finding none or several alternatives in force lists each beside its choice line. [Sources](sources.md#frontmatter) states what it may hold. |
-| **pick** | The alternative a reference's title tags, or an entry's `--presets`, name. A diagram link selects no preset, so it picks none, and the pick token names none. [Selection](selection.md#presets-in-force) states how a pick is counted. |
+| **pick** | The alternative a reference's title tags, or an entry's `--presets`, name. A diagram link's tooltip names one as a link title does, as [Diagram links](references.md#diagram-links) states, and the pick token names none. [Selection](selection.md#presets-in-force) states how a pick is counted. |
 | **routing pair** | A `subst` pair an alternative states. It routes its document's links to the picked kind's material rather than standing in for material under test, so a link using it raises no report, as [the substitution mapping](selection.md#the-substitution-mapping) states. |
 
 ## References
