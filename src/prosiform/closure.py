@@ -232,6 +232,10 @@ def identity(reference: Reference, base: str = "") -> str:
     return f"{path}{FRAGMENT}{reference.fragment}"
 
 
+Served = tuple[str, tuple[str, str | None]]
+"""A pair as the run's record names it: its declaring document and its key."""
+
+
 @dataclass(frozen=True)
 class Redirect:
     """One substitution a run performed, as the warning stating it reports.
@@ -241,17 +245,14 @@ class Redirect:
     the identity the first reference to reach it was written to name,
     `source` the destination that reference was written as, and `origin`
     the source position it stands at, absent where no caller that reached
-    it knew one.
+    it knew one. `pair` is the pair that served it.
     """
 
     resolved: str
     would: str
     source: str
     origin: str | None
-
-
-Served = tuple[str, tuple[str, str | None]]
-"""A pair as the run's record names it: its declaring document and its key."""
+    pair: Served
 
 
 class Redirects:
@@ -296,7 +297,7 @@ class Redirects:
         earlier = self._records.get(named)
         if earlier is None:
             self._records[named] = Redirect(
-                identity(substitute), identity(found), found.original, origin
+                identity(substitute), identity(found), found.original, origin, pair
             )
         elif earlier.origin is None and origin is not None:
             self._records[named] = replace(earlier, origin=origin)

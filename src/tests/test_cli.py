@@ -85,6 +85,7 @@ from prosiform.cli import (
     budgets,
     entry,
     main,
+    names,
     pair,
     parser,
     probe,
@@ -2993,6 +2994,128 @@ def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> Non
         ("W_SUBST_UNUSED", "a%20b.md"),
         ("W_SUBST_UNUSED", "rules.md#Step 1: Setup"),
     ]
+
+
+def routed(root: Path, pairs: str, fragment: str = "", ordinary: str = "") -> None:
+    """A work-kind document whose one alternative states the given pairs.
+
+    The guide's link names the document, or its `fragment`, and picks
+    the alternative beside any `ordinary` preset, which stands `stub.md`
+    in for `checklist.md`. Every target a pair or a link names declares.
+    """
+    selection = ", ".join(["epic", *([ordinary] if ordinary else [])])
+    written(
+        root,
+        "guide.md",
+        f'{DECLARED}# Guide\n\nSee [kind](work-kind.md{fragment} "{selection}").\n',
+    )
+    written(
+        root,
+        "work-kind.md",
+        "---\nprosiform:\n  epic:\n    choice: Lists its tasks.\n"
+        f"    subst: [{pairs}]\n"
+        + (
+            f"  {ordinary}:\n    subst: [{{checklist.md: stub.md}}]\n"
+            if ordinary
+            else ""
+        )
+        + "---\n# Work Kind\n\n## Populate\n\nPopulate [the body](body.md).\n\n"
+        "## Review\n\nReview against [the checklist](checklist.md#steps).\n",
+    )
+    for name in ("body", "epic-body", "checklist", "epic-checklist", "stub"):
+        title = name.replace("-", " ").title()
+        written(root, f"{name}.md", f"{DECLARED}# {title}\n\n## Steps\n\nEach step.\n")
+
+
+def test_a_used_routing_pair_raises_no_warning(root: Path) -> None:
+    routed(root, "{body.md: epic-body.md}")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Epic Body" in run.bundle
+    assert run.diagnostics() == []
+
+
+def test_a_routing_pair_whose_link_sits_outside_the_selection_stays_quiet(
+    root: Path,
+) -> None:
+    """Only the unselected Review section links checklist.md, which still names it."""
+    routed(
+        root,
+        "{body.md: epic-body.md}, {checklist.md: epic-checklist.md}",
+        "#populate",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "Epic Checklist" not in run.bundle
+    assert run.diagnostics() == []
+
+
+def test_a_routing_pair_naming_a_section_is_named_by_a_link_to_it(root: Path) -> None:
+    routed(
+        root,
+        '{body.md: epic-body.md}, {"checklist.md#steps": epic-checklist.md}',
+        "#populate",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.diagnostics() == []
+
+
+def test_a_routing_pair_no_link_of_its_document_names_warns_unused(
+    root: Path,
+) -> None:
+    routed(
+        root,
+        "{body.md: epic-body.md}, {retired.md: epic-body.md}, "
+        '{"checklist.md#other": epic-checklist.md}',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        (SUBST_UNUSED, "retired.md"),
+        (SUBST_UNUSED, "checklist.md#other"),
+    ]
+    assert "names no link its document writes" in run.diagnostics()[0]["message"]
+    assert "'work-kind.md'" in run.diagnostics()[0]["message"]
+
+
+def test_a_stand_in_beside_a_routing_pair_still_warns(root: Path) -> None:
+    routed(root, "{body.md: epic-body.md}", ordinary="mock")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [
+        (one["code"], one["source"], one.get("resolved")) for one in run.diagnostics()
+    ] == [(SUBST_USED, "checklist.md#steps", "stub.md#steps")]
+
+
+def test_a_stand_in_no_selected_link_uses_still_warns_unused(root: Path) -> None:
+    """A stand-in is weighed against the run's references, not the document's links."""
+    routed(root, "{body.md: epic-body.md}", "#populate", "mock")
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
+        (SUBST_UNUSED, "checklist.md")
+    ]
+
+
+@pytest.mark.parametrize(
+    ("key", "identities", "expected"),
+    [
+        (("rules.md", None), {("rules.md", None)}, True),
+        (("rules.md", None), {("rules.md", "steps")}, True),
+        (("rules.md", "steps"), {("rules.md", "steps")}, True),
+        (("rules.md", "steps"), {("rules.md", None)}, False),
+        (("rules.md", "steps"), {("rules.md", "other")}, False),
+        (("rules.md", None), {("docs/rules.md", None)}, False),
+        (("rules.md", None), set(), False),
+    ],
+)
+def test_a_link_names_a_key_for_its_section_or_its_whole_document(
+    key: tuple[str, str | None],
+    identities: set[tuple[str, str | None]],
+    expected: bool,
+) -> None:
+    assert names(identities, key) is expected
 
 
 def test_metadata_carries_no_conversion_meaning(root: Path) -> None:

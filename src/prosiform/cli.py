@@ -763,12 +763,16 @@ class Governed:
 
     `preset` names the preset stating it, `pair` the entry as written and
     `substitute` the reference its alternative resolves to from the
-    declaring document.
+    declaring document. A pair is `routing` where an alternative states
+    it: it routes the document's links to the picked kind's material,
+    and a pair of `default` or of an ordinary preset stands in for
+    material under test.
     """
 
     preset: str
     pair: Subst
     substitute: Reference
+    routing: bool = False
 
 
 def subst_reference(text: str, document: str) -> Reference:
@@ -820,7 +824,10 @@ def governing(
             for preset in matching_presets(conversion, reference.tags):
                 for pair in preset.substs:
                     one = Governed(
-                        preset.name, pair, subst_reference(pair.alternative, path)
+                        preset.name,
+                        pair,
+                        subst_reference(pair.alternative, path),
+                        preset.choice is not None,
                     )
                     first = above.setdefault(subst_identity(pair.original, path), one)
                     if identity(first.substitute) != identity(one.substitute):
@@ -3249,8 +3256,10 @@ def resourced(bundled: str, budget: int) -> bool:
     )
 
 
-def substituted(mapping: Substitution) -> list[Diagnostic]:
-    """One warning for each `subst` pair a reference named.
+def substituted(
+    mapping: Substitution, quiet: Collection[tuple[str, tuple[str, str | None]]]
+) -> list[Diagnostic]:
+    """One warning for each `subst` pair other than a routing pair a reference named.
 
     A key names one substitution, so the references it served state one
     warning at the first of them. The warning names that link as
@@ -3258,6 +3267,8 @@ def substituted(mapping: Substitution) -> list[Diagnostic]:
     the author wrote as `source`, and the substitute's identity as
     `resolved`; its message states the identity the reference would have
     resolved to, which is what tells two keys naming one stand-in apart.
+    A quiet pair, as `routes` names one, is the route its author
+    declared, so a reference using it raises nothing.
     """
     return [
         Diagnostic(
@@ -3270,6 +3281,7 @@ def substituted(mapping: Substitution) -> list[Diagnostic]:
             location=None if one.origin is None else located(one.origin),
         )
         for one in mapping.redirects.targets()
+        if one.pair not in quiet
     ]
 
 
@@ -3593,6 +3605,9 @@ class Compiled:
     carries, which the run weighs against its other bundles'. The pairs
     are those `governing` puts in force for the documents the bundle
     carries, which the run weighs against every reference it resolved.
+    The linked identities are those `linked` reads from each document
+    a routing pair is in force for, which a routing pair is weighed
+    against.
     """
 
     text: str
@@ -3604,6 +3619,7 @@ class Compiled:
     captured: Mapping[str, Capture]
     unselected: Mapping[str, tuple[str, ...]]
     pairs: Mapping[str, Mapping[tuple[str, str | None], Governed]]
+    linked: Mapping[str, frozenset[tuple[str, str | None]]]
 
 
 def compiled(
@@ -3685,6 +3701,41 @@ def compiled(
         captured,
         unselected(read, parsed, contributing(found), requested),
         pairs,
+        {
+            path: linked(path, parsed[path])
+            for path, held in pairs.items()
+            if any(one.routing for one in held.values())
+        },
+    )
+
+
+def linked(document: str, tokens: Sequence[Token]) -> frozenset[tuple[str, str | None]]:
+    """The document and section each link of one document names, wherever it sits.
+
+    Every region is read, so a link in a section the run did not select
+    names its target as one in the selection does. An identity is the
+    one the link was written to name, before any `subst` pair redirects
+    it, and a link naming no local Markdown document names none.
+    """
+    return frozenset(
+        (found.path, found.fragment)
+        for use in uses(tokens, tuple(regions(tokens)))
+        if not use.resource and (found := named(document, use.destination)) is not None
+    )
+
+
+def names(
+    identities: Collection[tuple[str, str | None]], key: tuple[str, str | None]
+) -> bool:
+    """Whether a link naming one of these identities names a `subst` key.
+
+    A key carrying a section is named by a link to that section, and a
+    key naming a whole document by a link to the document or any of
+    its sections.
+    """
+    path, fragment = key
+    return key in identities or (
+        fragment is None and any(one == path for one, _ in identities)
     )
 
 
@@ -3720,20 +3771,40 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
     ]
 
 
+def routes(bundles: Iterable[Compiled]) -> set[tuple[str, tuple[str, str | None]]]:
+    """The pairs, as declaring document and key, only alternatives put in force.
+
+    A pair a `default` or an ordinary preset states in any bundle of the
+    run stands in for material under test there, so it is no route.
+    """
+    routing: set[tuple[str, tuple[str, str | None]]] = set()
+    standing: set[tuple[str, tuple[str, str | None]]] = set()
+    for one in bundles:
+        for path, pairs in one.pairs.items():
+            for key, pair in pairs.items():
+                (routing if pair.routing else standing).add((path, key))
+    return routing - standing
+
+
 def unused_pairs(
     bundles: Iterable[Compiled], mapping: Substitution
 ) -> list[Diagnostic]:
     """One warning for each `subst` pair in force that no reference used.
 
     A pair is in force for the links its declaring document writes, so
-    one no reference of the run named substitutes nothing. The warning
+    one no reference of the run named substitutes nothing. A routing
+    pair routes whatever the document is compiled for, so it is unused
+    only where no link of its document names its key, a link outside
+    the selection naming it as one inside does. The warning
     carries the key as its author wrote it as `source`, names the
     declaring document and preset in its message, and carries no
     location: bundle by bundle, each bundle's documents by path, and each
     document's pairs in the order its presets are read.
     """
     held: dict[tuple[str, str, tuple[str, str | None]], Governed] = {}
+    written: dict[str, frozenset[tuple[str, str | None]]] = {}
     for one in bundles:
+        written.update(one.linked)
         for path in sorted(one.pairs):
             for key, pair in one.pairs[path].items():
                 held.setdefault((path, pair.preset, key), pair)
@@ -3741,14 +3812,23 @@ def unused_pairs(
         Diagnostic(
             WARNING,
             f"the subst key {one.pair.original!r} of prosiform.{one.preset} in "
-            f"{path!r} names no reference the run resolved, so it substitutes "
-            f"nothing",
+            f"{path!r} names "
+            + (
+                "no link its document writes"
+                if one.routing
+                else "no reference the run resolved"
+            )
+            + ", so it substitutes nothing",
             code=SUBST_UNUSED,
             source=one.pair.original,
             remedy="name an identity the declaring document links, or drop the pair",
         )
         for (path, _preset, key), one in held.items()
-        if not mapping.redirects.served((path, key), one.substitute)
+        if not (
+            names(written[path], key)
+            if one.routing
+            else mapping.redirects.served((path, key), one.substitute)
+        )
     ]
 
 
@@ -3903,7 +3983,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
         options.check,
         fault == CLEANUP_FAULT,
         [
-            *substituted(mapping),
+            *substituted(mapping, routes((first, *built.values()))),
             *unused_pairs((first, *built.values()), mapping),
             *unused_presets((first, *built.values())),
         ],
