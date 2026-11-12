@@ -574,7 +574,7 @@ def substs(conversion: Conversion) -> None:
     """
     for preset in conversion.presets:
         for at, pair in enumerate(preset.substs):
-            for side in (pair.original, pair.alternative):
+            for side in (pair.original, pair.substitute):
                 try:
                     refusal = (
                         "carries a scheme or an authority, so it names no local "
@@ -647,11 +647,11 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
     """Hold each preset a document declares to stating each of its rules once.
 
     A preset mapping two `subst` keys that normalise to one identity,
-    mapping a key to an alternative of its own identity, or writing a key
+    mapping a key to a substitute of its own identity, or writing a key
     naming a section alone states a rule the run cannot apply as written,
     so each is invalid usage at the entry. A key names the document whose
-    references it redirects, which a section alone does not. An
-    alternative naming no Markdown document is refused the same way,
+    references it redirects, which a section alone does not. A
+    substitute naming no Markdown document is refused the same way,
     because the reference it redirects could only be published as text.
     Identities are read from the declaring document, the reference that
     opened it being `found`.
@@ -669,20 +669,20 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
                     pair.location,
                 )
             key = subst_identity(pair.original, found.path)
-            if not is_markdown(subst_identity(pair.alternative, found.path)[0]):
+            if not is_markdown(subst_identity(pair.substitute, found.path)[0]):
                 raise preset_refusal(
-                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
+                    f"{entry} maps {pair.original!r} to {pair.substitute!r}, which "
                     f"names no Markdown document, so the reference it redirects "
                     f"could only be published as text",
-                    "name a Markdown document or section as the alternative",
+                    "name a Markdown document or section as the substitute",
                     found,
                     pair.location,
                 )
-            if key == subst_identity(pair.alternative, found.path):
+            if key == subst_identity(pair.substitute, found.path):
                 raise preset_refusal(
-                    f"{entry} maps {pair.original!r} to {pair.alternative!r}, which "
-                    f"name one identity, so the alternative stands in for itself",
-                    "name an alternative other than the reference it replaces",
+                    f"{entry} maps {pair.original!r} to {pair.substitute!r}, which "
+                    f"name one identity, so the substitute stands in for itself",
+                    "name a substitute other than the reference it replaces",
                     found,
                     pair.location,
                 )
@@ -708,15 +708,15 @@ def agreed(
     """Hold the selected presets to agreeing about every shared setting.
 
     Selected presets union, so two stating one `group` pair, or mapping
-    one `subst` key to one alternative, state one setting. Two stating
-    different `group` pairs, or mapping one key to two alternatives,
+    one `subst` key to one substitute, state one setting. Two stating
+    different `group` pairs, or mapping one key to two substitutes,
     leave nothing saying which would take effect, so the reference
     selecting them is invalid usage naming both presets and the setting.
     `default` lies beneath every selection rather than beside it, so it
     disagrees with none. The declaring document is `document`.
     """
     stated: Membership | None = None
-    alternatives: dict[tuple[str, str | None], tuple[str, Subst]] = {}
+    substitutes: dict[tuple[str, str | None], tuple[str, Subst]] = {}
     selected = f"selected by tags {sorted(tags)!r}"
     for preset in matching_presets(conversion, tags):
         one = preset.membership
@@ -741,22 +741,22 @@ def agreed(
             )
         for pair in preset.substs:
             key = subst_identity(pair.original, document)
-            named_first, first_pair = alternatives.setdefault(key, (preset.name, pair))
-            if subst_identity(first_pair.alternative, document) != subst_identity(
-                pair.alternative, document
+            named_first, first_pair = substitutes.setdefault(key, (preset.name, pair))
+            if subst_identity(first_pair.substitute, document) != subst_identity(
+                pair.substitute, document
             ):
                 raise preset_refusal(
                     f"prosiform.{named_first}.{SUBST} and "
                     f"prosiform.{preset.name}.{SUBST}, both {selected}, map "
-                    f"{pair.original!r} to {first_pair.alternative!r} and "
-                    f"{pair.alternative!r}",
-                    "map the reference to one alternative in the selected presets",
+                    f"{pair.original!r} to {first_pair.substitute!r} and "
+                    f"{pair.substitute!r}",
+                    "map the reference to one substitute in the selected presets",
                     reference,
                     first_pair.location,
                     (
                         pair.location,
                         f"prosiform.{preset.name}.{SUBST} maps {pair.original!r} "
-                        f"to {pair.alternative!r}",
+                        f"to {pair.substitute!r}",
                     ),
                 )
 
@@ -766,7 +766,7 @@ class Governed:
     """One `subst` pair in force for the links a document writes.
 
     `preset` names the preset stating it, `pair` the entry as written and
-    `substitute` the reference its alternative resolves to from the
+    `substitute` the reference the entry's substitute resolves to from the
     declaring document. A pair is `routing` where an alternative states
     it: it routes the document's links to the picked kind's material,
     and a pair of `default` or of an ordinary preset stands in for
@@ -780,7 +780,7 @@ class Governed:
 
 
 def subst_reference(text: str, document: str) -> Reference:
-    """One `subst` alternative as the reference the run reads, from its document.
+    """One `subst` substitute as the reference the run reads, from its document.
 
     It resolves as a link the document writes resolves: from the
     document's directory, a section alone naming a section of the
@@ -862,9 +862,9 @@ def governing(
     so a selected preset's pair holds over `default`'s for one key. The
     presets one reference selects are held to agreeing first, and two
     presets selected by different references reaching the document,
-    mapping one key to two alternatives, are refused the same way: the
+    mapping one key to two substitutes, are refused the same way: the
     document's links are written once, so the union would leave nothing
-    saying which alternative they resolve to.
+    saying which substitute they resolve to.
 
     Several alternatives in force are refused before their pairs are
     compared, since alternatives route one key to different kinds'
@@ -882,7 +882,7 @@ def governing(
             raise unresolved(path, conversion)
         in_force = {
             subst_identity(pair.original, path): Governed(
-                DEFAULT, pair, subst_reference(pair.alternative, path)
+                DEFAULT, pair, subst_reference(pair.substitute, path)
             )
             for pair in conversion.default.substs
         }
@@ -894,7 +894,7 @@ def governing(
                     one = Governed(
                         preset.name,
                         pair,
-                        subst_reference(pair.alternative, path),
+                        subst_reference(pair.substitute, path),
                         preset.choice is not None,
                     )
                     first = above.setdefault(subst_identity(pair.original, path), one)
@@ -909,18 +909,18 @@ def governing(
 def disagreeing(
     first: Governed, later: Governed, document: str, reference: Reference
 ) -> Failure:
-    """Two presets selected for one document mapping one key to two alternatives."""
+    """Two presets selected for one document mapping one key to two substitutes."""
     return preset_refusal(
         f"prosiform.{first.preset}.{SUBST} and prosiform.{later.preset}.{SUBST}, "
         f"both selected for {document!r}, map {later.pair.original!r} to "
-        f"{first.pair.alternative!r} and {later.pair.alternative!r}",
-        "map the reference to one alternative in the presets selected for one document",
+        f"{first.pair.substitute!r} and {later.pair.substitute!r}",
+        "map the reference to one substitute in the presets selected for one document",
         reference,
         first.pair.location,
         (
             later.pair.location,
             f"prosiform.{later.preset}.{SUBST} maps {later.pair.original!r} to "
-            f"{later.pair.alternative!r}",
+            f"{later.pair.substitute!r}",
         ),
     )
 

@@ -51,8 +51,8 @@ def test_substitution_keeps_the_occurrences_tags_and_context() -> None:
         composes=True,
         tags=read("checks,draft"),
     )
-    alternative = resolve("stand-in.md#chosen", tags=read("other"))
-    mapping = Substitution().governed({"guide.md": {("rules.md", None): alternative}})
+    substitute = resolve("stand-in.md#chosen", tags=read("other"))
+    mapping = Substitution().governed({"guide.md": {("rules.md", None): substitute}})
     redirected = mapping.writing("guide.md").redirect(found)
     assert (redirected.path, redirected.fragment) == ("stand-in.md", "chosen")
     assert redirected.tags == {"checks", "draft"}

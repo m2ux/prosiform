@@ -1,7 +1,7 @@
 description = "A preset named ?, the title token leaving the pick to an agent, fails with E_INVALID_CONVERSION_METADATA naming the key and publishes nothing."
 
 clauses = [
-  "Conversion metadata — The admitted keys",
+  "Conversion metadata — choice holds one line",
   "Metadata failures",
 ]
 

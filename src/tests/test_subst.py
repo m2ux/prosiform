@@ -626,7 +626,7 @@ def test_a_substitute_above_the_working_directory_reads_its_own_settings(
 ) -> None:
     """AC20's parent segment, read through the substitute's own bytes.
 
-    An alternative carrying `..` names a substitute above the invocation working
+    A substitute side carrying `..` names a substitute above the invocation working
     directory, and the group it joins is its own. Its links resolve from
     the directory it sits in, and a link beside it naming a document that
     declares nothing is carried as its author wrote it.
@@ -956,7 +956,7 @@ def test_two_tag_selections_selecting_disagreeing_pairs_are_refused(tree: Path) 
     assert "prosiform.Plan.subst and prosiform.Review.subst" in said[0]["message"]
 
 
-def test_a_pair_whose_alternative_names_no_markdown_document_is_refused(
+def test_a_pair_whose_substitute_names_no_markdown_document_is_refused(
     tree: Path,
 ) -> None:
     presetted(tree, "  default:\n    subst: [{rules.md: notes.txt}]\n")
