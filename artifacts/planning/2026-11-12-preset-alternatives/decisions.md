@@ -12,6 +12,7 @@ Settled in the design interview (user, 2026-11-12). Each names the options set a
 6. **An alternative's `subst` pairs route quietly**: no `W_SUBST_USED`, and `W_SUBST_UNUSED` only for a pair no link of its document names. Set aside: relaxing both warnings for every pair; keeping them.
 7. **Delivery is a new initiative** planned through work-planner. Set aside: one hot-fix pull request; a record with nothing raised.
 8. **work-kind is the motivating case.** work-planner is pre-migration, so a work-kind-shaped fixture proves the pattern.
+9. **The exactly-one failure has its own code**, `E_ALTERNATIVE_UNRESOLVED`, with exit 2, so a harness matches the pick step by code. Set aside: reusing `E_INVALID_USAGE`, as group and `subst` conflicts do.
 
 ## Defaults Taken
 
@@ -26,4 +27,4 @@ Details settled without a question; each can be reopened.
 
 ## Open Questions
 
-1. The exactly-one failure's code: `E_INVALID_USAGE`, as group and `subst` conflicts use, or a code of its own that harnesses and evals can match.
+None.

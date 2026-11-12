@@ -22,7 +22,7 @@ prosiform:
 ---
 ```
 
-- **Exactly one is in force.** Wherever a document declaring alternatives is compiled, exactly one of them is in force for it in each bundle: the union every reference reaching it selects, the set its `subst` pairs already resolve through. None, or more than one, fails the run with exit status 2, naming each alternative with its choice line in declaration order.
+- **Exactly one is in force.** Wherever a document declaring alternatives is compiled, exactly one of them is in force for it in each bundle: the union every reference reaching it selects, the set its `subst` pairs already resolve through. None, or more than one, fails the run with `E_ALTERNATIVE_UNRESOLVED` and exit status 2, naming each alternative with its choice line in declaration order.
 - **Alternatives layer like any preset.** The pick layers over `default`, and an ordinary preset, one with no `choice`, may be selected beside it under the existing union and conflict rules.
 - **`default` is no alternative.** It is in force wherever its document is compiled, so a `choice` in `default` is refused.
 - **An unpicked alternative is silent.** It raises no `W_PRESET_UNUSED`; an ordinary preset warns as before.
@@ -105,7 +105,7 @@ Expected modules, confirmed when the epics are cut.
 - `metadata.py` — the `choice` key, a `choice` in `default`, and a preset named `?`.
 - `tags.py` — `?` read as the pick token, matching no preset.
 - `closure.py` — `?` on deferred links only, and the pick checks on a deferred link to alternatives.
-- `cli.py` — the exactly-one rule and its diagnostic; `W_PRESET_UNUSED` skipping alternatives; routing pairs in `W_SUBST_USED` and `W_SUBST_UNUSED`; the `GUIDE` entry.
+- `cli.py` — the exactly-one rule and its `E_ALTERNATIVE_UNRESOLVED` diagnostic, listed by `-C`; `W_PRESET_UNUSED` skipping alternatives; routing pairs in `W_SUBST_USED` and `W_SUBST_UNUSED`; the `GUIDE` entry.
 - Title readers (`candidate.py`, `bundle.py`, `composition.py`, `dispatch.py`, `rewrite.py`) — `?` carried through `tags.read`.
 
 ### Corpus
@@ -130,7 +130,7 @@ A work-kind-shaped fixture proves the pattern end to end: a router with three al
 - `docs/references.md` — `?` under Selection by reference and Operators.
 - `invocation.md` — Conversion metadata, the pick in Examples, and the Guide paragraph.
 - `docs/glossary.md` — alternative, choice line, pick, routing pair.
-- `docs/validation.md` — the exactly-one failure and the refusals.
+- `docs/validation.md` — `E_ALTERNATIVE_UNRESOLVED` and the refusals.
 - The v1 design states each rule, and the docs repin to the commit adding them.
 
 ### Release
