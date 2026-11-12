@@ -12,7 +12,8 @@ The task targets `i15/e00/main`, beside W03, which also extends `cli.py`; whiche
 
 | Artifact | What it holds |
 | --- | --- |
-| [w02.md](../2026-11-12-preset-alternatives/e00/w02.md) | Component plan, scope and observing checks |
+| [w02.md](w02.md) | Component plan, scope and observing checks |
+| [test-results.md](test-results.md) | The test plan's results, with the revision tested |
 
 ## Links
 
