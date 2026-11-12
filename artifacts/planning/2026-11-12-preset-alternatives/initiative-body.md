@@ -35,16 +35,16 @@ A link's presets are fixed when its author writes the link, so a document generi
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/708) | Declared Alternatives | AC1, AC2, AC3, AC4, AC5 | | ✓ |
-| [E01](https://github.com/m2ux/prosiform/issues/709) | Agent Pick | AC1, AC2, AC4, AC5 | [E00](https://github.com/m2ux/prosiform/issues/708) | |
+| [E01](https://github.com/m2ux/prosiform/issues/709) | Agent Pick | AC1, AC2, AC4, AC5 | [E00](https://github.com/m2ux/prosiform/issues/708) | ✓ |
 | [E02](https://github.com/m2ux/prosiform/issues/733) | Agent Pick in Real Use | AC4 | [E01](https://github.com/m2ux/prosiform/issues/709) | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** A document generic over a kind compiles for the one kind picked for it, by its author's link or by the agent following the bundle, as the fixture corpus shows.
-- [ ] **AC2.** A pick left missing, unknown or plural fails before any bundle is published, as the fixture corpus shows.
-- [ ] **AC3.** Routing by kind warns only for a route no link of its document names, as the fixture corpus shows.
+- [x] **AC1.** A document generic over a kind compiles for the one kind picked for it, by its author's link or by the agent following the bundle, as the fixture corpus shows.
+- [x] **AC2.** A pick left missing, unknown or plural fails before any bundle is published, as the fixture corpus shows.
+- [x] **AC3.** Routing by kind warns only for a route no link of its document names, as the fixture corpus shows.
 - [ ] **AC4.** An agent following a bundle resolves a pick left to it from what the bundle and `pf` print, without reading a source, as the router fixtures, the bare-command test and the agent-pick eval show.
-- [ ] **AC5.** The documentation and the v1 design state each rule of alternatives and picks the build enforces, as `make links` and a read of the documentation show.
+- [x] **AC5.** The documentation and the v1 design state each rule of alternatives and picks the build enforces, as `make links` and a read of the documentation show.
 
 ## Non-Goals
 
@@ -60,4 +60,5 @@ A link's presets are fixed when its author writes the link, so a document generi
 - **R2.** **Source.** [Preset Alternatives design](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/design.md) — the rules the criteria answer to.
 - **R3.** [Work Kind](https://github.com/m2ux/workflow-server/blob/e6eb1af6d9ba6de3b97ff49a85ce82548224e285/skills/work-planner/artifacts/work-kind.md) — the kind router whose read-time routing motivates the design.
 - **R4.** [Production Build](https://github.com/m2ux/prosiform/issues/532) — the Rust build of the contract, which shares the fixture corpus these rules extend.
+
 
