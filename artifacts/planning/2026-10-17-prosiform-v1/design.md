@@ -137,22 +137,18 @@ The build names no requirement that a source document be a skill: any Markdown d
 
   Compiling a link:
 
-    Resolve its destination from the document carrying the link, then name
-    that destination from the working directory used for the command.
-    Qualify a same-document fragment with that document's path. Supply
-    its title as one --presets argument, shell-quoted where needed:
+    Run a link in a bundle as written, from the directory pf compiled that
+    bundle in. Resolve a link in a source document from that document,
+    then express it from the working directory; include the file for
+    #fragments. Pass title tags as one quoted --presets value, also for
+    deferred links:
 
-      pf guide.md#plan-report --presets checks,draft
       pf modes/review.md#review --presets 'checks, final draft'
-      pf guide.md#plan-report
 
-    Attach a value beginning with - to its option with =:
-
+    Omit --presets without tags; attach a value starting with - with =:
       pf guide.md --presets=-checks
 
-    Tags select the target's own presets above default. Unknown tags
-    select nothing. Headings and visible link text select no presets.
-    Preserve the same tags when compiling a deferred link in a later run.
+    Tags layer the target's presets above default.
 
   Exit status:
 
