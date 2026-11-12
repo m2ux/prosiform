@@ -1,0 +1,21 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/711",
+    "head": "59382d3a2e92e9d0ab12117f72fc96b2e4dc366b",
+    "base": "27010a9c79b8adf9114850ac41551f80f1d83d79",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-711-declared-alternatives/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-12T08:00:00Z",
+    "scope": "Diff: git diff 27010a9c79b8adf9114850ac41551f80f1d83d79...59382d3a2e92e9d0ab12117f72fc96b2e4dc366b: one file, artifacts/planning/2026-10-17-prosiform-v1/design.md, 37 insertions and 16 deletions across Guide, Conversion metadata, Presets, Metadata failures, Link classification and resource handling, Exit status and JSON diagnostics and Metadata conformance cases. The file at head is identical to c04f5d8e6, the W00 head its test results cover. Callers: The design carries no code. gitnexus (index at head, up to date) reports 13 changed Section symbols, 0 affected processes and no incoming or outgoing relationships for any changed section. Its dependents were read instead: the build rows' implementation on i15/e00/main eead56b5096870dbcd0703787a73261ce0cd2c76 (src/prosiform/metadata.py CHOICE, PICK and the choice refusals; src/prosiform/cli.py ALTERNATIVE_UNRESOLVED, the alternative listing and routing-pair reporting) against the rules each changed section states. Consistency: Every new anchor (#presets, #exit-status-and-json-diagnostics, #link-classification-and-resource-handling, #automatic-output-names) resolves. Each rule has one home; Selection by tags, default always applies and default is implicit name the exactly-one rule where an empty or unmatched selection meets a document declaring alternatives. A subst value is its substitute throughout. Excluded observation: The design states the pick token refusals (E_UNSUPPORTED_CONSTRUCT for ? outside a deferral, deferral pick checks) and the guide's ? entry, which the build on i15/e00/main does not implement: the guide text in src/prosiform/cli.py carries no ? entry. Epic #708's Proposal places the agent's pick outside this epic as the next layer. Scope evidence: Epic #708 Proposal, 'The agent's pick is the next layer ... lies outside this epic'; AC1 requires only that the design state it. git grep on eead56b5096870dbcd0703787a73261ce0cd2c76 finds PICK used only for the preset-name refusal in metadata.py. Arising issue: https://github.com/m2ux/prosiform/issues/709 (I15:E01 Agent Pick), the epic that builds the agent's pick.",
+    "criteria": "AC1 met: Read at head: choice row and choice holds one line (L430, L439); Alternatives, Exactly one alternative, The agent's pick (L462-L464); unpicked alternative raises no W_PRESET_UNUSED (L468); Metadata failures exception and E_ALTERNATIVE_UNRESOLVED row (L472, L478); routing pair in the substitution mapping (L498); The pick token (L515); exit 2 (L745); listing and warning exceptions (L755-L767); guide ? entry (L174-L176); Alternatives fixture row (L816). W00 test-results.md T1 and T2 at c04f5d8e6.",
+    "validation": "Link check (make links on the design): pass (.engineering/artifacts/planning/2026-11-12-708-i15-e00-w00-the-v1-design-states/test-results.md T1: exit 0 at c04f5d8e6; head design.md is identical to c04f5d8e6.) Section read against the Preset Alternatives record: pass (W00 test-results.md T2 and this review's read of the full diff.) gitnexus change surface: 1 file, 13 Section symbols, 0 processes, risk low (gitnexus detect-changes --scope compare --base-ref 27010a9c79b8adf9114850ac41551f80f1d83d79 in the review worktree at head.)",
+    "findings": [
+      {
+        "description": "Metadata failures (design.md L472): the opening sentence now names two exit-2 exceptions ('a disagreement between selected presets ... and a document with no single alternative in force, which exit 2'), so the following 'Both fail check mode' reads as those two exceptions rather than as the exit-1 and exit-2 classes it means. A wording ambiguity; no criterion depends on it.",
+        "severity": "nonblocking",
+        "disposition": "deferred",
+        "ticket": "https://github.com/m2ux/prosiform/issues/718"
+      }
+    ]
+  }
+]
