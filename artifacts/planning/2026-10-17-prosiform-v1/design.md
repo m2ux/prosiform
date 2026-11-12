@@ -469,7 +469,7 @@ A preset is a property of the document that declares it. Its settings govern tha
 
 ### Metadata failures
 
-Metadata input failures exit 1, except a disagreement between selected presets and the rules a preset states that [Presets](#presets) declares invalid usage, and a document with no single alternative in force, which exit 2. Both fail check mode, publish no bundle, and preserve an existing output file. Text and JSON diagnostics identify the failing field and original physical source location. A YAML syntax error points to the parser's marked token; an invalid key points to that key; a value type or value error points to that value; a malformed entry points to that entry; an unknown reserved field points to its key. Duplicate keys identify both occurrences. Collection-depth errors point to the collection that exceeds the limit.
+Metadata input failures exit 1, except a disagreement between selected presets and the rules a preset states that [Presets](#presets) declares invalid usage, and a document with no single alternative in force, which exit 2. Every metadata failure, exit 1 or 2, fails check mode, publishes no bundle and preserves an existing output file. Text and JSON diagnostics identify the failing field and original physical source location. A YAML syntax error points to the parser's marked token; an invalid key points to that key; a value type or value error points to that value; a malformed entry points to that entry; an unknown reserved field points to its key. Duplicate keys identify both occurrences. Collection-depth errors point to the collection that exceeds the limit.
 
 | Diagnostic | Defect |
 | --- | --- |
