@@ -37,7 +37,7 @@ A `?` tag in a deferred link's title leaves the pick of its target's alternative
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w03.md) | The guide states the pick end to end | AC4, AC5 | W02, [E00:W02](https://github.com/m2ux/prosiform/issues/708), [E00:W03](https://github.com/m2ux/prosiform/issues/708) | | | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w04.md) | The documentation states the pick | AC6 | W03, [E00:W04](https://github.com/m2ux/prosiform/issues/708) | | | |
 | [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w05.md) | An agent-pick eval workflow | AC7 | W03 | | | |
-| [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w06.md) | A measured agent-pick baseline | AC8 | W05 | | | |
+| [W06](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/e01/w06.md) | A measured agent-pick run | AC8 | W05 | | | |
 
 ## Acceptance Criteria
 
@@ -48,7 +48,7 @@ A `?` tag in a deferred link's title leaves the pick of its target's alternative
 - [ ] **AC5.** A kind router reached through a `?` link compiles, from the published bundle's command, to the listing and then to each pick's bundle, as the router fixtures show.
 - [ ] **AC6.** The references, invocation and glossary pages state the `?` tag and its refusals and pin the design stating them, as `make links` and a read of those pages show.
 - [ ] **AC7.** The diagram-following eval holds an agent-pick workflow whose scenarios pass only a session that enters the picked kind's states alone, after running `pf` with `?` replaced by that alternative and reading no source, as `make harness` and a stub-agent run of each scenario show.
-- [ ] **AC8.** The eval's baseline records the agent-pick workflow's pass rates from a live run, each failing session with its disposition, as the committed run record shows.
+- [ ] **AC8.** The agent-pick run record holds the workflow's pass rates from a live run, each failing session with its disposition, as the committed `agent-pick.json` shows.
 
 ## References
 

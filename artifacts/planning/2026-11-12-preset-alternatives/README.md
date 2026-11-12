@@ -29,7 +29,7 @@ This initiative lets a document declare one preset per kind as an alternative, a
 | [Guide and router work item](e01/w03.md) | The guide entry and the end-to-end router fixture |
 | [Pick documentation work item](e01/w04.md) | The pages stating the `?` tag |
 | [Agent-pick eval work item](e01/w05.md) | The eval workflow in which a headless agent resolves a `?` pick |
-| [Agent-pick run work item](e01/w06.md) | The live run and baseline of the agent-pick workflow |
+| [Agent-pick run work item](e01/w06.md) | The live run and run record of the agent-pick workflow |
 
 ## Links
 
