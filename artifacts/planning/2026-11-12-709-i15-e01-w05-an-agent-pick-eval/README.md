@@ -12,7 +12,7 @@ The task targets `i15/e01/main`, after the guide entry and router fixtures (W03)
 
 | Artifact | What it holds |
 | --- | --- |
-| [w05.md](../2026-11-12-preset-alternatives/e01/w05.md) | Component plan, scope and observing checks |
+| [w05.md](w05.md) | Component plan, scope and observing checks |
 
 ## Links
 
