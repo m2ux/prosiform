@@ -2,6 +2,7 @@ description = "The link title epic, checks picks the epic alternative of work-ki
 
 clauses = [
   "Presets — Selection by tags",
+  "Presets — Alternatives",
   "Presets — Selected presets union",
   "Presets — A preset nothing selected warns",
   "Link classification and resource handling — The substitution mapping",

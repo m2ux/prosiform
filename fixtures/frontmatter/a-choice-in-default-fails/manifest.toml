@@ -2,7 +2,7 @@ description = "A choice in default fails with E_INVALID_CONVERSION_METADATA nami
 
 clauses = [
   "Presets — default always applies",
-  "Conversion metadata — The admitted keys",
+  "Conversion metadata — choice holds one line",
   "Metadata failures",
 ]
 

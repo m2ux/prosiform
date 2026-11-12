@@ -1,7 +1,7 @@
 description = "A choice written as a block scalar holds a line break, so it fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing."
 
 clauses = [
-  "Conversion metadata — The admitted keys",
+  "Conversion metadata — choice holds one line",
   "Metadata failures",
 ]
 
