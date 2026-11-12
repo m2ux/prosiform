@@ -33,7 +33,7 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/{{E00}}) | Skill Entry | AC1, AC2 | | |
-| [E01](https://github.com/m2ux/prosiform/issues/{{E01}}) | Skill Variants | AC1, AC3 | [E00](https://github.com/m2ux/prosiform/issues/{{E00}}) | |
+| [E01](https://github.com/m2ux/prosiform/issues/{{E01}}) | Skill Variants | AC1, AC2, AC3 | [E00](https://github.com/m2ux/prosiform/issues/{{E00}}) | |
 | [E02](https://github.com/m2ux/prosiform/issues/{{E02}}) | Real-Use Baseline | AC4, AC5 | [E01](https://github.com/m2ux/prosiform/issues/{{E01}}) | |
 
 ## Acceptance Criteria

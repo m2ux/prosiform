@@ -12,21 +12,21 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 
 | Artifact | What it holds |
 | --- | --- |
-| [Decisions](decisions.md) | The confirmed goal and decisions with the options set aside, planning choices, join lines, the dependency check, findings for the user, defaults taken and the open question |
+| [Decisions](decisions.md) | The confirmed goal and decisions with the options set aside, planning choices, join lines, the dependency check and defaults taken |
 | [Goal trace](goal-trace.md) | The goal clauses traced to criteria and epics, the ranked gaps and outside threats |
 | [Initiative draft](initiative-body.md) | The initiative's goal, criteria and epic coverage |
-| [Skill Entry epic draft](e00-body.md) | E00's rows and criteria for harnesses, placement, the opening prompt and the retired bare-prompt path |
-| [Skill Variants epic draft](e01-body.md) | E01's rows and criteria converting each workflow family to skill variants |
+| [Skill Entry epic draft](e00-body.md) | E00's rows and criteria for harnesses, placement and the opening prompt |
+| [Skill Variants epic draft](e01-body.md) | E01's rows and criteria converting each workflow family to skill variants and retiring the bare-prompt path |
 | [Real-Use Baseline epic draft](e02-body.md) | E02's rows and criteria for deleting the bare-prompt records and measuring the new baseline |
 | [Codex work item](e00/w01.md) | Codex kept or retired by native skill discovery |
 | [Placement work item](e00/w02.md) | The variant layout, skill placement per harness and the bootstrap pair moved onto it |
 | [Opening prompt work item](e00/w03.md) | The scenario's task as the session's only prompt |
-| [Retirement work item](e00/w04.md) | The instruction files and entry wiring removed |
 | [Diagram family work item](e01/w01.md) | `linear`, `branching`, `looping`, `pricing` and `rework` as four skill variants each |
 | [Dispatch family work item](e01/w02.md) | The four dispatch workflows as product and `authored` skills |
 | [Deferral family work item](e01/w03.md) | The four deferral workflows as product skills |
 | [Composition family work item](e01/w04.md) | The composition and nested-dispatch workflows as product skills |
 | [Feature family work item](e01/w05.md) | The six feature workflows as product and `tree` skills |
+| [Retirement work item](e01/w06.md) | The instruction files, entry wiring and forms removed once every family is a skill |
 | [Records work item](e02/w01.md) | The bare-prompt records and their sections deleted |
 | [Runbook work item](e02/w02.md) | The real-use baseline runbook section and its shakedown |
 | [Baseline run work item](e02/w03.md) | The baseline run, its triage and committed record |

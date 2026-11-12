@@ -1,6 +1,6 @@
 ## Overview
 
-A session starts from a skill its CLI discovers and opens with its task in plain words, on every harness the eval keeps. The epic leaves the eval running end to end on the two workflows already written as skills, so the families that follow are converted onto a working runner.
+A session starts from a skill its CLI discovers and opens with its task in plain words, on every harness the eval keeps. The epic builds skill entry on the two workflows already written as skills, so the families that follow convert onto a working runner while the rest keep running as they are.
 
 ## Problem
 
@@ -20,11 +20,11 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 - **Each CLI offers the placed skill and no other.**
   The Claude harness admits its skill tool and drops the switch that disables skills, and the preflight refuses a configuration directory holding skills of its own.
 - **The opening prompt is the scenario's task.**
-  Each workflow's `scenarios.toml` states a `task` in plain words, filled from the scenario's inputs, and the run sends it as the session's only prompt.
-- **The bare-prompt path leaves.**
-  The three instruction files and the entry-file wiring are removed, and the runner gives sessions only to workflows written as skills.
+  A skill workflow's `scenarios.toml` states a `task` in plain words, filled from the scenario's inputs, and the run sends it as the session's only prompt.
+- **The skill states the tracing duty.**
+  One paragraph every variant's `SKILL.md` shares states how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`.
 - **The bootstrap pair proves it end to end.**
-  `bootstrap-audit` and `inline-bootstrap` move to the variant layout as the first product variants, so the runner has a family to run while the others convert.
+  `bootstrap-audit` and `inline-bootstrap` move to the variant layout as the first product variants; the other workflows run as they do until their family converts.
 
 ## Work Breakdown
 
@@ -32,21 +32,15 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 | --- | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w01.md) | Codex kept only with native discovery | AC1 | | | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w02.md) | Each harness places the session's skill | AC2, AC3 | W01 | | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w03.md) | The opening prompt states the task | AC4 | W02 | W04 | | |
-| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w04.md) | The bare-prompt path retired | AC5 | W02 | W03 | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w03.md) | The opening prompt states the task | AC4 | W02 | | | |
 
 ## Acceptance Criteria
 
 - [ ] **AC1.** The eval's harnesses are the agent CLIs whose own documentation states native skill discovery, as the harness tests show.
-- [ ] **AC2.** Every session's workspace holds its variant's skill under the discovery root its harness's CLI documents, as the harness tests show.
+- [ ] **AC2.** Every skill session's workspace holds its variant's skill under the discovery root its harness's CLI documents, as the harness tests show.
 - [ ] **AC3.** A session's CLI offers the placed skill and no skill of the eval's configuration or the caller's, as the harness isolation tests show.
-- [ ] **AC4.** A session's opening prompt is its scenario's task in plain words, naming no file, skill or instruction, as the run tests show.
-- [ ] **AC5.** The runner starts no session from a prompt naming an entry document, as the corpus and run tests show.
-
-## Open Questions
-
-- Where the tracing duty lives: `trace.log`, the sub-agent trace names and `answers.txt` are measurement the instruction states today; the planning record recommends one paragraph shared by every variant's `SKILL.md`.
+- [ ] **AC4.** A skill session's opening prompt is its scenario's task in plain words, naming no file, skill or instruction, as the run tests show.
 
 ## References
 
-- **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the decisions, defaults taken and the open question's recommendation.
+- **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the decisions and defaults behind the layout, the prompt and the tracing paragraph.
