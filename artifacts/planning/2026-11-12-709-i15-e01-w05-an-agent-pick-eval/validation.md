@@ -26,3 +26,8 @@ The checks the task pull request's Test Plan records, run against task branch `i
 
 - **Procedure.** `make check` with `PROSIFORM_BUILD="uv run --project <unit checkout>/src --frozen pf"`.
 - **Observation.** Exit 0. Lint, format, type and lock checks clean; `make test` 2039 passed; `make harness` 1022 passed; corpus 583 fixtures, 583 pass, 0 fail; smoke, layout, tables, links, vocabulary, invocation, conformance and independence pass, the conformance report naming 0 declarations that name no clause.
+
+## T6 Checks Workflow
+
+- **Procedure.** The repository's Checks workflow, which runs `make check`, on pull request [#725](https://github.com/m2ux/prosiform/pull/725) at head `eae0abebf`.
+- **Observation.** The `Checks` run completed with conclusion success: [run 43202564110](https://github.com/m2ux/prosiform/actions/runs/43202564110/job/131129450765).
