@@ -1,6 +1,6 @@
 # Test Results
 
-Revision tested: `cb7160c64` on `i15/e00/w02-exactly-one-alternative-in`, based on `i15/e00/main` at `b3027cd1a`. Every check ran from the unit checkout with `PROSIFORM_BUILD` naming that checkout's build: `uv run --project <unit-checkout>/src --frozen pf`.
+Revision tested: `297b82a3f` on `i15/e00/w02-exactly-one-alternative-in`, based on `i15/e00/main` at `c6a8ce7da`, which carries W03. Every check ran from the unit checkout with `PROSIFORM_BUILD` naming that checkout's build: `uv run --project <unit-checkout>/src --frozen pf`.
 
 ## T1 Unit Tests
 
@@ -15,12 +15,12 @@ Revision tested: `cb7160c64` on `i15/e00/w02-exactly-one-alternative-in`, based 
 
 - `no-pick-of-an-alternative-fails`, `an-unknown-alternative-name-fails`, `two-alternatives-in-one-title-fail`, `two-links-picking-different-alternatives-fail` and `a-diagram-link-alone-reaching-alternatives-fails`: exit 2 and one `E_ALTERNATIVE_UNRESOLVED` naming `work-kind.md` as `source`, its message carrying the three alternatives with their choice lines in declaration order.
 - `an-unpicked-alternative-raises-no-warning`: exit 0; the unpicked `initiative` and `task` alternatives raise nothing, and the ordinary `checks` preset warns `W_PRESET_UNUSED`.
-- `a-link-picks-an-alternative-beside-an-ordinary-preset`: its `W_PRESET_UNUSED` expectation for `initiative` removed.
+- `a-link-picks-an-alternative-beside-an-ordinary-preset`: its `W_PRESET_UNUSED` expectation for `initiative` removed beside W03's removal of `W_SUBST_USED`, so it expects no diagnostic.
 
 ## T3 Full Check
 
 `make check`: exit 0.
 
-- `corpus check: 561 fixture(s), 561 pass, 0 fail, 0 awaited, 0 unexpected pass`.
-- `make test` 1999 passed, `make harness` 1000 passed; lint, format, typecheck, lock, smoke, layout, tables, links, vocabulary, invocation, conformance and independence each passed.
+- `corpus check: 565 fixture(s), 565 pass, 0 fail, 0 awaited, 0 unexpected pass`.
+- `make test` 2012 passed, `make harness` 1004 passed; lint, format, typecheck, lock, smoke, layout, tables, links, vocabulary, invocation, conformance and independence each passed.
 - The README pins the design at `c04f5d8e6`, which declares `E_ALTERNATIVE_UNRESOLVED`: the harness holds the schema's error catalogue to the pinned design's codes, and the vocabulary check holds the glossary to its marked terms. Conformance: `0 declaration(s) naming no clause`, `0 reported code(s) the contract declares nowhere`.
