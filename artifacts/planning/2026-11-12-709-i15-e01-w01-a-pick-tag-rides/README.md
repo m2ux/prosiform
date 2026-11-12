@@ -1,6 +1,6 @@
 # A Pick Tag Rides a Deferred Link — November 2026
 
-> I15 E01 W01+W02 delivery · Created 2026-11-12
+> I15 E01 W01+W02 delivery · Created 2026-11-12 · Revised 2026-11-12
 
 ## Executive Summary
 
@@ -22,3 +22,5 @@ The task targets `i15/e01/main`, cut from `main` once Declared Alternatives merg
 | --- | --- |
 | Epic | [Agent Pick](https://github.com/m2ux/prosiform/issues/709) |
 | Prerequisites | [Declared Alternatives](https://github.com/m2ux/prosiform/issues/708) |
+| Pull request | [[I15:E01] A pick tag rides a deferred link](https://github.com/m2ux/prosiform/pull/721) |
+| Epic review | [[I15:E01] Agent Pick](https://github.com/m2ux/prosiform/pull/722) |
