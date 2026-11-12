@@ -1,0 +1,23 @@
+description = "A deferred link to a document declaring alternatives names only the ordinary preset checks, so the later run would find no alternative in force, and the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming the target's alternatives, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Link classification and resource handling — A withheld link's target",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["names no alternative", "declares the alternatives 'epic', 'task'"]
+reference = "work-kind.md"
+resolved = "work-kind.md"
+source = "guide.md:8"
+chain = ["guide.md", "work-kind.md"]

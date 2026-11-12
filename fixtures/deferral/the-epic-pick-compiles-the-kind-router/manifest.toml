@@ -1,0 +1,18 @@
+description = "The agent reruns the published command with ? replaced by epic, one alternative the listing names. The kind router compiles with epic in force, its routing pair stands epic-body.md in for body.md with no warning, and the bundle carries the pick's preset qualifier. The last step of a pick, for the epic alternative."
+
+clauses = [
+  "Presets — The agent's pick",
+  "Presets — Alternatives",
+  "Link classification and resource handling — The substitution mapping",
+  "Automatic output names, a selection is named by its path",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["work-kind.md#populate-body", "--presets", "epic"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/work-kind__populate-body--p-3d08be6e2134d929292759f7167df8e7b6735397875b7c4400721dfd71ec1bb6.bundle.md"]
+diagnostics = []

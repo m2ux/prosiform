@@ -287,6 +287,10 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "named from the working directory",
         "1 a failure stopped the run: report its diagnostics and go no further",
         "2 invalid usage or option combination",
+        "Run a link in a bundle as written, "
+        "from the directory pf compiled that bundle in.",
+        "Resolve a link in a source document from that document, "
+        "then express it from the working directory",
         "\u21b3 names a section to inline",
         "keep it in context",
         "\u21c9 names a bundle to hand on",
@@ -297,6 +301,9 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "step that led there, one per value where that step applies to",
         "A failure cancels nothing; all",
         "failures return together.",
+        "? among a link's title tags leaves the pick to you",
+        "pass the title as --presets as usual, read the alternatives pf lists,",
+        "and rerun with ? replaced by the one that fits your task",
     ):
         assert rule in " ".join(GUIDE.split())
 
@@ -1735,11 +1742,11 @@ def unresolved_of(run: Run) -> dict[str, Any]:
     return diagnostic
 
 
-@pytest.mark.parametrize("title", ["", ' "saga"', ' "checks"', ' "?"'])
+@pytest.mark.parametrize("title", ["", ' "saga"', ' "checks"'])
 def test_a_document_with_no_alternative_in_force_is_refused(
     kinds: Path, title: str
 ) -> None:
-    """An absent pick, an unknown name and `?` meet one diagnostic."""
+    """An absent pick and an unknown name meet one diagnostic."""
     written(
         kinds,
         "guide.md",
@@ -1818,6 +1825,131 @@ def test_a_dispatched_bundle_counts_the_references_within_it(kinds: Path) -> Non
         "the preset 'Checks' of 'work-kind.md' is selected by no reference "
         "the run compiled, so it governs nothing"
     ]
+
+
+POPULATE = "\n## Populate\n\nFill each field.\n"
+"""A section of the work-kind document a directive composes."""
+
+
+def refused_link(run: Run) -> dict[str, Any]:
+    """The one source refusal a run published nothing for."""
+    assert run.status == INPUT_FAILURE, run.stderr
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == UNSUPPORTED_CONSTRUCT
+    assert diagnostic["source"] == "guide.md:8"
+    return diagnostic
+
+
+@pytest.mark.parametrize("title", ["?", "checks, ?"])
+@pytest.mark.parametrize(
+    ("link", "destination"),
+    [
+        ("¬ the body", "work-kind.md"),
+        ("¬↳ the body", "work-kind.md#populate"),
+    ],
+)
+def test_a_deferral_publishes_its_pick_token_as_authored(
+    kinds: Path, link: str, destination: str, title: str
+) -> None:
+    written(kinds, "work-kind.md", WORK_KIND + POPULATE)
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + f'# Guide\n\n## Plan\n\nPopulate [{link}]({destination} "{title}").\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert f'({destination} "{title}")' in run.bundle
+
+
+@pytest.mark.parametrize("link", ["the body", "↳ the body", "⇉ the body", "⫽ the body"])
+def test_a_compiled_link_carrying_the_pick_token_is_refused(
+    kinds: Path, link: str
+) -> None:
+    written(kinds, "work-kind.md", WORK_KIND + POPULATE)
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + f'# Guide\n\n## Plan\n\nPopulate [{link}](work-kind.md#populate "?").\n',
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert diagnostic["reference"] == link
+    assert "pick token '?'" in diagnostic["message"]
+
+
+def test_a_link_to_a_silent_document_keeps_the_pick_token_as_text(
+    root: Path,
+) -> None:
+    """A citation compiles nothing, so its title is the author's text."""
+    written(root, "notes.md", "# Notes\n\nText.\n")
+    written(root, "guide.md", DECLARED + '# Guide\n\nSee [the notes](notes.md "?").\n')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert '(notes.md "?")' in run.bundle
+
+
+@pytest.mark.parametrize(
+    ("title", "stated"),
+    [
+        ("", "names no alternative"),
+        (' "checks"', "names no alternative"),
+        (' "epic, task"', "names 'Epic', 'Task'"),
+        (' "epic, ?"', "names 'Epic' beside the pick token '?'"),
+    ],
+)
+def test_a_deferral_stating_no_one_pick_is_refused(
+    kinds: Path, title: str, stated: str
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + f"# Guide\n\n## Plan\n\nPopulate [¬ the body](work-kind.md{title}).\n",
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert diagnostic["reference"] == "work-kind.md"
+    assert diagnostic["resolved"] == "work-kind.md"
+    assert diagnostic["message"] == (
+        f"the deferred link 'work-kind.md' {stated}; work-kind.md declares the "
+        "alternatives 'Epic', 'Task', and the link must name exactly one of them "
+        "or carry '?' alone"
+    )
+
+
+def test_a_pick_token_on_a_deferral_to_no_alternatives_is_refused(
+    kinds: Path,
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + '# Guide\n\n## Plan\n\nPopulate [¬ the body](body.md "?").\n',
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert diagnostic["message"] == (
+        "the deferred link 'body.md' carries the pick token '?', but body.md "
+        "declares no alternative to pick"
+    )
+
+
+@pytest.mark.parametrize(
+    ("destination", "title"),
+    [("work-kind.md", ' "Task, checks"'), ("body.md", ""), ("body.md", ' "checks"')],
+)
+def test_a_deferral_naming_one_pick_or_needing_none_publishes(
+    kinds: Path, destination: str, title: str
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + f"# Guide\n\n## Plan\n\nPopulate [¬ the body]({destination}{title}).\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert f"({destination}{title})" in run.bundle
 
 
 TWO_SECTIONS = DECLARED + (

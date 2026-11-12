@@ -10,12 +10,14 @@ A run puts the entry's bundle in place of `ENTRY`.
 ENTRY describes a workflow. Interpret it as a workflow and follow it to
 completion, starting at its first state.
 
-- The pf command is on your path, and the documents ENTRY was compiled from
-  sit in this directory, so run each compile from this directory.
+- The pf command is on your path. Run each pf command from this directory.
 - On entering a state, before anything else, append the state's name as one
-  line to trace.log in this directory. Append only a state the workflow's
-  diagram draws as a node: a section heading, a dispatched sub-agent's
-  section, or any other name the entry document carries is not a state.
+  line to trace.log in this directory. Append only a state: a step the
+  workflow takes, never the diamond it weighs a decision in, the condition
+  beside one of that decision's branches, a section heading, or any other
+  name the entry document carries. A marker the diagram clicks is a state
+  like any other: entering the one it opens with and the one it closes on
+  is a step, and each is appended.
 - When a state dispatches a sub-agent, tell it to append each state it
   enters as one line to trace-<section>.log in this directory, named for the
   section it is handed, and never to trace.log: the sub-agent follows a

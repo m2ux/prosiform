@@ -1,0 +1,23 @@
+description = "A deferred link names the alternative epic beside the pick token ?, making the pick and leaving it to the agent at once, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming the target's alternatives, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Link classification and resource handling — A withheld link's target",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["names 'epic' beside the pick token '?'", "declares the alternatives 'epic', 'task'"]
+reference = "work-kind.md"
+resolved = "work-kind.md"
+source = "guide.md:8"
+chain = ["guide.md", "work-kind.md"]

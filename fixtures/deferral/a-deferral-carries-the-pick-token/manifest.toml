@@ -1,0 +1,16 @@
+description = "A deferred link to a document declaring alternatives carries the pick token ? as its title, so the bundle publishes the link with its title as authored, leaving the pick to the agent that compiles it in a later run."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Presets — The agent's pick",
+  "Link classification and resource handling — A deferred link's destination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

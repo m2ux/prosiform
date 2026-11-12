@@ -81,6 +81,7 @@ from prosiform.closure import (
     Substitution,
     arrowed,
     bundle_selection,
+    compiled_pick,
     components,
     conflicting,
     contradicting,
@@ -213,6 +214,7 @@ from prosiform.source import (
 from prosiform.source import (
     CODES as SOURCE_CODES,
 )
+from prosiform.tags import PICK, picks
 from prosiform.tags import read as read_tags
 
 NAME = "pf"
@@ -332,9 +334,11 @@ Usage:
 
 Compiling a link:
 
-  Resolve the destination from the linking document, then express it
-  from the command's working directory; include the file for #fragments.
-  Pass title tags as one quoted --presets value, also for deferred links:
+  Run a link in a bundle as written, from the directory pf compiled that
+  bundle in. Resolve a link in a source document from that document,
+  then express it from the working directory; include the file for
+  #fragments. Pass title tags as one quoted --presets value, also for
+  deferred links:
 
     pf modes/review.md#review --presets 'checks, final draft'
 
@@ -360,6 +364,9 @@ Symbol grammar:
      Give each bundle to its own sub-agent at once, with the inputs of
      the step that led there, one per value where that step applies to
      several. A failure cancels nothing; all failures return together.
+  ?  among a link's title tags leaves the pick to you: pass the title as
+     --presets as usual, read the alternatives pf lists, and rerun with ?
+     replaced by the one that fits your task
 """
 
 
@@ -1833,6 +1840,45 @@ def refusals_of_operators(
         )
 
 
+def refusals_of_picks(
+    path: str,
+    source: Source,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+    chain: Sequence[str],
+    declarations: Declarations = DECLARING,
+    substitution: Substitution = UNSUBSTITUTED,
+) -> None:
+    """Refuse the pick token on a link whose target this run compiles.
+
+    The pick token leaves the pick to the agent compiling a deferral in a
+    later run, so an ordinary link, a composition directive, a dispatch
+    and a parallel dispatch naming a declaring document each ask this
+    run for a pick it cannot make. A link naming anything else is text,
+    or is refused by the operator refusals before this is asked, so its
+    title selects nothing and the token stays the author's text.
+    """
+    selected = tuple(regions(tokens)) if chosen is None else chosen.regions
+    for use in uses(tokens, selected):
+        if use.resource or not compiled_pick(use.opening, use.tags):
+            continue
+        at = location(path, source.line(use.line))
+        target = named(path, use.destination, substitution, at, chain, tags=use.tags)
+        if target is None or not declarations.declares(target):
+            continue
+        raise input_failure(
+            f"the link {use.opening!r} carries the pick token {PICK!r} and names "
+            f"{use.destination!r}, which this run compiles, so no agent is left "
+            f"to pick",
+            code=UNSUPPORTED_CONSTRUCT,
+            remedy=f"write the deferral mark {DEFERRAL_MARK!r} to leave the pick "
+            "to a later run, or name the alternative in the link's title",
+            reference=use.opening,
+            source=at,
+            chain=(*chain, use.destination),
+        )
+
+
 def refusals_of_directives(
     path: str,
     source: Source,
@@ -1995,6 +2041,8 @@ def withheld(
     link whichever half of the rule the link falls under. Each target
     retains the occurrence's tags, and a deferred directive states
     that it composes, so its later entry compilation uses that selection.
+    A deferral's target states that it defers, so its title is checked
+    for the pick the later run compiles it with.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2019,6 +2067,7 @@ def withheld(
             chain=(*chain, identity(found)),
             title=use.title,
             composes=directive(use.opening),
+            defers=deferred(use.opening),
         )
 
 
@@ -2170,7 +2219,7 @@ def traverse(
     limits.hold(TARGETS, len(seen))
     counted: dict[str, int] = {}
     postponed: dict[
-        tuple[str, str | None, str | None, bool, frozenset[str]], Reference
+        tuple[str, str | None, str | None, bool, frozenset[str], bool], Reference
     ] = {}
     dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
@@ -2230,6 +2279,15 @@ def traverse(
                 declarations,
                 mapping,
             )
+            refusals_of_picks(
+                path,
+                read[path],
+                parsed[path],
+                chosen,
+                reached,
+                declarations,
+                mapping,
+            )
             refusals_of_directives(
                 path,
                 read[path],
@@ -2256,7 +2314,15 @@ def traverse(
             ):
                 verify_cached(root, one, captured)
                 postponed.setdefault(
-                    (one.path, one.fragment, one.title, one.composes, one.tags), one
+                    (
+                        one.path,
+                        one.fragment,
+                        one.title,
+                        one.composes,
+                        one.tags,
+                        one.defers,
+                    ),
+                    one,
                 )
             for link in dispatches(
                 path,
@@ -2310,6 +2376,8 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
+        if one.defers:
+            stated_pick(read[one.path].conversion, one)
     return (
         read,
         parsed,
@@ -2352,6 +2420,58 @@ def confirm(
         f"the reference {one.original!r} names no heading of the document it withholds",
         code=TARGET_NOT_FOUND,
         remedy="name a heading the document carries",
+        reference=one.original,
+        resolved=one.path,
+        source=one.origin,
+        chain=one.chain,
+    )
+
+
+def stated_pick(conversion: Conversion, one: Reference) -> None:
+    """Hold one deferral to stating the pick its target compiles with.
+
+    The later run compiles the target with the deferral's title as its
+    selection, and a document declaring alternatives compiles with
+    exactly one in force, so the title names one of them or carries the
+    pick token, never both. The pick token asks for a pick among
+    alternatives, so a target declaring none is refused with it. Every
+    other title publishes a command that run refuses, so the defect is
+    the source's and is reported at the link.
+    """
+    alternatives = conversion.alternatives
+    pick = picks(one.tags)
+    if not alternatives:
+        if not pick:
+            return
+        message = (
+            f"the deferred link {one.original!r} carries the pick token "
+            f"{PICK!r}, but {one.path} declares no alternative to pick"
+        )
+        remedy = f"remove {PICK!r} from the link's title"
+    else:
+        names = [preset.name for preset in picked(conversion, (one,))]
+        if (len(names) == 1 and not pick) or (not names and pick):
+            return
+        listed = ", ".join(repr(preset.name) for preset in alternatives)
+        if pick:
+            stated = (
+                f"names {', '.join(repr(name) for name in names)} beside the pick "
+                f"token {PICK!r}"
+            )
+        elif names:
+            stated = f"names {', '.join(repr(name) for name in names)}"
+        else:
+            stated = "names no alternative"
+        message = (
+            f"the deferred link {one.original!r} {stated}; {one.path} declares "
+            f"the alternatives {listed}, and the link must name exactly one of "
+            f"them or carry {PICK!r} alone"
+        )
+        remedy = f"title the link with one alternative, or with {PICK!r} alone"
+    raise input_failure(
+        message,
+        code=UNSUPPORTED_CONSTRUCT,
+        remedy=remedy,
         reference=one.original,
         resolved=one.path,
         source=one.origin,

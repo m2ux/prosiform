@@ -1,0 +1,63 @@
+# A scenario is the inputs a run is given, the path a correct run walks and the
+# pf runs it makes. A compile entry names the reference one pf run compiles,
+# from the workspace, in the order the session makes them.
+#
+# Classify defers the kind router's Route section with the pick token ? as its
+# title, so the run on its line lists the router's alternatives beside their
+# choice lines. Each input describes the work in the words of one choice line
+# and names no alternative; the session reruns with ? replaced by the
+# alternative whose choice line fits, and the material that run compiles
+# states the transition into that kind's state. Work no choice line describes
+# takes other, the router's alternative for any other work, into Hold.
+
+[[scenario]]
+name = "initiative-picked"
+path = ["Entry", "Classify", "Charter", "Exit"]
+inputs = { "work.txt" = "States a goal across several releases: open a second region for the service." }
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "?"
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "initiative"
+
+[[scenario]]
+name = "epic-picked"
+path = ["Entry", "Classify", "Breakdown", "Exit"]
+inputs = { "work.txt" = "Delivers one feature in several pull requests: dark mode for the settings page." }
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "?"
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "epic"
+
+[[scenario]]
+name = "task-picked"
+path = ["Entry", "Classify", "Change", "Exit"]
+inputs = { "work.txt" = "Fits in one pull request: correct the spelling in the install guide." }
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "?"
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "task"
+
+[[scenario]]
+name = "unknown-kind-held"
+path = ["Entry", "Classify", "Hold", "Exit"]
+inputs = { "work.txt" = "Water the plants in the lobby." }
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "?"
+
+[[scenario.compile]]
+entry = "reference/work-kind.md#route"
+presets = "other"

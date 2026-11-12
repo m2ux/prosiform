@@ -80,6 +80,13 @@ session's and each started sub-agent's, are held to the runs stated for it:
 The checks are read in that order, after the dispatch checks, so a sub-agent
 that never started fails *undispatched* rather than leaving its runs unmade.
 
+A session in a shell form follows what `pf` prints and writes, so a run that
+passes the run checks is held to the files its record says were read,
+wherever its harness reports them: a read naming a document of the form's
+sources, as that document or a path ending `/` and its path within them, is
+*read source*. A bundle `pf` wrote, an input and the session's own files are
+no source.
+
 A start is an `Agent` tool call in the transcript, whose prompt names the
 compiled file or authored section it hands over; its
 return is the sub-agent's report, read as `question` when its first line opens
@@ -112,6 +119,7 @@ __all__ = [
     "Verdict",
     "pf_runs",
     "read_commands",
+    "read_reads",
     "read_starts",
     "read_trace",
     "record_calls",
@@ -119,6 +127,7 @@ __all__ = [
 ]
 from workflow import (
     BOOTSTRAP,
+    COMPILED_FORM,
     FEWER,
     SHELL_FORMS,
     SOURCE_DIR,
@@ -179,6 +188,7 @@ class Failure(StrEnum):
     UNCOMPILED = "uncompiled"
     OVERCOMPILED = "overcompiled"
     MISORDERED_COMPILE = "misordered_compile"
+    READ_SOURCE = "read_source"
     ERRORED = "errored"
 
 
@@ -292,16 +302,20 @@ def record_calls(
 
     The record is `subagents.json` beside the trace and the session's tokens:
     `commands`, the shell commands the session ran, null where the harness
-    gives a session in its corpus form, `form`, no `pf`, and `starts`, one
+    gives a session in its corpus form, `form`, no `pf`; `reads`, the files
+    its file-reading tool opened, null in the same forms; and `starts`, one
     entry per start in the order the transcript made them, each naming its
     parent start and its sub-agent's commands. The scorer reads it instead of
     the transcript. The harness reads its own stream, so one record shape
     serves every agent CLI.
     """
     starts = harness.starts(transcript)
-    commands = harness.commands(transcript) if form in SHELL_FORMS else None
+    shell = form in SHELL_FORMS
+    commands = harness.commands(transcript) if shell else None
+    reads = harness.reads(transcript) if shell else None
     held = {
         "commands": None if commands is None else list(commands),
+        "reads": None if reads is None else list(reads),
         "starts": [start.record() for start in starts],
     }
     (records / SUBAGENTS).write_text(json.dumps(held, indent=2) + "\n")
@@ -335,6 +349,39 @@ def read_commands(workspace: Path) -> tuple[str, ...] | None:
     """
     commands = _held(workspace).get("commands")
     return _texts(commands) if isinstance(commands, list) else None
+
+
+def read_reads(workspace: Path) -> tuple[str, ...] | None:
+    """The files a workspace's record says the session's agents read.
+
+    A record naming no list says the session's form gives it no shell, so no
+    read is held against it.
+    """
+    reads = _held(workspace).get("reads")
+    return _texts(reads) if isinstance(reads, list) else None
+
+
+def sources_read(workflow: Workflow, reads: tuple[str, ...]) -> tuple[str, ...]:
+    """The reads naming a document of the workflow's shell-form sources.
+
+    The sources are the documents of its `compiled` form, or of the skill's
+    `sources/` for a bootstrap workflow, each named by its path within them.
+    """
+    form = COMPILED_FORM if COMPILED_FORM in workflow.forms else BOOTSTRAP
+    if form not in workflow.forms:
+        return ()
+    root = workflow.form(form)
+    documents = [
+        path.relative_to(root).as_posix() for path in sorted(root.rglob("*.md"))
+    ]
+    return tuple(
+        read
+        for read in reads
+        if any(
+            read.removeprefix("./") == document or read.endswith(f"/{document}")
+            for document in documents
+        )
+    )
 
 
 def read_starts(workspace: Path) -> tuple[Start, ...]:
@@ -695,6 +742,7 @@ def score(
             )
         starts = read_starts(workspace)
         commands = read_commands(workspace)
+        reads = read_reads(workspace)
         source_directory = SOURCE_DIR if BOOTSTRAP in workflow.forms else ""
         order = dispatched(scenario, starts, source_directory)
         if order is not None:
@@ -709,6 +757,8 @@ def score(
             )
             if order is not None:
                 return Verdict(False, order, None, expected, actual, actions)
+        if reads is not None and sources_read(workflow, reads):
+            return Verdict(False, Failure.READ_SOURCE, None, expected, actual, actions)
         return Verdict(True, None, None, expected, actual, actions)
     elif divergence == len(actual):
         failure, at = Failure.UNFINISHED, divergence

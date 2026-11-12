@@ -42,6 +42,7 @@ Each class the [scorer](score.py) defines, and `errored`:
 | `uncompiled` | A run a `[[scenario.compile]]` table states for an agent is in neither that agent's `commands` in `subagents.json` nor the transcript's shell calls, while the session's form states the line, link or guide run it compiles on a step the path reached. | The transcript's shell calls make that run and `subagents.json` omits it or gives it to another agent; or the form states no line, link or guide run for it on the path. | The transcript's shell calls are cut short, or a command's words cannot be split to read its references. |
 | `overcompiled` | An agent's `commands` run `pf` on a reference no `[[scenario.compile]]` table states for it, as on a line whose step does not hold for the scenario's `inputs/`, and the form states no such line on the path. | The form states that reference on the path and the tables omit it; the reference is a stated one spelled in a way the scorer does not match; or the harness, not the agent, ran the command. | The step's condition admits reaching the line either way. |
 | `misordered_compile` | The agent made every stated run, the transcript's shell calls make them in the order its `commands` record, and the form's steps reach their lines in the tables' order. | The transcript's shell calls make them in the tables' order and `subagents.json` records another; or the form's steps reach the lines in another order than the tables state. | One assistant message holds several of the runs, so their order is not settled. |
+| `read_source` | A path in `reads` in `subagents.json` names a document of the form's sources, and the transcript's read calls open it. | The transcript opens no such document and `subagents.json` records one, or the path names a bundle `pf` wrote that the scorer reads as a source. | A read call's path cannot be matched to a file of the workspace. |
 | `errored` | Never: the session entered no state. | The `result` text or `stderr.log` names the cause: a refusal, a spent or expired login, an unknown model or flag, a crash, a provider error. | Neither names a cause. |
 
 ### Dispositions File
@@ -169,7 +170,7 @@ One repetition of every cell of the default matrix, on the baseline's harness an
 | Estimate | USD 0.57: 76 sessions at the fifth run's mean of USD 0.007449 a session. |
 | Run | `baseline-shakedown`, 2026-11-03: at a 400 000-token session cap, stopped at 56 of 74 sessions, USD 0.304038 spent, on a `defect`: every dispatch session failed on the harness's reading of the sub-agent stream, escalated as [#632](https://github.com/m2ux/prosiform/issues/632). It sets no cap. |
 | Check | `foreground-check`, 2026-11-03: `dispatch-question` and `dispatch-set` in `compiled`, one session each, on the harness #632 corrects: both `unfinished`, each a `defect` of the dispatch scenarios, escalated as [#637](https://github.com/m2ux/prosiform/issues/637). |
-| Second run | `baseline-shakedown`, 2026-11-03, on #632's and #637's fixes and I10:E06's guide: crashed at 65 of 76 sessions on the first run's leftover workspaces, USD 0.359917 spent, 56 passed; 8 failures `defect` (`pf` asked for where no shell is given, `pf` refused under `Bash(pf:*)`, starts the scorer cannot match to their sections) and 1 `miss`, escalated as [#650](https://github.com/m2ux/prosiform/issues/650). It sets no cap; the shakedown repeats once #650 is settled, with `workspaces/baseline-shakedown` removed beside `results/baseline-shakedown`. |
+| Second run | `agent-pick-shakedown-2`, 2026-11-12, on #727's instruction: all 4 sessions started, none passed, USD 0.025455 spent over 808 191 tokens, on a `defect` of `pf`'s guide: `unknown-kind-held` resolved the bundle's `Route` link from the bundle's folder, as the guide told it, found no file there, and opened the router's source, escalated as [#728](https://github.com/m2ux/prosiform/issues/728) and corrected by [#729](https://github.com/m2ux/prosiform/pull/729). `epic-picked` and `initiative-picked`, each taking `read_source` while picking the scenario's kind, and `task-picked`, taking `unfinished` after one step whose only output was a read written as text, are each a `miss`. It sets no cap. |
 | Fourth run | `baseline-shakedown-2`, 2026-11-04, on #650's decisions and the corpus beginning every workflow at `Entry` and ending it at `Exit`: all 74 sessions started, USD 0.536773 spent, 7 passed. 67 failed `wrong_branch` at divergence 0, each omitting the entry and exit states the scenarios require, because the instruction still forbade tracing "the diagram's start or stop marker". A `defect` of the instruction, not the corpus; it sets no cap. |
 | Fifth run | `baseline-shakedown-3`, 2026-11-04, on the instruction corrected to trace a clicked marker: all 74 sessions started, 71 passed, USD 0.551214 spent over 20 815 533 tokens, the largest session 1 414 151 and the mean 281 291. Every charted form passed in full; the three failures are `authored` sessions that named `workflow.md#<heading>` where their step links `review.md`, `plan.md` or `draft.md`, each triaged `miss`. These set the baseline's session cap, token budget and cost cap below, and the runner's default session cap and `EVAL_BUDGET_TOKENS` beside them. |
 
@@ -196,4 +197,48 @@ The edge workflows on every harness carrying a shell, run by [I10:E04](https://g
 
 ```bash
 make eval-diagrams HARNESS=<harness> ARGS='--models <model> --workflows <edge workflows> --forms compiled,bootstrap --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id composition-edges-<harness>'
+```
+
+## Agent-Pick Run
+
+The `agent-pick` [deferral scenarios](README.md#deferral-scenarios) on the baseline's harness and model, run and shaken down by [I15:E01](https://github.com/m2ux/prosiform/issues/709) W06. The workflow's sources sit in each session's directory beside its bundle, as they do in a real setup, so the run measures whether an agent that comes across them keeps to what `pf` prints and writes; a session that opens one takes `read_source`, a `miss`.
+
+| Item | Value |
+| --- | --- |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
+| Workflows | `agent-pick` |
+| Forms | `compiled`, the one form the workflow is written in. |
+| Repetitions | 5 |
+| Sessions | 20: four scenarios, one form, five repetitions. |
+| Session cap | 820 000 tokens: the fourth shakedown run's largest session, 408 196 tokens, doubled and rounded up to the next 10 000. |
+| Token budget | 16 400 000 tokens: 20 times the session cap. |
+| Cost cap | USD 1: 20 times the fourth shakedown run's mean session cost of USD 0.007211, doubled and rounded up to the next dollar. Approved by the user on 2026-11-12. |
+| Committed | `report.json` as `evals/diagram-following/agent-pick.json`, with its `dispositions.json` read into it, and its `report.md` as `evals/diagram-following/agent-pick.md`; the run's measured cost in the README. `baseline.json`, `report.md` and `mvp-proof.json` are untouched. |
+
+```bash
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 5 --session-budget-tokens 820000 --budget-tokens 16400000 --run-id agent-pick'
+```
+
+### Shakedown
+
+One repetition of each agent-pick scenario, on the run's harness and model, at the baseline's session cap. Its measured tokens and cost set the run's session cap, token budget and cost cap above.
+
+| Item | Value |
+| --- | --- |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
+| Spending cap | USD 1 for every live run of the shakedown together. |
+| Sessions | 4: four scenarios, one form, one repetition. |
+| Session cap | 2 830 000 tokens: the baseline's session cap. |
+| Token budget | 11 320 000 tokens: 4 times the session cap. |
+| Estimate | USD 0.03: 4 sessions at the baseline shakedown's mean of USD 0.007449 a session. |
+| Run | `agent-pick-shakedown`, 2026-11-12: all 4 sessions started, none passed, USD 0.03219 spent over 908 675 tokens, on a `defect` of the instruction: `epic-picked` and `unknown-kind-held` took `read_source` after the instruction told them the documents the entry was compiled from sat in their directory, escalated as [#726](https://github.com/m2ux/prosiform/issues/726) and corrected by [#727](https://github.com/m2ux/prosiform/pull/727). `initiative-picked`, tracing from `Classify` though the bundle draws `Entry` first, and `task-picked`, compiling `states/classify.md#classify`, which no line states, are each a `miss`. It sets no cap. |
+| Second run | `agent-pick-shakedown-2`, 2026-11-12, on #727's instruction: all 4 sessions started, none passed, USD 0.025455 spent over 808 191 tokens, on a `defect` of `pf`'s guide: `unknown-kind-held` resolved the bundle's `Route` link from the bundle's folder, as the guide told it, found no file there, and opened the router's source, escalated as [#728](https://github.com/m2ux/prosiform/issues/728) and corrected by [#729](https://github.com/m2ux/prosiform/pull/729). `epic-picked` and `initiative-picked`, each taking `read_source` while picking the scenario's kind, and `task-picked`, taking `unfinished` after one step whose only output was a read written as text, are each a `miss`. It sets no cap. |
+| Third run | `agent-pick-shakedown-3`, 2026-11-12, on #729's guide: all 4 sessions started, none passed, USD 0.025175 spent over 790 926 tokens, on a `defect` of the instruction: `epic-picked` and `unknown-kind-held` took `wrong_branch` at divergence 0, each omitting `Entry`, the bundle's clicked start marker, while the compiled instruction lacked the clicked-marker tracing rule the other forms' instructions carry, escalated as [#730](https://github.com/m2ux/prosiform/issues/730) and corrected by [#731](https://github.com/m2ux/prosiform/pull/731). `initiative-picked` and `task-picked`, each taking `read_source` while picking the scenario's kind, are each a `miss`. It sets no cap. |
+| Fourth run | `agent-pick-shakedown-4`, 2026-11-12, on #731's instruction: `completed`, all 4 sessions started, none passed, each failure triaged `miss`, every session tracing the scenario's path and picking its kind. `epic-picked`, `initiative-picked` and `task-picked` took `read_source`, opening the router's or the states' sources; `unknown-kind-held` took `uncompiled`, listing the alternatives with `pf reference/work-kind.md --presets '?'`, without the line's `#route`. |
+| Measured | USD 0.028844 in all, USD 0.007211 a session; 1 010 089 tokens, 252 522 a session, the largest 408 196. These set the run's session cap, token budget and cost cap above. |
+
+```bash
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 1 --session-budget-tokens 2830000 --budget-tokens 11320000 --run-id agent-pick-shakedown-4'
 ```

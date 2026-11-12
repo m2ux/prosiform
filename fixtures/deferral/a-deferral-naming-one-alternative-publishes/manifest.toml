@@ -1,0 +1,15 @@
+description = "A deferred link names the alternative task beside the ordinary preset checks, which is one pick its author made, so the bundle publishes the link with its title as authored."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Presets — The agent's pick",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -9,7 +9,7 @@ pf
 
 ## Guide
 
-`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <document>[#<section>] [--presets <presets>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
+`pf` with no arguments prints the guide to standard output and exits `0`. It states the compile step, `pf -o <folder> <document>[#<section>] [--presets <presets>]` run in the directory holding the source document, into a folder the run makes if it is not there, with a non-zero exit stopping the run and reporting its diagnostics; that a link whose text opens with `↳` names an inline target, which is compiled, read whole and followed; that a link whose text opens with `⇉` names a bundle given to a sub-agent, and one opening with `⫽` marks a dispatch set, whose members are given to their own sub-agents at once; and that `?` among a link's title tags leaves the pick to the agent, which passes the title as `--presets` as usual, reads the alternatives `pf` lists and reruns with `?` replaced by the one that fits its task. Every bundle opens with the run-pf line, which tells its reader to run `pf` first. A document's bootstrap is therefore one instruction: run `pf` and follow it. The build requires no skill: any Markdown document declaring `prosiform` is a valid entry. No option prints the guide, `pf -h` names the bare command, and arguments naming no entry reference are invalid usage.
 
 ## Options
 
@@ -57,7 +57,7 @@ pf guide.md --presets=-checks
 pf -c guide.md#plan-report --presets checks,draft
 ```
 
-Resolve the destination from the document carrying the link, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
+Run a link in a bundle as written, from the directory `pf` compiled that bundle in. Resolve a link in a source document from that document, then express it from the command's working directory. Qualify a same-document fragment with its document's path. Pass the link title as one shell argument, quoting spaces and shell metacharacters. Attach a value beginning with `-` to its option with `=`. Omit `--presets` when the title carries no tags. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
 
 The following commands use the checked source tree of a [preset fixture](fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml):
 
@@ -67,13 +67,27 @@ pf guide.md
 pf -c guide.md
 ```
 
+A deferral carrying the pick token publishes its title as authored: the mode of the [kind router fixture](fixtures/deferral/the-pick-token-command-lists-the-kind-routers-alternatives/manifest.toml) writes `[¬ Populate the body](../work-kind.md#populate-body "?")`, and its bundle carries `[Populate the body](work-kind.md#populate-body "?")`. The command that link spells lists the alternatives with their choice lines and exits `2`, and the rerun naming the one that fits compiles:
+
+```text
+$ cd fixtures/deferral/the-pick-token-command-lists-the-kind-routers-alternatives/source
+$ pf work-kind.md#populate-body --presets '?'
+E_ALTERNATIVE_UNRESOLVED: work-kind.md needs one alternative in force:
+  initiative  States a goal and lists its epics.
+  epic        Lists its tasks in a Work Breakdown table.
+  task        One pull request's worth of work.
+  source: work-kind.md
+  remedy: rerun with --presets naming the alternative that fits your task
+$ pf work-kind.md#populate-body --presets epic
+```
+
 ## Conversion metadata
 
 A document declares `prosiform` in leading YAML frontmatter. Every key is a preset name holding a mapping of settings. `default` applies wherever the document is compiled. A link's title supplies comma-separated complete preset names; `--presets` supplies the entry's names through the same grammar. Split on literal commas, trim surrounding Unicode whitespace, compare without case and ignore empty, repeated and unknown names. Headings and visible link labels select no presets.
 
 Matching presets layer over `default` in declaration order and govern the destination document's own content. A selected `group` pair holds over `default`'s; [Sources](docs/sources.md) states what `subst` holds. Selected presets union their settings. Different group pairs in one selection, or conflicting substitutes for one document's substitution key, fail with `E_INVALID_USAGE`, naming both presets. [Selection](docs/selection.md#presets-in-force) gives the full rules. `prosiform: {}` declares with no preset; a document with no group pair keeps its own file group. A preset no compiled reference selected warns with `W_PRESET_UNUSED` and the run publishes.
 
-A preset holding `choice` is an alternative, and its choice line states when to pick it. A document declaring alternatives compiles only with exactly one of them in force in each bundle, picked by a link's title or the entry's `--presets`; none or several fail with `E_ALTERNATIVE_UNRESOLVED` and exit `2`, listing each alternative beside its choice line, and its remedy is a rerun with `--presets` naming the one that fits. An alternative no reference picked raises no `W_PRESET_UNUSED`. [Selection](docs/selection.md#presets-in-force) states the rule, and the design's [Presets](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states it in full.
+A preset holding `choice` is an alternative, and its choice line states when to pick it. A document declaring alternatives compiles only with exactly one of them in force in each bundle, picked by a link's title or the entry's `--presets`, or left to an agent by a deferral carrying the pick token `?`, as [References](docs/references.md#the-pick-token) states; none or several fail with `E_ALTERNATIVE_UNRESOLVED` and exit `2`, listing each alternative beside its choice line, and its remedy is a rerun with `--presets` naming the one that fits. An alternative no reference picked raises no `W_PRESET_UNUSED`. [Selection](docs/selection.md#presets-in-force) states the rule, and the design's [Presets](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states it in full.
 
 ```yaml
 ---

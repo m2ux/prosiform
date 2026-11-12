@@ -16,13 +16,13 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 
-A workflow gives a session only the forms it is written in: `linear`, `branching`, `looping`, `pricing` and `rework` take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the three [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: `linear`, `branching`, `looping`, `pricing` and `rework` take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the four [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
 Each form's entry is held to what it may carry: a prose entry draws no diagram, and a linked entry draws the diagram's edges and no label on any of them.
 
-Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to compile from the directory holding the sources. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
+Every session is given the same [instruction](instruction.md), naming only the entry document; a `bootstrap` session takes [its own](instruction-bootstrap.md), telling it a skill is available to find, and a `compiled` session [its own](instruction-compiled.md), naming the entry's bundle where `pf` wrote it and telling it to run each `pf` command from its working directory. Each `[[scenario]]` table in a workflow's `scenarios.toml` declares one scenario:
 
 | Field | Meaning |
 | --- | --- |
@@ -113,11 +113,13 @@ Compiling runs a command, so the session is given `pf` and a shell as a `compile
 
 ### Deferral scenarios
 
-The three deferral workflows say whether an agent following a `compiled` bundle runs `pf` on each `↳` line its path needs, and on no other. A source writes a deferred composition, `[¬↳ <title>](<path>#<section>)`, and `pf` publishes it as a link from the step writing it to a sub-section holding the `[↳ <title>](<path>#<section>)` line. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the compiled sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
+The four deferral workflows say whether an agent following a `compiled` bundle runs `pf` on each `↳` line its path needs, and on no other. A source writes a deferred composition, `[¬↳ <title>](<path>#<section>)`, and `pf` publishes it as a link from the step writing it to a sub-section holding the `[↳ <title>](<path>#<section>)` line. A step opening with a condition, "If `inputs/<file>` reads `<value>`,", reaches its lines only where that condition holds, and a run's bundle may hold further lines its own steps reach. The corpus test walks the bundles as a session does: it compiles the entry's bundle, runs `pf` from the compiled sources on each line a step of the walk reaches, reads what each run writes as part of the state that reached it, and holds the scenario's runs and path to that walk.
 
 The material a `↳` line compiles may itself dispatch: the run on it writes a bundle linking the bundles of the section's own targets, and those are the sub-agents the agent that ran it starts.
 
 A state may also defer its transition: its document writes no `**Next.**` paragraph, and the material its deferral compiles states "Take the transition labelled `<label>`.", so only a session that ran `pf` on the line knows the edge to take.
+
+A deferral titled with the pick token `?` leaves the pick among its target's alternatives to the agent. `agent-pick`'s `Classify` defers the `Route` section of a kind router, `reference/work-kind.md`, whose alternatives `initiative`, `epic`, `task` and `other` each route the section's link to a document stating the transition into that kind's state. The run on the line answers with the alternatives beside their choice lines, and only the rerun with `?` replaced by one compiles the transition, so a session that guesses the alternative, picks another, or reads the router's source rather than the listing departs from the path or from its stated runs, or reads a source, as [Run checks](#run-checks) states. `inputs/work.txt` describes the work in the words of one choice line, or of none, and names no alternative; the walk takes the alternative whose choice line, less its stop, an input holds, and `other`, declared last for any other work, where none does.
 
 | Workflow | Scenario | What it runs |
 | --- | --- | --- |
@@ -127,6 +129,10 @@ A state may also defer its transition: its document writes no `**Next.**` paragr
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
 | `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches `reference/crew.md#work` with `lift`, then `strap`, each selection writing its own action. |
 | `deferred-dispatch` | `deferred-dispatch-passed` | Nothing: `Pack`'s step does not hold, so its line is passed and nothing is dispatched. |
+| `agent-pick` | `initiative-picked` | `pf reference/work-kind.md#route --presets=?`, whose listing the work's goal across several releases matches to `initiative`, then the rerun with `initiative`, whose transition enters `Charter`. |
+| `agent-pick` | `epic-picked` | The listing, then the rerun with `epic`, for one feature in several pull requests, whose transition enters `Breakdown`. |
+| `agent-pick` | `task-picked` | The listing, then the rerun with `task`, for work fitting one pull request, whose transition enters `Change`. |
+| `agent-pick` | `unknown-kind-held` | The listing, then the rerun with `other`, since no choice line describes the work, whose transition enters `Hold`. |
 | `preset-deferral` | `stand-in-followed` | `pf reference/fetch.md#read-mirror --presets=mirror`. The deferral's title selects `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 
 ### Composition scenarios
@@ -192,7 +198,7 @@ Each failure class the scorer defines is produced by some scenario, and the corp
 
 ### Dispatch checks
 
-A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. It holds the session's own shell `commands`, null where its harness gives it no shell, and its `starts`. Each start names the section a sub-agent followed, what it returned, whether it started beside the entry above it, `parent`, the index of the start whose sub-agent made it, null for the session's own, and `commands`, the shell commands its sub-agent ran, so each sub-agent's starts and commands sit under the section it followed at every depth the harness's stream reports. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when its first line opens `Question:`, as the authored workflow's question procedure states, and `done` otherwise.
+A dispatch scenario states the sub-agents a correct run starts, so a run whose trace is the path and whose actions are done is held to its sub-agent record before it passes. The record is [`subagents.json`](score.py), written from the session's transcript as it settles and sitting beside the trace and the session's cost, so the scorer reads it rather than the transcript. It holds the session's own shell `commands` and the files its agents' file-reading tool opened, `reads`, each null where its harness gives it no shell, and its `starts`. Each start names the section a sub-agent followed, what it returned, whether it started beside the entry above it, `parent`, the index of the start whose sub-agent made it, null for the session's own, and `commands`, the shell commands its sub-agent ran, so each sub-agent's starts and commands sit under the section it followed at every depth the harness's stream reports. A return is the sub-agent's report, read from inside the frame its CLI puts around it, and is `question` when its first line opens `Question:`, as the authored workflow's question procedure states, and `done` otherwise.
 
 The checks hold the dispatch's shape, then the session's handling of each return as the dispatch protocol states it: a start returning `done` moves the session on, and one returning a question is started again with the answers. Each sub-agent's action is then held as a state's is.
 
@@ -218,6 +224,14 @@ A run that passes the dispatch checks and its sub-agents' actions is held to the
 | `misordered_compile` | made its stated runs in another order, or a sub-agent did. |
 
 The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade. A harness reporting no command, as the Claude harness does in every form but `compiled` and `bootstrap`, holds a session to none of them.
+
+A session given a shell follows what `pf` prints and writes, so a run passing the run checks is then held to its record's `reads`: each path the stream records a file-reading call opening, the session's and every sub-agent's the stream carries. A path naming a document of the form's sources, as that document or a path ending `/` and its path within them, fails the session; a bundle `pf` wrote, an input and the session's own files are no source.
+
+The sources sit in the session's directory on purpose, as they would beside a real agent, and the session's instruction neither names nor forbids them, so the check finds whether an agent that comes across them keeps to what `pf` gave it.
+
+| Class | The session |
+| --- | --- |
+| `read_source` | opened a source document of its form, rather than only what `pf` printed and wrote. |
 
 A run in which every session it started took `errored` is **refused**. No session entered a state, so the matrix is no result, and its pass rates would read a spent login as a matrix of failing agents. `run.json` records `"state": "refused"` and a `reason`, and its report names both instead of giving tables or comparing pass rates. The reason is one session's own `result` text, so a reader sees the limit the agent reported. A run its budget stopped part way is refused on the same terms, since the sessions it never started add nothing its errored ones lack; one where some sessions errored on a genuine fault beside sessions that entered a state is a completed run whose failures are its result. The boundary is decided once the sessions settle, before `run.json` is written.
 
@@ -340,7 +354,7 @@ The run's guard reads each session's reported tokens when it settles: a session 
 
 ## Reading the report
 
-A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, each form's command line, harness, managed configuration, tokens, state and sessions not started. `subagents.json` holds the session's commands and the sub-agent starts the transcript records, one per entry, in order, each with its parent and its commands, so a reader sees what the agent dispatched and ran; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
+A run writes its records under `results/<run-id>/`, which git ignores: per session, `<model>/<workflow>/<scenario>/<form>/<repetition>/` with its transcript, its own `trace.log`, each dispatched sub-agent's `trace-<section>.log`, actions, sub-agent record and `session.json`; and `run.json`, the run's options, each form's command line, harness, managed configuration, tokens, state and sessions not started. `subagents.json` holds the session's commands, the files it read and the sub-agent starts the transcript records, one per entry, in order, each with its parent and its commands, so a reader sees what the agent dispatched and ran; `session.json` also holds the scenario's dispatch trace, so a reader sees the sub-agents a correct run starts beside the verdict on the one that ran. The runner then writes `report.md` and `report.json` beside `run.json`. To write them again, against another baseline:
 
 ```bash
 uv run --project src --frozen python evals/diagram-following/report.py evals/diagram-following/results/<run-id> --baseline <file>
@@ -357,6 +371,10 @@ A refused run — one every started session of which took `errored` — has no r
 [`mvp-proof.json`](mvp-proof.json) records a live run of the [feature scenarios](#feature-scenarios), with its [report](mvp-proof.md) beside it: 150 sessions on the `claude` harness and `claude-haiku-5-5`, fifteen scenarios in `bundle` and `tree`, five repetitions each. It proves that an agent given a feature workflow in either form follows it to completion: 148 sessions pass, all 75 in `bundle` and 73 of 75 in `tree`. The two failures, in `section-composition`'s `nested-composition`, are triaged as misses in the file. The run measured USD 0.67671 over 19 268 512 tokens, so a rerun spends the same budget.
 
 The managed platform configuration the sessions carried is recorded by count and fingerprint, as [Isolation](#isolation) states. [`RUNBOOK.md`](RUNBOOK.md#mvp-proof) states how the run is made.
+
+## Agent-pick run
+
+[`agent-pick.json`](agent-pick.json) records a live run of the [`agent-pick` scenarios](#deferral-scenarios), with its [report](agent-pick.md) beside it: 20 sessions on the `opencode` harness and the baseline's model, four scenarios in `compiled`, five repetitions each. Every session traced its scenario's path, the picked kind's state alone, and none passed: 15 opened a source of the form beside compiling, `read_source`; 4 compiled a reference no line on the path states, `overcompiled`; and 1 never ran the listing, `uncompiled`. Each failure is triaged as a miss in the file. The run measured USD 0.158708 over 5 037 116 tokens, so a rerun spends the same budget. [`RUNBOOK.md`](RUNBOOK.md#agent-pick-run) states how the run is made.
 
 ## Refreshing the baseline
 

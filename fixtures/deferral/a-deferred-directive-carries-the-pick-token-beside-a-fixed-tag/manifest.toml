@@ -1,0 +1,16 @@
+description = "A deferred composition directive carries the pick token ? beside the fixed tag checks, so the deferred composition line publishes the title as authored and leaves the pick among the target's alternatives to the agent."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Presets — The agent's pick",
+  "Section composition — Deferred composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

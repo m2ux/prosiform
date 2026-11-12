@@ -38,6 +38,13 @@ The environment scripts it:
 - `STUB_AGENT_TOKENS`: the tokens its `result` message reports, each kind set so
   their sum is this number;
 - `STUB_AGENT_STOP`: a number of states after which it stops walking;
+- `STUB_AGENT_SCENARIO`: the name of a scenario of its workflow whose path
+  and runs it takes in place of those its inputs name, as an agent that
+  picked another alternative does;
+- `STUB_AGENT_RUNS`: a number of its stated `pf` runs after which it makes
+  no more, as an agent that never reran a pick's listing does;
+- `STUB_AGENT_READ`: a path, from its workspace, it opens with a `Read` call
+  before its first run, as an agent reading a source does;
 - `STUB_AGENT_NO_DISPATCH`: when set, it starts no sub-agent, as an agent
   that read the protocol and ignored it does;
 - `STUB_AGENT_SEQUENTIAL`: when set, it starts every sub-agent in a message
@@ -77,6 +84,7 @@ from harness import (
     HANDBACK,
     PARENT,
     QUESTION,
+    READ_TOOL,
     SHELL_TOOL,
 )
 from score import ACTIONS, SUB_AGENT_TRACE, TRACE
@@ -211,11 +219,16 @@ def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None,
     tools = argv[argv.index("--tools") + 1] if "--tools" in argv else ""
     if item is None or SHELL_TOOL not in tools.split(","):
         return []
-    return [(run.by, shlex.join(["pf", *run.args])) for run in item.compile]
+    made = [(run.by, shlex.join(["pf", *run.args])) for run in item.compile]
+    if runs := os.environ.get("STUB_AGENT_RUNS"):
+        made = made[: int(runs)]
+    return made
 
 
-def shell_call(command: str, owner: str | None) -> dict[str, object]:
-    """One assistant message making a `Bash` call, under `owner`'s `Agent` call."""
+def tool_call(
+    name: str, given: dict[str, object], owner: str | None
+) -> dict[str, object]:
+    """One assistant message making one tool call, under `owner`'s `Agent` call."""
     return {
         "type": "assistant",
         PARENT: owner,
@@ -224,12 +237,17 @@ def shell_call(command: str, owner: str | None) -> dict[str, object]:
                 {
                     "type": "tool_use",
                     "id": f"toolu_{uuid.uuid4().hex[:12]}",
-                    "name": SHELL_TOOL,
-                    "input": {"command": command},
+                    "name": name,
+                    "input": given,
                 }
             ]
         },
     }
+
+
+def shell_call(command: str, owner: str | None) -> dict[str, object]:
+    """One assistant message making a `Bash` call, under `owner`'s `Agent` call."""
+    return tool_call(SHELL_TOOL, {"command": command}, owner)
 
 
 def handed(section: str, instruction: str) -> str:
@@ -362,6 +380,8 @@ def main() -> int:
     workflow = recognised(headings, workflows())
     inputs = {path.name: path.read_text() for path in (workspace / "inputs").iterdir()}
     item = scenario_of(workflow, inputs)
+    if named := os.environ.get("STUB_AGENT_SCENARIO"):
+        item = next(entry for entry in workflow.scenarios if entry.name == named)
     path = item.path if item else walk(workflow, workflow.forms[0], inputs)
     if stop := os.environ.get("STUB_AGENT_STOP"):
         path = path[: int(stop)]
@@ -395,6 +415,9 @@ def main() -> int:
                 }
             )
         )
+    if read := os.environ.get("STUB_AGENT_READ"):
+        opened: dict[str, object] = {"file_path": str(workspace / read)}
+        print(json.dumps(tool_call(READ_TOOL, opened, None)))
     runs = shell_runs(item, sys.argv[1:])
     own = [command for by, command in runs if by is None]
     if not own or own[0] != "pf":
