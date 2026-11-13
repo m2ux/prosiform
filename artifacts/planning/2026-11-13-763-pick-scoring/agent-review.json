@@ -1,0 +1,14 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/763",
+    "head": "2ff4e0ca0da2368fbbde2097f675b89edc46dbd5",
+    "base": "d5a57469fff50b2c4abbd2e8fb78f802e0b7b29f",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-13-763-pick-scoring/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-13T12:00:00Z",
+    "scope": "Diff: git diff d5a57469f...2ff4e0ca0 (merge base equals the base), 8 files, 243 insertions and 93 deletions, carrying task PR #762 (W00). Code read in full: evals/diagram-following/score.py (_picked, _agent_runs, compiles, pick_paths, score's verdict construction, Verdict.picks and record), beside the unchanged pf_runs, _names and _held_to it composes with; workflow.py (Compile.tags, args, effective_presets) and its module docstring; stub_agent.py shell_runs with STUB_AGENT_LISTING and STUB_AGENT_RUNS; workflows/agent-pick/scenarios.toml; README.md run checks and agent-pick prose; tests test_score.py, test_run.py, test_workflow.py (compiled_faults filtering the walk's listing through prosiform.tags.picks). Callers inspected: score -> compiles -> _agent_runs -> pf_runs, then _picked -> _names and _held_to; score -> pick_paths for a run passing the run checks; run.py builds the ERRORED Verdict positionally, which the defaulted picks field keeps valid; no other reader of the verdict record. A listing made after the pick is held as listing then pick and fails misordered_compile, as documented. Rejected speculative edge case: a picked run naming an alternative the router does not declare has the listing's effective presets, so its path would read after-listing; such a run already fails the scenario's pick, so no verdict changes. No observation was excluded.",
+    "criteria": "AC2 met: test_score.py test_each_agent_pick_scenario_passes_by_either_path_and_names_it passes each of the four agent-pick scenarios by first-run and after-listing paths, naming the path in picks, and fails another alternative (uncompiled) and a source read (read_source); test_run.py runs the stub through the runner for each path and departure; make eval-harness 785 passed at 21bb235d8, whose tree equals the head's (9b545c3b2).",
+    "validation": "GitHub Checks on 2ff4e0ca0: success (https://github.com/m2ux/prosiform/actions/runs/43431303466). make check at 21bb235d8, tree-equal to the head: lock-check, lint, format, typecheck, make test 2137 passed, harness 1054 passed, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance, independence all pass; make eval-harness 785 passed.",
+    "findings": []
+  }
+]
