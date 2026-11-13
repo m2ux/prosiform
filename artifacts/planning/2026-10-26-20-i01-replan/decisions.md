@@ -75,3 +75,5 @@ The user confirmed each recommended option of the I01 alignment.
 - **E03 tasks carry `tech-debt`.**
 - **Freeze record and calibration.** E13 AC5 requires the freeze record to name the build revision and fixture bytes the tag was checked against, delivered by W02. #20 states as a Non-Goal that the initiative does not recalibrate numerical defaults.
 - **Component lists are drafted before delivery.** E00 W03 and W04 declare the directory `ledger`, and E01 W01–W04 and E13 W01–W02 declare no files. Each gets an exact `<branch>:<path>` list before its row is dispatched; none is drafted while I01 sits in Backlog.
+- **E00:W05 and E00:W06 stay split.** Both change `main:checks/ledger.py`, `main:checks/tests/test_ledger.py` and `main:ledger/README.md`, but W05 waits on the user deploying the external example and W06 does not.
+- **Row splits.** E13 AC5 is its own row, W03, after W02, and E03 AC22 is its own row, W15, after W14, so no row delivers more than three criteria. E13 W02 depends on E00:W05 and E00:W06, whose declaration and resolution state the freeze check reads.

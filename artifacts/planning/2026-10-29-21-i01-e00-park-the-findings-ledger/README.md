@@ -34,3 +34,4 @@ The branches the table above names no longer exist on `origin`. GitHub records `
 - **W01.** Its delivered tree is held at [`41f3074`](https://github.com/m2ux/prosiform/commit/41f307490fca501469007fb903e52eb602d9163a), the head of #325, which neither `main` nor `workspace` contains. `ledger/` is absent from `main`.
 - **W02 and W03.** No pull request was opened from either task branch, so no remote ref holds their commits, and no local checkout of the workspace carries them.
 - **Exposure declaration.** The `ledger/exposure.toml` at `41f3074` names commands under `example/work-planner`, a tree no row maintains, declares or proves on.
+- **AC6.** Merged #324's Test Plan names AC6, which W05 now delivers. The pull request is left as merged, so a sync reports that disagreement on W01.

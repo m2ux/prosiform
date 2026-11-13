@@ -60,6 +60,9 @@ Neither row of any pair below depends on the other, and each keeps its own pull 
 - **E03:W13 and E03:W14 stay split.**
   Confirmed 2026-11-13. Both change `main:checks/README.md`, and W14 depends on W13, so the restatement row adds its paragraph beside the triage row's once triage has landed.
 
+- **E03:W14 and E03:W15 stay split.**
+  Confirmed 2026-11-13. Both change `main:checks/restate.py` and `main:checks/README.md`, and W15 depends on W14, so the refusal is added to the restatement command once it has landed.
+
 ## Links
 
 | Resource | Link |

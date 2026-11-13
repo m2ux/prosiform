@@ -118,6 +118,7 @@ The work runs in three stages. A Python 3 build lays out the repository, impleme
 | [I01:E02 permutations](i01-e02/permutations) | The member shapes the arrangement is read against |
 | [I01:E13:W01](i01-e04/w01.md) | The implementation plan for deferral decisions for the remaining entries |
 | [I01:E13:W02](i01-e04/w02.md) | The implementation plan for freeze check and the tagged revision |
+| [I01:E13:W03](i01-e04/w03.md) | The implementation plan for the freeze record of the checked revision |
 | [I13:E00:W01](i13-e00/w01.md) | The implementation plan for definition-occurrence reproducer |
 | [I13:E00:W02](i13-e00/w02.md) | The implementation plan for reference-suppression reproducer |
 | [I13:E00:W03](i13-e00/w03.md) | The implementation plan for offset-iterator reproducer and version check |

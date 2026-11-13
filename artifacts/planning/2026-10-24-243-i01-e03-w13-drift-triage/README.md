@@ -6,14 +6,15 @@
 
 Two tools keep the corpus honest after a behaviour change. Triage names each stale fixture under the category its difference falls in, so a change accepts the drift it intended rather than every fixture a red run touched. Restatement writes exactly two things and refuses a fixture whose run failed in itself.
 
-This record carries the planning for [W13](w13.md) and [W14](w14.md) under [E03 Repository Checks](https://github.com/m2ux/prosiform/issues/187). The work is raised as [#243](https://github.com/m2ux/prosiform/issues/243), which states W13's criteria and keeps the evidence both rows came from.
+This record carries the planning for [W13](w13.md), [W14](w14.md) and [W15](w15.md) under [E03 Repository Checks](https://github.com/m2ux/prosiform/issues/187). The work is raised as [#243](https://github.com/m2ux/prosiform/issues/243), which states W13's criteria and keeps the evidence both rows came from.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
 | [W13](w13.md) | Triage: the categories, the selection flag, and the guide entry |
-| [W14](w14.md) | Restatement: the dry default, the two files written, and the refusal |
+| [W14](w14.md) | Restatement: the dry default and the two files written |
+| [W15](w15.md) | Restatement refuses a fixture whose run failed in itself |
 
 ## Evidence
 
