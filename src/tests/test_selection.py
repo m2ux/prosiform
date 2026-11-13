@@ -288,5 +288,5 @@ def test_the_unresolved_failure_lists_each_alternative_beside_its_choice_line() 
         "  Task        One pull request's worth of work."
     )
     assert failure.diagnostic.remedy == (
-        "rerun with --presets naming the alternative that fits your task"
+        "rerun with --pick naming the alternative that fits your task"
     )

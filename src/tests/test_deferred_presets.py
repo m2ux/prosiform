@@ -1,5 +1,6 @@
 """Published deferred selections execute with the content immediate links select."""
 
+import re
 import shlex
 from pathlib import Path
 from urllib.parse import quote
@@ -79,10 +80,11 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
         if token.type == LINK_OPEN and token.attrGet("href") == expected_destination
     ]
     assert published.attrGet("title") == (title or None)
-    words = ["pf", str(published.attrGet("href"))]
-    if (presets := published.attrGet("title")) is not None:
-        words += ["--presets", str(presets)]
-    command = shlex.join(words)
+    [written_link] = re.findall(
+        r'\[[^\]]*\]\(library/task%20notes\.md#[^)\s]*(?: "[^"]*")?\)',
+        deferred.bundle,
+    )
+    command = shlex.join(["pf", written_link])
     activated = invoke(*shlex.split(command)[1:], cwd=tmp_path)
     assert activated.status == 0, activated.stderr
 

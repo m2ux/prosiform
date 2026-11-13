@@ -261,7 +261,7 @@ def test_the_version_response_names_the_version_and_the_profile() -> None:
 def test_the_help_response_shows_usage_defaults_and_exit_statuses() -> None:
     run = invoke("-h")
     assert run.status == SUCCESS
-    assert run.stdout.startswith("usage: pf [OPTIONS] REF [--presets PRESETS]")
+    assert run.stdout.startswith("usage: pf [OPTIONS] REF [--pick ALTERNATIVE]")
     assert "default text" in run.stdout
     assert "exit statuses:" in run.stdout
     for status in ("0", "1", "2", "3", "4"):
@@ -281,17 +281,21 @@ def test_a_bare_command_prints_the_guide(tmp_path: Path) -> None:
 
 def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
     for rule in (
+        "pf -o <folder> '<link>' [--pick <alternative>]",
         "pf -o <folder> <document>[#<section>]",
         "-o <folder> folder the run's bundles are written into",
-        "--presets PRESETS the link title's comma-separated preset names",
+        "<link> a link as a bundle publishes it: a Markdown link, "
+        "or a Mermaid click or class diagram link line",
         "<document> one document, or document#section, "
         "named from the working directory",
+        "--pick <alternative> the alternative a link whose title carries ? "
+        "leaves to you",
         "1 a failure stopped the run: report its diagnostics and go no further",
         "2 invalid usage or option combination",
-        "Run a link in a bundle as written, "
+        "Run pf on a link in a bundle as written, quoted as one argument, "
         "from the directory pf compiled that bundle in.",
-        "Resolve a link in a source document from that document, "
-        "then express it from the working directory",
+        "When its title carries ?, add --pick naming the alternative that fits "
+        "your task if you know it, or when pf lists the alternatives",
         "\u21b3 names a section to inline",
         "keep it in context",
         "\u21c9 names a bundle to hand on",
@@ -302,19 +306,21 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "step that led there, one per value where that step applies to",
         "A failure cancels nothing; all",
         "failures return together.",
-        "? among a link's title tags leaves the pick to you",
-        "pass the title as --presets as usual, read the alternatives pf lists,",
-        "and rerun with ? replaced by the one that fits your task",
+        "? among a link's title tags leaves the pick to you, made with --pick",
     ):
         assert rule in " ".join(GUIDE.split())
 
 
 def test_the_guide_is_plain_text() -> None:
+    """A link a command quotes is its argument, not a link the guide carries."""
+    prose = "\n".join(
+        line for line in GUIDE.splitlines() if not line.lstrip().startswith("pf ")
+    )
     assert not re.search(r"^#", GUIDE, re.MULTILINE)
     assert "`" not in GUIDE
     assert "*" not in GUIDE
     assert "_" not in GUIDE
-    assert not re.search(r"\[[^\]]*\]\([^)]*\)", GUIDE)
+    assert not re.search(r"\[[^\]]*\]\([^)]*\)", prose)
 
 
 def test_the_help_response_names_the_bare_command() -> None:
@@ -795,7 +801,9 @@ def test_an_entry_is_compiled_as_named_whatever_its_presets_state(root: Path) ->
 
 
 def test_an_entry_reference_resolves_to_the_path_the_caller_wrote() -> None:
-    assert entry("./docs/../entry.md#steps") == resolve("./docs/../entry.md#steps")
+    assert entry("./docs/../entry.md#steps", None) == resolve(
+        "./docs/../entry.md#steps"
+    )
 
 
 def test_a_failure_names_every_reference_that_reached_it(root: Path) -> None:
@@ -1552,7 +1560,7 @@ def test_a_linking_documents_presets_never_reach_the_document_it_links(
         + '# Release Checks\n\n## Checks\n\nFollow [the rules](rules.md "checks").\n',
     )
     written(root, "rules.md", presets(("default", ("rules", 1))) + "# Rules\n\nAll.\n")
-    run = invoke("guide.md", "--presets", "checks", cwd=root)
+    run = invoke('[Guide](guide.md "checks")', cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert "# Reviews\n\n## Release Checks" in run.bundle
     assert "# Guides" not in run.bundle
@@ -1602,7 +1610,7 @@ def test_a_preset_no_tag_selects_warns_and_the_run_publishes(root: Path) -> None
     [warning] = run.diagnostics()[:1]
     assert warning["severity"] == WARNING
     assert "location" not in warning
-    assert warning["remedy"].startswith("name the preset in the reaching link title")
+    assert warning["remedy"].startswith("name the preset in the reaching link's title")
 
 
 def test_selected_presets_and_default_warn_nothing(root: Path) -> None:
@@ -1759,12 +1767,12 @@ def test_a_document_with_no_alternative_in_force_is_refused(
 def test_an_entry_naming_no_alternative_is_refused_with_its_remedy(kinds: Path) -> None:
     diagnostic = unresolved_of(invoke("-d", "json", "work-kind.md", cwd=kinds))
     assert diagnostic["remedy"] == (
-        "rerun with --presets naming the alternative that fits your task"
+        "rerun with --pick naming the alternative that fits your task"
     )
 
 
 def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:
-    run = invoke("-d", "json", "work-kind.md", "--presets", "task", cwd=kinds)
+    run = invoke("-d", "json", '[Body](work-kind.md "task")', cwd=kinds)
     assert run.status == SUCCESS, run.stderr
     assert "# Task-Body" in run.bundle
     assert unused_presets_of(run) == [
@@ -1774,6 +1782,129 @@ def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> Non
             "the run compiled, so it governs nothing",
         )
     ]
+
+
+LINK_GUIDE = (
+    "---\nprosiform:\n  Checks:\n    group: {reviews: 1}\n---\n"
+    "# Guide\n\n## Plan\n\nEvery step.\n\n## Other\n\nOther text.\n"
+)
+"""A document whose `Checks` preset places it under a group of its own."""
+
+
+@pytest.mark.parametrize(
+    "link",
+    [
+        '[¬ Plan](guide.md#plan "checks")',
+        '[↳ Plan](guide.md#plan "checks")',
+        '[⇉ Plan](guide.md#plan "checks")',
+        '[⫽ Plan](guide.md#plan "checks")',
+        '[¬↳⇉⫽ Plan](guide.md#plan "checks")',
+        '[⇉¬ Plan](guide.md#plan "Checks, unknown")',
+        'click Plan "guide.md#plan" "checks"',
+        'click Plan href "guide.md#plan" "¬ checks"',
+        'click Plan "guide.md#plan" "⇉↳¬ checks"',
+        'link Plan "guide.md#plan" "checks"',
+        'link Plan "guide.md#plan" "¬↳ checks"',
+    ],
+)
+def test_a_link_entry_compiles_its_destination_whatever_marks_open_it(
+    root: Path, link: str
+) -> None:
+    """Operator marks direct the agent, so the entry reads none of them."""
+    written(root, "guide.md", LINK_GUIDE)
+    plain = invoke('[Plan](guide.md#plan "checks")', cwd=root)
+    run = invoke(link, cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundles == plain.bundles
+    assert "# Reviews" in run.bundle
+    assert "Every step." in run.bundle
+    assert "Other text." not in run.bundle
+
+
+@pytest.mark.parametrize(
+    "entry_text",
+    ["guide.md#plan", "[Plan](guide.md#plan)", 'click Plan "guide.md#plan" "¬"'],
+)
+def test_an_entry_carrying_no_title_selects_no_named_preset(
+    root: Path, entry_text: str
+) -> None:
+    written(root, "guide.md", LINK_GUIDE)
+    run = invoke(entry_text, cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Reviews" not in run.bundle
+    assert "Every step." in run.bundle
+
+
+@pytest.mark.parametrize(
+    ("link", "body"),
+    [
+        ('[¬ Body](work-kind.md "?")', "Task-Body"),
+        ('click Body "work-kind.md" "¬ ?"', "Task-Body"),
+        ('link Body "work-kind.md" "? , checks"', "Task-Body"),
+    ],
+)
+def test_a_first_run_pick_compiles_the_named_alternative(
+    kinds: Path, link: str, body: str
+) -> None:
+    run = invoke(link, "--pick", "Task", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert f"# {body}" in run.bundle
+
+
+def test_a_pick_after_the_listing_compiles_the_named_alternative(kinds: Path) -> None:
+    """The listing names --pick, and the rerun on the same link compiles."""
+    link = '[¬ Body](work-kind.md "?")'
+    diagnostic = unresolved_of(invoke("-d", "json", link, cwd=kinds))
+    assert "--pick" in diagnostic["remedy"]
+    run = invoke(link, "--pick", "epic", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Epic-Body" in run.bundle
+
+
+@pytest.mark.parametrize(
+    "arguments",
+    [
+        ("work-kind.md", "--pick", "task"),
+        ('[Body](work-kind.md "task")', "--pick", "task"),
+        ('click Body "work-kind.md" "¬ epic"', "--pick", "task"),
+        ('[¬ Body](work-kind.md "?")', "--pick", "task", "--pick", "epic"),
+        ("--pick", "task"),
+    ],
+)
+def test_a_stray_or_repeated_pick_is_invalid_usage(
+    kinds: Path, arguments: tuple[str, ...]
+) -> None:
+    run = invoke("-d", "json", *arguments, cwd=kinds)
+    assert run.status == USAGE_FAILURE
+    assert run.bundles == {}
+    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
+
+
+def test_the_build_accepts_no_presets_option(root: Path) -> None:
+    written(root, "guide.md", LINK_GUIDE)
+    run = invoke("-d", "json", "guide.md", "--presets", "checks", cwd=root)
+    assert run.status == USAGE_FAILURE
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == INVALID_USAGE
+    assert "unrecognized arguments: --presets" in diagnostic["message"]
+    assert "--presets" not in invoke("-h").stdout
+    assert "--presets" not in GUIDE
+
+
+@pytest.mark.parametrize(
+    "entry_text",
+    [
+        "[Plan](guide.md#plan) and [Other](guide.md#other)",
+        'click Plan "guide.md#plan"; click Other "guide.md#other"',
+    ],
+)
+def test_a_text_written_as_a_link_but_not_one_link_is_invalid_usage(
+    root: Path, entry_text: str
+) -> None:
+    written(root, "guide.md", LINK_GUIDE)
+    run = invoke("-d", "json", entry_text, cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
 
 
 def test_two_alternatives_in_force_are_refused_before_their_pairs_compare(
@@ -2071,13 +2202,13 @@ def test_a_selected_preset_pair_holds_over_default() -> None:
     assert pair(Conversion(True, (Preset("Draft"),)), frozenset({"draft"})) is None
 
 
-def test_a_whole_document_entry_selects_by_its_presets_argument(root: Path) -> None:
+def test_a_whole_document_link_entry_selects_by_its_title(root: Path) -> None:
     written(
         root,
         "guide.md",
         presets(("Checks", ("reviews", 1))) + "# Release Checks\n\nEvery check.\n",
     )
-    run = invoke("guide.md", "--presets", "checks", cwd=root)
+    run = invoke('[Guide](guide.md "checks")', cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert run.bundle == (
         f"{opening('Reviews')}# Reviews\n\n## Release Checks\n\nEvery check.\n"
@@ -3830,7 +3961,7 @@ def test_an_error_the_contract_does_not_name_is_an_internal_error_as_text(
 
 def captured_for(root: Path, path: str) -> dict[str, Capture]:
     """What one source was when it was read, as discovery captures it."""
-    return {path: read_document(root, entry(path), in_force({})).capture}
+    return {path: read_document(root, entry(path, None), in_force({})).capture}
 
 
 def test_a_source_nothing_wrote_passes_the_recheck(root: Path) -> None:

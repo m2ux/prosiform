@@ -1,11 +1,10 @@
 """The complete preset names a decoded comma-separated list supplies.
 
 A link's title, a diagram link's tooltip title and an entry's pick each
-supply a decoded string.
-Tokens are complete names, trimmed and case-folded, with empty tokens and
-repetition discarded. The set gives their order no meaning. Matching names
-to a destination's declarations and applying the implicit default belong
-to the consumer.
+supply a decoded string. Tokens are complete names, trimmed and
+case-folded, with empty tokens and repetition discarded. The set gives
+their order no meaning. Matching names to a destination's declarations
+and applying the implicit default belong to the consumer.
 
 The pick token `?` is one of the tokens and names no preset: it leaves
 the pick among a destination's alternatives to the agent that compiles

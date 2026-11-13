@@ -16,12 +16,12 @@ from prosiform.tags import read
     "arguments",
     [
         ("guide.md", "guide.md"),
-        ("guide.md", "--presets", "", "--presets", "checks"),
-        ("--presets", "checks"),
-        ('[Guide](guide.md "checks")'),
+        ('[Guide](guide.md "?")', "--pick", "checks", "--pick", "draft"),
+        ("--pick", "checks"),
+        ("[Guide](guide.md) [Guide](guide.md)",),
         ("guide.md", "--tags", "checks"),
         ("--ent", "guide.md"),
-        ("guide.md", "--pre", "checks"),
+        ('[Guide](guide.md "?")', "--pi", "checks"),
     ],
 )
 def test_the_single_entry_grammar_refuses_other_forms(
@@ -74,7 +74,7 @@ def test_entry_and_authored_link_select_the_same_destination_presets(
         "entry.md",
         DECLARED + "[Label](guide.md" + fragment + ' "' + tags + '")\n',
     )
-    direct = invoke("guide.md" + fragment, "--presets", tags, cwd=tmp_path)
+    direct = invoke("[Label](guide.md" + fragment + ' "' + tags + '")', cwd=tmp_path)
     linked = invoke("entry.md", cwd=tmp_path)
     assert direct.status == linked.status == 0, (direct.stderr, linked.stderr)
     for run in (direct, linked):
@@ -91,8 +91,8 @@ def test_headings_and_labels_select_no_presets(
     tmp_path: Path, tags: str | None
 ) -> None:
     tree(tmp_path)
-    arguments = [] if tags is None else ["--presets", tags]
-    run = invoke("guide.md", *arguments, cwd=tmp_path)
+    entry = "guide.md" if tags is None else f'[Guide](guide.md "{tags}")'
+    run = invoke(entry, cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert "DEFAULT" in run.bundle and "CHECKED" not in run.bundle
     assert list(run.bundles) == ["guide.bundle.md"]
@@ -123,10 +123,14 @@ def test_both_consumers_call_the_shared_reader(
 
     monkeypatch.setattr(cli, "read_tags", observe("cli"))
     monkeypatch.setattr(source, "read_tags", observe("source"))
-    run = invoke("entry.md", "--presets", "other", cwd=tmp_path)
+    run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert ("cli", "other") in calls
     assert ("source", "checks,draft") in calls
+    calls.clear()
+    run = invoke('[Guide](guide.md "other, ?")', "--pick", "draft", cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert ("source", "other, ?") in calls
+    assert ("cli", "draft") in calls
 
 
 def test_a_selected_dispatch_names_and_compiles_its_qualified_bundle(
@@ -160,16 +164,14 @@ def test_a_dispatch_only_input_inside_the_entry_run_folder_is_refused(
     assert (tmp_path / "guide.bundles/rules.md").read_text().endswith("Keep.\n")
 
 
-def test_the_guide_specifies_resolution_and_shell_quoting() -> None:
+def test_the_guide_specifies_link_entries_and_shell_quoting() -> None:
     run = invoke()  # invoke supplies -o; a bare invocation is observed in test_cli.
     assert run.status == 2
     guide = " ".join(cli.GUIDE.split())
     for rule in (
-        "Resolve a link in a source document from that document",
-        "include the file for #fragments",
-        "Pass title tags as one quoted --presets value, also for deferred links",
-        "pf modes/review.md#review --presets 'checks, final draft'",
-        "Omit --presets without tags; attach a value starting with - with =",
+        "Run pf on a link in a bundle as written, quoted as one argument",
+        "pf -o out '[¬ Review](modes/review.md#review \"checks, final draft\")'",
+        'pf -o out \'click Intake "activities/intake.md" "¬ ?"\' --pick Epic',
     ):
         assert rule in guide
 
@@ -193,17 +195,17 @@ def test_the_guides_relative_fragment_and_quoted_commands_compile(
     command = next(
         line.strip()
         for line in cli.GUIDE.splitlines()
-        if line.strip().startswith("pf " + destination) and "--presets" in line
+        if line.strip().startswith("pf -o out '[") and destination in line
     )
     arguments = shlex.split(command)
-    assert arguments[0] == "pf"
-    run = invoke(*arguments[1:], cwd=tmp_path)
+    assert arguments[:3] == ["pf", "-o", "out"]
+    run = invoke(*arguments[3:], cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert run.stderr == ""
     assert "# Reviews\n" in run.bundle and "Selected." in run.bundle
 
 
-def test_a_leading_dash_entry_needs_a_separator_and_a_preset_value_attaches(
+def test_a_leading_dash_path_needs_a_separator_and_a_link_entry_does_not(
     tmp_path: Path,
 ) -> None:
     written(
@@ -212,14 +214,35 @@ def test_a_leading_dash_entry_needs_a_separator_and_a_preset_value_attaches(
         "---\nprosiform:\n  '-checks':\n    group: {reviews: 1}\n---\n"
         "# Guide\n\nBody.\n",
     )
-    refused = invoke("-guide.md", "--presets=-checks", cwd=tmp_path)
+    refused = invoke("-guide.md", cwd=tmp_path)
     assert refused.status == 2
     assert "E_INVALID_USAGE" in refused.stderr
     assert refused.bundles == {}
-    run = invoke("--presets=-checks", "--", "-guide.md", cwd=tmp_path)
+    run = invoke("--", "-guide.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert "# Reviews\n\n## Guide\n\nBody." in run.bundle
-    assert "pf guide.md --presets=-checks" in cli.GUIDE
+    assert "# Reviews" not in run.bundle
+    linked = invoke('[Guide](-guide.md "-checks")', cwd=tmp_path)
+    assert linked.status == 0, linked.stderr
+    assert "# Reviews\n\n## Guide\n\nBody." in linked.bundle
+
+
+def test_the_guides_click_command_compiles_its_pick(tmp_path: Path) -> None:
+    written(
+        tmp_path,
+        "activities/intake.md",
+        "---\nprosiform:\n  Epic:\n    choice: An epic.\n"
+        "  Task:\n    choice: A task.\n---\n# Intake\n\nIntake steps.\n",
+    )
+    command = next(
+        line.strip()
+        for line in cli.GUIDE.splitlines()
+        if line.strip().startswith("pf -o out 'click")
+    )
+    arguments = shlex.split(command)
+    assert arguments[:3] == ["pf", "-o", "out"]
+    run = invoke(*arguments[3:], cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "Intake steps." in run.bundle
 
 
 @pytest.mark.parametrize("tagged_first", [False, True])
