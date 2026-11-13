@@ -1,6 +1,6 @@
 # Glossary
 
-Every term the contract uses, defined once. A term defined here means this and nothing else in the [design](https://github.com/m2ux/prosiform/blob/9f1a8e2b5/artifacts/planning/2026-10-17-prosiform-v1/design.md), the acceptance criteria, the fixture corpus and the tool's own diagnostics. The design italicises a term where it first uses it, and the vocabulary check holds this file to defining each one.
+Every term the contract uses, defined once. A term defined here means this and nothing else in the [design](https://github.com/m2ux/prosiform/blob/0d18a0650/artifacts/planning/2026-10-17-prosiform-v1/design.md), the acceptance criteria, the fixture corpus and the tool's own diagnostics. The design italicises a term where it first uses it, and the vocabulary check holds this file to defining each one.
 
 The tool is `prosiform`. It bundles; what it produces is a bundle.
 

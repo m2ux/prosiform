@@ -1,0 +1,22 @@
+description = "A Mermaid click whose tooltip opens with the dispatch operator and the parallel dispatch mark states two ways for one sub-agent to run, as the same marks opening a link's text do, so the run refuses the click, naming it by its keyword and node, and publishes no bundle."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — Operators that combine",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "click Output"
+message_contains = ["click Output"]
+source = "guide.md:10"
+chain = ["guide.md", "step.md#output"]

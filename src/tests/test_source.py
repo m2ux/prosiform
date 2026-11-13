@@ -648,6 +648,41 @@ def test_a_tooltip_s_marks_are_accepted_and_refused_as_a_link_s_text_marks(
         assert reader(clicked) == reader(linked.opening), reader.__name__
 
 
+@pytest.mark.parametrize(
+    ("written", "kind", "name"),
+    [
+        ('click Plan href "a.md" "⇉↳"', "flowchart LR", "click Plan"),
+        ('CLICK Plan "a.md" "?"', "flowchart LR", "CLICK Plan"),
+        ('link Cls "a.md" "¬ ⇉"', "classDiagram", "link Cls"),
+    ],
+)
+def test_a_diagram_link_is_named_by_its_keyword_and_node(
+    written: str, kind: str, name: str
+) -> None:
+    assert tooltip_use(written, kind).name == name
+
+
+def test_a_link_is_named_by_its_opening() -> None:
+    [linked] = selected("[⇉↳ Text](a.md)\n")
+    assert linked.name == linked.opening == "⇉↳ Text"
+
+
+def test_a_gantt_click_carrying_a_tooltip_is_no_use() -> None:
+    fence = next(
+        token
+        for token in parse(
+            '```mermaid\ngantt\n    click a href "a.md" "⇉"\n'
+            '    click b href "b.md"\n```\n'
+        )
+        if token.type == "fence"
+    )
+    read = linking(fence)
+    assert [one.destination for one in read.clicks] == ["b.md"]
+    assert [(one.destination, one.name) for one in read.tooltipped] == [
+        ("a.md", "click a")
+    ]
+
+
 def test_a_tooltip_selects_nothing_for_a_remote_destination() -> None:
     found = tooltip_use('click A "https://example.com/a.md" "checks"')
     assert found.tags == frozenset()

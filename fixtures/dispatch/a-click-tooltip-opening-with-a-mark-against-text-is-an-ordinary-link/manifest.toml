@@ -1,0 +1,16 @@
+description = "A Mermaid click whose tooltip writes the dispatch mark directly against text opens no operator, so the whole tooltip is the click's title, a tag naming no preset: the target is bundled as an ordinary link's is, with no diagnostic, and the tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — The dispatch operator",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

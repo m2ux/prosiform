@@ -70,7 +70,8 @@ class Tooltip:
     it, a blank closing it where the marks end the tooltip, and nothing
     where no mark opens it. The title is what the tooltip leaves once
     the marks and the blanks after them are set aside, read as a link's
-    title; a diagram link carrying no tooltip has none.
+    title; a diagram link carrying no tooltip has none, and neither does
+    one whose marks take up the whole tooltip.
     """
 
     opening: str = ""
@@ -85,4 +86,4 @@ def tooltip(written: str | None) -> Tooltip:
     found = opened(closed)
     if found is None:
         return Tooltip("", written)
-    return Tooltip(closed, closed[found.after :])
+    return Tooltip(closed, closed[found.after :] or None)

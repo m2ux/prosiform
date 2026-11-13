@@ -16,6 +16,7 @@ exit_status = 1
 [[expected.diagnostics]]
 severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
-message_contains = ["composition mark", "inline"]
+reference = "click Output"
+message_contains = ["click Output", "composition mark", "inline"]
 source = "guide.md:11"
 chain = ["guide.md", "step.md#output"]

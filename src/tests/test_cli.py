@@ -4888,6 +4888,54 @@ def test_a_click_tooltip_stating_a_refused_combination_is_refused(
     assert reported["code"] == UNSUPPORTED_CONSTRUCT
     assert reported["source"] == "guide.md:10"
     assert reported["chain"] == ["guide.md", "plan.md#steps"]
+    assert reported["reference"] == "click Plan"
+    assert "the link 'click Plan'" in reported["message"]
+
+
+def test_an_ordinary_click_carrying_the_pick_token_is_refused_naming_it(
+    root: Path,
+) -> None:
+    written(
+        root,
+        "kinds.md",
+        "---\nprosiform:\n  epic:\n    choice: An epic.\n"
+        "  task:\n    choice: A task.\n---\n# Kinds\n\nKinds.\n",
+    )
+    flow(root, 'click Kind "kinds.md" "?"')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["reference"] == "click Kind"
+    assert "the link 'click Kind' carries the pick token" in reported["message"]
+
+
+def test_a_deferring_composing_click_of_marks_alone_publishes_no_title(
+    root: Path,
+) -> None:
+    written(root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nStep one.\n")
+    flow(root, 'click Plan "plan.md#steps" "¬↳"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert "[↳ Steps](plan.md#steps)\n" in run.bundle
+    assert '""' not in run.bundle
+
+
+def test_a_gantt_click_carrying_a_tooltip_is_refused(root: Path) -> None:
+    written(root, "freeze.md", DECLARED + "# Freeze\n\nFreeze it.\n")
+    written(
+        root,
+        "guide.md",
+        DECLARED + "# Guide\n\n```mermaid\ngantt\n"
+        "    Freeze :freeze, 2026-11-02, 2d\n"
+        '    click freeze href "freeze.md" "⇉"\n```\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["source"] == "guide.md:9"
 
 
 def test_a_cycle_of_directives_names_each_earlier_directive_as_related(

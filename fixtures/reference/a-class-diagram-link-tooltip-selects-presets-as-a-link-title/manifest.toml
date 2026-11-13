@@ -1,0 +1,16 @@
+description = "A class diagram link line's tooltip naming checks selects the checks preset of rules.md as a link title naming it does, so checks places rules.md under its group, and only the line's destination is rewritten."
+
+clauses = [
+  "Presets — Selection belongs to the link",
+  "Link classification and resource handling — Examples",
+  "Grouping — Group membership",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

@@ -1,0 +1,16 @@
+description = "A Mermaid click whose tooltip is the composition mark alone composes the section it names beneath the section holding the diagram, as a link whose text opens with the mark does; the click's destination is rewritten to the contribution's group and its tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Section composition — Recognition",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
