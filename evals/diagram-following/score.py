@@ -428,22 +428,44 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
 
 SHELL_TOKEN = re.compile(
     r"(?P<space>[^\S\n]+)"
-    r"|(?P<redirect>[0-9]*(?:>>|>\||<>|[<>]&|[<>]))"
+    r"|(?P<duplicate>[0-9]*[<>]&(?:[0-9]+-?|-)(?=[\s;|&<>]|\Z))"
+    r"|(?P<heredoc>[0-9]*<<-?(?!<))"
+    r"|(?P<redirect>[0-9]*(?:<<<|>>|>\||<>|[<>]&|[<>]))"
     r"|(?P<separator>&&|\|\||[;|&\n])"
     r"|(?P<word>(?:'[^']*'|\"(?:\\.|[^\"\\])*\"|\\.|[^\s;|&<>\"'\\])+)",
 )
+
+
+def _body_end(command: str, at: int, delimiter: str, tabs: bool) -> int | None:
+    """The offset past the heredoc body opening at `at`; None when unclosed.
+
+    The body closes at the first line equal to its delimiter, leading tabs
+    set aside for a `<<-` heredoc.
+    """
+    while True:
+        end = command.find("\n", at)
+        line = command[at:] if end < 0 else command[at:end]
+        if (line.lstrip("\t") if tabs else line) == delimiter:
+            return len(command) if end < 0 else end + 1
+        if end < 0:
+            return None
+        at = end + 1
 
 
 def _commands(command: str) -> list[list[str] | None]:
     """Read literal shell words and redirects without evaluating shell input.
 
     Redirection operators and their one operand belong to the shell, not
-    the compiler grammar. Quoted or escaped operators remain argument text.
-    An incomplete token or redirect invalidates its command segment.
+    the compiler grammar; a duplication carries its descriptor as its
+    operand. A heredoc's delimiter is its operand, and its body, the lines
+    after the next newline up to the delimiter line, is data, never commands.
+    Quoted or escaped operators remain argument text. An incomplete token or
+    redirect, or a heredoc no line closes, invalidates its command segment.
     """
     found: list[list[str] | None] = []
     words: list[str] = []
-    redirect = False
+    redirect: re.Match[str] | None = None
+    bodies: list[tuple[str, bool, int]] = []
     invalid = False
     at = 0
     while at < len(command):
@@ -456,21 +478,35 @@ def _commands(command: str) -> list[list[str] | None]:
             continue
         if token.lastgroup == "separator":
             found.append(None if invalid or redirect else words)
-            words, redirect, invalid = [], False, False
-        elif token.lastgroup == "redirect":
-            invalid = invalid or redirect
-            redirect = True
+            words, redirect, invalid = [], None, False
+            while token.group() == "\n" and bodies:
+                end = _body_end(command, at, *bodies[0][:2])
+                if end is None:
+                    at = len(command)
+                    break
+                at = end
+                bodies.pop(0)
+        elif token.lastgroup == "duplicate":
+            invalid = invalid or redirect is not None
+            redirect = None
+        elif token.lastgroup in ("heredoc", "redirect"):
+            invalid = invalid or redirect is not None
+            redirect = token
         else:
             try:
                 [word] = shlex.split(token.group())
             except ValueError:
                 invalid = True
                 break
-            if redirect:
-                redirect = False
-            else:
+            if redirect is None:
                 words.append(word)
+                continue
+            if redirect.lastgroup == "heredoc":
+                bodies.append((word, redirect.group().endswith("-"), len(found)))
+            redirect = None
     found.append(None if invalid or redirect else words)
+    for _, _, segment in bodies:
+        found[segment] = None
     return found
 
 

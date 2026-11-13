@@ -1118,6 +1118,101 @@ def test_invalid_command_usage_satisfies_no_compile(command: str) -> None:
     assert compiles(item, (command,), ()) == Failure.UNCOMPILED
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pf target.md 2>&1>out",
+        "pf target.md 2>&1>>guide.log",
+        "pf target.md >out 2>&1>&2",
+        "pf target.md 2>&- <&0 >out",
+        "pf target.md 3>&1- >out",
+    ],
+)
+def test_a_duplicated_descriptor_is_its_redirects_operand(command: str) -> None:
+    expected = Compile(None, "target.md")
+    item = Scenario("adjacent", {}, (), compile=(expected,))
+    assert pf_runs((command,)) == [expected]
+    assert compiles(item, (command,), ()) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pf target.md 2>&1>",
+        "pf target.md >&",
+        "pf target.md 2>& >out",
+        "pf target.md > 2>&1",
+        "pf target.md >& 2>&1",
+        "pf target.md 2>&1 <",
+        "pf target.md <<< >out",
+    ],
+)
+def test_a_malformed_adjacent_redirection_satisfies_no_compile(command: str) -> None:
+    item = Scenario("adjacent", {}, (), compile=(Compile(None, "target.md"),))
+    assert pf_runs((command,)) == [None]
+    assert compiles(item, (command,), ()) == Failure.UNCOMPILED
+
+
+HEREDOC_BODY = "pf target.md\npf other.md 2>&1>out; pf\n"
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        f"cat <<'EOF' >notes.md\n{HEREDOC_BODY}EOF",
+        f'cat <<"EOF" >notes.md\n{HEREDOC_BODY}EOF\n',
+        f"cat <<EOF >notes.md\n{HEREDOC_BODY}EOF\n",
+        f"cat <<\\EOF\n{HEREDOC_BODY}EOF\n",
+        f"cat << EOF\n{HEREDOC_BODY}EOF\n",
+        "cat <<-EOF >notes.md\n\tpf target.md\n\tEOF\n",
+        "cat <<-'EOF'\n\tpf target.md\n\t\tEOF",
+        f"cat <<A <<'B'\n{HEREDOC_BODY}A\n{HEREDOC_BODY}B\n",
+        f"cat <<EOF >notes.md\nEOF is not the delimiter line\n{HEREDOC_BODY}EOF",
+    ],
+)
+def test_a_heredoc_body_is_data_rather_than_commands(command: str) -> None:
+    assert pf_runs((command,)) == []
+    stated = Scenario("heredoc", {}, (), compile=(Compile(None, "target.md"),))
+    assert compiles(stated, (command,), ()) == Failure.UNCOMPILED
+    assert compiles(Scenario("heredoc", {}, ()), (command,), ()) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        f"pf a.md\ncat <<'EOF' >notes.md\n{HEREDOC_BODY}EOF\npf b.md",
+        f"pf a.md; cat <<EOF >notes.md && pf b.md\n{HEREDOC_BODY}EOF\n",
+        f"cat <<A; pf a.md <<-B\n{HEREDOC_BODY}A\n\tpf other.md\n\tB\npf b.md\n",
+        f"pf a.md <<EOF\n{HEREDOC_BODY}EOF\npf b.md <<< 'pf other.md'",
+    ],
+)
+def test_runs_beside_a_heredoc_stay_observable(command: str) -> None:
+    runs = [Compile(None, "a.md"), Compile(None, "b.md")]
+    assert pf_runs((command,)) == runs
+    assert (
+        compiles(Scenario("heredoc", {}, (), compile=tuple(runs)), (command,), ())
+        is None
+    )
+
+
+@pytest.mark.parametrize(
+    ("command", "runs"),
+    [
+        (f"pf target.md <<EOF\n{HEREDOC_BODY}", [None]),
+        ("pf target.md <<EOF", [None]),
+        (f"pf a.md\ncat <<EOF\n{HEREDOC_BODY}", [Compile(None, "a.md"), None]),
+        (f"pf a.md; cat <<EOF\n{HEREDOC_BODY}\tEOF\n", [Compile(None, "a.md"), None]),
+        (f"cat <<A <<B\n{HEREDOC_BODY}A\npf a.md\n", [None]),
+    ],
+)
+def test_an_unterminated_heredoc_invalidates_its_segment(
+    command: str, runs: list[Compile | None]
+) -> None:
+    assert pf_runs((command,)) == runs
+    item = Scenario("heredoc", {}, (), compile=(Compile(None, "a.md"),))
+    assert compiles(item, (command,), ()) is not None
+
+
 @pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
 def test_information_satisfies_neither_guide_nor_compile(option: str) -> None:
     tagged = f"""pf {option} '[Target](target.md "checks")'"""
