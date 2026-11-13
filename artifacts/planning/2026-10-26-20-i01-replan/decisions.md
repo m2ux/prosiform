@@ -60,3 +60,18 @@ E12 was closed as not planned before any work landed, and AC17 is retired with i
 The member-declared model bundles the example with every link resolving, so no observed failure motivates the change. Issue 234 stays open as a candidate finding: it enters the ledger once the ledger exists, and becomes a revision only where real use shows the member-declared model failing. Any later plan settles link assignment and shared-file ownership before stating the rule.
 
 The epic bases `i01/e12/main` and `i01/e12/engineering` were created and deleted unused, and the W01 hold was released with its record.
+
+## R10 — Alignment Decisions of 2026-11-13
+
+The user confirmed each recommended option of the I01 alignment.
+
+- **E00 W01 keeps its delivery.** W01, AC1 and AC2 stay ticked on [#324](https://github.com/m2ux/prosiform/pull/324). When E00 is advanced, its base `i01/e00/main` is recreated from `41f3074`, the head of #325, as the [park record](../2026-10-29-21-i01-e00-park-the-findings-ledger/README.md) states.
+- **E00 AC6 moves to W05.** The exposure declaration for the external example is [W05](../2026-10-17-prosiform-v1/i01-e00/w05.md), depending on W01, and it replaces the `example/work-planner` entries W01 delivered.
+- **E00 gains a resolution state.** AC10 requires one state among open, resolved and deferred on each entry, delivered by [W06](../2026-10-17-prosiform-v1/i01-e00/w06.md). E00 otherwise stays parked.
+- **Prototype wording is removed.** #20 and #22 name the Python build where they named the prototype, and #20 AC10 reads the carried debt as what no run of the tool shows. The freeze premise stands.
+- **E03 AC13 is split.** AC20 (check-all names every failing target) and AC21 (a failed run told from a moved output) take W12. AC22 (restatement refuses a failed run) takes W14. The CI trigger clause holds on `main` and leaves the plan: a pull request from `example-project-lifecycle` ran Checks ([run 42970130100](https://github.com/m2ux/prosiform/actions/runs/42970130100)) and a push to `main` ran it ([run 43381176415](https://github.com/m2ux/prosiform/actions/runs/43381176415)), so #255 AC1 and AC2 are removed with the bullets that stated the trigger.
+- **E03 AC23 states the delivery wrapper's place**, from #160 AC2, and W02 covers it.
+- **Same-board references are removed.** #187 cites the joins record for its origin epic and drops the I10:E01 reference; #255 drops its reference to #243.
+- **E03 tasks carry `tech-debt`.**
+- **Freeze record and calibration.** E13 AC5 requires the freeze record to name the build revision and fixture bytes the tag was checked against, delivered by W02. #20 states as a Non-Goal that the initiative does not recalibrate numerical defaults.
+- **Component lists are drafted before delivery.** E00 W03 and W04 declare the directory `ledger`, and E01 W01–W04 and E13 W01–W02 declare no files. Each gets an exact `<branch>:<path>` list before its row is dispatched; none is drafted while I01 sits in Backlog.

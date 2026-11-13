@@ -70,6 +70,9 @@ By the user's decisions, 2026-11-13, on the I17 alignment findings.
    - **Re-pin pending.** Once W00 lands on `main`, the initiative's R3 and E02's R2 are re-pinned to that commit.
 2. **Open criteria hold one condition each.** The initiative's AC3 splits into AC3 and AC5, and its AC4 into AC4, AC6 and AC7; E02's AC2 splits into AC2 and AC5. Delivered criteria stay as written.
 3. **Review fixes take no row.** #756 stays without an E01 row, as E00's review fixes did.
+4. **E02 gates at task level.** The initiative's E02 row names no epic: W00 needs neither E00 nor E01, and W01's edge to E01 W04 holds the release back. Set aside: W00 depending on E01 W04.
+5. **The release stays one row.** W01 covers AC1, AC2, AC3 and AC5, because the release pull request and its tags are one delivery that cannot land in parts. Set aside: a separate tagging row.
+6. **E02's rows go straight to `main`.** W00's pull request and the release pull request each target `main`, and the epic takes no `i17/e02/main` base. Set aside: a base for W00.
 
 ## Dependency Check
 

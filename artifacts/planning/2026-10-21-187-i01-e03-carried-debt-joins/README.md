@@ -54,6 +54,12 @@ Neither row of any pair below depends on the other, and each keeps its own pull 
 - **I01's AC10 stands as written.**
   Confirmed 2026-10-21. E03's rows are debt found during the prototype initiative's delivery, not entries the findings ledger recorded from use, so AC5 does not cover them and the epic would otherwise claim no initiative criterion.
 
+- **E03:W12 and E03:W13 stay split.**
+  Confirmed 2026-11-13. Both change `main:Makefile`, and W13 depends on W12, so the second is delivered on the first and the two targets they add are separate lines.
+
+- **E03:W13 and E03:W14 stay split.**
+  Confirmed 2026-11-13. Both change `main:checks/README.md`, and W14 depends on W13, so the restatement row adds its paragraph beside the triage row's once triage has landed.
+
 ## Links
 
 | Resource | Link |

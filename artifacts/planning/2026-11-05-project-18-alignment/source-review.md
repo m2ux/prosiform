@@ -84,8 +84,7 @@ Every currently marked source has been read. The current-contract binding and it
 
 ### Branch and board configuration — medium
 
-- **Problem:** `config/branches` at refreshed `origin/workspace` declares `engineering`, `main` and `workspace`, but is absent from `origin/main`, `origin/i01/e00/main` and `origin/i10/e04/main`. The delivery scripts explicitly leave route, base-integration and review-link checks unevaluated.
-  **Proposed resolution:** Establish the declaration at the revisions the delivery checks evaluate before preparing missing bases. No branch is created, retargeted or merged using an inferred declaration.
+- **Resolved, 2026-11-13:** `config/branches` lives on the workspace branch, the root checkout, and declares `engineering`, `main` and `workspace`. It is not carried on `main` or on an epic base, and that is its correct place. A base is prepared from that declaration.
 - **Resolved:** Twenty open items needed Initiative and Epic custom-field values after #161's retirement. Two initiative options and nine epic options cover I11, I12 and I10 E04. Existing IDs, colors, descriptions and assigned status and priority values were preserved; each saved grouping was read back. [Readback evidence](grouping.json).
 - **I11 constraint:** The accepted release design explicitly names a `release/vX.Y.Z` branch and a user-owned merge into main. Its relationship to generic epic-base routing remains a recorded branch-shape decision; this alignment does not silently rewrite that release procedure.
 
