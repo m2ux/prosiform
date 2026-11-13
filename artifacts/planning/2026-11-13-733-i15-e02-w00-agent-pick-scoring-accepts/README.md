@@ -13,6 +13,7 @@ The guide tells an agent that knows its pick to pass `--pick` on its first run, 
 | Artifact | What it holds |
 | --- | --- |
 | [Work item](../2026-11-12-preset-alternatives/e02/w00.md) | The scenario shape, the path label and the tests |
+| [Test results](test-results.md) | Each check's result at the delivered revision |
 
 ## Links
 
