@@ -12,6 +12,8 @@ The release that ships the click tooltip rule and the link entry follows this pr
 
 | Artifact | What it holds |
 | --- | --- |
+| [w00.md](w00.md) | W00's work item: the Cutting a release steps and the tag target |
+| [test-results.md](test-results.md) | The checks run on W00 and their results |
 
 ## Links
 
