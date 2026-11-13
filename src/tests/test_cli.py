@@ -1905,6 +1905,9 @@ def test_the_build_accepts_no_presets_option(root: Path) -> None:
     "entry_text",
     [
         "[Plan](guide.md#plan) and [Other](guide.md#other)",
+        "[Plan](guide.md#plan).",
+        "[Plan](guide.md#plan) trailing",
+        'Defer [the plan](guide.md#plan "checks").',
         'click Plan "guide.md#plan"; click Other "guide.md#other"',
         "[" * 200 + "Plan" + "]" * 200 + "(guide.md#plan)",
     ],

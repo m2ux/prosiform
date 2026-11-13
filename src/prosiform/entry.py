@@ -33,7 +33,7 @@ from prosiform.source import (
 )
 from prosiform.tags import read as read_tags
 
-MARKDOWN_LINK = re.compile(r"\s*\[.*\]\(.*\)\s*", re.DOTALL)
+MARKDOWN_LINK = re.compile(r"\[.*\]\(", re.DOTALL)
 
 
 @dataclass(frozen=True)
@@ -81,14 +81,14 @@ def diagram_link(text: str) -> Link | None:
 def published(text: str) -> Link | None:
     """The link one entry argument publishes, or none for a plain path.
 
-    A text written as a Markdown link or a diagram link line that does
-    not read as exactly one is refused, since no plain path is spelled
-    that way.
+    A text holding a Markdown link, one carrying text beside it
+    included, or written as a diagram link line, that does not read as
+    exactly one link is refused, since no plain path holds `](`.
     """
-    if MARKDOWN_LINK.fullmatch(text):
+    if MARKDOWN_LINK.search(text):
         link = markdown_link(text)
         if link is None:
-            raise NotOneLink("is written as a Markdown link but is not one link")
+            raise NotOneLink("holds a Markdown link but is not one link alone")
         return link
     if QUOTE in text and (CLICK_STATEMENT.match(text) or CLASS_STATEMENT.match(text)):
         link = diagram_link(text)

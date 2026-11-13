@@ -28,7 +28,7 @@ Flags are case-sensitive.
 | `-h, --help` | usage, defaults and exit statuses |
 | `--pick ALTERNATIVE` | the alternative for an entry whose title carries ? |
 
-Compilation requires exactly one `REF`: a published link — a Markdown link, a Mermaid `click` line or a class diagram `link` line — or a plain path. A link's destination names the document and section compiled, and its title or tooltip selects that document's presets; the operator marks opening the link's text or tooltip direct the agent and are ignored. A plain path selects no named preset. `--pick` is accepted once, beside an entry whose title or tooltip carries `?`. Two entry references, a text written as a link that is not one link, repeated `--pick`, `--pick` without an entry, and `--pick` beside an entry carrying no `?`, a plain path included, are invalid usage and exit `2`. Informational invocations require no entry.
+Compilation requires exactly one `REF`: a published link — a Markdown link, a Mermaid `click` line or a class diagram `link` line — or a plain path. A link's destination names the document and section compiled, and its title or tooltip selects that document's presets; the operator marks opening the link's text or tooltip direct the agent and are ignored. A plain path selects no named preset, and one holding `](` is written percent-encoded or as a link's destination. `--pick` is accepted once, beside an entry whose title or tooltip carries `?`. Two entry references, a text holding a link that is not that one link alone, repeated `--pick`, `--pick` without an entry, and `--pick` beside an entry carrying no `?`, a plain path included, are invalid usage and exit `2`. Informational invocations require no entry.
 
 ### Budgets
 
