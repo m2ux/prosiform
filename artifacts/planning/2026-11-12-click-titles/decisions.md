@@ -51,6 +51,17 @@ Taken in Plan mode, 2026-11-12; each can be reopened.
 - E00:W00 and E00:W01 stay split: the design is on `engineering` and the build on `main`, two long-lived branches.
 - E00:W01 and E00:W03 stay split: the docstrings travel with the build, the documentation pages follow once the behaviour is on the epic base.
 
+## Link Invocation
+
+Hoisted from [#747](https://github.com/m2ux/prosiform/issues/747), 2026-11-13, by the user's decision: a new epic, E01 Link Invocation, ahead of the release, which becomes E02, so one release ships the tooltip rule and the link entry. #747 is closed as not planned, tracked in E01.
+
+1. **An operator is read and checked alike.** Every operator on a link entry is accepted or refused under the Operators rules, and the destination compiles as an entry with the link's presets; the operator changes nothing compiled. Set aside: refusing dispatch links; an operator shaping the run.
+2. **A stray pick is invalid usage.** `--pick` beside an entry carrying no `?`, a plain path included, exits `2`. Set aside: a pick on a plain path; ignoring it.
+3. **Preset Alternatives is reworded on delivery.** Its statement that a pick passes as `--presets` is reworded by the documentation row, once the build is on the epic base.
+4. **Five rows, three joined.** The design on `engineering` first; the build, the corpus fixtures and the checks and eval harness in one pull request, since retiring `--presets` turns each red; the documentation last.
+5. **`priority: 2`.** Beside E00, ahead of the release's `priority: 1`.
+6. **Task-level edges to E00.** Each row names the E00 row it consumes; the initiative edge E01 on E00 is overbroad, so the release names both epics.
+
 ## Dependency Check
 
 Recorded in [Goal trace](goal-trace.md#checks).

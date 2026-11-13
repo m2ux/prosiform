@@ -16,12 +16,13 @@ This initiative reads a click's tooltip as its link's title: marks opening it st
 | [Goal trace](goal-trace.md) | The goal clauses traced to criteria and epics, the ranked gaps, outside threats and checks |
 | [Initiative draft](initiative-body.md) | The initiative's goal, criteria and epic coverage |
 | [Click Titles epic draft](e00-body.md) | E00's rows and criteria for the design, build, fixtures and documentation |
-| [Click Titles Release epic draft](e01-body.md) | E01's row and criteria for the release |
+| [Link Invocation epic draft](e01-body.md) | E01's rows and criteria for the link entry and `--pick` |
+| [Click Titles Release epic draft](e02-body.md) | E02's row and criteria for the release |
 | [Design work item](e00/w00.md) | The v1 design stating click tooltips |
 | [Build work item](e00/w01.md) | The tooltip captured, split into operator and title, and read by every consumer |
 | [Fixtures work item](e00/w02.md) | One corpus fixture per rule and the retired fixture removed |
 | [Documentation work item](e00/w03.md) | Diagram links stating the rule and the pages linking it |
-| [Release work item](e01/w01.md) | The release branch, version, pull request and tags |
+| [Release work item](e02/w01.md) | The release branch, version, pull request and tags |
 | [Board placement](board.json) | The Initiative and Epic options added on the Python board, each item placed at Backlog, the I15 E02 and I16 field fill and the Advance result |
 
 ## Links
@@ -30,4 +31,4 @@ This initiative reads a click's tooltip as its link's title: marks opening it st
 | --- | --- |
 | Source as planned against | [`main` at `4cb6b5c`](https://github.com/m2ux/prosiform/tree/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d) |
 | Initiative | [#738](https://github.com/m2ux/prosiform/issues/738) |
-| Epics | [E00 #739](https://github.com/m2ux/prosiform/issues/739), [E01 #740](https://github.com/m2ux/prosiform/issues/740) |
+| Epics | [E00 #739](https://github.com/m2ux/prosiform/issues/739), [E01 #750](https://github.com/m2ux/prosiform/issues/750), [E02 #740](https://github.com/m2ux/prosiform/issues/740) |
