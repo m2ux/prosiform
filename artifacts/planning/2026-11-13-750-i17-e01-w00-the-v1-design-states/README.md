@@ -13,6 +13,7 @@ The design is the contract the build, the corpus and the documentation of I17:E0
 | Artifact | What it holds |
 | --- | --- |
 | [w00.md](w00.md) | The work item: the design sections restated and the checks they take |
+| [test-results.md](test-results.md) | The checks run on the design change and their results |
 
 ## Links
 
