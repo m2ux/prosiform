@@ -14,7 +14,7 @@ pf
 ## Options
 
 Flags are case-sensitive.
-`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
+`pf -h` and these tables agree; `make invocation` verifies them. The profile is `prosiform-markdown`, which `-v` reports beside the version. A conformance run's fault is not an option: the run reads it from its environment, as the design's [Conformance faults](https://github.com/m2ux/prosiform/blob/17c1f6e2f/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section states.
 
 | Option | Effect |
 | --- | --- |
@@ -87,7 +87,7 @@ A document declares `prosiform` in leading YAML frontmatter. Every key is a pres
 
 Matching presets layer over `default` in declaration order and govern the destination document's own content. A selected `group` pair holds over `default`'s; [Sources](docs/sources.md) states what `subst` holds. Selected presets union their settings. Different group pairs in one selection, or conflicting substitutes for one document's substitution key, fail with `E_INVALID_USAGE`, naming both presets. [Selection](docs/selection.md#presets-in-force) gives the full rules. `prosiform: {}` declares with no preset; a document with no group pair keeps its own file group. A preset no compiled reference selected warns with `W_PRESET_UNUSED` and the run publishes.
 
-A preset holding `choice` is an alternative, and its choice line states when to pick it. A document declaring alternatives compiles only with exactly one of them in force in each bundle, picked by a link's title or the entry's `--presets`, or left to an agent by a deferral carrying the pick token `?`, as [References](docs/references.md#the-pick-token) states; none or several fail with `E_ALTERNATIVE_UNRESOLVED` and exit `2`, listing each alternative beside its choice line, and its remedy is a rerun with `--presets` naming the one that fits. An alternative no reference picked raises no `W_PRESET_UNUSED`. [Selection](docs/selection.md#presets-in-force) states the rule, and the design's [Presets](https://github.com/m2ux/prosiform/blob/c04f5d8e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states it in full.
+A preset holding `choice` is an alternative, and its choice line states when to pick it. A document declaring alternatives compiles only with exactly one of them in force in each bundle, picked by a link's title or the entry's `--presets`, or left to an agent by a deferral carrying the pick token `?`, as [References](docs/references.md#the-pick-token) states; none or several fail with `E_ALTERNATIVE_UNRESOLVED` and exit `2`, listing each alternative beside its choice line, and its remedy is a rerun with `--presets` naming the one that fits. An alternative no reference picked raises no `W_PRESET_UNUSED`. [Selection](docs/selection.md#presets-in-force) states the rule, and the design's [Presets](https://github.com/m2ux/prosiform/blob/17c1f6e2f/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states it in full.
 
 ```yaml
 ---

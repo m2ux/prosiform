@@ -5,4 +5,4 @@ prosiform:
 ---
 # Rules
 
-Use the default settings.
+Every rule the guide follows.

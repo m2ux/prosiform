@@ -7,9 +7,9 @@ it declares nothing. Canonical source identities are relative to the
 invocation working directory, independent of the discovering parent, and
 one above it keeps its leading parent segments.
 
-Four operators open a link's text, their marks written together and
-followed by a space; the deferral mark combines with the composition mark
-alone. Each of the deferral, dispatch and parallel dispatch marks
+Four operators open a link's text, or a diagram link's tooltip, as the
+marks module reads them; the deferral mark combines with the composition
+mark alone. Each of the deferral, dispatch and parallel dispatch marks
 withholds the same compilation from the bundle carrying the link: a
 deferral states when the material is compiled, a dispatch that a
 sub-agent follows it, and a parallel dispatch that a sub-agent follows it
@@ -50,15 +50,20 @@ from urllib.parse import quote
 
 from markdown_it.token import Token
 
+from prosiform.marks import (
+    BLANKS,
+    DEFERRAL_MARK,
+    DISPATCH_MARK,
+    INLINE_MARK,
+    OPERATORS,
+    PARALLEL_MARK,
+    SPACE,
+    opened,
+)
 from prosiform.metadata import DEFAULT, Conversion, Preset
 from prosiform.profile import is_markdown
 from prosiform.source import ANCHOR, ENCODING, external, regions, uses
 from prosiform.tags import picks
-
-DEFERRAL_MARK = "¬"
-DISPATCH_MARK = "⇉"
-PARALLEL_MARK = "⫽"
-INLINE_MARK = "↳"
 
 # The arrows that open an operator, which no arrow refusal reaches.
 MARKS = (DISPATCH_MARK, INLINE_MARK)
@@ -78,9 +83,6 @@ NAMED_ARROW_BLOCKS = ((0x2700, 0x27BF), (0x2B00, 0x2BFF))
 ARROW_WORD = re.compile(r"\bARROWS?\b")
 UNASSIGNED = "Cn"
 
-SPACE = " "
-BLANKS = " \t"
-
 FRAGMENT = "#"
 QUERY = "?"
 SEPARATOR = "/"
@@ -98,8 +100,6 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
 PATH_PART = "path segment"
 FRAGMENT_PART = "fragment"
-
-OPERATORS = (DEFERRAL_MARK, DISPATCH_MARK, PARALLEL_MARK, INLINE_MARK)
 
 # The operator groups one link may state, their marks written together.
 # Only a composition can be deferred.
@@ -533,18 +533,6 @@ def normalized(base: str, segments: Sequence[str]) -> str:
     return SEPARATOR.join(walked)
 
 
-@dataclass(frozen=True)
-class Opened:
-    """The operator marks one link's text opens with, and where its text begins.
-
-    The marks are followed by a blank, and the text after the blanks
-    begins at `after`.
-    """
-
-    marks: str
-    after: int
-
-
 def arrow(scalar: str) -> bool:
     """Whether one scalar is a Unicode arrow.
 
@@ -559,28 +547,6 @@ def arrow(scalar: str) -> bool:
         any(low <= at <= high for low, high in NAMED_ARROW_BLOCKS)
         and ARROW_WORD.search(name(scalar, "")) is not None
     )
-
-
-def opened(text: str) -> Opened | None:
-    """The operator marks one link's text opens with, where it states any.
-
-    Symbols are written together and one blank separates the last of
-    them from the link's text, so an operator is a run of marks followed
-    by a blank, the blanks before the run being its spacing. A mark
-    followed directly by text is the author's text, and opens nothing.
-    """
-    at = 0
-    while at < len(text) and text[at] in BLANKS:
-        at += 1
-    end = at
-    while end < len(text) and text[end] in OPERATORS:
-        end += 1
-    if end == at or text[end : end + 1] != SPACE:
-        return None
-    after = end
-    while after < len(text) and text[after] in BLANKS:
-        after += 1
-    return Opened(text[at:end], after)
 
 
 def operators(opening: str) -> tuple[str, ...]:

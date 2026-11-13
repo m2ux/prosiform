@@ -8,5 +8,5 @@ prosiform: {}
 ```mermaid
 flowchart LR
     A[Plan] --> B[Populate]
-    click B "work-kind.md" "epic"
+    click B "work-kind.md"
 ```

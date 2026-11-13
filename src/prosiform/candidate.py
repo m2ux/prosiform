@@ -115,6 +115,7 @@ from prosiform.provenance import (
     Range,
     Record,
     Served,
+    click_at,
     link_at,
 )
 from prosiform.source import (
@@ -236,8 +237,9 @@ class Use:
     in the same shape and are compared as the same thing. A diagram's
     link destination is the one its line names, which a sequence diagram's
     menu entry writes with an entity for its `#`, so a destination the
-    bundle rewrote reads as `#<slug>` whatever form wrote it. It shows no
-    text and carries no title.
+    bundle rewrote reads as `#<slug>` whatever form wrote it. Its text is
+    the opening its tooltip states and its title the title the tooltip
+    states, so a tooltip the bundle changed is a use it did not preserve.
     """
 
     def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
@@ -351,15 +353,19 @@ def carried(
 
     An inline token's uses arrive as `uses` reads them. A diagram's link
     destinations arrive in the order its fence writes them, each on no
-    run of inline events, because a diagram link carries no text for a
-    mark to open. The compacted inline tokens are named by identity.
+    run of inline events, because its marks open its tooltip rather than
+    any text. The compacted inline tokens are named by identity.
     """
     for token in within(tokens, [span]):
         if token.type == INLINE:
             yield from uses(token, id(token) in compacted)
         elif token.type == FENCE:
             for click in clicks(token):
-                yield (), 0, Use(CLICK, "", "", click.destination)
+                yield (
+                    (),
+                    0,
+                    Use(CLICK, click.opening, click.title or "", click.destination),
+                )
 
 
 def positions(
@@ -370,7 +376,8 @@ def positions(
     A link is located by its inline block's first line, the table column
     that block stands in, and its position among the links that block
     writes, which is how a composing link's
-    contribution is held. An image and a diagram link compose nothing.
+    contribution is held, and a diagram link by the line and offset of
+    its destination. An image composes nothing.
     """
     for token in within(tokens, [span]):
         if token.type == INLINE:
@@ -382,8 +389,8 @@ def positions(
                 yield link_at(path, token, token.map[0], position)
                 position += 1
         elif token.type == FENCE:
-            for _click in clicks(token):
-                yield None
+            for click in clicks(token):
+                yield click_at(path, click)
 
 
 def intended(
@@ -428,15 +435,15 @@ def intended(
     image's alternative content where the use was written there, so
     the opening is read from the event the author wrote it on.
 
-    A diagram's link destination opens with nothing, so it is compiled
-    wherever it resolves to a declaring Markdown document and is
-    never withheld. The anchor it takes is the one the bundle writes in
-    the line, which no parser normalizes, read as the destination it
-    names: `#<slug>`, whichever spelling the line's form writes.
+    A diagram link opens with the marks its tooltip opens with, and the
+    bundle carries its tooltip as written, so only its destination
+    changes. The anchor it takes is the one the bundle writes in the
+    line, which no parser normalizes, read as the destination it names:
+    `#<slug>`, whichever spelling the line's form writes.
     """
     if one.kind == IMAGE:
         return one
-    opening = "" if one.kind == CLICK else opening_text(children, at)
+    opening = one.text if one.kind == CLICK else opening_text(children, at)
     found = bundled(path, one.destination, opening, declarations, substitution)
     if contextual and found is not None:
         assigned = targets.get((found.path, found.fragment))
@@ -473,16 +480,13 @@ def intended(
                 )
             return Use(
                 one.kind,
-                published_text(one.text, filed(given)),
+                one.text
+                if one.kind == CLICK
+                else published_text(one.text, filed(given)),
                 one.title,
-                normalizeLink(given),
+                given if one.kind == CLICK else normalizeLink(given),
             )
-        return Use(
-            one.kind,
-            unmarked(one.text),
-            one.title,
-            normalizeLink(rebased(withheld, one.destination)),
-        )
+        return withdrawn(one, rebased(withheld, one.destination))
     assigned = targets.get((found.path, found.fragment))
     if assigned is None:
         raise Invalid(
@@ -497,6 +501,17 @@ def intended(
         one.title,
         anchor if one.kind == CLICK else normalizeLink(anchor),
     )
+
+
+def withdrawn(one: Use, destination: str) -> Use:
+    """One use pointing where the bundle gave it, its marks taken off its text.
+
+    A diagram link's tooltip is carried as written and its destination
+    as the bundle writes it in the line, which no parser normalizes.
+    """
+    if one.kind == CLICK:
+        return Use(one.kind, one.text, one.title, destination)
+    return Use(one.kind, unmarked(one.text), one.title, normalizeLink(destination))
 
 
 def carrying(
@@ -1249,12 +1264,7 @@ def references(
                 contextual,
             )
             if anchor is None
-            else Use(
-                one.kind,
-                unmarked(one.text),
-                one.title,
-                normalizeLink(f"{ANCHOR}{anchor}"),
-            )
+            else withdrawn(one, f"{ANCHOR}{anchor}")
         )
     found = [
         one

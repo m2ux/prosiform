@@ -1,0 +1,22 @@
+description = "A Mermaid click whose tooltip writes the dispatch mark against the composition mark states two operations that contradict, as the same marks opening a link's text do, so the run refuses the click, naming it, and publishes no bundle."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — Operators that combine",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "click Output"
+message_contains = ["click Output", "composition mark", "inline"]
+source = "guide.md:11"
+chain = ["guide.md", "step.md#output"]

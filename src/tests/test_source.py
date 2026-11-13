@@ -23,6 +23,13 @@ import pytest
 from markdown_it.token import Token
 
 from prosiform import source as source_module
+from prosiform.closure import (
+    conflicting,
+    contradicting,
+    deferring_dispatch,
+    gapped,
+    operators,
+)
 from prosiform.profile import parse
 from prosiform.source import (
     MARK,
@@ -524,12 +531,14 @@ def test_operator_labels_leave_the_title_selection_on_its_occurrence(
         '[Checks](https://example.com/rules.md "draft")\n',
         '[Checks](//example.com/rules.md "draft")\n',
         '[Checks](mailto:rules@example.com "draft")\n',
-        '```mermaid\nflowchart LR\nclick A "rules.md" "draft"\n```\n',
-        '```mermaid\nclassDiagram\nlink A "rules.md" "draft"\n```\n',
+        '```mermaid\nflowchart LR\nclick A "https://example.com/r.md" "draft"\n```\n',
+        '```mermaid\nflowchart LR\nclick A "rules.md"\n```\n',
         "```mermaid\nsequenceDiagram\nlink A: draft @ rules.md\n```\n",
     ],
 )
-def test_images_external_links_and_diagram_text_supply_no_tags(text: str) -> None:
+def test_images_external_links_and_untitled_diagram_links_supply_no_tags(
+    text: str,
+) -> None:
     [found] = selected("# Checks\n\n" + text)
     assert found.tags == frozenset()
 
@@ -580,6 +589,104 @@ def test_each_diagram_click_is_one_link_use_opening_with_nothing() -> None:
         ("", False),
         ("", False),
     ]
+
+
+def tooltip_use(written: str, kind: str = "flowchart LR") -> Use:
+    """The one use a diagram line carrying a tooltip writes."""
+    [found] = selected(f"```mermaid\n{kind}\n    {written}\n```\n")
+    return found
+
+
+@pytest.mark.parametrize(
+    ("written", "kind"),
+    [
+        ('click A href "a.md" "⇉"', "flowchart LR"),
+        ('click A "a.md" "⇉"', "flowchart LR"),
+        ('link A "a.md" "⇉" _blank', "classDiagram"),
+    ],
+)
+def test_a_tooltip_of_marks_alone_states_its_link_s_operator(
+    written: str, kind: str
+) -> None:
+    found = tooltip_use(written, kind)
+    assert operators(found.opening) == ("⇉",)
+    assert found.tags == frozenset()
+
+
+@pytest.mark.parametrize(
+    ("tooltip", "marks", "tags"),
+    [
+        ("¬", ("¬",), set()),
+        ("⫽", ("⫽",), set()),
+        ("↳", ("↳",), set()),
+        ("¬↳", ("¬", "↳"), set()),
+        ("¬ ?", ("¬",), {"?"}),
+        ("⇉ Checks, draft", ("⇉",), {"checks", "draft"}),
+        ("checks, draft", (), {"checks", "draft"}),
+        ("⇉Intake", (), {"⇉intake"}),
+        ("", (), set()),
+    ],
+)
+def test_a_tooltip_s_opening_marks_are_its_operator_and_the_rest_its_title(
+    tooltip: str, marks: tuple[str, ...], tags: set[str]
+) -> None:
+    found = tooltip_use(f'click A "a.md" "{tooltip}"')
+    assert operators(found.opening) == marks
+    assert found.tags == tags
+
+
+@pytest.mark.parametrize(
+    "marks",
+    ["⇉", "¬↳", "¬ ⇉", "¬⇉", "⇉↳", "⇉⫽"],
+)
+def test_a_tooltip_s_marks_are_accepted_and_refused_as_a_link_s_text_marks(
+    marks: str,
+) -> None:
+    clicked = tooltip_use(f'click A "a.md" "{marks}"').opening
+    [linked] = selected(f"[{marks} Text](a.md)\n")
+    for reader in (operators, gapped, deferring_dispatch, contradicting, conflicting):
+        assert reader(clicked) == reader(linked.opening), reader.__name__
+
+
+@pytest.mark.parametrize(
+    ("written", "kind", "name"),
+    [
+        ('click Plan href "a.md" "⇉↳"', "flowchart LR", "click Plan"),
+        ('CLICK Plan "a.md" "?"', "flowchart LR", "CLICK Plan"),
+        ('link Cls "a.md" "¬ ⇉"', "classDiagram", "link Cls"),
+    ],
+)
+def test_a_diagram_link_is_named_by_its_keyword_and_node(
+    written: str, kind: str, name: str
+) -> None:
+    assert tooltip_use(written, kind).name == name
+
+
+def test_a_link_is_named_by_its_opening() -> None:
+    [linked] = selected("[⇉↳ Text](a.md)\n")
+    assert linked.name == linked.opening == "⇉↳ Text"
+
+
+def test_a_gantt_click_mermaid_does_not_parse_is_no_use() -> None:
+    fence = next(
+        token
+        for token in parse(
+            '```mermaid\ngantt\n    click a href "a.md" "⇉"\n'
+            '    click b href "b.md"\n    click c "c.md"\n```\n'
+        )
+        if token.type == "fence"
+    )
+    read = linking(fence)
+    assert [one.destination for one in read.clicks] == ["b.md"]
+    assert [(one.destination, one.name) for one in read.unparsed] == [
+        ("a.md", "click a"),
+        ("c.md", "click c"),
+    ]
+
+
+def test_a_tooltip_selects_nothing_for_a_remote_destination() -> None:
+    found = tooltip_use('click A "https://example.com/a.md" "checks"')
+    assert found.tags == frozenset()
 
 
 @pytest.mark.parametrize(

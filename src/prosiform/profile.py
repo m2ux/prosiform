@@ -23,7 +23,9 @@ line in a fence whose info string opens with `mermaid` — a `click` line,
 a class diagram's `link` line, or a sequence diagram's `link` or `links`
 participant menu, its keywords in any letter case — names a destination
 a reader of the rendered diagram follows, so each such destination is a
-use although the parser reads the fence as text.
+use although the parser reads the fence as text, and a quoted tooltip a
+`click` or class diagram `link` line carries states that use's operator
+and title.
 
 Every cell of a table row shares that row's line, so the parse records
 on each cell's inline token the column it stands in, and a reader of
@@ -540,7 +542,10 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     A `links` line holding a value that is no string is refused, so is
     one whose value is a non-empty array, and so is a link Mermaid
     renders that the reader does not follow, where it names a local
-    Markdown document.
+    Markdown document. A Gantt chart's click written in a form Mermaid's
+    gantt grammar does not parse, anything but a line of
+    `click <task> href "<destination>"` alone, is refused where it names a local
+    Markdown document, and carried as written otherwise.
     """
     read = linking(fence)
     for at in read.listed:
@@ -579,6 +584,23 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
             remedy="write the link as a click line naming the document",
             line=link.line,
             reference=link.destination,
+        )
+    for click in read.unparsed:
+        if not local_markdown(click.destination):
+            continue
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the Gantt chart's {click.name!r} names {click.destination!r} in "
+                f"a form Mermaid's gantt grammar does not parse, which reads "
+                f"href and the destination alone, so Mermaid draws no chart and "
+                f"the click opens nothing"
+            ),
+            remedy='write the click as click <task> href "<destination>" alone '
+            "on its line, with no tooltip, link target or semicolon: a Gantt "
+            "task's click states no operator and selects no preset",
+            line=click.line,
+            reference=click.destination,
         )
 
 

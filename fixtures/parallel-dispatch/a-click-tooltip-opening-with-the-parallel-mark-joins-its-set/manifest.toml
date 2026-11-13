@@ -1,0 +1,16 @@
+description = "Two Mermaid clicks whose tooltips are the parallel dispatch mark alone join their section's dispatch set: each click's destination is rewritten to the dispatch-set sub-section, which lists each target as a dispatch link to its bundle's file, and each tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — The parallel dispatch mark",
+  "Adversarial acceptance fixtures — Parallel dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md", "expected/intake.bundle.md", "expected/review.bundle.md"]
+diagnostics = []

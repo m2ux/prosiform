@@ -177,6 +177,7 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 | `source` | Holds one source: removes its byte-order mark and frontmatter, indexes its headings and their slugs, and lists its regions and the links it uses. |
 | `metadata` | Decodes a frontmatter block's YAML into conversion settings: presets, `group` pairs and `subst` pairs. |
 | `tags` | Normalizes complete comma-separated preset names for link titles and the entry's `--presets` argument. |
+| `marks` | Reads the operator marks a link's text opens with, and splits a diagram link's tooltip into its operator and its title. |
 | `profile` | Configures the `prosiform-markdown` parser, reads the diagram links in `mermaid` fences as uses, and refuses what the profile does not admit. |
 | `closure` | Normalises each reference from the file that writes it, classifies it by its target's declaration, and reads its operators and any directive label. |
 | `bundle` | Builds one file group per contributing source from its selected regions, under a file heading and with any structural ancestors, and joins the groups into the candidate. |

@@ -65,11 +65,7 @@ from prosiform.candidate import (
 )
 from prosiform.closure import (
     DECLARING,
-    DEFERRAL_MARK,
-    DISPATCH_MARK,
     DRIVE,
-    INLINE_MARK,
-    PARALLEL_MARK,
     SEPARATOR,
     UNSUBSTITUTED,
     BundleSelection,
@@ -154,6 +150,7 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
+from prosiform.marks import DEFERRAL_MARK, DISPATCH_MARK, INLINE_MARK, PARALLEL_MARK
 from prosiform.metadata import (
     DEFAULT,
     GROUP,
@@ -807,7 +804,7 @@ def picked(
 
     They are the union every reference reaching the document selects: the
     set its `subst` pairs resolve through. A name the document does not
-    declare, `?` and a diagram link's empty selection pick none.
+    declare, `?` and a diagram link carrying no tooltip pick none.
     """
     names = {
         preset.name
@@ -1730,7 +1727,7 @@ def refusals_of_operators(
         at = location(path, source.line(use.line))
         if gapped(use.opening):
             raise input_failure(
-                f"the link {use.opening!r} writes a blank between "
+                f"the link {use.name!r} writes a blank between "
                 + " and ".join(
                     f"{OPERATOR_NAMES[mark]} {mark!r}"
                     for mark in operators(use.opening)
@@ -1740,7 +1737,7 @@ def refusals_of_operators(
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="write the symbols with no space between them, and one "
                 "space between the last of them and the link's text",
-                reference=use.opening,
+                reference=use.name,
                 source=at,
                 chain=(*chain, use.destination),
             )
@@ -1757,30 +1754,30 @@ def refusals_of_operators(
             )
         if deferring_dispatch(use.opening):
             raise input_failure(
-                f"the link {use.opening!r} writes the deferral mark against a "
+                f"the link {use.name!r} writes the deferral mark against a "
                 "dispatch mark, which states a dispatch no bundle publishes",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="write the dispatch mark, a space and the link's text, "
                 "which compiles the target up front",
-                reference=use.opening,
+                reference=use.name,
                 source=at,
                 chain=(*chain, use.destination),
             )
         if contradicting(use.opening):
             raise input_failure(
-                f"the link {use.opening!r} writes a dispatch mark against the "
+                f"the link {use.name!r} writes a dispatch mark against the "
                 "composition mark, so it sends its material to a sub-agent and "
                 "places it inline at once",
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy=f"write the composition mark {INLINE_MARK!r} alone to "
                 "compose the section, or the dispatch mark to dispatch it",
-                reference=use.opening,
+                reference=use.name,
                 source=at,
                 chain=(*chain, use.destination),
             )
         if conflicting(use.opening):
             raise input_failure(
-                f"the link {use.opening!r} opens with "
+                f"the link {use.name!r} opens with "
                 + "".join(
                     f"{OPERATOR_NAMES[mark]} {mark!r}"
                     for mark in operators(use.opening)
@@ -1789,7 +1786,7 @@ def refusals_of_operators(
                 code=UNSUPPORTED_CONSTRUCT,
                 remedy="open the link's text with the one operator that states how "
                 "the material is compiled",
-                reference=use.opening,
+                reference=use.name,
                 source=at,
                 chain=(*chain, use.destination),
             )
@@ -1805,7 +1802,7 @@ def refusals_of_operators(
             continue
         if answer is Probed.ABSENT:
             raise input_failure(
-                f"the link {use.opening!r} opens with an operator and names "
+                f"the link {use.name!r} opens with an operator and names "
                 f"{use.destination!r}, which names no document, so the operator "
                 f"states a compilation no run can read",
                 code=TARGET_NOT_FOUND,
@@ -1816,7 +1813,7 @@ def refusals_of_operators(
             )
         if answer is Probed.SILENT:
             raise input_failure(
-                f"the link {use.opening!r} opens with an operator and names "
+                f"the link {use.name!r} opens with an operator and names "
                 f"{use.destination!r}, a document whose frontmatter declares no "
                 f"prosiform, so the operator states no compilation the run can "
                 f"carry out",
@@ -1829,7 +1826,7 @@ def refusals_of_operators(
             )
         kind = "image" if use.resource else "link"
         raise input_failure(
-            f"the {kind} {use.opening!r} opens with an operator and names "
+            f"the {kind} {use.name!r} opens with an operator and names "
             f"{use.destination!r}, which is no Markdown document or section, so "
             f"the operator states no compilation the run can carry out",
             code=UNSUPPORTED_CONSTRUCT,
@@ -1867,13 +1864,13 @@ def refusals_of_picks(
         if target is None or not declarations.declares(target):
             continue
         raise input_failure(
-            f"the link {use.opening!r} carries the pick token {PICK!r} and names "
+            f"the link {use.name!r} carries the pick token {PICK!r} and names "
             f"{use.destination!r}, which this run compiles, so no agent is left "
             f"to pick",
             code=UNSUPPORTED_CONSTRUCT,
             remedy=f"write the deferral mark {DEFERRAL_MARK!r} to leave the pick "
             "to a later run, or name the alternative in the link's title",
-            reference=use.opening,
+            reference=use.name,
             source=at,
             chain=(*chain, use.destination),
         )
@@ -1922,7 +1919,7 @@ def refusals_of_directives(
                 continue
             if target.fragment is None:
                 raise input_failure(
-                    f"the directive {use.opening!r} names {use.destination!r}, a "
+                    f"the directive {use.name!r} names {use.destination!r}, a "
                     f"whole document rather than a section of it, so no section "
                     f"answers its composition",
                     code=UNSUPPORTED_CONSTRUCT,
@@ -1936,10 +1933,10 @@ def refusals_of_directives(
             other = placed.get((*section, not later))
             if other is not None:
                 raise placed_twice(use, at, other, later, chain)
-            placed.setdefault((*section, later), (use.opening, at))
+            placed.setdefault((*section, later), (use.name, at))
             continue
         raise input_failure(
-            f"the link {use.opening!r} is a composition directive in the preamble, "
+            f"the link {use.name!r} is a composition directive in the preamble, "
             f"which no section holds, so the run has no scope to place "
             f"{use.destination!r} beneath",
             code=UNSUPPORTED_CONSTRUCT,
@@ -1959,7 +1956,7 @@ def placed_twice(
     chain: Sequence[str],
 ) -> Failure:
     """One scope composing a section and deferring it, naming both directives."""
-    this = (use.opening, at)
+    this = (use.name, at)
     immediate, deferring = (other, this) if later else (this, other)
     return input_failure(
         f"the directive {immediate[0]!r} at {immediate[1]} composes "
@@ -2000,7 +1997,7 @@ def composing_itself(
             continue
         yield Diagnostic(
             WARNING,
-            f"the directive {use.opening!r} composes {identity(target)!r} in the "
+            f"the directive {use.name!r} composes {identity(target)!r} in the "
             f"document that writes it, so it places material that document "
             f"already carries",
             code=COMPOSE_SELF,

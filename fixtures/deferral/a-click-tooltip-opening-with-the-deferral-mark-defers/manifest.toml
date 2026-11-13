@@ -1,0 +1,16 @@
+description = "A Mermaid click whose tooltip is the deferral mark alone defers its destination: the document it names contributes nothing, the click's destination is rewritten to that document's path from the invocation working directory, and its tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — The deferral mark",
+  "Adversarial acceptance fixtures — Deferral",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["topic/guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/topic_guide.bundle.md"]
+diagnostics = []

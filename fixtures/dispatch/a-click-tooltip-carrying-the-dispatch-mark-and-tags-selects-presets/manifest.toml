@@ -1,0 +1,30 @@
+description = "A Mermaid click whose tooltip is the dispatch mark followed by the tag checks dispatches its target under the checks preset, whose subst pair routes the target's link to stub.md; the click's destination is rewritten to that selection's bundle file and its tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — Dispatched bundles",
+  "Presets — Selection belongs to the link",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/intake--p-46dbac18dd44ade7ab46ab6f42ed16b938b800a8c3608f3332f959c86cb848a0.bundle.md",
+]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "form.md"
+resolved = "stub.md"
+
+[expected.diagnostics.location]
+file = "intake.md"
+line = 8
+column = 1
