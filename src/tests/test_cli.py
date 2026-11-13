@@ -1821,6 +1821,16 @@ def test_a_link_entry_compiles_its_destination_whatever_marks_open_it(
     assert "Other text." not in run.bundle
 
 
+@pytest.mark.parametrize("indent", ["    ", "\t"])
+def test_an_indented_link_entry_compiles_as_its_link(root: Path, indent: str) -> None:
+    """Whitespace around an entry is no Markdown code block."""
+    written(root, "guide.md", LINK_GUIDE)
+    plain = invoke('[Plan](guide.md#plan "checks")', cwd=root)
+    run = invoke(f'{indent}[Plan](guide.md#plan "checks")', cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert run.bundles == plain.bundles
+
+
 @pytest.mark.parametrize(
     "entry_text",
     ["guide.md#plan", "[Plan](guide.md#plan)", 'click Plan "guide.md#plan" "¬"'],

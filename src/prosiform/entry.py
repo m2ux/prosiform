@@ -54,7 +54,7 @@ def markdown_link(text: str) -> Link | None:
     A text nested past the parser's ceiling reads as no link.
     """
     try:
-        tokens = parse(text)
+        tokens = parse(text.strip())
     except Suppressed:
         return None
     inline = [token for token in tokens if token.type == "inline"]
@@ -64,7 +64,7 @@ def markdown_link(text: str) -> Link | None:
     if not children or children[0].type != LINK_OPEN or children[-1].type != LINK_CLOSE:
         return None
     found = [use for use in uses(tokens, tokens) if not use.resource]
-    if len(found) != 1 or sum(child.type == LINK_OPEN for child in children) != 1:
+    if len(found) != 1:
         return None
     return Link(found[0].destination, found[0].tags)
 
