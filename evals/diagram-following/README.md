@@ -80,7 +80,7 @@ A scenario names each `pf` run a correct session and each of its sub-agents make
 | `by` | Optional. The section of the scenario's trace whose sub-agent makes the run, as `<document>#<heading>`; absent for the session's own run. |
 | `entry` | Optional. The one reference supplied as the positional entry, as `<document>` or `<document>#<fragment>`; absent for bare `pf`, which prints the guide. |
 | `presets` | Optional. The comma-separated names of the title of the link the run passes as its entry; needs an entry. Complete names trim, case-fold and deduplicate. Only matching declarations contribute to the effective selection. A run stating none passes its entry as a plain path. |
-| `pick` | Optional. The alternative the run passes with `--pick`; needs `presets` carrying `?`, where it stands. |
+| `pick` | Optional. The alternative the run passes with `--pick`; needs `presets` carrying `?`, where it stands. A session makes it on its first run of the link or after the listing the link as written prints, so the listing is no stated run. |
 
 A reference resolves from the directory a shell form runs `pf` in: the skill's directory for `bootstrap`, as the guide states, and the workspace for `compiled`, which holds the compiled form's sources as they stand. The corpus test refuses a reference naming no document there, a `by` naming no section of the trace, and a run stated by a workflow written in neither form.
 
@@ -120,7 +120,7 @@ The material a `↳` line compiles may itself dispatch: the run on it writes a b
 
 A state may also defer its transition: its document writes no `**Next.**` paragraph, and the material its deferral compiles states "Take the transition labelled `<label>`.", so only a session that ran `pf` on the line knows the edge to take.
 
-A deferral titled with the pick token `?` leaves the pick among its target's alternatives to the agent. `agent-pick`'s `Classify` defers the `Route` section of a kind router, `reference/work-kind.md`, whose alternatives `initiative`, `epic`, `task` and `other` each route the section's link to a document stating the transition into that kind's state. The run on the line answers with the alternatives beside their choice lines, and only the rerun on the link with `--pick` naming one compiles the transition, so a session that guesses the alternative, picks another, or reads the router's source rather than the listing departs from the path or from its stated runs, or reads a source, as [Run checks](#run-checks) states. `inputs/work.txt` describes the work in the words of one choice line, or of none, and names no alternative; the walk takes the alternative whose choice line, less its stop, an input holds, and `other`, declared last for any other work, where none does.
+A deferral titled with the pick token `?` leaves the pick among its target's alternatives to the agent. `agent-pick`'s `Classify` defers the `Route` section of a kind router, `reference/work-kind.md`, whose alternatives `initiative`, `epic`, `task` and `other` each route the section's link to a document stating the transition into that kind's state. The run on the line as written answers with the alternatives beside their choice lines, and only a run on the link with `--pick` naming one compiles the transition. A session passes `--pick` on its first run of the link or after reading the listing, as the guide tells it, and a scenario states the picked run once, so either path meets it; a session that picks another alternative, or reads the router's source, departs from the path or from its stated runs, or reads a source, as [Run checks](#run-checks) states. `inputs/work.txt` describes the work in the words of one choice line, or of none, and names no alternative; the walk lists the alternatives and takes the one whose choice line, less its stop, an input holds, and `other`, declared last for any other work, where none does.
 
 | Workflow | Scenario | What it runs |
 | --- | --- | --- |
@@ -130,10 +130,10 @@ A deferral titled with the pick token `?` leaves the pick among its target's alt
 | `deferred-composition` | `nested-unreached` | Nothing: the archive's step holds, but the migration's bundle that carries it is never compiled. |
 | `deferred-dispatch` | `deferred-dispatch-compiled` | `pf` on `reference/loading.md#crew`, the `↳` line `Pack`'s step reaches where `order.txt` reads `bulk`, whose bundle dispatches `reference/crew.md#work` with `lift`, then `strap`, each selection writing its own action. |
 | `deferred-dispatch` | `deferred-dispatch-passed` | Nothing: `Pack`'s step does not hold, so its line is passed and nothing is dispatched. |
-| `agent-pick` | `initiative-picked` | `pf '[↳ Route](reference/work-kind.md#route "?")'`, whose listing the work's goal across several releases matches to `initiative`, then the rerun with `initiative`, whose transition enters `Charter`. |
-| `agent-pick` | `epic-picked` | The listing, then the rerun with `epic`, for one feature in several pull requests, whose transition enters `Breakdown`. |
-| `agent-pick` | `task-picked` | The listing, then the rerun with `task`, for work fitting one pull request, whose transition enters `Change`. |
-| `agent-pick` | `unknown-kind-held` | The listing, then the rerun with `other`, since no choice line describes the work, whose transition enters `Hold`. |
+| `agent-pick` | `initiative-picked` | `pf '[↳ Route](reference/work-kind.md#route "?")' --pick initiative`, the alternative whose choice line the work's goal across several releases matches, on the first run or after the listing, whose transition enters `Charter`. |
+| `agent-pick` | `epic-picked` | The link with `--pick epic`, for one feature in several pull requests, whose transition enters `Breakdown`. |
+| `agent-pick` | `task-picked` | The link with `--pick task`, for work fitting one pull request, whose transition enters `Change`. |
+| `agent-pick` | `unknown-kind-held` | The link with `--pick other`, since no choice line describes the work, whose transition enters `Hold`. |
 | `preset-deferral` | `stand-in-followed` | `pf '[↳ Read mirror](reference/fetch.md#read-mirror "mirror")'`. The deferral's title selects `fetch.md`'s `mirror` preset, whose `subst` puts the stored copy in place of the live page, so the transition the stand-in states sends the path to `Restore`, where the live page's would send it to `Serve`. |
 
 ### Composition scenarios
@@ -224,7 +224,9 @@ A run that passes the dispatch checks and its sub-agents' actions is held to the
 | `overcompiled` | made a run naming a reference no stated run names, as one on a deferred line its path did not reach does, or a sub-agent did. A bare `pf` beyond those stated prints the guide and compiles nothing, so it is no departure. |
 | `misordered_compile` | made its stated runs in another order, or a sub-agent did. |
 
-The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade. A harness reporting no command, as the Claude harness does in every form but `compiled` and `bootstrap`, holds a session to none of them.
+The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade.
+
+A stated run carrying a pick is met by either path to it: the picked run made first, `first-run`, or the listing, the link as written, followed by the picked run, `after-listing`. A session that made the listing took the second path, so it is held to the listing before its pick, and a listing after the pick is `misordered_compile`. A verdict passing the run checks names the path each stated pick took in its `picks`. A harness reporting no command, as the Claude harness does in every form but `compiled` and `bootstrap`, holds a session to none of them.
 
 A session given a shell follows what `pf` prints and writes, so a run passing the run checks is then held to its record's `reads`: each path the stream records a file-reading call opening, the session's and every sub-agent's the stream carries. A path naming a document of the form's sources, as that document or a path ending `/` and its path within them, fails the session; a bundle `pf` wrote, an input and the session's own files are no source.
 

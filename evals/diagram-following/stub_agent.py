@@ -41,8 +41,11 @@ The environment scripts it:
 - `STUB_AGENT_SCENARIO`: the name of a scenario of its workflow whose path
   and runs it takes in place of those its inputs name, as an agent that
   picked another alternative does;
-- `STUB_AGENT_RUNS`: a number of its stated `pf` runs after which it makes
-  no more, as an agent that never reran a pick's listing does;
+- `STUB_AGENT_LISTING`: when set, it runs each stated pick's link as written,
+  for the alternatives' listing, before its picked run, as an agent that did
+  not know its pick does; otherwise it makes the pick on its first run;
+- `STUB_AGENT_RUNS`: a number of its `pf` runs after which it makes no more,
+  as an agent that never reran a pick's listing does;
 - `STUB_AGENT_READ`: a path, from its workspace, it opens with a `Read` call
   before its first run, as an agent reading a source does;
 - `STUB_AGENT_NO_DISPATCH`: when set, it starts no sub-agent, as an agent
@@ -77,6 +80,7 @@ import shutil
 import sys
 import time
 import uuid
+from dataclasses import replace
 from pathlib import Path
 
 from harness import (
@@ -212,14 +216,25 @@ def framed(report: str) -> str:
 
 
 def shell_runs(item: Scenario | None, argv: list[str]) -> list[tuple[str | None, str]]:
-    """Each stated `pf` run as the agent making it and its command line.
+    """Each `pf` run the stub makes, as the agent making it and its command line.
 
-    A session whose `--tools` names no shell runs none.
+    These are the stated runs, each pick preceded by its listing where
+    `STUB_AGENT_LISTING` is set. A session whose `--tools` names no shell
+    runs none.
     """
     tools = argv[argv.index("--tools") + 1] if "--tools" in argv else ""
     if item is None or SHELL_TOOL not in tools.split(","):
         return []
-    made = [(run.by, shlex.join(["pf", *run.args])) for run in item.compile]
+    listed = bool(os.environ.get("STUB_AGENT_LISTING"))
+    made = [
+        (run.by, shlex.join(["pf", *step.args]))
+        for run in item.compile
+        for step in (
+            (replace(run, pick=None), run)
+            if listed and run.pick is not None
+            else (run,)
+        )
+    ]
     if runs := os.environ.get("STUB_AGENT_RUNS"):
         made = made[: int(runs)]
     return made
