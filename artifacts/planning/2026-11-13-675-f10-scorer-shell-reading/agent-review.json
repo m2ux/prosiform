@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/769",
+    "head": "7abf6065d0647e5956194bea7010a23d5fab7aad",
+    "base": "3475eecf947d0da96dc013e9e8226cad98841c64",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-13-675-f10-scorer-shell-reading/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F10 delivery session)",
+    "reviewed_at": "2026-11-13T00:00:00Z",
+    "scope": "The full diff of main..f10-scorer-shell-reading: SHELL_TOKEN, _body_end and _commands in evals/diagram-following/score.py and the five new tests in test_score.py. Callers inspected: pf_runs, _agent_runs, compiles, pick_paths and score in score.py, and codex_agent.pf_command, whose recorded redirects still reach the same compile (test_codex_recorded_redirects_reach_the_same_selected_compile). The base moved from 69e4da155 to 3475eecf9 by two README.md-only commits, which touch no scorer path; the branch merges cleanly. Probed by hand: 2>&1|cat, >&2 followed by a word (read as an argument, as the shell reads it), >&file, partly quoted and dash-led delimiters, a quoted <<EOF as argument text, an empty delimiter, 2>&1x, and two heredocs on consecutive commands; each reads as the shell reads it. Speculative edge cases rejected: a CRLF heredoc, whose carriage return the tokenizer reads as space so the delimiter line does not match and the segment reads invalid, where bash would match it; &> and # comments, which keep their earlier reading. No harness on the board's hosts records CRLF commands, and the issue scopes neither form. Stale descriptions: none; no document outside score.py describes the shell reading.",
+    "criteria": "AC1: test_a_duplicated_descriptor_is_its_redirects_operand, five commands ending in adjacent redirections read as one run of target.md and pass a scenario stating it; three fail on the base. AC2: test_a_malformed_adjacent_redirection_satisfies_no_compile, seven malformed forms read as invalid usage and score uncompiled. AC3: test_a_heredoc_body_is_data_rather_than_commands, nine quoted, unquoted and <<- heredocs whose bodies quote pf commands read as no run, scoring uncompiled against a stated run and passing against none; all fail on the base. AC4: test_runs_beside_a_heredoc_stay_observable and test_an_unterminated_heredoc_invalidates_its_segment, runs before, beside and after heredocs stay observable and an unclosed heredoc invalidates the segment that opened it.",
+    "validation": "pytest evals/diagram-following: 815 passed. make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (test 2137 passed, harness 1054 passed, corpus 615 of 615, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-13-675-f10-scorer-shell-reading/test-results.md",
+    "findings": []
+  }
+]

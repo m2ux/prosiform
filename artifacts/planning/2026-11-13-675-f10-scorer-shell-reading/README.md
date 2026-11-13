@@ -14,12 +14,14 @@ Both misreadings change a session's verdict, so a scored run can record a compil
 | --- | --- |
 | [f10.md](f10.md) | The work item: the shell reading the scorer takes and the checks it carries |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review record of the delivering pull request's reviewed head and base |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F10] Scorer Shell Reading](https://github.com/m2ux/prosiform/issues/675) |
+| Delivering pull request | [[F10] Scorer Shell Reading](https://github.com/m2ux/prosiform/pull/769) |
 | Heredoc finding | [#676](https://github.com/m2ux/prosiform/issues/676) |
 | Product integration | [#666](https://github.com/m2ux/prosiform/pull/666) |
 | Scorer repair | [#674](https://github.com/m2ux/prosiform/pull/674) |
