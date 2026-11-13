@@ -542,9 +542,10 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     A `links` line holding a value that is no string is refused, so is
     one whose value is a non-empty array, and so is a link Mermaid
     renders that the reader does not follow, where it names a local
-    Markdown document. A Gantt chart's click carrying a tooltip, which
-    Mermaid's gantt grammar does not read, is refused where it names a
-    local Markdown document, and carried as written otherwise.
+    Markdown document. A Gantt chart's click written in a form Mermaid's
+    gantt grammar does not parse, carrying a tooltip or naming its
+    destination without `href`, is refused where it names a local
+    Markdown document, and carried as written otherwise.
     """
     read = linking(fence)
     for at in read.listed:
@@ -584,18 +585,20 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
             line=link.line,
             reference=link.destination,
         )
-    for click in read.tooltipped:
+    for click in read.unparsed:
         if not local_markdown(click.destination):
             continue
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,
             message=(
-                f"the Gantt chart's {click.name!r} carries a tooltip after "
-                f"{click.destination!r}, which Mermaid's gantt grammar does not "
-                f"read, so Mermaid draws no chart and the click opens nothing"
+                f"the Gantt chart's {click.name!r} names {click.destination!r} in "
+                f"a form Mermaid's gantt grammar does not parse, which reads "
+                f"href and the destination alone, so Mermaid draws no chart and "
+                f"the click opens nothing"
             ),
-            remedy="remove the tooltip: a Gantt task's click states no operator "
-            "and selects no preset",
+            remedy='write the click as click <task> href "<destination>", with no '
+            "tooltip: a Gantt task's click states no operator and selects no "
+            "preset",
             line=click.line,
             reference=click.destination,
         )

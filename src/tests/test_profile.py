@@ -310,6 +310,19 @@ def test_a_gantt_click_carrying_a_tooltip_naming_local_markdown_is_refused() -> 
     assert "'click freeze'" in found[0].message
 
 
+def test_a_gantt_short_click_naming_local_markdown_is_refused() -> None:
+    diagram = 'gantt\n  Freeze :freeze, 2026-11-02, 2d\n  click freeze "f.md"\n'
+    found = list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n")))
+    assert [refusal.code for refusal in found] == ["E_UNSUPPORTED_CONSTRUCT"]
+    assert found[0].line == 6
+    assert found[0].reference == "f.md"
+
+
+def test_a_gantt_short_click_naming_a_remote_address_is_carried() -> None:
+    diagram = 'gantt\n  click freeze "https://example.com/f.md"\n'
+    assert list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n"))) == []
+
+
 def test_a_gantt_click_carrying_a_tooltip_naming_a_remote_address_is_carried() -> None:
     diagram = 'gantt\n  click freeze href "https://example.com/f.md" "tip"\n'
     assert list(refusals(parse(f"# Guide\n\n```mermaid\n{diagram}```\n"))) == []

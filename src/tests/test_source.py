@@ -667,19 +667,20 @@ def test_a_link_is_named_by_its_opening() -> None:
     assert linked.name == linked.opening == "⇉↳ Text"
 
 
-def test_a_gantt_click_carrying_a_tooltip_is_no_use() -> None:
+def test_a_gantt_click_mermaid_does_not_parse_is_no_use() -> None:
     fence = next(
         token
         for token in parse(
             '```mermaid\ngantt\n    click a href "a.md" "⇉"\n'
-            '    click b href "b.md"\n```\n'
+            '    click b href "b.md"\n    click c "c.md"\n```\n'
         )
         if token.type == "fence"
     )
     read = linking(fence)
     assert [one.destination for one in read.clicks] == ["b.md"]
-    assert [(one.destination, one.name) for one in read.tooltipped] == [
-        ("a.md", "click a")
+    assert [(one.destination, one.name) for one in read.unparsed] == [
+        ("a.md", "click a"),
+        ("c.md", "click c"),
     ]
 
 
