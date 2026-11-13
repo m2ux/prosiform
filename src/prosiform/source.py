@@ -163,7 +163,7 @@ QUOTED = (
     r"(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*"
 )
 CLICK_LINE = re.compile(
-    rf'\s*click\s+(?P<node>[^\s"]+)\s+(?:href\s+)?{QUOTED}', re.IGNORECASE
+    rf'\s*click\s+(?P<node>[^\s"]+)\s+(?P<href>href\s+)?{QUOTED}', re.IGNORECASE
 )
 CLASS_LINK = re.compile(rf'\s*link\s+(?P<node>[^\s"]+)\s+{QUOTED}', re.IGNORECASE)
 CLICK_STATEMENT = re.compile(r"\s*click\s", re.IGNORECASE)
@@ -807,17 +807,18 @@ class Diagram:
     Mermaid renders as a menu whose entries are named by their positions
     in the array; it names no destination either. The unfollowed links
     are the links Mermaid renders that no diagram link line writes, in
-    written order; none is a use. The tooltipped clicks are a Gantt
-    chart's clicks carrying a tooltip, which Mermaid's gantt grammar
-    does not read after a destination, so Mermaid draws no chart and
-    the click opens nothing; none is a use.
+    written order; none is a use. The unparsed clicks are a Gantt
+    chart's clicks written in a form Mermaid's gantt grammar does not
+    parse, one carrying a tooltip or one naming its destination without
+    `href`, so Mermaid draws no chart and the click opens nothing; none
+    is a use.
     """
 
     clicks: tuple[Click, ...] = ()
     broken: tuple[int, ...] = ()
     listed: tuple[int, ...] = ()
     unfollowed: tuple[Unfollowed, ...] = ()
-    tooltipped: tuple[Click, ...] = ()
+    unparsed: tuple[Click, ...] = ()
 
 
 class BrokenMenu(Exception):
@@ -892,8 +893,8 @@ def read_diagram(fence: Token) -> Diagram:
 
     A line links when it is one of these, its keywords in any letter case:
 
-    - in any diagram, `click <node> href "<destination>"` or
-      `click <node> "<destination>"`;
+    - in any diagram, `click <node> href "<destination>"`, and in any
+      diagram but a Gantt chart, `click <node> "<destination>"`;
     - in a class diagram, `link <class> "<destination>"`;
     - in a sequence diagram, `link <actor>: <label> @ <destination>`, the
       destination being the trimmed text after the first `@`;
@@ -912,9 +913,10 @@ def read_diagram(fence: Token) -> Diagram:
     are links Mermaid renders that the reader does not follow, so each
     is read as unfollowed rather than as a click.
 
-    Mermaid's gantt grammar reads a click's destination and nothing
-    after it, so a Gantt chart's click carrying a tooltip draws no
-    chart: it is read as tooltipped rather than as a click.
+    Mermaid's gantt grammar reads a click's destination after `href`
+    and nothing after it, so a Gantt chart's click carrying a tooltip,
+    or naming its destination without `href`, draws no chart: it is
+    read as unparsed rather than as a click.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
@@ -926,7 +928,7 @@ def read_diagram(fence: Token) -> Diagram:
     broken: list[int] = []
     listed: list[int] = []
     unfollowed: list[Unfollowed] = []
-    tooltipped: list[Click] = []
+    unparsed: list[Click] = []
     for at, physical in enumerate(lines(fence.content)):
         line = bare(physical)
         unfollowed.extend(rendered(line, form, base, anchors, first + at))
@@ -938,14 +940,15 @@ def read_diagram(fence: Token) -> Diagram:
         except ListedMenu:
             listed.append(first + at)
             continue
-        for written, offset, anchor, node, tip, name in named:
+        for written, offset, anchor, node, tip, name, href in named:
             destination = (
                 written.replace(ENTITY_ANCHOR, ANCHOR)
                 if anchor == ENTITY_ANCHOR
                 else written
             )
             stated = tooltip(tip)
-            (tooltipped if form == GANTT and tip is not None else found).append(
+            gantt_only = form == GANTT and (tip is not None or not href)
+            (unparsed if gantt_only else found).append(
                 Click(
                     destination,
                     first + at,
@@ -963,7 +966,7 @@ def read_diagram(fence: Token) -> Diagram:
         tuple(broken),
         tuple(listed),
         tuple(unfollowed),
-        tuple(tooltipped),
+        tuple(unparsed),
     )
 
 
@@ -1071,12 +1074,15 @@ def external(path: str) -> bool:
     return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
 
 
-def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None, str]]:
+def linked(
+    line: str, form: str
+) -> list[tuple[str, int, str, str, str | None, str, bool]]:
     """Each destination one line of a diagram of one type names, in written order.
 
     Each comes as written, with its offset, the anchor spelling its form
-    writes, the node its line is drawn on, the tooltip it carries and
-    the name a diagnostic gives it. A quoted destination is read from
+    writes, the node its line is drawn on, the tooltip it carries, the
+    name a diagnostic gives it and whether a `click` names it after
+    `href`. A quoted destination is read from
     each statement the line holds, with its node, its tooltip where it
     writes one and its keyword and node as its name; a sequence
     diagram's entry names no node, carries no tooltip and has no name.
@@ -1096,6 +1102,7 @@ def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None, s
                     quoted.group("node"),
                     quoted.group("tooltip"),
                     f"{statement.split(maxsplit=1)[0]} {quoted.group('node')}",
+                    quoted.groupdict().get("href") is not None,
                 )
             )
     if found or form != SEQUENCE_DIAGRAM:
@@ -1109,13 +1116,13 @@ def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None, s
         start, stop = trimmed(line, at + 1, end)
         if start == stop:
             return []
-        return [(line[start:stop], start, ENTITY_ANCHOR, "", None, "")]
+        return [(line[start:stop], start, ENTITY_ANCHOR, "", None, "", False)]
     menu = MENU.match(line)
     if menu is None:
         return []
     start, stop = trimmed(line, menu.end(), statement_end(line, menu.end()))
     return [
-        (value, offset, ENTITY_ANCHOR, "", None, "")
+        (value, offset, ENTITY_ANCHOR, "", None, "", False)
         for value, offset in entries(line, start, stop)
     ]
 
