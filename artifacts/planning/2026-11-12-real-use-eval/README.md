@@ -28,8 +28,9 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 | [Feature family work item](e01/w05.md) | The six feature workflows as product and `tree` skills |
 | [Retirement work item](e01/w06.md) | The instruction files, entry wiring and forms removed once every family is a skill |
 | [Records work item](e02/w01.md) | The bare-prompt records and their sections deleted |
-| [Runbook work item](e02/w02.md) | The real-use baseline runbook section and its shakedown |
-| [Baseline run work item](e02/w03.md) | The baseline run, its triage and committed record |
+| [Runbook work item](e02/w02.md) | The real-use baseline runbook section and its cap rule |
+| [Shakedown work item](e02/w03.md) | The shakedown run and the caps it records |
+| [Baseline run work item](e02/w04.md) | The baseline run, its triage and committed record |
 
 ## Links
 

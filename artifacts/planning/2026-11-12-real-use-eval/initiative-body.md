@@ -42,7 +42,7 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 - [ ] **AC2.** Every session opens with its scenario's task in plain words and carries no instruction of the eval's on finding or reading a skill, as the run and harness isolation tests show.
 - [ ] **AC3.** Every comparison the eval draws is between skill variants of one workflow, a product variant whose sources `pf` compiles against plain-Markdown controls, as the corpus test shows.
 - [ ] **AC4.** The eval's committed records and their documentation hold no run of a session started from a bare prompt, as the README and runbook tests show.
-- [ ] **AC5.** The committed baseline is a run of the skill-entry eval with every failing session triaged under the runbook, none a defect or unclear, as the baseline record and its report show.
+- [ ] **AC5.** The committed baseline is a run of every workflow of the skill-entry eval with every failing session triaged under the runbook, none a defect or unclear, as the baseline record and its report show.
 
 ## Non-Goals
 
@@ -58,3 +58,4 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 - **R2.** **Source.** [Decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/decisions.md) — the user's decisions on skill entry, the opening prompt, variants, harnesses and records that the criteria answer to.
 - **R3.** [Agent-pick run record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-709-i15-e01-w06-a-measured-agent-pick) — the bare-prompt run whose sessions opened sources beside the bundle, which motivates starting from a skill.
 - **R4.** [Preset Alternatives decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/decisions.md) — the remeasuring of agent-pick that waits on this eval's real-use baseline.
+

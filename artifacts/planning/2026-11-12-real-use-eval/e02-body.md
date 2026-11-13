@@ -25,16 +25,19 @@ The eval's committed records measure real use: the bare-prompt records leave, an
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w01.md) | Bare-prompt records and sections deleted | AC1 | [E01:W06](https://github.com/m2ux/prosiform/issues/736) | | | |
-| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w02.md) | Real-use baseline runbook and shakedown | AC2 | W01 | | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w03.md) | The real-use baseline run and record | AC3 | W02 | | | |
+| [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w02.md) | Real-use baseline runbook section | AC4 | W01 | | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w03.md) | Real-use baseline shakedown | AC2 | W02 | | | |
+| [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w04.md) | The real-use baseline run and record | AC3 | W03, [I15:E02:W00](https://github.com/m2ux/prosiform/issues/733) | | | |
 
 ## Acceptance Criteria
 
 - [ ] **AC1.** No record of a bare-prompt run, and no README or runbook section describing one, remains in the eval, as the README and runbook tests show.
 - [ ] **AC2.** The runbook's real-use baseline section takes its session cap, token budget and cost cap from a recorded shakedown on the skill-entry eval, as the runbook test shows.
 - [ ] **AC3.** `baseline.json` and `report.md` record a run of every workflow of the skill-entry eval whose every failing session is triaged and none is a defect or unclear, as the report's Failing Sessions shows.
+- [ ] **AC4.** The runbook states a real-use baseline section whose caps are set by a shakedown rule, as the runbook test shows.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the records decision and why the run rows stay apart.
 - **R2.** [Runbook](https://github.com/m2ux/prosiform/blob/d6072b20cfd5541b3edfa561e15677404e0f4cf6/evals/diagram-following/RUNBOOK.md) — the triage rubric and stop rules the run follows.
+

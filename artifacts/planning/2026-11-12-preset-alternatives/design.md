@@ -50,25 +50,26 @@ Populate the body [Populate Body](artifacts/work-kind.md#populate-body "?").
 
 ## The Pick
 
-The agent passes the title as `--presets`, as it does for every deferred link. `?` selects no preset, so the run finds no alternative in force and answers with the list:
+The agent passes its pick with `--pick` beside the link as written, as the v1 design's [link entries](https://github.com/m2ux/prosiform/blob/d744ecf2ef8bc2d1b44178d179312bf9f52e19f5/artifacts/planning/2026-10-17-prosiform-v1/design.md#L114-L121) state. Without `--pick`, `?` selects no preset, so the run finds no alternative in force and answers with the list:
 
 ```text
-$ pf -o out artifacts/work-kind.md#populate-body --presets '?'
+$ pf -o out '[Populate Body](artifacts/work-kind.md#populate-body "?")'
 error: artifacts/work-kind.md needs one alternative in force:
   Initiative  States a goal and lists its epics.
   Epic        Lists its tasks in a Work Breakdown table.
   Task        One pull request's worth of work.
-remedy: rerun with --presets naming the alternative that fits your task
+remedy: rerun with --pick naming the alternative that fits your task
 exit 2
 
-$ pf -o out artifacts/work-kind.md#populate-body --presets Epic
+$ pf -o out '[Populate Body](artifacts/work-kind.md#populate-body "?")' --pick Epic
 exit 0
 ```
 
-- One diagnostic answers `?`, a mistyped name and an absent `--presets`, so no flag lists alternatives.
+- An agent that knows its pick passes `--pick` on its first run; one that does not reads the list and reruns.
+- One diagnostic answers `?` without `--pick`, a mistyped pick and a link naming no alternative, so no flag lists alternatives.
 - Exit status 2 publishes nothing, as every failed run does; exit 0 still means the bundles were written.
 - The pick's bundle carries its preset qualifier (`--p-<digest>`), so each kind's bundle has its own name.
-- A fixed title or `--presets` naming one alternative is a pick its author made: `[Populate Body](work-kind.md#populate-body "Epic")`.
+- A fixed title naming one alternative is a pick its author made: `[Populate Body](work-kind.md#populate-body "Epic")`.
 
 ## Routing
 
@@ -90,13 +91,7 @@ A pair of an alternative is **routing**, not a stand-in:
 
 ## Guide
 
-The guide's symbol grammar gains one entry. **Compiling a link** keeps its wording, since its rule to pass the title as `--presets` already carries `?` to `pf`:
-
-```text
-  ?  in a link's title, a preset you pick: pass the title as --presets
-     as usual and pf lists the alternatives and when to pick each;
-     rerun with ? replaced by the one that fits your task
-```
+The guide's symbol grammar gains one entry for `?`, worded as the v1 design's [guide](https://github.com/m2ux/prosiform/blob/d744ecf2ef8bc2d1b44178d179312bf9f52e19f5/artifacts/planning/2026-10-17-prosiform-v1/design.md#L179) states it.
 
 ## Change Surface
 

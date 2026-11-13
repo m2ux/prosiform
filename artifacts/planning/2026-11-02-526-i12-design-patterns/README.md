@@ -6,7 +6,7 @@
 
 I12 gives prosiform a catalogue of design patterns: each page takes an established programming paradigm — SOLID, traits, polymorphism, inheritance and composition, contracts, concurrency, staging — and shows the grammar that realises it, on a specimen tree the build compiles and `make check` holds. Pages sit under `docs/patterns/`, declare `prosiform` so an agent can compile one with `pf`, and follow one lean template; an index maps each SOLID principle to the grammar that serves it.
 
-The documentation today describes each feature alone, and the one worked composition, `example/work-planner`, is being removed. Skills such as Work Planner state their own architecture — artifacts with Fields and Operations, modes calling operations by heading link, layers that call downwards — as private rules. The catalogue names those structures and the paradigms behind them, so an author composes a skill from known patterns rather than re-deriving them, and a grammar limit a pattern meets becomes an issue rather than folklore.
+The documentation today describes each feature alone. Skills such as Work Planner state their own architecture — artifacts with Fields and Operations, modes calling operations by heading link, layers that call downwards — as private rules. The catalogue names those structures and the paradigms behind them, so an author composes a skill from known patterns rather than re-deriving them, and a grammar limit a pattern meets becomes an issue rather than folklore.
 
 ## Artifacts
 
@@ -31,7 +31,8 @@ The documentation today describes each feature alone, and the one worked composi
 | [E02 W05 work item](e02/w05.md) | Null Object |
 | [E02 W06 work item](e02/w06.md) | Test Double |
 | [E02 W07 work item](e02/w07.md) | Structural Conformance |
-| [E02 W08 work item](e02/w08.md) | The polymorphism-and-substitution section of the index |
+| [E02 W08 work item](e02/w08.md) | Alternative Selection |
+| [E02 W09 work item](e02/w09.md) | The polymorphism-and-substitution section of the index |
 | [E03 W01 work item](e03/w01.md) | Trait Group |
 | [E03 W02 work item](e03/w02.md) | Composite Outline |
 | [E03 W03 work item](e03/w03.md) | Decorator Section |
@@ -64,7 +65,7 @@ The clauses the user confirmed on 2026-11-02, G5 reworded the same day:
 | G3 | AC3 | E00 | E00 AC5, and every page criterion's committed bundle set | No marked source |
 | G4 | AC4 | E00, E01–E04 | E00 AC6; E01 AC6, E02 AC8, E03 AC5, E04 AC6 | No marked source |
 | G5 | AC5 | E00 | E00 AC3 | No marked source |
-| G6 | AC6 | E01–E04 | E01 AC1–AC6, E02 AC1–AC8, E03 AC1–AC5, E04 AC1–AC6, E00 AC8 | No marked source |
+| G6 | AC6 | E01–E04 | E01 AC1–AC6, E02 AC1–AC9, E03 AC1–AC5, E04 AC1–AC6, E00 AC8 | No marked source |
 
 Every clause has a criterion, every criterion is covered by an epic row, and every epic criterion by a task row. The References are background; none is marked as a source.
 
@@ -78,7 +79,6 @@ Every clause has a criterion, every criterion is covered by an epic row, and eve
 - **`make links` reads every document.** The committed expected bundles are Markdown; their deferral destinations and dispatch links are written for the bundle's own folder. E00 W02 decides where the set sits and how the link check leaves it, before any specimen is committed.
 - **Every build change moves the specimens.** A deliberate change to what the build emits changes the expected bundle sets. E00 W02's re-record mode writes them in one command, and the diff shows what moved.
 - **The grammar settles first.** E00 W01–W03 depend on the argument-surface and grouping initiatives (#462, #463) closing; each work item's Analysis reads the documentation as it then stands, so a feature those initiatives change or retire is described as it lands.
-- **The example tree is not evidence.** #465 removes `example/work-planner` and the checks built on it; no row here reads, maintains or proves on it, and no page links it.
 - **The documentation index is also brought to the build by the grouping initiative's proof.** E00 W04 edits `docs/README.md` only after #463 closes, so the two never write it together.
 
 ## Design
@@ -92,7 +92,7 @@ Every clause has a criterion, every criterion is covered by an epic row, and eve
 
 ## Dependency Check
 
-`deps.py` over the initiative, the five epics and the thirty work items:
+`deps.py` over the initiative, the five epics and the thirty-one work items:
 
 - **Problems.** None.
 - **Joins.** No candidate unit: no two rows of one epic declare one component. E00 W03 and W04 are joined by choice, two components in one pull request, since the documentation index links a page that W03 creates.
@@ -102,13 +102,14 @@ Every clause has a criterion, every criterion is covered by an epic row, and eve
 ## Board Ranking
 
 I12 takes priority 1 on the Python board, Ready behind I15 at priority 2 (user, Advance 2026-11-12), so the polymorphism family follows the preset alternatives its pages cite.
-- **Contention.** `main:docs/patterns/README.md` is declared by E00 W03 and by each family's index row (E01 W06, E02 W08, E03 W05, E04 W06).
+- **Contention.** `main:docs/patterns/README.md` is declared by E00 W03 and by each family's index row (E01 W06, E02 W09, E03 W05, E04 W06).
   - E00 W03 never runs beside them: each family's index row depends on it.
   - The four family rows write disjoint sections — each family's own heading and table — and none edits the SOLID map, so they are independent regions of one file and may share a priority set.
 - **Proposed epic priority, as printed.** E00 5, E01 4, E02 3, E03 2, E04 1; the script separates every epic by the file-level contention above.
 
 ## Decisions
 
+- **Alignment of 2026-11-13.** (User, 2026-11-13.) The Problem cites the documentation at c77dba6, after I08 and I09 closed, and drops the removed example tree and its Non-Goal. E02 gains W08 Alternative Selection (AC9) for `choice` alternatives, and its index row becomes W09. AC1 and AC4, and E00 AC6, state what the page check and a read of the index observe. The References stay unmarked background. `priority: 1` is removed from E01 to E04, so no I12 issue carries a priority label while I12 is parked.
 - **Template and compilation are separate conditions.** (User, 2026-11-05.) AC2 states section order and AC7 states page compilation. The foundation row covers both through its existing AC1 and AC4. No task ID, dependency, join, lane or priority changes; both initiative criteria remain unticked until verified.
 - **Audience.** (User, 2026-11-02.) Skill authors, human and agent: pages read on GitHub and compile under `pf`.
 - **Home.** (User, 2026-11-02.) `docs/patterns/`, linked from `docs/README.md`, published with the build.

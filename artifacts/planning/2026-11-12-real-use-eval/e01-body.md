@@ -44,10 +44,11 @@ Every workflow of the eval becomes skill variants, so each comparison the eval d
 - [ ] **AC1.** Each of `linear`, `branching`, `looping`, `pricing` and `rework` is a product skill and `tree`, `prose` and `linked` control skills, each walking its scenarios' paths, as the corpus test shows.
 - [ ] **AC2.** Each of the four dispatch workflows is a product skill and an `authored` control skill, each walking its scenarios' paths and dispatch traces, as the corpus test shows.
 - [ ] **AC3.** Each of the four deferral workflows is a product skill whose stated runs resolve from the skill's directory, as the corpus test shows.
-- [ ] **AC4.** Each of the two composition workflows, `dispatch-depth` and `subagent-first-run` is a product skill walking its scenarios' paths, traces and stated runs, as the corpus test shows.
+- [ ] **AC4.** Each of the four composition workflows, `conditional-composition`, `directive-labels`, `dispatch-depth` and `subagent-first-run`, is a product skill walking its scenarios' paths, traces and stated runs, as the corpus test shows.
 - [ ] **AC5.** Each of the six feature workflows is a product skill and a `tree` control skill, each walking its scenarios' paths, as the corpus test shows.
 - [ ] **AC6.** The runner starts no session from a prompt naming an entry document, as the corpus and run tests show.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the variant layout, the families and why each task stays its own pull request.
+

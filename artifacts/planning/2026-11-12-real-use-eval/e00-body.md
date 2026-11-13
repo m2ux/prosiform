@@ -32,15 +32,17 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 | --- | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w01.md) | Codex kept only with native discovery | AC1 | | | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w02.md) | Each harness places the session's skill | AC2, AC3 | W01 | | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w03.md) | The opening prompt states the task | AC4 | W02 | | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w03.md) | The opening prompt states the task | AC4, AC5 | W02 | | | |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The eval's harnesses are the agent CLIs whose own documentation states native skill discovery, as the harness tests show.
+- [ ] **AC1.** Each harness the eval keeps drives an agent CLI whose own documentation states native skill discovery, cited in the harness, as the harness tests show.
 - [ ] **AC2.** Every skill session's workspace holds its variant's skill under the discovery root its harness's CLI documents, as the harness tests show.
 - [ ] **AC3.** A session's CLI offers the placed skill and no skill of the eval's configuration or the caller's, as the harness isolation tests show.
 - [ ] **AC4.** A skill session's opening prompt is its scenario's task in plain words, naming no file, skill or instruction, as the run tests show.
+- [ ] **AC5.** Every skill text in the corpus carries its workflow's shared tracing paragraph, stating how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`, as the corpus test shows.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the decisions and defaults behind the layout, the prompt and the tracing paragraph.
+

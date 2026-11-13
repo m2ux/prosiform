@@ -47,6 +47,19 @@ Settled in Plan mode (user, 2026-11-12).
 
 - **First-run pick scoring.** By the user's decision, 2026-11-13, [#754](https://github.com/m2ux/prosiform/issues/754) became E02 W00: the agent-pick scenarios accept a first-run `--pick`, which the I17 link entry's guide tells an agent that knows its pick to pass. The real-use run moved to W01 and depends on it. #754 is closed as not planned, tracked in E02.
 
+## Alignment
+
+Settled by the user, 2026-11-13, on Align mode's findings for #707 and #733.
+
+- **The real-use bar is every session.** E02 AC1 and initiative AC4 hold only when every session of the agent-pick run passes. Set aside: a stated pass rate; every session but one.
+- **The design states `--pick`.** The Pick and Guide sections follow the link invocation, which carries the pick as `--pick` beside the link as written, and link the v1 design stating it. Set aside: keeping `--presets` with a Non-Goal recording the departure.
+- **E02 W00 consumes the link invocation.** It depends on I17:E01 W01 and W03, which give `pf` and the eval harness `--pick`, and on E01 W05, whose scenarios it extends. Set aside: W03 alone; a whole-epic edge.
+- **E02 takes no whole-epic dependency.** Its rows name the E01 work they consume. E01 keeps its edge on E00, as Delivery settled, although the dependency check reports it overbroad. Set aside: clearing both cells; keeping both.
+- **E02 cites no pull request of its own board in References.** The Problem cites the earlier agent-pick run as evidence. Set aside: keeping the reference as an exception.
+- **E02's work items are drafted in planning.** `e02/w00.md` and `e02/w01.md` declare their files, so contention is measured. Set aside: leaving them to Deliver.
+- **E02 W01 is the agent-pick measurement.** It commits its own run record. The real-use baseline covers every workflow, agent-pick included; I16 orders its baseline after E02 W00 so a first-run pick scores as compiled. Set aside: measuring agent-pick from the baseline's cells; accepting the overlap unordered.
+- **E02 W01 waits on the real-use shakedown.** It runs on the harness and model the shakedown records, with caps from its agent-pick cells, so it depends on I16:E02's shakedown row rather than its runbook row.
+
 ## Dependency Check
 
 - **Epic priority.** E00 takes 2 and E01 takes 1: no whole-epic edge separates them, and their rows contend.
