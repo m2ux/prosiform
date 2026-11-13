@@ -1,0 +1,18 @@
+description = "An entry written as a Markdown link that holds two links names no one destination and fails with E_INVALID_USAGE without publication."
+
+clauses = [
+  "Link entries — A link entry",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Guide](guide.md) and [Guide](guide.md)"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["[Guide](guide.md) and [Guide](guide.md)"]

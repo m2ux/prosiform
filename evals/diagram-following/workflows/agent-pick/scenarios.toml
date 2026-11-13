@@ -5,7 +5,7 @@
 # Classify defers the kind router's Route section with the pick token ? as its
 # title, so the run on its line lists the router's alternatives beside their
 # choice lines. Each input describes the work in the words of one choice line
-# and names no alternative; the session reruns with ? replaced by the
+# and names no alternative; the session reruns the link with --pick naming the
 # alternative whose choice line fits, and the material that run compiles
 # states the transition into that kind's state. Work no choice line describes
 # takes other, the router's alternative for any other work, into Hold.
@@ -21,7 +21,8 @@ presets = "?"
 
 [[scenario.compile]]
 entry = "reference/work-kind.md#route"
-presets = "initiative"
+presets = "?"
+pick = "initiative"
 
 [[scenario]]
 name = "epic-picked"
@@ -34,7 +35,8 @@ presets = "?"
 
 [[scenario.compile]]
 entry = "reference/work-kind.md#route"
-presets = "epic"
+presets = "?"
+pick = "epic"
 
 [[scenario]]
 name = "task-picked"
@@ -47,7 +49,8 @@ presets = "?"
 
 [[scenario.compile]]
 entry = "reference/work-kind.md#route"
-presets = "task"
+presets = "?"
+pick = "task"
 
 [[scenario]]
 name = "unknown-kind-held"
@@ -60,4 +63,5 @@ presets = "?"
 
 [[scenario.compile]]
 entry = "reference/work-kind.md#route"
-presets = "other"
+presets = "?"
+pick = "other"

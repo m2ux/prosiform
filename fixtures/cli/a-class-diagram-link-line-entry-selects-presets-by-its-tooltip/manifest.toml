@@ -1,0 +1,17 @@
+description = "A class diagram link line entry compiles its destination under the presets its tooltip selects, as an authored class diagram link's tooltip selects them."
+
+clauses = [
+  "Link entries — A link entry",
+  "Presets — Selection by tags",
+  "Presets — What a selection governs",
+  "Presets — Selection belongs to the link",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["link Guide \"guide.md\" \"Checks\""]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"]
+diagnostics = []

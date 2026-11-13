@@ -1,0 +1,21 @@
+description = "A --pick beside a plain path fails with E_INVALID_USAGE without publication: a plain path carries no title, so no ? for the pick to stand in."
+
+clauses = [
+  "Link entries — The pick",
+  "Link entries — A plain path",
+  "CLI contract — --pick ALTERNATIVE",
+  "Presets — The agent's pick",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md", "--pick", "Checks"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["--pick", "guide.md"]

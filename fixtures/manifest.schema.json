@@ -63,7 +63,7 @@
       ],
       "properties": {
         "arguments": {
-          "description": "Command arguments, in order; an empty string can supply an empty preset list. The runner supplies JSON diagnostics, except to a fixture declaring no argument, which runs the bare command.",
+          "description": "Command arguments, in order, each passed as one argument: a link entry is one argument however many blanks and quotes it holds. The runner supplies JSON diagnostics, except to a fixture declaring no argument, which runs the bare command.",
           "type": "array",
           "items": {
             "type": "string"

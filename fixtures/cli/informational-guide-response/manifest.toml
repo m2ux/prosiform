@@ -1,4 +1,4 @@
-description = "A command line holding no argument prints the guide: how to run pf, that a link in a bundle runs as written while one in a source document is resolved from that document, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, how a ? among title tags is resolved, the inputs a dispatch carries, and that failures return together. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
+description = "A command line holding no argument prints the guide: how to run pf on a link in a bundle as written or on a document path, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, that a ? among title tags is resolved with --pick, the inputs a dispatch carries, and that failures return together. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
 
 clauses = [
   "Guide",
@@ -12,14 +12,19 @@ arguments = []
 [expected]
 exit_status = 0
 stdout_contains = [
+  "pf -o <folder> '<link>' [--pick <alternative>]",
   "pf -o <folder> <document>[#<section>]",
-  "-o <folder>         folder the run's bundles are written into",
-  "--presets PRESETS   the link title's comma-separated preset names;",
-  "<document>          one document, or document#section, named from the",
+  "-o <folder>            folder the run's bundles are written into, made if",
+  "<link>                 a link as a bundle publishes it: a Markdown link,",
+  "or a Mermaid click or class diagram link line",
+  "<document>             one document, or document#section, named from the",
+  "--pick <alternative>   the alternative a link whose title carries ?",
   "1  a failure stopped the run: report its diagnostics and go no further",
   "2  invalid usage or option combination",
-  "Run a link in a bundle as written, from the directory pf compiled that",
-  "bundle in. Resolve a link in a source document from that document,",
+  "Run pf on a link in a bundle as written, quoted as one argument, from",
+  "the directory pf compiled that bundle in. When its title carries ?, add",
+  "--pick naming the alternative that fits your task if you know it, or",
+  "when pf lists the alternatives:",
   "↳  names a section to inline",
   "keep it in context",
   "⇉  names a bundle to hand on",
@@ -29,8 +34,6 @@ stdout_contains = [
   "Give each bundle to its own sub-agent at once",
   "step that led there, one per value where that step applies to",
   "A failure cancels nothing; all failures return together.",
-  "?  among a link's title tags leaves the pick to you",
-  "rerun with ?",
-  "replaced by the one that fits your task",
+  "?  among a link's title tags leaves the pick to you, made with --pick",
 ]
 diagnostics = []

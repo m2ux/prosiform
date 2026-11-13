@@ -1,14 +1,15 @@
-description = "The command prescribed by the published deferred line selects the same cached page and reviewed notes as immediate composition. The requested list includes repeated and unmatched names and the headings supply no selection."
+description = "Running the published deferred link as written selects the same cached page and reviewed notes as immediate composition. Its title includes repeated and unmatched names and the headings supply no selection."
 
 clauses = [
   "Section composition — Activation",
   "Section composition — Presets and subst",
-  "Presets — A command-line entry reads the file it names",
+  "Presets — A command-line entry selects as a link does",
+  "Link entries — A link entry",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["library/material.md#instructions", "--presets", " release candidate,CAFÉ,unknown,café "]
+arguments = ["[Material](library/material.md#instructions \" release candidate,CAFÉ,unknown,café \")"]
 
 [expected]
 exit_status = 0

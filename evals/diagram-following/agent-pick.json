@@ -72,13 +72,13 @@
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/4",
       "failure": "overcompiled",
       "disposition": "miss",
-      "evidence": "the transcript's shell calls run pf on workflow.md, reference/work-kind.md without its fragment, states/classify.md and states/classify.md --presets initiative, none of which the bundle states on the path; it also made the listing and the rerun with initiative and traced the scenario's path"
+      "evidence": "the transcript's shell calls run pf on workflow.md, reference/work-kind.md without its fragment, states/classify.md, and states/classify.md with the initiative preset, none of which the bundle states on the path; it also made the listing and the rerun with initiative and traced the scenario's path"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/initiative-picked/compiled/5",
       "failure": "overcompiled",
       "disposition": "miss",
-      "evidence": "after the stated listing the transcript's shell calls run pf reference/kind.md --presets change and reference/work-kind.md#route --presets change, a transition's label rather than an alternative, before the rerun with initiative; the bundle states neither run"
+      "evidence": "after the stated listing the transcript's shell calls run pf on reference/kind.md and on reference/work-kind.md#route, each with the change preset, a transition's label rather than an alternative, before the rerun with initiative; the bundle states neither run"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/1",
@@ -102,7 +102,7 @@
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/4",
       "failure": "overcompiled",
       "disposition": "miss",
-      "evidence": "the transcript's shell calls run pf workflow.bundles/workflow.bundle.md, pf workflow.md, pf . and pf --presets x before the stated listing and rerun with task; the bundle states none of those references"
+      "evidence": "the transcript's shell calls run pf workflow.bundles/workflow.bundle.md, pf workflow.md, pf . and pf with the preset x and no entry before the stated listing and rerun with task; the bundle states none of those references"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/agent-pick/task-picked/compiled/5",

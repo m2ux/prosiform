@@ -1,4 +1,4 @@
-description = "The entry command selects guide.md's Checks preset. A separately tagged outgoing link selects rules.md's own Checks preset, which governs rules.md's content independently."
+description = "The link entry's title selects guide.md's Checks preset. A separately tagged outgoing link selects rules.md's own Checks preset, which governs rules.md's content independently."
 
 clauses = [
   "Presets — What a selection governs",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md", "--presets", "Checks"]
+arguments = ["[Release Checks](guide.md \"Checks\")"]
 
 [expected]
 exit_status = 0

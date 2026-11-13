@@ -567,7 +567,7 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         assert reference is not None
         folder = output / f"sub-{len(runs)}"
         root = workflow.form(COMPILED_FORM)
-        made = compile_reference(root, reference, folder, request.presets)
+        made = compile_reference(root, request, folder)
         assert made.returncode == 0, made.stderr.decode()
         return (
             folder / entry_bundle(reference, effective_presets(root, request))
@@ -660,7 +660,7 @@ def bootstrap_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     headed = re.search(r"^# (.+)$", authored(root / reference), re.MULTILINE)
     if headed is None or headed.group(1) != title:
         faults.append(f"the line is titled {title!r}, not as {reference} is headed")
-    run = compile_reference(root, reference, output, request.presets)
+    run = compile_reference(root, request, output)
     if run.returncode != 0:
         faults.append(f"pf {reference} exited {run.returncode}")
     elif not workflow.diagram.decisions:
@@ -1012,7 +1012,7 @@ def test_a_bootstrap_scenario_omitting_the_guide_is_a_fault(tmp_path: Path) -> N
     output.mkdir()
     assert bootstrap_faults(workflow, workflow.scenarios[0], output) == [
         "feature-tagged: it states (Compile(by=None, entry='sources/workflow.md', "
-        "presets=frozenset()),),"
+        "presets=frozenset(), pick=None),),"
         " not pf, then pf sources/workflow.md"
     ]
 
@@ -1182,7 +1182,7 @@ def test_each_agent_pick_scenario_lists_then_reruns_with_its_pick() -> None:
         pick = held[0] if held else last
         assert scenario.compile == (
             Compile(None, f"{ROUTER}#route", frozenset({"?"})),
-            Compile(None, f"{ROUTER}#route", frozenset({pick})),
+            Compile(None, f"{ROUTER}#route", frozenset({"?"}), pick),
         ), scenario.name
     assert inputs_read(AGENT_PICK, COMPILED_FORM) == {"work.txt"}
     assert AGENT_PICK.sections[COMPILED_FORM]["Classify"].deferred
@@ -1213,14 +1213,14 @@ def test_an_agent_pick_scenario_stating_another_pick_is_a_fault(
 ) -> None:
     """AC7: the rerun a scenario states is the one its input's choice line picks."""
     workflow = broken(
-        tmp_path, "agent-pick", "scenarios.toml", 'presets = "task"', 'presets = "epic"'
+        tmp_path, "agent-pick", "scenarios.toml", 'pick = "task"', 'pick = "epic"'
     )
     [scenario] = [item for item in workflow.scenarios if item.name == "task-picked"]
     faults = compiled_faults(workflow, scenario, tmp_path / "out")
     assert faults == [
         "task-picked: the walk runs pf on "
-        "[('reference/work-kind.md#route', '--presets=?'), "
-        "('reference/work-kind.md#route', '--presets=task')]"
+        """[('[Entry](reference/work-kind.md#route "?")',), """
+        """('[Entry](reference/work-kind.md#route "?")', '--pick', 'task')]"""
     ]
 
 
@@ -1240,7 +1240,7 @@ def test_an_agent_pick_input_holding_two_choice_lines_is_a_fault(
     assert faults == [
         "task-picked: the inputs hold the choice lines of ['epic', 'task'], not one",
         "task-picked: the walk runs pf on "
-        "[('reference/work-kind.md#route', '--presets=?')]",
+        """[('[Entry](reference/work-kind.md#route "?")',)]""",
     ]
 
 
@@ -1258,7 +1258,7 @@ def test_compile_reference_selects_declared_presets_and_reads_qualified_output(
         )
     request = Compile(None, "entry.md", frozenset({"checks", "unknown"}))
     output = tmp_path / "out"
-    made = compile_reference(tmp_path, "entry.md", output, request.presets)
+    made = compile_reference(tmp_path, request, output)
     assert made.returncode == 0, made.stderr.decode()
     assert effective_presets(tmp_path, request) == frozenset({"Checks"})
     path = output / entry_bundle("entry.md", frozenset({"Checks"}))

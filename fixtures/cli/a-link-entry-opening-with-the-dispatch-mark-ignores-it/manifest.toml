@@ -1,0 +1,17 @@
+description = "A Markdown link entry whose text opens with the dispatch mark ⇉ compiles its destination under the presets its title selects: the mark directs the agent and is ignored, so the bundle is the one the same link without it writes."
+
+clauses = [
+  "Link entries — A link entry",
+  "Link entries — Operator marks are set aside",
+  "Presets — Selection by tags",
+  "Presets — What a selection governs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[⇉ Release Checks](guide.md \"Checks\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"]
+diagnostics = []

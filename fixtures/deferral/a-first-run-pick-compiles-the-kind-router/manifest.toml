@@ -1,0 +1,19 @@
+description = "An agent that knows its pick passes it on the first run: pf runs on the ? link the mode's bundle publishes, as written, with --pick epic given before it, and compiles the kind router with epic in force without the listing. The bundle is the one the rerun after the listing writes, carrying the pick's preset qualifier."
+
+clauses = [
+  "Presets — The agent's pick",
+  "Presets — Alternatives",
+  "Link entries — The pick",
+  "CLI contract — --pick ALTERNATIVE",
+  "Automatic output names, a selection is named by its path",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["--pick", "epic", "[Populate the body](work-kind.md#populate-body \"?\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/work-kind__populate-body--p-3d08be6e2134d929292759f7167df8e7b6735397875b7c4400721dfd71ec1bb6.bundle.md"]
+diagnostics = []

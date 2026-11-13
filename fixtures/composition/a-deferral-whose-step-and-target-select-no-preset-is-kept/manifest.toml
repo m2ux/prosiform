@@ -4,7 +4,7 @@ clauses = [
   "Section composition — Deferred composition",
   "Section composition — Presets and subst",
   "Presets — Selection by tags",
-  "Presets — A command-line entry reads the file it names",
+  "Presets — A command-line entry selects as a link does",
   "Adversarial acceptance fixtures — Composition",
 ]
 

@@ -5,6 +5,7 @@ from itertools import permutations
 
 import pytest
 
+from prosiform.entry import published
 from prosiform.profile import parse
 from prosiform.tags import PICK, picks, read
 
@@ -67,8 +68,10 @@ def test_parsed_titles_and_shell_decoded_values_supply_the_same_list(
     title = titles[0]
     assert isinstance(title, str)
     assert title == " Checks,Draft "
-    argument = shlex.split("--presets ' Checks,Draft '")[1]
-    assert read(title) == read(argument) == {"checks", "draft"}
+    argument = shlex.split("""pf '[Plan](guide.md " Checks,Draft ")'""")[1]
+    link = published(argument)
+    assert link is not None
+    assert read(title) == link.tags == {"checks", "draft"}
 
 
 @pytest.mark.parametrize("text", ["?", " ? ", "checks, ?", "?,draft"])
