@@ -33,13 +33,13 @@ A build's major and minor are the contract revision it implements. Its patch is 
 
 ## Cutting a release
 
-A release is one commit carrying both tags.
+A release is one merge on `main` carrying both tags.
 
 1. **Branch.** `release/vX.Y.Z` is cut from `main`.
 2. **Declare.** One commit on it, `Declare Python build version X.Y.Z`, sets the version in `src/pyproject.toml` and the `prosiform` entry of `src/uv.lock`.
 3. **Choose the number.** The previous contract tag's corpus runs against the new build, from a worktree of that tag with `PROSIFORM_BUILD` naming the new build. Its passes and failures decide the number, as [What the numbers mean](#what-the-numbers-mean) states.
-4. **Tag.** Annotated `contract/vX.Y.Z` and `python/vX.Y.Z` tags name that commit. The contract tag's message records what the revision adds, the current corpus's fixture count, and the previous corpus's passes and failures against this build. The build tag's message records the contract it implements, the profile, and the validation that passed.
-5. **Merge back.** The release branch merges into `main`, so `main` reports the shipped version. The branch stays after the merge.
+4. **Merge.** The release pull request merges the release branch into `main`, so `main` reports the shipped version. The branch stays after the merge.
+5. **Tag.** Annotated `contract/vX.Y.Z` and `python/vX.Y.Z` tags name the release merge on `main`. The contract tag's message records what the revision adds, the current corpus's fixture count, and the previous corpus's passes and failures against this build. The build tag's message records the contract it implements, the profile, and the validation that passed.
 
 A published tag never moves. Work that merges after a release is tagged ships in the next one.
 
