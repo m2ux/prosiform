@@ -1,6 +1,6 @@
 # Test Results
 
-Results for the joined W01–W03 unit at `a9d72f3f2` on `i17/e01/w01-pf-reads-a-published-main`, run on 2026-11-13 with `PROSIFORM_BUILD` naming the worktree's built `pf`.
+Results for the joined W01–W03 unit at `8cb826b4d` on `i17/e01/w01-pf-reads-a-published-main`, run on 2026-11-13 with `PROSIFORM_BUILD` naming the worktree's built `pf`.
 
 ## T1 Link Entries
 
@@ -24,7 +24,7 @@ Results for the joined W01–W03 unit at `a9d72f3f2` on `i17/e01/w01-pf-reads-a-
 
 ## T6 Full Check
 
-`make check` passes: lint, format, typecheck, `make test` (2127 passed), harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check` passes: lint, format, typecheck, `make test` (2128 passed), harness, corpus, smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
 ## Limitations
 
