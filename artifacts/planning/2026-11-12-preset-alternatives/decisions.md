@@ -43,6 +43,10 @@ Settled in Plan mode (user, 2026-11-12).
 - **I15 runs first on the Python board.** Advance (user, 2026-11-12) gives I15 priority 2, In Progress with E00 Ready, and I12 priority 1, Ready, so I12's polymorphism pages follow the alternatives they cite. I01 and I14 stay unranked. Set aside: I15 with I14 in parallel; I15 alone; I01 first.
 - **No ordering edge with the symbol-grammar hot-fix.** Whichever lands second absorbs the other; E01 W03 is re-planned only if the hot-fix lands first. Set aside: landing the hot-fix first; folding it into E01.
 
+## Hoisted Work
+
+- **First-run pick scoring.** By the user's decision, 2026-11-13, [#754](https://github.com/m2ux/prosiform/issues/754) became E02 W00: the agent-pick scenarios accept a first-run `--pick`, which the I17 link entry's guide tells an agent that knows its pick to pass. The real-use run moved to W01 and depends on it. #754 is closed as not planned, tracked in E02.
+
 ## Dependency Check
 
 - **Epic priority.** E00 takes 2 and E01 takes 1: no whole-epic edge separates them, and their rows contend.
