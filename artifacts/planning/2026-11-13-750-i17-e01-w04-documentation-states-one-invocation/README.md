@@ -12,6 +12,7 @@ Preset Alternatives' issue body states the pick as `--pick`, so no planned work 
 
 | Artifact | What it holds |
 | --- | --- |
+| [w04.md](w04.md) | W04's work item: the documentation pages, the design pins and #707's pick wording |
 
 ## Links
 
