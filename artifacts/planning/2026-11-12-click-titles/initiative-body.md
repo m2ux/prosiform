@@ -34,15 +34,15 @@ A diagram link follows its destination and ignores everything else on its line, 
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/739) | Click Titles | AC1, AC2 | | ✓ |
 | [E01](https://github.com/m2ux/prosiform/issues/750) | Link Invocation | AC4, AC6 | | ✓ |
-| [E02](https://github.com/m2ux/prosiform/issues/740) | Click Titles Release | AC3, AC5 | [E00](https://github.com/m2ux/prosiform/issues/739), [E01](https://github.com/m2ux/prosiform/issues/750) | |
+| [E02](https://github.com/m2ux/prosiform/issues/740) | Click Titles Release | AC3, AC5 | [E00](https://github.com/m2ux/prosiform/issues/739), [E01](https://github.com/m2ux/prosiform/issues/750) | ✓ |
 
 ## Acceptance Criteria
 
 - [x] **AC1.** A Mermaid click's quoted tooltip states the link's operator and selects its presets as a Markdown link's opening marks and title do, so a click bundles as a dispatch, a deferral or any other operator, as the contract corpus shows.
 - [x] **AC2.** The design and the documentation state the click tooltip rule, and neither holds a claim that a diagram link carries no operator or that a Mermaid tooltip selects no preset, as a search of both and `make links` show.
-- [ ] **AC3.** A release's paired contract and Python tags name a commit on `main` that carries the click tooltip rule and the link invocation, as the release pull request and `pf -v` on the tagged commit show.
+- [x] **AC3.** A release's paired contract and Python tags name a commit on `main` that carries the click tooltip rule and the link invocation, as the release pull request and `pf -v` on the tagged commit show.
 - [x] **AC4.** `pf` given a published Markdown link or diagram link as written compiles the destination with the presets it carries, whatever operator marks open it, as the contract corpus and `make smoke` show.
-- [ ] **AC5.** That release's number is the one the previous contract tag's corpus chooses, as the release pull request's recorded corpus run shows.
+- [x] **AC5.** That release's number is the one the previous contract tag's corpus chooses, as the release pull request's recorded corpus run shows.
 - [x] **AC6.** A deferral link given a pick option compiles the picked alternative, as the contract corpus shows.
 
 ## Non-Goals

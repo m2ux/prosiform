@@ -26,21 +26,18 @@ A release ships the click tooltip rule and the link invocation: a release branch
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| W00 | Cutting a release states tagging the merge | AC4 | | | | |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-click-titles/e02/w01.md) | The release carrying click tooltips and link entries | AC1, AC2, AC3, AC5 | W00, [E01:W04](https://github.com/m2ux/prosiform/issues/750) | | | |
+| [W00](https://github.com/m2ux/prosiform/pull/760) | Cutting a release states tagging the merge | AC4 | | | | ✓ |
+| [W01](https://github.com/m2ux/prosiform/pull/761) | The release carrying click tooltips and link entries | AC1, AC2, AC3, AC5 | W00, [E01:W04](https://github.com/m2ux/prosiform/issues/750) | | | ✓ |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The release's number is the one the previous contract tag's corpus, run against the release build, chooses under the versioning rules, as the recorded corpus run in the release pull request shows.
-- [ ] **AC2.** The release pull request merges the release branch's one version commit into `main`, as the merged pull request shows.
-- [ ] **AC3.** Annotated `contract/` and `python/` tags of that version name the release merge on `main`, their messages following the previous pair's, as `git show` of each tag shows.
-- [ ] **AC4.** Cutting a release in `docs/versioning.md` states that the release pull request merges into `main` before tagging and that the paired tags name that merge, as a read of the section and `make links` show.
-- [ ] **AC5.** `pf -v` on `main` reports the release's version, as `pf -v` shows.
+- [x] **AC1.** The release's number is the one the previous contract tag's corpus, run against the release build, chooses under the versioning rules, as the recorded corpus run in the release pull request shows.
+- [x] **AC2.** The release pull request merges the release branch's one version commit into `main`, as the merged pull request shows.
+- [x] **AC3.** Annotated `contract/` and `python/` tags of that version name the release merge on `main`, their messages following the previous pair's, as `git show` of each tag shows.
+- [x] **AC4.** Cutting a release in `docs/versioning.md` states that the release pull request merges into `main` before tagging and that the paired tags name that merge, as a read of the section and `make links` show.
+- [x] **AC5.** `pf -v` on `main` reports the release's version, as `pf -v` shows.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-click-titles) — why the release is its own epic.
 - **R2.** [Versioning](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md) — the release procedure and the meaning of each number.
-
-
-

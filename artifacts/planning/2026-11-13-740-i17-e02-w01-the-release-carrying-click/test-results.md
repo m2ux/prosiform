@@ -28,11 +28,11 @@ Recorded in the release pull request, [#761](https://github.com/m2ux/prosiform/p
 
 ## T3 Version
 
-`src/.venv/bin/pf -v` on the release branch reports `pf 0.25.0 (prosiform-markdown)`. On `main` once #761 merges. Pending.
+`pf -v` built from `main` at `d5a57469f`, the merge of #761, reports `pf 0.25.0 (prosiform-markdown)`. Held.
 
 ## T4 Tags
 
-Each tag's target is the merge of #761 on `main`, read with `git show` once the tags exist. Pending.
+Annotated `contract/v0.25.0` and `python/v0.25.0` each name `d5a57469f`, the merge of #761 on `main`, with the messages below. Held.
 
 ## Tag Messages
 
