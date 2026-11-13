@@ -2018,34 +2018,47 @@ def test_a_run_naming_the_staged_form_is_refused_as_an_unknown_form(
     assert not list(log.iterdir())
 
 
-AGENT_PICK_DEPARTURES: dict[str, tuple[str | None, str | None, Failure | None]] = {
-    "picked": (None, None, None),
-    "wrong-pick": ("STUB_AGENT_SCENARIO", "unknown-kind-held", Failure.WRONG_BRANCH),
-    "source-read": ("STUB_AGENT_READ", "reference/work-kind.md", Failure.READ_SOURCE),
-    "pick-unmade": ("STUB_AGENT_RUNS", "1", Failure.UNCOMPILED),
+AGENT_PICK_DEPARTURES: dict[str, tuple[dict[str, str], Failure | None]] = {
+    "picked": ({}, None),
+    "wrong-pick": ({"STUB_AGENT_SCENARIO": "unknown-kind-held"}, Failure.WRONG_BRANCH),
+    "source-read": ({"STUB_AGENT_READ": "reference/work-kind.md"}, Failure.READ_SOURCE),
+    "pick-unmade": (
+        {"STUB_AGENT_LISTING": "1", "STUB_AGENT_RUNS": "1"},
+        Failure.UNCOMPILED,
+    ),
 }
-"""Each agent-pick departure the stub states: its script, its value, its class.
+"""Each agent-pick departure the stub states: its script and its class.
 
 `unknown-kind-held` is the one scenario whose input names no choice line, so
 taking its path and runs is a pick the others' inputs do not call for; the
-departure is not run on it.
+departure is not run on it. `pick-unmade` lists the alternatives and makes
+no pick, so it takes the listing path whichever path the session is given.
 """
 
+AGENT_PICK_PATHS = {"first-run": {}, "after-listing": {"STUB_AGENT_LISTING": "1"}}
+"""Each path to a pick, as the stub's script for taking it."""
 
+
+@pytest.mark.parametrize("path", list(AGENT_PICK_PATHS))
 @pytest.mark.parametrize("departure", list(AGENT_PICK_DEPARTURES))
 def test_a_stub_run_of_each_agent_pick_scenario_passes_only_its_own_pick(
-    tmp_path: Path, log: Path, monkeypatch: pytest.MonkeyPatch, departure: str
+    tmp_path: Path,
+    log: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    departure: str,
+    path: str,
 ) -> None:
-    """AC7: a compiled session passes on its kind's state, its pick and no source.
+    """AC2: a compiled session passes by either path to its pick, which it names.
 
-    The stub walks each scenario's path and makes its stated runs: the guide,
-    the listing `?` draws and the rerun naming the pick. A session taking
-    another kind's path and runs fails its branch, one reading the router's
-    source fails `read_source`, and one never rerunning the listing leaves
-    its pick uncompiled.
+    The stub walks each scenario's path and makes the guide run and its
+    stated pick, on the link's first run or after the listing `?` draws. A
+    passing session names the path its pick took. A session taking another
+    kind's path and runs fails its branch, one reading the router's source
+    fails `read_source`, and one never rerunning the listing leaves its pick
+    uncompiled.
     """
-    script, value, failure = AGENT_PICK_DEPARTURES[departure]
-    if script is not None and value is not None:
+    scripts, failure = AGENT_PICK_DEPARTURES[departure]
+    for script, value in {**AGENT_PICK_PATHS[path], **scripts}.items():
         monkeypatch.setenv(script, value)
     eval_run(
         tmp_path,
@@ -2055,11 +2068,13 @@ def test_a_stub_run_of_each_agent_pick_scenario_passes_only_its_own_pick(
     cells = {record["scenario"]: record["verdict"] for record in records(tmp_path)}
     assert set(cells) == {scenario.name for scenario in CORPUS["agent-pick"].scenarios}
     for name, verdict in cells.items():
-        due = None if name == value else failure
+        due = None if name in scripts.values() else failure
         assert (verdict["passed"], verdict["failure"]) == (
             due is None,
             None if due is None else str(due),
         ), name
+        if due is None:
+            assert verdict["picks"] == [path], name
     for entry in seen(log):
         argv = entry["argv"]
         assert argv[argv.index("--tools") + 1].endswith(",Bash")

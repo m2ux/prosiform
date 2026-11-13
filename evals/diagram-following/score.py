@@ -84,6 +84,12 @@ session's and each started sub-agent's, are held to the runs stated for it:
 The checks are read in that order, after the dispatch checks, so a sub-agent
 that never started fails *undispatched* rather than leaving its runs unmade.
 
+A stated run carrying a pick is met by either path to it: the picked run
+made first, *first-run*, or the listing, the link as written, followed by
+the picked run, *after-listing*. An agent that made the listing took the
+second path, so it is held to the listing before its pick. A verdict passing
+the run checks names the path each stated pick took.
+
 A session in a shell form follows what `pf` prints and writes, so a run that
 passes the run checks is held to the files its record says were read,
 wherever its harness reports them: a read naming a document of the form's
@@ -114,6 +120,8 @@ from harness import QUESTION, Harness, Start
 
 __all__ = [
     "ACTIONS",
+    "AFTER_LISTING",
+    "FIRST_RUN",
     "SUBAGENTS",
     "SUB_AGENT_TRACE",
     "TRACE",
@@ -122,6 +130,7 @@ __all__ = [
     "Start",
     "Verdict",
     "pf_runs",
+    "pick_paths",
     "read_commands",
     "read_reads",
     "read_starts",
@@ -173,6 +182,10 @@ carries both and the run keeps them together.
 ACTIONS = "actions"
 SUBAGENTS = "subagents.json"
 TRANSCRIPT = "transcript.jsonl"
+FIRST_RUN = "first-run"
+"""The path of a pick made on the agent's first run of its link."""
+AFTER_LISTING = "after-listing"
+"""The path of a pick made by rerunning the link after its listing."""
 
 
 class Failure(StrEnum):
@@ -205,7 +218,9 @@ class Verdict:
     an unfinished run, the trace's length. A pass carries no failure and no
     divergence. `actions` names the action files absent or wrong among the
     diagram states the trace entered, in trace order, and, for a sub-agent's
-    missing action, its file.
+    missing action, its file. `picks` names, for a run passing the run
+    checks, the path each pick its scenario states took, `first-run` or
+    `after-listing`, in stated order; it is empty for any other run.
     """
 
     passed: bool
@@ -214,6 +229,7 @@ class Verdict:
     expected: tuple[str, ...]
     actual: tuple[str, ...]
     actions: tuple[str, ...]
+    picks: tuple[str, ...] = ()
 
     def record(self) -> dict[str, object]:
         """The verdict as plain values `json.dumps` writes unchanged."""
@@ -222,6 +238,7 @@ class Verdict:
         record["expected"] = list(self.expected)
         record["actual"] = list(self.actual)
         record["actions"] = list(self.actions)
+        record["picks"] = list(self.picks)
         return record
 
 
@@ -529,19 +546,40 @@ def _held_to(
     return None if cursor == len(stated) else Failure.MISORDERED_COMPILE
 
 
-def compiles(
+def _picked(
+    made: list[Compile | None], stated: list[Compile], root: Path | None
+) -> tuple[list[Compile], tuple[str, ...]]:
+    """The runs one agent is held to, and the path each stated pick took.
+
+    A stated pick is met by the picked run alone, or by the listing, the link
+    as written, then the picked run. An agent that made the listing took the
+    second path, so it is held to the listing before its pick.
+    """
+    held: list[Compile] = []
+    paths: list[str] = []
+    for due in stated:
+        if due.pick is not None:
+            listing = replace(due, pick=None)
+            if any(_names(run, listing, root) for run in made):
+                held.append(listing)
+                paths.append(AFTER_LISTING)
+            else:
+                paths.append(FIRST_RUN)
+        held.append(due)
+    return held, tuple(paths)
+
+
+def _agent_runs(
     scenario: Scenario,
     commands: tuple[str, ...],
     starts: tuple[Start, ...],
-    source_directory: str = "",
-    root: Path | None = None,
-) -> Failure | None:
-    """The first run check a session's record fails, or nothing when it passes.
+    source_directory: str,
+) -> list[tuple[list[Compile | None], list[Compile]]]:
+    """Each agent's runs beside the runs its scenario states for it.
 
     The session's runs are read from its own commands, and a sub-agent's from
     the commands of every start naming its section, so a section dispatched
-    again keeps one sequence of runs. Each check is read over every agent
-    before the next, so a record failing two takes the earlier.
+    again keeps one sequence of runs.
     """
     agents: dict[str | None, list[Compile | None]] = {None: pf_runs(commands)}
     for section in dict.fromkeys(entry.section for entry in scenario.trace):
@@ -557,13 +595,48 @@ def compiles(
                 for command in start.commands
             )
         )
-    stated = {
-        agent: [replace(run, by=None) for run in scenario.compile if run.by == agent]
-        for agent in agents
-    }
-    found = [_held_to(made, stated[agent], root) for agent, made in agents.items()]
+    return [
+        (
+            made,
+            [replace(run, by=None) for run in scenario.compile if run.by == agent],
+        )
+        for agent, made in agents.items()
+    ]
+
+
+def compiles(
+    scenario: Scenario,
+    commands: tuple[str, ...],
+    starts: tuple[Start, ...],
+    source_directory: str = "",
+    root: Path | None = None,
+) -> Failure | None:
+    """The first run check a session's record fails, or nothing when it passes.
+
+    Each check is read over every agent before the next, so a record failing
+    two takes the earlier.
+    """
+    found = [
+        _held_to(made, _picked(made, stated, root)[0], root)
+        for made, stated in _agent_runs(scenario, commands, starts, source_directory)
+    ]
     order = (Failure.UNCOMPILED, Failure.OVERCOMPILED, Failure.MISORDERED_COMPILE)
     return next((failure for failure in order if failure in found), None)
+
+
+def pick_paths(
+    scenario: Scenario,
+    commands: tuple[str, ...],
+    starts: tuple[Start, ...],
+    source_directory: str = "",
+    root: Path | None = None,
+) -> tuple[str, ...]:
+    """The path each pick a scenario states took, the session's first, in order."""
+    return tuple(
+        path
+        for made, stated in _agent_runs(scenario, commands, starts, source_directory)
+        for path in _picked(made, stated, root)[1]
+    )
 
 
 def names(
@@ -748,15 +821,18 @@ def score(
             return Verdict(
                 False, Failure.MISSING_ACTION, None, expected, actual, undone_by
             )
+        picks: tuple[str, ...] = ()
         if commands is not None:
-            order = compiles(
-                scenario, commands, starts, source_directory, workflow.compile_root
-            )
+            root = workflow.compile_root
+            order = compiles(scenario, commands, starts, source_directory, root)
             if order is not None:
                 return Verdict(False, order, None, expected, actual, actions)
+            picks = pick_paths(scenario, commands, starts, source_directory, root)
         if reads is not None and sources_read(workflow, reads):
-            return Verdict(False, Failure.READ_SOURCE, None, expected, actual, actions)
-        return Verdict(True, None, None, expected, actual, actions)
+            return Verdict(
+                False, Failure.READ_SOURCE, None, expected, actual, actions, picks
+            )
+        return Verdict(True, None, None, expected, actual, actions, picks)
     elif divergence == len(actual):
         failure, at = Failure.UNFINISHED, divergence
     else:
