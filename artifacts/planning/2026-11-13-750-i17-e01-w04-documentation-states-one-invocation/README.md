@@ -29,4 +29,4 @@ Preset Alternatives' issue body states the pick as `--pick`, so no planned work 
 
 | Change | Kind | State |
 | --- | --- | --- |
-| #707's Proposal bullet "The guide states the pick" still has the agent rerun with `?` replaced; the approved #707 edit covered only the deferral bullet and the Problem evidence | Folded work | Held: the user approved a minimal #707 edit |
+| #707's Proposal bullet "The guide states the pick" still has the agent rerun with `?` replaced; the approved #707 edit covered only the deferral bullet and the Problem evidence | Folded work | Applied by the user's decision, 2026-11-13: the agent passes its pick with `--pick` beside the link as written |
