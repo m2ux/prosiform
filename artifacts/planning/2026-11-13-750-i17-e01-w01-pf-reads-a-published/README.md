@@ -12,6 +12,9 @@ The build, the corpus fixtures and the checks share one pull request because rem
 
 | Artifact | What it holds |
 | --- | --- |
+| [w01.md](w01.md) | W01's work item: the link entry, `--pick` and the build's text |
+| [w02.md](w02.md) | W02's work item: the corpus fixtures for link entries and `--pick` |
+| [w03.md](w03.md) | W03's work item: the smoke check and eval harness on link entries |
 
 ## Links
 
