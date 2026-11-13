@@ -543,8 +543,8 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     one whose value is a non-empty array, and so is a link Mermaid
     renders that the reader does not follow, where it names a local
     Markdown document. A Gantt chart's click written in a form Mermaid's
-    gantt grammar does not parse, carrying a tooltip or naming its
-    destination without `href`, is refused where it names a local
+    gantt grammar does not parse, anything but a line of
+    `click <task> href "<destination>"` alone, is refused where it names a local
     Markdown document, and carried as written otherwise.
     """
     read = linking(fence)
@@ -596,9 +596,9 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
                 f"href and the destination alone, so Mermaid draws no chart and "
                 f"the click opens nothing"
             ),
-            remedy='write the click as click <task> href "<destination>", with no '
-            "tooltip: a Gantt task's click states no operator and selects no "
-            "preset",
+            remedy='write the click as click <task> href "<destination>" alone '
+            "on its line, with no tooltip, link target or semicolon: a Gantt "
+            "task's click states no operator and selects no preset",
             line=click.line,
             reference=click.destination,
         )

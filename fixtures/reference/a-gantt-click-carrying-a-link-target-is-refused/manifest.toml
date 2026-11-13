@@ -1,0 +1,21 @@
+description = "A Gantt task's click written with href and followed by the link target _blank is refused with a diagnostic naming its line and the destination, since Mermaid's gantt grammar reads nothing after a click's destination and draws no chart where a target follows it; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "freeze.md"
+message_contains = ["click freeze", "href"]
+source = "guide.md:12"
+chain = ["guide.md"]

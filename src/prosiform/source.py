@@ -163,8 +163,9 @@ QUOTED = (
     r"(?:\s+(?:_self|_blank|_parent|_top))?\s*;?\s*"
 )
 CLICK_LINE = re.compile(
-    rf'\s*click\s+(?P<node>[^\s"]+)\s+(?P<href>href\s+)?{QUOTED}', re.IGNORECASE
+    rf'\s*click\s+(?P<node>[^\s"]+)\s+(?:href\s+)?{QUOTED}', re.IGNORECASE
 )
+GANTT_CLICK = re.compile(r'\s*click\s+[^\s"]+\s+href\s+"[^"]*"\s*', re.IGNORECASE)
 CLASS_LINK = re.compile(rf'\s*link\s+(?P<node>[^\s"]+)\s+{QUOTED}', re.IGNORECASE)
 CLICK_STATEMENT = re.compile(r"\s*click\s", re.IGNORECASE)
 CLASS_STATEMENT = re.compile(r"\s*(?:link|callback)\s", re.IGNORECASE)
@@ -809,9 +810,10 @@ class Diagram:
     are the links Mermaid renders that no diagram link line writes, in
     written order; none is a use. The unparsed clicks are a Gantt
     chart's clicks written in a form Mermaid's gantt grammar does not
-    parse, one carrying a tooltip or one naming its destination without
-    `href`, so Mermaid draws no chart and the click opens nothing; none
-    is a use.
+    parse: anything but a line of `click <task> href "<destination>"`
+    alone, such as one carrying a tooltip, a link target or a `;`, or
+    naming its destination without `href`. Mermaid draws no chart from
+    it and the click opens nothing; none is a use.
     """
 
     clicks: tuple[Click, ...] = ()
@@ -914,9 +916,10 @@ def read_diagram(fence: Token) -> Diagram:
     is read as unfollowed rather than as a click.
 
     Mermaid's gantt grammar reads a click's destination after `href`
-    and nothing after it, so a Gantt chart's click carrying a tooltip,
-    or naming its destination without `href`, draws no chart: it is
-    read as unparsed rather than as a click.
+    and nothing after it, so a Gantt chart's click written any other
+    way, carrying a tooltip, a link target or a `;`, or naming its
+    destination without `href`, draws no chart: it is read as unparsed
+    rather than as a click.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
@@ -940,15 +943,14 @@ def read_diagram(fence: Token) -> Diagram:
         except ListedMenu:
             listed.append(first + at)
             continue
-        for written, offset, anchor, node, tip, name, href in named:
+        for written, offset, anchor, node, tip, name, gantt_form in named:
             destination = (
                 written.replace(ENTITY_ANCHOR, ANCHOR)
                 if anchor == ENTITY_ANCHOR
                 else written
             )
             stated = tooltip(tip)
-            gantt_only = form == GANTT and (tip is not None or not href)
-            (unparsed if gantt_only else found).append(
+            (unparsed if form == GANTT and not gantt_form else found).append(
                 Click(
                     destination,
                     first + at,
@@ -1081,9 +1083,10 @@ def linked(
 
     Each comes as written, with its offset, the anchor spelling its form
     writes, the node its line is drawn on, the tooltip it carries, the
-    name a diagnostic gives it and whether a `click` names it after
-    `href`. A quoted destination is read from
-    each statement the line holds, with its node, its tooltip where it
+    name a diagnostic gives it and whether the line is the one form
+    Mermaid's gantt grammar parses, `click <task> href "<destination>"`
+    and nothing more. A quoted destination is read from each statement
+    the line holds, with its node, its tooltip where it
     writes one and its keyword and node as its name; a sequence
     diagram's entry names no node, carries no tooltip and has no name.
     """
@@ -1102,7 +1105,7 @@ def linked(
                     quoted.group("node"),
                     quoted.group("tooltip"),
                     f"{statement.split(maxsplit=1)[0]} {quoted.group('node')}",
-                    quoted.groupdict().get("href") is not None,
+                    GANTT_CLICK.fullmatch(line) is not None,
                 )
             )
     if found or form != SEQUENCE_DIAGRAM:

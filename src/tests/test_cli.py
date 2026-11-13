@@ -4892,6 +4892,66 @@ def test_a_click_tooltip_stating_a_refused_combination_is_refused(
     assert "the link 'click Plan'" in reported["message"]
 
 
+@pytest.mark.parametrize(
+    ("clicks", "code", "named", "reference"),
+    [
+        (['click A "plan.md" "↳"'], UNSUPPORTED_CONSTRUCT, "directive", "plan.md"),
+        (
+            ['click A "plan.md#steps" "↳"', 'click B "plan.md#steps" "¬↳"'],
+            UNSUPPORTED_CONSTRUCT,
+            "directive",
+            "plan.md#steps",
+        ),
+        (
+            ['click A "https://example.com/plan.md" "⇉"'],
+            UNSUPPORTED_CONSTRUCT,
+            "link",
+            "https://example.com/plan.md",
+        ),
+        (['click A "missing.md" "⇉"'], TARGET_NOT_FOUND, "link", "missing.md"),
+        (['click A "notes.md" "⇉"'], UNSUPPORTED_CONSTRUCT, "link", "notes.md"),
+    ],
+    ids=["whole-document", "composed-and-deferred", "remote", "missing", "silent"],
+)
+def test_a_click_s_directive_and_target_refusals_name_the_click(
+    root: Path, clicks: list[str], code: str, named: str, reference: str
+) -> None:
+    """A refusal reading a click's directive or target names it by keyword and node.
+
+    The reference stays the destination the click names, as it does for
+    a Markdown link reaching the same refusal.
+    """
+    written(root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nStep one.\n")
+    written(root, "notes.md", "# Notes\n\nNothing declared.\n")
+    flow(root, *clicks)
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == code
+    assert reported["reference"] == reference
+    assert f"the {named} 'click A'" in reported["message"]
+
+
+def test_a_composing_click_in_the_preamble_is_refused_naming_it(root: Path) -> None:
+    written(root, "plan.md", DECLARED + "# Plan\n\n## Steps\n\nStep one.\n")
+    written(
+        root,
+        "guide.md",
+        DECLARED + '```mermaid\nflowchart LR\n    click A "plan.md#steps" "↳"\n```\n'
+        "\n# Guide\n\nGuide.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["reference"] == "plan.md#steps"
+    assert (
+        "the link 'click A' is a composition directive in the preamble"
+        in (reported["message"])
+    )
+
+
 def test_an_ordinary_click_carrying_the_pick_token_is_refused_naming_it(
     root: Path,
 ) -> None:
