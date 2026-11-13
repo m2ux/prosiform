@@ -32,7 +32,6 @@ This initiative lets a document declare one preset per kind as an alternative, a
 | [Agent-pick eval work item](e01/w05.md) | The eval workflow in which a headless agent resolves a `?` pick |
 | [Agent-pick run work item](e01/w06.md) | The live run and run record of the agent-pick workflow |
 | [First-run pick scoring work item](e02/w00.md) | Agent-pick scenarios met by a first-run `--pick` or a pick after the listing |
-| [Real-use agent-pick run work item](e02/w01.md) | The agent-pick run on the skill-entry eval and its own run record |
 
 ## Links
 

@@ -27,6 +27,8 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
   A harness stays where its CLI discovers skills natively and leaves the eval otherwise.
 - **One real-use baseline replaces the bare-prompt records.**
   The bare-prompt records and their sections leave the eval, and a shaken-down run on the skill-entry eval becomes the baseline.
+- **Agent-pick is measured on its own.**
+  A dedicated agent-pick run on the skill-entry eval measures whether an agent at a `?` pick keeps to what `pf` prints.
 
 ## Work Breakdown
 
@@ -34,7 +36,7 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/735) | Skill Entry | AC1, AC2 | | |
 | [E01](https://github.com/m2ux/prosiform/issues/736) | Skill Variants | AC1, AC2, AC3 | [E00](https://github.com/m2ux/prosiform/issues/735) | |
-| [E02](https://github.com/m2ux/prosiform/issues/737) | Real-Use Baseline | AC4, AC5 | [E01](https://github.com/m2ux/prosiform/issues/736) | |
+| [E02](https://github.com/m2ux/prosiform/issues/737) | Real-Use Baseline | AC4, AC5, AC6 | [E01](https://github.com/m2ux/prosiform/issues/736) | |
 
 ## Acceptance Criteria
 
@@ -43,6 +45,7 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 - [ ] **AC3.** Every comparison the eval draws is between skill variants of one workflow, a product variant whose sources `pf` compiles against plain-Markdown controls, as the corpus test shows.
 - [ ] **AC4.** The eval's committed records and their documentation hold no run of a session started from a bare prompt, as the README and runbook tests show.
 - [ ] **AC5.** The committed baseline is a run of every workflow of the skill-entry eval with every failing session triaged under the runbook, none a defect or unclear, as the baseline record and its report show.
+- [ ] **AC6.** An agent reaching a `?` pick through a skill resolves it from what the bundle and `pf` print without reading a source, in every session of the agent-pick run on the skill-entry eval, as its run record shows.
 
 ## Non-Goals
 
@@ -58,4 +61,5 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 - **R2.** **Source.** [Decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/decisions.md) — the user's decisions on skill entry, the opening prompt, variants, harnesses and records that the criteria answer to.
 - **R3.** [Agent-pick run record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-709-i15-e01-w06-a-measured-agent-pick) — the bare-prompt run whose sessions opened sources beside the bundle, which motivates starting from a skill.
 - **R4.** [Preset Alternatives decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-preset-alternatives/decisions.md) — the remeasuring of agent-pick that waits on this eval's real-use baseline.
+
 

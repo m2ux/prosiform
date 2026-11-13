@@ -53,6 +53,8 @@ Each line names a candidate unit the dependency check prints and why its rows st
 - E02:W01 and E02:W02 stay split: the deletion leaves the runbook with its rubric and stop rules alone, and the new section is written and reviewed against that runbook.
 - E02:W01, E02:W02, E02:W03 and E02:W04 stay split: the deletion and the section are design work, the shakedown and the baseline are paid runs under the runbook, and each run starts only on what the row before it committed.
 
+- **The agent-pick run is E02 W05.** By the user's decision, 2026-11-13, the real-use agent-pick run moved here from [Preset Alternatives](https://github.com/m2ux/prosiform/issues/707) E02, with its criterion as initiative AC6 and epic AC5. It runs five repetitions on the shakedown's harness and model with caps from its agent-pick cells, after the shakedown and the pick scoring that accepts a first-run `--pick`. Set aside: measuring agent-pick from the baseline's cells.
+
 ## Dependency Check
 
 - **Problems.** None.

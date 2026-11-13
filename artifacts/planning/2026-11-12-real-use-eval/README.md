@@ -31,6 +31,7 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 | [Runbook work item](e02/w02.md) | The real-use baseline runbook section and its cap rule |
 | [Shakedown work item](e02/w03.md) | The shakedown run and the caps it records |
 | [Baseline run work item](e02/w04.md) | The baseline run, its triage and committed record |
+| [Agent-pick run work item](e02/w05.md) | The agent-pick run on the skill-entry eval and its own run record |
 
 ## Links
 

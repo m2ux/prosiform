@@ -19,6 +19,8 @@ The eval's committed records measure real use: the bare-prompt records leave, an
   Its shakedown, one repetition of every cell on the harness and model the user names, sets the session cap, token budget and cost cap.
 - **The baseline is the run the section states.**
   Its failing sessions are triaged under the rubric, and `baseline.json` and `report.md` are written from it.
+- **Agent-pick has a run of its own.**
+  Five repetitions of the agent-pick workflow on the shakedown's harness and model, with caps from its agent-pick cells, commit `agent-pick.json` and `agent-pick.md`.
 
 ## Work Breakdown
 
@@ -28,6 +30,7 @@ The eval's committed records measure real use: the bare-prompt records leave, an
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w02.md) | Real-use baseline runbook section | AC4 | W01 | | | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w03.md) | Real-use baseline shakedown | AC2 | W02 | | | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w04.md) | The real-use baseline run and record | AC3 | W03, [I15:E02:W00](https://github.com/m2ux/prosiform/issues/733) | | | |
+| [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w05.md) | A real-use agent-pick run | AC5 | W03, [I15:E02:W00](https://github.com/m2ux/prosiform/issues/733) | | | |
 
 ## Acceptance Criteria
 
@@ -35,9 +38,11 @@ The eval's committed records measure real use: the bare-prompt records leave, an
 - [ ] **AC2.** The runbook's real-use baseline section takes its session cap, token budget and cost cap from a recorded shakedown on the skill-entry eval, as the runbook test shows.
 - [ ] **AC3.** `baseline.json` and `report.md` record a run of every workflow of the skill-entry eval whose every failing session is triaged and none is a defect or unclear, as the report's Failing Sessions shows.
 - [ ] **AC4.** The runbook states a real-use baseline section whose caps are set by a shakedown rule, as the runbook test shows.
+- [ ] **AC5.** An agent reaching a `?` pick through a skill resolves it from what the bundle and `pf` print without reading a source, in every session of the agent-pick run on the skill-entry eval, as its run record shows.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the records decision and why the run rows stay apart.
 - **R2.** [Runbook](https://github.com/m2ux/prosiform/blob/d6072b20cfd5541b3edfa561e15677404e0f4cf6/evals/diagram-following/RUNBOOK.md) — the triage rubric and stop rules the run follows.
+
 
