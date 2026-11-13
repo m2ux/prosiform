@@ -21,3 +21,8 @@ The release that ships the click tooltip rule and the link entry follows this pr
 | --- | --- |
 | Epic | [I17:E02 #740](https://github.com/m2ux/prosiform/issues/740) |
 | Initiative planning record | [Click Titles](../2026-11-12-click-titles/README.md) |
+| Pull request | [[I17:E02] Cutting a release states tagging the merge #760](https://github.com/m2ux/prosiform/pull/760) |
+
+## Plan Changes
+
+This session changed no plan.
