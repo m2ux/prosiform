@@ -196,7 +196,7 @@ message_contains = ["#stop", "document#fragment"]
 
 `E_INVALID_USAGE` names every command line the grammar does not admit, and the contract has the message say which fault it was. A fixture names the run's own data the message must carry — the reference refused, the option whose value was outside its set, the run folder that held an input source — so a build reporting another fault under that code fails the fixture while each build keeps its own phrasing. The field is optional, and a diagnostic declaring none states nothing about its message.
 
-The following fixtures illustrate invalid usage. The single-entry grammar also refuses two entry references and an entry written as a link that is not one link. What the corpus covers under one code is read from the manifests rather than assumed from the code:
+The following fixtures illustrate invalid usage. The single-entry grammar also refuses two entry references and an entry holding a link that is not that one link alone. What the corpus covers under one code is read from the manifests rather than assumed from the code:
 
 | Fault | Fixture |
 | --- | --- |

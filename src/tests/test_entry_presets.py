@@ -34,13 +34,27 @@ def test_the_single_entry_grammar_refuses_other_forms(
     assert run.bundles == {}
 
 
+@pytest.mark.parametrize(
+    "entry_text", ["%5Bnote%5D%28draft%29.md", "[Note](<[note](draft).md>)"]
+)
 def test_an_entry_destination_may_contain_brackets_and_parentheses(
+    tmp_path: Path, entry_text: str
+) -> None:
+    """A path holding link syntax is written escaped or as a link's destination."""
+    written(tmp_path, "[note](draft).md", DECLARED + "# Note\n\nBody.\n")
+    run = invoke(entry_text, cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    assert "Body." in run.bundle
+
+
+def test_a_path_holding_link_syntax_unescaped_is_invalid_usage(
     tmp_path: Path,
 ) -> None:
     written(tmp_path, "[note](draft).md", DECLARED + "# Note\n\nBody.\n")
     run = invoke("[note](draft).md", cwd=tmp_path)
-    assert run.status == 0, run.stderr
-    assert "Body." in run.bundle
+    assert run.status == 2
+    assert "E_INVALID_USAGE" in run.stderr
+    assert run.bundles == {}
 
 
 PRESETS = (
