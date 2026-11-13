@@ -1,0 +1,14 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/753",
+    "head": "a3192a5e8249c1760ae0136de999fd93c3c2f416",
+    "base": "c77dba6a707023fe09bcac505ae3ec11dbccaa7e",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-13-753-link-invocation/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-13T08:06:00Z",
+    "scope": "Diff: git diff c77dba6a7...a3192a5e8 (merge base equals the base), 109 files, 1273 insertions and 370 deletions, carrying task PRs #752 (W01-W03) and #755 (W04); W00 (#751) changed engineering only. Code read in full: src/prosiform/entry.py (published, markdown_link, diagram_link, NotOneLink), src/prosiform/cli.py (GUIDE usage and Compiling a link, ? grammar entry, parser --pick with Once, entry(text, pick), unresolved remedy, unused_presets remedy, execute's requested entry), src/prosiform/tags.py docstring; tests test_cli, test_entry_presets, test_deferred_presets, test_tags; checks/smoke.py, checks/tests/test_authoring.py, test_runner.py; evals/diagram-following score.py, workflow.py, scenarios.toml and their tests; README.md, invocation.md and docs/. Callers inspected: execute -> entry -> published -> markdown_link (parse, uses) and diagram_link (linked, tooltip, read_tags); entry -> picks, read_tags, resolve; the pick replaces PICK in the tag set as (tags - {PICK}) | read_tags(pick). Searches at head: --presets appears only in test_cli.py's refusal assertions; no text instructs replacing ? in a title. No observation was excluded.",
+    "criteria": "AC1 met: design.md at 005b0ff1d states Link entries, --pick under The agent's pick and holds no --presets (W00 #751). AC2 met: test_cli.py link, click and class diagram link entries compile identically whatever marks open them; corpus cli fixtures for each mark and a malformed combination. AC3 met: test_cli.py first-run pick, pick after the listing whose remedy names --pick, stray, repeated and entry-less --pick exit 2. AC4 met: make invocation holds 29 statements against pf -h; GUIDE and help carry no --presets. AC5 met: make corpus 615 pass, make conformance and independence pass; git grep --presets fixtures empty. AC6 met: make smoke and make eval-harness pass; checks and evals pass no --presets. AC7 met: git grep --presets README.md docs empty; #707 body holds no --presets; make links passes.",
+    "validation": "GitHub Checks on a3192a5e8: success. make check at 5d3293729, whose tree equals the head's (07501a0fb): lock-check, lint, format, typecheck, make test 2128 passed, harness 1054 passed, corpus 615 pass, smoke, layout, tables, links (online), vocabulary, invocation 29 statements, conformance, independence all pass.",
+    "findings": []
+  }
+]
