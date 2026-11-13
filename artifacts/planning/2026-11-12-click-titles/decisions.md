@@ -55,7 +55,7 @@ Taken in Plan mode, 2026-11-12; each can be reopened.
 
 Hoisted from [#747](https://github.com/m2ux/prosiform/issues/747), 2026-11-13, by the user's decision: a new epic, E01 Link Invocation, ahead of the release, which becomes E02, so one release ships the tooltip rule and the link entry. #747 is closed as not planned, tracked in E01.
 
-1. **An operator is read and checked alike.** Every operator on a link entry is accepted or refused under the Operators rules, and the destination compiles as an entry with the link's presets; the operator changes nothing compiled. Set aside: refusing dispatch links; an operator shaping the run.
+1. **Operator marks are ignored at the entry.** By the user's decision, 2026-11-13: marks opening a link's text or a tooltip are agent directives at the content level, acted on before the agent runs `pf`, and checked when `pf` compiled the source; the entry strips them unchecked and compiles the destination with the link's presets. `?` is a title tag and keeps its meaning. Set aside: checking marks under the Operators rules, which only blocks an agent on a link `pf` itself published; refusing dispatch links; an operator shaping the run.
 2. **A stray pick is invalid usage.** `--pick` beside an entry carrying no `?`, a plain path included, exits `2`. Set aside: a pick on a plain path; ignoring it.
 3. **Preset Alternatives is reworded on delivery.** Its statement that a pick passes as `--presets` is reworded by the documentation row, once the build is on the epic base.
 4. **Five rows, three joined.** The design on `engineering` first; the build, the corpus fixtures and the checks and eval harness in one pull request, since retiring `--presets` turns each red; the documentation last.
