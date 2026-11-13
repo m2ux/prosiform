@@ -192,7 +192,8 @@ COMMENT = re.compile(r"\s*%%.*\n")
 CLASS_DIAGRAM = "classDiagram"
 SEQUENCE_DIAGRAM = "sequenceDiagram"
 KANBAN = "kanban"
-DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM, KANBAN)
+GANTT = "gantt"
+DIAGRAM_TYPES = (CLASS_DIAGRAM, SEQUENCE_DIAGRAM, KANBAN, GANTT)
 TEXT_LABELS = (
     SEQUENCE_DIAGRAM,
     "pie",
@@ -649,10 +650,16 @@ class Use:
     a strikethrough, an image, a line break or raw HTML — and for an
     autolink, an image and a diagram link, whose text no author wrote
     as a label.
+
+    The name is how a diagnostic names the use to its reader: the
+    opening for a link or an image, where its marks are written, and a
+    diagram link's keyword and node, such as `click Plan`, since the
+    marks its tooltip opens with name nothing.
     """
 
     destination: str
     opening: str
+    name: str
     line: int | None
     resource: bool
     title: str | None = None
@@ -754,6 +761,11 @@ class Click:
     and the title its preset tags. A sequence diagram's `link` and
     `links` carry no tooltip, so they open with nothing and carry no
     title.
+
+    The name is how a diagnostic names the link to its reader: the
+    line's keyword as written and the node it is drawn on, such as
+    `click Plan`. A sequence diagram's entry, carrying no operator and
+    no title, has none.
     """
 
     destination: str
@@ -764,6 +776,7 @@ class Click:
     node: str = ""
     opening: str = ""
     title: str | None = None
+    name: str = ""
 
 
 @dataclass(frozen=True)
@@ -794,13 +807,17 @@ class Diagram:
     Mermaid renders as a menu whose entries are named by their positions
     in the array; it names no destination either. The unfollowed links
     are the links Mermaid renders that no diagram link line writes, in
-    written order; none is a use.
+    written order; none is a use. The tooltipped clicks are a Gantt
+    chart's clicks carrying a tooltip, which Mermaid's gantt grammar
+    does not read after a destination, so Mermaid draws no chart and
+    the click opens nothing; none is a use.
     """
 
     clicks: tuple[Click, ...] = ()
     broken: tuple[int, ...] = ()
     listed: tuple[int, ...] = ()
     unfollowed: tuple[Unfollowed, ...] = ()
+    tooltipped: tuple[Click, ...] = ()
 
 
 class BrokenMenu(Exception):
@@ -821,9 +838,9 @@ def diagram_type(content: str) -> str:
 
     Mermaid sets aside a leading front matter block, every directive and
     every comment line, and reads the type from the word the remaining
-    text opens on. Only a class diagram, a sequence diagram and a Kanban
-    diagram write a link form of their own, so every other diagram is
-    named by the empty string.
+    text opens on. Only a class diagram, a sequence diagram, a Kanban
+    diagram and a Gantt chart write a link form of their own, so every
+    other diagram is named by the empty string.
     """
     opening = diagram_opening(content)
     return next((one for one in DIAGRAM_TYPES if opening.startswith(one)), "")
@@ -894,6 +911,10 @@ def read_diagram(fence: Token) -> Diagram:
     A Kanban ticket's link and an HTML anchor Mermaid draws in a label
     are links Mermaid renders that the reader does not follow, so each
     is read as unfollowed rather than as a click.
+
+    Mermaid's gantt grammar reads a click's destination and nothing
+    after it, so a Gantt chart's click carrying a tooltip draws no
+    chart: it is read as tooltipped rather than as a click.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
@@ -905,6 +926,7 @@ def read_diagram(fence: Token) -> Diagram:
     broken: list[int] = []
     listed: list[int] = []
     unfollowed: list[Unfollowed] = []
+    tooltipped: list[Click] = []
     for at, physical in enumerate(lines(fence.content)):
         line = bare(physical)
         unfollowed.extend(rendered(line, form, base, anchors, first + at))
@@ -916,14 +938,14 @@ def read_diagram(fence: Token) -> Diagram:
         except ListedMenu:
             listed.append(first + at)
             continue
-        for written, offset, anchor, node, tip in named:
+        for written, offset, anchor, node, tip, name in named:
             destination = (
                 written.replace(ENTITY_ANCHOR, ANCHOR)
                 if anchor == ENTITY_ANCHOR
                 else written
             )
             stated = tooltip(tip)
-            found.append(
+            (tooltipped if form == GANTT and tip is not None else found).append(
                 Click(
                     destination,
                     first + at,
@@ -933,9 +955,16 @@ def read_diagram(fence: Token) -> Diagram:
                     node,
                     stated.opening,
                     stated.title,
+                    name,
                 )
             )
-    return Diagram(tuple(found), tuple(broken), tuple(listed), tuple(unfollowed))
+    return Diagram(
+        tuple(found),
+        tuple(broken),
+        tuple(listed),
+        tuple(unfollowed),
+        tuple(tooltipped),
+    )
 
 
 def rendered(
@@ -1042,14 +1071,17 @@ def external(path: str) -> bool:
     return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
 
 
-def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None]]:
+def linked(
+    line: str, form: str
+) -> list[tuple[str, int, str, str, str | None, str]]:
     """Each destination one line of a diagram of one type names, in written order.
 
     Each comes as written, with its offset, the anchor spelling its form
-    writes, the node its line is drawn on and the tooltip it carries. A
-    quoted destination is read from each statement the line holds, with
-    its node and its tooltip where it writes one; a sequence diagram's
-    entry names no node and carries no tooltip.
+    writes, the node its line is drawn on, the tooltip it carries and
+    the name a diagnostic gives it. A quoted destination is read from
+    each statement the line holds, with its node, its tooltip where it
+    writes one and its keyword and node as its name; a sequence
+    diagram's entry names no node, carries no tooltip and has no name.
     """
     found = []
     for statement, start in statements(line):
@@ -1065,6 +1097,7 @@ def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None]]:
                     ANCHOR,
                     quoted.group("node"),
                     quoted.group("tooltip"),
+                    f"{statement.split(maxsplit=1)[0]} {quoted.group('node')}",
                 )
             )
     if found or form != SEQUENCE_DIAGRAM:
@@ -1078,13 +1111,13 @@ def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None]]:
         start, stop = trimmed(line, at + 1, end)
         if start == stop:
             return []
-        return [(line[start:stop], start, ENTITY_ANCHOR, "", None)]
+        return [(line[start:stop], start, ENTITY_ANCHOR, "", None, "")]
     menu = MENU.match(line)
     if menu is None:
         return []
     start, stop = trimmed(line, menu.end(), statement_end(line, menu.end()))
     return [
-        (value, offset, ENTITY_ANCHOR, "", None)
+        (value, offset, ENTITY_ANCHOR, "", None, "")
         for value, offset in entries(line, start, stop)
     ]
 
@@ -1255,6 +1288,7 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                 yield Use(
                     click.destination,
                     click.opening,
+                    click.name,
                     click.line,
                     False,
                     title,
@@ -1273,9 +1307,11 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                 found = child.attrGet(HREF)
                 destination = "" if found is None else str(found)
                 attribute = child.attrGet("title")
+                opening = opening_text(children, at)
                 yield Use(
                     destination,
-                    opening_text(children, at),
+                    opening,
+                    opening,
                     line,
                     False,
                     title,
@@ -1287,9 +1323,11 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
                 )
             else:
                 image_destination = child.attrGet(SRC)
+                alternative = alternative_text(child)
                 yield Use(
                     "" if image_destination is None else str(image_destination),
-                    alternative_text(child),
+                    alternative,
+                    alternative,
                     line,
                     True,
                     title,
