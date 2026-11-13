@@ -182,7 +182,7 @@ def test_a_named_entry_and_its_equivalent_dispatch_close_one_cycle(
         "---\nprosiform:\n  checks: {}\n---\n"
         '# Task\n\n[⇉ Same](./task.md# "CHECKS,unknown,default,checks")\n',
     )
-    run = invoke("-d", "json", "task.md", "--presets", "checks", cwd=tmp_path)
+    run = invoke("-d", "json", '[Task](task.md "checks")', cwd=tmp_path)
     assert run.status == 1, run.stderr
     assert run.bundles == {}
     [refusal] = run.diagnostics()

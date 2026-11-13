@@ -52,7 +52,9 @@ SDLCS = presets(EXAMPLE / LIFECYCLE)
 
 CASES = {
     DEFAULT: ((LIFECYCLE,), {"W_PRESET_UNUSED"}),
-    **{sdlc: ((LIFECYCLE, "--presets", sdlc), {"W_SUBST_USED"}) for sdlc in SDLCS},
+    **{
+        sdlc: ((f'[↳ SDLC]({LIFECYCLE} "{sdlc}")',), {"W_SUBST_USED"}) for sdlc in SDLCS
+    },
 }
 """Each SDLC's arguments, and the diagnostic codes its run reports."""
 
@@ -142,7 +144,7 @@ def test_an_adapter_missing_a_practice_fails_its_sdlc(tmp_path: Path) -> None:
     text = adapter.read_text()
     adapter.write_text(text[: text.index("## Verify")])
     status, diagnostics = compile_in(
-        copy, tmp_path / "out", LIFECYCLE, "--presets", "waterfall"
+        copy, tmp_path / "out", f'[↳ Waterfall]({LIFECYCLE} "waterfall")'
     )
     assert status == 1
     assert "E_TARGET_NOT_FOUND" in {one["code"] for one in diagnostics}
@@ -168,7 +170,9 @@ def test_an_adapter_binds_through_one_preset_and_one_link(tmp_path: Path) -> Non
     entry.write_text(entry.read_text() + f'- [↳ Iterative]({LIFECYCLE} "iterative")\n')
     assert sorted(offered(entry.read_text())) == sorted(["", "iterative", *SDLCS])
     folder = tmp_path / "out"
-    status, diagnostics = compile_in(copy, folder, LIFECYCLE, "--presets", "iterative")
+    status, diagnostics = compile_in(
+        copy, folder, f'[↳ Iterative]({LIFECYCLE} "iterative")'
+    )
     assert status == 0, diagnostics
     bundle = bundle_of(folder)
     assert "Build the increment." in bundle

@@ -1,7 +1,7 @@
-description = "The entry command supplies Checks through --presets for its selected section. The target's own preset places the section, and the effective selection qualifies its output name."
+description = "A link entry to the Checks section titled Checks selects the Checks preset. The target's own preset places the section, and the effective selection qualifies its output name."
 
 clauses = [
-  "Presets — A command-line entry reads the file it names",
+  "Presets — A command-line entry selects as a link does",
   "Presets — default always applies",
   "Presets — Selection by tags",
   "Grouping — Group membership",
@@ -9,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["docs/guide.md#checks", "--presets", "Checks"]
+arguments = ["[Checks](docs/guide.md#checks \"Checks\")"]
 
 [expected]
 exit_status = 0

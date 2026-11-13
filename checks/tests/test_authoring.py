@@ -23,6 +23,7 @@ from documents import ROOT
 
 from prosiform.cli import main as compile_main
 from prosiform.cli import parser as command_parser
+from prosiform.entry import published
 
 GUIDE = ROOT / "invocation.md"
 README = ROOT / "README.md"
@@ -33,7 +34,7 @@ SURFACES = (GUIDE, README)
 # Each authoring statement, beside the document that states it. The guide
 # keeps the command line; the architecture pages state the rules it links to.
 INSTRUCTIONS = (
-    (GUIDE, "pf [OPTIONS] REF [--presets PRESETS]"),
+    (GUIDE, "pf [OPTIONS] REF [--pick ALTERNATIVE]"),
     (SOURCES, "Every key in `prosiform` is a **preset** name"),
     (SOURCES, "the target's own declaration then decides whether it is compiled"),
     (SOURCES, "An entry reference resolves from it, and every path a diagnostic names"),
@@ -49,7 +50,7 @@ INSTRUCTIONS = (
 
 HYPHENS = "hyphens rather than underscores"
 FENCE = re.compile(r"```bash\n(.*?)```", re.DOTALL)
-TAKES_VALUE = frozenset({"-o", "-d", "--budget"})
+TAKES_VALUE = frozenset({"-o", "-d", "--budget", "--pick"})
 SWITCH = frozenset({"-c", "-C", "-v", "-h"})
 
 
@@ -87,19 +88,25 @@ def commands(path: Path) -> list[tuple[Path, list[str]]]:
 
 
 def source_paths(argv: list[str]) -> list[str]:
-    """The single entry destination, with operational option values excluded."""
+    """The single entry destination, with option values excluded.
+
+    A link entry names the destination it publishes; a plain path names
+    itself.
+    """
     found: list[str] = []
     tokens = iter(argv)
     for token in tokens:
         option, equal, value = token.partition("=")
-        if option in TAKES_VALUE or option == "--presets":
+        if option in TAKES_VALUE:
             if not equal:
                 next(tokens)
         elif token.startswith("-"):
             assert token in SWITCH, token
         else:
             assert not found, "one entry per command"
-            found.append(token.partition("#")[0])
+            link = published(token)
+            destination = token if link is None else link.destination
+            found.append(destination.partition("#")[0])
     return found
 
 
@@ -196,9 +203,11 @@ def test_architecture_module_inventory_matches_the_package() -> None:
 
 def test_focused_deferred_command_uses_the_current_grammar() -> None:
     text = (ROOT / "docs/composition.md").read_text()
-    [command] = re.findall(r"`(pf [^`]*fetch.md#implementation)`", text)
+    [command] = re.findall(r"`(pf [^`]*fetch.md#implementation\)')`", text)
     parsed = command_parser().parse_args(shlex.split(command)[1:])
-    assert parsed.entry == "fetch.md#implementation"
+    generated = "[↳ Implementation](fetch.md#implementation)"
+    assert parsed.entry == generated
+    assert f"\n{generated}\n" in text
 
 
 def test_budget_reproduction_supplies_one_explicit_entry() -> None:

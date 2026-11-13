@@ -129,6 +129,7 @@ from prosiform.dispatch import (
     subsections,
     written_in,
 )
+from prosiform.entry import NotOneLink, published
 from prosiform.grouping import member_headings, merged, prepared
 from prosiform.limits import (
     BUDGETS,
@@ -320,29 +321,29 @@ bundles.
 
 Usage:
 
-  pf -o <folder> <document>[#<section>] [--presets <presets>]
+  pf -o <folder> '<link>' [--pick <alternative>]
+  pf -o <folder> <document>[#<section>]
 
-  -o <folder>         folder the run's bundles are written into, made if absent;
-                               default: the working directory
-  <document>          one document, or document#section, named from the
-                                  working directory
-  --presets PRESETS   the link title's comma-separated preset names;
-                                  omit it when the title carries no tags
+  -o <folder>            folder the run's bundles are written into, made if
+                         absent; default: the working directory
+  <link>                 a link as a bundle publishes it: a Markdown link,
+                         or a Mermaid click or class diagram link line
+  <document>             one document, or document#section, named from the
+                         working directory
+  --pick <alternative>   the alternative a link whose title carries ?
+                         leaves to you
 
 Compiling a link:
 
-  Run a link in a bundle as written, from the directory pf compiled that
-  bundle in. Resolve a link in a source document from that document,
-  then express it from the working directory; include the file for
-  #fragments. Pass title tags as one quoted --presets value, also for
-  deferred links:
+  Run pf on a link in a bundle as written, quoted as one argument, from
+  the directory pf compiled that bundle in. When its title carries ?, add
+  --pick naming the alternative that fits your task if you know it, or
+  when pf lists the alternatives:
 
-    pf modes/review.md#review --presets 'checks, final draft'
+    pf -o out '[¬ Review](modes/review.md#review "checks, final draft")'
+    pf -o out 'click Intake "activities/intake.md" "¬ ?"' --pick Epic
 
-  Omit --presets without tags; attach a value starting with - with =:
-    pf guide.md --presets=-checks
-
-  Tags layer the target's presets above default.
+  Title tags layer the target's presets above default.
 
 Exit status:
 
@@ -361,9 +362,7 @@ Symbol grammar:
      Give each bundle to its own sub-agent at once, with the inputs of
      the step that led there, one per value where that step applies to
      several. A failure cancels nothing; all failures return together.
-  ?  among a link's title tags leaves the pick to you: pass the title as
-     --presets as usual, read the alternatives pf lists, and rerun with ?
-     replaced by the one that fits your task
+  ?  among a link's title tags leaves the pick to you, made with --pick
 """
 
 
@@ -833,7 +832,7 @@ def unresolved(path: str, conversion: Conversion) -> Failure:
             f"{path} needs one alternative in force:{rows}",
             code=ALTERNATIVE_UNRESOLVED,
             source=path,
-            remedy="rerun with --presets naming the alternative that fits your task",
+            remedy="rerun with --pick naming the alternative that fits your task",
         ),
     )
 
@@ -971,7 +970,7 @@ def parser() -> Parser:
         prog=NAME,
         add_help=False,
         allow_abbrev=False,
-        usage=f"{NAME} [OPTIONS] REF [--presets PRESETS]",
+        usage=f"{NAME} [OPTIONS] REF [--pick ALTERNATIVE]",
         description=(
             "Bundle the local Markdown closure of one entry reference, "
             "and of each target they dispatch, into validated bundles. Run with "
@@ -1037,13 +1036,13 @@ def parser() -> Parser:
         "entry",
         metavar="REF",
         nargs="?",
-        help="one document or document#fragment; paths from cwd",
+        help="a link as a bundle publishes it, or document[#fragment]; paths from cwd",
     )
     grammar.add_argument(
-        "--presets",
-        metavar="PRESETS",
+        "--pick",
+        metavar="ALTERNATIVE",
         action=Once,
-        help="comma-separated preset names for the entry; default: no named presets",
+        help="the alternative for an entry whose title carries ?",
     )
     return grammar
 
@@ -1074,17 +1073,36 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
     return selected
 
 
-def entry(text: str) -> Reference:
-    """Normalize an entry reference, keeping the leading parents of a path above.
+def entry(text: str, pick: str | None) -> Reference:
+    """Normalize an entry, keeping the leading parents of a path above.
 
-    An entry reference is written by no document, so no `subst` pair
-    redirects it: the run compiles the document it names and is named
-    for the path the caller wrote.
+    A link entry is read as an authored link is, for its destination and
+    the tags its title states; the operator marks opening it are the
+    agent's and are not read. A plain path carries no title. A pick
+    stands in the tag list where the pick token stands, so it is
+    admitted only beside an entry whose title carries that token.
+
+    An entry is written by no document, so no `subst` pair redirects it:
+    the run compiles the document it names and is named for the path the
+    caller wrote.
     """
-    if re.fullmatch(r"\s*\[.*\]\(.*\)\s*", text, re.DOTALL):
+    try:
+        link = published(text)
+    except NotOneLink as refused:
         raise usage_failure(
-            "the entry accepts a destination, not a Markdown link", reference=text
-        )
+            f"the entry {text!r} {refused}", reference=text
+        ) from refused
+    tags = frozenset() if link is None else link.tags
+    if pick is not None:
+        if not picks(tags):
+            raise usage_failure(
+                f"--pick names the alternative for an entry whose title carries "
+                f"{PICK!r}, and the entry {text!r} carries none",
+                reference=text,
+            )
+        tags = tags - {PICK} | read_tags(pick)
+    if link is not None:
+        text = link.destination
     try:
         found = resolve(text)
     except Malformed as malformed:
@@ -1106,7 +1124,7 @@ def entry(text: str) -> Reference:
             remedy="name a document under the invocation working directory",
             reference=text,
         )
-    return found
+    return replace(found, tags=tags)
 
 
 def entered(requested: Sequence[Reference]) -> list[Reference]:
@@ -3959,10 +3977,7 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
             f"compiled, so it governs nothing",
             code=PRESET_UNUSED,
             source=path,
-            remedy=(
-                "name the preset in the reaching link title or --presets, "
-                "or drop the preset"
-            ),
+            remedy="name the preset in the reaching link's title, or drop the preset",
         )
         for path in sorted(left)
         for name in left[path]
@@ -4117,7 +4132,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
             "folder the run's bundles are written under"
         )
     mapping = Substitution()
-    requested = [replace(entry(options.entry), tags=read_tags(options.presets))]
+    requested = [entry(options.entry, options.pick)]
     for one in requested:
         if not one.path:
             raise usage_failure(

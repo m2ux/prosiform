@@ -1,0 +1,20 @@
+description = "A --pick beside a link entry whose title carries no ? fails with E_INVALID_USAGE without publication: a fixed title is a pick its author made."
+
+clauses = [
+  "Link entries — The pick",
+  "CLI contract — --pick ALTERNATIVE",
+  "Presets — The agent's pick",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Release Checks](guide.md \"Checks\")", "--pick", "Checks"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["--pick", "guide.md"]

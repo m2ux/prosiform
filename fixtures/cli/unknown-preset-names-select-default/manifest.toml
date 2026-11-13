@@ -1,10 +1,10 @@
-description = "An empty or unmatched preset list applies the implicit default selection, keeps the unqualified output name and emits no unknown-name diagnostic."
+description = "A link entry whose title names only unknown, empty and default tags applies the implicit default selection, keeps the unqualified output name and emits no unknown-name diagnostic."
 
-clauses = ["CLI contract", "Presets — Selection by tags", "Presets — default always applies"]
+clauses = ["Link entries — A link entry", "Presets — Selection by tags", "Presets — default always applies"]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md", "--presets", "unknown,default,,"]
+arguments = ["[Guide](guide.md \"unknown,default,,\")"]
 
 [expected]
 exit_status = 0

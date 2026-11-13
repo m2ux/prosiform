@@ -1053,7 +1053,7 @@ def test_codex_recorded_redirects_reach_the_same_selected_compile() -> None:
     for append in (False, True):
         command = pf_command(
             {
-                "args": ["target.md", "--presets", "checks"],
+                "args": ['[Target](target.md "checks")'],
                 "stdout": "guide output.log",
                 "stderr": "errors.log",
                 "stderr_to_stdout": True,
@@ -1077,8 +1077,9 @@ def test_redirects_can_precede_or_interrupt_compiler_words() -> None:
 
 
 def test_quoted_shell_operators_remain_compiler_argument_text() -> None:
-    assert pf_runs(("pf 'a>b.md' --presets 'a&b,c|d' >out",)) == [
-        Compile(None, "a>b.md", frozenset({"a&b", "c|d"}))
+    assert pf_runs(("pf 'a>b.md' >out", """pf '[A>B](a.md "a&b,c|d")' >out""")) == [
+        Compile(None, "a>b.md"),
+        Compile(None, "a.md", frozenset({"a&b", "c|d"})),
     ]
     assert pf_runs((r"pf a\>b.md",)) == [Compile(None, "a>b.md")]
     assert pf_runs(("pf a.md 2>&1 && pf >guide.log; pf b.md | cat",)) == [
@@ -1098,9 +1099,11 @@ def test_quoted_shell_operators_remain_compiler_argument_text() -> None:
         "pf target.md > >out",
         "pf target.md 'unterminated",
         "pf target.md target.md",
-        "pf target.md --presets=checks --presets=checks",
-        "pf --presets checks",
-        "pf '[Target](target.md)'",
+        """pf '[Target](target.md "?")' --pick checks --pick checks""",
+        "pf --pick checks",
+        "pf target.md --pick checks",
+        """pf '[Target](target.md "checks")' --pick checks""",
+        "pf '[Target](target.md) [Other](other.md)'",
         "pf --tags checks target.md",
         "pf target.md other.md",
         "pf --ent target.md",
@@ -1114,13 +1117,11 @@ def test_invalid_command_usage_satisfies_no_compile(command: str) -> None:
 
 @pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
 def test_information_satisfies_neither_guide_nor_compile(option: str) -> None:
-    assert pf_runs((f"pf {option}", f"pf {option} target.md --presets=checks")) == []
+    tagged = f"""pf {option} '[Target](target.md "checks")'"""
+    assert pf_runs((f"pf {option}", tagged)) == []
     for expected in (Compile(None), Compile(None, "target.md", frozenset({"checks"}))):
         item = Scenario("one-run", {}, (), compile=(expected,))
-        assert (
-            compiles(item, (f"pf {option} target.md --presets=checks",), ())
-            == Failure.UNCOMPILED
-        )
+        assert compiles(item, (tagged,), ()) == Failure.UNCOMPILED
 
 
 @pytest.mark.parametrize(
@@ -1147,8 +1148,10 @@ def test_run_checks_match_effective_declared_presets(
         (),
         compile=(Compile(None, "target.md", frozenset({"checks", "draft"})),),
     )
-    command = "pf target.md" + (
-        f" --presets='{presets}'" if presets is not None else ""
+    command = (
+        f"""pf '[Target](target.md "{presets}")'"""
+        if presets is not None
+        else "pf target.md"
     )
     assert compiles(item, (command,), (), root=tmp_path) == failure
 
@@ -1159,14 +1162,14 @@ def test_unknown_names_share_default_selection(tmp_path: Path) -> None:
     assert (
         compiles(
             item,
-            ("pf target.md --presets 'unknown,default'",),
+            ("""pf '[Target](target.md "unknown,default")'""",),
             (),
             root=tmp_path,
         )
         is None
     )
     assert (
-        compiles(item, ("pf target.md --presets checks",), (), root=tmp_path)
+        compiles(item, ("""pf '[Target](target.md "checks")'""",), (), root=tmp_path)
         == Failure.UNCOMPILED
     )
 
@@ -1186,9 +1189,11 @@ def test_tagged_deferred_workflow_requires_its_selection(
     workflow = CORPUS["preset-deferral"]
     [item] = workflow.scenarios
     held = workspace(tmp_path, workflow, list(item.path))
-    command = "pf reference/fetch.md#read-mirror"
-    if presets is not None:
-        command += f" --presets='{presets}'"
+    command = (
+        f"""pf '[↳ Read mirror](reference/fetch.md#read-mirror "{presets}")'"""
+        if presets is not None
+        else "pf reference/fetch.md#read-mirror"
+    )
     (held / SUBAGENTS).write_text(json.dumps({"commands": [command], "starts": []}))
     assert score(workflow, item, held).failure == failure
 
@@ -1220,16 +1225,38 @@ def test_dispatch_workflow_requires_both_selected_bundles(
     )
 
 
-def test_quoted_preset_separators_and_leading_dashes_are_values() -> None:
-    assert pf_runs(("pf guide.md --presets='-checks,semi;colon,pipe|name'",)) == [
+def test_quoted_title_separators_and_leading_dashes_are_values() -> None:
+    assert pf_runs(("""pf '[G](guide.md "-checks,semi;colon,pipe|name")'""",)) == [
         Compile(None, "guide.md", frozenset({"-checks", "semi;colon", "pipe|name"}))
     ]
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        """pf '[Target](target.md "checks")'""",
+        """pf '[¬↳ Target](./target.md "checks")'""",
+        """pf 'click Target "target.md" "⇉ checks"'""",
+        """pf 'link Target "target.md" "checks"'""",
+    ],
+)
+def test_a_published_link_runs_its_destination_under_its_title(command: str) -> None:
+    """A link entry's destination is the run's reference; its marks are not read."""
+    assert pf_runs((command,)) == [Compile(None, "target.md", frozenset({"checks"}))]
+
+
+def test_a_pick_stands_where_the_pick_token_stands() -> None:
+    [run] = pf_runs(("""pf '[Target](target.md "checks,?")' --pick Draft""",))
+    assert run == Compile(None, "target.md", frozenset({"checks", "draft"}))
+    assert run is not None and run.tags == frozenset({"checks", "draft"})
+
+
+ROUTE = """'[Route](reference/work-kind.md#route "?")'"""
+
 PICKED = (
     "pf",
-    "pf reference/work-kind.md#route --presets '?'",
-    "pf reference/work-kind.md#route --presets task",
+    f"pf {ROUTE}",
+    f"pf {ROUTE} --pick task",
 )
 """The runs a session picking `task` for its work makes: the guide, the listing,
 the pick."""
@@ -1277,7 +1304,7 @@ def picking(
         (PICKED[:2], [], Failure.UNCOMPILED),
         ((PICKED[0], PICKED[2]), [], Failure.UNCOMPILED),
         (
-            (*PICKED[:2], "pf reference/work-kind.md#route --presets epic", PICKED[2]),
+            (*PICKED[:2], f"pf {ROUTE} --pick epic", PICKED[2]),
             [],
             Failure.OVERCOMPILED,
         ),
@@ -1320,7 +1347,7 @@ def test_an_agent_pick_session_entering_another_kind_fails_its_branch(
     """AC7: entering the state of a kind the input does not describe is a branch."""
     verdict = picking(
         tmp_path,
-        (*PICKED[:2], "pf reference/work-kind.md#route --presets epic"),
+        (*PICKED[:2], f"pf {ROUTE} --pick epic"),
         [],
         ["Entry", "Classify", "Breakdown", "Exit"],
     )

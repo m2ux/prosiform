@@ -1,0 +1,17 @@
+description = "A Markdown link entry whose text opens with ¬↳⇉, a combination the operator rules refuse in a source, compiles its destination under the presets its title selects: the marks opening a link entry are ignored whatever they combine to."
+
+clauses = [
+  "Link entries — A link entry",
+  "Link entries — Operator marks are set aside",
+  "Presets — Selection by tags",
+  "Presets — What a selection governs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[¬↳⇉ Release Checks](guide.md \"Checks\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide--p-2462c733cdaede7a3e296d33a0b1fa269615757968d634a5f993a8aec214dd3d.bundle.md"]
+diagnostics = []

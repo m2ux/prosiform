@@ -88,8 +88,7 @@
   },
   "lifecycle-waterfall": {
     "root": "example/project-lifecycle",
-    "entry": "lifecycle.md",
-    "args": ["--presets", "waterfall"],
+    "entry": "[↳ Waterfall](lifecycle.md \"waterfall\")",
     "files": [
       "SKILL.md",
       "lifecycle.md",

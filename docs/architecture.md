@@ -63,7 +63,7 @@ flowchart LR
 
 ## Selection
 
-Following the links answers which files join the bundle. Each Markdown link occurrence's title selects its target's named presets above `default`; the entry supplies its selection through `--presets`. Headings and visible labels select nothing, and outgoing links carry their own selections. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and settles them into one [**selection**](selection.md), ordered by where each document was first named.
+Following the links answers which files join the bundle. Each Markdown link occurrence's title selects its target's named presets above `default`; a link entry's title selects for the entry, and a plain path selects none. Headings and visible labels select nothing, and outgoing links carry their own selections. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and settles them into one [**selection**](selection.md), ordered by where each document was first named.
 
 ```mermaid
 flowchart LR
@@ -176,7 +176,8 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 | `access` | Reads a source, or its frontmatter alone, through a rooted, no-follow directory walk, never past the budget it is given. |
 | `source` | Holds one source: removes its byte-order mark and frontmatter, indexes its headings and their slugs, and lists its regions and the links it uses. |
 | `metadata` | Decodes a frontmatter block's YAML into conversion settings: presets, `group` pairs and `subst` pairs. |
-| `tags` | Normalizes complete comma-separated preset names for link titles and the entry's `--presets` argument. |
+| `entry` | Reads the command-line entry: a published Markdown link, `click` line or class diagram `link` line, through the readers that read an authored link, or a plain path. |
+| `tags` | Normalizes complete comma-separated preset names for link titles and the entry's `--pick`. |
 | `marks` | Reads the operator marks a link's text opens with, and splits a diagram link's tooltip into its operator and its title. |
 | `profile` | Configures the `prosiform-markdown` parser, reads the diagram links in `mermaid` fences as uses, and refuses what the profile does not admit. |
 | `closure` | Normalises each reference from the file that writes it, classifies it by its target's declaration, and reads its operators and any directive label. |
