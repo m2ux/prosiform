@@ -19,6 +19,7 @@ This initiative lets a document declare one preset per kind as an alternative, a
 | [Initiative draft](initiative-body.md) | The initiative goal, criteria and epic coverage |
 | [Declared Alternatives epic draft](e00-body.md) | E00's rows and criteria for alternatives, the exactly-one rule and routing pairs |
 | [Agent Pick epic draft](e01-body.md) | E01's rows and criteria for the `?` tag, the guide entry and the router fixture |
+| [Real-Use Agent Pick epic draft](e02-body.md) | E02's rows and criteria for first-run pick scoring and the real-use agent-pick run |
 | [Design work item](e00/w00.md) | The v1 design stating alternatives and the agent's pick |
 | [Choice line work item](e00/w01.md) | The `choice` key and its refusals |
 | [Exactly-one work item](e00/w02.md) | The exactly-one rule, its failure and the silent unpicked alternative |
@@ -38,4 +39,5 @@ This initiative lets a document declare one preset per kind as an alternative, a
 | Initiative: [I15] Preset Alternatives | [#707](https://github.com/m2ux/prosiform/issues/707) |
 | Epic: [I15:E00] Declared Alternatives | [#708](https://github.com/m2ux/prosiform/issues/708) |
 | Epic: [I15:E01] Agent Pick | [#709](https://github.com/m2ux/prosiform/issues/709) |
+| Epic: [I15:E02] Real-Use Agent Pick | [#733](https://github.com/m2ux/prosiform/issues/733) |
 | Motivating case: work-planner `work-kind.md` | [workflow-server `workspace`](https://github.com/m2ux/workflow-server/blob/workspace/skills/work-planner/artifacts/work-kind.md) |
