@@ -92,6 +92,7 @@ from workflow import (
 )
 
 from prosiform.source import declaration
+from prosiform.tags import picks
 
 BUNDLED_HEADING = re.compile(r"^#+ (\w+)$", re.MULTILINE)
 RUN_PF = "Run `pf`, then follow the guidance it prints."
@@ -518,15 +519,19 @@ def compiled_faults(workflow: Workflow, scenario: Scenario, output: Path) -> lis
 
     The walk runs `pf` on each `↳` line a state's steps reach, as a correct
     session does, so the session's stated runs are the walk's, and the path
-    is the one the entry's bundle and the bundles those runs write state.
+    is the one the entry's bundle and the bundles those runs write state. A
+    scenario states a pick once, met with or without the listing before it,
+    so the walk's listing, a run on a `?` line naming no pick, is no stated
+    run.
     """
-    walked, runs, faults = compiled_walk(workflow, scenario.inputs, output)
+    walked, made, faults = compiled_walk(workflow, scenario.inputs, output)
     if not faults and walked != scenario.path:
         faults.append(f"the compiled bundles lead {walked}")
+    runs = [run for run in made if run.pick is not None or not picks(run.presets)]
     stated = tuple(run for run in scenario.compile if run.by is None)
     root = workflow.form(COMPILED_FORM)
     if [run.selection(root) for run in runs] != [run.selection(root) for run in stated]:
-        faults.append(f"the walk runs pf on {[run.args for run in runs]}")
+        faults.append(f"the walk runs pf on {[run.args for run in made]}")
     return [f"{scenario.name}: {fault}" for fault in faults]
 
 
@@ -1170,18 +1175,19 @@ def held_choices(workflow: Workflow, scenario: Scenario) -> list[str]:
     ]
 
 
-def test_each_agent_pick_scenario_lists_then_reruns_with_its_pick() -> None:
-    """AC7: the run on `?` lists the router, and the rerun names the input's pick.
+def test_each_agent_pick_scenario_states_its_pick_once() -> None:
+    """AC2: a scenario states the run naming the input's pick, and no listing.
 
-    Work no choice line describes takes the alternative declared last, which
-    stands for any other work.
+    A session meets the pick on its first run of the link or after the
+    listing, so the listing is no run the scenario states. Work no choice
+    line describes takes the alternative declared last, which stands for any
+    other work.
     """
     last = list(router_choices(AGENT_PICK))[-1]
     for scenario in AGENT_PICK.scenarios:
         held = held_choices(AGENT_PICK, scenario)
         pick = held[0] if held else last
         assert scenario.compile == (
-            Compile(None, f"{ROUTER}#route", frozenset({"?"})),
             Compile(None, f"{ROUTER}#route", frozenset({"?"}), pick),
         ), scenario.name
     assert inputs_read(AGENT_PICK, COMPILED_FORM) == {"work.txt"}

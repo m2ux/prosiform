@@ -16,6 +16,8 @@ import pytest
 from harness import Claude, Opencode
 from score import (
     ACTIONS,
+    AFTER_LISTING,
+    FIRST_RUN,
     SUBAGENTS,
     TRACE,
     Failure,
@@ -376,6 +378,7 @@ def test_the_record_is_plain_json_values(tmp_path: Path) -> None:
         "expected": ["Entry", "Plan", "Build", "Test", "Ship", "Exit"],
         "actual": ["Entry", "Plan", "Build"],
         "actions": [],
+        "picks": [],
     }
 
 
@@ -1253,13 +1256,26 @@ def test_a_pick_stands_where_the_pick_token_stands() -> None:
 
 ROUTE = """'[Route](reference/work-kind.md#route "?")'"""
 
-PICKED = (
-    "pf",
-    f"pf {ROUTE}",
-    f"pf {ROUTE} --pick task",
-)
-"""The runs a session picking `task` for its work makes: the guide, the listing,
-the pick."""
+
+def picked(pick: str, listed: bool = True) -> tuple[str, ...]:
+    """The runs a session picking `pick` makes: the guide, the listing where it
+    takes one, and the pick."""
+    return ("pf", *((f"pf {ROUTE}",) if listed else ()), f"pf {ROUTE} --pick {pick}")
+
+
+PICKED = picked("task")
+"""The runs a session picking `task` for its work after the listing makes."""
+
+AGENT_PICKS = [
+    (item.name, pick)
+    for item in CORPUS["agent-pick"].scenarios
+    for pick in (item.compile[0].pick,)
+    if pick is not None
+]
+"""Each agent-pick scenario beside the alternative its input picks."""
+
+PATHS = [(False, FIRST_RUN), (True, AFTER_LISTING)]
+"""Whether a session lists the alternatives before its pick, beside its path."""
 
 
 def picking(
@@ -1267,10 +1283,13 @@ def picking(
     commands: tuple[str, ...] | None,
     reads: list[str] | None,
     trace: list[str] | None = None,
+    name: str = "task-picked",
 ) -> Verdict:
-    """The verdict on an agent-pick session whose work fits one pull request."""
+    """The verdict on an agent-pick session, by default one whose work fits one
+    pull request."""
     workflow = CORPUS["agent-pick"]
-    item = scenario("agent-pick", "task-picked")
+    item = scenario("agent-pick", name)
+    tmp_path.mkdir(parents=True, exist_ok=True)
     held = workspace(tmp_path, workflow, list(item.path) if trace is None else trace)
     (held / SUBAGENTS).write_text(
         json.dumps(
@@ -1288,6 +1307,7 @@ def picking(
     ("commands", "reads", "failure"),
     [
         (PICKED, [], None),
+        (picked("task", listed=False), [], None),
         (
             PICKED,
             [
@@ -1302,7 +1322,7 @@ def picking(
         (PICKED, ["./states/classify.md"], Failure.READ_SOURCE),
         (PICKED, ["reference/change.md"], Failure.READ_SOURCE),
         (PICKED[:2], [], Failure.UNCOMPILED),
-        ((PICKED[0], PICKED[2]), [], Failure.UNCOMPILED),
+        (picked("epic", listed=False), [], Failure.UNCOMPILED),
         (
             (*PICKED[:2], f"pf {ROUTE} --pick epic", PICKED[2]),
             [],
@@ -1312,14 +1332,15 @@ def picking(
         (PICKED[:2], ["/eval/ws/reference/work-kind.md"], Failure.UNCOMPILED),
     ],
     ids=[
-        "picked",
+        "picked-after-listing",
+        "picked-first-run",
         "bundles-and-inputs-read",
         "reads-unreported",
         "router-read",
         "state-read",
         "route-read",
         "pick-unmade",
-        "listing-unmade",
+        "other-pick-first-run",
         "wrong-pick-beside",
         "pick-before-listing",
         "source-read-in-place-of-the-pick",
@@ -1331,14 +1352,41 @@ def test_an_agent_pick_session_is_held_to_its_runs_and_its_reads(
     reads: list[str] | None,
     failure: Failure | None,
 ) -> None:
-    """AC7: a pick passes only after the listing and the rerun, reading no source.
+    """AC2: a pick passes on the first run or after the listing, reading no source.
 
-    A read of a bundle `pf` wrote or of an input is no source read, and a
-    record naming no reads holds the session to none. A run check a session
-    fails takes precedence over a source it read.
+    A listing made after the pick is out of order. A read of a bundle `pf`
+    wrote or of an input is no source read, and a record naming no reads
+    holds the session to none. A run check a session fails takes precedence
+    over a source it read.
     """
     verdict = picking(tmp_path, commands, reads)
     assert (verdict.passed, verdict.failure) == (failure is None, failure)
+
+
+@pytest.mark.parametrize(("listed", "path"), PATHS)
+@pytest.mark.parametrize(("name", "pick"), AGENT_PICKS)
+def test_each_agent_pick_scenario_passes_by_either_path_and_names_it(
+    tmp_path: Path, name: str, pick: str, listed: bool, path: str
+) -> None:
+    """AC2: each scenario's pick scores as compiled by either path, named in the
+    verdict, and fails a session picking another alternative or reading a source.
+    """
+    verdict = picking(tmp_path / "picked", picked(pick, listed), [], name=name)
+    assert (verdict.passed, verdict.picks) == (True, (path,))
+    assert verdict.record()["picks"] == [path]
+    other = next(alternative for _, alternative in AGENT_PICKS if alternative != pick)
+    wrong = picking(tmp_path / "other", picked(other, listed), [], name=name)
+    assert (wrong.failure, wrong.picks) == (Failure.UNCOMPILED, ())
+    read = picking(
+        tmp_path / "read", picked(pick, listed), ["reference/work-kind.md"], name=name
+    )
+    assert (read.failure, read.picks) == (Failure.READ_SOURCE, (path,))
+
+
+def test_a_scenario_stating_no_pick_names_no_path(tmp_path: Path) -> None:
+    item = scenario("linear", "straight-through")
+    verdict = run(tmp_path, "linear", "straight-through", list(item.path))
+    assert (verdict.passed, verdict.picks) == (True, ())
 
 
 def test_an_agent_pick_session_entering_another_kind_fails_its_branch(

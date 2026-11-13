@@ -68,7 +68,9 @@ for the session's own, in `entry` its one reference, in `presets` the
 comma-separated names of the title of the link it runs, and in `pick` the
 alternative it passes with `--pick` where that title carries `?`. A run
 with no entry is bare `pf`, and one with no title runs its reference as a
-plain path.
+plain path. A run carrying a pick is stated once: a session makes it on its
+first run of the link, or after the listing the link as written prints, and
+the scorer accepts either.
 A reference resolves from the directory a shell form runs `pf`
 in, so a run naming a document that is not there states no run of the
 workflow.
