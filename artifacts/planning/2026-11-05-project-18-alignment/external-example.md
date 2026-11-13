@@ -8,7 +8,7 @@ I01's exposure set contains the example skill planned for `prosiform-skills` and
 
 ## Delivery evidence
 
-The delivered declaration at `41f3074:ledger/exposure.toml`, the head of #325 names ten commands under the removed `example/work-planner` tree. `checks/ledger.py` validates those paths against the local example directory, and `ledger/README.md` describes that local source. This delivery does not establish a declaration for the forthcoming external skill.
+The delivered declaration at `41f3074:ledger/exposure.toml`, the head of #325, names ten commands under the removed `example/work-planner` tree. `checks/ledger.py` validates those paths against the local example directory, and `ledger/README.md` describes that local source. This delivery does not establish a declaration for the forthcoming external skill.
 
 I01 AC7 states the confirmed source set and remains unticked. E00 AC6 states the corresponding declaration and is unticked because the external entries and their validation remain pending. W01 retains its historical PR link; the missing declaration is a further-work finding, not a claim that its original delivery included the external skill. E13's exposure gate remains open, and its criteria require no change.
 
