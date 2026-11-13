@@ -13,7 +13,7 @@ A deterministic compiler for instruction sets written as linked Markdown. Give i
 
 ## 🎯 Overview
 
-Agent skills are authored as collections of linked documents: an entry point links to procedures, and procedures link to the sections that govern them. Reaching the complete context for one operation means resolving that graph at read time. prosiform moves that work into a compilation step, so retrieval stops being part of the reasoning task.
+Agent skills are authored as collections of linked documents. Reaching the complete context for one operation means resolving that graph at read time. Prosiform moves that work into a compilation step, so retrieval stops being part of the reasoning task.
 
 Authors can maintain shared rules in one place and reuse them across procedures. The agent receives the selected material in one continuous document, with repeated content included once and links pointing to the relevant sections. Each bundle is validated before publication; invalid content produces an explicit failure. Completeness follows the links to declared sources.
 
