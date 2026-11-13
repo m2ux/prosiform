@@ -1,0 +1,16 @@
+description = "A Mermaid click whose tooltip is the deferral and composition marks alone defers the section it names, and the marks take up the whole tooltip, so the link carries no title: the contribution's line publishes the link with no title, as a deferred composition link carrying none does."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Section composition — Deferred composition",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

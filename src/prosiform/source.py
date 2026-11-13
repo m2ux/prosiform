@@ -1071,9 +1071,7 @@ def external(path: str) -> bool:
     return path.startswith(AUTHORITY) or SCHEME.match(path) is not None
 
 
-def linked(
-    line: str, form: str
-) -> list[tuple[str, int, str, str, str | None, str]]:
+def linked(line: str, form: str) -> list[tuple[str, int, str, str, str | None, str]]:
     """Each destination one line of a diagram of one type names, in written order.
 
     Each comes as written, with its offset, the anchor spelling its form
