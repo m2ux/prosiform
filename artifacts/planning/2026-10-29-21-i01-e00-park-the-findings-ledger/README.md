@@ -26,3 +26,11 @@ Each is a design question about the ledger, not a defect in a delivered row.
 ## What This Leaves Open
 
 I01's goal ends when every ledger entry is resolved or deferred and design and corpus carry one tagged revision, so its AC1, AC2, AC5, AC7 and AC9 read the ledger, and E13's freeze does. The initiative cannot complete as written while E00 is parked. That is left as it stands for the user to decide; this record changes no criterion.
+
+## Branch State on 2026-11-13
+
+The branches the table above names no longer exist on `origin`. GitHub records `i01/e00/main` as deleted on 2026-11-07, after review pull request #325 closed unmerged on 2026-11-01.
+
+- **W01.** Its delivered tree is held at [`41f3074`](https://github.com/m2ux/prosiform/commit/41f307490fca501469007fb903e52eb602d9163a), the head of #325, which neither `main` nor `workspace` contains. `ledger/` is absent from `main`.
+- **W02 and W03.** No pull request was opened from either task branch, so no remote ref holds their commits, and no local checkout of the workspace carries them.
+- **Exposure declaration.** The `ledger/exposure.toml` at `41f3074` names commands under `example/work-planner`, a tree no row maintains, declares or proves on.
