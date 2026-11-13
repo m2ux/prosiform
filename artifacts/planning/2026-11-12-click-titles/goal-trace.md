@@ -34,3 +34,4 @@ Ranked; the flagged ones most threaten the goal.
 - Format: the initiative and both epic drafts report nothing to fix, apply or decide.
 - Dependencies: no problems, no open candidate unit, no cross-epic contention; longest chain four steps, E00 W00 through E00 W03 to E01 W01. The check proposes E00 2, E01 1, applied as the epics' priority labels.
 - Dependencies after the Link Invocation hoist, 2026-11-13: no problems; longest chain four steps, E01 W00 through E01 W04 to E02 W01; E00 and E01 `priority: 2`, E02 `priority: 1`.
+- Dependencies at alignment, 2026-11-13, with E01's work items from its task records: no problems; longest chains five steps, each through E00 W00, E01 W04 and E02 W01; contending pairs E00 W00 and E01 W00 on the v1 design, E00 W01 and E01 W01 on `source.py` and `test_cli.py`, E00 W03 and E01 W04 on `references.md`, `glossary.md` and `selection.md`, each ordered by a dependency edge.
