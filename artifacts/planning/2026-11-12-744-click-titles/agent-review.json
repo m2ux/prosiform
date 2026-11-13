@@ -10,5 +10,60 @@
     "criteria": "AC2 met: test_source.py test_a_tooltip_of_marks_alone_states_its_link_s_operator (click with and without href, class link) and test_a_tooltip_s_marks_are_accepted_and_refused_as_a_link_s_text_marks; test_cli.py refused combinations. AC3 met: test_source.py test_a_tooltip_s_opening_marks_are_its_operator_and_the_rest_its_title; test_cli.py test_a_click_tooltip_selects_presets_as_a_link_title, test_a_dispatching_click_s_tooltip_tags_select_its_bundle_s_presets, test_a_deferring_click_carries_the_pick_token. AC4 met: test_cli.py dispatching, deferring, parallel and composing click tests, each asserting the tooltip bytes unchanged; test_candidate.py tooltip and destination preservation. AC5 met: five click fixtures (dispatch, deferral, preset selection, pick, refused combination) pass and the retired fixture is removed; make corpus 587 pass, make conformance 0 declarations naming no clause. AC6 met: Diagram links states the rule; a search of docs/ and src/prosiform/ finds no claim that a diagram link carries no operator or selects no preset beyond the qualified no-tooltip case; make links resolves 427 documents. Evidence: e00/w01.md and e00/w02.md Validation at 7ed16523, e00/w03.md Validation at 47a1efe3.",
     "validation": "make check at 47a1efe3 (tree identical to head): pass, exit 0: lint, format, types, 2079 unit tests, 1026 harness tests, 587 corpus fixtures, smoke, layout, tables, links (427 documents), vocabulary (51 terms on 9f1a8e2b5), invocation, conformance (373 clauses, 68 uncovered, 0 declarations naming no clause), independence (e00/w03.md#make-check). make check at 7ed16523 with W01 and W02: pass (e00/w01.md#make-check). gitnexus detect-changes --scope compare against 4cb6b5c4e: 53 files, 91 symbols, 169 affected flows, risk critical, every flow through read_diagram, linked, uses or opened.",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/744",
+    "head": "0ee5b6fcf657958d39a50bdb3cc55fedb7cc47c2",
+    "base": "4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-744-click-titles/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (agent)",
+    "reviewed_at": "2026-11-13T12:00:00Z",
+    "scope": "Diff: git diff 4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d...0ee5b6fcf657958d39a50bdb3cc55fedb7cc47c2: 121 files, 2125 insertions and 270 deletions. The earlier record at 722e849a9 covers W01 to W03; this record re-reads the whole diff with the three review-fix merges since, #746, #748 and #749 (git diff 722e849a9 0ee5b6fcf: src/prosiform/cli.py, marks.py, profile.py, source.py and their tests, 20 fixtures, docs/references.md and the design pin). Prior review rounds: two independent reviews of #744. Round one found four defects (the guide not saying what a click's title is, click refusals naming the click as '' or '⇉↳ ', corpus gaps across the tooltip operators and refusals, a marks-only tooltip publishing an empty title) and asked for the Gantt grammar check; round two found a Gantt click carrying a link target or a semicolon still compiled, and the click directive and target refusal paths untested. Code read in full at head: marks.tooltip (title None where marks take the whole tooltip); source.py QUOTED, CLICK_LINE, CLASS_LINK, GANTT_CLICK, Use.name, Click.name, Diagram.unparsed, read_diagram, linked, uses; profile.diagram_refusals; cli.refusals_of_operators, refusals_of_picks, refusals_of_directives, placed_twice, composing_itself. Callers (gitnexus index at head, 7,030 nodes): read_diagram via linking from clicks and diagram_refusals; uses from the cli refusals, withheld, linked, required, resourced and closure.boundary, each reading Use.opening and Use.tags as before and Use.name only in diagnostic text and reference; bundle.py, dispatch.py, composition.py and candidate.py read Click fields unchanged since 722e849a9. Checked by running pf at head: a Gantt line holding two href statements is refused, a remote destination followed by _blank is carried, and each unparsed form is held by its fixture; a sequence diagram entry carrying name ''; an image's name equal to its alternative text, so no Markdown diagnostic changed. Guide and --presets: unchanged from the base; the title-handoff question moved to arising issue https://github.com/m2ux/prosiform/issues/747. No excluded observation.",
+    "criteria": "AC2 met: test_source.py tooltip tests, test_cli.py test_a_click_tooltip_stating_a_refused_combination_is_refused asserting reference 'click Plan'. AC3 met: tooltip title tests, the marks-only title test test_a_deferring_composing_click_of_marks_alone_publishes_no_title, and fixtures for '⇉ checks', '¬ ?', '?' and a class diagram link tooltip. AC4 met: dispatching, deferring, parallel and composing click tests and fixtures, each carrying the tooltip as written. AC5 met: fixtures for every operator, each refused combination, the directive and target refusals and every Gantt refusal pass; make corpus 605 pass. AC6 met: docs/references.md Diagram links states the tooltip, naming and Gantt rules; every design link pins 17c1f6e2f; make links resolves 427 documents.",
+    "validation": "make check at 565724036 (tree identical to head 0ee5b6fcf): pass, exit 0: lint, format, types, 2100 unit tests, 1044 harness tests, 605 corpus fixtures, smoke, layout, tables, links (427 documents), vocabulary (51 terms on 17c1f6e2f), invocation (29 statements), conformance (373 clauses, 0 declarations naming no clause), independence. CI Checks passed on #746 head 6e233d43e, #748 head 8afef1afa and #749 head 565724036. gitnexus detect-changes --scope compare --base-ref 4cb6b5c4e: 121 files, 77 symbols, 453 affected flows, risk critical.",
+    "findings": [
+      {
+        "description": "Round 1: the guide and invocation.md did not say what a diagram link's title is, so an agent passing a click's tooltip with its marks as --presets looped on E_ALTERNATIVE_UNRESOLVED.",
+        "severity": "nonblocking",
+        "disposition": "deferred",
+        "ticket": "https://github.com/m2ux/prosiform/issues/747"
+      },
+      {
+        "description": "Round 1: a click's refusals named it by its tooltip marks, as the link '' or '⇉↳ ', with that as the reference.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/746"
+      },
+      {
+        "description": "Round 1: the corpus lacked fixtures for a click composing, joining a set, selecting presets with ⇉, a mark against text, a deferring pick, a class diagram link tooltip and the refusals ¬ ⇉, ¬⇉, ⇉⫽ and ⫽↳.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/746"
+      },
+      {
+        "description": "Round 1: a tooltip of marks alone published its deferral with an empty title, [↳ S](a.md#s \"\").",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/746"
+      },
+      {
+        "description": "Round 1 Gantt check: Mermaid's gantt grammar reads no tooltip and no short form, yet pf read both.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/748"
+      },
+      {
+        "description": "Round 2: a Gantt click carrying a link target or ending in a semicolon was still compiled, though Mermaid cannot parse it.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/749"
+      },
+      {
+        "description": "Round 2: the click directive refusals and the operator target refusals had no test or fixture naming the click.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/pull/749"
+      }
+    ]
   }
 ]
