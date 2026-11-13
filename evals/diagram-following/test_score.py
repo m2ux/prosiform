@@ -1247,7 +1247,7 @@ def test_a_published_link_runs_its_destination_under_its_title(command: str) -> 
 
 def test_a_pick_stands_where_the_pick_token_stands() -> None:
     [run] = pf_runs(("""pf '[Target](target.md "checks,?")' --pick Draft""",))
-    assert run == Compile(None, "target.md", frozenset({"checks", "?"}), "Draft")
+    assert run == Compile(None, "target.md", frozenset({"checks", "draft"}))
     assert run is not None and run.tags == frozenset({"checks", "draft"})
 
 

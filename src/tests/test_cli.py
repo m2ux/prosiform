@@ -1896,6 +1896,7 @@ def test_the_build_accepts_no_presets_option(root: Path) -> None:
     [
         "[Plan](guide.md#plan) and [Other](guide.md#other)",
         'click Plan "guide.md#plan"; click Other "guide.md#other"',
+        "[" * 200 + "Plan" + "]" * 200 + "(guide.md#plan)",
     ],
 )
 def test_a_text_written_as_a_link_but_not_one_link_is_invalid_usage(

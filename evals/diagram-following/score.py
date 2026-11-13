@@ -153,7 +153,6 @@ from prosiform.cli import (
 from prosiform.cli import (
     parser as command_parser,
 )
-from prosiform.entry import published
 
 PF = "pf"
 
@@ -487,20 +486,12 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 runs.append(None if len(words) > 1 else Compile(None))
                 continue
             try:
-                command_entry(parsed.entry, parsed.pick)
+                reference = command_entry(parsed.entry, parsed.pick)
             except CommandFailure:
                 runs.append(None)
                 continue
-            link = published(parsed.entry)
-            destination = parsed.entry if link is None else link.destination
-            runs.append(
-                Compile(
-                    None,
-                    destination.removeprefix("./"),
-                    frozenset() if link is None else link.tags,
-                    parsed.pick,
-                )
-            )
+            fragment = "" if reference.fragment is None else f"#{reference.fragment}"
+            runs.append(Compile(None, reference.path + fragment, reference.tags))
     return runs
 
 

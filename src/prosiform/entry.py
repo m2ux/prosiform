@@ -20,7 +20,7 @@ import re
 from dataclasses import dataclass
 
 from prosiform.marks import tooltip
-from prosiform.profile import parse
+from prosiform.profile import Suppressed, parse
 from prosiform.source import (
     CLASS_DIAGRAM,
     CLASS_STATEMENT,
@@ -49,8 +49,14 @@ class NotOneLink(ValueError):
 
 
 def markdown_link(text: str) -> Link | None:
-    """The one Markdown link a text holds and nothing else, where it holds one."""
-    tokens = parse(text)
+    """The one Markdown link a text holds and nothing else, where it holds one.
+
+    A text nested past the parser's ceiling reads as no link.
+    """
+    try:
+        tokens = parse(text)
+    except Suppressed:
+        return None
     inline = [token for token in tokens if token.type == "inline"]
     if len(inline) != 1 or len(tokens) != 3:
         return None
