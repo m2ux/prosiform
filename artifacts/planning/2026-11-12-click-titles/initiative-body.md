@@ -33,15 +33,17 @@ A diagram link follows its destination and ignores everything else on its line, 
 | Epic | Description | Coverage | Depends on | Done |
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/739) | Click Titles | AC1, AC2 | | ✓ |
-| [E01](https://github.com/m2ux/prosiform/issues/750) | Link Invocation | AC4 | | |
-| [E02](https://github.com/m2ux/prosiform/issues/740) | Click Titles Release | AC3 | [E00](https://github.com/m2ux/prosiform/issues/739), [E01](https://github.com/m2ux/prosiform/issues/750) | |
+| [E01](https://github.com/m2ux/prosiform/issues/750) | Link Invocation | AC4, AC6 | | ✓ |
+| [E02](https://github.com/m2ux/prosiform/issues/740) | Click Titles Release | AC3, AC5 | [E00](https://github.com/m2ux/prosiform/issues/739), [E01](https://github.com/m2ux/prosiform/issues/750) | |
 
 ## Acceptance Criteria
 
 - [x] **AC1.** A Mermaid click's quoted tooltip states the link's operator and selects its presets as a Markdown link's opening marks and title do, so a click bundles as a dispatch, a deferral or any other operator, as the contract corpus shows.
 - [x] **AC2.** The design and the documentation state the click tooltip rule, and neither holds a claim that a diagram link carries no operator or that a Mermaid tooltip selects no preset, as a search of both and `make links` show.
-- [ ] **AC3.** A release's paired contract and Python tags name a commit on `main` that carries the click tooltip rule and the link invocation, its number chosen by the previous contract tag's corpus, as the release pull request and `pf -v` on the tagged commit show.
-- [ ] **AC4.** `pf` given a published Markdown link or diagram link as written compiles the destination with the presets it carries, whatever operator marks open it, a deferral resolves through a pick option, and no `--presets` option remains, as the contract corpus, `make smoke` and `make invocation` show.
+- [ ] **AC3.** A release's paired contract and Python tags name a commit on `main` that carries the click tooltip rule and the link invocation, as the release pull request and `pf -v` on the tagged commit show.
+- [x] **AC4.** `pf` given a published Markdown link or diagram link as written compiles the destination with the presets it carries, whatever operator marks open it, as the contract corpus and `make smoke` show.
+- [ ] **AC5.** That release's number is the one the previous contract tag's corpus chooses, as the release pull request's recorded corpus run shows.
+- [x] **AC6.** A deferral link given a pick option compiles the picked alternative, as the contract corpus shows.
 
 ## Non-Goals
 
@@ -56,5 +58,3 @@ A diagram link follows its destination and ignores everything else on its line, 
 - **R2.** **Source.** [Decisions](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-click-titles/decisions.md) — the goal and the tooltip design the criteria answer to.
 - **R3.** **Source.** [Cutting a release](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#cutting-a-release) — the release procedure the last criterion answers to.
 - **R4.** **Source.** [pf takes a published link verbatim](https://github.com/m2ux/prosiform/issues/747) — the invocation design the link criterion answers to.
-
-

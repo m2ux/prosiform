@@ -6,15 +6,19 @@ A release ships the click tooltip rule and the link invocation: a release branch
 
 - **The rule ships in no build.**
   The latest tags, `contract/v0.24.0` and `python/v0.24.0`, read past a click's tooltip and take `--presets`, and a caller holding an installed `pf` gets no click operator or link entry until a release carries it.
+- **The procedure tags a commit the project does not tag.**
+  [Cutting a release](https://github.com/m2ux/prosiform/blob/c77dba6a707023fe09bcac505ae3ec11dbccaa7e/docs/versioning.md#L41-L42) tags the version commit and merges it back afterwards, while `contract/v0.24.0` and `python/v0.24.0` name the release merge on `main`.
 
 ## Proposal
 
 - **The procedure is the project's own.**
   [Cutting a release](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#cutting-a-release) states every step; this epic follows it once the click tooltip rule and the link invocation are on `main`.
+- **The procedure states the tag target.**
+  Cutting a release states that the release pull request merges into `main` first and that the paired tags name that merge.
 - **The previous corpus chooses the number.**
   The previous contract tag's corpus runs against the new build; the retired tooltip fixture and every `--presets` invocation failing there make the change incompatible, and the number moves as [What the numbers mean](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#what-the-numbers-mean) states.
 - **The release branch is the delivery branch.**
-  The row is delivered by `release/vX.Y.Z` cut from `main` and pull-requested into `main`; the epic takes no `i17/e02/main` base.
+  Its rows are delivered by pull requests into `main`, the release row's from `release/vX.Y.Z` cut from `main`; the epic takes no `i17/e02/main` base.
 - **The tags go on `main`.**
   The release pull request merges first, and the paired tags name that merge.
 
@@ -22,16 +26,21 @@ A release ships the click tooltip rule and the link invocation: a release branch
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-click-titles/e02/w01.md) | The release carrying click tooltips and link entries | AC1, AC2, AC3 | [E01:W04](https://github.com/m2ux/prosiform/issues/750) | | | |
+| W00 | Cutting a release states tagging the merge | AC4 | | | | |
+| [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-click-titles/e02/w01.md) | The release carrying click tooltips and link entries | AC1, AC2, AC3, AC5 | W00, [E01:W04](https://github.com/m2ux/prosiform/issues/750) | | | |
 
 ## Acceptance Criteria
 
 - [ ] **AC1.** The release's number is the one the previous contract tag's corpus, run against the release build, chooses under the versioning rules, as the recorded corpus run in the release pull request shows.
-- [ ] **AC2.** The release pull request merges the release branch's one version commit into `main`, and `pf -v` on `main` reports that version, as the merged pull request and `pf -v` show.
+- [ ] **AC2.** The release pull request merges the release branch's one version commit into `main`, as the merged pull request shows.
 - [ ] **AC3.** Annotated `contract/` and `python/` tags of that version name the release merge on `main`, their messages following the previous pair's, as `git show` of each tag shows.
+- [ ] **AC4.** Cutting a release in `docs/versioning.md` states that the release pull request merges into `main` before tagging and that the paired tags name that merge, as a read of the section and `make links` show.
+- [ ] **AC5.** `pf -v` on `main` reports the release's version, as `pf -v` shows.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-click-titles) — why the release is its own epic.
 - **R2.** [Versioning](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md) — the release procedure and the meaning of each number.
+
+
 
