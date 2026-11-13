@@ -203,9 +203,11 @@ def test_architecture_module_inventory_matches_the_package() -> None:
 
 def test_focused_deferred_command_uses_the_current_grammar() -> None:
     text = (ROOT / "docs/composition.md").read_text()
-    [command] = re.findall(r"`(pf [^`]*fetch.md#implementation)`", text)
+    [command] = re.findall(r"`(pf [^`]*fetch.md#implementation\)')`", text)
     parsed = command_parser().parse_args(shlex.split(command)[1:])
-    assert parsed.entry == "fetch.md#implementation"
+    generated = "[↳ Implementation](fetch.md#implementation)"
+    assert parsed.entry == generated
+    assert f"\n{generated}\n" in text
 
 
 def test_budget_reproduction_supplies_one_explicit_entry() -> None:
