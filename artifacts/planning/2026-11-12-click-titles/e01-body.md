@@ -32,21 +32,21 @@
 
 | Task | Description | Coverage | Depends on | Joins | Lane | Done |
 | --- | --- | --- | --- | --- | --- | --- |
-| [W00](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-13-750-i17-e01-w00-the-v1-design-states/) | The v1 design states link invocation | AC1 | [E00:W00](https://github.com/m2ux/prosiform/issues/739) | | | |
-| W01 | pf reads a published link as entry | AC2, AC3, AC4 | W00, [E00:W01](https://github.com/m2ux/prosiform/issues/739) | W02, W03 | | |
-| W02 | Corpus fixtures for link entries | AC5 | W00, [E00:W02](https://github.com/m2ux/prosiform/issues/739) | W01 | | |
-| W03 | Checks and eval harness pass links | AC6 | W00 | W01 | | |
-| W04 | Documentation states one invocation instruction | AC7 | W01, W02, W03, [E00:W03](https://github.com/m2ux/prosiform/issues/739) | | | |
+| [W00](https://github.com/m2ux/prosiform/pull/751) | The v1 design states link invocation | AC1 | [E00:W00](https://github.com/m2ux/prosiform/issues/739) | | | ✓ |
+| [W01](https://github.com/m2ux/prosiform/pull/752) | pf reads a published link as entry | AC2, AC3, AC4 | W00, [E00:W01](https://github.com/m2ux/prosiform/issues/739) | W02, W03 | | ✓ |
+| [W02](https://github.com/m2ux/prosiform/pull/752) | Corpus fixtures for link entries | AC5 | W00, [E00:W02](https://github.com/m2ux/prosiform/issues/739) | W01, W03 | | ✓ |
+| [W03](https://github.com/m2ux/prosiform/pull/752) | Checks and eval harness pass links | AC6 | W00 | W01, W02 | | ✓ |
+| [W04](https://github.com/m2ux/prosiform/pull/755) | Documentation states one invocation instruction | AC7 | W01, W02, W03, [E00:W03](https://github.com/m2ux/prosiform/issues/739) | | | ✓ |
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The v1 design states that an entry is a published Markdown or diagram link or a plain path, that `--pick` resolves a `?` deferral and is invalid usage elsewhere, and holds no `--presets` option, as a read of its invocation and Presets sections shows.
-- [ ] **AC2.** `pf` given a published Markdown link, `click` line or class diagram `link` line compiles its destination and section with the presets its title or tooltip selects, the same whatever operator marks open it, malformed combinations included, as `test_cli.py` shows.
-- [ ] **AC3.** `--pick` beside a link carrying `?` compiles the named alternative, the alternatives listing names `--pick` as its remedy, and `--pick` beside an entry carrying no `?` exits `2`, as `test_cli.py` shows.
-- [ ] **AC4.** `pf -h`, the guide and `invocation.md` state the link entry and `--pick`, and the build accepts no `--presets`, as `make invocation` and `test_cli.py` show.
-- [ ] **AC5.** The corpus holds a fixture for a link entry opening with operator marks, a diagram link entry, a first-run pick, a pick after the listing and a stray pick, and no manifest passes `--presets`, as `make corpus` and `make conformance` show.
-- [ ] **AC6.** The smoke check and the diagram-following eval harness invoke `pf` with links as written and `--pick`, and neither passes `--presets`, as `make smoke` and `make eval-harness` show.
-- [ ] **AC7.** The README, `docs/` and Preset Alternatives' issue body state the link invocation and `--pick`, and none mentions `--presets`, as a search of each and `make links` show.
+- [x] **AC1.** The v1 design states that an entry is a published Markdown or diagram link or a plain path, that `--pick` resolves a `?` deferral and is invalid usage elsewhere, and holds no `--presets` option, as a read of its invocation and Presets sections shows.
+- [x] **AC2.** `pf` given a published Markdown link, `click` line or class diagram `link` line compiles its destination and section with the presets its title or tooltip selects, the same whatever operator marks open it, malformed combinations included, as `test_cli.py` shows.
+- [x] **AC3.** `--pick` beside a link carrying `?` compiles the named alternative, the alternatives listing names `--pick` as its remedy, and `--pick` beside an entry carrying no `?` exits `2`, as `test_cli.py` shows.
+- [x] **AC4.** `pf -h`, the guide and `invocation.md` state the link entry and `--pick`, as `make invocation` and `test_cli.py` show.
+- [x] **AC5.** The corpus holds a fixture for a link entry opening with operator marks, a diagram link entry, a first-run pick, a pick after the listing and a stray pick, and no manifest passes `--presets`, as `make corpus` and `make conformance` show.
+- [x] **AC6.** The smoke check and the diagram-following eval harness invoke `pf` with links as written and `--pick`, and neither passes `--presets`, as `make smoke` and `make eval-harness` show.
+- [x] **AC7.** The README, `docs/` and Preset Alternatives' issue body state the link invocation and `--pick`, and none mentions `--presets`, as a search of each and `make links` show.
 
 ## References
 
