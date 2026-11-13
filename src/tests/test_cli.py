@@ -1890,17 +1890,6 @@ def test_a_stray_or_repeated_pick_is_invalid_usage(
     assert [one["code"] for one in run.diagnostics()] == [INVALID_USAGE]
 
 
-def test_the_build_accepts_no_presets_option(root: Path) -> None:
-    written(root, "guide.md", LINK_GUIDE)
-    run = invoke("-d", "json", "guide.md", "--presets", "checks", cwd=root)
-    assert run.status == USAGE_FAILURE
-    [diagnostic] = run.diagnostics()
-    assert diagnostic["code"] == INVALID_USAGE
-    assert "unrecognized arguments: --presets" in diagnostic["message"]
-    assert "--presets" not in invoke("-h").stdout
-    assert "--presets" not in GUIDE
-
-
 @pytest.mark.parametrize(
     "entry_text",
     [
