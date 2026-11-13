@@ -50,6 +50,7 @@ Each line names a candidate unit the dependency check prints and why its rows st
 - E00:W02 and E00:W03 stay split: placement is proven on the bootstrap pair before their prompts change.
 - E01:W01, E01:W02, E01:W03, E01:W04, E01:W05 and E01:W06 stay split: each converts one family with its own corpus fixtures, the retirement lands only once every family runs as skills, and one pull request for all of it is too large to review.
 - E01:W01 and E01:W06 stay split: the retirement removes the forms the diagram family converts from, so it waits on the conversion.
+- E02:W01 and E02:W02 stay split: the deletion leaves the runbook with its rubric and stop rules alone, and the new section is written and reviewed against that runbook.
 - E02:W01, E02:W02, E02:W03 and E02:W04 stay split: the deletion and the section are design work, the shakedown and the baseline are paid runs under the runbook, and each run starts only on what the row before it committed.
 
 ## Dependency Check
