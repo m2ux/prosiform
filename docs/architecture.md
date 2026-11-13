@@ -176,7 +176,8 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 | `access` | Reads a source, or its frontmatter alone, through a rooted, no-follow directory walk, never past the budget it is given. |
 | `source` | Holds one source: removes its byte-order mark and frontmatter, indexes its headings and their slugs, and lists its regions and the links it uses. |
 | `metadata` | Decodes a frontmatter block's YAML into conversion settings: presets, `group` pairs and `subst` pairs. |
-| `tags` | Normalizes complete comma-separated preset names for link titles and the entry's `--presets` argument. |
+| `entry` | Reads the command-line entry: a published Markdown link, `click` line or class diagram `link` line, through the readers that read an authored link, or a plain path. |
+| `tags` | Normalizes complete comma-separated preset names for link titles and the entry's `--pick`. |
 | `marks` | Reads the operator marks a link's text opens with, and splits a diagram link's tooltip into its operator and its title. |
 | `profile` | Configures the `prosiform-markdown` parser, reads the diagram links in `mermaid` fences as uses, and refuses what the profile does not admit. |
 | `closure` | Normalises each reference from the file that writes it, classifies it by its target's declaration, and reads its operators and any directive label. |
