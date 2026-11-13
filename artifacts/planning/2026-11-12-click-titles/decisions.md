@@ -62,6 +62,15 @@ Hoisted from [#747](https://github.com/m2ux/prosiform/issues/747), 2026-11-13, b
 5. **`priority: 2`.** Beside E00, ahead of the release's `priority: 1`.
 6. **Task-level edges to E00.** Each row names the E00 row it consumes; the initiative edge E01 on E00 is overbroad, so the release names both epics.
 
+## Alignment
+
+By the user's decisions, 2026-11-13, on the I17 alignment findings.
+
+1. **Cutting a release states the tag target within E02.** The procedure tags the version commit, while the project tags the release merge on `main`. E02 gains W00, which states that the release pull request merges before tagging and the tags name that merge, and AC4; W01 depends on W00. Set aside: a Non-Goal keeping the procedure as written; tagging the version commit.
+   - **Re-pin pending.** Once W00 lands on `main`, the initiative's R3 and E02's R2 are re-pinned to that commit.
+2. **Open criteria hold one condition each.** The initiative's AC3 splits into AC3 and AC5, and its AC4 into AC4, AC6 and AC7; E02's AC2 splits into AC2 and AC5. Delivered criteria stay as written.
+3. **Review fixes take no row.** #756 stays without an E01 row, as E00's review fixes did.
+
 ## Dependency Check
 
 Recorded in [Goal trace](goal-trace.md#checks).

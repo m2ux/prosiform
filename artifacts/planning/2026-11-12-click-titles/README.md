@@ -27,6 +27,7 @@ This initiative reads a click's tooltip as its link's title: marks opening it st
 | [Link fixtures work item](../2026-11-13-750-i17-e01-w01-pf-reads-a-published/w02.md) | E01's corpus fixtures for link entries |
 | [Link checks work item](../2026-11-13-750-i17-e01-w01-pf-reads-a-published/w03.md) | E01's checks and eval harness passing links |
 | [Link documentation work item](../2026-11-13-750-i17-e01-w04-documentation-states-one-invocation/w04.md) | E01's documentation stating one invocation instruction |
+| [Release procedure work item](e02/w00.md) | Cutting a release stating the release merge as the tag target |
 | [Release work item](e02/w01.md) | The release branch, version, pull request and tags |
 | [Board placement](board.json) | The Initiative and Epic options added on the Python board, each item placed at Backlog, the I15 E02 and I16 field fill and the Advance result |
 
