@@ -99,7 +99,7 @@ A run cannot pick for a link it compiles, so the token is accepted on a deferral
 
 The run publishing a deferral reads its target's declaration and checks the deferral's pick against it, since every other form fails the later run. A deferral naming a document that declares alternatives names exactly one of them or carries `?`, never both and never neither, and a `?` deferral whose target declares no alternative is refused. Each refusal publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT` and exit status `1`, naming the link and its source location, as the operator refusals do, because the defect is in the source the run read.
 
-The design's [Presets](https://github.com/m2ux/prosiform/blob/6c47199e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/6c47199e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
+The design's [Presets](https://github.com/m2ux/prosiform/blob/0d18a0650/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/0d18a0650/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
 
 ## Diagram links
 

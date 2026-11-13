@@ -292,8 +292,6 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "from the directory pf compiled that bundle in.",
         "Resolve a link in a source document from that document, "
         "then express it from the working directory",
-        "A Mermaid click or link line's title is its tooltip less "
-        "the marks opening it and the blank after them.",
         "\u21b3 names a section to inline",
         "keep it in context",
         "\u21c9 names a bundle to hand on",

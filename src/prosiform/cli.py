@@ -334,9 +334,8 @@ Compiling a link:
   Run a link in a bundle as written, from the directory pf compiled that
   bundle in. Resolve a link in a source document from that document,
   then express it from the working directory; include the file for
-  #fragments. A Mermaid click or link line's title is its tooltip less
-  the marks opening it and the blank after them. Pass title tags as one
-  quoted --presets value, also for deferred links:
+  #fragments. Pass title tags as one quoted --presets value, also for
+  deferred links:
 
     pf modes/review.md#review --presets 'checks, final draft'
 
