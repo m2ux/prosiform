@@ -13,6 +13,7 @@ The latest pair, `contract/v0.24.0` and `python/v0.24.0`, reads past a click's t
 | Artifact | What it holds |
 | --- | --- |
 | [Release work item](../2026-11-12-click-titles/e02/w01.md) | The branch, version commit, number, pull request and tags |
+| [test-results.md](test-results.md) | The checks run on W01, the previous corpus run and the prepared tag messages |
 
 ## Links
 
