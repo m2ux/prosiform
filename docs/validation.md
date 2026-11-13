@@ -73,7 +73,7 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 ## What a run refuses
 
-Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/9f1a8e2b5/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
+Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/6c47199e6/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
 
 | Check | Code | Exit |
 | --- | --- | --- |
