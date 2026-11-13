@@ -1,0 +1,15 @@
+description = "A repeated --pick beside a link entry whose title carries ? fails with E_INVALID_USAGE, even when both name one alternative, without publication."
+
+clauses = ["CLI contract", "CLI contract — --pick ALTERNATIVE", "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination"]
+
+[invocation]
+cwd = "source"
+arguments = ["[Guide](guide.md \"?\")", "--pick", "epic", "--pick", "epic"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_USAGE"
+message_contains = ["--pick"]

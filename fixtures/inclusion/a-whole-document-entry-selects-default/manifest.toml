@@ -1,9 +1,10 @@
-description = "A whole-document entry without --presets applies default. Heading words supply no selection, so its Checks preset remains unused and warns."
+description = "A whole-document entry written as a plain path selects no named preset and applies default. Heading words supply no selection, so its Checks preset remains unused and warns."
 
 clauses = [
   "Presets — A preset nothing selected warns",
-  "Presets — A command-line entry reads the file it names",
+  "Presets — A command-line entry selects as a link does",
   "Presets — default always applies",
+  "Link entries — A plain path",
   "Grouping — Group membership",
 ]
 

@@ -1,8 +1,9 @@
-description = "The agent reruns the published command with ? replaced by task, one alternative the listing names. The kind router compiles with task in force, its routing pair stands task-body.md in for body.md with no warning, and the bundle carries the pick's preset qualifier. The last step of a pick, for the task alternative."
+description = "After the listing, the agent reruns pf on the same published ? link with --pick task, one alternative the listing names, which stands where ? stands. The kind router compiles with task in force, its routing pair stands task-body.md in for body.md with no warning, and the bundle carries the pick's preset qualifier. The last step of a pick, for the task alternative."
 
 clauses = [
   "Presets — The agent's pick",
   "Presets — Alternatives",
+  "Link entries — The pick",
   "Link classification and resource handling — The substitution mapping",
   "Automatic output names, a selection is named by its path",
   "Exit status and JSON diagnostics — 0",
@@ -10,7 +11,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["work-kind.md#populate-body", "--presets", "task"]
+arguments = ["[Populate the body](work-kind.md#populate-body \"?\")", "--pick", "task"]
 
 [expected]
 exit_status = 0

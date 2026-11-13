@@ -1,4 +1,4 @@
-description = "A mode in modes/ defers a section of the kind router work-kind.md with the pick token ? as its title. The bundle publishes the link rebased to the working directory with its title as authored, so its command is pf work-kind.md#populate-body --presets '?' from that directory. The first step of a pick, which the router's listing and each pick's bundle follow."
+description = "A mode in modes/ defers a section of the kind router work-kind.md with the pick token ? as its title. The bundle publishes the link rebased to the working directory with its title as authored, so pf runs on it as written from that directory. The first step of a pick, which the router's listing and each pick's bundle follow."
 
 clauses = [
   "Presets — The agent's pick",

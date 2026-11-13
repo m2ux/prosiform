@@ -1,14 +1,14 @@
-description = "A later `noted.md#draft --presets Draft` invocation selects the target document's Draft preset and places the section under Drafts. Its heading supplies no selection."
+description = "A link entry to noted.md#draft titled Draft selects the target document's Draft preset and places the section under Drafts. Its heading supplies no selection."
 
 clauses = [
   "Presets — A preset nothing selected warns",
-  "Presets — A command-line entry reads the file it names",
+  "Presets — A command-line entry selects as a link does",
   "Conversion metadata — Selection boundary",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["noted.md#draft", "--presets", "Draft"]
+arguments = ["[the draft notes](noted.md#draft \"Draft\")"]
 
 [expected]
 exit_status = 0

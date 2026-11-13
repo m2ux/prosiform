@@ -1,4 +1,4 @@
-description = "The entry declares Draft, and its command supplies no matching --presets name. Draft governs nothing, so the run warns once and publishes."
+description = "The entry declares Draft, and its plain path selects no named preset. Draft governs nothing, so the run warns once and publishes."
 
 clauses = [
   "Presets — A preset nothing selected warns",

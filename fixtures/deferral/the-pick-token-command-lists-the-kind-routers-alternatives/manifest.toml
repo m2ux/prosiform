@@ -1,15 +1,16 @@
-description = "The command the mode's bundle publishes for its ? link passes the title as --presets. ? matches no preset, so no alternative of the kind router is in force and the run answers with the listing: each alternative beside its choice line, in declaration order, for the agent to pick from. The second step of a pick."
+description = "pf runs on the ? link the mode's bundle publishes, as written and with no --pick. ? matches no preset, so no alternative of the kind router is in force and the run answers with the listing: each alternative beside its choice line, in declaration order, for the agent to pick from, and its remedy is a rerun with --pick. The second step of a pick that waits for the listing."
 
 clauses = [
   "Presets — The agent's pick",
   "Presets — Exactly one alternative",
+  "Link entries — A link entry",
   "Metadata failures — E_ALTERNATIVE_UNRESOLVED",
   "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["work-kind.md#populate-body", "--presets", "?"]
+arguments = ["[Populate the body](work-kind.md#populate-body \"?\")"]
 
 [expected]
 exit_status = 2

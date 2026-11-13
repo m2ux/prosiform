@@ -12,7 +12,9 @@ arguments = ["-h"]
 [expected]
 exit_status = 0
 stdout_contains = [
-  "pf [OPTIONS] REF [--presets PRESETS]",
+  "pf [OPTIONS] REF [--pick ALTERNATIVE]",
+  "a link as a bundle publishes it, or",
+  "the alternative for an entry whose title carries ?",
   "default 256",
   "compilation, validation, or informational",
   "dependency, policy, safety, or resource-limit failure",

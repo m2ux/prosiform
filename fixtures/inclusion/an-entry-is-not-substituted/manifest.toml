@@ -3,7 +3,7 @@ description = "An entry reference whose own default preset states subst: [{entry
 clauses = [
   "Link classification and resource handling — The substitution mapping",
   "Automatic output names, the run is named for the path the caller wrote",
-  "Presets — A command-line entry reads the file it names",
+  "Presets — A command-line entry selects as a link does",
   "Exit status and JSON diagnostics — 0",
 ]
 
