@@ -36,14 +36,14 @@ A link's presets are fixed when its author writes the link, so a document generi
 | --- | --- | --- | --- | --- |
 | [E00](https://github.com/m2ux/prosiform/issues/708) | Declared Alternatives | AC1, AC2, AC3, AC4, AC5 | | ✓ |
 | [E01](https://github.com/m2ux/prosiform/issues/709) | Agent Pick | AC1, AC2, AC4, AC5 | [E00](https://github.com/m2ux/prosiform/issues/708) | ✓ |
-| [E02](https://github.com/m2ux/prosiform/issues/733) | Pick Scoring | AC4 | | |
+| [E02](https://github.com/m2ux/prosiform/issues/733) | Pick Scoring | AC4 | | ✓ |
 
 ## Acceptance Criteria
 
 - [x] **AC1.** A document generic over a kind compiles for the one kind picked for it, by its author's link or by the agent following the bundle, as the fixture corpus shows.
 - [x] **AC2.** A pick left missing, unknown or plural fails before any bundle is published, as the fixture corpus shows.
 - [x] **AC3.** Routing by kind warns only for a route no link of its document names, as the fixture corpus shows.
-- [ ] **AC4.** An agent following a bundle resolves a pick left to it from what the bundle and `pf` print, without reading a source, as the router fixtures, the bare-command test and the agent-pick scoring of both pick paths show.
+- [x] **AC4.** An agent following a bundle resolves a pick left to it from what the bundle and `pf` print, without reading a source, as the router fixtures, the bare-command test and the agent-pick scoring of both pick paths show.
 - [x] **AC5.** The documentation and the v1 design state each rule of alternatives and picks the build enforces, as `make links` and a read of the documentation show.
 
 ## Non-Goals

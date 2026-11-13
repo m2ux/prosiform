@@ -27,3 +27,4 @@ The agent-pick scenarios score a pick by either path the guide gives an agent: `
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-preset-alternatives) — the decisions placing this epic and moving the real-use agent-pick run to the real-use eval.
 - **R2.** [Agent-pick scenarios accept a first-run pick](https://github.com/m2ux/prosiform/issues/754) — the scoring gap the first-run pick opened.
 
+
