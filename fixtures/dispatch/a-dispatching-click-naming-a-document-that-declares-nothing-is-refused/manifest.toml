@@ -1,0 +1,21 @@
+description = "A Mermaid click whose tooltip is the dispatch mark names a document whose frontmatter declares no prosiform, so the operator states no compilation the run can carry out: the run refuses the click, naming it by its keyword and node, and publishes no bundle."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — An operator's target",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "notes.md"
+message_contains = ["the link 'click A'", "declares no prosiform"]
+source = "guide.md:10"
+chain = ["guide.md", "notes.md"]
