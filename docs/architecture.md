@@ -63,7 +63,7 @@ flowchart LR
 
 ## Selection
 
-Following the links answers which files join the bundle. Each Markdown link occurrence's title selects its target's named presets above `default`; the entry supplies its selection through `--presets`. Headings and visible labels select nothing, and outgoing links carry their own selections. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and settles them into one [**selection**](selection.md), ordered by where each document was first named.
+Following the links answers which files join the bundle. Each Markdown link occurrence's title selects its target's named presets above `default`; a link entry's title selects for the entry, and a plain path selects none. Headings and visible labels select nothing, and outgoing links carry their own selections. It also has to answer which part of each file, and in what order — a reference may name a whole document or one section, and two references may name overlapping material. The run follows references until nothing new is reachable, keeps each region once, and settles them into one [**selection**](selection.md), ordered by where each document was first named.
 
 ```mermaid
 flowchart LR
