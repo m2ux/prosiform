@@ -428,6 +428,7 @@ def read_starts(workspace: Path) -> tuple[Start, ...]:
 
 SHELL_TOKEN = re.compile(
     r"(?P<space>[^\S\n]+)"
+    r"|(?P<duplicate>[0-9]*[<>]&(?:[0-9]+-?|-)(?=[\s;|&<>]|\Z))"
     r"|(?P<redirect>[0-9]*(?:>>|>\||<>|[<>]&|[<>]))"
     r"|(?P<separator>&&|\|\||[;|&\n])"
     r"|(?P<word>(?:'[^']*'|\"(?:\\.|[^\"\\])*\"|\\.|[^\s;|&<>\"'\\])+)",
@@ -438,7 +439,8 @@ def _commands(command: str) -> list[list[str] | None]:
     """Read literal shell words and redirects without evaluating shell input.
 
     Redirection operators and their one operand belong to the shell, not
-    the compiler grammar. Quoted or escaped operators remain argument text.
+    the compiler grammar; a duplication carries its descriptor as its
+    operand. Quoted or escaped operators remain argument text.
     An incomplete token or redirect invalidates its command segment.
     """
     found: list[list[str] | None] = []
@@ -457,6 +459,9 @@ def _commands(command: str) -> list[list[str] | None]:
         if token.lastgroup == "separator":
             found.append(None if invalid or redirect else words)
             words, redirect, invalid = [], False, False
+        elif token.lastgroup == "duplicate":
+            invalid = invalid or redirect
+            redirect = False
         elif token.lastgroup == "redirect":
             invalid = invalid or redirect
             redirect = True

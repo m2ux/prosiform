@@ -1118,6 +1118,41 @@ def test_invalid_command_usage_satisfies_no_compile(command: str) -> None:
     assert compiles(item, (command,), ()) == Failure.UNCOMPILED
 
 
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pf target.md 2>&1>out",
+        "pf target.md 2>&1>>guide.log",
+        "pf target.md >out 2>&1>&2",
+        "pf target.md 2>&- <&0 >out",
+        "pf target.md 3>&1- >out",
+    ],
+)
+def test_a_duplicated_descriptor_is_its_redirects_operand(command: str) -> None:
+    expected = Compile(None, "target.md")
+    item = Scenario("adjacent", {}, (), compile=(expected,))
+    assert pf_runs((command,)) == [expected]
+    assert compiles(item, (command,), ()) is None
+
+
+@pytest.mark.parametrize(
+    "command",
+    [
+        "pf target.md 2>&1>",
+        "pf target.md >&",
+        "pf target.md 2>& >out",
+        "pf target.md > 2>&1",
+        "pf target.md >& 2>&1",
+        "pf target.md 2>&1 <",
+        "pf target.md <<< >out",
+    ],
+)
+def test_a_malformed_adjacent_redirection_satisfies_no_compile(command: str) -> None:
+    item = Scenario("adjacent", {}, (), compile=(Compile(None, "target.md"),))
+    assert pf_runs((command,)) == [None]
+    assert compiles(item, (command,), ()) == Failure.UNCOMPILED
+
+
 @pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
 def test_information_satisfies_neither_guide_nor_compile(option: str) -> None:
     tagged = f"""pf {option} '[Target](target.md "checks")'"""
