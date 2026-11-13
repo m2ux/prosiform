@@ -64,8 +64,11 @@ run on a deferred line of its bundle compiles states.
 A scenario also lists the `pf` runs a correct run makes: one
 `[[scenario.compile]]` table per run, in the order the walk makes them,
 naming in `by` the section of the trace whose sub-agent makes it, absent
-for the session's own, in `entry` its one reference and in `presets` the
-link title's comma-separated names. A run with no entry is bare `pf`.
+for the session's own, in `entry` its one reference, in `presets` the
+comma-separated names of the title of the link it runs, and in `pick` the
+alternative it passes with `--pick` where that title carries `?`. A run
+with no entry is bare `pf`, and one with no title runs its reference as a
+plain path.
 A reference resolves from the directory a shell form runs `pf`
 in, so a run naming a document that is not there states no run of the
 workflow.
@@ -104,10 +107,10 @@ edge taken.
 
 A deferral whose title carries the pick token `?` leaves the pick among its
 target's alternatives to the agent: the run on its line answers with the
-alternatives and their choice lines, and the walk reruns it with `?`
-replaced by the alternative whose choice line an input holds, or by the one
-the target declares last where no input holds one, which stands for any
-other work. The step writing the deferral names, as `inputs/<file>`, the
+alternatives and their choice lines, and the walk reruns it with `--pick`
+naming the alternative whose choice line an input holds, or the one the
+target declares last where no input holds one, which stands for any other
+work. The step writing the deferral names, as `inputs/<file>`, the
 input describing the work it picks for.
 
 A document under an `undeclared/` directory declares no `prosiform`, so a
@@ -119,6 +122,7 @@ other document declares.
 import hashlib
 import json
 import re
+import shlex
 import shutil
 import subprocess
 import tomllib
@@ -601,22 +605,39 @@ class Compile:
     `by` is the section of the trace whose sub-agent makes the run, as
     `<document>#<heading>`, or nothing for the session's own. `entry` is one
     `<document>[#<fragment>]` from the shell form's directory, or nothing for
-    bare `pf`. `presets` holds normalized complete names from the link title.
-    Output and diagnostic options are the agent's to choose.
+    bare `pf`. `presets` holds normalized complete names from the title of
+    the link the run names its entry by, and `pick` the alternative standing
+    for `?` among them. Output and diagnostic options are the agent's to
+    choose.
     """
 
     by: str | None
     entry: str | None = None
     presets: frozenset[str] = frozenset()
+    pick: str | None = None
+
+    @property
+    def tags(self) -> frozenset[str]:
+        """The names the run selects, its pick standing where `?` stands."""
+        if self.pick is None:
+            return self.presets
+        return self.presets - {PICK} | read_tags(self.pick)
 
     @property
     def args(self) -> tuple[str, ...]:
-        """The command's entry and preset options as shell words."""
+        """The command's entry and pick as shell words.
+
+        A run with title names enters by the link a bundle publishes to its
+        reference; one without enters by the reference as a plain path.
+        """
         if self.entry is None:
             return ()
+        if not self.presets:
+            return (self.entry,)
+        title = ",".join(sorted(self.presets))
         return (
-            f"{self.entry}",
-            *((f"--presets={','.join(sorted(self.presets))}",) if self.presets else ()),
+            f'[Entry]({self.entry} "{title}")',
+            *(("--pick", self.pick) if self.pick is not None else ()),
         )
 
     def selection(self, root: Path) -> tuple[str | None, str | None, frozenset[str]]:
@@ -626,13 +647,11 @@ class Compile:
 
 def effective_presets(root: Path, run: Compile) -> frozenset[str]:
     """Declared named presets selected by one explicit request."""
-    if run.entry is None or not run.presets:
+    if run.entry is None or not run.tags:
         return frozenset()
     path = root / run.entry.partition("#")[0]
     conversion = declaration(path.read_text(), file=str(path))
-    return frozenset(
-        preset.name for preset in matching_presets(conversion, run.presets)
-    )
+    return frozenset(preset.name for preset in matching_presets(conversion, run.tags))
 
 
 @dataclass(frozen=True)
@@ -994,15 +1013,20 @@ def read_compile(row: dict[str, object], named: str) -> Compile:
     by = row.get("by")
     entry = row.get("entry")
     presets = row.get("presets")
+    pick = row.get("pick")
     if by is not None and not isinstance(by, str):
         raise CorpusError(f"{named}: a run's by is {by!r}, not a section")
     if entry is not None and not isinstance(entry, str):
         raise CorpusError(f"{named}: a run's entry is {entry!r}, not a reference")
     if presets is not None and (not isinstance(presets, str) or entry is None):
         raise CorpusError(f"{named}: a run's presets need an entry and a string list")
-    if set(row) - {"by", "entry", "presets"}:
-        raise CorpusError(f"{named}: a run's fields are entry, presets and by")
-    return Compile(by, entry, read_tags(presets))
+    if pick is not None and (
+        not isinstance(pick, str) or not picks(read_tags(presets))
+    ):
+        raise CorpusError(f"{named}: a run's pick needs presets carrying {PICK}")
+    if set(row) - {"by", "entry", "presets", "pick"}:
+        raise CorpusError(f"{named}: a run's fields are entry, presets, pick and by")
+    return Compile(by, entry, read_tags(presets), pick)
 
 
 def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
@@ -1160,21 +1184,22 @@ def bundle(
     succeeds, and every other bundle the run writes sits beside it in the
     same folder.
     """
-    return compile_reference(workflow.form(form), workflow.entry, output)
+    return compile_reference(workflow.form(form), Compile(None, workflow.entry), output)
 
 
 def compile_reference(
-    root: Path, reference: str, output: Path, presets: frozenset[str] = frozenset()
+    root: Path, run: Compile, output: Path
 ) -> subprocess.CompletedProcess[bytes]:
-    """The `pf` run compiling one reference from `root` under `output`.
+    """The `pf` run one stated run makes from `root` under `output`.
 
-    Its entry's bundle is `output / entry_bundle(reference)` once it succeeds.
+    Its entry's bundle is `output / entry_bundle(run.entry, presets)` once it
+    succeeds, `presets` being the run's effective declared names.
     """
     command = shutil.which("pf")
     if command is None:
         raise CorpusError("no pf command is on the path to bundle a form with")
     return subprocess.run(
-        [command, *Compile(None, reference, presets).args, "-o", str(output)],
+        [command, *run.args, "-o", str(output)],
         cwd=root,
         capture_output=True,
         check=False,
@@ -1477,8 +1502,9 @@ def compiled_walk(
     and runs `pf` from them on each `↳` line a state's steps reach, as a
     session does, so the runs are the ones a correct
     session makes and the path is the one the bundles they write state. A
-    line leaving the pick to the agent takes two runs: the one its title
-    states, which lists the alternatives, then the one `picked` makes. Each
+    line leaving the pick to the agent takes two runs: the link as written,
+    which lists the alternatives, then the link with the `--pick` that
+    `picked` makes. Each
     run writes under `output`, and one failing is a fault.
     """
     entry = output / "entry"
@@ -1491,15 +1517,12 @@ def compiled_walk(
     def compiled(request: Compile) -> subprocess.CompletedProcess[bytes]:
         runs.append(request)
         assert request.entry is not None
-        return compile_reference(
-            root, request.entry, output / f"run-{len(runs)}", request.presets
-        )
+        return compile_reference(root, request, output / f"run-{len(runs)}")
 
     def activate(request: Compile) -> str:
         made = compiled(request)
         if picks(request.presets):
-            pick = picked(request, made, inputs)
-            request = replace(request, presets=request.presets - {PICK} | {pick})
+            request = replace(request, pick=picked(request, made, inputs))
             made = compiled(request)
         reference = request.entry
         assert reference is not None
@@ -1533,15 +1556,14 @@ def picked(
     listing absent, or two choice lines held, is a fault.
     """
     stderr = made.stderr.decode()
+    command = shlex.join(("pf", *request.args))
     if made.returncode != 2 or UNRESOLVED not in reported(made.stderr):
-        raise CorpusError(
-            f"pf {request.entry} --presets ? lists no alternatives: {stderr}"
-        )
+        raise CorpusError(f"{command} lists no alternatives: {stderr}")
     listed: list[tuple[str, str]] = ALTERNATIVE.findall(
         stderr.partition(f"{UNRESOLVED}:")[2]
     )
     if not listed:
-        raise CorpusError(f"pf {request.entry} --presets ? lists no alternatives")
+        raise CorpusError(f"{command} lists no alternatives")
     held = [
         name
         for name, choice in listed

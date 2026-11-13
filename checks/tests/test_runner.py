@@ -275,7 +275,7 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
 ) -> None:
     fixture = write_fixture(
         tmp_path / "fixture",
-        arguments=("guide.md#alpha", "--presets", "checks,draft"),
+        arguments=('[Alpha](guide.md#alpha "checks,?")', "--pick", "draft"),
     )
     record = tmp_path / "argv"
     configure(monkeypatch, recording(record))
@@ -283,9 +283,9 @@ def test_the_run_receives_the_allowed_root_and_the_diagnostic_format(
     assert record.read_text(encoding="utf-8").splitlines() == [
         "-d",
         "json",
-        "guide.md#alpha",
-        "--presets",
-        "checks,draft",
+        '[Alpha](guide.md#alpha "checks,?")',
+        "--pick",
+        "draft",
     ]
 
 

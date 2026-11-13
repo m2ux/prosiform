@@ -182,6 +182,11 @@ def version(environment: Path, elsewhere: Path) -> str:
     return response.strip()
 
 
+def link(entry: str, title: str) -> str:
+    """The Markdown link a bundle publishes to an entry under a title."""
+    return f'[Entry]({entry} "{title}")'
+
+
 def derived(entry: str) -> str:
     """The name a run gives one entry's folder and bundle, from its path.
 
@@ -255,13 +260,15 @@ def publishes(environment: Path, elsewhere: Path, sources: Path) -> None:
         raise Failed("check mode published a bundle")
     for arguments in (
         (entry, entry + "#guide"),
-        (entry, "--presets", "", "--presets", "checks"),
-        ("--presets", "checks"),
+        (link(entry, "?"), "--pick", "checks", "--pick", "checks"),
+        ("--pick", "checks"),
+        (entry, "--pick", "checks"),
+        (link(entry, "checks"), "--pick", "checks"),
     ):
         run = invoke(environment, elsewhere, *arguments)
         if run.returncode != 2 or run.stdout or list(elsewhere.iterdir()):
             raise Failed("the installed single-entry grammar accepts invalid usage")
-    run = invoke(environment, elsewhere, entry, "--presets", "unknown,default,,")
+    run = invoke(environment, elsewhere, link(entry, "unknown,default,,"))
     succeeded(run, "unknown preset selection")
     if run.stdout or run.stderr or not (elsewhere / run_folder(name)).is_dir():
         raise Failed("unknown presets change installed-command output")
@@ -295,20 +302,14 @@ def ships_glossary(environment: Path) -> Path:
 
 
 def selects_presets(environment: Path, elsewhere: Path, sources: Path) -> None:
-    """The installed command selects a declared preset and qualifies its filename."""
+    """A link title selects a declared preset, which qualifies the filename."""
     target = sources / "selected.md"
     target.write_text(
         "---\nprosiform:\n  checks:\n    group: {reviews: 1}\n---\n"
         "# Selected\n\nInstalled preset selection.\n"
     )
     entry = os.path.relpath(target, elsewhere)
-    run = invoke(
-        environment,
-        elsewhere,
-        entry,
-        "--presets",
-        " CHECKS,unknown,,checks ",
-    )
+    run = invoke(environment, elsewhere, link(entry, " CHECKS,unknown,,checks "))
     reported(run, "installed preset selection")
     named = derived(entry) + (
         "--p-46dbac18dd44ade7ab46ab6f42ed16b938b800a8c3608f3332f959c86cb848a0"

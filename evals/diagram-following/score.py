@@ -64,10 +64,14 @@ wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
 own sub-agent ran. A command is a
 `pf` run in each segment `;`, `&&`, `||` or `|` separate whose first word is
-`pf` or a path ending `/pf`. The compiler's grammar reads one positional entry and
-optional `--presets`; titles and arguments share complete-name normalization.
-A reference names a stated one when it is that reference or ends `/` and
-that reference, and its effective matching named presets agree. Informational
+`pf` or a path ending `/pf`. The compiler's own grammar and entry reader read
+its one positional entry, a published link or a plain path, and an optional
+`--pick`: a link's destination is the run's reference and its title the
+names it selects, the pick standing where `?` stands, and a plain path
+selects none. A run the compiler refuses, a stray or repeated `--pick`
+among them, compiles nothing. A reference names a stated one when it is
+that reference or ends `/` and that reference, and its effective matching
+named presets agree. Informational
 calls compile nothing and satisfy no bare guide run. Each agent's runs, the
 session's and each started sub-agent's, are held to the runs stated for it:
 
@@ -149,7 +153,7 @@ from prosiform.cli import (
 from prosiform.cli import (
     parser as command_parser,
 )
-from prosiform.tags import read as read_tags
+from prosiform.entry import published
 
 PF = "pf"
 
@@ -459,8 +463,10 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
 
     A run is a command whose first word is `pf` or a path ending `/pf`, since
     a command may name the build by a directory. The compiler's own grammar
-    reads its positional entry and its preset option, including an attached
-    value.
+    reads its positional entry and its pick, and its own entry reader the
+    link the entry publishes: the link's destination and title tags, or a
+    plain path carrying none. An entry the compiler refuses, a pick beside
+    an entry whose title carries no `?` among them, is invalid usage.
     """
     runs: list[Compile | None] = []
     for command in commands:
@@ -477,24 +483,24 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 continue
             if parsed.help or parsed.version or parsed.codes:
                 continue
-            if parsed.entry is None and len(words) > 1:
+            if parsed.entry is None:
+                runs.append(None if len(words) > 1 else Compile(None))
+                continue
+            try:
+                command_entry(parsed.entry, parsed.pick)
+            except CommandFailure:
                 runs.append(None)
-            else:
-                if parsed.entry is not None:
-                    try:
-                        command_entry(parsed.entry)
-                    except CommandFailure:
-                        runs.append(None)
-                        continue
-                runs.append(
-                    Compile(
-                        None,
-                        parsed.entry.removeprefix("./")
-                        if parsed.entry is not None
-                        else None,
-                        read_tags(parsed.presets),
-                    )
+                continue
+            link = published(parsed.entry)
+            destination = parsed.entry if link is None else link.destination
+            runs.append(
+                Compile(
+                    None,
+                    destination.removeprefix("./"),
+                    frozenset() if link is None else link.tags,
+                    parsed.pick,
                 )
+            )
     return runs
 
 
@@ -503,11 +509,11 @@ def _names(made: Compile | None, stated: Compile, root: Path | None) -> bool:
     if made is None:
         return False
     if made.entry is None or stated.entry is None:
-        return made.entry == stated.entry and made.presets == stated.presets
+        return made.entry == stated.entry and made.tags == stated.tags
     if not (made.entry == stated.entry or made.entry.endswith(f"/{stated.entry}")):
         return False
     if root is None or not (root / stated.entry.partition("#")[0]).is_file():
-        return made.presets == stated.presets
+        return made.tags == stated.tags
     return effective_presets(
         root, replace(made, entry=stated.entry)
     ) == effective_presets(root, stated)
