@@ -51,14 +51,15 @@ class NotOneLink(ValueError):
 def markdown_link(text: str) -> Link | None:
     """The one Markdown link a text holds and nothing else, where it holds one.
 
-    A text nested past the parser's ceiling reads as no link.
+    A heading holding a link, and a text nested past the parser's ceiling,
+    read as no link.
     """
     try:
         tokens = parse(text.strip())
     except Suppressed:
         return None
     inline = [token for token in tokens if token.type == "inline"]
-    if len(inline) != 1 or len(tokens) != 3:
+    if len(inline) != 1 or len(tokens) != 3 or tokens[0].type != "paragraph_open":
         return None
     children = inline[0].children or []
     if not children or children[0].type != LINK_OPEN or children[-1].type != LINK_CLOSE:

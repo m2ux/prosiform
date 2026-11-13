@@ -1898,6 +1898,9 @@ def test_a_stray_or_repeated_pick_is_invalid_usage(
         "[Plan](guide.md#plan) trailing",
         'Defer [the plan](guide.md#plan "checks").',
         'click Plan "guide.md#plan"; click Other "guide.md#other"',
+        "# [Plan](guide.md#plan)",
+        '###### [Plan](guide.md#plan "checks")',
+        "[Plan](guide.md#plan)\n---",
         "[" * 200 + "Plan" + "]" * 200 + "(guide.md#plan)",
     ],
 )
