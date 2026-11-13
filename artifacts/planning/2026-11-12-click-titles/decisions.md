@@ -43,7 +43,7 @@ Taken in Plan mode, 2026-11-12; each can be reopened.
 
 - **E00's bases.** `i17/e00/engineering` and `i17/e00/main`, cut 2026-11-12 from `engineering` at `f90d0cf` and `main` at `4cb6b5c`. `config/branches` is absent at both; the names come from `workspace`, which states `engineering`, `main` and `workspace`.
 - **E00's review pull requests open with the first task merge.** GitHub refuses a pull request between a base and the branch it was cut from, since there are no commits between them.
-- **E01 releases from `release/vX.Y.Z`.** By the user's decision, 2026-11-12, the release row follows [Cutting a release](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#cutting-a-release): a `release/vX.Y.Z` branch from `main`, pull-requested into `main`, with no `i17/e01/main` base. Set aside: an epic base for the release.
+- **E02 releases from `release/vX.Y.Z`.** By the user's decision, 2026-11-12, the release row follows [Cutting a release](https://github.com/m2ux/prosiform/blob/4cb6b5c4eda9fb6728b4a378714c474dc47eaf2d/docs/versioning.md#cutting-a-release): a `release/vX.Y.Z` branch from `main`, pull-requested into `main`, with no `i17/e02/main` base. Set aside: an epic base for the release.
 
 ## Joins
 
