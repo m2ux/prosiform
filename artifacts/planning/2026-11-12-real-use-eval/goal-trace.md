@@ -22,6 +22,11 @@ Ranked; the flagged ones most threaten the goal.
 3. **Flagged: discovery depends on harness flags.** The Claude harness disables skills today; E00 AC3 holds the change, and a host-managed configuration still reaches sessions, recorded by count and fingerprint as the README states.
 4. **Flagged: the eval runs mixed while E01 is open.** Converted families run as skills and the rest on bare prompts; a run in that window is no baseline, and E02 starts only after E01 W06.
 5. **Noted: the downstream edge.** The agent-pick remeasurement waits on E02 W02 (decision 13).
+6. **Open, flagged: two composition workflows lack a criterion.** E01 W04 converts `conditional-composition`, `directive-labels`, `dispatch-depth` and `subagent-first-run`; E01 AC4 names the last two alone, so initiative AC1 is not wholly made true for the first two.
+7. **Open: the tracing duty has no criterion.** Decision 9 and E00's Proposal put the shared tracing paragraph in every variant's `SKILL.md`; E00 W03 writes it, and no E00 criterion holds it.
+8. **Open: E00 AC1 reads two ways.** "The eval's harnesses are the agent CLIs whose documentation states native skill discovery" can also require every such CLI to become a harness.
+9. **Open: E02 W02 is design and a paid run.** The runbook section is design work and its shakedown a run under the runbook, while the Joins line splits W01 from W02 on that same distinction.
+10. **Open: initiative AC4 and AC5 restate E02 AC1 and AC3.** AC5 also omits decision 14's every workflow, which E02 AC3 alone states.
 
 ## Outside Threats
 
