@@ -22,3 +22,11 @@ Preset Alternatives' issue body states the pick as `--pick`, so no planned work 
 | Epic | [I17:E01 #750](https://github.com/m2ux/prosiform/issues/750) |
 | Initiative planning record | [Click Titles](../2026-11-12-click-titles/README.md) |
 | Build | [W01 to W03 #752](https://github.com/m2ux/prosiform/pull/752) |
+| Pull request | [[I17:E01] The documentation states one invocation instruction #755](https://github.com/m2ux/prosiform/pull/755) |
+| Epic review | [[I17:E01] Link Invocation #753](https://github.com/m2ux/prosiform/pull/753) |
+
+## Plan Changes
+
+| Change | Kind | State |
+| --- | --- | --- |
+| #707's Proposal bullet "The guide states the pick" still has the agent rerun with `?` replaced; the approved #707 edit covered only the deferral bullet and the Problem evidence | Folded work | Held: the user approved a minimal #707 edit |
