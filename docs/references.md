@@ -95,11 +95,11 @@ flowchart TD
 
 `?` among a link's title tags is the [pick token](glossary.md#references), alone as in `[¬ Populate Body](work-kind.md#populate-body "?")` or beside fixed tags as in `"checks, ?"`. It names no preset: it leaves the [pick](glossary.md#sources) among the target's alternatives to the agent compiling the link in a later run, which resolves it as the [guide](../invocation.md#guide) states.
 
-A run cannot pick for a link it compiles, so the token is accepted on a deferral, `¬` and `¬↳` alike, and refused on an ordinary link, a composition directive, a dispatch and a parallel dispatch naming a document that declares `prosiform`. A deferral publishes its title tags as authored, the token among them, so the command its destination and title spell carries it.
+A run cannot pick for a link it compiles, so the token is accepted on a deferral, `¬` and `¬↳` alike, and refused on an ordinary link, a composition directive, a dispatch and a parallel dispatch naming a document that declares `prosiform`. A deferral publishes its title tags as authored, the token among them, so the link the agent runs as written carries it, and `--pick` beside it names the alternative.
 
 The run publishing a deferral reads its target's declaration and checks the deferral's pick against it, since every other form fails the later run. A deferral naming a document that declares alternatives names exactly one of them or carries `?`, never both and never neither, and a `?` deferral whose target declares no alternative is refused. Each refusal publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT` and exit status `1`, naming the link and its source location, as the operator refusals do, because the defect is in the source the run read.
 
-The design's [Presets](https://github.com/m2ux/prosiform/blob/17c1f6e2f/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/17c1f6e2f/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
+The design's [Presets](https://github.com/m2ux/prosiform/blob/005b0ff1d/artifacts/planning/2026-10-17-prosiform-v1/design.md#presets) section states the agent's pick, and its [Link classification](https://github.com/m2ux/prosiform/blob/005b0ff1d/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) section states the pick token.
 
 ## Diagram links
 
