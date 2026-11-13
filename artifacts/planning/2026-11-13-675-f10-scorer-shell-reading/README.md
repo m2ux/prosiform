@@ -13,6 +13,7 @@ Both misreadings change a session's verdict, so a scored run can record a compil
 | Artifact | What it holds |
 | --- | --- |
 | [f10.md](f10.md) | The work item: the shell reading the scorer takes and the checks it carries |
+| [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
 
 ## Links
 
