@@ -41,6 +41,7 @@ Settled by the user, 2026-11-15.
 23. **The specimen is Work Planner, from its own cutover.** The `compiled` variant is the skill as [prosiform-skills #9](https://github.com/m2ux/prosiform-skills/issues/9) settles it and the `tree` variant the baseline revision that epic fixes, so E03 W01 depends on that epic whole. Set aside: a snapshot converted inside the eval; converting the live skill ahead of evidence as this initiative's work; a synthetic skill at Work Planner's scale.
 24. **E03 takes its own run.** Its shakedown and run are rows of E03, so the real-use baseline and the agent-pick run do not wait on another repository's epic. Set aside: one run covering the eval's workflows and Work Planner together.
 25. **The score is required context, tokens and reads.** A session passes on its request's context contract from the reading-route harness; the report compares the variants on pass rate, tokens and reads. Set aside: a grader for the finished standup, revision or overview, one per mode.
+26. **Work Planner keeps its own skill text.** E00 AC5 binds the skill texts the corpus writes; each Work Planner variant's `SKILL.md` is the file its revision holds, and its sessions are scored from `subagents.json`. Set aside: adding the tracing paragraph to both variants, which leaves the specimen no longer the skill as shipped.
 
 ## Planning
 
@@ -103,6 +104,5 @@ Details settled without a question and confirmed by the user, 2026-11-12.
 
 Raised 2026-11-15 with E03; each is settled before E03's first task starts.
 
-- **The tracing paragraph and Work Planner's own skill text.** E00 AC5 holds every skill text in the corpus to a shared tracing paragraph, and E03 places each revision's `SKILL.md` as it stands. Recommended: E00 AC5 binds the skill texts the corpus writes, and Work Planner's are scored from the session's record of reads, since a paragraph of the eval's changes the specimen. The alternative adds the paragraph to both variants.
 - **How each revision reaches the eval tree.** Recommended: one submodule per variant, pinned to its commit, as prosiform's workspace vendors the skill; the gitlink is the recorded commit and no copy goes stale. The alternative commits a copy of each revision.
 - **Which commits the variants name.** They follow the settled and baseline revisions [prosiform-skills #9](https://github.com/m2ux/prosiform-skills/issues/9) fixes, which that epic's own open question still holds.

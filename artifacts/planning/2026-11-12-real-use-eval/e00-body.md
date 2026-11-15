@@ -24,7 +24,7 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 - **The opening prompt is the scenario's task.**
   A skill workflow's `scenarios.toml` states a `task` in plain words, filled from the scenario's inputs, and the run sends it as the session's only prompt.
 - **The skill states the tracing duty.**
-  One paragraph every variant's `SKILL.md` shares states how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`.
+  One paragraph every `SKILL.md` the corpus writes shares states how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`.
 - **The bootstrap pair proves it end to end.**
   `bootstrap-audit` and `inline-bootstrap` move to the variant layout as the first product variants; the other workflows run as they do until their family converts.
 - **Every dispatched section states a state.**
@@ -45,7 +45,7 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 - [ ] **AC2.** Every skill session's workspace holds its variant's skill under the discovery root its harness's CLI documents, as the harness tests show.
 - [ ] **AC3.** A session's CLI offers the placed skill and no skill of the eval's configuration or the caller's, as the harness isolation tests show.
 - [ ] **AC4.** A skill session's opening prompt is its scenario's task in plain words, naming no file, skill or instruction, as the run tests show.
-- [ ] **AC5.** Every skill text in the corpus carries its workflow's shared tracing paragraph, stating how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`, as the corpus test shows.
+- [ ] **AC5.** Every skill text the corpus writes carries its workflow's shared tracing paragraph, stating how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`, as the corpus test shows.
 - [ ] **AC6.** Every section a bootstrap variant dispatches to a sub-agent states at least one state for the sub-agent to trace, as the corpus test shows.
 
 ## References

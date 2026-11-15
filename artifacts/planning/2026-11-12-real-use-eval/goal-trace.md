@@ -12,7 +12,7 @@
 | One baseline is measured on the skill-entry eval, over every workflow | AC5 | E02 | E02 AC2, AC3, AC4 | Decisions 5, 14, 19, 20 and 21 |
 | One skill of real size is measured compiled against plain on required context, tokens and reads | AC7 | E03 | E03 AC1–AC7 | Decisions 22 to 25 |
 
-The marked source is the record's [decisions](decisions.md), Confirmed 1 to 25.
+The marked source is the record's [decisions](decisions.md), Confirmed 1 to 26.
 
 ## Gaps
 
@@ -26,7 +26,7 @@ Ranked; the flagged ones most threaten the goal.
 6. **Noted: the cross-initiative edges.** The agent-pick remeasurement waits on E02 W03 (decision 13), and E02 W04 waits on I15's first-run scorer (decision 21).
 7. **Flagged: E03 waits on another repository's epic.** [prosiform-skills #9](https://github.com/m2ux/prosiform-skills/issues/9) is the last epic of an initiative whose every epic stands in Backlog, so E03 W01 cannot start until it closes; decision 24 keeps E00 to E02 clear of the wait.
 8. **Flagged: two revisions, two contracts.** The cutover's grain review may split, merge or move sections, so one request's contract differs between the revisions. E03 holds each variant to its own revision's contract, and E03 W02's analysis confirms each request requires the same content in both before the scores are compared.
-9. **Flagged: the skill text carries no tracing paragraph.** E00 AC5 binds every skill text in the corpus and E03 places the skill's own; the record's first open question holds the resolution.
+9. **Resolved.** E00 AC5 bound every skill text in the corpus while E03 places the skill's own; decision 26 holds AC5 to the texts the corpus writes.
 10. **Noted: discovery may differ between the variants.** The record's defaults give every variant of a workflow one name and description, and the two revisions' entry points may state different ones. E03 W01's review reads both and the README states any difference beside the comparison.
 11. **Noted: the baseline revision must hold the harness.** A baseline revision older than the reading-route harness states no contract of its own; E03 W01's analysis settles which commit supplies the `tree` variant's contract.
 
@@ -46,3 +46,4 @@ Ranked; the flagged ones most threaten the goal.
 - Dependencies: no problems; every candidate unit is named on a record line in [decisions](decisions.md#joins), and E02 W01 with W04 is split by rule.
 - Format with E03, 2026-11-15: the E03 draft reports nothing to fix, apply or decide; the initiative draft reports its E03 row unlinked, which publication resolves.
 - Dependencies with E03, 2026-11-15: no problems and no open candidate unit; E03's README rows are split by rule.
+- Saved bodies, 2026-11-15: the initiative, E00 and E03 as the tracker holds them match their drafts, report nothing to fix, apply or decide, and the dependency check over the saved bodies reports no problems. E03 stands at Backlog on the Python board with no priority label.

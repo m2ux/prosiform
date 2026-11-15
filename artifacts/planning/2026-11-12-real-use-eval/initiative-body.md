@@ -41,7 +41,7 @@ Each session starts from a prompt the eval writes, naming the file to read, whic
 | [E00](https://github.com/m2ux/prosiform/issues/735) | Skill Entry | AC1, AC2 | | |
 | [E01](https://github.com/m2ux/prosiform/issues/736) | Skill Variants | AC1, AC2, AC3 | | |
 | [E02](https://github.com/m2ux/prosiform/issues/737) | Real-Use Baseline | AC4, AC5, AC6 | [E01](https://github.com/m2ux/prosiform/issues/736) | |
-| E03 | Field Scale | AC7 | [I16:E07](https://github.com/m2ux/prosiform-skills/issues/9) | |
+| [E03](https://github.com/m2ux/prosiform/issues/771) | Field Scale | AC7 | [I16:E07](https://github.com/m2ux/prosiform-skills/issues/9) | |
 
 ## Acceptance Criteria
 
