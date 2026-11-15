@@ -10,6 +10,8 @@ A session starts from a skill its CLI discovers and opens with its task in plain
   [`instruction()`](https://github.com/m2ux/prosiform/blob/d6072b20cfd5541b3edfa561e15677404e0f4cf6/evals/diagram-following/workflow.py#L1134-L1145) picks one of three instruction files by form and puts the entry document's name in it.
 - **Only one form starts from a skill.**
   [`prepare()`](https://github.com/m2ux/prosiform/blob/d6072b20cfd5541b3edfa561e15677404e0f4cf6/evals/diagram-following/run.py#L440-L456) places a skill for `bootstrap` alone; every other form copies a tree or a bundle into the workspace.
+- **A bootstrap dispatch can leave its parent waiting.**
+  `bootstrap-audit`'s [`Source` and `Tests` sections](https://github.com/m2ux/prosiform/blob/main/evals/diagram-following/workflows/bootstrap-audit/skill/sources/review.md) are dispatched but state no state, so a sub-agent may trace nothing and the parent waits until the session cap ends it. Two of five repetitions of one scenario timed out in the bare-prompt baseline run, and the `bootstrap` form was left out of the committed baseline (R2).
 
 ## Proposal
 
@@ -25,6 +27,8 @@ A session starts from a skill its CLI discovers and opens with its task in plain
   One paragraph every variant's `SKILL.md` shares states how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`.
 - **The bootstrap pair proves it end to end.**
   `bootstrap-audit` and `inline-bootstrap` move to the variant layout as the first product variants; the other workflows run as they do until their family converts.
+- **Every dispatched section states a state.**
+  Each section a bootstrap variant hands to a sub-agent states at least one state for it to trace, so a scenario passes or fails on how the agent followed the workflow and its repetitions agree.
 
 ## Work Breakdown
 
@@ -33,6 +37,7 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w01.md) | Codex kept only with native discovery | AC1 | | | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w02.md) | Each harness places the session's skill | AC2, AC3 | W01 | | | |
 | [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e00/w03.md) | The opening prompt states the task | AC4, AC5 | W02 | | | |
+| W04 | Dispatched bootstrap sections state a state | AC6 | W03 | | | |
 
 ## Acceptance Criteria
 
@@ -41,8 +46,12 @@ A session starts from a skill its CLI discovers and opens with its task in plain
 - [ ] **AC3.** A session's CLI offers the placed skill and no skill of the eval's configuration or the caller's, as the harness isolation tests show.
 - [ ] **AC4.** A skill session's opening prompt is its scenario's task in plain words, naming no file, skill or instruction, as the run tests show.
 - [ ] **AC5.** Every skill text in the corpus carries its workflow's shared tracing paragraph, stating how a session records `trace.log`, names a sub-agent's trace and reads `answers.txt`, as the corpus test shows.
+- [ ] **AC6.** Every section a bootstrap variant dispatches to a sub-agent states at least one state for the sub-agent to trace, as the corpus test shows.
 
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the decisions and defaults behind the layout, the prompt and the tracing paragraph.
+- **R2.** [#656](https://github.com/m2ux/prosiform/issues/656) — the bootstrap timeouts, the empty sub-agent traces and why the `bootstrap` form is not in the baseline.
+
+
 

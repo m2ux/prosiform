@@ -28,7 +28,7 @@ The eval's committed records measure real use: the bare-prompt records leave, an
 | --- | --- | --- | --- | --- | --- | --- |
 | [W01](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w01.md) | Bare-prompt records and sections deleted | AC1 | [E01:W06](https://github.com/m2ux/prosiform/issues/736) | | | |
 | [W02](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w02.md) | Real-use baseline runbook section | AC4 | W01 | | | |
-| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w03.md) | Real-use baseline shakedown | AC2 | W02 | | | |
+| [W03](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w03.md) | Real-use baseline shakedown | AC2 | W02, [E00:W04](https://github.com/m2ux/prosiform/issues/735) | | | |
 | [W04](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w04.md) | The real-use baseline run and record | AC3 | W03, [I15:E02:W00](https://github.com/m2ux/prosiform/issues/733) | | | |
 | [W05](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-12-real-use-eval/e02/w05.md) | A real-use agent-pick run | AC5 | W03, [I15:E02:W00](https://github.com/m2ux/prosiform/issues/733) | | | |
 
@@ -44,5 +44,7 @@ The eval's committed records measure real use: the bare-prompt records leave, an
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the records decision and why the run rows stay apart.
 - **R2.** [Runbook](https://github.com/m2ux/prosiform/blob/d6072b20cfd5541b3edfa561e15677404e0f4cf6/evals/diagram-following/RUNBOOK.md) — the triage rubric and stop rules the run follows.
+
+
 
 

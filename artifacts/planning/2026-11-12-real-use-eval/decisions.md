@@ -4,6 +4,8 @@
 
 Confirmed by the user, 2026-11-12: every diagram-following eval scenario is a real-use scenario. A session starts from a skill placed where the agent's CLI discovers skills, and opens with the task in plain words. The CLI's own skill mechanism, name and description up front, `SKILL.md` on use and linked material on demand, is the disclosure the agent works under; the eval adds nothing to it. A bare prompt naming an entry file is not an eval.
 
+Extended by the user, 2026-11-15: one skill of real size, Work Planner, is measured compiled against plain on the context each request requires, tokens and reads, and the record is committed.
+
 ## Confirmed
 
 Settled by the user, 2026-11-12. Each names the options set aside.
@@ -33,6 +35,13 @@ Settled by the user at alignment, 2026-11-13, each as recommended.
 20. **Initiative AC5 names every workflow.** AC4 and AC5 stay as the goal's whole-initiative criteria, and AC5 states decision 14's every workflow. Set aside: keeping AC5 unchanged.
 21. **The baseline waits on the first-run scorer.** E02 W04 depends on `[I15:E02:W00]` (#733), so the baseline is never scored before the scorer accepts a first-run `--pick`.
 
+Settled by the user, 2026-11-15.
+
+22. **Field scale is an epic of this initiative.** The committed baseline ties on `bundle`, `tree`, `prose` and `linked`, every session passing, because each workflow is small enough to read whole; a measurement on a skill of real size joins I16 as E03, reusing its skill entry and runbook. Set aside: a standalone initiative after I16; one before it, measured from bare prompts; an adoption on-ramp ahead of any measurement.
+23. **The specimen is Work Planner, from its own cutover.** The `compiled` variant is the skill as [prosiform-skills #9](https://github.com/m2ux/prosiform-skills/issues/9) settles it and the `tree` variant the baseline revision that epic fixes, so E03 W01 depends on that epic whole. Set aside: a snapshot converted inside the eval; converting the live skill ahead of evidence as this initiative's work; a synthetic skill at Work Planner's scale.
+24. **E03 takes its own run.** Its shakedown and run are rows of E03, so the real-use baseline and the agent-pick run do not wait on another repository's epic. Set aside: one run covering the eval's workflows and Work Planner together.
+25. **The score is required context, tokens and reads.** A session passes on its request's context contract from the reading-route harness; the report compares the variants on pass rate, tokens and reads. Set aside: a grader for the finished standup, revision or overview, one per mode.
+
 ## Planning
 
 Taken in Plan mode, 2026-11-12; each can be reopened.
@@ -40,6 +49,13 @@ Taken in Plan mode, 2026-11-12; each can be reopened.
 - **The initiative takes I16**, I15 being the highest of any state.
 - **No lanes.** Every row extends the runner, the corpus test or the README, so rows land one at a time on each epic's base.
 - **Thirteen rows and fifteen criteria.** E00 three rows and five criteria, E01 six and six, E02 four and four.
+
+Taken in Plan mode, 2026-11-15; each can be reopened.
+
+- **Field scale is E03**, six rows and seven criteria, with initiative AC7. It takes no lanes and no priority label, as the initiative's other epics do.
+- **E03's edges are rows.** E03 W01 names E00 W03 and the outside epic; E03 W04 names E02 W02 for the runbook's cap rule. The initiative row names the outside epic alone: E00 holds a row E03 does not consume, so no whole-epic edge on it is derived.
+- **The outside epic is written `[I16:E07]`.** The board reader resolves that form by its link, where a bare `#9` is read against this repository, whose issue 9 is closed.
+- **The record's drafts follow the live bodies.** E00's draft takes its W04 row and AC6, E02's its W03 edge on E00 W04, and the initiative's its E01 cell, each as the tracker held them on 2026-11-15.
 
 ## Joins
 
@@ -51,7 +67,8 @@ Each line names a candidate unit the dependency check prints and why its rows st
 - E01:W01, E01:W02, E01:W03, E01:W04, E01:W05 and E01:W06 stay split: each converts one family with its own corpus fixtures, the retirement lands only once every family runs as skills, and one pull request for all of it is too large to review.
 - E01:W01 and E01:W06 stay split: the retirement removes the forms the diagram family converts from, so it waits on the conversion.
 - E02:W01 and E02:W02 stay split: the deletion leaves the runbook with its rubric and stop rules alone, and the new section is written and reviewed against that runbook.
-- E02:W01, E02:W02, E02:W03 and E02:W04 stay split: the deletion and the section are design work, the shakedown and the baseline are paid runs under the runbook, and each run starts only on what the row before it committed.
+- E02:W01, E02:W02, E02:W03, E02:W04 and E02:W05 stay split: the deletion and the section are design work, the shakedown, the baseline and the agent-pick run are paid runs under the runbook, and each run starts only on what the row before it committed.
+- E03:W04, E03:W05 and E03:W06 stay split: the section is design work, the shakedown and the run are paid runs under the runbook, and each run starts only on what the row before it committed.
 
 - **The agent-pick run is E02 W05.** By the user's decision, 2026-11-13, the real-use agent-pick run moved here from [Preset Alternatives](https://github.com/m2ux/prosiform/issues/707) E02, with its criterion as initiative AC6 and epic AC5. It runs five repetitions on the shakedown's harness and model with caps from its agent-pick cells, after the shakedown and the pick scoring that accepts a first-run `--pick`. Set aside: measuring agent-pick from the baseline's cells.
 
@@ -61,6 +78,14 @@ Each line names a candidate unit the dependency check prints and why its rows st
 - **Epic priority.** The check proposes E00 3, E01 2, E02 1; none is applied, by decision 15.
 - **Contention.** Every cross-epic pair shares the README, and E00's placement and prompt rows share `workflow.py` and `test_workflow.py` with E01's rows; the whole-epic edges order them.
 - **Longest chains.** Five of nine steps, each from E00 W01 through an E01 family row, E01 W06 and E02 W01 to E02 W04.
+
+Rerun with E03, 2026-11-15.
+
+- **Problems.** None.
+- **Epic priority.** The check proposes E00 4, E01 3, E02 2, E03 1; none is applied, by decision 15.
+- **Contention.** E03's rows share the README with every other epic's rows, `workflow.py`, `run.py` and their tests with E00's and E01's, `score.py` with E00 W03, and the runbook and its test with E02's; E03 W01 follows E00 W03 and E03 W04 follows E02 W02, which order them.
+- **Longest chains.** Five of ten steps, each from E00 W01 through an E01 family row, E01 W06, E02 W01 and E02 W02 to E03 W04, W05 and W06.
+- **Not read.** E00 W04 has no work item in the record.
 
 ## Defaults Taken
 
@@ -76,4 +101,8 @@ Details settled without a question and confirmed by the user, 2026-11-12.
 
 ## Open Questions
 
-None.
+Raised 2026-11-15 with E03; each is settled before E03's first task starts.
+
+- **The tracing paragraph and Work Planner's own skill text.** E00 AC5 holds every skill text in the corpus to a shared tracing paragraph, and E03 places each revision's `SKILL.md` as it stands. Recommended: E00 AC5 binds the skill texts the corpus writes, and Work Planner's are scored from the session's record of reads, since a paragraph of the eval's changes the specimen. The alternative adds the paragraph to both variants.
+- **How each revision reaches the eval tree.** Recommended: one submodule per variant, pinned to its commit, as prosiform's workspace vendors the skill; the gitlink is the recorded commit and no copy goes stale. The alternative commits a copy of each revision.
+- **Which commits the variants name.** They follow the settled and baseline revisions [prosiform-skills #9](https://github.com/m2ux/prosiform-skills/issues/9) fixes, which that epic's own open question still holds.

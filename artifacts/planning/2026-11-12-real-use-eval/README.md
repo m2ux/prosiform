@@ -1,12 +1,12 @@
 # Real-Use Eval — November 2026
 
-> Initiative · Created 2026-11-12
+> Initiative · Created 2026-11-12 · Revised 2026-11-15
 
 ## Executive Summary
 
 The diagram-following eval starts every session from a prompt it writes, naming the file to read, and only one form starts from a skill, after telling the agent a skill is there. No real use of a skill looks like that, and the agent-pick run showed the cost: every pick was right, yet no session passed, most having opened the sources lying beside the bundle they were handed.
 
-This initiative makes every scenario a real-use scenario. Each session starts from a skill placed where its agent CLI discovers skills and opens with its task in plain words; the CLI's own skill mechanism is the only disclosure it works under. The comparisons the eval drew between forms become skill variants of each workflow, the bare-prompt records leave, and one baseline measured on the skill-entry eval replaces them.
+This initiative makes every scenario a real-use scenario. Each session starts from a skill placed where its agent CLI discovers skills and opens with its task in plain words; the CLI's own skill mechanism is the only disclosure it works under. The comparisons the eval drew between forms become skill variants of each workflow, the bare-prompt records leave, and one baseline measured on the skill-entry eval replaces them. A fourth epic measures one skill of real size: Work Planner runs compiled and plain on captured requests, scored on the context each request requires, with tokens and reads compared in a run of its own.
 
 ## Artifacts
 
@@ -18,6 +18,7 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 | [Skill Entry epic draft](e00-body.md) | E00's rows and criteria for harnesses, placement and the opening prompt |
 | [Skill Variants epic draft](e01-body.md) | E01's rows and criteria converting each workflow family to skill variants and retiring the bare-prompt path |
 | [Real-Use Baseline epic draft](e02-body.md) | E02's rows and criteria for deleting the bare-prompt records and measuring the new baseline |
+| [Field Scale epic draft](e03-body.md) | E03's rows and criteria for Work Planner as two variants, the context-contract score, the comparison and its run |
 | [Codex work item](e00/w01.md) | Codex kept or retired by native skill discovery |
 | [Placement work item](e00/w02.md) | The variant layout, skill placement per harness and the bootstrap pair moved onto it |
 | [Opening prompt work item](e00/w03.md) | The scenario's task as the session's only prompt |
@@ -32,6 +33,12 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 | [Shakedown work item](e02/w03.md) | The shakedown run and the caps it records |
 | [Baseline run work item](e02/w04.md) | The baseline run, its triage and committed record |
 | [Agent-pick run work item](e02/w05.md) | The agent-pick run on the skill-entry eval and its own run record |
+| [Work Planner variants work item](e03/w01.md) | Work Planner as a `compiled` and a `tree` variant from recorded commits, with captured requests as scenarios |
+| [Context contract work item](e03/w02.md) | A session scored on the files and sections its request's contract requires |
+| [Variant comparison work item](e03/w03.md) | The report's per-scenario comparison of pass rate, tokens and reads |
+| [Field-scale runbook work item](e03/w04.md) | The field-scale runbook section and its cap rule |
+| [Field-scale shakedown work item](e03/w05.md) | The shakedown run and the caps it records |
+| [Field-scale run work item](e03/w06.md) | The field-scale run, its triage and committed record |
 
 ## Links
 
@@ -43,3 +50,6 @@ This initiative makes every scenario a real-use scenario. Each session starts fr
 | Initiative | [#734](https://github.com/m2ux/prosiform/issues/734) |
 | Epics | [E00 #735](https://github.com/m2ux/prosiform/issues/735), [E01 #736](https://github.com/m2ux/prosiform/issues/736), [E02 #737](https://github.com/m2ux/prosiform/issues/737) |
 | Superseded | [I14 #660](https://github.com/m2ux/prosiform/issues/660) |
+| Work Planner cutover E03 waits on | [prosiform-skills #9](https://github.com/m2ux/prosiform-skills/issues/9) |
+| Reading-route harness | [workflow-server #1695](https://github.com/m2ux/workflow-server/pull/1695) |
+| Baseline the field-scale evidence reads | [`report.md` at `8c61125`](https://github.com/m2ux/prosiform/blob/8c611259ab407e09e4d50262b79cf2f8eef14a5d/evals/diagram-following/report.md) |
