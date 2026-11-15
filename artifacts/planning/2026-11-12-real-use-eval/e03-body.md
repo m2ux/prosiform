@@ -20,7 +20,7 @@ The eval measures one skill of real size. Work Planner runs as two skill variant
 - **Work Planner is a workflow of the eval.**
   Its `compiled` variant is the skill at the revision where every mode compiles, and its `tree` variant the skill at the plain revision before it.
 - **Each variant names its commit.**
-  The workflow records the repository and commit each variant is taken from, and the corpus test holds the placed files to them.
+  Each variant is a submodule of the skill's repository pinned to one commit, and the corpus test holds the placed files to it.
 - **The skill text is the skill's own.**
   Each variant's `SKILL.md` is the file its revision holds, with no paragraph of the eval's, so the scorer reads the session's record of reads and commands.
 - **A scenario is a captured request.**
@@ -47,7 +47,7 @@ The eval measures one skill of real size. Work Planner runs as two skill variant
 
 ## Acceptance Criteria
 
-- [ ] **AC1.** The Work Planner workflow holds a `compiled` and a `tree` skill variant, each the skill's files at the repository commit the workflow records, as the corpus test shows.
+- [ ] **AC1.** The Work Planner workflow holds a `compiled` and a `tree` skill variant, each the skill's files at the repository commit its submodule pins, as the corpus test shows.
 - [ ] **AC2.** Every Work Planner scenario states a captured request as its task and holds each input that request reads, as the corpus test shows.
 - [ ] **AC3.** A Work Planner session passes only when its recorded reads cover every file and section its request's context contract requires, as the scorer tests show.
 - [ ] **AC4.** The report gives, for each Work Planner scenario, each variant's pass rate, mean tokens and mean reads and the difference between the variants, as the report tests show.
@@ -58,8 +58,6 @@ The eval measures one skill of real size. Work Planner runs as two skill variant
 ## Open Questions
 
 - Which repository commits the `compiled` and `tree` variants name. They follow the settled and baseline revisions Work Planner's cutover fixes.
-- How each revision's files reach the eval tree: a submodule pinned to the commit, or a committed copy.
-
 ## References
 
 - **R1.** [Planning record](https://github.com/m2ux/prosiform/tree/engineering/artifacts/planning/2026-11-12-real-use-eval) — the field-scale decisions, the options set aside and the recommendation for each open question.
