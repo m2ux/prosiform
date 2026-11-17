@@ -318,12 +318,16 @@ def kinds(*substs: str, membership: Membership | None = None) -> Conversion:
     )
 
 
-def routes(conversion: Conversion, fragment: str | None) -> bool:
+def routes(
+    conversion: Conversion,
+    fragment: str | None,
+    path: str = "stage.md",
+    text: str = STAGE,
+) -> bool:
     """Whether the alternatives change the stage's content one dependency selects."""
-    tokens = parse(STAGE)
-    reaching = [resolve("stage.md" if fragment is None else f"stage.md#{fragment}")]
-    chosen = cli.selection("stage.md", tokens, reaching, ())
-    return cli.routed("stage.md", conversion, tokens, chosen)
+    tokens = parse(text)
+    reaching = [resolve(path if fragment is None else f"{path}#{fragment}")]
+    return cli.routed(path, conversion, tokens, reaching, ())
 
 
 @pytest.mark.parametrize(
@@ -347,3 +351,29 @@ def test_an_alternative_stating_a_group_pair_changes_any_content() -> None:
     at = Location("stage.md", 4, 5)
     membership = Membership("Alpha", "stages", 1, at, at)
     assert routes(kinds(membership=membership), "hand-off") is True
+
+
+INTRODUCED = (
+    "# Stage\n\nRead the [body](body.md) first.\n\n## Hand-off\n\nOne folder.\n"
+)
+"""A stage whose introduction writes a link and whose Hand-off writes none."""
+
+
+@pytest.mark.parametrize(
+    ("path", "grouped", "expected"),
+    [
+        ("sub/stage.md", True, True),
+        ("stage.md", True, False),
+        ("sub/stage.md", False, False),
+    ],
+)
+def test_an_introduction_a_folder_preamble_carries_is_selected_content(
+    path: str, grouped: bool, expected: bool
+) -> None:
+    at = Location(path, 2, 3)
+    default = Preset(
+        "default",
+        membership=Membership("default", "stages", 1, at, at) if grouped else None,
+    )
+    conversion = replace(kinds("body.md"), presets=(default, *kinds("body.md").presets))
+    assert routes(conversion, "hand-off", path, INTRODUCED) is expected

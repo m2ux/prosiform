@@ -164,6 +164,7 @@ from prosiform.metadata import (
     Subst,
 )
 from prosiform.preamble import grouped as preamble_group
+from prosiform.preamble import selected as preamble_selection
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -814,7 +815,7 @@ def picked(
 
 
 def unresolved(path: str, conversion: Conversion) -> Failure:
-    """A document declaring alternatives compiled with none, or several, in force.
+    """A document compiled with several alternatives in force, or none it needs.
 
     The document's links are written once, so they follow one kind's
     routes. The message lists each alternative beside its choice line in
@@ -837,25 +838,60 @@ def unresolved(path: str, conversion: Conversion) -> Failure:
     )
 
 
+def preambled(
+    path: str,
+    tokens: Sequence[Token],
+    references: Sequence[Reference],
+    paired: bool,
+    entries: Collection[Reference],
+) -> bool:
+    """Whether a document's title and introduction stand in its folder's preamble group.
+
+    A document in a subfolder that every including reference reaches by
+    a section, and that a `group` pair joins to a merged group, carries
+    them there, unless it is the parent opening the bundle on its own
+    title.
+    """
+    return (
+        all(one.fragment is not None for one in references)
+        and paired
+        and bool(posixpath.dirname(path))
+        and not (path == parent_document(entries) and carries_title(tokens))
+    )
+
+
 def routed(
     path: str,
     conversion: Conversion,
     tokens: Sequence[Token],
-    chosen: Selection | None,
+    references: Sequence[Reference],
+    entries: Collection[Reference],
 ) -> bool:
     """Whether one document's alternatives change what its selected content compiles to.
 
     An alternative changes it where one of them states a `group` pair,
     which decides the group the selected content joins, or a `subst`
     pair whose key a link in the selected content names, which routes
-    that link. Content none of them changes compiles under `default`
+    that link. The selected content is what the references select, and
+    the title and introduction a folder's preamble group carries for
+    the document. Content none of them changes compiles under `default`
     and the ordinary presets its references select.
     """
     if any(one.membership is not None for one in conversion.alternatives):
         return True
-    written = linked(
-        path, tokens, tuple(regions(tokens)) if chosen is None else chosen.regions
-    )
+    chosen = selection(path, tokens, references, entries)
+    read_regions = tuple(regions(tokens)) if chosen is None else chosen.regions
+    including = [one for one in references if not one.composes]
+    introduction = preamble_selection(tokens)
+    if introduction is not None and preambled(
+        path,
+        tokens,
+        including,
+        any(pair(conversion, one.tags) is not None for one in including),
+        entries,
+    ):
+        read_regions += introduction.regions
+    written = linked(path, tokens, read_regions)
     return any(
         names(written, subst_identity(pair.original, path))
         for one in conversion.alternatives
@@ -883,13 +919,7 @@ def resolved(
             continue
         count = len(picked(conversion, references))
         if count > 1 or (
-            count == 0
-            and routed(
-                path,
-                conversion,
-                parsed[path],
-                selection(path, parsed[path], references, entries),
-            )
+            count == 0 and routed(path, conversion, parsed[path], references, entries)
         ):
             raise unresolved(path, conversion)
 
@@ -2563,8 +2593,8 @@ def unselected(
     """The presets of each carried document that no reference reaching it selected.
 
     `default` is in force wherever its document is compiled, so it is
-    never among them. A set of alternatives leaves all but one unpicked
-    wherever its document is compiled, so no alternative is among them
+    never among them. A set of alternatives leaves at least all but one
+    unpicked wherever its document is compiled, so no alternative is among them
     either. The names keep the order the document declares them in. A
     document reached only through a deferral is carried by no bundle, so
     its presets are weighed by none.
@@ -3122,13 +3152,8 @@ def assembled(
             )
         folders: dict[str, list[str]] = {}
         for path in selected:
-            choice = selection(path, parsed[path], selected[path], entries)
-            if (
-                choice is not None
-                and all(one.fragment is not None for one in selected[path])
-                and joins[path]
-                and posixpath.dirname(path)
-                and not (path == parent and carries_title(parsed[path]))
+            if preambled(
+                path, parsed[path], selected[path], bool(joins[path]), entries
             ):
                 folders.setdefault(posixpath.dirname(path), []).append(path)
         preamble_divisions = []
