@@ -1869,6 +1869,8 @@ def test_an_entry_carrying_no_title_selects_no_named_preset(
     [
         ("⇉ fast", True),
         ("checks, ¬", True),
+        ("checks,\n⇉ fast", True),
+        ("\u00a0⇉ fast", True),
         ("with ↳ Given", False),
         ("⇉Fast", False),
     ],
@@ -5283,7 +5285,8 @@ def test_a_node_mark_followed_by_text_opens_an_ordinary_click(root: Path) -> Non
         ("⇉, checks", "⇉"),
         ("checks, ¬ ⇉", "¬ ⇉"),
         ("¬ ?", "¬ ?"),
-        ("↳ Given", "↳ Given"),
+        ("↳ Given", "↳ given"),
+        ("\u00a0⇉", "⇉"),
     ],
 )
 def test_a_tooltip_tag_stating_operator_marks_is_refused(

@@ -157,7 +157,6 @@ from prosiform.marks import (
     DISPATCH_MARK,
     INLINE_MARK,
     PARALLEL_MARK,
-    marked,
 )
 from prosiform.metadata import (
     DEFAULT,
@@ -183,6 +182,7 @@ from prosiform.profile import (
     Refusal,
     Suppressed,
     is_markdown,
+    marked_tag,
     parse,
     refusals,
 )
@@ -1163,7 +1163,7 @@ def entry(text: str, pick: str | None) -> Reference:
     A link entry is read as an authored link is, for its destination and
     the tags its title states; the operator marks opening it are the
     agent's and are not read. An entry whose title holds a tag
-    `marks.marked` reads as marks is refused, as `profile.inline_refusals`
+    `profile.marked_tag` finds is refused, as `profile.inline_refusals`
     and `profile.diagram_refusals` refuse one in a source: the run would
     carry the tag into the titles of the deferrals it publishes. A plain
     path carries no title. A
@@ -1181,10 +1181,10 @@ def entry(text: str, pick: str | None) -> Reference:
             f"the entry {text!r} {refused}", reference=text
         ) from refused
     tags = frozenset() if link is None else link.tags
-    stating = sorted(tag for tag in tags if marked(tag))
-    if stating:
+    stating = marked_tag(tags)
+    if stating is not None:
         raise usage_failure(
-            f"the entry {text!r} carries the title tag {stating[0]!r}, which "
+            f"the entry {text!r} carries the title tag {stating!r}, which "
             f"states operator marks, and a title names presets alone",
             reference=text,
         )
