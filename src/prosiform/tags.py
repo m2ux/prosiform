@@ -1,6 +1,6 @@
 """The complete preset names a decoded comma-separated list supplies.
 
-A link's title, a diagram link's tooltip and an entry's pick each
+A link's title, a diagram link's tooltip title and an entry's pick each
 supply a decoded string. Tokens are complete names, trimmed and
 case-folded, with empty tokens and repetition discarded. The set gives
 their order no meaning. Matching names to a destination's declarations

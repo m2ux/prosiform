@@ -76,14 +76,12 @@ read as Mermaid detects it, and each is read where Mermaid's lexer
 ends it, so a line holding several `;`-ended statements names the
 destination of each. Each destination is a use, on the line it is
 written. A `click` line or a class diagram's `link` line is drawn on a
-diagram element, whose text is the use's text: the use opens with that
-text, so its marks state its operator as a Markdown link's text does.
-A flowchart node's text is the last text its shapes write, and a
-class's text is the label its `class` statement declares; an element
-drawn with no text, and an element of any other diagram, opens with
-nothing. The quoted tooltip such a line may carry is the use's title
-alone. Mermaid keeps one link for each element, so a second link line
-naming an element is read as a repetition the profile refuses. A
+diagram element, whose text is the use's text, so the marks opening it
+state the use's operator as a Markdown link's text does; an element
+drawn with no text opens with nothing. The quoted tooltip such a line
+may carry is the use's title alone. Mermaid keeps one link for each
+element, so a second link line naming an element is read as a
+repetition the profile refuses. A
 click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
 is a use.
@@ -675,7 +673,7 @@ class Use:
     for a use in the preamble, which lies in no section.
 
     The tags are the complete preset names in a local link's parsed
-    title attribute, or in a diagram link's tooltip, which is its title.
+    title attribute, or in a diagram link's `Click` title.
     Each occurrence carries its own immutable selection; an image and an
     external link carry none.
 
@@ -944,8 +942,8 @@ def read_diagram(fence: Token) -> Diagram:
       the JSON object being one destination.
 
     A quoted destination may be followed by a quoted tooltip and a link
-    target; the tooltip is the link's title, and the text of the element
-    the line names, as `element_texts` reads it, is its text. A line may
+    target, which the line's `Click` holds with its element's text. A
+    line may
     hold several statements, each ended by a `;` outside a quoted string,
     and each `click` or class `link` statement among them names its own
     destination. A click naming a callback, or
@@ -1414,11 +1412,11 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     position.
 
     A diagram's link destination is written on its own line of the
-    fence, so it is located at that line, and opens with the marks the
-    text of the element it is drawn on opens with.
+    fence, so it is located at that line, and opens with its `Click`
+    opening.
 
     A local link's title attribute supplies its tags through the shared
-    list reader, and so does a diagram link's tooltip, which is its title.
+    list reader, and so does a diagram link's `Click` title.
     Images and external links supply no tags; neither the visible label
     nor a surrounding heading supplies them.
 

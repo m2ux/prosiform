@@ -459,11 +459,7 @@ def link_text(children: Sequence[Token], at: int) -> str:
 
 
 def element_text(click: Click) -> str:
-    """The text one diagram link shows its reader, its marks taken off.
-
-    It is the text of the element the link is drawn on, and the
-    element's name where it is drawn with none.
-    """
+    """One diagram link's `Click` opening with its marks taken off, or its node."""
     return " ".join(unmarked(click.opening).split()) or click.node
 
 
@@ -477,9 +473,8 @@ def written_in(
 ) -> list[Link]:
     """Every dispatched link one region writes, diagram links among them, in order.
 
-    A link's text is what its reader reads in it, its marks taken off. A
-    diagram link's text is the text of the element it is drawn on, its
-    marks taken off, and the element's name where it is drawn with none.
+    A link's text is what its reader reads in it, its marks taken off,
+    as `element_text` reads a diagram link's.
     """
     found: list[Link] = []
     for block in within(tokens, [region]):

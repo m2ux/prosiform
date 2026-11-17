@@ -23,11 +23,10 @@ line in a fence whose info string opens with `mermaid` — a `click` line,
 a class diagram's `link` line, or a sequence diagram's `link` or `links`
 participant menu, its keywords in any letter case — names a destination
 a reader of the rendered diagram follows, so each such destination is a
-use although the parser reads the fence as text. The text of the
-element a `click` or class diagram `link` line names states that use's
-operator, and the quoted tooltip the line carries its title. Mermaid
-keeps one link for each element, so a second such line naming one
-element is refused as an unsupported construct naming both lines.
+use although the parser reads the fence as text, read as the source
+model's `Click` holds it. A second `click` or class diagram `link` line
+naming one element, and a tooltip tag stating operator marks, are each
+refused as an unsupported construct naming the line.
 
 Every cell of a table row shares that row's line, so the parse records
 on each cell's inline token the column it stands in, and a reader of

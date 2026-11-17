@@ -4,14 +4,12 @@ An agent compiles a link it meets in a bundle by running `pf` on the
 link as the bundle publishes it: a Markdown link, a Mermaid `click`
 line or a class diagram `link` line. Each is read by the reader that
 reads it in a source, so its destination and its title tags arrive as
-they would from an authored link, a Markdown escape decoded and a
-diagram link's tooltip read as its title.
+they would from an authored link, a Markdown escape decoded.
 
 Operator marks direct the agent reading the bundle, which has acted on
 them before it runs `pf`, and the run that compiled the link's source
 checked them. The entry therefore reads no operator: the marks opening
-a link's text are never read, whatever they combine to, and a diagram
-link line carries no element text to hold any.
+a link's text are never read, whatever they combine to.
 
 Any other text is a plain path, the bootstrap entry a document names
 to start its own run, which carries no title.

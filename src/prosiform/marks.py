@@ -4,10 +4,6 @@ Four operators open a link's text, their marks written together and
 followed by a space. A mark followed directly by text is the author's
 text and opens nothing. What each operator states is the closure
 module's to say.
-
-A diagram link's text is the text of the diagram element its `click`
-or class diagram `link` line names, so the marks opening that text
-state the diagram link's operator as they state a Markdown link's.
 """
 
 from dataclasses import dataclass
