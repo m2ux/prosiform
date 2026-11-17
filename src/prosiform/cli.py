@@ -152,7 +152,12 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.marks import DEFERRAL_MARK, DISPATCH_MARK, INLINE_MARK, PARALLEL_MARK
+from prosiform.marks import (
+    DEFERRAL_MARK,
+    DISPATCH_MARK,
+    INLINE_MARK,
+    PARALLEL_MARK,
+)
 from prosiform.metadata import (
     DEFAULT,
     GROUP,
@@ -177,6 +182,7 @@ from prosiform.profile import (
     Refusal,
     Suppressed,
     is_markdown,
+    marked_tag,
     parse,
     refusals,
 )
@@ -343,7 +349,7 @@ Compiling a link:
   when pf lists the alternatives:
 
     pf -o out '[¬ Review](modes/review.md#review "checks, final draft")'
-    pf -o out 'click Intake "activities/intake.md" "¬ ?"' --pick Epic
+    pf -o out 'click Intake "activities/intake.md" "?"' --pick Epic
 
   Title tags layer the target's presets above default.
 
@@ -1156,8 +1162,12 @@ def entry(text: str, pick: str | None) -> Reference:
 
     A link entry is read as an authored link is, for its destination and
     the tags its title states; the operator marks opening it are the
-    agent's and are not read. A plain path carries no title. A pick
-    stands in the tag list where the pick token stands, so it is
+    agent's and are not read. An entry whose title holds a tag
+    `profile.marked_tag` finds is refused, as `profile.inline_refusals`
+    and `profile.diagram_refusals` refuse one in a source: the run would
+    carry the tag into the titles of the deferrals it publishes. A plain
+    path carries no title. A
+    pick stands in the tag list where the pick token stands, so it is
     admitted only beside an entry whose title carries that token.
 
     An entry is written by no document, so no `subst` pair redirects it:
@@ -1171,6 +1181,13 @@ def entry(text: str, pick: str | None) -> Reference:
             f"the entry {text!r} {refused}", reference=text
         ) from refused
     tags = frozenset() if link is None else link.tags
+    stating = marked_tag(tags)
+    if stating is not None:
+        raise usage_failure(
+            f"the entry {text!r} carries the title tag {stating!r}, which "
+            f"states operator marks, and a title names presets alone",
+            reference=text,
+        )
     if pick is not None:
         if not picks(tags):
             raise usage_failure(
@@ -1472,10 +1489,15 @@ def refused(
     returned, and the line the diagnostic carries is the line that content
     occupies in the file. The chain is the one that reached the source,
     because the construct is where the run arrived rather than something
-    a further reference named.
+    a further reference named. A refusal naming an earlier construct
+    beside its own names that construct's line of the file too.
     """
+    message = refusal.message
+    if refusal.earlier is not None:
+        earlier = location(name, source.line(refusal.earlier))
+        message += f"; the earlier link is at {earlier}"
     return input_failure(
-        refusal.message,
+        message,
         code=refusal.code,
         remedy=refusal.remedy,
         reference=refusal.reference,

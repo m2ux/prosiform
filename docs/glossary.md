@@ -35,7 +35,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 
 | Term | Definition |
 | --- | --- |
-| **reference** | An authored Markdown link to a local document or section, or a destination naming one that a `mermaid` diagram link writes: a `click` line, a class diagram's `link` line, or a sequence diagram's `link` or `links` participant menu, its keywords in any letter case. |
+| **reference** | An authored Markdown link to a local document or section, or a destination naming one that a `mermaid` diagram link writes: a `click` line, a class diagram's `link` line, or a sequence diagram's `link` or `links` participant menu, its keywords in any letter case. A `click` or class diagram `link` takes its text, and its operator marks, from the node or class it names, and its title from its tooltip, and one element carries one such link, as [Diagram links](references.md#diagram-links) states. |
 | **entry reference** | The one published link, or plain document or document#fragment path, the command line supplies as its positional argument. Traversal starts at the link's destination or the path, with the matching named presets a link entry's title selects above `default`; its operator marks are ignored, and a plain path selects none. |
 | **target** | The document or section a reference resolves to, after path and fragment normalization. |
 | **dependency** | A target a reference resolves to whose document declares `prosiform` in its leading frontmatter, where its author has not withheld it with a deferral, a dispatch operator or a parallel dispatch mark. It is resolved, bundled and rewritten wherever the document sits; a reference naming a document that declares nothing, or none, cites what it names and creates none. |

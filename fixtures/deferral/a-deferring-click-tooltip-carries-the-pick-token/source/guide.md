@@ -7,5 +7,6 @@ prosiform: {}
 
 ```mermaid
 flowchart LR
-    click Kind "work-kind.md" "¬ ?"
+    Kind[¬ Kind]
+    click Kind "work-kind.md" "?"
 ```

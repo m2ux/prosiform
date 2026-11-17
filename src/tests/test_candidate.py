@@ -474,8 +474,8 @@ DEFERRING_CLICK = """# Guide
 
 ```mermaid
 flowchart LR
-    Open([Open]) --> Note([Note])
-    click Note "note.md" "¬"
+    Open([Open]) --> Note([¬ Note])
+    click Note "note.md" "draft"
 ```
 """
 
@@ -483,18 +483,24 @@ flowchart LR
 def test_a_deferring_click_carrying_its_tooltip_as_written_validates() -> None:
     one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
     one.validate()
-    assert 'click Note "note.md" "¬"' in one.bundled
+    assert 'Note([¬ Note])\n    click Note "note.md" "draft"' in one.bundled
 
 
 def test_a_click_whose_tooltip_the_bundle_changed_fails() -> None:
     one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
-    one.bundled = one.bundled.replace('"note.md" "¬"', '"note.md" "checks"')
+    one.bundled = one.bundled.replace('"note.md" "draft"', '"note.md" "checks"')
+    assert refused(one).invariant == REFERENCE_PRESERVATION
+
+
+def test_a_click_whose_node_text_the_bundle_changed_fails() -> None:
+    one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
+    one.bundled = one.bundled.replace("Note([¬ Note])", "Note([¬ A note])")
     assert refused(one).invariant == REFERENCE_PRESERVATION
 
 
 def test_a_deferring_click_pointing_at_its_target_s_heading_fails() -> None:
     one = built({"guide.md": DEFERRING_CLICK, "note.md": NOTE}, ["guide.md"])
-    one.bundled = one.bundled.replace('"note.md" "¬"', '"#note" "¬"')
+    one.bundled = one.bundled.replace('"note.md" "draft"', '"#note" "draft"')
     assert refused(one).invariant == REFERENCE_PRESERVATION
 
 
@@ -504,8 +510,8 @@ COMPOSING_CLICK = """# Guide
 
 ```mermaid
 flowchart LR
-    Read([Read]) --> Detail([Detail])
-    click Detail "note.md#detail" "↳"
+    Read([Read]) --> Detail([↳ Detail])
+    click Detail "note.md#detail"
 ```
 """
 
@@ -513,12 +519,12 @@ flowchart LR
 def test_a_composing_click_pointing_at_its_contribution_validates() -> None:
     one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
     one.validate()
-    assert 'click Detail "#note" "↳"' in one.bundled
+    assert 'click Detail "#note"\n' in one.bundled
 
 
 def test_a_composing_click_pointing_at_its_target_section_fails() -> None:
     one = built({"guide.md": COMPOSING_CLICK, "note.md": HEADED}, ["guide.md"])
-    one.bundled = one.bundled.replace('"#note" "↳"', '"#detail" "↳"')
+    one.bundled = one.bundled.replace('"#note"\n', '"#detail"\n')
     assert refused(one).invariant == REFERENCE_PRESERVATION
 
 

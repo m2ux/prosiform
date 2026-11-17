@@ -23,9 +23,10 @@ line in a fence whose info string opens with `mermaid` — a `click` line,
 a class diagram's `link` line, or a sequence diagram's `link` or `links`
 participant menu, its keywords in any letter case — names a destination
 a reader of the rendered diagram follows, so each such destination is a
-use although the parser reads the fence as text, and a quoted tooltip a
-`click` or class diagram `link` line carries states that use's operator
-and title.
+use although the parser reads the fence as text, read as
+`source.Click` holds it. A second `click` or class diagram `link` line
+naming one element, and a tooltip tag `marked_tag` finds,
+are each refused as an unsupported construct naming the line.
 
 Every cell of a table row shares that row's line, so the parse records
 on each cell's inline token the column it stands in, and a reader of
@@ -96,7 +97,9 @@ from markdown_it.utils import EnvType
 
 from prosiform import PROFILE
 from prosiform.limits import NESTING
+from prosiform.marks import marked
 from prosiform.source import FENCE, external, linking
+from prosiform.tags import read as read_tags
 
 PRESET = "commonmark"
 ENABLED = ("table", "strikethrough")
@@ -120,6 +123,7 @@ COMMAND_OPEN = ("<big>", "<pre>")
 COMMAND_CLOSE = ("</pre>", "</big>")
 
 HREF = "href"
+TITLE = "title"
 LABEL_OPEN = "["
 
 REFERENCES = "references"
@@ -161,6 +165,8 @@ class Refusal:
     remedy: str
     line: int | None = None
     reference: str | None = None
+    earlier: int | None = None
+    """The line of an earlier construct the refusal names beside its own."""
 
 
 class Suppressed(Exception):
@@ -471,7 +477,9 @@ def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[R
     """Every construct one inline token carries that the profile refuses.
 
     A paragraph wrapped as a command block carries its four tags, and
-    raw HTML is refused only between them.
+    raw HTML is refused only between them. A local link whose title holds
+    a tag `marked_tag` finds is refused, so no title a run
+    publishes is one `cli.entry` refuses.
     """
     at = line(inline)
     children = inline.children or []
@@ -480,6 +488,25 @@ def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[R
     markup = next((child for child in children if child.type == HTML_INLINE), None)
     if markup is not None:
         yield html_refusal(markup.content, at)
+
+    for child in children:
+        title = child.attrGet(TITLE) if child.type == LINK_OPEN else None
+        if not title or external(str(child.attrGet(HREF) or "")):
+            continue
+        tag = marked_tag(read_tags(str(title)))
+        if tag is not None:
+            yield Refusal(
+                code=UNSUPPORTED_CONSTRUCT,
+                message=(
+                    f"the link to {child.attrGet(HREF)!r} carries the title tag "
+                    f"{tag!r}, which states operator marks, and a title names "
+                    f"presets alone"
+                ),
+                remedy="write the marks at the start of the link's text, and keep "
+                "the title for preset tags",
+                line=at,
+                reference=str(child.attrGet(HREF)),
+            )
 
     found = recognized(WIKI_LINK, inline)
     if found is not None:
@@ -536,6 +563,15 @@ def local_markdown(destination: str) -> bool:
     return not external(path) and is_markdown(path)
 
 
+def marked_tag(tags: frozenset[str]) -> str | None:
+    """The first tag, in code point order, that `marks.marked` reads as marks.
+
+    The tags are the ones `tags.read` reads from a title, so a source and
+    the entry its published link becomes read one title alike.
+    """
+    return next((one for one in sorted(tags) if marked(one)), None)
+
+
 def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     """Each line one diagram carries that the profile refuses, in written order.
 
@@ -545,9 +581,46 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     Markdown document. A Gantt chart's click written in a form Mermaid's
     gantt grammar does not parse, anything but a line of
     `click <task> href "<destination>"` alone, is refused where it names a local
-    Markdown document, and carried as written otherwise.
+    Markdown document, and carried as written otherwise. A `click` or
+    class diagram `link` naming an element an earlier one names is
+    refused beside that earlier line, wherever either points: Mermaid
+    keeps one link for each element, so a reader of the rendered diagram
+    reaches only the last. A `click` or class diagram `link` whose
+    tooltip holds a tag `marked_tag` finds is refused, its
+    operator being read as `source.Click` states.
     """
     read = linking(fence)
+    for click in read.clicks:
+        tag = marked_tag(read_tags(click.title))
+        if tag is None:
+            continue
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the diagram's {click.name!r} carries the tooltip tag "
+                f"{tag!r}, which states operator marks, and a tooltip "
+                f"is the link's title, which names presets alone"
+            ),
+            remedy="write the marks at the start of the text of the element the "
+            "link names, as Plan[⇉ Plan], and keep the tooltip for preset tags",
+            line=click.line,
+            reference=click.name,
+        )
+    for earlier, click in read.repeated:
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the diagram's {click.name!r} links the element {click.node!r}, "
+                f"which {earlier.name!r} already links, and Mermaid keeps one "
+                f"link for each element, so a reader of the rendered diagram "
+                f"reaches only the last"
+            ),
+            remedy="keep one click or link line for each element, and draw "
+            "each further link on an element of its own",
+            line=click.line,
+            reference=click.name,
+            earlier=earlier.line,
+        )
     for at in read.listed:
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,

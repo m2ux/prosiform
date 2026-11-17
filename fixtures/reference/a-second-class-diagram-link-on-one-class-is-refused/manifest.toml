@@ -1,0 +1,21 @@
+description = "A second class diagram link line naming a class an earlier link line already links is refused, whatever the second names, naming its own line as the diagnostic's source and the earlier line in its message, since Mermaid keeps one link for each class; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "link Rules"
+message_contains = ["'Rules'", "guide.md:9"]
+source = "guide.md:10"
+chain = ["guide.md"]

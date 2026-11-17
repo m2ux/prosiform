@@ -1,8 +1,7 @@
-description = "A Mermaid click line entry compiles its destination under the presets its tooltip selects once the deferral mark opening the tooltip is set aside, as an authored click's tooltip selects them."
+description = "A Mermaid click line entry compiles its destination under the presets its tooltip selects, the tooltip read whole as its title, as an authored click's tooltip selects them."
 
 clauses = [
   "Link entries — A link entry",
-  "Link entries — Operator marks are set aside",
   "Presets — Selection by tags",
   "Presets — What a selection governs",
   "Presets — Selection belongs to the link",
@@ -10,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["click Guide \"guide.md\" \"¬ Checks\""]
+arguments = ["click Guide \"guide.md\" \"Checks\""]
 
 [expected]
 exit_status = 0

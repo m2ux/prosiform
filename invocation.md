@@ -28,7 +28,7 @@ Flags are case-sensitive.
 | `-h, --help` | usage, defaults and exit statuses |
 | `--pick ALTERNATIVE` | the alternative for an entry whose title carries ? |
 
-Compilation requires exactly one `REF`: a published link — a Markdown link, a Mermaid `click` line or a class diagram `link` line — or a plain path. A link's destination names the document and section compiled, and its title or tooltip selects that document's presets; the operator marks opening the link's text or tooltip direct the agent and are ignored. A plain path selects no named preset, and one holding `](` is written percent-encoded or as a link's destination. `--pick` is accepted once, beside an entry whose title or tooltip carries `?`. Two entry references, a text holding a link that is not that one link alone, repeated `--pick`, `--pick` without an entry, and `--pick` beside an entry carrying no `?`, a plain path included, are invalid usage and exit `2`. Informational invocations require no entry.
+Compilation requires exactly one `REF`: a published link — a Markdown link, a Mermaid `click` line or a class diagram `link` line — or a plain path. A link's destination names the document and section compiled, and its title or tooltip selects that document's presets; the operator marks opening a link's text direct the agent and are ignored. A plain path selects no named preset, and one holding `](` is written percent-encoded or as a link's destination. `--pick` is accepted once, beside an entry whose title or tooltip carries `?`. Two entry references, a text holding a link that is not that one link alone, repeated `--pick`, `--pick` without an entry, `--pick` beside an entry carrying no `?`, a plain path included, and an entry whose title or tooltip holds a tag stating operator marks, as `"⇉"` or `"¬ ?"`, are invalid usage and exit `2`. Informational invocations require no entry.
 
 ### Budgets
 
@@ -52,7 +52,7 @@ An agent encountering `[Plan Report](guide.md#plan-report "checks,draft")` in a 
 ```text
 pf '[Plan Report](guide.md#plan-report "checks,draft")'
 pf -o out '[¬ Review](modes/review.md#review "checks, final draft")'
-pf 'click Review "modes/review.md#review" "¬ checks"'
+pf 'click Review "modes/review.md#review" "checks"'
 pf guide.md#plan-report
 pf -c '[Plan Report](guide.md#plan-report "checks,draft")'
 ```
@@ -83,7 +83,7 @@ $ pf '[Populate the body](work-kind.md#populate-body "?")' --pick epic
 
 ## Conversion metadata
 
-A document declares `prosiform` in leading YAML frontmatter. Every key is a preset name holding a mapping of settings. `default` applies wherever the document is compiled. A link's title, or a diagram link's tooltip less its operator marks, supplies comma-separated complete preset names, and a link entry's title supplies the entry's. Split on literal commas, trim surrounding Unicode whitespace, compare without case and ignore empty, repeated and unknown names. Headings and visible link labels select no presets.
+A document declares `prosiform` in leading YAML frontmatter. Every key is a preset name holding a mapping of settings. `default` applies wherever the document is compiled. A link's title, or a diagram link's tooltip, supplies comma-separated complete preset names, and a link entry's title supplies the entry's. Split on literal commas, trim surrounding Unicode whitespace, compare without case and ignore empty, repeated and unknown names. Headings and visible link labels select no presets.
 
 Matching presets layer over `default` in declaration order and govern the destination document's own content. A selected `group` pair holds over `default`'s; [Sources](docs/sources.md) states what `subst` holds. Selected presets union their settings. Different group pairs in one selection, or conflicting substitutes for one document's substitution key, fail with `E_INVALID_USAGE`, naming both presets. [Selection](docs/selection.md#presets-in-force) gives the full rules. `prosiform: {}` declares with no preset; a document with no group pair keeps its own file group. A preset no compiled reference selected warns with `W_PRESET_UNUSED` and the run publishes.
 

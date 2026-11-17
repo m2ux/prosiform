@@ -246,9 +246,9 @@ class Use:
     in the same shape and are compared as the same thing. A diagram's
     link destination is the one its line names, which a sequence diagram's
     menu entry writes with an entity for its `#`, so a destination the
-    bundle rewrote reads as `#<slug>` whatever form wrote it. Its text is
-    the opening its tooltip states and its title the title the tooltip
-    states, so a tooltip the bundle changed is a use it did not preserve.
+    bundle rewrote reads as `#<slug>` whatever form wrote it. Its text
+    and title are its `source.Click` opening and title, so either one the bundle
+    changed is a use it did not preserve.
     """
 
     def __init__(self, kind: str, text: str, title: str, destination: str) -> None:
@@ -362,8 +362,8 @@ def carried(
 
     An inline token's uses arrive as `uses` reads them. A diagram's link
     destinations arrive in the order its fence writes them, each on no
-    run of inline events, because its marks open its tooltip rather than
-    any text. The compacted inline tokens are named by identity.
+    run of inline events, opening with its `source.Click` opening. The
+    compacted inline tokens are named by identity.
     """
     for token in within(tokens, [span]):
         if token.type == INLINE:
@@ -446,10 +446,11 @@ def intended(
     image's alternative content where the use was written there, so
     the opening is read from the event the author wrote it on.
 
-    A diagram link opens with the marks its tooltip opens with, and the
-    bundle carries its tooltip as written, so only its destination
-    changes. The anchor it takes is the one the bundle writes in the
-    line, which no parser normalizes, read as the destination it names:
+    A diagram link opens with its `source.Click` opening, which the bundle
+    carries as written, so only its destination changes, and a
+    deferral's tooltip. The anchor it takes is the one the bundle writes
+    in the line, which no parser normalizes, read as the destination it
+    names:
     `#<slug>`, whichever spelling the line's form writes.
     """
     if one.kind == IMAGE:
@@ -500,10 +501,7 @@ def intended(
         names = carried_names(withheld, conversions)
         if names:
             title = deferred_title(one.title, names) or ""
-            text = one.text
-            if one.kind == CLICK:
-                text = f"{text}, {', '.join(names)}" if one.title else text + title
-            one = Use(one.kind, text, title, one.destination)
+            one = Use(one.kind, one.text, title, one.destination)
         return withdrawn(one, rebased(withheld, one.destination))
     assigned = targets.get((found.path, found.fragment))
     if assigned is None:
@@ -615,8 +613,9 @@ def undestined(example: Token) -> str:
 
     A line can name several destinations, so they are taken out from the
     last back, and each offset still names the characters it was read at.
-    A tooltip's text is taken out with its destination, since a deferral's
-    title gains the run's names and the use comparison holds the tooltip.
+    A tooltip is taken out with its destination, since a deferral's title
+    gains the run's names, as a tooltip of its own where it carries none,
+    and the use comparison holds the tooltip.
     """
     held = lines(example.content)
     first = 0 if example.map is None else example.map[0] + 2
@@ -626,7 +625,7 @@ def undestined(example: Token) -> str:
         rest = line[click.offset + len(click.written) :]
         tip = TOOLTIP.match(rest)
         if tip is not None:
-            rest = rest[: tip.start(1)] + rest[tip.end(1) :]
+            rest = rest[: tip.start(1) - 1].rstrip() + rest[tip.end() :]
         held[at] = line[: click.offset] + rest
     return "".join(held)
 

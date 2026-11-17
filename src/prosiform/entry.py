@@ -4,13 +4,12 @@ An agent compiles a link it meets in a bundle by running `pf` on the
 link as the bundle publishes it: a Markdown link, a Mermaid `click`
 line or a class diagram `link` line. Each is read by the reader that
 reads it in a source, so its destination and its title tags arrive as
-they would from an authored link, a Markdown escape decoded and a
-tooltip's opening marks set aside.
+they would from an authored link, a Markdown escape decoded.
 
 Operator marks direct the agent reading the bundle, which has acted on
 them before it runs `pf`, and the run that compiled the link's source
 checked them. The entry therefore reads no operator: the marks opening
-a link's text or a tooltip are never read, whatever they combine to.
+a link's text are never read, whatever they combine to.
 
 Any other text is a plain path, the bootstrap entry a document names
 to start its own run, which carries no title.
@@ -19,7 +18,6 @@ to start its own run, which carries no title.
 import re
 from dataclasses import dataclass
 
-from prosiform.marks import tooltip
 from prosiform.profile import Suppressed, parse
 from prosiform.source import (
     CLASS_DIAGRAM,
@@ -76,7 +74,7 @@ def diagram_link(text: str) -> Link | None:
     if len(found) != 1:
         return None
     destination, _, _, _, written, _, _ = found[0]
-    return Link(destination, read_tags(tooltip(written).title))
+    return Link(destination, read_tags(written))
 
 
 def published(text: str) -> Link | None:

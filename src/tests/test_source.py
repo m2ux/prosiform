@@ -591,59 +591,113 @@ def test_each_diagram_click_is_one_link_use_opening_with_nothing() -> None:
     ]
 
 
-def tooltip_use(written: str, kind: str = "flowchart LR") -> Use:
-    """The one use a diagram line carrying a tooltip writes."""
-    [found] = selected(f"```mermaid\n{kind}\n    {written}\n```\n")
+def diagram_use(written: str, kind: str = "flowchart LR", drawn: str = "") -> Use:
+    """The one use a diagram line writes, below the element lines drawn first."""
+    [found] = selected(f"```mermaid\n{kind}\n{drawn}    {written}\n```\n")
     return found
 
 
 @pytest.mark.parametrize(
-    ("written", "kind"),
+    "drawn",
     [
-        ('click A href "a.md" "⇉"', "flowchart LR"),
-        ('click A "a.md" "⇉"', "flowchart LR"),
-        ('link A "a.md" "⇉" _blank', "classDiagram"),
+        "A[⇉ Judge]",
+        "A(⇉ Judge)",
+        "A([⇉ Judge])",
+        "A[[⇉ Judge]]",
+        "A[(⇉ Judge)]",
+        "A((⇉ Judge))",
+        "A(((⇉ Judge)))",
+        "A>⇉ Judge]",
+        "A{⇉ Judge}",
+        "A{{⇉ Judge}}",
+        "A[/⇉ Judge/]",
+        "A[\\⇉ Judge\\]",
+        "A[/⇉ Judge\\]",
+        'A["⇉ Judge (with Given)"]',
+        'A["`⇉ **Judge**`"]',
+        'A@{ shape: rect, label: "⇉ Judge" }',
+        "X --> A[⇉ Judge]",
+        "X -->|calls f(x)| A[⇉ Judge]",
+        'X -- "B(text)" --> A[⇉ Judge]',
+        "A[⇉ Judge] & B[Plan] --> X",
+        "X---A[⇉ Judge]",
+        "X---oA[⇉ Judge]",
+        "X--xA[⇉ Judge]",
+        "X ==o A[⇉ Judge]",
     ],
 )
-def test_a_tooltip_of_marks_alone_states_its_link_s_operator(
-    written: str, kind: str
-) -> None:
-    found = tooltip_use(written, kind)
+def test_a_node_s_text_states_its_link_s_operator(drawn: str) -> None:
+    found = diagram_use('click A href "a.md"', drawn=f"    {drawn}\n")
     assert operators(found.opening) == ("⇉",)
     assert found.tags == frozenset()
 
 
+@pytest.mark.parametrize("written", ['link A "a.md"', 'click A href "a.md"'])
+def test_a_class_s_label_states_its_link_s_operator(written: str) -> None:
+    found = diagram_use(written, "classDiagram", '    class A["¬ Judge"]\n')
+    assert found.opening == "¬ Judge"
+    assert operators(found.opening) == ("¬",)
+
+
 @pytest.mark.parametrize(
-    ("tooltip", "marks", "tags"),
+    ("kind", "drawn", "written"),
     [
-        ("¬", ("¬",), set()),
-        ("⫽", ("⫽",), set()),
-        ("↳", ("↳",), set()),
-        ("¬↳", ("¬", "↳"), set()),
-        ("¬ ?", ("¬",), {"?"}),
-        ("⇉ Checks, draft", ("⇉",), {"checks", "draft"}),
-        ("checks, draft", (), {"checks", "draft"}),
-        ("⇉Intake", (), {"⇉intake"}),
-        ("", (), set()),
+        ("flowchart LR", "    A --> B\n", 'click A "a.md"'),
+        ("flowchart LR", "", 'click A "a.md"'),
+        ("graph TD", "    A\n", 'click A href "a.md"'),
+        ("classDiagram", "    class A\n", 'link A "a.md"'),
+        ("classDiagram", "    A --> B\n", 'click A href "a.md"'),
+        ("stateDiagram-v2", "    A: ⇉ Judge\n", 'click A "a.md"'),
+        ("flowchart LR", "    my-A[⇉ Judge]\n", 'click A "a.md"'),
     ],
 )
-def test_a_tooltip_s_opening_marks_are_its_operator_and_the_rest_its_title(
-    tooltip: str, marks: tuple[str, ...], tags: set[str]
+def test_an_element_drawn_with_no_text_carries_no_operator(
+    kind: str, drawn: str, written: str
 ) -> None:
-    found = tooltip_use(f'click A "a.md" "{tooltip}"')
-    assert operators(found.opening) == marks
+    assert diagram_use(written, kind, drawn).opening == ""
+
+
+def test_a_node_s_last_text_is_its_link_s_text() -> None:
+    found = diagram_use('click A "a.md"', drawn="    A[⇉ One] --> B\n    A[Two]\n")
+    assert found.opening == "Two"
+    assert operators(found.opening) == ()
+
+
+@pytest.mark.parametrize(
+    ("tooltip", "tags"),
+    [
+        ("⇉", {"⇉"}),
+        ("¬ ?", {"¬ ?"}),
+        ("⇉ Checks, draft", {"⇉ checks", "draft"}),
+        ("checks, draft", {"checks", "draft"}),
+        ("?", {"?"}),
+        ("", set()),
+    ],
+)
+def test_a_tooltip_is_the_title_and_states_no_operator(
+    tooltip: str, tags: set[str]
+) -> None:
+    found = diagram_use(f'click A "a.md" "{tooltip}"', drawn="    A[Judge]\n")
+    assert operators(found.opening) == ()
     assert found.tags == tags
+
+
+def test_a_tooltip_selects_presets_beside_the_node_s_operator() -> None:
+    found = diagram_use('click A "a.md" "checks, ?"', drawn="    A[¬ Judge]\n")
+    assert operators(found.opening) == ("¬",)
+    assert found.tags == {"checks", "?"}
 
 
 @pytest.mark.parametrize(
     "marks",
     ["⇉", "¬↳", "¬ ⇉", "¬⇉", "⇉↳", "⇉⫽"],
 )
-def test_a_tooltip_s_marks_are_accepted_and_refused_as_a_link_s_text_marks(
+def test_a_node_s_marks_are_accepted_and_refused_as_a_link_s_text_marks(
     marks: str,
 ) -> None:
-    clicked = tooltip_use(f'click A "a.md" "{marks}"').opening
+    clicked = diagram_use('click A "a.md"', drawn=f"    A[{marks} Text]\n").opening
     [linked] = selected(f"[{marks} Text](a.md)\n")
+    assert clicked == linked.opening
     for reader in (operators, gapped, deferring_dispatch, contradicting, conflicting):
         assert reader(clicked) == reader(linked.opening), reader.__name__
 
@@ -651,20 +705,52 @@ def test_a_tooltip_s_marks_are_accepted_and_refused_as_a_link_s_text_marks(
 @pytest.mark.parametrize(
     ("written", "kind", "name"),
     [
-        ('click Plan href "a.md" "⇉↳"', "flowchart LR", "click Plan"),
+        ('click Plan href "a.md" "checks"', "flowchart LR", "click Plan"),
         ('CLICK Plan "a.md" "?"', "flowchart LR", "CLICK Plan"),
-        ('link Cls "a.md" "¬ ⇉"', "classDiagram", "link Cls"),
+        ('link Cls "a.md"', "classDiagram", "link Cls"),
     ],
 )
 def test_a_diagram_link_is_named_by_its_keyword_and_node(
     written: str, kind: str, name: str
 ) -> None:
-    assert tooltip_use(written, kind).name == name
+    assert diagram_use(written, kind).name == name
 
 
 def test_a_link_is_named_by_its_opening() -> None:
     [linked] = selected("[⇉↳ Text](a.md)\n")
     assert linked.name == linked.opening == "⇉↳ Text"
+
+
+@pytest.mark.parametrize(
+    ("kind", "body"),
+    [
+        ("flowchart LR", '    click A "one.md"\n    click A href "two.md" "checks"'),
+        ("flowchart LR", '    click A "one.md"; click A "https://example.com/two"'),
+        ("classDiagram", '    link A "one.md"\n    click A href "two.md"'),
+        ("classDiagram", '    link A "one.md"\n    link A "two.md"'),
+    ],
+)
+def test_a_second_link_on_one_element_is_read_as_repeated(kind: str, body: str) -> None:
+    read = diagram_read(body, kind)
+    assert [(one.line, two.line, two.node) for one, two in read.repeated] == [
+        (3, 3 if ";" in body else 4, "A")
+    ]
+    assert len(read.clicks) == 2
+
+
+def test_links_on_distinct_elements_and_menu_entries_repeat_nothing() -> None:
+    assert (
+        diagram_read(
+            '    click A "one.md"\n    click B "one.md"', "flowchart LR"
+        ).repeated
+        == ()
+    )
+    assert (
+        diagram_read(
+            "    participant A\n    link A: One @ one.md\n    link A: Two @ two.md"
+        ).repeated
+        == ()
+    )
 
 
 def test_a_gantt_click_mermaid_does_not_parse_is_no_use() -> None:
@@ -685,7 +771,7 @@ def test_a_gantt_click_mermaid_does_not_parse_is_no_use() -> None:
 
 
 def test_a_tooltip_selects_nothing_for_a_remote_destination() -> None:
-    found = tooltip_use('click A "https://example.com/a.md" "checks"')
+    found = diagram_use('click A "https://example.com/a.md" "checks"')
     assert found.tags == frozenset()
 
 
