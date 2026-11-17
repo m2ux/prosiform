@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F15 at `64c354307` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`. The first agent review's fixes, through `f02eaea6b`, change no fixture result and add a circle-edge case to T6 and the glossary to T7; the coordinator's review adds the tooltip mark-tag refusal (T2, T9) and the docstring consolidation (T7) at `e70e5b864` and `32aa73de7`, and the third agent review the entry refusal (T10) at `d20610c4a` and the owner-named docstrings at `f8502500c` and `64c354307`.
+Results for F15 at `efc7882a1` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`. The first agent review's fixes, through `f02eaea6b`, change no fixture result and add a circle-edge case to T6 and the glossary to T7; the coordinator's review adds the tooltip mark-tag refusal (T2, T9) and the docstring consolidation (T7) at `e70e5b864` and `32aa73de7`, and the third agent review the entry refusal (T10) at `d20610c4a` and the owner-named docstrings at `f8502500c` and `64c354307`; the fourth and fifth reviews the local link title refusal (T11) at `f79b25e60` and one tag reader for source and entry at `efc7882a1`.
 
 ## T1 Element Text Operator
 
@@ -52,7 +52,7 @@ A reading of `docs/references.md` (Operators, Selection by reference, Diagram li
 
 ## T8 Full Check
 
-`make check` exits 0: lint, format, typecheck, `make test` (2234 passed), harness (1076 passed), corpus (637 fixtures, 637 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check` exits 0: lint, format, typecheck, `make test` (2241 passed), harness (1076 passed), corpus (637 fixtures, 637 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
 ## T9 Tooltip Mark Tags
 
@@ -61,3 +61,7 @@ A reading of `docs/references.md` (Operators, Selection by reference, Diagram li
 ## T10 Entry Mark Tags
 
 `test_cli.py::test_a_link_entry_whose_title_states_operator_marks_is_invalid_usage`: the entries `click Plan "guide.md#plan" "⇉"`, `click Plan "guide.md#plan" "¬ ?"`, `link Plan "guide.md#plan" "checks, ↳"` and `[Plan](guide.md#plan "⇉ checks")` each exit 2 with `E_INVALID_USAGE`, naming the tag as stating operator marks, and publish nothing, so no run carries a mark tag into the tooltip of a deferring diagram link it publishes. Held.
+
+## T11 Local Link Title Mark Tags
+
+`test_cli.py::test_a_local_link_title_tag_stating_operator_marks_is_refused`: a local deferral titled `"⇉ fast"`, `"checks, ¬"`, `"checks,\n⇉ fast"` or a tag led by a non-breaking space fails with `E_UNSUPPORTED_CONSTRUCT`, exit status 1, naming the link at the line its paragraph opens on, while `"with ↳ Given"`, `"⇉Fast"` and an external link titled `"⇉"` compile. Source, tooltip and entry read a title's tags with one reader, `profile.marked_tag` over `tags.read`, and `test_a_tooltip_tag_stating_operator_marks_is_refused` adds a tooltip led by a non-breaking space; so every title a run publishes is one its entry accepts. Held.

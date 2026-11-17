@@ -75,5 +75,70 @@
         "evidence": "https://github.com/m2ux/prosiform/commit/f8502500c"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/785",
+    "head": "64c354307dce7d6056134e02f5aa506de5aeef90",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-783-f15-diagram-link-text/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F15 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change 32aa73de7..64c354307 and the design change e00d82ba4..c006aa0f8: the entry refusal of a title tag stating operator marks, the bundle.clicked docstring, and the docstrings naming source.Click, marks.marked and profile.diagram_refusals by their owners under the written docstring convention. Probed Markdown and diagram entries with mark tags and with prose titles, and a Markdown deferral whose authored title holds a mark tag.",
+    "criteria": "AC1-AC7 hold; the entry refusal closes the earlier finding; no docstring the branch touched restates the rule.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf at 64c354307: exit 0 (2234 tests, harness 1076, corpus 637 of 637).",
+    "findings": [
+      {
+        "description": "A Markdown deferral whose authored title held a tag stating operator marks compiled and published that title, which its later entry then refused as invalid usage, leaving the agent no way forward.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f79b25e60"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/785",
+    "head": "f79b25e60681ec950917ff51f105b7a5ed5d71d1",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-783-f15-diagram-link-text/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F15 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change 64c354307..f79b25e60 and the design change c006aa0f8..df05eebeb: the refusal of a local link title tag stating operator marks in profile.inline_refusals. Probed inline and reference-style links, headings, preamble, block quotes, table cells, command blocks, entity-written titles, external links and images, prose titles, and titles holding line breaks and non-breaking spaces. Rejected as speculative: mark-only titles on local links to non-Markdown files, undeclaring documents and fragments, which never become entries.",
+    "criteria": "AC1-AC7 hold; the invariant that every title a run publishes is one its entry accepts failed under finding 1.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf at f79b25e60: exit 0 (2238 tests, harness 1076, corpus 637 of 637).",
+    "findings": [
+      {
+        "description": "The profile split a title on commas and trimmed only spaces and tabs, while the entry read its tags with tags.read, which trims all whitespace, so a title tag led by a line break or a non-breaking space compiled at source and was refused at its entry.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/efc7882a1"
+      },
+      {
+        "description": "references.md and the design said the Markdown title refusal names the link's line, where it reports the line its paragraph opens on, as the other inline refusals do.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/efc7882a1"
+      },
+      {
+        "description": "The diagram tooltip refusal ended 'which states no operator' while the Markdown title and entry refusals said 'a title names presets alone'.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/efc7882a1"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/785",
+    "head": "efc7882a14e39373bf93460de13d52e03c0b4b69",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-783-f15-diagram-link-text/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F15 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change f79b25e60..efc7882a1 and the design change df05eebeb..a0c67a6f2: profile.marked_tag reading tags.read tags for the inline refusal, the diagram refusal and cli.entry; the reported-line wording; the diagram message wording. Re-probed line-break and NBSP-led titles and tooltips at source and entry, and the positions and prose titles of the previous round.",
+    "criteria": "AC1-AC7 hold, and every title a run publishes is one its entry accepts.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf at efc7882a1: exit 0 (2241 tests, harness 1076, corpus 637 of 637).",
+    "findings": []
   }
 ]
