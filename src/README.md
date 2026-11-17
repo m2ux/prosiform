@@ -52,6 +52,17 @@ The wheel includes [`docs/glossary.md`](../docs/glossary.md) at `prosiform/docs/
 
 `make smoke`, run from the repository root, builds the wheel, installs it in a temporary environment, and invokes `pf` from outside the repository. This checks packaging and entry-point resolution on every change.
 
+## Docstrings and comments
+
+A rule the build implements is stated once, in the docstring of the unit that implements it. Every other docstring states what its own unit does and names the rules it relies on by their owner.
+
+- **Module docstring.**  The module's responsibility and the contract it offers its callers.
+- **Class or function docstring.**  What that unit does, what it takes and what it returns, and any invariant a caller keeps.
+- **A rule another unit owns.**  Named by that unit, as `source.Click`, and never restated or paraphrased.
+- **Comment.**  Why the code is as it is, where the code cannot say it. A comment never restates what the code does or how it came to be.
+
+A change to a rule edits its owner's docstring and the code that implements it, and no other prose.
+
 ## Checks
 
 ### Commands
