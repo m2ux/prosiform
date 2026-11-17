@@ -343,7 +343,7 @@ Compiling a link:
   when pf lists the alternatives:
 
     pf -o out '[¬ Review](modes/review.md#review "checks, final draft")'
-    pf -o out 'click Intake "activities/intake.md" "¬ ?"' --pick Epic
+    pf -o out 'click Intake "activities/intake.md" "?"' --pick Epic
 
   Title tags layer the target's presets above default.
 
@@ -1472,10 +1472,14 @@ def refused(
     returned, and the line the diagnostic carries is the line that content
     occupies in the file. The chain is the one that reached the source,
     because the construct is where the run arrived rather than something
-    a further reference named.
+    a further reference named. A refusal naming an earlier construct
+    beside its own names that construct's line of the file too.
     """
+    message = refusal.message
+    if refusal.earlier is not None:
+        message += f"; the earlier is {location(name, source.line(refusal.earlier))}"
     return input_failure(
-        refusal.message,
+        message,
         code=refusal.code,
         remedy=refusal.remedy,
         reference=refusal.reference,

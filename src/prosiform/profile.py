@@ -23,9 +23,11 @@ line in a fence whose info string opens with `mermaid` — a `click` line,
 a class diagram's `link` line, or a sequence diagram's `link` or `links`
 participant menu, its keywords in any letter case — names a destination
 a reader of the rendered diagram follows, so each such destination is a
-use although the parser reads the fence as text, and a quoted tooltip a
-`click` or class diagram `link` line carries states that use's operator
-and title.
+use although the parser reads the fence as text. The text of the
+element a `click` or class diagram `link` line names states that use's
+operator, and the quoted tooltip the line carries its title. Mermaid
+keeps one link for each element, so a second such line naming one
+element is refused as an unsupported construct naming both lines.
 
 Every cell of a table row shares that row's line, so the parse records
 on each cell's inline token the column it stands in, and a reader of
@@ -161,6 +163,8 @@ class Refusal:
     remedy: str
     line: int | None = None
     reference: str | None = None
+    earlier: int | None = None
+    """The line of an earlier construct the refusal names beside its own."""
 
 
 class Suppressed(Exception):
@@ -545,9 +549,28 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     Markdown document. A Gantt chart's click written in a form Mermaid's
     gantt grammar does not parse, anything but a line of
     `click <task> href "<destination>"` alone, is refused where it names a local
-    Markdown document, and carried as written otherwise.
+    Markdown document, and carried as written otherwise. A `click` or
+    class diagram `link` naming an element an earlier one names is
+    refused beside that earlier line, wherever either points: Mermaid
+    keeps one link for each element, so a reader of the rendered diagram
+    reaches only the last.
     """
     read = linking(fence)
+    for earlier, click in read.repeated:
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the diagram's {click.name!r} links the element {click.node!r}, "
+                f"which {earlier.name!r} already links, and Mermaid keeps one "
+                f"link for each element, so a reader of the rendered diagram "
+                f"reaches only the last"
+            ),
+            remedy="keep one click or link line for each element, and draw "
+            "each further link on an element of its own",
+            line=click.line,
+            reference=click.name,
+            earlier=earlier.line,
+        )
     for at in read.listed:
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,

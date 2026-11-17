@@ -170,6 +170,7 @@ from prosiform.source import (
     HREF,
     LINE_FEED,
     LINK_OPEN,
+    QUOTE,
     TEXT,
     Click,
     Selection,
@@ -728,20 +729,23 @@ def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
     the end of the line, which both carry alike, its terminator aside:
     a CRLF the document wrote reaches the fence as a line feed.
 
-    A titled destination is a deferring click's, whose tooltip states
-    its marks and then its title: the names its title gains are written
-    before the tooltip's closing quote, after the title's tags or after
-    the marks where it states none.
+    A titled destination is a deferring click's, whose tooltip is its
+    title: the names its title gains are written before the tooltip's
+    closing quote, after the title's tags, or as a tooltip of their own
+    after the destination where the click carries none.
     """
     after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
     rest = physical[end:]
     if isinstance(given, Titled):
+        names = ", ".join(given.names)
         tip = TOOLTIP.match(rest)
-        assert tip is not None
-        close = tip.end() - 1
-        separator = ", " if click.title else "" if rest[close - 1].isspace() else " "
-        rest = f"{rest[:close]}{separator}{', '.join(given.names)}{rest[close:]}"
+        if tip is None:
+            rest = f'{QUOTE} "{names}"{rest[len(QUOTE) :]}'
+        else:
+            close = tip.end() - 1
+            separator = ", " if click.title else ""
+            rest = f"{rest[:close]}{separator}{names}{rest[close:]}"
         given = given.destination
     return f"{physical[: end - len(click.written)]}{given}{rest}"
 

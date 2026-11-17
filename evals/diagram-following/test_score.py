@@ -1334,7 +1334,7 @@ def test_quoted_title_separators_and_leading_dashes_are_values() -> None:
     [
         """pf '[Target](target.md "checks")'""",
         """pf '[¬↳ Target](./target.md "checks")'""",
-        """pf 'click Target "target.md" "⇉ checks"'""",
+        """pf 'click Target "target.md" "checks"'""",
         """pf 'link Target "target.md" "checks"'""",
     ],
 )

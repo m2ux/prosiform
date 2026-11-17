@@ -185,7 +185,7 @@ def test_the_guide_specifies_link_entries_and_shell_quoting() -> None:
     for rule in (
         "Run pf on a link in a bundle as written, quoted as one argument",
         "pf -o out '[¬ Review](modes/review.md#review \"checks, final draft\")'",
-        'pf -o out \'click Intake "activities/intake.md" "¬ ?"\' --pick Epic',
+        'pf -o out \'click Intake "activities/intake.md" "?"\' --pick Epic',
     ):
         assert rule in guide
 

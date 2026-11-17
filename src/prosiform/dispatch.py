@@ -469,7 +469,7 @@ def written_in(
 
     A link's text is what its reader reads in it, its marks taken off. A
     diagram link's text is the node it is drawn on, which is what names
-    it to its reader, however few characters its tooltip holds.
+    it to its reader.
     """
     found: list[Link] = []
     for block in within(tokens, [region]):

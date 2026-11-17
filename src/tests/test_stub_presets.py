@@ -132,13 +132,16 @@ def test_a_deferral_carries_the_runs_names(
 def test_a_deferring_click_carries_the_runs_names(tmp_path: Path) -> None:
     tree(
         tmp_path,
-        '```mermaid\nflowchart LR\n  click A "stage.md" "¬"\n'
-        '  click B "stage.md" "¬ draft"\n```',
+        "```mermaid\nflowchart LR\n  A[¬ A] --> B[¬ B] --> C[¬ C]\n"
+        '  click A "stage.md"\n'
+        '  click B "stage.md" "draft"\n'
+        '  click C href "stage.md" "" _blank\n```',
     )
     run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert 'click A "stage.md" "¬ recorded"' in run.bundle
-    assert 'click B "stage.md" "¬ draft, recorded"' in run.bundle
+    assert 'click A "stage.md" "recorded"\n' in run.bundle
+    assert 'click B "stage.md" "draft, recorded"\n' in run.bundle
+    assert 'click C href "stage.md" "recorded" _blank\n' in run.bundle
 
 
 def test_a_deferral_omits_a_name_its_target_declares_otherwise(

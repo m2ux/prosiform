@@ -75,9 +75,15 @@ Each form is read in the diagram that writes it, the diagram's type
 read as Mermaid detects it, and each is read where Mermaid's lexer
 ends it, so a line holding several `;`-ended statements names the
 destination of each. Each destination is a use, on the line it is
-written. A `click` line or a class diagram's `link` line may carry a
-quoted tooltip, which states the use's operator and title as the marks
-module reads it; a destination carrying none opens with nothing. A
+written. A `click` line or a class diagram's `link` line is drawn on a
+diagram element, whose text is the use's text: the use opens with that
+text, so its marks state its operator as a Markdown link's text does.
+A flowchart node's text is the last text its shapes write, and a
+class's text is the label its `class` statement declares; an element
+drawn with no text, and an element of any other diagram, opens with
+nothing. The quoted tooltip such a line may carry is the use's title
+alone. Mermaid keeps one link for each element, so a second link line
+naming an element is read as a repetition the profile refuses. A
 click naming a callback runs script rather than following a
 destination, and a line in any other fence is example text, so neither
 is a use.
@@ -117,7 +123,6 @@ from ruamel.yaml import YAML
 from ruamel.yaml.error import YAMLError
 
 from prosiform.limits import FILE_BYTES, NESTING
-from prosiform.marks import tooltip
 from prosiform.metadata import (
     INVALID_CONVERSION_METADATA,
     INVALID_FRONTMATTER,
@@ -191,6 +196,33 @@ DIRECTIVE = re.compile(
 )
 COMMENT = re.compile(r"\s*%%.*\n")
 CLASS_DIAGRAM = "classDiagram"
+FLOWCHARTS = ("flowchart", "graph")
+SHAPES = {
+    "(((": (")))",),
+    "((": ("))",),
+    "([": ("])",),
+    "(-": ("-)",),
+    "[[": ("]]",),
+    "[(": (")]",),
+    "[/": ("/]", "\\]"),
+    "[\\": ("\\]", "/]"),
+    "{{": ("}}",),
+    "@{": ("}",),
+    "[": ("]",),
+    "(": (")",),
+    "{": ("}",),
+    ">": ("]",),
+}
+NODE_SHAPE = re.compile(
+    r"(?<!\w)(?<!\w-)(?P<node>\w+(?:-\w+)*)(?P<open>"
+    + "|".join(re.escape(opener) for opener in SHAPES)
+    + ")"
+)
+METADATA_SHAPE = "@{"
+LABEL = "label"
+EDGE_TEXT = "|"
+MARKDOWN_STRING = "`"
+CLASS_LABEL = re.compile(r'\s*class\s+(?P<node>[^\s"\[]+)\["(?P<label>[^"]*)"\]')
 SEQUENCE_DIAGRAM = "sequenceDiagram"
 KANBAN = "kanban"
 GANTT = "gantt"
@@ -641,7 +673,7 @@ class Use:
     for a use in the preamble, which lies in no section.
 
     The tags are the complete preset names in a local link's parsed
-    title attribute, or in the title a diagram link's tooltip states.
+    title attribute, or in a diagram link's tooltip, which is its title.
     Each occurrence carries its own immutable selection; an image and an
     external link carry none.
 
@@ -654,8 +686,8 @@ class Use:
 
     The name is how a diagnostic names the use to its reader: the
     opening for a link or an image, where its marks are written, and a
-    diagram link's keyword and node, such as `click Plan`, since the
-    marks its tooltip opens with name nothing.
+    diagram link's keyword and node, such as `click Plan`, which name
+    the line its author wrote.
     """
 
     destination: str
@@ -756,12 +788,13 @@ class Click:
     line as opening a comment, which takes the destination with it.
 
     The node is the diagram element a `click` or class diagram `link`
-    line is drawn on, which names the link to its reader. The opening
-    and the title are what that line's quoted tooltip states, as the
-    marks module reads a tooltip: the opening holds its operator marks,
-    and the title its preset tags. A sequence diagram's `link` and
-    `links` carry no tooltip, so they open with nothing and carry no
-    title.
+    line is drawn on, which names the link to its reader. The opening is
+    that element's text, which holds the link's operator marks as a
+    Markdown link's text does, and is empty for an element drawn with no
+    text. The title is the line's quoted tooltip as written, which holds
+    the link's preset tags, and is absent where the line carries none.
+    A sequence diagram's `link` and `links` are drawn on no element and
+    carry no tooltip, so they open with nothing and carry no title.
 
     The name is how a diagnostic names the link to its reader: the
     line's keyword as written and the node it is drawn on, such as
@@ -813,7 +846,11 @@ class Diagram:
     parse: anything but a line of `click <task> href "<destination>"`
     alone, such as one carrying a tooltip, a link target or a `;`, or
     naming its destination without `href`. Mermaid draws no chart from
-    it and the click opens nothing; none is a use.
+    it and the click opens nothing; none is a use. The repeated links
+    are each `click` or class diagram `link` naming an element an earlier
+    one already names, paired with that earlier one: Mermaid keeps the
+    last link it reads for an element, so a reader of the rendered
+    diagram reaches only one of them.
     """
 
     clicks: tuple[Click, ...] = ()
@@ -821,6 +858,7 @@ class Diagram:
     listed: tuple[int, ...] = ()
     unfollowed: tuple[Unfollowed, ...] = ()
     unparsed: tuple[Click, ...] = ()
+    repeated: tuple[tuple[Click, Click], ...] = ()
 
 
 class BrokenMenu(Exception):
@@ -904,7 +942,8 @@ def read_diagram(fence: Token) -> Diagram:
       the JSON object being one destination.
 
     A quoted destination may be followed by a quoted tooltip and a link
-    target; the tooltip states the link's operator and title. A line may
+    target; the tooltip is the link's title, and the text of the element
+    the line names, as `element_texts` reads it, is its text. A line may
     hold several statements, each ended by a `;` outside a quoted string,
     and each `click` or class `link` statement among them names its own
     destination. A click naming a callback, or
@@ -920,18 +959,24 @@ def read_diagram(fence: Token) -> Diagram:
     way, carrying a tooltip, a link target or a `;`, or naming its
     destination without `href`, draws no chart: it is read as unparsed
     rather than as a click.
+
+    A click or class `link` naming an element an earlier one names is
+    read as repeated, beside the earlier one, and is still a click.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
     form = diagram_type(fence.content)
     base = ticket_base(fence.content) if form == KANBAN else None
     anchors = draws_anchors(fence.content)
+    texts = element_texts(fence.content, form)
     first = fence.map[0] + 2
     found: list[Click] = []
     broken: list[int] = []
     listed: list[int] = []
     unfollowed: list[Unfollowed] = []
     unparsed: list[Click] = []
+    linked_at: dict[str, Click] = {}
+    repeated: list[tuple[Click, Click]] = []
     for at, physical in enumerate(lines(fence.content)):
         line = bare(physical)
         unfollowed.extend(rendered(line, form, base, anchors, first + at))
@@ -949,27 +994,119 @@ def read_diagram(fence: Token) -> Diagram:
                 if anchor == ENTITY_ANCHOR
                 else written
             )
-            stated = tooltip(tip)
-            (unparsed if form == GANTT and not gantt_form else found).append(
-                Click(
-                    destination,
-                    first + at,
-                    offset,
-                    anchor,
-                    written,
-                    node,
-                    stated.opening,
-                    stated.title,
-                    name,
-                )
+            click = Click(
+                destination,
+                first + at,
+                offset,
+                anchor,
+                written,
+                node,
+                texts.get(node, ""),
+                tip,
+                name,
             )
+            if form == GANTT and not gantt_form:
+                unparsed.append(click)
+                continue
+            found.append(click)
+            if node:
+                earlier = linked_at.setdefault(node, click)
+                if earlier is not click:
+                    repeated.append((earlier, click))
     return Diagram(
         tuple(found),
         tuple(broken),
         tuple(listed),
         tuple(unfollowed),
         tuple(unparsed),
+        tuple(repeated),
     )
+
+
+def element_texts(content: str, form: str) -> dict[str, str]:
+    """The text one diagram draws for each element a diagram link line can name.
+
+    A flowchart node's text is what its shape writes, between the
+    shape's opening and closing brackets or as the `label` of its `@{…}`
+    metadata, a quoted text read without its quotes and a Markdown
+    string without its backticks. Mermaid keeps the last text it reads
+    for a node, so a later shape's text replaces an earlier one's. A
+    class's text is the quoted label its `class` statement declares. An
+    element with no such text is drawn with its name, which an author
+    writes as an identifier and not as text, and every other diagram's
+    elements are read for none, so neither is held here.
+    """
+    if form == CLASS_DIAGRAM:
+        return {
+            found.group("node"): found.group("label")
+            for physical in lines(content)
+            for statement, _start in statements(bare(physical))
+            if (found := CLASS_LABEL.match(statement)) is not None
+        }
+    if not diagram_opening(content).startswith(FLOWCHARTS):
+        return {}
+    held: dict[str, str] = {}
+    for physical in lines(content):
+        line = bare(physical)
+        if COMMENT_LINE.match(line):
+            continue
+        for statement, _start in statements(line):
+            if CLICK_STATEMENT.match(statement):
+                continue
+            held.update(shaped(statement))
+    return held
+
+
+def shaped(statement: str) -> Iterator[tuple[str, str]]:
+    """Each node one flowchart statement writes a shape for, with the shape's text.
+
+    A quoted string and an edge's `|…|` text outside a shape are text
+    no node is named in, so the scan passes over them.
+    """
+    at = 0
+    while at < len(statement):
+        character = statement[at]
+        if character in (QUOTE, EDGE_TEXT):
+            close = statement.find(character, at + 1)
+            at = len(statement) if close < 0 else close + 1
+            continue
+        found = NODE_SHAPE.match(statement, at)
+        if found is None:
+            at += 1
+            continue
+        text, at = shape_text(statement, found.end(), found.group("open"))
+        if text is not None:
+            yield found.group("node"), text
+
+
+def shape_text(statement: str, start: int, opener: str) -> tuple[str | None, int]:
+    """The text one shape writes from its opening, and where the shape ends.
+
+    A metadata shape writes the `label` its mapping holds, and none where
+    it holds no label.
+    """
+    closers = SHAPES[opener]
+    if opener == METADATA_SHAPE:
+        close = statement.find(closers[0], start)
+        end = len(statement) if close < 0 else close + 1
+        label = yaml_mapping(statement[start - 1 : end]).get(LABEL)
+        return (None if label is None else str(label)), end
+    text_end = start
+    if statement.startswith(QUOTE, start):
+        close = statement.find(QUOTE, start + 1)
+        text_end = len(statement) if close < 0 else close + 1
+    found = [
+        (at, at + len(closer))
+        for closer in closers
+        if (at := statement.find(closer, text_end)) >= 0
+    ]
+    close, end = min(found) if found else (len(statement), len(statement))
+    text = statement[start:close]
+    if text.startswith(QUOTE):
+        text = text.strip().removeprefix(QUOTE).removesuffix(QUOTE)
+        if len(text) > 1 and text[0] == text[-1] == MARKDOWN_STRING:
+            text = text[1:-1]
+    return text, end
 
 
 def rendered(
@@ -1270,11 +1407,11 @@ def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
     position.
 
     A diagram's link destination is written on its own line of the
-    fence, so it is located at that line, and opens with the marks its
-    tooltip opens with.
+    fence, so it is located at that line, and opens with the marks the
+    text of the element it is drawn on opens with.
 
     A local link's title attribute supplies its tags through the shared
-    list reader, and so does the title a diagram link's tooltip states.
+    list reader, and so does a diagram link's tooltip, which is its title.
     Images and external links supply no tags; neither the visible label
     nor a surrounding heading supplies them.
 

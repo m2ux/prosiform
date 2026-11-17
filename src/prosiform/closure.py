@@ -7,8 +7,8 @@ it declares nothing. Canonical source identities are relative to the
 invocation working directory, independent of the discovering parent, and
 one above it keeps its leading parent segments.
 
-Four operators open a link's text, or a diagram link's tooltip, as the
-marks module reads them; the deferral mark combines with the composition
+Four operators open a link's text, a diagram link's element text among
+them, as the marks module reads them; the deferral mark combines with the composition
 mark alone. Each of the deferral, dispatch and parallel dispatch marks
 withholds the same compilation from the bundle carrying the link: a
 deferral states when the material is compiled, a dispatch that a
