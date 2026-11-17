@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F15 at `f02eaea6b` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`; the agent review's fixes after it change no fixture result, and add a circle-edge case to T6 and the glossary to T7.
+Results for F15 at `32aa73de7` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`. The first agent review's fixes, through `f02eaea6b`, change no fixture result and add a circle-edge case to T6 and the glossary to T7; the coordinator's review adds the tooltip mark-tag refusal (T2, T9) and the docstring consolidation (T7) at `e70e5b864` and `32aa73de7`.
 
 ## T1 Element Text Operator
 
@@ -14,7 +14,7 @@ Each was a tooltip-operator fixture, reworked with the marks moved into the node
 
 ## T2 Tooltip as Title
 
-`make corpus` passes `fixtures/dispatch/a-dispatching-click-s-tooltip-tags-select-its-bundle-s-presets`, where `Intake[⇉ Intake]` beside the tooltip `"checks"` dispatches under `checks`, and `fixtures/dispatch/a-click-tooltip-opening-with-a-mark-states-no-operator`, where `Intake[Intake]` beside the tooltip `"⇉ checks"` is an ordinary link: the target is bundled inline, its `checks` preset unselected (`W_PRESET_UNUSED`), the tooltip carried as written. `fixtures/deferral/a-deferring-click-tooltip-carries-the-pick-token` and `fixtures/cli/a-click-line-entry-selects-presets-by-its-tooltip` carry `?` and `Checks` as whole tooltips. Held.
+`make corpus` passes `fixtures/dispatch/a-dispatching-click-s-tooltip-tags-select-its-bundle-s-presets`, where `Intake[⇉ Intake]` beside the tooltip `"checks"` dispatches under `checks`, and a tooltip tag stating operator marks is refused rather than read as a preset name, as T9 shows. `fixtures/deferral/a-deferring-click-tooltip-carries-the-pick-token` and `fixtures/cli/a-click-line-entry-selects-presets-by-its-tooltip` carry `?` and `Checks` as whole tooltips. Held.
 
 ## T3 Refused Combinations
 
@@ -40,7 +40,7 @@ The design's **Examples** under Link classification states that a class diagram 
 ## T6 Reader Unit Tests
 
 - `test_source.py`: a node's text read from every flowchart shape, quoted and Markdown strings and `@{…}` labels among them, past edge text and quoted strings; a class's label; no text for a node with none, a class with no label, another diagram's element and a dashed id ending in the node's name; the last text winning; a tooltip read whole as the title with no operator; node marks accepted and refused as a link's text marks; a second link on one element read as repeated, and distinct elements and menu entries not.
-- `test_cli.py`: a tooltip's marks stating no operator, a class label dispatching, a second click and a second class link refused naming both lines; the click tests rewritten to node text.
+- `test_cli.py`: a tooltip tag of marks, alone, beside other tags or opening a tag before a blank, refused naming the line, and a tooltip tag with marks against text or after prose read as a title; a class label dispatching, a second click and a second class link refused naming both lines; the click tests rewritten to node text.
 - `test_candidate.py`: a bundle changing a click's node text or tooltip fails validation.
 - `test_stub_presets.py`: a deferring click carrying no tooltip, an empty tooltip and a link target gains the run's names as a tooltip.
 
@@ -48,8 +48,12 @@ Held.
 
 ## T7 Documented Rule
 
-A reading of `docs/references.md` (Operators, Selection by reference, Diagram links) and the design (**Examples** and **Selection belongs to the link**, Link entries, the fixture rows) states the element text as the link text, the tooltip as the title and one link per element. `grep -rni tooltip` over `docs/`, `README.md`, `invocation.md`, the design and `src/prosiform` finds no statement that a tooltip carries an operator. Held.
+A reading of `docs/references.md` (Operators, Selection by reference, Diagram links) and the design (**Examples** and **Selection belongs to the link**, Link entries, the fixture rows) states the element text as the link text, the tooltip as the title and one link per element. `grep -rni tooltip` over `docs/`, `README.md`, `invocation.md`, the design and `src/prosiform` finds no statement that a tooltip carries an operator; `docs/references.md` and the design state the tooltip mark-tag refusal. The rule is stated in the source model's module docstring and `Click`, and the other docstrings the branch touched name `Click` without restating it; `closure.py` narrates no diagram link and `tags.py` is unchanged from `main`. Held.
 
 ## T8 Full Check
 
-`make check` exits 0: lint, format, typecheck, `make test` (2224 passed), harness (1075 passed), corpus (636 fixtures, 636 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check` exits 0: lint, format, typecheck, `make test` (2230 passed), harness (1076 passed), corpus (637 fixtures, 637 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+
+## T9 Tooltip Mark Tags
+
+`make corpus` passes `fixtures/dispatch/a-click-tooltip-of-the-dispatch-mark-is-refused` (`Intake[Intake]` beside the tooltip `"⇉"`) and `fixtures/dispatch/a-click-tooltip-tag-of-operator-marks-beside-other-tags-is-refused` (the tooltip `"⇉, checks"`, `checks` a preset `intake.md` declares): each fails with `E_UNSUPPORTED_CONSTRUCT`, exit status 1, naming `click Intake` at `guide.md:11`, the message naming the tag `'⇉'` and the remedy writing the marks at the start of the element's text. pf 0.26.0 dispatched the first; the head before `e70e5b864` compiled it silently as an inline link. Held.
