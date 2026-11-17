@@ -957,6 +957,7 @@ def test_a_parallel_set_listing_the_other_preset_variant_twice_fails() -> None:
             ["guide", "⫽-dispatch-set"],
             {("guide.md", 0): serving},
             lambda reference: next(iter(reference.tags)) + ".bundle.md",
+            {},
         )
     assert raised.value.invariant == TARGET_INTEGRITY
     assert "effective bundle files" in str(raised.value)
