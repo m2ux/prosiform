@@ -2255,6 +2255,7 @@ def traverse(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     run: frozenset[str] = frozenset(),
+    picking: bool = True,
 ) -> tuple[
     dict[str, Source],
     dict[str, list[Token]],
@@ -2324,6 +2325,11 @@ def traverse(
     Every source is held with the run's names, the names its entry
     title gives, so each document's stubs they name are in force
     wherever the run compiles it, whatever reference reaches it.
+
+    Each withheld reference's pick is held to its target's declaration
+    where `picking` holds. A traversal standing in for the run that
+    compiles a deferral later reads that run's references alone, and
+    holds no pick of its own withheld references.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -2492,8 +2498,12 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
-        if one.defers or picks(one.tags):
-            stated_pick(read[one.path].conversion, parsed[one.path], one)
+        if picking and (one.defers or picks(one.tags)):
+            stated_pick(
+                read[one.path].conversion,
+                one,
+                lambda later: later_needs_pick(root, later, limits, declarations, run),
+            )
     return (
         read,
         parsed,
@@ -2543,17 +2553,62 @@ def confirm(
     )
 
 
+def later_needs_pick(
+    root: Path,
+    one: Reference,
+    limits: Limits,
+    declarations: Declarations,
+    run: frozenset[str],
+) -> bool:
+    """Whether the run compiling a deferral later needs a pick the deferral makes.
+
+    That run's entry is the published link: its target, its operator
+    marks ignored, selecting by the deferral's title and the run's names
+    the bundle appends to it. Its traversal is read here, and the
+    alternatives in force for the target are counted on every reference
+    reaching it there, as that run counts them. A traversal that fails
+    leaves the need unknown, so the deferral needs a pick of its own.
+    """
+    entry = replace(
+        one,
+        composes=False,
+        defers=False,
+        origin=None,
+        chain=(identity(one),),
+        tags=one.tags | run,
+    )
+    try:
+        read, parsed, _, _, found, _, _ = traverse(
+            root,
+            [entry],
+            limits,
+            declarations,
+            Substitution(),
+            run_names(entry),
+            picking=False,
+        )
+    except (Failure, Crossed):
+        return True
+    conversion = read[one.path].conversion
+    references = contributing(found).get(one.path, [entry])
+    return not picked(conversion, references) and routed(
+        one.path, conversion, parsed[one.path], references, [entry]
+    )
+
+
 def stated_pick(
-    conversion: Conversion, tokens: Sequence[Token], one: Reference
+    conversion: Conversion,
+    one: Reference,
+    needs_pick: Callable[[Reference], bool],
 ) -> None:
     """Hold one deferral, or one dispatch carrying the pick token, to its pick.
 
     The later run compiles a deferral's target as its entry, with the
     deferral's title as its selection. A document declaring alternatives
     compiles there with at most one in force, and with exactly one where
-    an alternative changes what the deferral selects, so the title names
-    one of them or carries the pick token, never both, and names none
-    only where no alternative changes the selected content. A dispatch
+    an alternative changes what that run selects, so the title names one
+    of them or carries the pick token, never both, and names none only
+    where that run needs none, as `needs_pick` reads it. A dispatch
     carrying the pick token compiles its target once for each
     alternative, so it names none of them beside the token. The pick
     token asks for a pick among alternatives, so a target declaring none
@@ -2576,8 +2631,7 @@ def stated_pick(
         names = [preset.name for preset in picked(conversion, (one,))]
         if (len(names) == 1 and not pick) or (not names and pick):
             return
-        entry = (replace(one, composes=False, defers=False),)
-        if not names and not routed(one.path, conversion, tokens, entry, entry):
+        if not names and not needs_pick(one):
             return
         listed = ", ".join(repr(preset.name) for preset in alternatives)
         if pick:
