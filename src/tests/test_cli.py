@@ -2129,6 +2129,20 @@ def test_a_deferral_whose_later_run_fails_otherwise_needs_no_pick(
     assert "(work-kind.md#populate)" in run.bundle
 
 
+def test_a_deferral_whose_later_run_fails_for_want_of_a_pick_is_refused(
+    kinds: Path,
+) -> None:
+    """Unpicked, the later run reads the unrouted body, and a pick routes past it."""
+    written(kinds, "body.md", DECLARED + "# Body\n\nSee [nothing](#nowhere).\n")
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Plan\n\nPopulate [¬ the body](work-kind.md).\n",
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert "names no alternative" in diagnostic["message"]
+
+
 @pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
 def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
     kinds: Path, title: str
