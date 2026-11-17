@@ -17,9 +17,9 @@ together with the section's other parallel dispatches. A deferred link's
 destination is the target's path, which no compiled link carries, so the
 deferral is stated there; a dispatched link points at a bundle file, or
 at a dispatch-set or dispatch-pick sub-section naming the bundles the run
-compiles for its target, which states the dispatch. The composition mark places the
-target's section beneath the section writing it, so the link points at
-that placement. Every mark is therefore authoring syntax, and the bundle
+compiles for its target, which states the dispatch. The composition mark
+places the target's section beneath the section writing it, so the link
+points at that placement. Every mark is therefore authoring syntax, and the bundle
 drops it, a dispatch pointing at a bundle file keeping its own.
 
 A composition directive is a link whose text opens with the composition

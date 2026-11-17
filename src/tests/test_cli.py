@@ -3228,6 +3228,37 @@ def test_a_dispatch_in_a_level_six_section_publishes_inline(root: Path) -> None:
     assert run.bundle.endswith("Run [\u21c9 plan](plan.bundle.md).\n")
 
 
+def test_a_picking_dispatch_in_a_level_six_section_is_refused(kinds: Path) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## A\n\n### B\n\n#### C\n\n##### D\n\n###### E\n\n"
+        'Run [⇉ the body](work-kind.md "?").\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == HEADING_DEPTH_OVERFLOW
+
+
+def test_an_authored_heading_equal_to_the_dispatch_pick_is_refused(
+    kinds: Path,
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + '# Guide\n\nRun [⇉ the body](work-kind.md "?").\n\n'
+        "## ⇉ Dispatch Pick\n\nText.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == HEADING_COLLISION
+    assert "⇉ Dispatch Pick" in diagnostic["message"]
+
+
 def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
     root: Path,
 ) -> None:
