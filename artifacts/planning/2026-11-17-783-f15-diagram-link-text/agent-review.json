@@ -49,5 +49,31 @@
     "criteria": "AC1-AC7 as at 283759970; the fixes change no fixture result and the glossary now states the rule (AC6).",
     "validation": "make check with PROSIFORM_BUILD naming the worktree's pf at f02eaea6b: exit 0 (2224 tests, harness 1075, corpus 636 of 636).",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/785",
+    "head": "32aa73de7139522e63e3d48cd86297505ca5a92e",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-783-f15-diagram-link-text/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F15 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change f02eaea6b..32aa73de7, answering the coordinator's review: the refusal of a tooltip tag stating operator marks (marks.marked, profile.diagram_refusals, two fixtures, docs/references.md and the design's Examples) and the rule stated once in source.py's module docstring and Click. Probed tooltips of prose, marks against text, mid-text marks, the pick token, empty and blank tooltips, marks alone, marks before a blank, separators and tabs; href, callback, external and undeclared destinations; class, Gantt and sequence diagrams; frontmatter line numbers; entries; and deferral title-gaining through bundle.clicked and closure.carried_names. Rejected as speculative: a tab after the marks, a mark tooltip on an external or undeclared destination, a preset named with marks, refusal order within one fence, the tag separator constant, ragged docstring wraps.",
+    "criteria": "AC1-AC7 hold; the coordinator's finding 1 holds for authored diagrams, and finding 2 holds but for one docstring (finding 2 here).",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf at 32aa73de7: exit 0 (2230 tests, harness 1076, corpus 637 of 637).",
+    "findings": [
+      {
+        "description": "A link entry's title tag stating operator marks, as pf 'click G \"guide.md\" \"⇉\"' or a Markdown entry titled \"⇉ fast, task\", reached the tooltip of every deferring click the run published through closure.carried_names, publishing a tooltip the profile refuses.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d20610c4a"
+      },
+      {
+        "description": "The bundle.clicked docstring restated that a deferring click's tooltip is its title rather than naming the Click title.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f8502500c"
+      }
+    ]
   }
 ]

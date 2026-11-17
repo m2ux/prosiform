@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F15 at `32aa73de7` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`. The first agent review's fixes, through `f02eaea6b`, change no fixture result and add a circle-edge case to T6 and the glossary to T7; the coordinator's review adds the tooltip mark-tag refusal (T2, T9) and the docstring consolidation (T7) at `e70e5b864` and `32aa73de7`.
+Results for F15 at `64c354307` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`. The first agent review's fixes, through `f02eaea6b`, change no fixture result and add a circle-edge case to T6 and the glossary to T7; the coordinator's review adds the tooltip mark-tag refusal (T2, T9) and the docstring consolidation (T7) at `e70e5b864` and `32aa73de7`, and the third agent review the entry refusal (T10) at `d20610c4a` and the owner-named docstrings at `f8502500c` and `64c354307`.
 
 ## T1 Element Text Operator
 
@@ -48,12 +48,16 @@ Held.
 
 ## T7 Documented Rule
 
-A reading of `docs/references.md` (Operators, Selection by reference, Diagram links) and the design (**Examples** and **Selection belongs to the link**, Link entries, the fixture rows) states the element text as the link text, the tooltip as the title and one link per element. `grep -rni tooltip` over `docs/`, `README.md`, `invocation.md`, the design and `src/prosiform` finds no statement that a tooltip carries an operator; `docs/references.md` and the design state the tooltip mark-tag refusal. The rule is stated in the source model's module docstring and `Click`, and the other docstrings the branch touched name `Click` without restating it; `closure.py` narrates no diagram link and `tags.py` is unchanged from `main`. Held.
+A reading of `docs/references.md` (Operators, Selection by reference, Diagram links) and the design (**Examples** and **Selection belongs to the link**, Link entries, the fixture rows) states the element text as the link text, the tooltip as the title and one link per element. `grep -rni tooltip` over `docs/`, `README.md`, `invocation.md`, the design and `src/prosiform` finds no statement that a tooltip carries an operator; `docs/references.md` and the design state the tooltip mark-tag refusal. The rule is stated in the source model's module docstring and `Click`, and the other docstrings the branch touched name it by its owner, as `source.Click`, `marks.marked` and `profile.diagram_refusals`, without restating it; `closure.py` narrates no diagram link and `tags.py` is unchanged from `main`. Held.
 
 ## T8 Full Check
 
-`make check` exits 0: lint, format, typecheck, `make test` (2230 passed), harness (1076 passed), corpus (637 fixtures, 637 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check` exits 0: lint, format, typecheck, `make test` (2234 passed), harness (1076 passed), corpus (637 fixtures, 637 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
 ## T9 Tooltip Mark Tags
 
 `make corpus` passes `fixtures/dispatch/a-click-tooltip-of-the-dispatch-mark-is-refused` (`Intake[Intake]` beside the tooltip `"⇉"`) and `fixtures/dispatch/a-click-tooltip-tag-of-operator-marks-beside-other-tags-is-refused` (the tooltip `"⇉, checks"`, `checks` a preset `intake.md` declares): each fails with `E_UNSUPPORTED_CONSTRUCT`, exit status 1, naming `click Intake` at `guide.md:11`, the message naming the tag `'⇉'` and the remedy writing the marks at the start of the element's text. pf 0.26.0 dispatched the first; the head before `e70e5b864` compiled it silently as an inline link. Held.
+
+## T10 Entry Mark Tags
+
+`test_cli.py::test_a_link_entry_whose_title_states_operator_marks_is_invalid_usage`: the entries `click Plan "guide.md#plan" "⇉"`, `click Plan "guide.md#plan" "¬ ?"`, `link Plan "guide.md#plan" "checks, ↳"` and `[Plan](guide.md#plan "⇉ checks")` each exit 2 with `E_INVALID_USAGE`, naming the tag as stating operator marks, and publish nothing, so no run carries a mark tag into the tooltip of a deferring diagram link it publishes. Held.
