@@ -1,0 +1,99 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/787",
+    "head": "ed1455bb02d12a54e88da404c18abb4d9a8e7a51",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-788-f17-comment-convention/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer given the diff and issue #788 alone)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The full diff of main..786-comment-convention at ed1455bb0: the Docstrings and comments section of src/README.md, read against issue #788, the rest of src/README.md and sampled docstrings in src/prosiform/ for followability.",
+    "criteria": "AC1: the section states every item of #788's Proposal. AC2: the documentation checks pass.",
+    "validation": "make layout tables links vocabulary at ed1455bb0: exit 0 (links online, 427 documents resolved; 52 contract terms defined).",
+    "findings": [
+      {
+        "description": "The section did not say which of a module, class or function owns a rule all could claim, so two authors could disagree.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/02d303d6465018a0e3bec909c74967c4e2180df1"
+      },
+      {
+        "description": "\"No other prose\" conflicted with the contract documents and this file's own Test coverage section, which restate rules by design.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/02d303d6465018a0e3bec909c74967c4e2180df1"
+      },
+      {
+        "description": "Naming the owner alone did not say which of its rules a docstring relies on.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/02d303d6465018a0e3bec909c74967c4e2180df1"
+      },
+      {
+        "description": "Bold labels took two spaces where the repository's bullets take one.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/02d303d6465018a0e3bec909c74967c4e2180df1"
+      },
+      {
+        "description": "\"A comment never restates how it came to be\" spoke of restating history the code never states.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/02d303d6465018a0e3bec909c74967c4e2180df1"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/787",
+    "head": "02d303d6465018a0e3bec909c74967c4e2180df1",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-788-f17-comment-convention/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer given the diff and issue #788 alone)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change ed1455bb0..02d303d64 fixing the first round's five findings, with the whole section and issue #788.",
+    "criteria": "AC1 and AC2 still met; each first-round finding resolved.",
+    "validation": "make layout tables links vocabulary at 02d303d64: exit 0.",
+    "findings": [
+      {
+        "description": "The example named source.Click, a class that only holds the anchor, as the owner of the anchor spelling, which the functions applying it own under the narrowest-unit rule.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/e4f83edcc4029be8e0a285f0eb2863c99655a3cd"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/787",
+    "head": "e4f83edcc4029be8e0a285f0eb2863c99655a3cd",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-788-f17-comment-convention/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer given the diff and issue #788 alone)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change 02d303d64..e4f83edcc: the source.frontmatter example and the value-holding class sentence, checked against source.frontmatter's docstring and code.",
+    "criteria": "AC1 and AC2 still met; the second-round finding resolved.",
+    "validation": "make layout tables links vocabulary at e4f83edcc: exit 0.",
+    "findings": [
+      {
+        "description": "The section did not say which unit owns a rule several units apply, as frontmatter and closes_head both apply the delimiter comparison.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/740e0b97af388434240d35cb9065335c6a118ecc"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/787",
+    "head": "740e0b97af388434240d35cb9065335c6a118ecc",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-788-f17-comment-convention/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer given the diff and issue #788 alone)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change e4f83edcc..740e0b97a: one sentence giving a rule several units apply one owner, which the others name.",
+    "criteria": "AC1 and AC2 still met; the third-round finding resolved.",
+    "validation": "make layout tables links vocabulary at 740e0b97a: exit 0 (links online).",
+    "findings": []
+  }
+]
