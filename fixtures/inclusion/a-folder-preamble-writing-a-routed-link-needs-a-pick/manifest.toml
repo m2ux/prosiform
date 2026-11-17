@@ -1,0 +1,20 @@
+description = "A link with no title selects the Hand-off section of sub/stage.md, which writes no link. Its default group pair joins it to a merged group from a subfolder, so its folder's preamble group carries its introduction, which links body.md, a key both alternatives route. The run fails with E_ALTERNATIVE_UNRESOLVED, listing each alternative beside its choice line."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Metadata failures — E_ALTERNATIVE_UNRESOLVED",
+  "Exit status and JSON diagnostics — 2, invalid CLI usage or option combination",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ALTERNATIVE_UNRESOLVED"
+source = "sub/stage.md"
+message_contains = ["sub/stage.md needs one alternative in force:\n  alpha  The work is of kind alpha.\n  beta   The work is of kind beta."]
