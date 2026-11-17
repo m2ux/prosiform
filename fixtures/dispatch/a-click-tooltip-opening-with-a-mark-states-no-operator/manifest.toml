@@ -2,7 +2,6 @@ description = "A Mermaid click whose tooltip opens with the dispatch mark, on a 
 
 clauses = [
   "Link classification and resource handling — Examples",
-  "Link classification and resource handling — Diagram link text",
   "Presets — Selection belongs to the link",
   "Adversarial acceptance fixtures — Dispatch",
 ]

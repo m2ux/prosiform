@@ -2,7 +2,6 @@ description = "A second Mermaid click naming a node an earlier click already lin
 
 clauses = [
   "Link classification and resource handling — Examples",
-  "Link classification and resource handling — Diagram link text",
   "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
 ]
 
