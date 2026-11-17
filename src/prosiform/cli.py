@@ -3968,6 +3968,7 @@ def compiled(
         governed(substitution, pairs),
     )
     dispatching: dict[BundleSelection, Hop] = {}
+    own: list[Hop] = []
     for hop in hops:
         conversion = read[hop.target.path].conversion
         targets = (
@@ -3976,9 +3977,12 @@ def compiled(
             else [hop.target]
         )
         for target in targets:
-            dispatching.setdefault(
-                bundle_selection(target, conversion), replace(hop, target=target)
-            )
+            selection = bundle_selection(target, conversion)
+            if selection in dispatching:
+                continue
+            dispatching[selection] = replace(hop, target=target)
+            if hop.own and (not own or own[-1] is not hop):
+                own.append(hop)
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
         trailing.append(
@@ -3997,7 +4001,7 @@ def compiled(
         dispatching,
         [
             *coinciding,
-            *(selfward(hop) for hop in dispatching.values() if hop.own),
+            *(selfward(hop) for hop in own),
             *itself,
         ],
         trailing,

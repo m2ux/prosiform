@@ -3228,6 +3228,20 @@ def test_a_dispatch_in_a_level_six_section_publishes_inline(root: Path) -> None:
     assert run.bundle.endswith("Run [\u21c9 plan](plan.bundle.md).\n")
 
 
+def test_a_picking_dispatch_of_its_own_document_warns_once(root: Path) -> None:
+    written(
+        root,
+        "stage.md",
+        "---\nprosiform:\n  epic:\n    choice: An epic.\n"
+        "  task:\n    choice: A task.\n---\n# Stage\n\n"
+        '## Run\n\nThen [⇉ other](#other "?").\n\n## Other\n\nDo it.\n',
+    )
+    written(root, "guide.md", DECLARED + '# Guide\n\n[⇉ Stage](stage.md#run "epic")\n')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [one["code"] for one in run.diagnostics()] == [DISPATCH_SELF]
+
+
 def test_a_picking_dispatch_in_a_level_six_section_is_refused(kinds: Path) -> None:
     written(
         kinds,
