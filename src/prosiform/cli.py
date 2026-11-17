@@ -2493,7 +2493,7 @@ def traverse(
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
         if one.defers or picks(one.tags):
-            stated_pick(read[one.path].conversion, one)
+            stated_pick(read[one.path].conversion, parsed[one.path], one)
     return (
         read,
         parsed,
@@ -2543,18 +2543,23 @@ def confirm(
     )
 
 
-def stated_pick(conversion: Conversion, one: Reference) -> None:
+def stated_pick(
+    conversion: Conversion, tokens: Sequence[Token], one: Reference
+) -> None:
     """Hold one deferral, or one dispatch carrying the pick token, to its pick.
 
-    The later run compiles a deferral's target with the deferral's title
-    as its selection, and a document declaring alternatives compiles with
-    exactly one in force, so the title names one of them or carries the
-    pick token, never both. A dispatch carrying the pick token compiles
-    its target once for each alternative, so it names none of them
-    beside the token. The pick token asks for a pick among alternatives,
-    so a target declaring none is refused with it. Every other title
-    publishes a command or a bundle a run refuses, so the defect is the
-    source's and is reported at the link.
+    The later run compiles a deferral's target as its entry, with the
+    deferral's title as its selection. A document declaring alternatives
+    compiles there with at most one in force, and with exactly one where
+    an alternative changes what the deferral selects, so the title names
+    one of them or carries the pick token, never both, and names none
+    only where no alternative changes the selected content. A dispatch
+    carrying the pick token compiles its target once for each
+    alternative, so it names none of them beside the token. The pick
+    token asks for a pick among alternatives, so a target declaring none
+    is refused with it. Every other title publishes a command or a
+    bundle a run refuses, so the defect is the source's and is reported
+    at the link.
     """
     alternatives = conversion.alternatives
     pick = picks(one.tags)
@@ -2570,6 +2575,9 @@ def stated_pick(conversion: Conversion, one: Reference) -> None:
     else:
         names = [preset.name for preset in picked(conversion, (one,))]
         if (len(names) == 1 and not pick) or (not names and pick):
+            return
+        entry = (replace(one, composes=False, defers=False),)
+        if not names and not routed(one.path, conversion, tokens, entry, entry):
             return
         listed = ", ".join(repr(preset.name) for preset in alternatives)
         if pick:
