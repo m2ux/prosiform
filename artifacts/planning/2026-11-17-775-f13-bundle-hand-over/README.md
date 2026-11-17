@@ -13,6 +13,7 @@ The fix states the hand-over in the guide — the sub-agent is given the bundle 
 | Artifact | What it holds |
 | --- | --- |
 | [f13.md](f13.md) | The work item: the hand-over wording, the rule deciding the run-pf line and the checks it carries |
+| [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
 
 ## Links
 
