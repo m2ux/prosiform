@@ -2078,6 +2078,23 @@ def test_a_deferral_stating_no_one_pick_is_refused(
     )
 
 
+@pytest.mark.parametrize("title", ["", ' "checks"'])
+@pytest.mark.parametrize("link", ["¬ the fields", "¬↳ the fields"])
+def test_a_deferral_naming_no_alternative_to_unrouted_content_publishes(
+    kinds: Path, link: str, title: str
+) -> None:
+    """Populate writes no link the alternatives route, so the later run needs none."""
+    written(kinds, "work-kind.md", WORK_KIND + POPULATE)
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + f"# Guide\n\n## Plan\n\n[{link}](work-kind.md#populate{title})\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert f"(work-kind.md#populate{title})" in run.bundle
+
+
 @pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
 def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
     kinds: Path, title: str
