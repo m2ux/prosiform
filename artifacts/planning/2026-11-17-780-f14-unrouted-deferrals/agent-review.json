@@ -1,0 +1,135 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/781",
+    "head": "fb36680e212406d94d61fff71684731417abb96d",
+    "base": "470a18590b9954a62d1868d09152d02977301727",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-780-f14-unrouted-deferrals/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F14 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The full diff of main..f14-unrouted-deferrals at fb36680e2 and the design change on engineering. Probed each case with pf on the first run and on the later run of the published link: sections routed and unrouted, a section linking a routed section of its own document, directly and through another document, a section picking an alternative itself, alternatives with group pairs, ordinary presets with group pairs, deferred directives, whole-document deferrals, subfolder documents, deferring click tooltips and ? dispatches.",
+    "criteria": "AC1-AC3: the fixtures pass in make corpus. AC4: docs/references.md and the design state the rule. AC5: make check passes. The Proposal's condition, accepted where the target compiles with none in force, fails under finding 1.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (2182 tests, harness 1069, corpus 630 of 630).",
+    "findings": [
+      {
+        "description": "The check read the deferral's own selection alone, so a deferred section linking a routed section of its own document published while its later run failed with E_ALTERNATIVE_UNRESOLVED.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/90f751ad2"
+      },
+      {
+        "description": "A deferral to a section picking an alternative by its own link was refused though its later run compiles.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f1dd2daa3"
+      },
+      {
+        "description": "The reworked refusal fixture dropped the corpus case that an ordinary preset alone is no pick.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f1dd2daa3"
+      },
+      {
+        "description": "The fixtures' stage.md files named substitutes and a body that did not exist, so their later runs could not compile.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f1dd2daa3"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/781",
+    "head": "693a1755c810bbbeb83abd31375e5259bdfa5a4f",
+    "base": "470a18590b9954a62d1868d09152d02977301727",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-780-f14-unrouted-deferrals/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (two independent reviewers for the F14 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The fixes fb36680e2..693a1755c and the full diff main..693a1755c, with the design change. Re-ran the first-round probes, and probed entry titles naming the target's alternative, stub names, --budget limits, later bodies failing for other reasons, deferral cycles, a subfolder preamble and the cost of chained and unchained deferrals.",
+    "criteria": "AC1-AC5 met at 693a1755c; finding 1 breaks the Proposal's condition.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (2182 tests, harness 1071, corpus 632 of 632).",
+    "findings": [
+      {
+        "description": "The stand-in entry carried every run name, though the published deferral carries only the names Conversion.carried keeps, so an entry title naming the target's alternative passed the check and the later run failed.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6ede57b02"
+      },
+      {
+        "description": "A failure of the later run's traversal for another reason was reported as a missing pick, whose remedy sends the author the wrong way.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6ede57b02"
+      },
+      {
+        "description": "The nested traversal held the first run's --budget limits, where the later run run as written holds the defaults.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6ede57b02"
+      },
+      {
+        "description": "The nested traversal ran again for each occurrence of one selection, with nothing memoized.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6ede57b02"
+      },
+      {
+        "description": "The fallback in contributing(found).get(one.path, [entry]) could never be used.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6ede57b02"
+      },
+      {
+        "description": "No unit test covered later_needs_pick's run-name and failure paths.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/5e6500530"
+      },
+      {
+        "description": "The design's Exactly one alternative bullet and the deferred directive fixture manifest stated the deferral case imprecisely.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a6dff2611"
+      },
+      {
+        "description": "test-results.md reported the earlier head and counts.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-780-f14-unrouted-deferrals/test-results.md"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/781",
+    "head": "a6dff26116100091b5e0fb8a7adda4ad0d2ceafc",
+    "base": "470a18590b9954a62d1868d09152d02977301727",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-780-f14-unrouted-deferrals/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F14 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The fixes 693a1755c..a6dff2611 and the design change e4284b17f..d2331b56b. Re-ran p10 with an entry title naming the target's alternative, p8b, p13 with --budget files=2, and the agreement probes p1, p2, p4b, p7b and p11; added p14 and p15.",
+    "criteria": "AC1-AC5 met; each second-round finding confirmed fixed.",
+    "validation": "pytest with tests/test_linked_bootstrap.py deselected (its uv build needs network in the reviewer's sandbox): all passed.",
+    "findings": [
+      {
+        "description": "A nested traversal failing with no alternative in force counted as needing no pick, though a pick can route past the unrouted file that fails, so a deferral needing a pick published and its later run showed the body's defect.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f1a26389e"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/781",
+    "head": "4bbb3e4b12068f2747fecc32d9d534dc5e094e33",
+    "base": "470a18590b9954a62d1868d09152d02977301727",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-780-f14-unrouted-deferrals/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F14 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The fix a6dff2611..4bbb3e4b1 and the design change d2331b56b..824919653: the per-alternative retry where the unpicked traversal fails, its unit test and the documents stating it. Re-ran p15, p14, p8b, p1, p2, p10 and p11, each agreeing with its later run, and checked that the retry's casefolded name matches the tag normalization matching_presets reads. Excluded observations, no arising issue filed (this session may not create issues): (1) docs/selection.md, section Presets in force, gives only the composition example for content no alternative changes; scope evidence: issue #780's AC4 names docs/references.md and the design alone. (2) The traverse docstring in cli.py says a deferred directive's later entry compilation uses its selection, beside the rule that an entry's operator marks are ignored; scope evidence: the text predates this branch and states no pick rule. (3) The docs link the design at the pin e333bb447, which lacks the F14 design text; scope evidence: the repository pins the design by convention and the brief moves the pin only where a check needs a clause, which none does.",
+    "criteria": "AC1-AC3: the five deferral fixtures pass in make corpus. AC4: docs/references.md and the design state the rule. AC5: make check passes at 4bbb3e4b1.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (2185 tests, harness 1071, corpus 632 of 632, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-780-f14-unrouted-deferrals/test-results.md",
+    "findings": []
+  }
+]
