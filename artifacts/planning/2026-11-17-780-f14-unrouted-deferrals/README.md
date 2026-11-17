@@ -13,6 +13,7 @@ The fix holds the deferral to the rule the later run applies: it names no altern
 | Artifact | What it holds |
 | --- | --- |
 | [f14.md](f14.md) | The work item: the deferral pick check following the later run's rule |
+| [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
 
 ## Links
 
