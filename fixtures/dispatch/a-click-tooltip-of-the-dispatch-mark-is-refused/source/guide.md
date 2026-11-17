@@ -8,5 +8,5 @@ prosiform: {}
 ```mermaid
 flowchart LR
     Intake[Intake]
-    click Intake "intake.md" "⇉ checks"
+    click Intake "intake.md" "⇉"
 ```

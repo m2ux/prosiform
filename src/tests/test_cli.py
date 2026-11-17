@@ -5223,16 +5223,44 @@ def test_a_node_mark_followed_by_text_opens_an_ordinary_click(root: Path) -> Non
     assert run.diagnostics() == []
 
 
-@pytest.mark.parametrize("tooltip", ["⇉", "¬ ?", "↳ Given"])
-def test_a_tooltip_s_marks_state_no_operator(root: Path, tooltip: str) -> None:
-    """A tooltip is the title alone, so its marks are tags naming no preset."""
+@pytest.mark.parametrize(
+    ("tooltip", "tag"),
+    [
+        ("⇉", "⇉"),
+        ("¬↳", "¬↳"),
+        ("⇉, checks", "⇉"),
+        ("checks, ¬ ⇉", "¬ ⇉"),
+        ("¬ ?", "¬ ?"),
+        ("↳ Given", "↳ Given"),
+    ],
+)
+def test_a_tooltip_tag_stating_operator_marks_is_refused(
+    root: Path, tooltip: str, tag: str
+) -> None:
+    """A tooltip is the title alone, so a tag of marks is refused, not ignored."""
     written(root, "intake.md", DECLARED + "# Intake\n\nTake it in.\n")
     flow(root, "Intake[Intake]", f'click Intake "intake.md" "{tooltip}"')
     run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["source"] == "guide.md:11"
+    assert reported["reference"] == "click Intake"
+    assert repr(tag) in reported["message"]
+    assert "start of the text of the element" in reported["remedy"]
+
+
+@pytest.mark.parametrize("tooltip", ["with ↳ Given", "⇉Intake", "checks"])
+def test_a_tooltip_tag_opening_with_no_operator_marks_is_a_title(
+    root: Path, tooltip: str
+) -> None:
+    written(root, "intake.md", DECLARED + "# Intake\n\nTake it in.\n")
+    flow(root, "Intake[Intake]", f'click Intake "intake.md" "{tooltip}"')
+    run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert f'    click Intake "#intake" "{tooltip}"\n' in run.bundle
     assert "# Intake\n\nTake it in.\n" in run.bundle
-    assert set(run.bundles) == {"guide.bundle.md"}
 
 
 def test_a_class_label_states_its_link_s_operator(root: Path) -> None:

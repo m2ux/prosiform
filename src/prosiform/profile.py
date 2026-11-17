@@ -98,9 +98,11 @@ from markdown_it.utils import EnvType
 
 from prosiform import PROFILE
 from prosiform.limits import NESTING
+from prosiform.marks import marked
 from prosiform.source import FENCE, external, linking
 
 PRESET = "commonmark"
+TAG_SEPARATOR = ","
 ENABLED = ("table", "strikethrough")
 HEADROOM = 20
 
@@ -553,9 +555,30 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     class diagram `link` naming an element an earlier one names is
     refused beside that earlier line, wherever either points: Mermaid
     keeps one link for each element, so a reader of the rendered diagram
-    reaches only the last.
+    reaches only the last. A `click` or class diagram `link` whose
+    tooltip holds a tag stating operator marks is refused: the tooltip
+    is its `Click` title, which states no operator.
     """
     read = linking(fence)
+    for click in read.clicks:
+        tag = next(
+            (one for one in (click.title or "").split(TAG_SEPARATOR) if marked(one)),
+            None,
+        )
+        if tag is None:
+            continue
+        yield Refusal(
+            code=UNSUPPORTED_CONSTRUCT,
+            message=(
+                f"the diagram's {click.name!r} carries the tooltip tag "
+                f"{tag.strip()!r}, which states operator marks, and a tooltip "
+                f"is the link's title, which states no operator"
+            ),
+            remedy="write the marks at the start of the text of the element the "
+            "link names, as Plan[⇉ Plan], and keep the tooltip for preset tags",
+            line=click.line,
+            reference=click.name,
+        )
     for earlier, click in read.repeated:
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,

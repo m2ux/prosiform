@@ -1,0 +1,22 @@
+description = "A Mermaid click whose tooltip holds the dispatch mark as one tag beside the preset tag checks is refused naming the click by its keyword and node, whatever the other tags select: a tooltip tag made of operator marks states no operator, and the run publishes no bundle."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Presets — Selection belongs to the link",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "click Intake"
+message_contains = ["'⇉'", "tooltip"]
+source = "guide.md:11"
+chain = ["guide.md"]

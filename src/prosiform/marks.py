@@ -55,3 +55,11 @@ def opened(text: str) -> Opened | None:
     while after < len(text) and text[after] in BLANKS:
         after += 1
     return Opened(text[at:end], after)
+
+
+def marked(text: str) -> bool:
+    """Whether one text states operator marks: marks alone, or marks opening it."""
+    held = text.strip(BLANKS)
+    if held and all(one in OPERATORS or one in BLANKS for one in held):
+        return True
+    return opened(text) is not None

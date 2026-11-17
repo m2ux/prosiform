@@ -1,0 +1,21 @@
+description = "A Mermaid click whose tooltip is the dispatch mark alone, on a node whose text opens with no mark, is refused naming the click by its keyword and node: the tooltip is the link's title and states no operator, so the run reports the mark rather than reading it as a preset name no document declares, and publishes no bundle."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "click Intake"
+message_contains = ["'⇉'", "tooltip"]
+source = "guide.md:11"
+chain = ["guide.md"]
