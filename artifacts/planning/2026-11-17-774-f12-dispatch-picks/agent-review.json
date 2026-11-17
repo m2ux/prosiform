@@ -18,5 +18,18 @@
         "evidence": "https://github.com/m2ux/prosiform/commit/90b2751032f93de989d3d87b299081e56ca0b05f"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/778",
+    "head": "54aed07f7789dd08e65fa62a09d79d92f1aede3e",
+    "base": "3ded34bc8269ddee0c73f96768ed9ff19411eac5",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-774-f12-dispatch-picks/agent-review.json",
+    "reviewer": "Dispatching session for the delivery",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change since the reviewed head 90b2751032f93de989d3d87b299081e56ca0b05f: a rebase onto main at 3ded34bc8, which merged #776 (F11). One conflict, in the alternatives paragraph of invocation.md: the paragraph keeps F11 wording of when an alternative must be in force and adds that a dispatch carrying the pick token leaves the pick to an agent. No other file changed beyond the rebase. docs/references.md keeps the deferral pick rule that #780 changes.",
+    "criteria": "AC1: fixture dispatch/a-dispatch-carrying-the-pick-token-lists-a-bundle-for-each-alternative publishes one bundle per alternative, each routed by its alternative. AC2: the same fixture's entry bundle lists one dispatch line per alternative beside its choice line in declaration order (task before epic as declared), and dispatch/a-dispatch-carrying-the-pick-token-beside-a-preset-selects-it-in-each-bundle shows a fixed preset selected in each. AC3: test_the_guide_states_each_rule_an_agent_follows_a_bundle_by asserts the guide's statement of ? on a dispatch link. AC4: dispatch/a-parallel-dispatch-carrying-the-pick-token-is-refused fails with E_UNSUPPORTED_CONSTRUCT. AC5: docs/dispatch.md (Where the links point), docs/references.md (The pick token) and the design (Dispatch links, The pick token, The agent's pick, Guide) each state the rule. AC6: make check exits 0 at 90b275103.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree pf at 54aed07f7: exit 0 (test 2155 passed, harness 1060 passed, corpus 621 of 621, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence).",
+    "findings": []
   }
 ]
