@@ -1,0 +1,22 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/778",
+    "head": "90b2751032f93de989d3d87b299081e56ca0b05f",
+    "base": "8c611259ab407e09e4d50262b79cf2f8eef14a5d",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-774-f12-dispatch-picks/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F12 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The full diff of main..f12-dispatch-picks: compiled_pick, picking and alternatives_of in closure.py; refusals_of_picks, withheld, traverse, stated_pick, Compiled and compiled in cli.py, and the guide text; PICKING, CHOICE_SEPARATOR, choices, Link.picking, fits, Placing.heading, Placing.place and collisions in dispatch.py; pointing in bundle.py; dispatches and parallel_sets in candidate.py; PICK_SECTION in provenance.py; docstrings in rewrite.py and tags.py; the two new and one renamed fixture under fixtures/dispatch; docs/dispatch.md, docs/references.md, docs/glossary.md and invocation.md; and the design commit on engineering. Callers inspected: emitted_visible (heading text through pointing), rewrite.edits and published_text (the mark drops because the destination is an anchor), candidate.shown_use, dispatched_set, cycle, analysed, selfward, unused_presets, resolved, compose's two subsection passes and the dispatched_file collision map. Probed by hand: the issue's reproduction (pick.md) publishes three bundles; a click tooltip carrying the dispatch operator and ? points at the sub-section; ? beside the ordinary preset in either case and spacing; a self-dispatch carrying ? (found warning once per alternative, fixed at 90b275103). Speculative edge cases rejected: two self-dispatch links on one line naming different selections, which the warning collection keys by link; a ? dispatch in a composed contribution, which takes the set's composed placement unchanged. The README design pin stays at 005b0ff1d so as not to carry other units' in-flight design changes; it is raised as an open question on the pull request rather than as a finding.",
+    "criteria": "AC1: fixture dispatch/a-dispatch-carrying-the-pick-token-lists-a-bundle-for-each-alternative publishes one bundle per alternative, each routed by its alternative. AC2: the same fixture's entry bundle lists one dispatch line per alternative beside its choice line in declaration order (task before epic as declared), and dispatch/a-dispatch-carrying-the-pick-token-beside-a-preset-selects-it-in-each-bundle shows a fixed preset selected in each. AC3: test_the_guide_states_each_rule_an_agent_follows_a_bundle_by asserts the guide's statement of ? on a dispatch link. AC4: dispatch/a-parallel-dispatch-carrying-the-pick-token-is-refused fails with E_UNSUPPORTED_CONSTRUCT. AC5: docs/dispatch.md (Where the links point), docs/references.md (The pick token) and the design (Dispatch links, The pick token, The agent's pick, Guide) each state the rule. AC6: make check exits 0 at 90b275103.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (test 2145 passed, harness 1055 passed, corpus 616 of 616, lock-check, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-774-f12-dispatch-picks/test-results.md",
+    "findings": [
+      {
+        "description": "A dispatch of its own document carrying ? raised W_DISPATCH_SELF once for each alternative's bundle at one link.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/90b2751032f93de989d3d87b299081e56ca0b05f"
+      }
+    ]
+  }
+]

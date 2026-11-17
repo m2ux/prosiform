@@ -14,12 +14,14 @@ With this hot-fix, a `⇉` link carrying `?` compiles its target once for each a
 | --- | --- |
 | [f12.md](f12.md) | The work item: the confirmed design, the design points decided, and the checks it carries |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review record of the delivering pull request's reviewed head and base |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F12] Dispatch Picks](https://github.com/m2ux/prosiform/issues/774) |
+| Delivering pull request | [[F12] Dispatch Picks](https://github.com/m2ux/prosiform/pull/778) |
 | Design | [design.md](../2026-10-17-prosiform-v1/design.md) |
 
 ## Plan Changes
