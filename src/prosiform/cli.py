@@ -837,18 +837,60 @@ def unresolved(path: str, conversion: Conversion) -> Failure:
     )
 
 
-def resolved(
-    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
-) -> None:
-    """Hold every carried document declaring alternatives to exactly one in force.
+def routed(
+    path: str,
+    conversion: Conversion,
+    tokens: Sequence[Token],
+    chosen: Selection | None,
+) -> bool:
+    """Whether one document's alternatives change what its selected content compiles to.
 
-    The count is taken on the references one bundle carries, so a
-    dispatched bundle counts the references reaching the document within
-    it.
+    An alternative changes it where one of them states a `group` pair,
+    which decides the group the selected content joins, or a `subst`
+    pair whose key a link in the selected content names, which routes
+    that link. Content none of them changes compiles under `default`
+    and the ordinary presets its references select.
+    """
+    if any(one.membership is not None for one in conversion.alternatives):
+        return True
+    written = linked(
+        path, tokens, tuple(regions(tokens)) if chosen is None else chosen.regions
+    )
+    return any(
+        names(written, subst_identity(pair.original, path))
+        for one in conversion.alternatives
+        for pair in one.substs
+    )
+
+
+def resolved(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> None:
+    """Hold every carried document declaring alternatives to the pick it needs.
+
+    Several alternatives in force fail wherever the document is
+    compiled, and none in force fails where an alternative would change
+    what its selected content compiles to. The count is taken on the
+    references one bundle carries, so a dispatched bundle counts the
+    references reaching the document within it.
     """
     for path, references in selected.items():
         conversion = read[path].conversion
-        if conversion.alternatives and len(picked(conversion, references)) != 1:
+        if not conversion.alternatives:
+            continue
+        count = len(picked(conversion, references))
+        if count > 1 or (
+            count == 0
+            and routed(
+                path,
+                conversion,
+                parsed[path],
+                selection(path, parsed[path], references, entries),
+            )
+        ):
             raise unresolved(path, conversion)
 
 
@@ -3862,7 +3904,7 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    resolved(read, contributing(found))
+    resolved(read, parsed, contributing(found), requested)
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
     named = {name: selected}
@@ -3918,24 +3960,25 @@ def compiled(
         unselected(read, parsed, contributing(found), requested),
         pairs,
         {
-            path: linked(path, parsed[path])
+            path: linked(path, parsed[path], tuple(regions(parsed[path])))
             for path, held in pairs.items()
             if any(one.routing for one in held.values())
         },
     )
 
 
-def linked(document: str, tokens: Sequence[Token]) -> frozenset[tuple[str, str | None]]:
-    """The document and section each link of one document names, wherever it sits.
+def linked(
+    document: str, tokens: Sequence[Token], selected: Sequence[Token]
+) -> frozenset[tuple[str, str | None]]:
+    """The document and section each link in the selected regions of one document names.
 
-    Every region is read, so a link in a section the run did not select
-    names its target as one in the selection does. An identity is the
-    one the link was written to name, before any `subst` pair redirects
-    it, and a link naming no local Markdown document names none.
+    An identity is the one the link was written to name, before any
+    `subst` pair redirects it, and a link naming no local Markdown
+    document names none.
     """
     return frozenset(
         (found.path, found.fragment)
-        for use in uses(tokens, tuple(regions(tokens)))
+        for use in uses(tokens, selected)
         if not use.resource and (found := named(document, use.destination)) is not None
     )
 

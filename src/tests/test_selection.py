@@ -18,8 +18,10 @@ from prosiform.closure import (
     resolve,
     withholding_target,
 )
+from prosiform.diagnostics import Location
 from prosiform.limits import in_force
-from prosiform.metadata import Conversion, Preset
+from prosiform.metadata import Conversion, Membership, Preset, Subst
+from prosiform.profile import parse
 from prosiform.tags import read
 
 SETTINGS = Conversion(
@@ -290,3 +292,58 @@ def test_the_unresolved_failure_lists_each_alternative_beside_its_choice_line() 
     assert failure.diagnostic.remedy == (
         "rerun with --pick naming the alternative that fits your task"
     )
+
+
+STAGE = (
+    "# Stage\n\n## Hand-off\n\nOne folder.\n\n"
+    "## Steps\n\nRead the [body](body.md#read) and [notes](notes.md).\n"
+)
+"""A stage whose Hand-off writes no link and whose Steps link two documents."""
+
+
+def kinds(*substs: str, membership: Membership | None = None) -> Conversion:
+    """Two alternatives, the first stating each pair from `substs` and `membership`."""
+    location = Location("stage.md", 1, 1)
+    return Conversion(
+        declared=True,
+        presets=(
+            Preset(
+                "Alpha",
+                membership=membership,
+                substs=tuple(Subst(one, "alpha.md", location) for one in substs),
+                choice="Kind alpha.",
+            ),
+            Preset("Beta", choice="Kind beta."),
+        ),
+    )
+
+
+def routes(conversion: Conversion, fragment: str | None) -> bool:
+    """Whether the alternatives change the stage's content one dependency selects."""
+    tokens = parse(STAGE)
+    reaching = [resolve("stage.md" if fragment is None else f"stage.md#{fragment}")]
+    chosen = cli.selection("stage.md", tokens, reaching, ())
+    return cli.routed("stage.md", conversion, tokens, chosen)
+
+
+@pytest.mark.parametrize(
+    ("key", "fragment", "expected"),
+    [
+        ("body.md", "steps", True),
+        ("body.md#read", "steps", True),
+        ("body.md#write", "steps", False),
+        ("notes.md#read", "steps", False),
+        ("body.md", "hand-off", False),
+        ("notes.md", None, True),
+    ],
+)
+def test_an_alternative_changes_content_whose_links_name_its_key(
+    key: str, fragment: str | None, expected: bool
+) -> None:
+    assert routes(kinds(key), fragment) is expected
+
+
+def test_an_alternative_stating_a_group_pair_changes_any_content() -> None:
+    at = Location("stage.md", 4, 5)
+    membership = Membership("Alpha", "stages", 1, at, at)
+    assert routes(kinds(membership=membership), "hand-off") is True
