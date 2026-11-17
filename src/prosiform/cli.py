@@ -2480,6 +2480,16 @@ def traverse(
         found.extend(discovered)
         found.extend(reselecting)
         frontier = [*discovered, *reselecting]
+    later: dict[tuple[str, str | None, frozenset[str]], bool] = {}
+
+    def needs_pick(deferral: Reference) -> bool:
+        key = (deferral.path, deferral.fragment, deferral.tags)
+        if key not in later:
+            later[key] = later_needs_pick(
+                root, deferral, read[deferral.path].conversion, declarations
+            )
+        return later[key]
+
     for one in postponed.values():
         if one.path not in read:
             limits.hold(FILES, len(read) + 1)
@@ -2499,11 +2509,7 @@ def traverse(
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
         if picking and (one.defers or picks(one.tags)):
-            stated_pick(
-                read[one.path].conversion,
-                one,
-                lambda later: later_needs_pick(root, later, limits, declarations, run),
-            )
+            stated_pick(read[one.path].conversion, one, needs_pick)
     return (
         read,
         parsed,
@@ -2556,18 +2562,19 @@ def confirm(
 def later_needs_pick(
     root: Path,
     one: Reference,
-    limits: Limits,
+    target: Conversion,
     declarations: Declarations,
-    run: frozenset[str],
 ) -> bool:
     """Whether the run compiling a deferral later needs a pick the deferral makes.
 
     That run's entry is the published link: its target, its operator
     marks ignored, selecting by the deferral's title and the run's names
-    the bundle appends to it. Its traversal is read here, and the
-    alternatives in force for the target are counted on every reference
-    reaching it there, as that run counts them. A traversal that fails
-    leaves the need unknown, so the deferral needs a pick of its own.
+    the bundle carries for the target, at the default budgets a link run
+    as written holds. Its traversal is read here, and the alternatives in
+    force for the target are counted on every reference reaching it
+    there, as that run counts them. A traversal that fails fails that
+    run whatever the deferral picks, so it is that run's to report, as
+    it is for a deferral naming an alternative, and needs no pick here.
     """
     entry = replace(
         one,
@@ -2575,22 +2582,22 @@ def later_needs_pick(
         defers=False,
         origin=None,
         chain=(identity(one),),
-        tags=one.tags | run,
+        tags=one.tags | target.carried(),
     )
     try:
         read, parsed, _, _, found, _, _ = traverse(
             root,
             [entry],
-            limits,
+            in_force({}),
             declarations,
             Substitution(),
             run_names(entry),
             picking=False,
         )
     except (Failure, Crossed):
-        return True
+        return False
     conversion = read[one.path].conversion
-    references = contributing(found).get(one.path, [entry])
+    references = contributing(found)[one.path]
     return not picked(conversion, references) and routed(
         one.path, conversion, parsed[one.path], references, [entry]
     )
