@@ -7,8 +7,9 @@ their order no meaning. Matching names to a destination's declarations
 and applying the implicit default belong to the consumer.
 
 The pick token `?` is one of the tokens and names no preset: it leaves
-the pick among a destination's alternatives to the agent that compiles
-it, and no preset may be named for it, so it selects none.
+the pick among a destination's alternatives to an agent, the one that
+compiles it or the one that hands on one of its alternatives' bundles,
+and no preset may be named for it, so it selects none.
 """
 
 PICK = "?"

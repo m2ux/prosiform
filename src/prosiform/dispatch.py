@@ -24,15 +24,23 @@ once it is built, before the bundle's destinations are assigned, so the
 ordinal a renderer gives a repeated heading counts them as it counts
 every other heading.
 
+A `⇉` link carrying the pick token names one selection for each
+alternative its target declares, and points at a `⇉ Dispatch Pick`
+sub-section of its own, placed as a set's is and after it, whose lines
+list each alternative's bundle beside its choice line in declaration
+order, so the dispatching agent hands on one.
+
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so three dispatches publish nothing:
 
 - A chain of bundles returning to one already on it is a cycle: its
   sub-agents would dispatch one another without end. A dispatch naming
   the run's own single selection closes the shortest one.
-- A set in a level-6 section leaves no level for its sub-section.
-- An authored heading whose text equals `⫽ Dispatch Set` in a bundle that
-  emits one would give two sections one name.
+- A set or a picking dispatch in a level-6 section leaves no level for
+  its sub-section.
+- An authored heading whose text equals `⫽ Dispatch Set` or
+  `⇉ Dispatch Pick` in a bundle that emits one would give two sections
+  one name.
 
 A chain deeper than the limit still publishes, and warns: flattening it
 is the author's optimisation rather than a defect. A dispatch naming

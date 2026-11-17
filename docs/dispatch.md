@@ -28,6 +28,17 @@ Each bundle is compiled under every rule an entry's is. Budgets hold per bundle,
 
 A `⇉` link publishes in place with its mark and the one blank after it, pointing at its target's bundle file. A section gains no generated structure for it, and a dispatch in a level-6 section publishes like any other.
 
+A `⇉` link whose title carries the [pick token](references.md#the-pick-token) `?` leaves its pick to the agent that dispatches it. The run compiles its target once for each alternative the target declares, each a bundle of its own, as a link naming that alternative does, and any other name beside `?` selects the target's ordinary preset in every one of them. The section writing the link gains one dispatch-pick sub-section for it, headed `⇉ Dispatch Pick`, placed as a set's sub-section is and after it. Its body holds one dispatch line for each alternative, in declaration order, followed by an em dash and the alternative's choice line:
+
+```markdown
+### ⇉ Dispatch Pick
+
+[⇉ Stage](stage--p-9aae….bundle.md) — One pull request's worth of work.
+[⇉ Stage](stage--p-3d08….bundle.md) — Lists its tasks in a Work Breakdown table.
+```
+
+The link itself is published without its mark, its title as authored, pointing at the sub-section, and the agent hands on the one bundle whose choice line fits its work, as the guide states. A `⫽` link carrying `?` is refused, because a set hands on every member and no agent is left to pick.
+
 The `⫽` links in a section's own content are one **set**, and a child section's links form its own. A set of two or more distinct effective selections gains one dispatch-set sub-section, headed `⫽ Dispatch Set`, one level below the section, after the section's own content and any destination sections [composition](composition.md#where-it-lands) places there, and before its child sections. The set's links are published without their marks and point at it. A set of one distinct effective selection is a single dispatch: each of its links is published as a `⇉` link to the target's bundle file, and the section gains no sub-section.
 
 ```mermaid
@@ -49,13 +60,13 @@ A run carrying both kinds shows them together. Two `⫽` links form one set and 
 
 *The entry's bundle links what to hand over; the three procedures are compiled as if each had been asked for on its own.*
 
-A set in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
+A set or a `⇉` link carrying `?` in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
 
 A dispatch in a heading the bundle emits as text alone has no link to publish, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
 
 ## The guide
 
-The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, and the inputs a sub-agent is given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, and the inputs a sub-agent is given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
 
 ## The run-pf line
 
@@ -82,11 +93,11 @@ A dispatched link naming the document that writes it warns where it closes no cy
 
 ## Generated headings
 
-An authored heading whose text equals the dispatch-set heading pf emits in the same bundle would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
+An authored heading whose text equals the dispatch-set or dispatch-pick heading pf emits in the same bundle would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
 
 The comparison is exact, and case-sensitive: an authored heading differs from the derived one in any character publishes, and takes the ordinal the renderer gives a repeated slug.
 
-A heading the run does not emit in that bundle is the author's there: a bundle carrying no set may carry any heading, `In parallel` among them.
+A heading the run does not emit in that bundle is the author's there: a bundle carrying no set and no `⇉` link carrying `?` may carry any heading, `In parallel` among them.
 
 ## Target shape
 
