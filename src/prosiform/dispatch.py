@@ -459,7 +459,7 @@ def link_text(children: Sequence[Token], at: int) -> str:
 
 
 def element_text(click: Click) -> str:
-    """One diagram link's `Click` opening with its marks taken off, or its node."""
+    """One diagram link's `source.Click` opening, its marks taken off, or its node."""
     return " ".join(unmarked(click.opening).split()) or click.node
 
 

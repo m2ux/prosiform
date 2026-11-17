@@ -247,7 +247,7 @@ class Use:
     link destination is the one its line names, which a sequence diagram's
     menu entry writes with an entity for its `#`, so a destination the
     bundle rewrote reads as `#<slug>` whatever form wrote it. Its text
-    and title are its `Click` opening and title, so either one the bundle
+    and title are its `source.Click` opening and title, so either one the bundle
     changed is a use it did not preserve.
     """
 
@@ -362,7 +362,7 @@ def carried(
 
     An inline token's uses arrive as `uses` reads them. A diagram's link
     destinations arrive in the order its fence writes them, each on no
-    run of inline events, opening with its `Click` opening. The
+    run of inline events, opening with its `source.Click` opening. The
     compacted inline tokens are named by identity.
     """
     for token in within(tokens, [span]):
@@ -446,7 +446,7 @@ def intended(
     image's alternative content where the use was written there, so
     the opening is read from the event the author wrote it on.
 
-    A diagram link opens with its `Click` opening, which the bundle
+    A diagram link opens with its `source.Click` opening, which the bundle
     carries as written, so only its destination changes, and a
     deferral's tooltip. The anchor it takes is the one the bundle writes
     in the line, which no parser normalizes, read as the destination it

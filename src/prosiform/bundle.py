@@ -729,7 +729,7 @@ def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
     the end of the line, which both carry alike, its terminator aside:
     a CRLF the document wrote reaches the fence as a line feed.
 
-    A titled destination is a deferring click's: the names its `Click`
+    A titled destination is a deferring click's: the names its `source.Click`
     title gains are written before the tooltip's closing quote, after the
     title's tags, or as a tooltip of their own after the destination
     where the click carries none.

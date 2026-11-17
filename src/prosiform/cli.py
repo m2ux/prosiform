@@ -1162,12 +1162,12 @@ def entry(text: str, pick: str | None) -> Reference:
 
     A link entry is read as an authored link is, for its destination and
     the tags its title states; the operator marks opening it are the
-    agent's and are not read. A title tag stating operator marks names
-    no preset and would reach the deferring diagram links the run
-    publishes, where the profile refuses it, so the entry is refused. A
-    plain path carries no title. A pick stands in the tag list where the
-    pick token stands, so it is admitted only beside an entry whose title
-    carries that token.
+    agent's and are not read. An entry whose title holds a tag
+    `marks.marked` reads as marks is refused: the run would carry the tag
+    into the tooltips of the deferring diagram links it publishes, which
+    `profile.diagram_refusals` refuses. A plain path carries no title. A
+    pick stands in the tag list where the pick token stands, so it is
+    admitted only beside an entry whose title carries that token.
 
     An entry is written by no document, so no `subst` pair redirects it:
     the run compiles the document it names and is named for the path the
