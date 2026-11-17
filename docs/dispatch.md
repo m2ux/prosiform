@@ -12,7 +12,7 @@ One step of a procedure carries the mark. The run opens three files, and publish
 
 *Every panel is the build's own output: the left column is what the run read, the right what it wrote.*
 
-The entry's bundle keeps the link where its author wrote it, with its mark, and points it at the file `Publish` was compiled to, as if it had been asked for on its own. A reader opens the file the link names, and an agent follows it as the [guide](../invocation.md#guide) states: give the linked file to a sub-agent and continue with its answer. A condition the author writes stays in the prose around the link.
+The entry's bundle keeps the link where its author wrote it, with its mark, and points it at the file `Publish` was compiled to, as if it had been asked for on its own. A reader opens the file the link names, and an agent follows it as the [guide](../invocation.md#guide) states: give a sub-agent the linked file's path, with the inputs the dispatching step states as given, and continue with its answer. A condition the author writes stays in the prose around the link.
 
 ## What a dispatch changes
 
@@ -66,7 +66,7 @@ A dispatch in a heading the bundle emits as text alone has no link to publish, s
 
 ## The guide
 
-The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, and the inputs a sub-agent is given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there. Its inputs are those the dispatching step states as given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
 
 ## The run-pf line
 
