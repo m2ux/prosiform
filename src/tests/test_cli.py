@@ -302,8 +302,8 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "\u2afd marks a dispatch set",
         "its section holds one set of bundles, listed as",
         "\u21c9 lines in the sub-section headed \u2afd Dispatch Set.",
-        "Give each bundle to its own sub-agent at once",
-        "step that led there, one per value where that step applies to",
+        "to its own sub-agent at once",
+        "one per value where that step applies to several.",
         "A failure cancels nothing; all",
         "failures return together.",
         "? among a link's title tags leaves the pick to you, made with --pick.",
@@ -312,6 +312,24 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "hand on the one bundle whose choice line fits your work",
     ):
         assert rule in " ".join(GUIDE.split())
+
+
+def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
+    """A sub-agent is given where the bundle is, and reads it there."""
+    guide = " ".join(GUIDE.split())
+    assert (
+        "⇉ names a bundle to hand on: give a sub-agent the path of its file, "
+        "which it reads there," in guide
+    )
+    assert "Give each bundle's file path to its own sub-agent at once" in guide
+
+
+def test_the_guide_states_a_sub_agents_inputs_are_the_dispatching_steps() -> None:
+    """The inputs travelling with a bundle are those its dispatching step gives."""
+    guide = " ".join(GUIDE.split())
+    stated = "with the inputs the dispatching step states as given"
+    assert guide.count(stated) == 2
+    assert "the step that led there" not in guide
 
 
 def test_the_guide_is_plain_text() -> None:

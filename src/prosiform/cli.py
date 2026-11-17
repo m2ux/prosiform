@@ -357,13 +357,15 @@ Symbol grammar:
 
   ↳  names a section to inline: compile its destination with pf, read that
      bundle whole, keep it in context, and follow it where the link stands
-  ⇉  names a bundle to hand on: give it to a sub-agent with the inputs of
-     the step that led there, and continue with its answer
+  ⇉  names a bundle to hand on: give a sub-agent the path of its file,
+     which it reads there, with the inputs the dispatching step states as
+     given, and continue with its answer
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
      ⇉ lines in the sub-section headed ⫽ Dispatch Set.
-     Give each bundle to its own sub-agent at once, with the inputs of
-     the step that led there, one per value where that step applies to
-     several. A failure cancels nothing; all failures return together.
+     Give each bundle's file path to its own sub-agent at once, with the
+     inputs the dispatching step states as given, one per value where
+     that step applies to several.
+     A failure cancels nothing; all failures return together.
   ?  among a link's title tags leaves the pick to you, made with --pick.
      On a ⇉ link it points at the sub-section headed ⇉ Dispatch Pick,
      which lists one ⇉ line for each alternative beside its choice line:
