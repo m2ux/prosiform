@@ -126,7 +126,7 @@ One row per script in `../scripts`, then one per document the tests read. The ta
 | Document | Exercised by |
 | --- | --- |
 | `*/SKILL.md` | [test_modes](test_modes.py) (4) |
-| [README](README.md) | [test_readme](test_readme.py) (14) |
+| [README](README.md) | [test_readme](test_readme.py) (13) |
 | `SKILL.md` | [test_board_status](test_board_status.py) (24), [test_checkouts](test_checkouts.py) (10), [test_documents](test_documents.py) (28) |
 | `artifacts/` | [test_board_status](test_board_status.py) (24), [test_checkouts](test_checkouts.py) (10), [test_command_contracts](test_command_contracts.py) (14), [test_documents](test_documents.py) (28) |
 | [pull-request](../artifacts/pull-request.md) | [test_merge_outcomes](test_merge_outcomes.py) (16) |

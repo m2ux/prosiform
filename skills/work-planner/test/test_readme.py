@@ -64,7 +64,7 @@ def summary(name: str) -> str:
     return re.split(r'(?<=[.!?]) ', doc)[0].rstrip('.')
 
 
-def test_count(name: str) -> str:
+def count_tests(name: str) -> str:
     return str(len(re.findall(r'^\s*def test_', (HERE / name).read_text(), re.M)))
 
 
@@ -219,7 +219,7 @@ class Coverage(unittest.TestCase):
         for row in rows(SCRIPT_COVERAGE) + rows(DOCUMENT_COVERAGE):
             for target, count in zip(linked(row[1]), COUNT.findall(row[1])):
                 with self.subTest(module=target):
-                    self.assertEqual(count, test_count(Path(target).name))
+                    self.assertEqual(count, count_tests(Path(target).name))
 
     def test_each_named_module_carries_its_count(self):
         for row in rows(SCRIPT_COVERAGE) + rows(DOCUMENT_COVERAGE):
