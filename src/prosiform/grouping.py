@@ -338,6 +338,7 @@ def prepared(
             first_line,
             substitution,
             composing,
+            conversions=conversions,
         )
     )
     member = Member(

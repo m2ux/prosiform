@@ -131,6 +131,7 @@ from prosiform.closure import (
     Substitution,
     bundle_selection,
     bundled,
+    carried_names,
     directive,
     dispatched,
     filed,
@@ -162,7 +163,7 @@ from prosiform.provenance import (
     click_at,
     link_at,
 )
-from prosiform.rewrite import Definition, destinations, rewritten
+from prosiform.rewrite import Definition, Titled, destinations, rewritten
 from prosiform.source import (
     ANCHOR,
     FENCE,
@@ -211,6 +212,8 @@ OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
 
 ATX_MARKER = re.compile(r"^([^#]*)(#{1,6})")
+TOOLTIP = re.compile(r'"\s+"[^"]*"')
+"""A quoted destination's closing quote and the quoted tooltip after it."""
 CLOSING_SEQUENCE = re.compile(r"(^|[ \t])(#+)([ \t]*)$")
 
 
@@ -567,6 +570,8 @@ def rewrite(
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
+    *,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -603,6 +608,9 @@ def rewrite(
     heading's directive naming a bundled section that the map holds no
     contribution for is in a title its file heading or its subsection
     absorbs, which is no section to compose beneath, and is refused.
+
+    A deferral's title gains the run's names its target's settings
+    carry, a diagram link's tooltip among them.
     """
     written = list(physical)
     served = {} if dispatching is None else dispatching
@@ -640,6 +648,7 @@ def rewrite(
                     line=start + first_line,
                     substitution=substitution,
                     tags=tags,
+                    conversions=conversions,
                 )
                 for at, (one, opening, tags) in enumerate(found)
             ]
@@ -667,6 +676,7 @@ def rewrite(
                         line=click.line - 1 + first_line,
                         substitution=substitution,
                         tags=read_tags(click.title),
+                        conversions=conversions,
                     )
                 )
                 if given is not None:
@@ -709,7 +719,7 @@ def unplaced(
         raise Unplaced(path, start + first_line, destination, opening, composing=True)
 
 
-def clicked(physical: str, held: str, click: Click, given: str) -> str:
+def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
     """One physical line with one diagram link destination replaced.
 
     The fence holds the line without the container markers and indent
@@ -717,10 +727,23 @@ def clicked(physical: str, held: str, click: Click, given: str) -> str:
     trailing text of the physical one. The destination is located from
     the end of the line, which both carry alike, its terminator aside:
     a CRLF the document wrote reaches the fence as a line feed.
+
+    A titled destination is a deferring click's, whose tooltip states
+    its marks and then its title: the names its title gains are written
+    before the tooltip's closing quote, after the title's tags or after
+    the marks where it states none.
     """
     after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
-    return f"{physical[: end - len(click.written)]}{given}{physical[end:]}"
+    rest = physical[end:]
+    if isinstance(given, Titled):
+        tip = TOOLTIP.match(rest)
+        assert tip is not None
+        close = tip.end() - 1
+        separator = ", " if click.title else "" if rest[close - 1].isspace() else " "
+        rest = f"{rest[:close]}{separator}{', '.join(given.names)}{rest[close:]}"
+        given = given.destination
+    return f"{physical[: end - len(click.written)]}{given}{rest}"
 
 
 def target(
@@ -735,7 +758,8 @@ def target(
     substitution: Substitution = UNSUBSTITUTED,
     *,
     tags: frozenset[str] = frozenset(),
-) -> str | None:
+    conversions: Mapping[str, Conversion] | None = None,
+) -> str | Titled | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
@@ -758,6 +782,10 @@ def target(
     A link naming a document that declares nothing, and one naming no
     Markdown document, is text the bundle carries and takes no
     destination, whether or not its author marked it.
+
+    A deferral's destination is titled with the run's names its
+    target's settings carry beyond those its title states, so the run
+    compiling it selects the same stubs.
     """
     found = bundled(path, destination, opening, declarations, substitution)
     if found is not None:
@@ -773,7 +801,9 @@ def target(
         if served not in held:
             raise Unplaced(path, line, destination, opening, composing=False)
         return held[served]
-    return rebased(withheld, destination)
+    names = carried_names(withheld, conversions)
+    published = rebased(withheld, destination)
+    return Titled(published, names) if names else published
 
 
 def carries_title(tokens: Sequence[Token]) -> bool:
@@ -1185,6 +1215,7 @@ def group(
             first_line,
             substitution,
             composing,
+            conversions=conversions,
         )
     )
     for token in regions(tokens):

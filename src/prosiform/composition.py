@@ -113,7 +113,9 @@ from prosiform.closure import (
     Declarations,
     Reference,
     Substitution,
+    carried_names,
     deferred,
+    deferred_title,
     directive,
     rebased,
     resolvable,
@@ -398,12 +400,15 @@ class Composing:
         The line names the target by its visible heading text and by the
         path a later run compiles it from, as a deferred link's
         destination names it, so that run composes the body this one
-        withholds. Every pass emits it alike.
+        withholds. Every pass emits it alike. Its title gains the run's
+        names the target's settings carry, as a deferred link's does.
         """
+        names = carried_names(one.target, self.conversions)
+        link_title = deferred_title(one.link_title, names)
         suffix = ""
-        if one.link_title is not None:
+        if link_title is not None:
             title = (
-                escape(one.link_title, quote=True)
+                escape(link_title, quote=True)
                 .replace("\\", "&#92;")
                 .replace("\n", "&#10;")
                 .replace("\r", "&#13;")
@@ -418,7 +423,10 @@ class Composing:
         self.parts.append(
             Instruction(
                 text,
-                activates=((one.target.path, one.target.fragment), one.target.tags),
+                activates=(
+                    (one.target.path, one.target.fragment),
+                    one.target.tags | frozenset(names),
+                ),
             )
         )
 
@@ -478,6 +486,7 @@ class Composing:
                 source.first_line,
                 self.substitution,
                 self.composing.get(placed, {}),
+                conversions=self.conversions,
             )
         )
         named = source_fragments(tokens)

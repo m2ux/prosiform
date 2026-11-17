@@ -1,0 +1,25 @@
+description = "A preset holding both stub and choice fails with E_INVALID_CONVERSION_METADATA naming the later field and publishes nothing, since a preset is an alternative a reference picks or a stub a run selects, never both."
+
+clauses = [
+  "Conversion metadata — stub holds one line",
+  "Metadata failures",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.recorded.stub"]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 5
+column = 5

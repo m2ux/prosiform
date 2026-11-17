@@ -2234,12 +2234,27 @@ def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -
         raise changed(one.path, "source identity changed", one.chain)
 
 
+def stubbed(source: Source, run: frozenset[str]) -> Source:
+    """One source as a run reads it: its settings holding the run's names."""
+    return replace(source, conversion=replace(source.conversion, run=run))
+
+
+def run_names(entry: Reference) -> frozenset[str]:
+    """The names a run selects stubs by: those its entry's title gives.
+
+    The pick token names no preset and `default` selects no named one,
+    so neither is among them.
+    """
+    return frozenset(name for name in entry.tags if name not in (PICK, DEFAULT))
+
+
 def traverse(
     root: Path,
     requested: Sequence[Reference],
     limits: Limits,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    run: frozenset[str] = frozenset(),
 ) -> tuple[
     dict[str, Source],
     dict[str, list[Token]],
@@ -2305,6 +2320,10 @@ def traverse(
     Discovered dispatch occurrences and self-composition warnings describe
     the current mapping. Final composition determines the published
     handoffs from the source ranges its groups actually carry.
+
+    Every source is held with the run's names, the names its entry
+    title gives, so each document's stubs they name are in force
+    wherever the run compiles it, whatever reference reaches it.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -2329,7 +2348,7 @@ def traverse(
                 continue
             limits.hold(FILES, len(read) + 1)
             opened = read_document(root, one, limits, total)
-            source = opened.source
+            source = stubbed(opened.source, run)
             environment: dict[str, Any] = {}
             try:
                 tokens = parse(source.text, limits.of(NESTING), environment)
@@ -2469,7 +2488,7 @@ def traverse(
                     suppressed, one.path, opened.source, one.chain
                 ) from suppressed
             total += opened.size
-            read[one.path] = opened.source
+            read[one.path] = stubbed(opened.source, run)
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
@@ -2608,7 +2627,9 @@ def unselected(
     `default` is in force wherever its document is compiled, so it is
     never among them. A set of alternatives leaves at least all but one
     unpicked wherever its document is compiled, so no alternative is among them
-    either. The names keep the order the document declares them in. A
+    either, and a stub stands in for material only a run selecting it
+    uses, so no stub is among them. The names keep the order the
+    document declares them in. A
     document reached only through a deferral is carried by no bundle, so
     its presets are weighed by none.
     """
@@ -2625,6 +2646,7 @@ def unselected(
             for preset in conversion.presets
             if preset.name != DEFAULT
             and preset.choice is None
+            and preset.stub is None
             and preset.name not in chosen
         )
     return left
@@ -3924,6 +3946,7 @@ def compiled(
     requested: Sequence[Reference],
     options: argparse.Namespace,
     substitution: Substitution = UNSUBSTITUTED,
+    run: frozenset[str] = frozenset(),
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
@@ -3934,13 +3957,16 @@ def compiled(
     Each document's links resolve under the `subst` pairs its own presets
     put in force for the references this bundle carries, and every bundle
     of the run records its substitutions in the run's one mapping.
+
+    `run` holds the run's names, which select the stubs of every
+    document the bundle reads, a dispatched bundle's among them.
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
     declared_entries(requested, declarations)
     try:
         read, parsed, defined, captured, found, _, _ = traverse(
-            root, requested, limits, declarations, substitution
+            root, requested, limits, declarations, substitution, run
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
@@ -4145,12 +4171,15 @@ def dispatched_set(
     single: Collection[BundleSelection],
     options: argparse.Namespace,
     substitution: Substitution = UNSUBSTITUTED,
+    run: frozenset[str] = frozenset(),
 ) -> dict[BundleSelection, Compiled]:
     """Every dispatched bundle, transitively, by its effective selection.
 
     Each distinct selection is compiled once, as its own entry, in the
     order the dispatches reaching it were read. A dispatch naming the
-    run's own single selection is the entry's bundle.
+    run's own single selection is the entry's bundle. Each is compiled
+    under the run's names, so the stubs they select are in force in
+    every bundle of the run.
     """
     built: dict[BundleSelection, Compiled] = {}
     pending = list(entry.hops.items())
@@ -4159,7 +4188,7 @@ def dispatched_set(
         if selected in built or selected in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, substitution)
+        one = compiled(root, [target], options, substitution, run)
         built[selected] = one
         pending.extend(one.hops.items())
     return built
@@ -4240,10 +4269,11 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     requested = entered(requested)
 
     output = Path(options.output).resolve()
-    first = compiled(root, requested, options, mapping)
+    run = run_names(requested[0])
+    first = compiled(root, requested, options, mapping, run)
     folder = output / (first.name.removesuffix(BUNDLE_SUFFIX) + RUN_FOLDER_SUFFIX)
     single = {first.selection}
-    built = dispatched_set(root, first, single, options, mapping)
+    built = dispatched_set(root, first, single, options, mapping, run)
 
     def onward(target: BundleSelection) -> Mapping[BundleSelection, Hop]:
         return first.hops if target in single else built[target].hops

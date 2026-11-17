@@ -36,7 +36,8 @@ RESOURCE_LIMIT = "E_RESOURCE_LIMIT"
 GROUP = "group"
 SUBST = "subst"
 CHOICE = "choice"
-FIELDS = (GROUP, SUBST, CHOICE)
+STUB = "stub"
+FIELDS = (GROUP, SUBST, CHOICE, STUB)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -118,13 +119,15 @@ class Preset:
     document joins; a preset stating none leaves the document its
     individual file group. `substs` holds each `subst` entry in written
     order. `choice` holds the choice line of an alternative, stating
-    when to pick it; a preset holding none is an ordinary preset.
+    when to pick it, and `stub` the line of a stub, stating what it
+    stands in for; a preset holding neither is an ordinary preset.
     """
 
     name: str
     membership: Membership | None = None
     substs: tuple[Subst, ...] = ()
     choice: str | None = None
+    stub: str | None = None
 
 
 @dataclass(frozen=True)
@@ -137,10 +140,16 @@ class Conversion:
     holds each preset in written order. A source the substitution mapping
     redirected is read as the substitute, so the settings decoded here are
     the substitute's: none travels from the document its key named.
+
+    `run` holds the names the run's entry title gives, normalized as
+    title tags are. They select this document's stubs wherever the run
+    compiles it, so the run reading the document states them, and
+    settings no run read hold none.
     """
 
     declared: bool = False
     presets: tuple[Preset, ...] = ()
+    run: frozenset[str] = frozenset()
 
     @property
     def default(self) -> Preset:
@@ -157,6 +166,19 @@ class Conversion:
     def alternatives(self) -> tuple[Preset, ...]:
         """Each preset holding a choice line, in declaration order."""
         return tuple(preset for preset in self.presets if preset.choice is not None)
+
+    def carried(self) -> frozenset[str]:
+        """The run's names a deferral reaching this document publishes in its title.
+
+        The run compiling the deferral selects its stubs by them again.
+        A name naming a preset of this document other than a stub is
+        left out, since the later run's entry title would select that
+        preset where this run selected none.
+        """
+        declared = {
+            preset.name.casefold() for preset in self.presets if preset.stub is None
+        }
+        return frozenset(name for name in self.run if name not in declared)
 
 
 class InvalidMetadata(Exception):
@@ -465,7 +487,7 @@ def decode(
                 key.location,
             )
         if value.kind != "map":
-            within = "<alternative>" if key.value == CHOICE else DEFAULT
+            within = {CHOICE: "<alternative>", STUB: "<stub>"}.get(key.value, DEFAULT)
             remedy = (
                 f"; write the field within a preset, as prosiform.{within}.{key.value}"
                 if key.value in FIELDS
@@ -526,6 +548,29 @@ def _preset(preset: str, mapping: _Node) -> Preset:
                 "since it is printed beside its alternative as one row",
                 value.location,
             )
+        if key.value == STUB and preset.casefold() == DEFAULT:
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} is refused: {DEFAULT} is in force wherever its document "
+                "is compiled, so it is no stub a run selects; write the stub "
+                "within a named preset",
+                key.location,
+            )
+        if key.value == STUB and not _one_line(value):
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} must be a non-empty string holding no line break, "
+                "since it states in one line what the stub stands in for",
+                value.location,
+            )
+        if {key.value, *fields} >= {CHOICE, STUB}:
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} is refused: prosiform.{preset} holds both {CHOICE} and "
+                f"{STUB}, and a preset is an alternative a reference picks or a "
+                "stub a run selects, never both; keep one of the two",
+                key.location,
+            )
         fields[key.value] = value
     named = f"prosiform.{preset}."
 
@@ -535,6 +580,7 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         _membership(preset, named + GROUP, fields[GROUP]) if GROUP in fields else None,
         tuple(_subst(f"{named}{SUBST}[{at}]", entry) for at, entry in enumerate(held)),
         fields[CHOICE].value if CHOICE in fields else None,
+        fields[STUB].value if STUB in fields else None,
     )
 
 

@@ -194,6 +194,9 @@ class Use:
     nothing. It is a link the parser reads beside an enclosing link
     rather than within it, so the one that carries it stays the link it
     is, and the flag is what the scan reads that from.
+
+    The title is the span an inline use's title occupies, its delimiters
+    included; an inline use writing none, and every other use, has none.
     """
 
     kind: str
@@ -203,6 +206,45 @@ class Use:
     end: int
     definition: Definition | None = None
     autolink: bool = False
+    title: tuple[int, int] | None = None
+
+
+@dataclass(frozen=True)
+class Titled:
+    """A destination published with names its link's title gains.
+
+    A deferral carries the run's names to the run compiling it, so its
+    title gains each name it does not already state, after the tags its
+    author wrote.
+    """
+
+    destination: str
+    names: tuple[str, ...]
+
+
+TITLE_ESCAPED = frozenset('\\"()&' + "'")
+"""The characters a name written into a title is escaped in: every delimiter
+a title may close with, the escape itself and the one opening a character
+reference, so the parser reads the name back as written."""
+
+
+def title_names(names: Sequence[str]) -> str:
+    """Names joined into a title list, each written as the parser reads it back."""
+    return ", ".join(
+        "".join(ESCAPE + char if char in TITLE_ESCAPED else char for char in name)
+        for name in names
+    )
+
+
+def gained(title: str, names: Sequence[str]) -> str:
+    """One authored title, delimiters included, with the names written before its close.
+
+    Names follow the authored tags after a comma; a title holding nothing
+    takes them alone.
+    """
+    inner = title[1:-1]
+    separator = ", " if inner else ""
+    return f"{title[:-1]}{separator}{title_names(names)}{title[-1]}"
 
 
 def escaped(text: str, at: int) -> bool:
@@ -325,13 +367,16 @@ def skipped(text: str, at: int) -> int:
     return at
 
 
-def inline_target(text: str, at: int) -> tuple[tuple[int, int], int] | None:
-    """The destination span and the end of the inline target opening at one position.
+def inline_target(
+    text: str, at: int
+) -> tuple[tuple[int, int], tuple[int, int] | None, int] | None:
+    """The destination and title spans and the end of the inline target at one position.
 
     The target runs from the parenthesis to the one closing it, holding
     a destination, an optional title, and the whitespace between them.
-    A run the grammar does not admit is no inline target, and the
-    brackets before it are read as a reference-style use or as the
+    The title span holds its delimiters, and a target writing no title
+    has none. A run the grammar does not admit is no inline target, and
+    the brackets before it are read as a reference-style use or as the
     literal text they are.
     """
     opening = skipped(text, at + 1)
@@ -339,14 +384,16 @@ def inline_target(text: str, at: int) -> tuple[tuple[int, int], int] | None:
     if ending is None:
         return None
     scan = skipped(text, ending)
+    title: tuple[int, int] | None = None
     if scan < len(text) and text[scan] in TITLE_CLOSERS and scan > ending:
         closing = title_end(text, scan)
         if closing is None:
             return None
+        title = (scan, closing)
         scan = skipped(text, closing)
     if scan >= len(text) or text[scan] != TARGET_CLOSE:
         return None
-    return (opening, ending), scan + 1
+    return (opening, ending), title, scan + 1
 
 
 def autolink_end(text: str, at: int, spans: Sequence[tuple[int, int]]) -> int | None:
@@ -402,7 +449,7 @@ def formed(
     if after < len(text) and text[after] == TARGET_OPEN:
         found = inline_target(text, after)
         if found is not None:
-            return Use(kind, opening, label, found[0], found[1])
+            return Use(kind, opening, label, found[0], found[2], title=found[1])
     if after < len(text) and text[after] == LABEL_OPEN:
         ending = label_close(text, after, spans)
         if ending is not None:
@@ -588,7 +635,9 @@ def definitions(
     return found
 
 
-def published(held: Definition, destination: str | None) -> str:
+def published(
+    held: Definition, destination: str | None, names: Sequence[str] = ()
+) -> str:
     """The inline target a reference-style use is published with.
 
     The destination is the one the bundle assigned the use's target
@@ -597,13 +646,20 @@ def published(held: Definition, destination: str | None) -> str:
     the author spelled it, so a title the author broke across two lines
     reaches the bundle broken in the same place: the title is the
     author's text and the conversion moves it rather than reflowing it.
+    Names a deferral's title gains are written before its close, or as
+    the whole title of a definition stating none.
     """
     target = held.destination if destination is None else destination
-    title = f"{SPACE}{held.title}" if held.title else ""
-    return f"{TARGET_OPEN}{target}{title}{TARGET_CLOSE}"
+    title = held.title
+    if names:
+        title = gained(title, names) if title else f'"{title_names(names)}"'
+    shown = f"{SPACE}{title}" if title else ""
+    return f"{TARGET_OPEN}{target}{shown}{TARGET_CLOSE}"
 
 
-def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int, str]]:
+def edits(
+    one: Use, destination: str | Titled | None, label: str, text: str = ""
+) -> list[tuple[int, int, str]]:
     """The spans one use's emission replaces, and what it writes at each.
 
     A use's label is the author's, so the span a use edits is its
@@ -623,12 +679,28 @@ def edits(one: Use, destination: str | None, label: str) -> list[tuple[int, int,
     question, and this writes the answer, so a fragment of the bundle
     and a path from the invocation working directory are published the
     same way.
+
+    A titled destination is a deferral's: the names its title gains are
+    written before the authored title's close, which `text` holds, or
+    after the destination as a title of their own where the use writes
+    none. Neither edit reaches a span another edit names.
     """
+    names: tuple[str, ...] = ()
+    if isinstance(destination, Titled):
+        names = destination.names
+        destination = destination.destination
     found: list[tuple[int, int, str]] = []
     if one.definition is not None:
-        found.append((*one.target, published(one.definition, destination)))
+        found.append((*one.target, published(one.definition, destination, names)))
     elif destination is not None:
-        found.append((*one.target, destination))
+        if names and one.title is None:
+            found.append((*one.target, f'{destination} "{title_names(names)}"'))
+        else:
+            found.append((*one.target, destination))
+        if names and one.title is not None:
+            start, end = one.title
+            titled = gained(text[start:end], names)
+            found.append((start, end, titled))
     shown = None if destination is None else published_text(label, filed(destination))
     if shown is not None and shown != label:
         lead = opened(label)
@@ -822,7 +894,7 @@ def moved(at: int, start: int, end: int, width: int) -> int:
 def rewritten(
     physical: Sequence[str],
     inline: Token,
-    assigned: Sequence[str | None],
+    assigned: Sequence[str | Titled | None],
     defined: Mapping[str, Definition],
 ) -> list[str]:
     """The lines one run of inline text occupies, as the bundle publishes them.
@@ -869,7 +941,7 @@ def rewritten(
     applied = [
         edit
         for one in found
-        for edit in edits(one, targets.get(id(one)), labels.get(id(one), ""))
+        for edit in edits(one, targets.get(id(one)), labels.get(id(one), ""), text)
     ]
     starts: list[int] = []
     if command_block(inline.children or []):

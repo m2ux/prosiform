@@ -73,8 +73,9 @@ def test_equivalent_requests_compile_once_under_the_contract_name(
         requested: list[Reference],
         options: argparse.Namespace,
         substitution: Substitution,
+        run: frozenset[str],
     ) -> cli.Compiled:
-        result = compile_bundle(root, requested, options, substitution)
+        result = compile_bundle(root, requested, options, substitution, run)
         observed.append(result.selection)
         return result
 

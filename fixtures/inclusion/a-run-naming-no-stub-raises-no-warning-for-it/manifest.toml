@@ -1,0 +1,16 @@
+description = "A plain path names no stub, so the recorded stub of the dispatched stage.md stays unselected: the stage reads its live review, takes no preset qualifier, and the run raises no W_PRESET_UNUSED for the stub."
+
+clauses = [
+  "Presets — A preset nothing selected warns",
+  "Presets — Stubs",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["entry.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry.bundle.md", "expected/stage.bundle.md"]
+diagnostics = []
