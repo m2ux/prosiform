@@ -1,0 +1,35 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/776",
+    "head": "1b9e706d3cf601888704b601e4bb4977e7723f2b",
+    "base": "8c611259ab407e09e4d50262b79cf2f8eef14a5d",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-773-f11-unrouted-sections/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F11 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The full diff of main..f11-unrouted-sections and the design change on engineering. Probed with pf: reference-style and Mermaid click links in a routed section, compositions and dispatches to routed and unrouted sections, whole-document entries, several references to one document, headings outside the selection, W_SUBST_UNUSED and W_PRESET_UNUSED with no pick, and key matching in names() against Substitution.redirect.",
+    "criteria": "AC1-AC4: the four fixtures pass and the main paths match the rule. AC5: docs and design state the rule consistently apart from the deferral prose under finding 2. AC6: make check passes.",
+    "validation": "pytest src/tests passes apart from test_linked_bootstrap.py, which the reviewer's sandbox could not run (uv cache read-only).",
+    "findings": [
+      "Defect: a folder preamble group carries a document's title and introduction where every including reference names a section, a group pair from default or an ordinary preset joins it and it sits in a subfolder; routed did not read that introduction, so a routed link in it published unrouted with no pick.",
+      "Defect: stated_pick still refuses a deferral naming no alternative to a section no alternative changes, though the later run compiles it; docs/references.md, the design's pick token and fixture rows, and the stated_pick docstring state that refusal.",
+      "Nit: the unresolved and unselected docstrings and the invocation.md sentence state the old bound or read awkwardly.",
+      "Nit: no fixture covers a dispatch, a diagram link, a reference-style link or a folder preamble under the rule."
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/776",
+    "head": "580572a5d47aa12c662aebe236ccd4f6755bda7e",
+    "base": "8c611259ab407e09e4d50262b79cf2f8eef14a5d",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-773-f11-unrouted-sections/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F11 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The fixes at d59ad49ef, 2a3fc3826 and 580572a5d for the first review's findings. preambled states the folder-preamble condition once for the grouping and for routed; a fixture and unit tests cover it, and the fixture published at exit 0 on 1b9e706d3. The docstrings and invocation.md sentence state the bound. The folder-preamble fixture covers the fourth finding's preamble case; dispatch, diagram and reference-style links were probed by the first reviewer and reach routed through the same link reading.",
+    "criteria": "AC1-AC4: the five fixtures pass in make corpus. AC5: docs/selection.md and the design state the rule. AC6: make check passes at 580572a5d.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (test 2147 passed, harness 1059 passed, corpus 620 of 620, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-773-f11-unrouted-sections/test-results.md",
+    "findings": [
+      "Held: the first review's deferral finding. Accepting a deferral naming no alternative to an unrouted section changes the deferral pick rule in docs/references.md and the design's pick token, which the issue's Proposal and criteria do not scope, and which F12 is changing beside this unit. It is held for the owner rather than applied."
+    ]
+  }
+]

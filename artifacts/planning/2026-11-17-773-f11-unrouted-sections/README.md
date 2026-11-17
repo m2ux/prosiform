@@ -14,14 +14,17 @@ A route that dispatches a stage under each alternative and composes the stage's 
 | --- | --- |
 | [f11.md](f11.md) | The work item: the rule on when an alternative must be in force and the checks it carries |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review records of the delivering pull request's reviewed heads and base |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F11] Unrouted Sections](https://github.com/m2ux/prosiform/issues/773) |
+| Delivering pull request | [[F11] Unrouted Sections](https://github.com/m2ux/prosiform/pull/776) |
 | Design | [Presets](../2026-10-17-prosiform-v1/design.md#presets) |
 
 ## Plan Changes
 
-None: the session applied no plan change and held none, and no issue arose from the delivery.
+- **Held: a deferral to an unrouted section.**
+  A deferral naming a document that declares alternatives must name one or carry `?` when it is published, even where the section it names compiles with no pick. Accepting it would change the deferral pick rule, which the issue does not scope and F12 is changing, so it is held for the owner.
