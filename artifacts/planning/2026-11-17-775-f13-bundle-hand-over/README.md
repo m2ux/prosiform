@@ -4,17 +4,17 @@
 
 ## Executive Summary
 
-A dispatching agent reads the guide to learn how to hand a bundle to a sub-agent. On `main` the guide says to give the bundle "with the inputs of the step that led there", which says neither whether the bundle travels as its path or its text nor which inputs travel with it. Every bundle also opens with the instruction to run `pf`, including a bundle none of whose links leaves it, so a reader spends a call on a guide with nothing to say about that bundle.
+A dispatching agent reads the guide to learn how to hand a bundle to a sub-agent. On `main` the guide says to give the bundle "with the inputs of the step that led there", which says neither whether the bundle travels as its path or its text nor which inputs travel with it.
 
-The fix states the hand-over in the guide — the sub-agent is given the bundle file's path and reads it there, with the inputs the dispatching step states as given — and drops the instruction heading and the run-pf line from a bundle that links no document outside it.
+The fix states the hand-over in the guide: the sub-agent is given the bundle file's path and reads it there, with the inputs the dispatching step states as given. Every bundle keeps the run-pf line, since it is how a reader reaches the guide to the symbols the bundle carries.
 
 ## Artifacts
 
 | Artifact | What it holds |
 | --- | --- |
-| [f13.md](f13.md) | The work item: the hand-over wording, the rule deciding the run-pf line and the checks it carries |
+| [f13.md](f13.md) | The work item: the hand-over wording and the checks it carries |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
-| [agent-review.json](agent-review.json) | The agent review record of the delivering pull request's reviewed head and base |
+| [agent-review.json](agent-review.json) | The agent review records of the delivering pull request's reviewed heads and bases |
 
 ## Links
 
@@ -22,8 +22,9 @@ The fix states the hand-over in the guide — the sub-agent is given the bundle 
 | --- | --- |
 | Hot-fix issue | [[F13] Bundle Hand-Over](https://github.com/m2ux/prosiform/issues/775) |
 | Delivering pull request | [[F13] Bundle Hand-Over](https://github.com/m2ux/prosiform/pull/779) |
-| Design | [Link classification and resource handling](../2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) |
+| Design | [Guide](../2026-10-17-prosiform-v1/design.md#guide) |
 
 ## Plan Changes
 
-None: the session applied no plan change and held none, and no issue arose from the delivery.
+- **The run-pf line stays on every bundle.**
+  The first delivery also dropped the instruction heading and the run-pf line from a bundle linking nothing outside it. The owner noted that a reader runs `pf` for the guide to the symbols any bundle carries, so that half was removed from the issue, the branch and the design. The issue's original body is kept as [a comment on it](https://github.com/m2ux/prosiform/issues/775#issuecomment-6948431160).

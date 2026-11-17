@@ -17,5 +17,18 @@
         "disposition": "fixed in 408446630"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/779",
+    "head": "cc9505fe6ed5e7f6b482270c018b1755083d9dcf",
+    "base": "bd0f5c6bb594b2fa7dff365e248ec60c297ffba4",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-775-f13-bundle-hand-over/agent-review.json",
+    "reviewer": "Dispatching session for the delivery",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change since the reviewed head 408446630: the branch is rebuilt on main at bd0f5c6bb, which merged #776 and #778, with the hand-over alone. d781d025e re-applies 77a24ad01, the guide wording, its two tests and the guide fixture; its one conflict, beside the ? entry F12 added to the guide, keeps both. cc9505fe6 states the hand-over in docs/dispatch.md, docs/glossary.md and invocation.md. The run-pf line change, its fixtures, the redrawn drawings and the eval check are not on the branch, and every bundle opens with the run-pf line as on main. The design on engineering states the hand-over and restores the run-pf line every bundle opens with.",
+    "criteria": "AC1: test_the_guide_hands_a_bundle_over_by_the_path_of_its_file and the cli/informational-guide-response fixture. AC2: test_the_guide_states_a_sub_agents_inputs_are_the_dispatching_steps. AC3: docs/dispatch.md, invocation.md and the design state both rules. AC4: make check exits 0 at cc9505fe6.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree pf at cc9505fe6: exit 0 (test 2157 passed, harness 1060 passed, corpus 621 of 621, lock-check, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-775-f13-bundle-hand-over/test-results.md",
+    "findings": []
   }
 ]
