@@ -111,7 +111,8 @@
       {
         "description": "At the repository root the convention does not say which code it covers, so the Python under checks/, evals/ and scripts/ may or may not be held to it.",
         "severity": "nonblocking",
-        "disposition": "open"
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/3e611a195d9158b297998ff159d7e90011aa99c5"
       }
     ]
   }
