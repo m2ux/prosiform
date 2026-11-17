@@ -95,5 +95,24 @@
     "criteria": "AC1 and AC2 still met; the third-round finding resolved.",
     "validation": "make layout tables links vocabulary at 740e0b97a: exit 0 (links online).",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/787",
+    "head": "e176ff3b33a12c0ee736ab3a7b05734e2732c1e4",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-788-f17-comment-convention/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer given the diff and issue #788 alone)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change 740e0b97a..e176ff3b3 moving the convention unchanged from src/README.md into a root AGENTS.md, against the rewritten issue #788, the CI path filter and the eval harness's instruction isolation. The review report arrived after the pull request merged at this head.",
+    "criteria": "AC1: AGENTS.md holds the convention and no other document restates it; the whole pull request changes AGENTS.md alone against its base. AC2: the documentation checks pass.",
+    "validation": "make layout tables links vocabulary at e176ff3b3: exit 0; the link check reads AGENTS.md (428 documents resolved).",
+    "findings": [
+      {
+        "description": "At the repository root the convention does not say which code it covers, so the Python under checks/, evals/ and scripts/ may or may not be held to it.",
+        "severity": "nonblocking",
+        "disposition": "open"
+      }
+    ]
   }
 ]
