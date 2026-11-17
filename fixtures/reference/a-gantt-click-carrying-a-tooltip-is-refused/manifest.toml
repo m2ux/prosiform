@@ -1,4 +1,4 @@
-description = "A Gantt task's click written with href and followed by a tooltip is refused with a diagnostic naming its line, since Mermaid's gantt grammar reads nothing after a click's destination and draws no chart where a string follows it, so the tooltip states no operator and no title; no bundle is published."
+description = "A Gantt task's click written with href and followed by a tooltip is refused with a diagnostic naming its line, since Mermaid's gantt grammar reads nothing after a click's destination and draws no chart where a string follows it, so the tooltip states no title; no bundle is published."
 
 clauses = [
   "Link classification and resource handling — Examples",
