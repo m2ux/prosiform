@@ -31,5 +31,18 @@
     "findings": [
       "Held: the first review's deferral finding. Accepting a deferral naming no alternative to an unrouted section changes the deferral pick rule in docs/references.md and the design's pick token, which the issue's Proposal and criteria do not scope, and which F12 is changing beside this unit. It is held for the owner rather than applied."
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/776",
+    "head": "580572a5d47aa12c662aebe236ccd4f6755bda7e",
+    "base": "8c611259ab407e09e4d50262b79cf2f8eef14a5d",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-773-f11-unrouted-sections/agent-review.json",
+    "reviewer": "Dispatching session for the F11 delivery",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "No change since the reviewed head 580572a5d: this record settles the one observation the previous record held. Excluded observation: stated_pick refuses a deferral naming no alternative to a section no alternative changes, though the later run compiles it. Scope evidence: issue #773 states its rule for links the run compiles, and none of its criteria names a deferral; the refusal is the pick-token rule in docs/references.md, which this unit leaves as it is. Reproduced on the build of 580572a5d: a plain link to such a section compiles at exit 0 and the deferral fails with E_UNSUPPORTED_CONSTRUCT. Arising issue: https://github.com/m2ux/prosiform/issues/780. The fixes for the first review are as the previous record states them.",
+    "criteria": "AC1-AC4: the five fixtures pass in make corpus. AC5: docs/selection.md and the design state the rule. AC6: make check passes at 580572a5d.",
+    "validation": "The Checks run on 580572a5d completed with success. make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (test 2147 passed, harness 1059 passed, corpus 620 of 620, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-773-f11-unrouted-sections/test-results.md",
+    "findings": []
   }
 ]
