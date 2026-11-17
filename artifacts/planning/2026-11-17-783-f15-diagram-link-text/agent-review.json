@@ -1,0 +1,53 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/785",
+    "head": "28375997074d481e5d269b76ce28dc7e68d81bce",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-783-f15-diagram-link-text/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F15 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The full diff of main..f15-diagram-link-text at 283759970 and the design change on engineering; the callers of Click.opening and Click.title in composition, dispatch, closure, cli, candidate and entry. Probed with pf: every flowchart shape, quoted and Markdown strings, @{} labels, style suffixes, relabelling, semicolon-joined statements, class labels and unlabelled classes, state, sequence and Gantt diagrams, every refused combination, repeated links with frontmatter offsets and remote destinations, tooltips holding marks, deferrals with no tooltip, an empty tooltip, link targets and semicolons under candidate validation, and composition parity with a Markdown directive; Mermaid 11.17.2 checked with mermaid-cli. Rejected as speculative: shape-like edge text without spaces, shape-like Mermaid frontmatter values, multi-line Markdown-string labels, generic and styled class labels, brackets inside labels, Gantt clicks naming several tasks, a callback click beside an href click, HTML entities standing for a mark. Excluded as pre-existing and independent: the refusal message for two dispatch marks joins the mark names with no separator, for Markdown links alike (cli.py refusals_of_operators, present at 84b7d2c2b); drafted as an arising issue.",
+    "criteria": "AC1-AC5: the fixtures pass in make corpus and the probes behave as stated. AC6: docs/references.md, selection.md, invocation.md and the design state the rule and nothing states a tooltip operator; the glossary stated no part of it (finding 4). AC7: make check passes.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (2221 tests, harness 1075, corpus 636 of 636).",
+    "findings": [
+      {
+        "description": "A circle or cross edge written against its node, as X---oB[⇉ Review], attached the shape to a node named oB, so a click on B carried no operator and its dispatch compiled silently as an inline link.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c00d8a910"
+      },
+      {
+        "description": "A dispatched click was listed in a dispatch set or pick by its node id rather than its node text, and the dispatch docstring still named the node as the link's text.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/1a82575ce"
+      },
+      {
+        "description": "The tags module docstring still named a diagram link's tooltip title, the old split of a tooltip into marks and title.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f02eaea6b"
+      },
+      {
+        "description": "The glossary stated no part of the diagram link text rule.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f02eaea6b"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/785",
+    "head": "f02eaea6bd275289e56e5eaf919ae0017544e0fa",
+    "base": "84b7d2c2b06b62f863d470c34dc51e6d18f83b0b",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-783-f15-diagram-link-text/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F15 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The change 283759970..f02eaea6b and the four findings it fixes: the circle and cross edge read (re-probed X---oB, -->oB, a dashed id my-ox and a spaced edge against Mermaid's link lexer), the dispatch listing by element text (re-probed a parallel set, labels holding brackets, emphasis and a line break, escaped in the listing), the tags docstring and the glossary entry.",
+    "criteria": "AC1-AC7 as at 283759970; the fixes change no fixture result and the glossary now states the rule (AC6).",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf at f02eaea6b: exit 0 (2224 tests, harness 1075, corpus 636 of 636).",
+    "findings": []
+  }
+]

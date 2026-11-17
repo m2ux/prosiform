@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F15 at `283759970` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf` and `origin/engineering` at `ee7c9a78f`.
+Results for F15 at `f02eaea6b` on `f15-diagram-link-text`, run on 2026-11-17 in the unit checkout, with `PROSIFORM_BUILD` naming the worktree's `pf`. T1–T7 first held at `283759970`; the agent review's fixes after it change no fixture result, and add a circle-edge case to T6 and the glossary to T7.
 
 ## T1 Element Text Operator
 
@@ -52,4 +52,4 @@ A reading of `docs/references.md` (Operators, Selection by reference, Diagram li
 
 ## T8 Full Check
 
-`make check` exits 0: lint, format, typecheck, `make test` (2221 passed), harness (1075 passed), corpus (636 fixtures, 636 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check` exits 0: lint, format, typecheck, `make test` (2224 passed), harness (1075 passed), corpus (636 fixtures, 636 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.

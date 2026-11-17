@@ -14,12 +14,20 @@ The fix reads a diagram link's operator from the text of the node it is drawn on
 | --- | --- |
 | [f15.md](f15.md) | The work item: the element text as a diagram link's text, the tooltip as its title, and one link per element |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review records of the delivering pull request's reviewed heads and base |
+
+## Changes
+
+| Change | Result |
+| --- | --- |
+| Arising issue: the refusal of a link opening with two dispatch marks runs the mark names together (`refusals_of_operators` in `cli.py`), drafted, not saved or placed | held |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F15] Diagram Link Text](https://github.com/m2ux/prosiform/issues/783) |
+| Delivering pull request | [[F15] Diagram Link Text](https://github.com/m2ux/prosiform/pull/785) |
 | Follow-on | [[F16] Dispatch Brief](https://github.com/m2ux/prosiform/issues/784) |
 | Precedent | [Click Titles](https://github.com/m2ux/prosiform/pull/744) |
 | Design | [Link classification and resource handling](../2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) |
