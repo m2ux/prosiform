@@ -2572,9 +2572,13 @@ def later_needs_pick(
     the bundle carries for the target, at the default budgets a link run
     as written holds. Its traversal is read here, and the alternatives in
     force for the target are counted on every reference reaching it
-    there, as that run counts them. A traversal that fails fails that
-    run whatever the deferral picks, so it is that run's to report, as
-    it is for a deferral naming an alternative, and needs no pick here.
+    there, as that run counts them.
+
+    A traversal that fails with no alternative in force needs a pick
+    where one alternative's traversal succeeds, since that pick is what
+    the run lacks. Where every one fails too, the run fails whatever the
+    deferral picks, so the failure is that run's to report, as it is for
+    a deferral naming an alternative, and needs no pick here.
     """
     entry = replace(
         one,
@@ -2584,18 +2588,32 @@ def later_needs_pick(
         chain=(identity(one),),
         tags=one.tags | target.carried(),
     )
-    try:
-        read, parsed, _, _, found, _, _ = traverse(
-            root,
-            [entry],
-            in_force({}),
-            declarations,
-            Substitution(),
-            run_names(entry),
-            picking=False,
+
+    def traversed(
+        tags: frozenset[str],
+    ) -> tuple[dict[str, Source], dict[str, list[Token]], list[Reference]] | None:
+        chosen = replace(entry, tags=tags)
+        try:
+            read, parsed, _, _, found, _, _ = traverse(
+                root,
+                [chosen],
+                in_force({}),
+                declarations,
+                Substitution(),
+                run_names(chosen),
+                picking=False,
+            )
+        except (Failure, Crossed):
+            return None
+        return read, parsed, found
+
+    unpicked = traversed(entry.tags)
+    if unpicked is None:
+        return any(
+            traversed(entry.tags | {alternative.name.casefold()}) is not None
+            for alternative in target.alternatives
         )
-    except (Failure, Crossed):
-        return False
+    read, parsed, found = unpicked
     conversion = read[one.path].conversion
     references = contributing(found)[one.path]
     return not picked(conversion, references) and routed(
