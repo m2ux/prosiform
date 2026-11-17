@@ -62,6 +62,7 @@ Every other failure raises `Invalid`, which names the invariant and
 what disagreed. Nothing is published while a check fails.
 """
 
+import re
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import PurePosixPath
@@ -90,6 +91,8 @@ from prosiform.closure import (
     Substitution,
     alternatives_of,
     bundled,
+    carried_names,
+    deferred_title,
     dispatched,
     filed,
     parallel,
@@ -99,6 +102,7 @@ from prosiform.closure import (
     unmarked,
     withholding_target,
 )
+from prosiform.metadata import Conversion
 from prosiform.profile import HTML_INLINE, REFERENCES, command_block, parse
 from prosiform.provenance import (
     CONTRIBUTION_HEADING,
@@ -156,6 +160,8 @@ CODE_BLOCKS = ("fence", "code_block")
 
 LINK = "link"
 CLICK = "click"
+TOOLTIP = re.compile(r'"\s+"([^"]*)"')
+"""A quoted destination's closing quote and the quoted tooltip after it."""
 
 UNSAFE_BUNDLE_BOUNDARY = "E_UNSAFE_BUNDLE_BOUNDARY"
 
@@ -406,6 +412,7 @@ def intended(
     dispatched_to: Mapping[Served, str] | None = None,
     substitution: Substitution = UNSUBSTITUTED,
     contextual: bool = False,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
@@ -417,7 +424,8 @@ def intended(
 
     A deferred link naming a declaring document carries its target's
     path from the invocation working directory, so where it points is
-    the destination the bundle rebased. A dispatched link points at the
+    the destination the bundle rebased, and its title gains the run's
+    names its target's settings carry. A dispatched link points at the
     bundle file or dispatch-set sub-section its region carries for its
     target. A link
     resolving nowhere the bundle is responsible for is published as
@@ -489,6 +497,13 @@ def intended(
                 one.title,
                 given if one.kind == CLICK else normalizeLink(given),
             )
+        names = carried_names(withheld, conversions)
+        if names:
+            title = deferred_title(one.title, names) or ""
+            text = one.text
+            if one.kind == CLICK:
+                text = f"{text}, {', '.join(names)}" if one.title else text + title
+            one = Use(one.kind, text, title, one.destination)
         return withdrawn(one, rebased(withheld, one.destination))
     assigned = targets.get((found.path, found.fragment))
     if assigned is None:
@@ -600,13 +615,19 @@ def undestined(example: Token) -> str:
 
     A line can name several destinations, so they are taken out from the
     last back, and each offset still names the characters it was read at.
+    A tooltip's text is taken out with its destination, since a deferral's
+    title gains the run's names and the use comparison holds the tooltip.
     """
     held = lines(example.content)
     first = 0 if example.map is None else example.map[0] + 2
     for click in reversed(list(clicks(example))):
         at = click.line - first
         line = held[at]
-        held[at] = line[: click.offset] + line[click.offset + len(click.written) :]
+        rest = line[click.offset + len(click.written) :]
+        tip = TOOLTIP.match(rest)
+        if tip is not None:
+            rest = rest[: tip.start(1)] + rest[tip.end(1) :]
+        held[at] = line[: click.offset] + rest
     return "".join(held)
 
 
@@ -1232,6 +1253,7 @@ def references(
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
     contextual: bool = False,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> None:
     """Hold one region's uses, diagram links among them, to those its source wrote.
 
@@ -1265,6 +1287,7 @@ def references(
                 dispatched_to,
                 substitution,
                 contextual,
+                conversions,
             )
             if anchor is None
             else withdrawn(one, f"{ANCHOR}{anchor}")
@@ -1575,6 +1598,7 @@ def validate(
             substitution,
             contributing.get(carried.placing, {}),
             record.preamble,
+            {path: one.conversion for path, one in read.items()},
         )
         preserved(
             carried.path,

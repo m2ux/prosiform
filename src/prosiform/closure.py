@@ -188,12 +188,18 @@ def matching_presets(
     """The destination's matching named presets, in declaration order.
 
     Tags hold normalized complete names. An unmatched name adds nothing,
-    and the reserved default token supplies no named selection.
+    and the reserved default token supplies no named selection. A stub
+    the run's own names select matches whatever the tags name, since
+    the run selects it wherever it compiles its document.
     """
     return tuple(
         preset
         for preset in conversion.presets
-        if preset.name.casefold() != DEFAULT and preset.name.casefold() in tags
+        if preset.name.casefold() != DEFAULT
+        and (
+            preset.name.casefold() in tags
+            or (preset.stub is not None and preset.name.casefold() in conversion.run)
+        )
     )
 
 
@@ -1085,3 +1091,30 @@ def rebased(found: Reference, text: str) -> str:
     if fragment is None:
         return path
     return f"{path}{FRAGMENT}{fragment}"
+
+
+def carried_names(
+    found: Reference, conversions: Mapping[str, Conversion] | None
+) -> tuple[str, ...]:
+    """The run's names a deferral publishes beside its own title tags.
+
+    They are the names its target carries, as its settings hold them,
+    that the deferral's title does not already name, in code point
+    order. A target no run read carries none.
+    """
+    conversion = None if conversions is None else conversions.get(found.path)
+    if conversion is None:
+        return ()
+    return tuple(sorted(conversion.carried() - found.tags))
+
+
+def deferred_title(title: str | None, names: Sequence[str]) -> str | None:
+    """The title a deferral publishes: its author's, then the run's names it carries.
+
+    The names join the authored tags as further comma-separated names,
+    so the run compiling the deferral reads both from one title.
+    """
+    if not names:
+        return title
+    joined = ", ".join(names)
+    return f"{title}, {joined}" if title else joined
