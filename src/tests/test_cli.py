@@ -1865,6 +1865,38 @@ def test_an_entry_carrying_no_title_selects_no_named_preset(
 
 
 @pytest.mark.parametrize(
+    ("title", "refused"),
+    [
+        ("⇉ fast", True),
+        ("checks, ¬", True),
+        ("with ↳ Given", False),
+        ("⇉Fast", False),
+    ],
+)
+def test_a_local_link_title_tag_stating_operator_marks_is_refused(
+    root: Path, title: str, refused: bool
+) -> None:
+    """A run publishes a deferral's title, which its entry then reads."""
+    written(root, "kind.md", DECLARED + "# Kind\n\nKinds.\n")
+    written(
+        root,
+        "guide.md",
+        DECLARED + f'# Guide\n\nSee [¬ Kind](kind.md "{title}") and '
+        '[the site](https://example.com "⇉").\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    if not refused:
+        assert run.status == SUCCESS, run.stderr
+        return
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [reported] = run.diagnostics()
+    assert reported["code"] == UNSUPPORTED_CONSTRUCT
+    assert reported["source"] == "guide.md:6"
+    assert reported["reference"] == "kind.md"
+
+
+@pytest.mark.parametrize(
     "link",
     [
         'click Plan "guide.md#plan" "⇉"',

@@ -123,6 +123,7 @@ COMMAND_OPEN = ("<big>", "<pre>")
 COMMAND_CLOSE = ("</pre>", "</big>")
 
 HREF = "href"
+TITLE = "title"
 LABEL_OPEN = "["
 
 REFERENCES = "references"
@@ -476,7 +477,9 @@ def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[R
     """Every construct one inline token carries that the profile refuses.
 
     A paragraph wrapped as a command block carries its four tags, and
-    raw HTML is refused only between them.
+    raw HTML is refused only between them. A local link whose title holds
+    a tag `marks.marked` reads as marks is refused, so no title a run
+    publishes is one `cli.entry` refuses.
     """
     at = line(inline)
     children = inline.children or []
@@ -485,6 +488,25 @@ def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[R
     markup = next((child for child in children if child.type == HTML_INLINE), None)
     if markup is not None:
         yield html_refusal(markup.content, at)
+
+    for child in children:
+        title = child.attrGet(TITLE) if child.type == LINK_OPEN else None
+        if not title or external(str(child.attrGet(HREF) or "")):
+            continue
+        tag = marked_tag(str(title))
+        if tag is not None:
+            yield Refusal(
+                code=UNSUPPORTED_CONSTRUCT,
+                message=(
+                    f"the link to {child.attrGet(HREF)!r} carries the title tag "
+                    f"{tag!r}, which states operator marks, and a title names "
+                    f"presets alone"
+                ),
+                remedy="write the marks at the start of the link's text, and keep "
+                "the title for preset tags",
+                line=at,
+                reference=str(child.attrGet(HREF)),
+            )
 
     found = recognized(WIKI_LINK, inline)
     if found is not None:
@@ -541,6 +563,12 @@ def local_markdown(destination: str) -> bool:
     return not external(path) and is_markdown(path)
 
 
+def marked_tag(title: str) -> str | None:
+    """The first tag of one title that `marks.marked` reads as marks, trimmed."""
+    found = next((one for one in title.split(TAG_SEPARATOR) if marked(one)), None)
+    return None if found is None else found.strip()
+
+
 def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     """Each line one diagram carries that the profile refuses, in written order.
 
@@ -560,17 +588,14 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
     """
     read = linking(fence)
     for click in read.clicks:
-        tag = next(
-            (one for one in (click.title or "").split(TAG_SEPARATOR) if marked(one)),
-            None,
-        )
+        tag = marked_tag(click.title or "")
         if tag is None:
             continue
         yield Refusal(
             code=UNSUPPORTED_CONSTRUCT,
             message=(
                 f"the diagram's {click.name!r} carries the tooltip tag "
-                f"{tag.strip()!r}, which states operator marks, and a tooltip "
+                f"{tag!r}, which states operator marks, and a tooltip "
                 f"is the link's title, which states no operator"
             ),
             remedy="write the marks at the start of the text of the element the "

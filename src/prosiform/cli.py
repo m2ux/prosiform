@@ -1163,9 +1163,10 @@ def entry(text: str, pick: str | None) -> Reference:
     A link entry is read as an authored link is, for its destination and
     the tags its title states; the operator marks opening it are the
     agent's and are not read. An entry whose title holds a tag
-    `marks.marked` reads as marks is refused: the run would carry the tag
-    into the tooltips of the deferring diagram links it publishes, which
-    `profile.diagram_refusals` refuses. A plain path carries no title. A
+    `marks.marked` reads as marks is refused, as `profile.inline_refusals`
+    and `profile.diagram_refusals` refuse one in a source: the run would
+    carry the tag into the titles of the deferrals it publishes. A plain
+    path carries no title. A
     pick stands in the tag list where the pick token stands, so it is
     admitted only beside an entry whose title carries that token.
 
@@ -1184,7 +1185,7 @@ def entry(text: str, pick: str | None) -> Reference:
     if stating:
         raise usage_failure(
             f"the entry {text!r} carries the title tag {stating[0]!r}, which "
-            f"states operator marks, and a title states no operator",
+            f"states operator marks, and a title names presets alone",
             reference=text,
         )
     if pick is not None:
