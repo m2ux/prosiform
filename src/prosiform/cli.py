@@ -152,7 +152,13 @@ from prosiform.limits import (
 from prosiform.limits import (
     CODES as LIMITS_CODES,
 )
-from prosiform.marks import DEFERRAL_MARK, DISPATCH_MARK, INLINE_MARK, PARALLEL_MARK
+from prosiform.marks import (
+    DEFERRAL_MARK,
+    DISPATCH_MARK,
+    INLINE_MARK,
+    PARALLEL_MARK,
+    marked,
+)
 from prosiform.metadata import (
     DEFAULT,
     GROUP,
@@ -1156,9 +1162,12 @@ def entry(text: str, pick: str | None) -> Reference:
 
     A link entry is read as an authored link is, for its destination and
     the tags its title states; the operator marks opening it are the
-    agent's and are not read. A plain path carries no title. A pick
-    stands in the tag list where the pick token stands, so it is
-    admitted only beside an entry whose title carries that token.
+    agent's and are not read. A title tag stating operator marks names
+    no preset and would reach the deferring diagram links the run
+    publishes, where the profile refuses it, so the entry is refused. A
+    plain path carries no title. A pick stands in the tag list where the
+    pick token stands, so it is admitted only beside an entry whose title
+    carries that token.
 
     An entry is written by no document, so no `subst` pair redirects it:
     the run compiles the document it names and is named for the path the
@@ -1171,6 +1180,13 @@ def entry(text: str, pick: str | None) -> Reference:
             f"the entry {text!r} {refused}", reference=text
         ) from refused
     tags = frozenset() if link is None else link.tags
+    stating = sorted(tag for tag in tags if marked(tag))
+    if stating:
+        raise usage_failure(
+            f"the entry {text!r} carries the title tag {stating[0]!r}, which "
+            f"states operator marks, and a title states no operator",
+            reference=text,
+        )
     if pick is not None:
         if not picks(tags):
             raise usage_failure(

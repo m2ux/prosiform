@@ -1865,6 +1865,26 @@ def test_an_entry_carrying_no_title_selects_no_named_preset(
 
 
 @pytest.mark.parametrize(
+    "link",
+    [
+        'click Plan "guide.md#plan" "⇉"',
+        'click Plan "guide.md#plan" "¬ ?"',
+        'link Plan "guide.md#plan" "checks, ↳"',
+        '[Plan](guide.md#plan "⇉ checks")',
+    ],
+)
+def test_a_link_entry_whose_title_states_operator_marks_is_invalid_usage(
+    root: Path, link: str
+) -> None:
+    """A run would publish the tag in its deferring diagram links' tooltips."""
+    written(root, "guide.md", LINK_GUIDE)
+    run = invoke(link, cwd=root)
+    assert run.status == USAGE_FAILURE
+    assert "states operator marks" in run.stderr
+    assert run.bundles == {}
+
+
+@pytest.mark.parametrize(
     ("link", "body"),
     [
         ('[¬ Body](work-kind.md "?")', "Task-Body"),
