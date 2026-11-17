@@ -621,6 +621,9 @@ def diagram_use(written: str, kind: str = "flowchart LR", drawn: str = "") -> Us
         'X -- "B(text)" --> A[⇉ Judge]',
         "A[⇉ Judge] & B[Plan] --> X",
         "X---A[⇉ Judge]",
+        "X---oA[⇉ Judge]",
+        "X--xA[⇉ Judge]",
+        "X ==o A[⇉ Judge]",
     ],
 )
 def test_a_node_s_text_states_its_link_s_operator(drawn: str) -> None:

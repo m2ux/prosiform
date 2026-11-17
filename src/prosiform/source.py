@@ -221,6 +221,8 @@ NODE_SHAPE = re.compile(
 METADATA_SHAPE = "@{"
 LABEL = "label"
 EDGE_TEXT = "|"
+EDGE = ("-", "=")
+EDGE_ENDS = "ox"
 MARKDOWN_STRING = "`"
 CLASS_LABEL = re.compile(r'\s*class\s+(?P<node>[^\s"\[]+)\["(?P<label>[^"]*)"\]')
 SEQUENCE_DIAGRAM = "sequenceDiagram"
@@ -1061,7 +1063,9 @@ def shaped(statement: str) -> Iterator[tuple[str, str]]:
     """Each node one flowchart statement writes a shape for, with the shape's text.
 
     A quoted string and an edge's `|…|` text outside a shape are text
-    no node is named in, so the scan passes over them.
+    no node is named in, so the scan passes over them. An edge ending in
+    a circle or a cross, written against the node it reaches as in
+    `A---oB[Text]`, ends at `B`, as Mermaid's lexer reads it.
     """
     at = 0
     while at < len(statement):
@@ -1074,9 +1078,12 @@ def shaped(statement: str) -> Iterator[tuple[str, str]]:
         if found is None:
             at += 1
             continue
+        node = found.group("node")
+        if node[0] in EDGE_ENDS and len(node) > 1 and statement[:at].endswith(EDGE):
+            node = node[1:]
         text, at = shape_text(statement, found.end(), found.group("open"))
         if text is not None:
-            yield found.group("node"), text
+            yield node, text
 
 
 def shape_text(statement: str, start: int, opener: str) -> tuple[str | None, int]:
