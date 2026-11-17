@@ -6,6 +6,7 @@ prosiform:
   beta:
     choice: The work is of kind beta.
     subst: [{body.md: beta-body.md}]
+  checks: {}
 ---
 # Stage
 

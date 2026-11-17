@@ -1,0 +1,23 @@
+description = "A deferred link with no title names the Hand-off section of stage.md, which writes no routed link itself but links the Steps section of its own document, and Steps links body.md, a key both alternatives route. The later run carries Steps through that link and would need an alternative in force, so the run refuses the deferral with E_UNSUPPORTED_CONSTRUCT, naming the target's alternatives, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Presets — Exactly one alternative",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["names no alternative", "declares the alternatives 'alpha', 'beta'"]
+reference = "stage.md#hand-off"
+resolved = "stage.md"
+source = "guide.md:8"
+chain = ["guide.md", "stage.md#hand-off"]

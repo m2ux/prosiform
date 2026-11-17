@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Route
 
-Later, work through the stage's [¬ steps](stage.md#steps).
+Later, work through the stage's [¬ steps](stage.md#steps "checks").

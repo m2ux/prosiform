@@ -1,4 +1,4 @@
-description = "A deferred link with no title names the Steps section of stage.md, which links body.md, a key both of its alternatives route. The later run would need an alternative in force and find none, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming the target's alternatives, and publishes nothing."
+description = "A deferred link titled with the ordinary preset checks alone names the Steps section of stage.md, which links body.md, a key both of its alternatives route. An ordinary preset is no pick. The later run would need an alternative in force and find none, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming the target's alternatives, and publishes nothing."
 
 clauses = [
   "Link classification and resource handling — The pick token",
