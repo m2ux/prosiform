@@ -135,6 +135,7 @@ from prosiform.closure import (
     dispatched,
     filed,
     parallel,
+    picking,
     published_text,
     rebased,
     resolvable,
@@ -385,11 +386,14 @@ def pointing(
 ) -> bool:
     """Whether a withheld link points at a bundle file the dispatch map names.
 
-    A `⇉` link always does. A `⫽` link does where the map gives its
+    A `⇉` link does, unless it carries the pick token, which points it at
+    its dispatch-pick sub-section. A `⫽` link does where the map gives its
     target a file, and a link the map says nothing of points at its set's
     sub-section. Where there is no map, `alone` states that the link's
     set holds one target, which is published as a dispatch to its file.
     """
+    if picking(opening, target.tags):
+        return False
     if not parallel(opening):
         return True
     if dispatched_to is None:

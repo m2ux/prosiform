@@ -306,7 +306,10 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "step that led there, one per value where that step applies to",
         "A failure cancels nothing; all",
         "failures return together.",
-        "? among a link's title tags leaves the pick to you, made with --pick",
+        "? among a link's title tags leaves the pick to you, made with --pick.",
+        "On a ⇉ link it points at the sub-section headed ⇉ Dispatch Pick, "
+        "which lists one ⇉ line for each alternative beside its choice line: "
+        "hand on the one bundle whose choice line fits your work",
     ):
         assert rule in " ".join(GUIDE.split())
 
@@ -2002,7 +2005,7 @@ def test_a_deferral_publishes_its_pick_token_as_authored(
     assert f'({destination} "{title}")' in run.bundle
 
 
-@pytest.mark.parametrize("link", ["the body", "↳ the body", "⇉ the body", "⫽ the body"])
+@pytest.mark.parametrize("link", ["the body", "↳ the body", "⫽ the body"])
 def test_a_compiled_link_carrying_the_pick_token_is_refused(
     kinds: Path, link: str
 ) -> None:
@@ -2054,6 +2057,66 @@ def test_a_deferral_stating_no_one_pick_is_refused(
         f"the deferred link 'work-kind.md' {stated}; work-kind.md declares the "
         "alternatives 'Epic', 'Task', and the link must name exactly one of them "
         "or carry '?' alone"
+    )
+
+
+@pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
+def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
+    kinds: Path, title: str
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + f'# Guide\n\n## Plan\n\nPopulate [⇉ the body](work-kind.md "{title}").\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    fixed = frozenset({"Checks"}) if "checks" in title.casefold() else frozenset()
+    epic, task = (
+        bundle_file(BundleSelection("work-kind.md", None, fixed | {kind}))
+        for kind in ("Epic", "Task")
+    )
+    assert epic in run.bundles and task in run.bundles
+    assert "# Epic-Body" in run.bundles[epic]
+    assert "# Task-Body" in run.bundles[task]
+    assert (
+        f'Populate [the body](#⇉-dispatch-pick "{title}").\n\n'
+        f"### ⇉ Dispatch Pick\n\n"
+        f"[⇉ the body]({epic}) — Lists its tasks.\n"
+        f"[⇉ the body]({task}) — One pull request.\n"
+    ) in run.bundle
+
+
+def test_a_dispatch_naming_an_alternative_beside_the_pick_token_is_refused(
+    kinds: Path,
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED
+        + '# Guide\n\n## Plan\n\nPopulate [⇉ the body](work-kind.md "epic, ?").\n',
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert diagnostic["message"] == (
+        "the dispatch 'work-kind.md' names 'Epic' beside the pick token '?'; "
+        "work-kind.md declares the alternatives 'Epic', 'Task', and the link must "
+        "name exactly one of them or carry '?' alone"
+    )
+
+
+def test_a_dispatch_carrying_the_pick_token_to_no_alternatives_is_refused(
+    kinds: Path,
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + '# Guide\n\n## Plan\n\nPopulate [⇉ the body](body.md "?").\n',
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert diagnostic["message"] == (
+        "the dispatch 'body.md' carries the pick token '?', but body.md "
+        "declares no alternative to pick"
     )
 
 
@@ -3163,6 +3226,51 @@ def test_a_dispatch_in_a_level_six_section_publishes_inline(root: Path) -> None:
     assert run.status == SUCCESS
     assert run.diagnostics() == []
     assert run.bundle.endswith("Run [\u21c9 plan](plan.bundle.md).\n")
+
+
+def test_a_picking_dispatch_of_its_own_document_warns_once(root: Path) -> None:
+    written(
+        root,
+        "stage.md",
+        "---\nprosiform:\n  epic:\n    choice: An epic.\n"
+        "  task:\n    choice: A task.\n---\n# Stage\n\n"
+        '## Run\n\nThen [⇉ other](#other "?").\n\n## Other\n\nDo it.\n',
+    )
+    written(root, "guide.md", DECLARED + '# Guide\n\n[⇉ Stage](stage.md#run "epic")\n')
+    run = invoke("-d", "json", "guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    assert [one["code"] for one in run.diagnostics()] == [DISPATCH_SELF]
+
+
+def test_a_picking_dispatch_in_a_level_six_section_is_refused(kinds: Path) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## A\n\n### B\n\n#### C\n\n##### D\n\n###### E\n\n"
+        'Run [⇉ the body](work-kind.md "?").\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == HEADING_DEPTH_OVERFLOW
+
+
+def test_an_authored_heading_equal_to_the_dispatch_pick_is_refused(
+    kinds: Path,
+) -> None:
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + '# Guide\n\nRun [⇉ the body](work-kind.md "?").\n\n'
+        "## ⇉ Dispatch Pick\n\nText.\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == INPUT_FAILURE
+    assert run.bundles == {}
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == HEADING_COLLISION
+    assert "⇉ Dispatch Pick" in diagnostic["message"]
 
 
 def test_an_authored_heading_equal_to_the_dispatch_set_is_refused(
@@ -4942,7 +5050,9 @@ def test_a_deferring_click_carries_the_pick_token(root: Path) -> None:
     assert '    click Kind "kinds.md" "¬ ?"\n' in run.bundle
 
 
-def test_a_dispatching_click_carrying_the_pick_token_is_refused(root: Path) -> None:
+def test_a_dispatching_click_carrying_the_pick_token_points_at_its_pick(
+    root: Path,
+) -> None:
     written(
         root,
         "kinds.md",
@@ -4950,6 +5060,24 @@ def test_a_dispatching_click_carrying_the_pick_token_is_refused(root: Path) -> N
         "  task:\n    choice: A task.\n---\n# Kinds\n\nKinds.\n",
     )
     flow(root, 'click Kind "kinds.md" "⇉ ?"')
+    run = invoke("guide.md", cwd=root)
+    assert run.status == SUCCESS, run.stderr
+    epic, task = (
+        bundle_file(BundleSelection("kinds.md", None, frozenset({kind})))
+        for kind in ("epic", "task")
+    )
+    assert '    click Kind "#⇉-dispatch-pick" "⇉ ?"\n' in run.bundle
+    assert f"[⇉ Kind]({epic}) — An epic.\n[⇉ Kind]({task}) — A task.\n" in run.bundle
+
+
+def test_a_parallel_click_carrying_the_pick_token_is_refused(root: Path) -> None:
+    written(
+        root,
+        "kinds.md",
+        "---\nprosiform:\n  epic:\n    choice: An epic.\n"
+        "  task:\n    choice: A task.\n---\n# Kinds\n\nKinds.\n",
+    )
+    flow(root, 'click Kind "kinds.md" "⫽ ?"')
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == INPUT_FAILURE
     assert run.bundles == {}

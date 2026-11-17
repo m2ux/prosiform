@@ -15,11 +15,11 @@ deferral states when the material is compiled, a dispatch that a
 sub-agent follows it, and a parallel dispatch that a sub-agent follows it
 together with the section's other parallel dispatches. A deferred link's
 destination is the target's path, which no compiled link carries, so the
-deferral is stated there; a dispatched link points at a bundle file or an
-dispatch-set sub-section naming the bundle the run compiles for its
-target, which states the dispatch. The composition mark places the
-target's section beneath the section writing it, so the link points at
-that placement. Every mark is therefore authoring syntax, and the bundle
+deferral is stated there; a dispatched link points at a bundle file, or
+at a dispatch-set or dispatch-pick sub-section naming the bundles the run
+compiles for its target, which states the dispatch. The composition mark
+places the target's section beneath the section writing it, so the link
+points at that placement. Every mark is therefore authoring syntax, and the bundle
 drops it, a dispatch pointing at a bundle file keeping its own.
 
 A composition directive is a link whose text opens with the composition
@@ -63,7 +63,7 @@ from prosiform.marks import (
 from prosiform.metadata import DEFAULT, Conversion, Preset
 from prosiform.profile import is_markdown
 from prosiform.source import ANCHOR, ENCODING, external, regions, uses
-from prosiform.tags import picks
+from prosiform.tags import PICK, picks
 
 # The arrows that open an operator, which no arrow refusal reaches.
 MARKS = (DISPATCH_MARK, INLINE_MARK)
@@ -627,12 +627,36 @@ def deferred(opening: str) -> bool:
 def compiled_pick(opening: str, tags: frozenset[str]) -> bool:
     """Whether a link carries the pick token where no agent compiles its target.
 
-    The pick token leaves the pick among alternatives to the agent that
-    compiles a deferral in a later run. Every other link names a target
-    a run compiles from what the link states — inline, composed or as
-    a dispatched bundle — so no agent is there to pick.
+    The pick token leaves the pick among alternatives to an agent: the
+    one compiling a deferral in a later run, or the one handing on a `⇉`
+    dispatch, whose run compiles a bundle for each alternative. Every
+    other link names a target a run compiles from what the link states —
+    inline, composed or as a parallel dispatch's one bundle — so no
+    agent is there to pick.
     """
-    return picks(tags) and not deferred(opening)
+    return picks(tags) and not deferred(opening) and not picking(opening, tags)
+
+
+def picking(opening: str, tags: frozenset[str]) -> bool:
+    """Whether a link is a `⇉` dispatch leaving its pick to the dispatching agent."""
+    return picks(tags) and dispatched(opening) and not parallel(opening)
+
+
+def alternatives_of(
+    reference: Reference, conversion: Conversion
+) -> tuple[tuple[Reference, Preset], ...]:
+    """Each alternative a picking dispatch publishes a bundle for, in declaration order.
+
+    Each is the dispatch's reference with the alternative standing in its
+    tags where the pick token stands, beside the fixed tags, so each
+    bundle selects that alternative and the ordinary presets the link
+    names.
+    """
+    fixed = reference.tags - {PICK}
+    return tuple(
+        (replace(reference, tags=fixed | {one.name.casefold()}), one)
+        for one in conversion.alternatives
+    )
 
 
 def dispatched(opening: str) -> bool:

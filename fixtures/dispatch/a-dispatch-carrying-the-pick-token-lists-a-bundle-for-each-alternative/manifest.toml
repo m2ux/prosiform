@@ -1,0 +1,22 @@
+description = "A dispatched link carries the pick token ?, so the run compiles its target once for each alternative the target declares, each a bundle of its own routed by that alternative, and the section writing the link points it at a dispatch-pick sub-section listing one dispatch line for each alternative beside its choice line, in declaration order, for the dispatching agent to hand on one."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Link classification and resource handling — Dispatched bundles",
+  "Link classification and resource handling — Dispatch links",
+  "Presets — Alternatives",
+  "Presets — Bundle selection identity",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/work-kind--p-9aae63ebb71992854bd7a2a3c1b43c39a44ce2599fc6c4121ab823a94d703892.bundle.md",
+  "expected/work-kind--p-3d08be6e2134d929292759f7167df8e7b6735397875b7c4400721dfd71ec1bb6.bundle.md",
+]
+diagnostics = []

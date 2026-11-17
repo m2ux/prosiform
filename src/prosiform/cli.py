@@ -75,6 +75,7 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
+    alternatives_of,
     arrowed,
     bundle_selection,
     compiled_pick,
@@ -363,7 +364,10 @@ Symbol grammar:
      Give each bundle to its own sub-agent at once, with the inputs of
      the step that led there, one per value where that step applies to
      several. A failure cancels nothing; all failures return together.
-  ?  among a link's title tags leaves the pick to you, made with --pick
+  ?  among a link's title tags leaves the pick to you, made with --pick.
+     On a ⇉ link it points at the sub-section headed ⇉ Dispatch Pick,
+     which lists one ⇉ line for each alternative beside its choice line:
+     hand on the one bundle whose choice line fits your work
 """
 
 
@@ -1939,9 +1943,11 @@ def refusals_of_picks(
     """Refuse the pick token on a link whose target this run compiles.
 
     The pick token leaves the pick to the agent compiling a deferral in a
-    later run, so an ordinary link, a composition directive, a dispatch
-    and a parallel dispatch naming a declaring document each ask this
-    run for a pick it cannot make. A link naming anything else is text,
+    later run, or to the agent handing on a `⇉` dispatch, so an ordinary
+    link, a composition directive and a parallel dispatch naming a
+    declaring document each ask this run for a pick it cannot make. A
+    parallel dispatch's sub-agents all run, so no agent is left to pick
+    one of its bundles. A link naming anything else is text,
     or is refused by the operator refusals before this is asked, so its
     title selects nothing and the token stays the author's text.
     """
@@ -1959,7 +1965,8 @@ def refusals_of_picks(
             f"to pick",
             code=UNSUPPORTED_CONSTRUCT,
             remedy=f"write the deferral mark {DEFERRAL_MARK!r} to leave the pick "
-            "to a later run, or name the alternative in the link's title",
+            f"to a later run, the dispatch mark {DISPATCH_MARK!r} to leave it to "
+            "the dispatching agent, or name the alternative in the link's title",
             reference=use.name,
             source=at,
             chain=(*chain, use.destination),
@@ -2129,7 +2136,8 @@ def withheld(
     retains the occurrence's tags, and a deferred directive states
     that it composes, so its later entry compilation uses that selection.
     A deferral's target states that it defers, so its title is checked
-    for the pick the later run compiles it with.
+    for the pick the later run compiles it with, as a dispatch's title
+    carrying the pick token is checked for the alternatives it compiles.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2463,7 +2471,7 @@ def traverse(
             captured[one.path] = opened.capture
             parsed[one.path] = tokens
         confirm(parsed[one.path], one)
-        if one.defers:
+        if one.defers or picks(one.tags):
             stated_pick(read[one.path].conversion, one)
     return (
         read,
@@ -2515,23 +2523,26 @@ def confirm(
 
 
 def stated_pick(conversion: Conversion, one: Reference) -> None:
-    """Hold one deferral to stating the pick its target compiles with.
+    """Hold one deferral, or one dispatch carrying the pick token, to its pick.
 
-    The later run compiles the target with the deferral's title as its
-    selection, and a document declaring alternatives compiles with
+    The later run compiles a deferral's target with the deferral's title
+    as its selection, and a document declaring alternatives compiles with
     exactly one in force, so the title names one of them or carries the
-    pick token, never both. The pick token asks for a pick among
-    alternatives, so a target declaring none is refused with it. Every
-    other title publishes a command that run refuses, so the defect is
-    the source's and is reported at the link.
+    pick token, never both. A dispatch carrying the pick token compiles
+    its target once for each alternative, so it names none of them
+    beside the token. The pick token asks for a pick among alternatives,
+    so a target declaring none is refused with it. Every other title
+    publishes a command or a bundle a run refuses, so the defect is the
+    source's and is reported at the link.
     """
     alternatives = conversion.alternatives
     pick = picks(one.tags)
+    kind = "deferred link" if one.defers else "dispatch"
     if not alternatives:
         if not pick:
             return
         message = (
-            f"the deferred link {one.original!r} carries the pick token "
+            f"the {kind} {one.original!r} carries the pick token "
             f"{PICK!r}, but {one.path} declares no alternative to pick"
         )
         remedy = f"remove {PICK!r} from the link's title"
@@ -2550,7 +2561,7 @@ def stated_pick(conversion: Conversion, one: Reference) -> None:
         else:
             stated = "names no alternative"
         message = (
-            f"the deferred link {one.original!r} {stated}; {one.path} declares "
+            f"the {kind} {one.original!r} {stated}; {one.path} declares "
             f"the alternatives {listed}, and the link must name exactly one of "
             f"them or carry {PICK!r} alone"
         )
@@ -3880,8 +3891,10 @@ class Compiled:
     """One bundle of a run, compiled from its own entry under its own budgets.
 
     The dispatches are keyed by their effective bundle selections, at the
-    first link naming each. The warnings are held in two runs so a depth
-    warning, which only the run's entry raises and only once every
+    first link naming each; a `⇉` link carrying the pick token names one
+    selection for each alternative its target declares. The warnings are
+    held in two runs so a depth warning, which only the run's entry
+    raises and only once every
     bundle is compiled, takes its place between them. The unselected
     presets are those `unselected` returns for the documents the bundle
     carries, which the run weighs against its other bundles'. The pairs
@@ -3955,10 +3968,21 @@ def compiled(
         governed(substitution, pairs),
     )
     dispatching: dict[BundleSelection, Hop] = {}
+    own: list[Hop] = []
     for hop in hops:
-        dispatching.setdefault(
-            bundle_selection(hop.target, read[hop.target.path].conversion), hop
+        conversion = read[hop.target.path].conversion
+        targets = (
+            [one for one, _alternative in alternatives_of(hop.target, conversion)]
+            if picks(hop.target.tags)
+            else [hop.target]
         )
+        for target in targets:
+            selection = bundle_selection(target, conversion)
+            if selection in dispatching:
+                continue
+            dispatching[selection] = replace(hop, target=target)
+            if hop.own and (not own or own[-1] is not hop):
+                own.append(hop)
     trailing: list[Diagnostic] = []
     if resourced(bundled, limits.of(NESTING)):
         trailing.append(
@@ -3977,7 +4001,7 @@ def compiled(
         dispatching,
         [
             *coinciding,
-            *(selfward(hop) for hop in dispatching.values() if hop.own),
+            *(selfward(hop) for hop in own),
             *itself,
         ],
         trailing,

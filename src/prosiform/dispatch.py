@@ -24,15 +24,23 @@ once it is built, before the bundle's destinations are assigned, so the
 ordinal a renderer gives a repeated heading counts them as it counts
 every other heading.
 
+A `⇉` link carrying the pick token names one selection for each
+alternative its target declares, and points at a `⇉ Dispatch Pick`
+sub-section of its own, placed as a set's is and after it, whose lines
+list each alternative's bundle beside its choice line in declaration
+order, so the dispatching agent hands on one.
+
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so three dispatches publish nothing:
 
 - A chain of bundles returning to one already on it is a cycle: its
   sub-agents would dispatch one another without end. A dispatch naming
   the run's own single selection closes the shortest one.
-- A set in a level-6 section leaves no level for its sub-section.
-- An authored heading whose text equals `⫽ Dispatch Set` in a bundle that
-  emits one would give two sections one name.
+- A set or a picking dispatch in a level-6 section leaves no level for
+  its sub-section.
+- An authored heading whose text equals `⫽ Dispatch Set` or
+  `⇉ Dispatch Pick` in a bundle that emits one would give two sections
+  one name.
 
 A chain deeper than the limit still publishes, and warns: flattening it
 is the author's optimisation rather than a defect. A dispatch naming
@@ -72,9 +80,11 @@ from prosiform.closure import (
     Declarations,
     Reference,
     Substitution,
+    alternatives_of,
     dispatched,
     identity,
     parallel,
+    picking,
     unmarked,
 )
 from prosiform.closure import withholding_target as withheld
@@ -90,6 +100,7 @@ from prosiform.provenance import (
     COMPOSED_HEADINGS,
     FILENAME_WRAPPER,
     PARALLEL_SECTION,
+    PICK_SECTION,
     Ancestor,
     Carried,
     Emitted,
@@ -132,6 +143,17 @@ words name the structure rather than repeating the section the sub-section
 already stands under. A bundle's sets share this heading, so the renderer's
 ordinals keep them apart as it keeps any repeated heading apart.
 """
+
+PICKING = "⇉ Dispatch Pick"
+"""The heading a `⇉` link carrying the pick token takes for its sub-section.
+
+The mark leads, as the set's does, and the words name the structure: a
+listing of one bundle for each alternative, of which the dispatching
+agent hands on one.
+"""
+
+CHOICE_SEPARATOR = "—"
+"""What stands between a picking dispatch's line and its choice line."""
 
 TOGETHER = ""
 """A set's sub-section states no instruction of its own.
@@ -396,6 +418,29 @@ class Link:
         """Where the occurrence points, as its target, requested tags and operator."""
         return (self.target, self.reference.tags, self.parallel)
 
+    @property
+    def picking(self) -> bool:
+        """Whether the link is a `⇉` dispatch leaving its pick to its agent."""
+        return picking(self.opening, self.reference.tags)
+
+
+def fits(depth: int, first: Link) -> None:
+    """Refuse a sub-section a level-6 section would emit beyond the last level."""
+    if depth <= MAX_LEVEL:
+        return
+    raise Refused(
+        Diagnostic(
+            ERROR,
+            f"the dispatch {first.written!r} sits in a level-{MAX_LEVEL} "
+            f"section, so its sub-section would be emitted at level "
+            f"{depth}, which is beyond H{MAX_LEVEL}",
+            code=HEADING_DEPTH_OVERFLOW,
+            reference=first.written,
+            remedy=LEVEL_REMEDY,
+            location=first.location,
+        )
+    )
+
 
 def link_text(children: Sequence[Token], at: int) -> str:
     """The text a reader reads in the link opened at one position."""
@@ -520,6 +565,20 @@ def listing(entries: Sequence[tuple[str, str]]) -> str:
     )
 
 
+def choices(entries: Sequence[tuple[str, str, str]]) -> str:
+    """The lines a picking dispatch's sub-section carries, one per alternative.
+
+    Each line is a `⇉` link to the alternative's bundle, as a set's member
+    is, followed by the alternative's choice line, so its reader picks the
+    bundle whose choice line fits its work.
+    """
+    return "\n".join(
+        f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)}) "
+        f"{CHOICE_SEPARATOR} {escaped(choice)}"
+        for file, text, choice in entries
+    )
+
+
 def region_of(tokens: Sequence[Token], part: Range) -> Token:
     """The region of a parse one selected range holds."""
     return next(one for one in regions(tokens) if one.map == list(part.lines))
@@ -567,12 +626,14 @@ class Placing:
         self.inner_serving: list[tuple[tuple[str, int], Served]] = []
         self.inner_level = 0
 
-    def heading(self, text: str, depth: int, body: Sequence[Instruction]) -> int:
+    def heading(
+        self, text: str, depth: int, body: Sequence[Instruction], kind: str
+    ) -> int:
         """Emit one generated section, returning its heading's bundle position."""
         at = self.at + len(self.headings)
         self.emitted.append(f"{ATX * depth} {escaped(text)}")
-        self.parts.append(Generated(text, depth, PARALLEL_SECTION))
-        self.headings.append(Generated(text, depth, PARALLEL_SECTION))
+        self.parts.append(Generated(text, depth, kind))
+        self.headings.append(Generated(text, depth, kind))
         for one in body:
             self.emitted.append(one.text)
             self.parts.append(one)
@@ -613,15 +674,21 @@ class Placing:
         depth: int,
         title: str = "",
     ) -> None:
-        """Say where one section's dispatched links point, emitting its set's section.
+        """Say where one section's dispatched links point, emitting its sub-sections.
 
         A `⇉` link and every `⫽` link in a set of one effective selection
         point at their target's bundle file. A set of two or more
-        selections points at the sub-section emitted here. Equivalent
-        requests share one member, retaining its first link's label.
+        selections points at the dispatch-set sub-section emitted here.
+        Equivalent requests share one member, retaining its first link's
+        label. Each distinct `⇉` link carrying the pick token then points
+        at a dispatch-pick sub-section of its own, in the order its first
+        link is written, listing its target's alternatives in declaration
+        order.
         """
         files = {
-            served: self.bundle_file(link.reference) for served, link in pending.items()
+            served: self.bundle_file(link.reference)
+            for served, link in pending.items()
+            if not link.picking
         }
         together: dict[str, Link] = {}
         for served, link in pending.items():
@@ -631,25 +698,26 @@ class Placing:
             served: file_destination(file) for served, file in files.items()
         }
         if len(together) > 1:
-            if depth > MAX_LEVEL:
-                first = next(iter(together.values()))
-                raise Refused(
-                    Diagnostic(
-                        ERROR,
-                        f"the dispatch {first.written!r} sits in a level-{MAX_LEVEL} "
-                        f"section, so its sub-section would be emitted at level "
-                        f"{depth}, which is beyond H{MAX_LEVEL}",
-                        code=HEADING_DEPTH_OVERFLOW,
-                        reference=first.written,
-                        remedy=LEVEL_REMEDY,
-                        location=first.location,
-                    )
-                )
+            fits(depth, next(iter(together.values())))
             listed = listing([(file, link.text) for file, link in together.items()])
             body: list[Instruction] = [Instruction(listed)]
-            at = self.heading(PARALLEL, depth, body)
+            at = self.heading(PARALLEL, depth, body, PARALLEL_SECTION)
             serving.update(
                 (served, at) for served, link in pending.items() if link.parallel
+            )
+        for served, link in pending.items():
+            if not link.picking:
+                continue
+            fits(depth, link)
+            conversion = self.read[link.reference.path].conversion
+            listed = choices(
+                [
+                    (self.bundle_file(one), link.text, alternative.choice or "")
+                    for one, alternative in alternatives_of(link.reference, conversion)
+                ]
+            )
+            serving[served] = self.heading(
+                PICKING, depth, [Instruction(listed)], PICK_SECTION
             )
         for key, served in links:
             self.placed.setdefault(key, {})[served] = serving[served]
@@ -801,7 +869,7 @@ def collisions(groups: Sequence[Group], read: Mapping[str, Source]) -> None:
         one.text
         for group in groups
         for one in group.record.headings
-        if isinstance(one, Generated) and one.kind == PARALLEL_SECTION
+        if isinstance(one, Generated) and one.kind in (PARALLEL_SECTION, PICK_SECTION)
     }
     for group in groups:
         for one, at in authored(group.record, read):

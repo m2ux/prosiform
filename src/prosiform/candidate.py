@@ -88,6 +88,7 @@ from prosiform.closure import (
     Declarations,
     Reference,
     Substitution,
+    alternatives_of,
     bundled,
     dispatched,
     filed,
@@ -104,6 +105,7 @@ from prosiform.provenance import (
     FILENAME_WRAPPER,
     GROUP_HEADING,
     PARALLEL_SECTION,
+    PICK_SECTION,
     Ancestor,
     Carried,
     Contributing,
@@ -144,6 +146,7 @@ from prosiform.source import (
     visible,
     within,
 )
+from prosiform.tags import picks
 from prosiform.tags import read as read_tags
 
 TITLE = "title"
@@ -1355,16 +1358,25 @@ def dispatches(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
     bundle_file: Callable[[Reference], str],
 ) -> None:
-    """Hold each dispatched link's destination to a bundle file or a set's section.
+    """Hold each dispatched link's destination to a bundle file or its sub-section.
 
-    A dispatch-set sub-section answers to no source target, so what a
-    set's link destination is held to is the kind of heading it reaches.
+    A dispatch-set or dispatch-pick sub-section answers to no source
+    target, so what a set's link, or a `⇉` link carrying the pick token,
+    is held to is the kind of heading it reaches.
     A destination that is no fragment of the bundle names a file beside
     it, which no heading stands for.
     """
     for (path, _line), served in dispatching.items():
-        for (target, tags, _parallel), destination in served.items():
+        for (target, tags, together), destination in served.items():
+            kind = PARALLEL_SECTION if together or not picks(tags) else PICK_SECTION
             if filed(destination):
+                if kind == PICK_SECTION:
+                    raise Invalid(
+                        TARGET_INTEGRITY,
+                        f"the dispatch of {target!r} with tags {sorted(tags)!r} "
+                        f"in {path!r} carries the pick token and points at the "
+                        f"file {destination!r}",
+                    )
                 reference = Reference(target[0], target[0], target[1], tags=tags)
                 expected = quote(bundle_file(reference), safe="")
                 if destination != expected:
@@ -1377,12 +1389,12 @@ def dispatches(
                 continue
             found = reached.get(destination.removeprefix(ANCHOR))
             if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == PARALLEL_SECTION
+                isinstance(found[1], Generated) and found[1].kind == kind
             ):
                 raise Invalid(
                     TARGET_INTEGRITY,
                     f"the destination {destination!r} a dispatch of {target!r} in "
-                    f"{path!r} was given reaches no dispatch-set sub-section",
+                    f"{path!r} was given reaches no {kind}",
                 )
 
 
@@ -1391,8 +1403,13 @@ def parallel_sets(
     assigned: Sequence[str],
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
     bundle_file: Callable[[Reference], str],
+    read: Mapping[str, Source],
 ) -> None:
-    """Each generated dispatch set lists exactly its effective selection files."""
+    """Each generated dispatch sub-section lists exactly its effective selection files.
+
+    A set's sub-section lists its members' files, and a dispatch-pick
+    sub-section the file of each alternative its target declares.
+    """
     openings = dict(
         zip(assigned, (one for one, _inline in headings(tokens)), strict=True)
     )
@@ -1400,12 +1417,22 @@ def parallel_sets(
     positions = {id(span): at for at, span in enumerate(spans)}
     expected: dict[str, set[str]] = {}
     for served in dispatching.values():
-        for (target, tags, _parallel), destination in served.items():
+        for (target, tags, together), destination in served.items():
             if filed(destination):
                 continue
             reference = Reference(target[0], target[0], target[1], tags=tags)
-            expected.setdefault(destination, set()).add(
-                quote(bundle_file(reference), safe="")
+            listed = (
+                [reference]
+                if together or not picks(tags)
+                else [
+                    one
+                    for one, _alternative in alternatives_of(
+                        reference, read[target[0]].conversion
+                    )
+                ]
+            )
+            expected.setdefault(destination, set()).update(
+                quote(bundle_file(one), safe="") for one in listed
             )
     for destination, files in expected.items():
         opening = openings[destination.removeprefix(ANCHOR)]
@@ -1517,7 +1544,7 @@ def validate(
     integrity(reached, targets)
     one_member(groups)
     dispatches(reached, served, bundle_file)
-    parallel_sets(tokens, assigned, served, bundle_file)
+    parallel_sets(tokens, assigned, served, bundle_file, read)
     contributing = {} if composing is None else composing
     contributions(reached, contributing)
     for record, part, span in paired:
