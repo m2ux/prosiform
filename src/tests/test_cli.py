@@ -2078,6 +2078,71 @@ def test_a_deferral_stating_no_one_pick_is_refused(
     )
 
 
+@pytest.mark.parametrize("title", ["", ' "checks"'])
+@pytest.mark.parametrize("link", ["¬ the fields", "¬↳ the fields"])
+def test_a_deferral_naming_no_alternative_to_unrouted_content_publishes(
+    kinds: Path, link: str, title: str
+) -> None:
+    """Populate writes no link the alternatives route, so the later run needs none."""
+    written(kinds, "work-kind.md", WORK_KIND + POPULATE)
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + f"# Guide\n\n## Plan\n\n[{link}](work-kind.md#populate{title})\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert f"(work-kind.md#populate{title})" in run.bundle
+
+
+def test_an_entry_title_naming_the_targets_alternative_is_no_deferrals_pick(
+    kinds: Path,
+) -> None:
+    """The published deferral leaves out a run name naming its target's alternative."""
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Plan\n\nPopulate [¬ the body](work-kind.md).\n",
+    )
+    diagnostic = refused_link(
+        invoke("-d", "json", '[Guide](guide.md "epic")', cwd=kinds)
+    )
+    assert "names no alternative" in diagnostic["message"]
+
+
+def test_a_deferral_whose_later_run_fails_otherwise_needs_no_pick(
+    kinds: Path,
+) -> None:
+    """The later run fails whatever the deferral picks, so it reports the defect."""
+    written(
+        kinds,
+        "work-kind.md",
+        WORK_KIND + "\n## Populate\n\nFill [each field](#nowhere).\n",
+    )
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Plan\n\n[¬ the fields](work-kind.md#populate)\n",
+    )
+    run = invoke("-d", "json", "guide.md", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert "(work-kind.md#populate)" in run.bundle
+
+
+def test_a_deferral_whose_later_run_fails_for_want_of_a_pick_is_refused(
+    kinds: Path,
+) -> None:
+    """Unpicked, the later run reads the unrouted body, and a pick routes past it."""
+    written(kinds, "body.md", DECLARED + "# Body\n\nSee [nothing](#nowhere).\n")
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Plan\n\nPopulate [¬ the body](work-kind.md).\n",
+    )
+    diagnostic = refused_link(invoke("-d", "json", "guide.md", cwd=kinds))
+    assert "names no alternative" in diagnostic["message"]
+
+
 @pytest.mark.parametrize("title", ["?", "checks, ?", "Checks,?"])
 def test_a_dispatch_carrying_the_pick_token_lists_a_bundle_for_each_alternative(
     kinds: Path, title: str

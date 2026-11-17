@@ -1,0 +1,23 @@
+description = "A deferred link titled with the ordinary preset checks alone names the Steps section of stage.md, which links body.md, a key both of its alternatives route. An ordinary preset is no pick. The later run would need an alternative in force and find none, so the run refuses the link with E_UNSUPPORTED_CONSTRUCT, naming the target's alternatives, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — The pick token",
+  "Link classification and resource handling — A withheld link's target",
+  "Validation and failure contract — Publication",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["names no alternative", "declares the alternatives 'alpha', 'beta'"]
+reference = "stage.md#steps"
+resolved = "stage.md"
+source = "guide.md:8"
+chain = ["guide.md", "stage.md#steps"]
