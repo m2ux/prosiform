@@ -12,6 +12,7 @@ The fix reads a diagram link's operator from the text of the node it is drawn on
 
 | Artifact | What it holds |
 | --- | --- |
+| [f15.md](f15.md) | The work item: the element text as a diagram link's text, the tooltip as its title, and one link per element |
 
 ## Links
 
