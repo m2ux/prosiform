@@ -14,10 +14,16 @@ The fix states the hand-over in the guide — the sub-agent is given the bundle 
 | --- | --- |
 | [f13.md](f13.md) | The work item: the hand-over wording, the rule deciding the run-pf line and the checks it carries |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review record of the delivering pull request's reviewed head and base |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F13] Bundle Hand-Over](https://github.com/m2ux/prosiform/issues/775) |
+| Delivering pull request | [[F13] Bundle Hand-Over](https://github.com/m2ux/prosiform/pull/779) |
 | Design | [Link classification and resource handling](../2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling) |
+
+## Plan Changes
+
+None: the session applied no plan change and held none, and no issue arose from the delivery.

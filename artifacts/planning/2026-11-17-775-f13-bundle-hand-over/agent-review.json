@@ -1,0 +1,21 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/779",
+    "head": "408446630a2822a1928be1db7bcb946fec99b41c",
+    "base": "8c611259ab407e09e4d50262b79cf2f8eef14a5d",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-775-f13-bundle-hand-over/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F13 delivery session)",
+    "reviewed_at": "2026-11-17T00:00:00Z",
+    "scope": "The full diff of main..f13-bundle-hand-over: the guide's dispatch and dispatch-set entries, outside and linking_out, and the second pass of the compile in src/prosiform/cli.py; the instruction-group docstrings in bundle.py, provenance.py and __init__.py; the guide and run-pf tests in test_cli.py and test_bundle.py and the expectation updates in test_cli.py, test_derived_output.py, test_file_roots.py and test_subst.py; the two new prosiform fixtures, the renamed AC3 fixture, the 380 committed bundles that drop the instruction group and the description edits; checks/smoke.py; evals/diagram-following test_workflow.py, README.md and scenarios.toml; docs/dispatch.md, invocation.md, glossary, composition, destinations, fixtures/README.md and the redrawn drawings. Callers inspected: assembled, subsections, destination_map, anchors, contributions and validate in the compile, whose heading positions are built over the groups without the instruction heading and whose fragments are recomputed over the final groups when the heading is prepended; resourced, whose reading linking_out follows; source.uses for links, images and diagram clicks, and closure.components, external and DRIVE for the local-path test. Cases probed: a deferral spelled from the working directory with ../, a dispatch-set item, a deferred composition directive's generated line, a pick-token deferral, an undeclared and a missing .md, a remote .md address, an image of a .md file, a non-Markdown resource, a fragment, and a link inside a code example, which uses() does not read. The corpus confirms the rule in both directions: every stripped expectation and every kept one holds byte for byte against the built pf. Rejected as speculative: a parse of the bundle raising Suppressed in linking_out, which candidate validation's own parse of the same text at the same budget would raise as well. Known interaction left to the owner's merge order: F12 (#774) edits the guide's pick-token entry beside the dispatch-set entry and adds a dispatch-pick sub-section whose items link bundle files, which linking_out counts as links out.",
+    "criteria": "AC1: test_the_guide_hands_a_bundle_over_by_the_path_of_its_file, the guide says a sub-agent is given the path of the bundle file, which it reads there; cli/informational-guide-response holds the wording against the built pf. AC2: test_the_guide_states_a_sub_agents_inputs_are_the_dispatching_steps, both entries say the inputs the dispatching step states as given. AC3: fixture prosiform/a-bundle-linking-nothing-outside-it-opens-with-its-content carries no instruction heading and no run-pf line. AC4: fixture prosiform/a-bundle-linking-an-undeclared-document-opens-with-the-run-pf-line beside the existing dispatch, parallel, deferred-directive, plain-deferral and pick-token fixtures, each opening on the line. AC5: docs/dispatch.md, invocation.md and the design on engineering each state the hand-over by path with the dispatching step's inputs and the run-pf line's reach. AC6: make check exits 0 at the head.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf: exit 0 (test 2147 passed, harness 1055 passed, corpus 616 of 616, lock, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). make eval-harness: 815 passed. Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-17-775-f13-bundle-hand-over/test-results.md",
+    "findings": [
+      {
+        "severity": "minor",
+        "summary": "Test docstrings, a fixture description and an eval scenario comment still said every bundle opens with the run-pf line.",
+        "disposition": "fixed in 408446630"
+      }
+    ]
+  }
+]
