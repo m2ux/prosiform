@@ -118,6 +118,7 @@ from prosiform.source import (
     FENCE,
     INLINE,
     LINK_OPEN,
+    Click,
     Source,
     clicks,
     events,
@@ -457,6 +458,15 @@ def link_text(children: Sequence[Token], at: int) -> str:
     return "".join(shows)
 
 
+def element_text(click: Click) -> str:
+    """The text one diagram link shows its reader, its marks taken off.
+
+    It is the text of the element the link is drawn on, and the
+    element's name where it is drawn with none.
+    """
+    return " ".join(unmarked(click.opening).split()) or click.node
+
+
 def written_in(
     path: str,
     source: Source,
@@ -468,8 +478,8 @@ def written_in(
     """Every dispatched link one region writes, diagram links among them, in order.
 
     A link's text is what its reader reads in it, its marks taken off. A
-    diagram link's text is the node it is drawn on, which is what names
-    it to its reader.
+    diagram link's text is the text of the element it is drawn on, its
+    marks taken off, and the element's name where it is drawn with none.
     """
     found: list[Link] = []
     for block in within(tokens, [region]):
@@ -483,7 +493,7 @@ def written_in(
                         click.destination,
                         click.opening,
                         click.title,
-                        click.node,
+                        element_text(click),
                         source.line(click.line),
                         declarations,
                         substitution,

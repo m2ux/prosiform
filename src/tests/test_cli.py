@@ -5172,7 +5172,7 @@ def test_parallel_clicks_join_their_section_s_set(root: Path) -> None:
     written(root, "review.md", DECLARED + "# Review\n\nReview it.\n")
     flow(
         root,
-        "Intake[⫽ Intake] --> Review(⫽ Review)",
+        "Intake[⫽ Take it in] --> Review(⫽ Review the draft)",
         'click Intake href "intake.md"',
         'click Review "review.md"',
     )
@@ -5182,7 +5182,8 @@ def test_parallel_clicks_join_their_section_s_set(root: Path) -> None:
     assert '    click Review "#⫽-dispatch-set"\n' in run.bundle
     assert run.bundle.endswith(
         "### ⫽ Dispatch Set\n\n"
-        "[⇉ Intake](intake.bundle.md)\n[⇉ Review](review.bundle.md)\n"
+        "[⇉ Take it in](intake.bundle.md)\n"
+        "[⇉ Review the draft](review.bundle.md)\n"
     )
 
 
