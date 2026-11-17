@@ -272,7 +272,7 @@ An error decides a failing run.
 
 | Code | Declared by |
 | --- | --- |
-| `E_ALTERNATIVE_UNRESOLVED` | Presets, Exactly one alternative — a document declaring alternatives compiled with none, or several, of them in force in one bundle. |
+| `E_ALTERNATIVE_UNRESOLVED` | Presets, Exactly one alternative — a document declaring alternatives compiled with several of them in force in one bundle, or none where one changes its selected content. |
 | `E_AMBIGUOUS_SOURCE_HEADING` | Source-heading resolution — two headings in one source producing one slug. |
 | `E_DISPATCH_CYCLE` | Link classification and resource handling, Dispatch cycles — a chain of dispatched bundles returning to one already on it. |
 | `E_GROUP_CONFLICT` | Grouping, Consistent depth — contributing files declare different depths for one group. |

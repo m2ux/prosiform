@@ -78,7 +78,7 @@ Each check below ends the run before anything is written, under the code it name
 | Check | Code | Exit |
 | --- | --- | --- |
 | A command line the grammar does not admit, a preset disagreement, a `subst` rule within one preset | `E_INVALID_USAGE` | `2` |
-| A document declaring [alternatives](selection.md#presets-in-force) with none, or several, in force in a bundle | `E_ALTERNATIVE_UNRESOLVED` | `2` |
+| A document declaring [alternatives](selection.md#presets-in-force) with several in force in a bundle, or none where one changes its selected content | `E_ALTERNATIVE_UNRESOLVED` | `2` |
 | An entry outside the profile's suffixes | `E_UNSUPPORTED_ENTRY_SUFFIX` | `1` |
 | An entry written as an absolute or drive path, or with a scheme or authority | `E_SOURCE_OUTSIDE_ROOT` | `1` |
 | A symbolic link on a source's path | `E_SOURCE_SYMLINK` | `1` |

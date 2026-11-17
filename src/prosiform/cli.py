@@ -164,6 +164,7 @@ from prosiform.metadata import (
     Subst,
 )
 from prosiform.preamble import grouped as preamble_group
+from prosiform.preamble import selected as preamble_selection
 from prosiform.profile import (
     CODES as PROFILE_CODES,
 )
@@ -814,7 +815,7 @@ def picked(
 
 
 def unresolved(path: str, conversion: Conversion) -> Failure:
-    """A document declaring alternatives compiled with none, or several, in force.
+    """A document compiled with several alternatives in force, or none it needs.
 
     The document's links are written once, so they follow one kind's
     routes. The message lists each alternative beside its choice line in
@@ -837,18 +838,89 @@ def unresolved(path: str, conversion: Conversion) -> Failure:
     )
 
 
-def resolved(
-    read: Mapping[str, Source], selected: Mapping[str, Sequence[Reference]]
-) -> None:
-    """Hold every carried document declaring alternatives to exactly one in force.
+def preambled(
+    path: str,
+    tokens: Sequence[Token],
+    references: Sequence[Reference],
+    paired: bool,
+    entries: Collection[Reference],
+) -> bool:
+    """Whether a document's title and introduction stand in its folder's preamble group.
 
-    The count is taken on the references one bundle carries, so a
-    dispatched bundle counts the references reaching the document within
-    it.
+    A document in a subfolder that every including reference reaches by
+    a section, and that a `group` pair joins to a merged group, carries
+    them there, unless it is the parent opening the bundle on its own
+    title.
+    """
+    return (
+        all(one.fragment is not None for one in references)
+        and paired
+        and bool(posixpath.dirname(path))
+        and not (path == parent_document(entries) and carries_title(tokens))
+    )
+
+
+def routed(
+    path: str,
+    conversion: Conversion,
+    tokens: Sequence[Token],
+    references: Sequence[Reference],
+    entries: Collection[Reference],
+) -> bool:
+    """Whether one document's alternatives change what its selected content compiles to.
+
+    An alternative changes it where one of them states a `group` pair,
+    which decides the group the selected content joins, or a `subst`
+    pair whose key a link in the selected content names, which routes
+    that link. The selected content is what the references select, and
+    the title and introduction a folder's preamble group carries for
+    the document. Content none of them changes compiles under `default`
+    and the ordinary presets its references select.
+    """
+    if any(one.membership is not None for one in conversion.alternatives):
+        return True
+    chosen = selection(path, tokens, references, entries)
+    read_regions = tuple(regions(tokens)) if chosen is None else chosen.regions
+    including = [one for one in references if not one.composes]
+    introduction = preamble_selection(tokens)
+    if introduction is not None and preambled(
+        path,
+        tokens,
+        including,
+        any(pair(conversion, one.tags) is not None for one in including),
+        entries,
+    ):
+        read_regions += introduction.regions
+    written = linked(path, tokens, read_regions)
+    return any(
+        names(written, subst_identity(pair.original, path))
+        for one in conversion.alternatives
+        for pair in one.substs
+    )
+
+
+def resolved(
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    selected: Mapping[str, Sequence[Reference]],
+    entries: Collection[Reference],
+) -> None:
+    """Hold every carried document declaring alternatives to the pick it needs.
+
+    Several alternatives in force fail wherever the document is
+    compiled, and none in force fails where an alternative would change
+    what its selected content compiles to. The count is taken on the
+    references one bundle carries, so a dispatched bundle counts the
+    references reaching the document within it.
     """
     for path, references in selected.items():
         conversion = read[path].conversion
-        if conversion.alternatives and len(picked(conversion, references)) != 1:
+        if not conversion.alternatives:
+            continue
+        count = len(picked(conversion, references))
+        if count > 1 or (
+            count == 0 and routed(path, conversion, parsed[path], references, entries)
+        ):
             raise unresolved(path, conversion)
 
 
@@ -2521,8 +2593,8 @@ def unselected(
     """The presets of each carried document that no reference reaching it selected.
 
     `default` is in force wherever its document is compiled, so it is
-    never among them. A set of alternatives leaves all but one unpicked
-    wherever its document is compiled, so no alternative is among them
+    never among them. A set of alternatives leaves at least all but one
+    unpicked wherever its document is compiled, so no alternative is among them
     either. The names keep the order the document declares them in. A
     document reached only through a deferral is carried by no bundle, so
     its presets are weighed by none.
@@ -3080,13 +3152,8 @@ def assembled(
             )
         folders: dict[str, list[str]] = {}
         for path in selected:
-            choice = selection(path, parsed[path], selected[path], entries)
-            if (
-                choice is not None
-                and all(one.fragment is not None for one in selected[path])
-                and joins[path]
-                and posixpath.dirname(path)
-                and not (path == parent and carries_title(parsed[path]))
+            if preambled(
+                path, parsed[path], selected[path], bool(joins[path]), entries
             ):
                 folders.setdefault(posixpath.dirname(path), []).append(path)
         preamble_divisions = []
@@ -3862,7 +3929,7 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    resolved(read, contributing(found))
+    resolved(read, parsed, contributing(found), requested)
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
     named = {name: selected}
@@ -3918,24 +3985,25 @@ def compiled(
         unselected(read, parsed, contributing(found), requested),
         pairs,
         {
-            path: linked(path, parsed[path])
+            path: linked(path, parsed[path], tuple(regions(parsed[path])))
             for path, held in pairs.items()
             if any(one.routing for one in held.values())
         },
     )
 
 
-def linked(document: str, tokens: Sequence[Token]) -> frozenset[tuple[str, str | None]]:
-    """The document and section each link of one document names, wherever it sits.
+def linked(
+    document: str, tokens: Sequence[Token], selected: Sequence[Token]
+) -> frozenset[tuple[str, str | None]]:
+    """The document and section each link in the selected regions of one document names.
 
-    Every region is read, so a link in a section the run did not select
-    names its target as one in the selection does. An identity is the
-    one the link was written to name, before any `subst` pair redirects
-    it, and a link naming no local Markdown document names none.
+    An identity is the one the link was written to name, before any
+    `subst` pair redirects it, and a link naming no local Markdown
+    document names none.
     """
     return frozenset(
         (found.path, found.fragment)
-        for use in uses(tokens, tuple(regions(tokens)))
+        for use in uses(tokens, selected)
         if not use.resource and (found := named(document, use.destination)) is not None
     )
 

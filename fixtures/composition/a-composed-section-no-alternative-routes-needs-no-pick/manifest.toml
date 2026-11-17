@@ -1,0 +1,17 @@
+description = "A directive composes the Hand-off section of stage.md with no title. Its two alternatives route body.md, which only the uncomposed Steps section links, and state no group pair, so no alternative changes the composed section: it compiles with none in force, and the unpicked alternatives raise no warning."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Presets — Alternatives",
+  "Section composition — Contributions",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []
