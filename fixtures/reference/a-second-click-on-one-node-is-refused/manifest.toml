@@ -1,0 +1,22 @@
+description = "A second Mermaid click naming a node an earlier click already links is refused, naming its own line as the diagnostic's source and the earlier click's line in its message, since Mermaid keeps one link for each node and a reader of the rendered diagram reaches only the last; no bundle is published."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — Diagram link text",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+reference = "click Judge"
+message_contains = ["'Judge'", "guide.md:9"]
+source = "guide.md:10"
+chain = ["guide.md"]

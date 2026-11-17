@@ -8,5 +8,6 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ```mermaid
 flowchart LR
-    click Kind "work-kind.md" "¬ ?"
+    Kind[¬ Kind]
+    click Kind "work-kind.md" "?"
 ```

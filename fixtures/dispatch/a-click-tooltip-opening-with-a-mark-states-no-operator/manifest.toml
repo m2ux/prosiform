@@ -1,0 +1,21 @@
+description = "A Mermaid click whose tooltip opens with the dispatch mark, on a node whose text opens with none, is an ordinary link: the tooltip is its title whole, so the mark states no operator and the tag it opens names no preset, the target is bundled inline with its checks preset unselected, and the tooltip is carried as written."
+
+clauses = [
+  "Link classification and resource handling — Examples",
+  "Link classification and resource handling — Diagram link text",
+  "Presets — Selection belongs to the link",
+  "Adversarial acceptance fixtures — Dispatch",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "intake.md"

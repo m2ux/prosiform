@@ -7,5 +7,6 @@ prosiform: {}
 
 ```mermaid
 flowchart LR
-    click A "notes.md" "⇉"
+    A[⇉ A]
+    click A "notes.md"
 ```

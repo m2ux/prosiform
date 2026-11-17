@@ -1,4 +1,4 @@
-description = "A Mermaid click whose tooltip is the composition mark names a whole document rather than a section of it, so no section answers its composition: the run refuses the click, naming it by its keyword and node, and publishes no bundle."
+description = "A Mermaid click on a node whose text opens with the composition mark names a whole document rather than a section of it, so no section answers its composition: the run refuses the click, naming it by its keyword and node, and publishes no bundle."
 
 clauses = [
   "Link classification and resource handling — Examples",
@@ -17,5 +17,5 @@ severity = "error"
 code = "E_UNSUPPORTED_CONSTRUCT"
 reference = "plan.md"
 message_contains = ["the directive 'click A'", "whole document"]
-source = "guide.md:10"
+source = "guide.md:11"
 chain = ["guide.md", "plan.md"]

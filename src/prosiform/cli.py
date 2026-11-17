@@ -1477,7 +1477,8 @@ def refused(
     """
     message = refusal.message
     if refusal.earlier is not None:
-        message += f"; the earlier is {location(name, source.line(refusal.earlier))}"
+        earlier = location(name, source.line(refusal.earlier))
+        message += f"; the earlier link is at {earlier}"
     return input_failure(
         message,
         code=refusal.code,
