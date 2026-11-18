@@ -36,6 +36,7 @@ from workflow import (
     BOOTSTRAP,
     BOOTSTRAP_DIR,
     BRIEFED_FORM,
+    BUNDLE_HEADING,
     COMPILED_FORM,
     COMPILED_STEP,
     DIAGRAM,
@@ -60,6 +61,7 @@ from workflow import (
     UNDRAWN,
     UNLABELLED,
     WORKFLOWS,
+    BundledSection,
     Compile,
     CorpusError,
     Scenario,
@@ -89,6 +91,7 @@ from workflow import (
     read_workflow,
     reported,
     section_body,
+    slug,
     stray,
     walk,
     workflows,
@@ -1968,11 +1971,11 @@ def test_a_composition_of_a_section_no_brief_names_is_a_fault(tmp_path: Path) ->
         tmp_path,
         "dispatch-brief",
         f"{COMPILED_FORM}/{document('Trace')}",
-        "(../ledger.md#given)",
-        "(../ledger.md#check)",
+        "(../ledger.md#contract)",
+        "(../ledger.md#steps)",
     )
     assert brief_faults(workflow) == [
-        f"{document('Trace')} composes ledger.md#check, no brief"
+        f"{document('Trace')} composes ledger.md#steps, no brief"
     ]
 
 
@@ -1989,12 +1992,48 @@ def test_a_form_differing_beyond_the_brief_is_a_fault(tmp_path: Path) -> None:
     ]
 
 
+def brief_parts(path: Path, fragment: str) -> tuple[str, list[tuple[str, str]]]:
+    """A document's brief section as its lead content and its child sections.
+
+    The lead is the text above the section's first child heading. Each child
+    is a heading one level below the section's, as its title and the text it
+    holds up to the next heading.
+    """
+    text = path.read_text()
+    headings = list(BUNDLE_HEADING.finditer(text))
+    index = next(
+        place
+        for place, heading in enumerate(headings)
+        if slug(heading.group(2)) == fragment
+    )
+    level = len(headings[index].group(1))
+    inner = list(
+        itertools.takewhile(
+            lambda heading: len(heading.group(1)) > level, headings[index + 1 :]
+        )
+    )
+    after = index + 1 + len(inner)
+    end = headings[after].start() if after < len(headings) else len(text)
+    bounds = [heading.start() for heading in inner[1:]] + [end]
+    lead = text[headings[index].end() : inner[0].start() if inner else end]
+    children = [
+        (heading.group(2), text[heading.end() : bound].strip())
+        for heading, bound in zip(inner, bounds, strict=True)
+        if len(heading.group(1)) == level + 1
+    ]
+    return lead.strip(), children
+
+
 def test_each_brief_is_its_target_sections_action_which_the_sub_agent_copies() -> None:
     """AC9: a sub-agent's action holds the brief's value only where it was written.
 
     The brief's section states the file and value the dispatching agent
     writes, and the dispatched section has its sub-agent copy that file into
-    its own action, so the entry's action holds the brief's value.
+    its own action, so the entry's action holds the brief's value. The brief
+    is a contract whose lead content links its `Given`, `Leaves` and
+    `Answers` children by fragment, and the file and value live in `Given`
+    alone, so a dispatching agent that acts on the lead alone writes no
+    brief.
     """
     workflow = CORPUS_BY_NAME["dispatch-brief"]
     for scenario in workflow.scenarios:
@@ -2006,8 +2045,18 @@ def test_each_brief_is_its_target_sections_action_which_the_sub_agent_copies() -
         assert brief is not None, scenario.name
         for form in (COMPILED_FORM, BRIEFED_FORM):
             root = workflow.form(form)
-            given = section_body(root, f"{name}.md", brief.removeprefix("#"))
-            assert ACTION.findall(given) == [entry.brief], (scenario.name, form)
+            lead, children = brief_parts(root / f"{name}.md", brief.removeprefix("#"))
+            titles = [title for title, _ in children]
+            assert titles == ["Given", "Leaves", "Answers"], (scenario.name, form)
+            assert [unquote(target) for _, target in fragment_links(lead)] == [
+                slug(title) for title in titles
+            ], (scenario.name, form)
+            assert f"`actions/{entry.brief[0]}`" not in lead, (scenario.name, form)
+            stated = {title: ACTION.findall(body) for title, body in children}
+            assert stated == {"Given": [entry.brief], "Leaves": [], "Answers": []}, (
+                scenario.name,
+                form,
+            )
             body = section_body(root, f"{name}.md", heading)
             assert ACTION.findall(body) == [], (scenario.name, form)
             for file in (entry.brief[0], entry.action[0]):
@@ -2019,10 +2068,11 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
 ) -> None:
     """AC9: the forms differ in where the brief stands against the dispatch.
 
-    The briefed bundle publishes each brief in a `⇉ <text>` sub-section ahead
-    of the dispatch link it closes with, and the step's link names that
-    sub-section; the compiled bundle composes the same section after the
-    step that dispatches. Neither target's own bundle carries its brief.
+    The briefed bundle publishes each brief's lead content in a `⇉ <text>`
+    sub-section ahead of the dispatch link it carries, and the step's link
+    names that sub-section; the compiled bundle composes the same section
+    after the step that dispatches. Neither target's own bundle carries its
+    brief.
     """
     workflow = CORPUS_BY_NAME["dispatch-brief"]
     bundles = {}
@@ -2034,15 +2084,21 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
     for scenario in workflow.scenarios:
         [entry] = scenario.trace
         assert entry.brief is not None
+        name, _, _ = entry.section.partition("#")
+        source = workflow.form(BRIEFED_FORM) / f"{name}.md"
+        brief = declared_brief(source)
+        assert brief is not None
+        # The lead's first sentence, which holds no link `pf` rewrites.
+        lead = brief_parts(source, brief.removeprefix("#"))[0].partition(". ")[0]
         written = f"Write `actions/{entry.brief[0]}` containing `{entry.brief[1]}`."
         linked = f"]({entry_bundle(entry.section).name})"
         positions = {}
         for form, output in bundles.items():
             text = (output / workflow.entry_bundle).read_text()
-            assert text.count(written) == 1, (form, written)
-            positions[form] = (text.index(written), text.index(linked))
+            assert written in text and text.count(lead) == 1, (form, lead)
+            positions[form] = (text.index(lead), text.index(linked))
             target = (output / workflow.entry_bundle.parent / linked[2:-1]).read_text()
-            assert written not in target, (form, entry.section)
+            assert written not in target and lead not in target, (form, entry.section)
         assert positions[BRIEFED_FORM][0] < positions[BRIEFED_FORM][1]
         assert positions[COMPILED_FORM][0] > positions[COMPILED_FORM][1]
         text = (bundles[BRIEFED_FORM] / workflow.entry_bundle).read_text()
@@ -2052,9 +2108,9 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
             for section in sections.values()
             if section.title.startswith("⇉ ") and linked in section.text
         ]
-        assert written in lifted.text and lifted.text.index(
-            written
-        ) < lifted.text.index(linked)
+        assert lead in lifted.text and lifted.text.index(lead) < lifted.text.index(
+            linked
+        )
         dispatching = workflow.sections[BRIEFED_FORM][scenario.path[2]]
         assert lifted.title == f"⇉ {markdown_links(dispatching.body)[0].label[2:]}"
         state = next(
@@ -2065,6 +2121,64 @@ def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
         assert lifted.fragment in {
             unquote(target) for _, target in fragment_links(state.text)
         }
+
+
+def subtree(sections: dict[str, BundledSection], root: str) -> list[BundledSection]:
+    """The headings a bundle nests under one heading, in bundle order."""
+    order = list(sections.values())
+    index = list(sections).index(root)
+    level = order[index].level
+    return list(
+        itertools.takewhile(lambda section: section.level > level, order[index + 1 :])
+    )
+
+
+def test_a_lifted_brief_links_its_own_children(tmp_path: Path) -> None:
+    """AC9: a brief's lead content links the children lifted beside it.
+
+    In the briefed entry bundle, the `⇉ <text>` sub-section holds the
+    brief's lead content, then its dispatch line, then the brief's child
+    sections one level below the sub-section's heading. Each link the lead
+    makes to a child names the lifted copy inside the sub-section, so a
+    dispatching agent following it reads the child before dispatching.
+    """
+    workflow = CORPUS_BY_NAME["dispatch-brief"]
+    output = tmp_path / BRIEFED_FORM
+    run = bundle(workflow, BRIEFED_FORM, output)
+    assert run.returncode == 0 and not run.stderr, run.stderr.decode()
+    text = (output / workflow.entry_bundle).read_text()
+    sections = bundled_sections(text)
+    for scenario in workflow.scenarios:
+        [entry] = scenario.trace
+        name, _, _ = entry.section.partition("#")
+        source = workflow.form(BRIEFED_FORM) / f"{name}.md"
+        brief = declared_brief(source)
+        assert brief is not None
+        lead, children = brief_parts(source, brief.removeprefix("#"))
+        dispatch = f"({entry_bundle(entry.section).name})"
+        [lifted] = [
+            section
+            for section in sections.values()
+            if section.title.startswith("⇉ ") and dispatch in section.text
+        ]
+        inner = subtree(sections, lifted.fragment)
+        assert [(section.level, section.title) for section in inner] == [
+            (lifted.level + 1, title) for title, _ in children
+        ], scenario.name
+        heading = BUNDLE_HEADING.search(lifted.text)
+        head = lifted.text[: heading.start() if heading else None].strip()
+        paragraphs = head.split("\n\n")
+        line = f"[{lifted.title}]{dispatch}"
+        assert paragraphs[-1] == line, (scenario.name, paragraphs)
+        assert len(paragraphs) == len(lead.split("\n\n")) + 1, scenario.name
+        targets = [
+            unquote(target)
+            for _, target in fragment_links("\n\n".join(paragraphs[:-1]))
+        ]
+        assert targets == [section.fragment for section in inner], (
+            scenario.name,
+            targets,
+        )
 
 
 def test_every_decision_is_exercised_both_ways() -> None:

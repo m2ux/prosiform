@@ -608,23 +608,34 @@ def test_a_sub_agent_started_before_its_brief_was_acted_on_is_premature(
     )
 
 
-def test_a_brief_never_acted_on_is_premature_where_its_sub_agent_says_so(
-    tmp_path: Path,
+@pytest.mark.parametrize("name", ["ledger-brief", "payroll-brief"])
+@pytest.mark.parametrize("guessed", [None, "ledger", "payroll"])
+def test_a_dispatch_on_the_brief_lead_alone_is_premature(
+    tmp_path: Path, name: str, guessed: str | None
 ) -> None:
-    """AC9: the start's order is read before the brief's own file.
+    """AC9: a session that read only the brief's lead content dispatched early.
 
-    A session that never wrote the brief dispatched before acting on it, so
-    a sub-agent reporting it absent takes `premature_dispatch` rather than
-    the later `missing_action`.
+    The brief's value lives in a child section its lead links, so a session
+    that dispatched without following the links wrote no brief, or one
+    holding a value of its own, and its sub-agent copied that rather than
+    the brief's value. The start's order is read before the brief's own
+    file, so the verdict is `premature_dispatch` rather than the later
+    `missing_action`.
     """
-    item = scenario("dispatch-brief", "ledger-brief")
-    held = briefed(tmp_path, "ledger-brief")
+    item = scenario("dispatch-brief", name)
+    held = briefed(tmp_path, name)
     [entry] = item.trace
     assert entry.brief is not None and entry.action is not None
-    (held / ACTIONS / entry.brief[0]).unlink()
-    (held / ACTIONS / entry.action[0]).write_text("absent\n")
+    if guessed is None:
+        (held / ACTIONS / entry.brief[0]).unlink()
+    else:
+        (held / ACTIONS / entry.brief[0]).write_text(f"{guessed}\n")
+    (held / ACTIONS / entry.action[0]).write_text(f"{guessed or 'absent'}\n")
     verdict = score(CORPUS["dispatch-brief"], item, held)
-    assert verdict.failure == Failure.PREMATURE_DISPATCH
+    assert (verdict.failure, verdict.actions) == (
+        Failure.PREMATURE_DISPATCH,
+        (entry.action[0],),
+    )
 
 
 def test_a_brief_left_unwritten_beside_a_copied_value_is_missing_action(

@@ -5,6 +5,6 @@ prosiform: {}
 
 Write `actions/audit.txt` containing `audited`.
 
-[↳ Payroll given](../payroll.md#given)
+[↳ Payroll contract](../payroll.md#contract)
 
-1. [⇉ Payroll](../payroll.md#check).
+1. [⇉ Payroll](../payroll.md#steps).

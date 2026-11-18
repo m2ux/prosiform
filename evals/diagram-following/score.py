@@ -53,7 +53,9 @@ what the sub-agents wrote:
   written, holds the brief's value there: otherwise *premature_dispatch*,
   named in the verdict's `actions`. The target's section has its sub-agent
   copy the file the brief has the dispatching agent write, so another value
-  says the sub-agent started before the brief was acted on;
+  says the sub-agent started before the brief was acted on. A brief that
+  states its value in a child section its lead content links is acted on
+  only where the dispatching agent followed that link;
 - each brief's file and each sub-agent's action file holds the value its
   trace entry states: otherwise *missing_action*, named in the verdict's
   `actions`.

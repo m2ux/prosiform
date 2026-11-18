@@ -5,6 +5,6 @@ prosiform: {}
 
 Write `actions/trace.txt` containing `traced`.
 
-[↳ Ledger given](../ledger.md#given)
+[↳ Ledger contract](../ledger.md#contract)
 
-1. [⇉ Ledger](../ledger.md#check).
+1. [⇉ Ledger](../ledger.md#steps).
