@@ -164,5 +164,18 @@
         "evidence": "https://github.com/m2ux/prosiform/commit/e08c4606b"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "e08c4606bc99dc7bee7f2efc179d14fb6e96259d",
+    "base": "4cbd9db525e452aae4824427eeb667e2c7c0b438",
+    "base_ref": "f16-dispatch-brief",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fix 622c1f6ff..e08c4606b: the routing-pair exception in docs/selection.md naming a stub's pair among the stand-ins.",
+    "criteria": "AC1-AC5 met; the fifth-round finding confirmed fixed and no finding remains.",
+    "validation": "Read the diff; make check exits 0 at e08c4606b (2266 tests, harness 1116, corpus 677 of 677). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/test-results.md",
+    "findings": []
   }
 ]
