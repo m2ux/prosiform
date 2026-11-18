@@ -236,5 +236,70 @@
     "criteria": "The fixes hold; no new defect.",
     "validation": "make check exit 0 (2257 tests, harness 1107, corpus 668 of 668); make eval-harness 855 passed.",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "38a23da252ee47e42be51f4ca9c553c9d1489661",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T23:00:00Z",
+    "scope": "The change 4cbd9db52..38a23da25 committing the dispatch-brief live run: its report and dispositions against each failing session's transcript, subagents.json and actions, the runbook's triage rubric and stop rules, the compiled bundles of both forms, and the README and runbook figures against the run and shakedown reports.",
+    "criteria": "AC10: each of the 15 failures is a miss, none is defect or unclear, and the committed report and figures match the run.",
+    "validation": "make check exit 0; make eval-harness 855 passed; the committed report equals results/dispatch-brief/report.*.",
+    "findings": [
+      {
+        "description": "The README claimed every sub-agent found the Given value written, which the records do not show: they show the value written before every start and held in every finding.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/2bc0075f96cc6cf3a9d949f023365b9cf7d9a3ff"
+      },
+      {
+        "description": "The shared overcompiled evidence named kinds of reference some sessions' commands were not, and listed pf -h, which the scorer skips.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/2bc0075f96cc6cf3a9d949f023365b9cf7d9a3ff"
+      },
+      {
+        "description": "The invalid-usage run pf -o . with no entry was not named by the evidence as the scorer counts it.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/2bc0075f96cc6cf3a9d949f023365b9cf7d9a3ff"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "76e92fc57cb859f2bfab26d29e0164b01d301072",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T23:30:00Z",
+    "scope": "The change 38a23da25..76e92fc57 and the findings it fixed, against results/dispatch-brief.",
+    "criteria": "The README claim and the dispositions' evidence hold.",
+    "validation": "make check exit 0; the committed report equals results/dispatch-brief/report.*.",
+    "findings": [
+      {
+        "description": "Two evidence cells carried an unescaped pipe inside a code span, splitting their table rows on GitHub.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6d4cde584337e3b3ec8f61bb43d6ab6911908d2f"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "6d4cde584337e3b3ec8f61bb43d6ab6911908d2f",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T23:45:00Z",
+    "scope": "The change 76e92fc57..6d4cde584: the two escaped evidence cells and the table's column count.",
+    "criteria": "The report's table renders every failing session in its columns.",
+    "validation": "make check exit 0 (2257 tests, harness 1107, corpus 668 of 668); every Failing Sessions row has the header's 5 cell separators.",
+    "findings": []
   }
 ]

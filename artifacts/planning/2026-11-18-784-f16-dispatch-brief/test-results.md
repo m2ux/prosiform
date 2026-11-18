@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F16 at `4cbd9db52` on `f16-dispatch-brief`, run on 2026-11-18 in the unit checkout, with the docs pinning the design at `d4a467ef4`. Every fixture named below sits under `fixtures/dispatch-brief/` unless its path says otherwise.
+Results for F16 at `6d4cde584` on `f16-dispatch-brief`, run on 2026-11-18 in the unit checkout, with the docs pinning the design at `d4a467ef4`. Every fixture named below sits under `fixtures/dispatch-brief/` unless its path says otherwise.
 
 ## T1 Lifted Dispatch
 
@@ -40,11 +40,18 @@ A reading of `docs/dispatch.md` (Briefs, The guide, Generated headings), `docs/s
 
 ## T10 Live Run
 
-Not run. The runbook's Dispatch-Brief Run states the USD 5 cap the user approved; the delivery session's attempt to start the shakedown was refused by its own permission layer, so the run waits for the user to start it or grant the session that permission.
+Both runs were made at `4cbd9db52` on the `opencode` harness and `openrouter/deepseek/deepseek-v4.1-flash-1017`, under the user's USD 5 cap, by the coordinating session on the user's direct approval.
+
+- **Shakedown** `dispatch-brief-shakedown`: 4 sessions, 1 passed, USD 0.024484 over 800 977 tokens; the largest session's 260 255 tokens set the run's session cap at 530 000 and its token budget at 10 600 000, and 20 sessions at the doubled mean come to about USD 0.25. Its three `read_source` failures are each a `miss`.
+- **Run** `dispatch-brief`: 20 of 20 sessions started, USD 0.116679 over 3 583 711 tokens. `briefed` passed 3 of 10 (30%), failing on `overcompiled` 4 and `read_source` 3; `compiled` passed 2 of 10 (20%), failing on `overcompiled` 5 and `read_source` 3. No session took `premature_dispatch`: every session wrote the `Given` value before starting its sub-agent.
+- **Triage**: each of the 15 failures is a `miss` in `results/dispatch-brief/dispositions.json`, read into the committed report. The `overcompiled` sessions ran `pf` on a bundle file, a published dispatch link, a source section, a directory, an unknown word or no entry; none ran `pf` on the Contract preamble's links, and the scenario states no compile run. The `read_source` sessions opened the workflow's sources beside the bundles.
+- **Committed**: `evals/diagram-following/dispatch-brief.json` and `dispatch-brief.md`, the README's Dispatch-brief run section and the runbook's run and shakedown rows.
+
+The briefed form does not measurably outperform the unbriefed one: 30% against 20% over ten sessions each is no reliable difference, neither form dispatched before acting on the Contract, and the failures are unrelated to the brief. Held.
 
 ## T11 Full Check
 
-`make check` with `PROSIFORM_BUILD` naming the worktree's `pf` exits 0: lint, format, typecheck, `make test` (2257 passed), harness (1107 passed), corpus (668 fixtures, 668 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check` with `PROSIFORM_BUILD` naming the worktree's `pf` exits 0 at `6d4cde584`: lint, format, typecheck, `make test` (2257 passed), harness (1107 passed), corpus (668 fixtures, 668 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
 ## T12 Copy-Local Links
 
