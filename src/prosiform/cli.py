@@ -837,12 +837,15 @@ def picked(
     return tuple(one for one in conversion.alternatives if one.name in names)
 
 
-def unresolved(path: str, conversion: Conversion) -> Failure:
+def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
     The document's links are written once, so they follow one kind's
     routes. The message lists each alternative beside its choice line in
-    declaration order, so its reader reruns naming the one that fits.
+    declaration order, so its reader picks the one that fits. The remedy
+    is a rerun with `--pick` where `rerun` holds, and otherwise one
+    alternative named by the links reaching the document, as the pick
+    rule `entry` owns admits.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -856,7 +859,12 @@ def unresolved(path: str, conversion: Conversion) -> Failure:
             f"{path} needs one alternative in force:{rows}",
             code=ALTERNATIVE_UNRESOLVED,
             source=path,
-            remedy="rerun with --pick naming the alternative that fits your task",
+            remedy=(
+                "rerun with --pick naming the alternative that fits your task"
+                if rerun
+                else "name the alternative that fits your task in the title or "
+                "tooltip of each link reaching it, a link entry's among them"
+            ),
         ),
     )
 
@@ -935,16 +943,24 @@ def resolved(
     what its selected content compiles to. The count is taken on the
     references one bundle carries, so a dispatched bundle counts the
     references reaching the document within it.
+
+    The failure remedies a rerun with `--pick` only where none is in
+    force and an entry reaching the document carries the pick token,
+    which is where `entry` admits `--pick`.
     """
     for path, references in selected.items():
         conversion = read[path].conversion
         if not conversion.alternatives:
             continue
         count = len(picked(conversion, references))
-        if count > 1 or (
-            count == 0 and routed(path, conversion, parsed[path], references, entries)
-        ):
+        if count > 1:
             raise unresolved(path, conversion)
+        if count == 0 and routed(path, conversion, parsed[path], references, entries):
+            raise unresolved(
+                path,
+                conversion,
+                rerun=any(one in entries and picks(one.tags) for one in references),
+            )
 
 
 def governing(
@@ -1178,8 +1194,10 @@ def entry(text: str, pick: str | None) -> Reference:
     and `profile.diagram_refusals` refuse one in a source: the run would
     carry the tag into the titles of the deferrals it publishes. A plain
     path carries no title. A
-    pick stands in the tag list where the pick token stands, so it is
-    admitted only beside an entry whose title carries that token.
+    pick joins the tag list beside the pick token, so it is admitted only
+    beside an entry whose title carries that token. The token stays in
+    the list: it names no preset, and the entry still states that its
+    pick is the caller's.
 
     An entry is written by no document, so no `subst` pair redirects it:
     the run compiles the document it names and is named for the path the
@@ -1206,7 +1224,7 @@ def entry(text: str, pick: str | None) -> Reference:
                 f"{PICK!r}, and the entry {text!r} carries none",
                 reference=text,
             )
-        tags = tags - {PICK} | read_tags(pick)
+        tags = tags | read_tags(pick)
     if link is not None:
         text = link.destination
     try:
@@ -1731,6 +1749,44 @@ def included(
         dropped -= restored
 
 
+def rooted(
+    tokens: Sequence[Token], one: Reference, fragment: str
+) -> tuple[Token, ...] | None:
+    """The section one reference's fragment roots in its document's tokens.
+
+    `section` owns which section a fragment roots and the two refusals
+    it raises. Each is a reference that reached a document and could
+    not name one section of it, so each is reported as the input failure
+    the contract declares for it, naming that document as the identity
+    the reference resolved to and the chain that reached the reference.
+    A fragment naming no heading returns `None` for the caller to refuse.
+    """
+    try:
+        return section(tokens, fragment)
+    except Ambiguous as shared:
+        raise input_failure(
+            f"the reference {one.original!r} names {len(shared.lines)} headings "
+            f"of the document it selects from, which it cannot tell apart",
+            code=AMBIGUOUS_SOURCE_HEADING,
+            remedy="retitle one of the headings so each takes a slug of its own",
+            reference=one.original,
+            resolved=one.path,
+            source=one.origin,
+            chain=one.chain,
+        ) from shared
+    except Nested as nested:
+        raise input_failure(
+            f"the reference {one.original!r} names a heading a container "
+            f"carries, which is no selectable section root",
+            code=NESTED_SECTION_TARGET,
+            remedy="name a heading the document carries at its own level",
+            reference=one.original,
+            resolved=one.path,
+            source=one.origin,
+            chain=one.chain,
+        ) from nested
+
+
 def selection(
     path: str,
     tokens: Sequence[Token],
@@ -1766,30 +1822,7 @@ def selection(
             whole = True
             entered = entered or one in entries
             continue
-        try:
-            found = section(tokens, spelled)
-        except Ambiguous as shared:
-            raise input_failure(
-                f"the reference {one.original!r} names {len(shared.lines)} headings "
-                f"of the document it selects from, which it cannot tell apart",
-                code=AMBIGUOUS_SOURCE_HEADING,
-                remedy="retitle one of the headings so each takes a slug of its own",
-                reference=one.original,
-                resolved=path,
-                source=one.origin,
-                chain=one.chain,
-            ) from shared
-        except Nested as nested:
-            raise input_failure(
-                f"the reference {one.original!r} names a heading a container "
-                f"carries, which is no selectable section root",
-                code=NESTED_SECTION_TARGET,
-                remedy="name a heading the document carries at its own level",
-                reference=one.original,
-                resolved=path,
-                source=one.origin,
-                chain=one.chain,
-            ) from nested
+        found = rooted(tokens, one, spelled)
         if found is None:
             raise input_failure(
                 f"the reference {one.original!r} names no heading of the document "
@@ -2469,7 +2502,12 @@ def traverse(
     the dependencies they mark and the constructs the profile refuses
     there, so an unselected section is content the run parsed and
     never asked for. A selection only grows, so a region a later round
-    adds is held to the same checks in the round that adds it.
+    adds is held to the same checks in the round that adds it. Each
+    round selects every carried document before it counts the presets
+    the references select or reads a selected region, so a fragment
+    naming no one section reports its own defect ahead of any failure of
+    the alternatives the references pick or the presets they select, and
+    of a refusal in another document's regions.
 
     Expansion depth counts the reference chain from the nearest entry,
     independently of the fixed-point rounds needed to activate presets. The
@@ -2548,6 +2586,10 @@ def traverse(
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
         carried = contributing(found)
+        chosen_of = {
+            path: selection(path, parsed[path], selecting, requested)
+            for path, selecting in carried.items()
+        }
         mapping = governed(
             substitution, governing(read, parsed, carried, requested)
         ).unrecorded()
@@ -2557,7 +2599,7 @@ def traverse(
         dispatching.clear()
         composed_itself.clear()
         for path, selecting in carried.items():
-            chosen = selection(path, parsed[path], selecting, requested)
+            chosen = chosen_of[path]
             regions_read = (
                 tuple(regions(parsed[path])) if chosen is None else chosen.regions
             )
@@ -2722,14 +2764,20 @@ def confirm(
     the index of every heading the profile recognizes. Which section a
     fragment roots, and whether two headings make it ambiguous, is what
     the run compiling the link decides; this run says only that the
-    target is there to be found.
+    target is there to be found. A deferred composition directive is the
+    exception: this run names its contribution by the heading its target
+    section opens with, so the fragment must root one section here, as
+    `rooted` holds it.
 
     The caller supplies the cached index from the source's captured read.
     A withheld-only source contributes no content to a group.
     """
     if one.fragment is None:
         return
-    if any(heading.fragment == one.fragment for heading in index(tokens)):
+    if one.composes:
+        if rooted(tokens, one, one.fragment) is not None:
+            return
+    elif any(heading.fragment == one.fragment for heading in index(tokens)):
         return
     raise input_failure(
         f"the reference {one.original!r} names no heading of the document it withholds",

@@ -96,7 +96,7 @@ Design rules: *Operator marks*, and *Operators that combine* under [Link classif
 
 ## The target
 
-A directive names a section of a document that declares `prosiform`, resolved as any reference is, the writing document's `subst` included. A missing document or section fails with `E_TARGET_NOT_FOUND`. A whole document, a document that declares nothing, a remote address and a resource are refused with `E_UNSUPPORTED_CONSTRUCT`, because none of them is a section to place.
+A directive names a section of a document that declares `prosiform`, resolved as any reference is, the writing document's `subst` included. A missing document or section fails with `E_TARGET_NOT_FOUND`, a fragment two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`, and one naming a heading a container carries with `E_NESTED_SECTION_TARGET`. A deferred directive is held to the same, because the run names its contribution by the heading its target section opens with. A fragment's defect is reported ahead of a failure of the alternatives its title picks and the presets it selects. A whole document, a document that declares nothing, a remote address and a resource are refused with `E_UNSUPPORTED_CONSTRUCT`, because none of them is a section to place.
 
 Design rule: *The eligible target*. Fixtures:
 
@@ -105,6 +105,9 @@ Design rule: *The eligible target*. Fixtures:
 - [a-directive-naming-a-whole-document-is-refused](../fixtures/composition/a-directive-naming-a-whole-document-is-refused)
 - [a-directive-naming-a-document-that-declares-nothing-is-refused](../fixtures/composition/a-directive-naming-a-document-that-declares-nothing-is-refused)
 - [a-deferred-directive-naming-a-document-that-declares-nothing-is-refused](../fixtures/composition/a-deferred-directive-naming-a-document-that-declares-nothing-is-refused)
+- [a-deferred-directive-in-composed-content-naming-a-shared-fragment-is-refused](../fixtures/composition/a-deferred-directive-in-composed-content-naming-a-shared-fragment-is-refused)
+- [a-deferred-directive-naming-a-heading-a-container-carries-is-refused](../fixtures/composition/a-deferred-directive-naming-a-heading-a-container-carries-is-refused)
+- [a-directive-naming-a-shared-fragment-and-two-alternatives-reports-the-fragment](../fixtures/composition/a-directive-naming-a-shared-fragment-and-two-alternatives-reports-the-fragment)
 - [a-directive-naming-a-remote-address-is-refused](../fixtures/composition/a-directive-naming-a-remote-address-is-refused)
 - [a-directive-naming-a-resource-is-refused](../fixtures/composition/a-directive-naming-a-resource-is-refused)
 
@@ -260,6 +263,8 @@ Every failure above publishes nothing, under `-c` as without it, and in a dispat
 | Code | Raised for |
 | --- | --- |
 | `E_TARGET_NOT_FOUND` | a missing target document or section |
+| `E_AMBIGUOUS_SOURCE_HEADING` | a target fragment two headings of its document share |
+| `E_NESTED_SECTION_TARGET` | a target fragment naming a heading a container carries |
 | `E_UNSUPPORTED_CONSTRUCT` | an ineligible target, a directive with no scope, a target with no parent, a cycle, a refused combination of marks, a section composed and deferred by one scope, and an operator naming a target that declares nothing |
 | `E_HEADING_COLLISION` | an authored heading equal to a destination section |
 | `E_HEADING_DEPTH_OVERFLOW` | a composed heading past H6 |
