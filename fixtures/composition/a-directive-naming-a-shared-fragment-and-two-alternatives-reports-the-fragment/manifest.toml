@@ -1,0 +1,23 @@
+description = "The directive names stage.md#dup with the title alpha, beta. Two headings of stage.md take the slug dup, so the fragment names neither, and the title picks two alternatives of stage.md, which would fail with E_ALTERNATIVE_UNRESOLVED. The fragment's own defect is reported first, because the run selects every document before it reads their presets: the run fails with E_AMBIGUOUS_SOURCE_HEADING and publishes nothing."
+
+clauses = [
+  "Source-heading resolution, two headings in one source producing the same slug",
+  "Presets — Exactly one alternative",
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_AMBIGUOUS_SOURCE_HEADING"
+reference = "stage.md#dup"
+resolved = "stage.md"
+source = "guide.md:8"
+chain = ["guide.md", "stage.md#dup"]

@@ -1785,11 +1785,40 @@ def test_a_document_with_no_alternative_in_force_is_refused(
     unresolved_of(invoke("-d", "json", "guide.md", cwd=kinds))
 
 
-def test_an_entry_naming_no_alternative_is_refused_with_its_remedy(kinds: Path) -> None:
-    diagnostic = unresolved_of(invoke("-d", "json", "work-kind.md", cwd=kinds))
-    assert diagnostic["remedy"] == (
-        "rerun with --pick naming the alternative that fits your task"
+@pytest.mark.parametrize(
+    ("entry", "named"),
+    [
+        ("work-kind.md", '[Body](work-kind.md "epic")'),
+        ("guide.md", "guide.md"),
+    ],
+)
+def test_an_entry_carrying_no_pick_token_is_refused_with_a_remedy_the_run_accepts(
+    kinds: Path, entry: str, named: str
+) -> None:
+    """The remedy names the alternative in the links reaching the document.
+
+    `--pick` beside such an entry is invalid usage, so the remedy does
+    not name it, and the run compiles once the links name the alternative.
+    """
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md).\n",
     )
+    diagnostic = unresolved_of(invoke("-d", "json", entry, cwd=kinds))
+    assert diagnostic["remedy"] == (
+        "name the alternative that fits your task in the title or tooltip of "
+        "each link reaching it, a link entry's among them"
+    )
+    assert invoke(entry, "--pick", "epic", cwd=kinds).status == USAGE_FAILURE
+    written(
+        kinds,
+        "guide.md",
+        DECLARED + '# Guide\n\n## Plan\n\nPopulate [the body](work-kind.md "epic").\n',
+    )
+    run = invoke(named, cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+    assert "# Epic-Body" in run.bundle
 
 
 def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:
@@ -1934,11 +1963,27 @@ def test_a_first_run_pick_compiles_the_named_alternative(
     assert f"# {body}" in run.bundle
 
 
+@pytest.mark.parametrize("pick", ["bogus", "checks"])
+def test_a_pick_naming_no_alternative_is_refused_with_a_rerun_remedy(
+    kinds: Path, pick: str
+) -> None:
+    """The entry still carries `?`, so the rerun names another pick."""
+    link = '[¬ Body](work-kind.md "?")'
+    diagnostic = unresolved_of(invoke("-d", "json", link, "--pick", pick, cwd=kinds))
+    assert diagnostic["remedy"] == (
+        "rerun with --pick naming the alternative that fits your task"
+    )
+    run = invoke(link, "--pick", "epic", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+
+
 def test_a_pick_after_the_listing_compiles_the_named_alternative(kinds: Path) -> None:
     """The listing names --pick, and the rerun on the same link compiles."""
     link = '[¬ Body](work-kind.md "?")'
     diagnostic = unresolved_of(invoke("-d", "json", link, cwd=kinds))
-    assert "--pick" in diagnostic["remedy"]
+    assert diagnostic["remedy"] == (
+        "rerun with --pick naming the alternative that fits your task"
+    )
     run = invoke(link, "--pick", "epic", cwd=kinds)
     assert run.status == SUCCESS, run.stderr
     assert "# Epic-Body" in run.bundle

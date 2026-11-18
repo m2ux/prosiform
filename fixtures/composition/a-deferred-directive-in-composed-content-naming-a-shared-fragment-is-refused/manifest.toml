@@ -1,0 +1,23 @@
+description = "The guide composes the Given section of stage.md, which writes a deferred directive naming later.md#later. The run names the directive's contribution by the heading its target section opens with, and two headings of later.md take the slug later, so the fragment names neither: the run refuses it as an ordinary reference naming that fragment is refused, with the reference, the document it resolved to and the chain through the composition, and publishes nothing."
+
+clauses = [
+  "Source-heading resolution, two headings in one source producing the same slug",
+  "Section composition — Deferred composition",
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_AMBIGUOUS_SOURCE_HEADING"
+reference = "later.md#later"
+resolved = "later.md"
+source = "stage.md:8"
+chain = ["guide.md", "stage.md#given", "later.md#later"]
