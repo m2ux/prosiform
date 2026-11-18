@@ -38,18 +38,19 @@ own, headed by its mark and its text and placed as a set's is and after
 it, beside the section's pick sub-sections in the order their links are
 written; a picking dispatch's sub-section
 holds its brief above its pick lines; a set's holds each briefed
-member's brief above that member's line. The dispatches a brief writes
-take their sub-sections one level below the sub-section holding it,
-after its dispatch lines.
+member's brief above that member's line.
 
 A dispatch has to be one a sub-agent can finish and one the bundle can
-place, so three dispatches publish nothing:
+place, so four dispatches publish nothing:
 
 - A chain of bundles returning to one already on it is a cycle: its
   sub-agents would dispatch one another without end. A dispatch naming
   the run's own single selection closes the shortest one.
-- A set or a picking dispatch in a level-6 section leaves no level for
-  its sub-section.
+- A set, a picking dispatch or a briefed one in a level-6 section
+  leaves no level for its sub-section.
+- A brief emitting a heading or writing a dispatch leaves its dispatch
+  line governed by something other than the brief, as `unbriefable`
+  states.
 - An authored heading whose text equals `⫽ Dispatch Set`,
   `⇉ Dispatch Pick` or a lifted sub-section's heading in a bundle that
   emits one would give two sections one name, as would one lifted
@@ -110,6 +111,7 @@ from prosiform.diagnostics import (
     RelatedLocation,
 )
 from prosiform.marks import DISPATCH_MARK
+from prosiform.profile import UNSUPPORTED_CONSTRUCT
 from prosiform.provenance import (
     BRIEF_SECTION,
     COMPOSED_HEADINGS,
@@ -197,6 +199,9 @@ CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching 
 LEVEL_REMEDY = "move the dispatch to a section above the sixth level"
 COLLISION_REMEDY = "retitle the authored heading"
 LIFT_REMEDY = "write one of the two dispatches with other link text"
+BRIEF_REMEDY = (
+    "name a brief holding no heading and no dispatch, and link the rest of its material"
+)
 
 Placed = dict[tuple[str, int], dict[Served, int | str]]
 """Where each dispatched link points, by the region and link it serves.
@@ -453,6 +458,30 @@ and gives the text, parts and headings the brief emits.
 """
 
 
+def unbriefable(link: Link, brief: Reference, what: str) -> Refused:
+    """The refusal of a brief its dispatch line could not follow as it governs.
+
+    A brief is content its dispatcher reads before the dispatch line, so
+    a brief emitting a heading, for a subsection or a composition
+    directive it holds, would put that line beneath the heading, and one
+    writing a dispatch would hand on a bundle of its own beside the
+    line. `what` names which the brief does.
+    """
+    return Refused(
+        Diagnostic(
+            ERROR,
+            f"the dispatch {link.written!r} carries the brief "
+            f"{identity(brief)!r}, which {what}, so its dispatch line would "
+            f"not follow the brief it governs",
+            code=UNSUPPORTED_CONSTRUCT,
+            reference=link.written,
+            resolved=identity(brief),
+            remedy=BRIEF_REMEDY,
+            location=link.location,
+        )
+    )
+
+
 def fits(depth: int, first: Link) -> None:
     """Refuse a sub-section a level-6 section would emit beyond the last level."""
     if depth <= MAX_LEVEL:
@@ -685,45 +714,33 @@ class Placing:
         self.emitted.append(one.text)
         self.parts.append(one)
 
-    def brief(
-        self,
-        link: Link,
-        depth: int,
-        nested: dict[Served, Link],
-        nesting: list[tuple[tuple[str, int], Served]],
-    ) -> None:
+    def brief(self, link: Link, depth: int) -> None:
         """Emit the brief one dispatch carries, as `briefing` names it, or nothing.
 
         The brief stands beneath a sub-section heading at `depth`, as the
-        briefer composes it. The dispatches its regions write join
-        `nested`, so they take their own sub-sections once the
-        sub-section holding the brief has listed its dispatch.
+        briefer composes it, and the dispatch line follows it. A brief
+        writing a dispatch is refused, as `unbriefable` states.
         """
         found = self.briefs.get(link.served)
         if found is None:
             return
         emitted, parts, headings = self.briefer(link, found, depth)
+        if any(
+            written_in(
+                part.path,
+                self.read[part.path],
+                self.parsed[part.path],
+                region_of(self.parsed[part.path], part),
+                self.declarations,
+                self.substitution,
+            )
+            for part in parts
+            if isinstance(part, Range)
+        ):
+            raise unbriefable(link, found, "writes a dispatch")
         self.emitted.extend(emitted)
         self.parts.extend(parts)
         self.headings.extend(headings)
-        for part in parts:
-            if not isinstance(part, Range):
-                continue
-            key = (part.path, part.lines[0])
-            if key in self.grouped or key in self.placed:
-                continue
-            tokens = self.parsed[part.path]
-            for each in written_in(
-                part.path,
-                self.read[part.path],
-                tokens,
-                region_of(tokens, part),
-                self.declarations,
-                self.substitution,
-            ):
-                nested.setdefault(each.served, each)
-                if (key, each.served) not in nesting:
-                    nesting.append((key, each.served))
 
     def lifted(self, link: Link, file: str, depth: int) -> int:
         """Emit the sub-section a dispatch carrying a brief is lifted into.
@@ -753,11 +770,8 @@ class Placing:
         self.lifts[text] = file
         fits(depth, link)
         at = self.heading(text, depth, BRIEF_SECTION)
-        nested: dict[Served, Link] = {}
-        nesting: list[tuple[tuple[str, int], Served]] = []
-        self.brief(link, depth, nested, nesting)
+        self.brief(link, depth)
         self.say(Instruction(listing([(file, link.text)])))
-        self.place(nested, nesting, depth + 1)
         return at
 
     def flush(self, following: int | None) -> None:
@@ -828,8 +842,6 @@ class Placing:
         if len(together) > 1:
             fits(depth, next(iter(together.values())))
             at = self.heading(PARALLEL, depth, PARALLEL_SECTION)
-            nested: dict[Served, Link] = {}
-            nesting: list[tuple[tuple[str, int], Served]] = []
             bare: list[tuple[str, str]] = []
             for file, link in together.items():
                 if self.briefs[link.served] is None:
@@ -838,11 +850,10 @@ class Placing:
                 if bare:
                     self.say(Instruction(listing(bare)))
                 bare = []
-                self.brief(link, depth, nested, nesting)
+                self.brief(link, depth)
                 self.say(Instruction(listing([(file, link.text)])))
             if bare:
                 self.say(Instruction(listing(bare)))
-            self.place(nested, nesting, depth + 1)
             serving.update(
                 (served, at) for served, link in pending.items() if link.parallel
             )
@@ -869,9 +880,7 @@ class Placing:
         fits(depth, link)
         conversion = self.read[link.reference.path].conversion
         at = self.heading(PICKING, depth, PICK_SECTION)
-        nested: dict[Served, Link] = {}
-        nesting: list[tuple[tuple[str, int], Served]] = []
-        self.brief(link, depth, nested, nesting)
+        self.brief(link, depth)
         listed = choices(
             [
                 (self.bundle_file(one), link.text, alternative.choice or "")
@@ -879,7 +888,6 @@ class Placing:
             ]
         )
         self.say(Instruction(listed))
-        self.place(nested, nesting, depth + 1)
         return at
 
     def group(self, one: Group) -> Group:
@@ -981,7 +989,7 @@ def subsections(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[list[Group], Placed]:
-    """Every group with its dispatch-set sub-sections, and where each link points.
+    """Every group with its dispatch sub-sections, and where each link points.
 
     A group's sections are read in the order it emits them: a heading
     part closes the section above it, and the sub-section that section

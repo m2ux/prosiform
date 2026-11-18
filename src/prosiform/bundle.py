@@ -125,10 +125,13 @@ from markdown_it.token import Token
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    Briefs,
     BundleSelection,
     Declarations,
     Reference,
     Substitution,
+    Unresolvable,
+    briefing,
     bundle_selection,
     bundled,
     carried_names,
@@ -387,6 +390,7 @@ def pointing(
     opening: str,
     dispatched_to: Mapping[Served, str] | None,
     alone: bool = False,
+    lifted: bool = False,
 ) -> bool:
     """Whether a withheld link points at a bundle file the dispatch map names.
 
@@ -395,15 +399,16 @@ def pointing(
     target a file, and a link the map says nothing of points at a file
     for a `⇉` link and at its set's sub-section for a `⫽` one, so a
     sub-section a brief lifts it into is one the map names. Where there
-    is no map, a `⇉` link points at a file, and `alone` states that a `⫽`
-    link's set holds one target, which is published as a dispatch to
-    its file.
+    is no map, `lifted` states that the link carries a brief, which
+    points it at the sub-section it is lifted into, a `⇉` link carrying
+    none points at a file, and `alone` states that a `⫽` link's set holds
+    one target, which is published as a dispatch to its file.
     """
     if picking(opening, target.tags):
         return False
     together = parallel(opening)
     if dispatched_to is None:
-        return alone or not together
+        return not lifted and (alone or not together)
     given = dispatched_to.get(((target.path, target.fragment), target.tags, together))
     if given is None:
         return not together
@@ -458,6 +463,20 @@ def sole_set(
     return len(targets) == 1
 
 
+def briefs(target: Reference, conversions: Mapping[str, Conversion] | None) -> bool:
+    """Whether a dispatch of one read target carries a brief, as `briefing` names it.
+
+    Presets naming two briefs, or a brief naming no fragment, carry none
+    here: the traversal refuses them.
+    """
+    if conversions is None or target.path not in conversions:
+        return False
+    try:
+        return briefing(target, conversions[target.path]) is not None
+    except (Briefs, Unresolvable):
+        return False
+
+
 def emitted_visible(
     path: str,
     inline: Token,
@@ -465,6 +484,7 @@ def emitted_visible(
     substitution: Substitution = UNSUBSTITUTED,
     dispatched_to: Mapping[Served, str] | None = None,
     alone: bool = False,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> str:
     """The text one inline token shows once the bundle has rewritten its links.
 
@@ -477,7 +497,9 @@ def emitted_visible(
 
     A `⫽` link points at a bundle file where its set holds one target,
     which the dispatch map states for the region carrying it. Without a
-    map, `alone` states whether its set holds one target.
+    map, `alone` states whether its set holds one target, and the
+    conversions read decide whether a dispatch carries a brief, as
+    `briefs` states.
 
     A link the bundle took no destination for shows the text its author
     wrote. That covers a markup or resource reference and a reference
@@ -505,7 +527,13 @@ def emitted_visible(
             if target is not None:
                 shown_label = published_text(
                     child.content,
-                    pointing(target, child.content, dispatched_to, alone),
+                    pointing(
+                        target,
+                        child.content,
+                        dispatched_to,
+                        alone,
+                        briefs(target, conversions),
+                    ),
                 )
             elif directive(child.content):
                 shown_label = unmarked(child.content)
@@ -545,6 +573,7 @@ def shown_text(
                 substitution,
                 conversions=conversions,
             ),
+            conversions=conversions,
         )
         for opening, inline in headings(tokens)
     }

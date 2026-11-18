@@ -76,6 +76,7 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
+    Unresolvable,
     alternatives_of,
     arrowed,
     briefing,
@@ -2251,17 +2252,37 @@ def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
     the pick token carries the brief no alternative is in force for, so
     an alternative naming a brief of its own changes the brief, and the
     pick is left unresolved as `unresolved` reports. Two selected presets
-    naming different briefs are invalid usage naming both.
+    naming different briefs are invalid usage naming both, and a brief
+    naming no fragment the reference grammar reads is invalid metadata
+    of the target, each named with the dispatch and its route.
     """
     target = hop.target
     try:
         found = briefing(target, conversion)
     except Briefs as two:
-        raise usage_failure(
-            f"{two}, both selected by the dispatch {target.original!r}, so "
-            f"nothing says which section the dispatch carries",
-            reference=target.original,
+        raise Failure(
+            USAGE_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"{two}, both selected by the dispatch {target.original!r}, so "
+                f"nothing says which section the dispatch carries",
+                code=INVALID_USAGE,
+                reference=target.original,
+                chain=target.chain or None,
+                remedy="select one preset naming a brief",
+                location=hop.location,
+            ),
         ) from two
+    except Unresolvable as malformed:
+        raise input_failure(
+            f"the brief of {target.path!r}, carried by the dispatch "
+            f"{target.original!r}, {malformed}",
+            code=INVALID_CONVERSION_METADATA,
+            remedy="name the brief by a fragment of a heading the document carries",
+            reference=target.original,
+            resolved=target.path,
+            chain=target.chain,
+        ) from malformed
     if picks(target.tags) and any(
         one.brief is not None for one in conversion.alternatives
     ):
@@ -3644,7 +3665,6 @@ def compose(
                 declarations,
                 substitution,
             )
-        contributed.update(briefs.placed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal

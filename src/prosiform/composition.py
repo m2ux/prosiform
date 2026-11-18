@@ -121,7 +121,7 @@ from prosiform.closure import (
     rebased,
     resolvable,
 )
-from prosiform.dispatch import Link, region_of
+from prosiform.dispatch import Link, region_of, unbriefable
 from prosiform.limits import OUTPUT_BYTES, Limits
 from prosiform.marks import INLINE_MARK
 from prosiform.provenance import (
@@ -473,13 +473,20 @@ class Composing:
     ) -> tuple[list[str], list[Part], list[Emitted]]:
         """One dispatch's brief, as the text, parts and headings it emits.
 
-        The brief is its section's body and subsections composed beneath
-        a heading at `depth` the dispatch stage emits for it, so the
-        section's own heading gives way to that one. Its links are
-        rewritten against the document writing them, as a contribution's
-        are, under the placing of the dispatch carrying it, which a
-        directive the brief writes composes beneath.
+        The brief is its section's body composed beneath a heading at
+        `depth` the dispatch stage emits for it, so the section's own
+        heading gives way to that one. Its links are rewritten against the
+        document writing them, as a contribution's are. A brief holding a
+        subsection or a composition directive would emit a heading of its
+        own, which `unbriefable` refuses.
         """
+        tokens = self.parsed[target.path]
+        body = (section(tokens, target.fragment or "") or ())[1:]
+        if any(token.type == HEADING_OPEN for token in body) or any(
+            next(self.directives(target.path, token), None) is not None
+            for token in body
+        ):
+            raise unbriefable(link, target, "emits a heading")
         one = Directive(target, link.written, link.location.line, link.at, "")
         self.emitted, self.parts, self.headings = [], [], []
         self.carry(one, depth, (one,))

@@ -12,10 +12,6 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 Write the case number as [the rules](#tests) say.
 
-#### Case
-
-The case number is on the ticket.
-
 [⇉ Investigate](investigate.bundle.md)
 
 # Rules

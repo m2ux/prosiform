@@ -1,4 +1,4 @@
-description = "A brief is compiled as a composition: the link it writes is followed into the dispatching bundle's closure and points at the section it names there, its own heading gives way to the sub-section's and its child section nests one level below it, while the target's own bundle carries the section unchanged."
+description = "A brief is compiled as a composition: the link it writes is followed into the dispatching bundle's closure and points at the section it names there, and its own heading gives way to the sub-section's, while the target's own bundle carries the section unchanged."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",

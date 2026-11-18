@@ -26,7 +26,7 @@ Each bundle is compiled under every rule an entry's is. Budgets hold per bundle,
 
 ## Where the links point
 
-A `⇉` link publishes in place with its mark and the one blank after it, pointing at its target's bundle file. A section gains no generated structure for it, and a dispatch in a level-6 section publishes like any other.
+A `⇉` link publishes in place with its mark and the one blank after it, pointing at its target's bundle file. Unless it carries a [brief](#briefs), a section gains no generated structure for it, and a dispatch in a level-6 section publishes like any other.
 
 A `⇉` link whose title carries the [pick token](references.md#the-pick-token) `?` leaves its pick to the agent that dispatches it. The run compiles its target once for each alternative the target declares, each a bundle of its own, as a link naming that alternative does, and any other name beside `?` selects the target's ordinary preset in every one of them. The section writing the link gains one dispatch-pick sub-section for it, headed `⇉ Dispatch Pick`, placed as a set's sub-section is and after it. Its body holds one dispatch line for each alternative, in declaration order, followed by an em dash and the alternative's choice line:
 
@@ -60,7 +60,7 @@ A run carrying both kinds shows them together. Two `⫽` links form one set and 
 
 *The entry's bundle links what to hand over; the three procedures are compiled as if each had been asked for on its own.*
 
-A set or a `⇉` link carrying `?` in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
+A set, a `⇉` link carrying `?`, or one carrying a brief, in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
 
 A dispatch in a heading the bundle emits as text alone has no link to publish, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
 
@@ -92,13 +92,13 @@ Write the case number to the case file before you dispatch.
 
 *From [a-dispatch-to-a-target-declaring-a-brief-is-lifted-into-a-sub-section](../fixtures/dispatch-brief/a-dispatch-to-a-target-declaring-a-brief-is-lifted-into-a-sub-section).*
 
-The brief is compiled as a `↳` composition of its section is: its links are followed into the dispatching bundle's closure, its own heading gives way to the generated one, and its child sections nest one level below it. The target's own bundle carries the section unchanged. A dispatch the brief writes takes its own sub-section one level below the one holding the brief, after that sub-section's dispatch lines.
+The brief is compiled as a `↳` composition of its section is: its links are followed into the dispatching bundle's closure, and its own heading gives way to the generated one. The target's own bundle carries the section unchanged. A brief is what its dispatcher reads before the dispatch line, so a brief that would emit a heading, for a subsection or a `↳` or `¬↳` directive it holds, would put that line beneath the heading, and one writing a dispatch would hand on a bundle beside it; each fails with `E_UNSUPPORTED_CONSTRUCT`, naming the dispatch and the brief.
 
 A `⇉` link carrying `?` places its brief in its `⇉ Dispatch Pick` sub-section, above the pick lines. The brief compiles with no alternative in force, so it publishes where no alternative changes it, as [Presets in force](selection.md#presets-in-force) states for a link, and the run fails with `E_ALTERNATIVE_UNRESOLVED`, listing the alternatives, where one changes it: an alternative routing a link the brief writes, or one naming a brief of its own.
 
 In a `⫽ Dispatch Set` sub-section, each member carrying a brief is published as its brief followed by its own dispatch line, in the set's order, and a member carrying none keeps its bare line.
 
-Two `⇉` links in one section naming one effective selection share one sub-section, headed by the first one's text, as they share one destination. A lifted heading equal to an authored heading, to `⇉ Dispatch Pick`, or to another lifted heading naming a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
+Two `⇉` links in one section with the same text and effective selection share one sub-section, and so do two naming one target with the same title tags, under the first one's text, as they share one destination. A briefed `⇉` link in a level-6 section leaves no level for its sub-section and fails with `E_HEADING_DEPTH_OVERFLOW`, as a set's does. A lifted heading equal to an authored heading, to `⇉ Dispatch Pick`, or to another lifted heading naming a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document, or a fragment no reference decodes, fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
 
 ## The guide
 

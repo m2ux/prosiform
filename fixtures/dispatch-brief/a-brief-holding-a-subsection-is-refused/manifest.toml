@@ -1,0 +1,25 @@
+description = "A brief holding a subsection would emit a heading of its own, so the dispatch line would stand beneath it rather than after the brief; the run fails with E_UNSUPPORTED_CONSTRUCT naming the dispatch and the brief, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_UNSUPPORTED_CONSTRUCT"
+message_contains = ["emits a heading"]
+reference = "investigate.md"
+resolved = "investigate.md#given"
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 8
+column = 1
