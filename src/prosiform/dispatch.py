@@ -37,13 +37,13 @@ link carrying one, or a set of one, is lifted into a sub-section of its
 own, headed by its mark and its text and placed as a set's is and after
 it, beside the section's pick sub-sections in the order their links are
 written; a picking dispatch's sub-section holds its brief around its
-pick lines; a set's lists its members carrying no brief as bare lines,
-then lifts each briefed member into a sub-section of its own one level
-below the set's, each in the set's order. A brief is published as its lead content, the
-content above its first heading, then the dispatch line, then its child
-sections and the sections its directives compose, each one level below
-the sub-section holding it, so the line stands under no heading the
-brief emits. A dispatch a brief writes is a dispatch of its own, never a
+pick lines; a set holding a briefed member lifts every member into a
+sub-section of its own one level below the set's, in the set's order, a
+member carrying no brief holding its line alone. A brief is published as
+its lead content, the content above its first heading, then the dispatch
+line, then its child sections and the sections its directives compose,
+each one level below the sub-section holding it, so the line stands under
+no heading the brief emits. A dispatch a brief writes is a dispatch of its own, never a
 member of a set around it: it publishes where the brief writes it, and
 takes its sub-sections one level below the sub-section holding the
 brief, after the brief. Each copy of a brief places its dispatches
@@ -912,10 +912,10 @@ class Placing:
         point at their target's bundle file. A set of two or more
         selections points at the dispatch-set sub-section emitted here.
         Equivalent requests share one member, retaining its first link's
-        label. Its members carrying no brief are listed first, in the
-        set's order, since a line after a member's sub-section would stand
-        beneath it, and each carrying one is then lifted into a sub-section
-        one level below the set's, in the set's order. Each
+        label. Where any member carries a brief, every member is lifted
+        into a sub-section of its own one level below the set's, in the
+        set's order, so no member's line stands beneath another member's
+        headings; a member carrying none holds its line alone. Each
         distinct `⇉` link carrying the pick token, and each link outside a
         set of two or more carrying a brief, then points at a sub-section
         of its own, in the order its first link is written: a
@@ -946,16 +946,15 @@ class Placing:
         if len(together) > 1:
             fits(depth, next(iter(together.values())))
             at = self.heading(PARALLEL, depth, PARALLEL_SECTION)
-            bare = [
-                (file, link.text)
-                for file, link in together.items()
-                if self.briefs[link.served] is None
-            ]
-            if bare:
-                self.say(Instruction(listing(bare)))
-            for file, link in together.items():
-                if self.briefs[link.served] is not None:
+            if any(self.briefs[link.served] is not None for link in together.values()):
+                for file, link in together.items():
                     self.lifted(link, file, depth + 1)
+            else:
+                self.say(
+                    Instruction(
+                        listing([(file, link.text) for file, link in together.items()])
+                    )
+                )
             serving.update(
                 (served, at) for served, link in pending.items() if link.parallel
             )

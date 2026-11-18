@@ -13,10 +13,12 @@ Start both.
 
 ### ⫽ Dispatch Set
 
-[⇉ Review](review.bundle.md)
-
 #### ⇉ Investigate
 
 First [⇉ Helper](helper.bundle.md), then write the case number.
 
 [⇉ Investigate](investigate.bundle.md)
+
+#### ⇉ Review
+
+[⇉ Review](review.bundle.md)

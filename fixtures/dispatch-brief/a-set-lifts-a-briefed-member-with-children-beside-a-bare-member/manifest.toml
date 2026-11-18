@@ -1,4 +1,4 @@
-description = "A set of a member whose brief holds a subsection and a composition directive, and a member carrying no brief, lists the bare member's line in the dispatch-set sub-section and lifts the briefed member into a sub-section one level below it, holding the brief's lead content, the member's line and then the brief's sections one level further down."
+description = "A set of a member whose brief holds a subsection and a composition directive, and a member carrying no brief, lifts every member into a sub-section one level below the set's, in written order: the briefed member's holds the brief's lead content, its line and then the brief's sections one level further down, and the bare member's holds its line alone."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",
