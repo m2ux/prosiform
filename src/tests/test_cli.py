@@ -1963,6 +1963,20 @@ def test_a_first_run_pick_compiles_the_named_alternative(
     assert f"# {body}" in run.bundle
 
 
+@pytest.mark.parametrize("pick", ["bogus", "checks"])
+def test_a_pick_naming_no_alternative_is_refused_with_a_rerun_remedy(
+    kinds: Path, pick: str
+) -> None:
+    """The entry still carries `?`, so the rerun names another pick."""
+    link = '[¬ Body](work-kind.md "?")'
+    diagnostic = unresolved_of(invoke("-d", "json", link, "--pick", pick, cwd=kinds))
+    assert diagnostic["remedy"] == (
+        "rerun with --pick naming the alternative that fits your task"
+    )
+    run = invoke(link, "--pick", "epic", cwd=kinds)
+    assert run.status == SUCCESS, run.stderr
+
+
 def test_a_pick_after_the_listing_compiles_the_named_alternative(kinds: Path) -> None:
     """The listing names --pick, and the rerun on the same link compiles."""
     link = '[¬ Body](work-kind.md "?")'

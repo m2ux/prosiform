@@ -832,11 +832,9 @@ def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failur
     The document's links are written once, so they follow one kind's
     routes. The message lists each alternative beside its choice line in
     declaration order, so its reader picks the one that fits. The remedy
-    names a pick the run accepts: a rerun with `--pick` where `rerun`
-    holds, because the entry reaching the document carries `?` and
-    `--pick` stands in for it there, and otherwise one alternative named
-    by the links reaching the document, since `--pick` is invalid usage
-    beside an entry carrying no `?`.
+    is a rerun with `--pick` where `rerun` holds, and otherwise one
+    alternative named by the links reaching the document, as the pick
+    rule `entry` owns admits.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -934,6 +932,10 @@ def resolved(
     what its selected content compiles to. The count is taken on the
     references one bundle carries, so a dispatched bundle counts the
     references reaching the document within it.
+
+    The failure remedies a rerun with `--pick` only where none is in
+    force and an entry reaching the document carries the pick token,
+    which is where `entry` admits `--pick`.
     """
     for path, references in selected.items():
         conversion = read[path].conversion
@@ -1181,8 +1183,10 @@ def entry(text: str, pick: str | None) -> Reference:
     and `profile.diagram_refusals` refuse one in a source: the run would
     carry the tag into the titles of the deferrals it publishes. A plain
     path carries no title. A
-    pick stands in the tag list where the pick token stands, so it is
-    admitted only beside an entry whose title carries that token.
+    pick joins the tag list beside the pick token, so it is admitted only
+    beside an entry whose title carries that token. The token stays in
+    the list: it names no preset, and the entry still states that its
+    pick is the caller's.
 
     An entry is written by no document, so no `subst` pair redirects it:
     the run compiles the document it names and is named for the path the
@@ -1209,7 +1213,7 @@ def entry(text: str, pick: str | None) -> Reference:
                 f"{PICK!r}, and the entry {text!r} carries none",
                 reference=text,
             )
-        tags = tags - {PICK} | read_tags(pick)
+        tags = tags | read_tags(pick)
     if link is not None:
         text = link.destination
     try:
