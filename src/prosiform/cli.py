@@ -839,7 +839,12 @@ def picked(
     return tuple(one for one in conversion.alternatives if one.name in names)
 
 
-def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failure:
+def unresolved(
+    path: str,
+    conversion: Conversion,
+    rerun: bool = False,
+    placing: Reference | None = None,
+) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
     The links one group or one composed copy writes are written once, so
@@ -847,7 +852,10 @@ def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failur
     beside its choice line in declaration order, so its reader picks the
     one that fits. The remedy is a rerun with `--pick` where `rerun`
     holds, and otherwise one alternative named by the links reaching the
-    document, as the pick rule `entry` owns admits.
+    document, as the pick rule `entry` owns admits. `placing` is the
+    directive or dispatch placing a composed copy, which the diagnostic
+    names and whose title alone the remedy points at, since the copy
+    follows its presets alone.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -866,7 +874,12 @@ def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failur
                 if rerun
                 else "name the alternative that fits your task in the title or "
                 "tooltip of each link reaching it, a link entry's among them"
+                if placing is None
+                else "name the alternative that fits your task in the title of "
+                "the directive or dispatch placing this copy"
             ),
+            reference=None if placing is None else placing.original,
+            chain=None if placing is None else placing.chain,
         ),
     )
 
@@ -975,9 +988,10 @@ def resolved(
             ),
         ]
         for reaching, grouped in held:
+            placing = None if grouped else reaching[0]
             count = len(picked(conversion, reaching))
             if count > 1:
-                raise unresolved(path, conversion)
+                raise unresolved(path, conversion, placing=placing)
             if count == 0 and routed(
                 path, conversion, parsed[path], reaching, entries, grouped
             ):
@@ -985,6 +999,7 @@ def resolved(
                     path,
                     conversion,
                     rerun=any(one in entries and picks(one.tags) for one in reaching),
+                    placing=placing,
                 )
 
 
@@ -1014,13 +1029,9 @@ def governing(
     document only grow across the traversal's rounds, so several in
     force in any round are several at its fixed point.
 
-    A pair an alternative and an ordinary preset both state, agreeing,
-    stands in for material under test whichever the document declares
-    first: it is a routing pair only where every preset stating it is an
-    alternative.
-
-    A key is the identity its original names from the declaring document,
-    and only documents stating a pair in force appear.
+    Each selected preset's pairs are layered as `layer` states. A key is
+    the identity its original names from the declaring document, and
+    only documents stating a pair in force appear.
     """
     table: dict[str, dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
@@ -1030,34 +1041,62 @@ def governing(
             raise unresolved(path, conversion)
         for reference in references:
             if len(picked(conversion, [reference])) > 1:
-                raise unresolved(path, conversion)
+                raise unresolved(
+                    path,
+                    conversion,
+                    placing=reference if reference.composes else None,
+                )
             agreed(conversion, reference.tags, reference, path)
-        in_force = {
-            subst_identity(pair.original, path): Governed(
-                DEFAULT, pair, subst_reference(pair.substitute, path)
-            )
-            for pair in conversion.default.substs
-        }
         above: dict[tuple[str, str | None], Governed] = {}
         for reference in including:
             for preset in matching_presets(conversion, reference.tags):
-                for pair in preset.substs:
-                    one = Governed(
-                        preset.name,
-                        pair,
-                        subst_reference(pair.substitute, path),
-                        preset.choice is not None,
-                    )
-                    key = subst_identity(pair.original, path)
-                    first = above.setdefault(key, one)
-                    if identity(first.substitute) != identity(one.substitute):
-                        raise disagreeing(first, one, path, reference)
-                    if first.routing and not one.routing:
-                        above[key] = one
-        in_force.update(above)
+                clash = layer(above, preset, path)
+                if clash is not None:
+                    raise disagreeing(*clash, path, reference)
+        in_force = {**defaults(conversion, path), **above}
         if in_force:
             table[path] = in_force
     return table
+
+
+def defaults(
+    conversion: Conversion, path: str
+) -> dict[tuple[str, str | None], Governed]:
+    """The `subst` pairs a document's `default` puts in force wherever it compiles."""
+    return {
+        subst_identity(pair.original, path): Governed(
+            DEFAULT, pair, subst_reference(pair.substitute, path)
+        )
+        for pair in conversion.default.substs
+    }
+
+
+def layer(
+    above: dict[tuple[str, str | None], Governed], preset: Preset, path: str
+) -> tuple[Governed, Governed] | None:
+    """Layer one selected preset's `subst` pairs into those `above` holds.
+
+    A pair an alternative and an ordinary preset both state, agreeing,
+    stands in for material under test whichever the document declares
+    first: it is a routing pair only where every preset stating it is an
+    alternative. A key `above` already maps to another substitute is
+    returned with that earlier pair and the later one, which is left
+    out, for the caller to refuse.
+    """
+    for pair in preset.substs:
+        one = Governed(
+            preset.name,
+            pair,
+            subst_reference(pair.substitute, path),
+            preset.choice is not None,
+        )
+        key = subst_identity(pair.original, path)
+        first = above.setdefault(key, one)
+        if identity(first.substitute) != identity(one.substitute):
+            return first, one
+        if first.routing and not one.routing:
+            above[key] = one
+    return None
 
 
 def disagreeing(
@@ -1087,10 +1126,11 @@ def copies(
 
     A copy is a contribution or a brief, placed by a composing reference:
     its document's `default` pairs, with each preset that reference's
-    tags select layered above them, as the composition module states for
-    a contribution's presets. Copies are keyed by the document and those
-    tags, and only copies stating a pair in force appear. Agreement among
-    the presets one reference selects is held by `governing`.
+    tags select layered above them as `layer` states, as the composition
+    module states for a contribution's presets. Copies are keyed by the
+    document and those tags, and only copies stating a pair in force
+    appear. Agreement among the presets one reference selects is held by
+    `governing`.
     """
     table: dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
@@ -1099,19 +1139,10 @@ def copies(
             copy = (path, reference.tags)
             if not reference.composes or copy in table:
                 continue
-            pairs = {
-                subst_identity(pair.original, path): Governed(
-                    preset.name,
-                    pair,
-                    subst_reference(pair.substitute, path),
-                    preset.choice is not None,
-                )
-                for preset in (
-                    conversion.default,
-                    *matching_presets(conversion, reference.tags),
-                )
-                for pair in preset.substs
-            }
+            above: dict[tuple[str, str | None], Governed] = {}
+            for preset in matching_presets(conversion, reference.tags):
+                layer(above, preset, path)
+            pairs = {**defaults(conversion, path), **above}
             if pairs:
                 table[copy] = pairs
     return table

@@ -1,4 +1,4 @@
-description = "One section whose link both alternatives of stage.md route is composed once by a directive picking alpha and once by a directive picking none. Each copy resolves under its own directive's presets, so the second has no alternative in force for a link an alternative routes, and the run fails with E_ALTERNATIVE_UNRESOLVED listing the alternatives and publishes nothing."
+description = "One section whose link both alternatives of stage.md route is composed once by a directive picking alpha and once by a directive picking none. Each copy resolves under its own directive's presets, so the second has no alternative in force for a link an alternative routes, and the run fails with E_ALTERNATIVE_UNRESOLVED naming the directive placing that copy, listing the alternatives, and publishes nothing."
 
 clauses = [
   "Section composition — Presets and subst",
@@ -15,5 +15,7 @@ exit_status = 2
 [[expected.diagnostics]]
 severity = "error"
 code = "E_ALTERNATIVE_UNRESOLVED"
+reference = "stage.md#given"
 source = "stage.md"
+chain = ["guide.md", "stage.md#given"]
 message_contains = ["stage.md needs one alternative in force:\n  alpha  The work is of kind alpha.\n  beta   The work is of kind beta."]
