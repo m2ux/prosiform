@@ -1,0 +1,43 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/802",
+    "head": "1f9408a103d01718d158eaf8f3510c20d55535c5",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-799-f22-guide-compile-step/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent review agent)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The full diff of main..f22-guide-compile-step at 1f9408a10: the GUIDE text in src/prosiform/cli.py, the Guide section of invocation.md, the guide sentence in src/tests/test_cli.py and the guide fixture fixtures/cli/informational-guide-response/manifest.toml. Compared the fixture against the printed guide, and searched README, docs/, checks/ and evals/ for a statement the change makes false.",
+    "criteria": "AC1: the guide pf prints, and invocation.md, say in one short clause that the agent does not run pf on a ⇉ or ⫽ link, with no other wording changed. AC2: make check passes.",
+    "validation": "make check at 1f9408a10: exit 0.",
+    "findings": [
+      {
+        "id": "A",
+        "severity": "non-blocking",
+        "location": "invocation.md:12",
+        "finding": "The words 'by the agent' were added outside the new clause, in 'run by the agent on a link'.",
+        "resolution": "Fixed at e37af7839: the actor moves into the clause, 'though never by the agent on a ⇉ or ⫽ link'."
+      },
+      {
+        "id": "B",
+        "severity": "non-blocking",
+        "location": "invocation.md:12",
+        "finding": "The clause stood between 'as written' and 'quoted as one argument', so the latter could read as qualifying the dispatch link, and the order differed from the guide.",
+        "resolution": "Fixed at e37af7839: the clause follows 'quoted as one argument', in the guide's order."
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/802",
+    "head": "e37af78390af947160e7d5843aabd2b4e366286e",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-799-f22-guide-compile-step/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent review agent)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "Re-review of the full diff of main..f22-guide-compile-step at e37af7839, for the fixes to findings A and B and anything they introduce.",
+    "criteria": "AC1: the guide pf prints, and invocation.md, say in one short clause that the agent does not run pf on a ⇉ or ⫽ link, with no other wording changed. AC2: make check passes.",
+    "validation": "make check at e37af7839: exit 0.",
+    "findings": []
+  }
+]
