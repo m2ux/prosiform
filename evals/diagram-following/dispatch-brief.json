@@ -90,7 +90,7 @@
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/1",
       "failure": "overcompiled",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o . 2>/dev/null || true`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o . 2>/dev/null \\|\\| true`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/2",
@@ -102,7 +102,7 @@
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/3",
       "failure": "overcompiled",
       "disposition": "miss",
-      "evidence": "the transcript's own bash calls run `pf -o inputs-out 'x' 2>&1 | head -5; ls inputs`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+      "evidence": "the transcript's own bash calls run `pf -o inputs-out 'x' 2>&1 \\| head -5; ls inputs`, each pf on a reference no line of the form states, or with no entry as invalid usage, which the scorer reads as an unstated run; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
     },
     {
       "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/5",
