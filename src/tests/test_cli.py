@@ -1826,40 +1826,81 @@ ROUTED_BRIEF = (
     "  Task:\n    choice: One task.\n    subst: [{body.md: task-body.md}]\n"
     "  Epic:\n    choice: Many tasks.\n    subst: [{body.md: epic-body.md}]\n---\n"
     "# Stage\n\n## Given\n\nRead [the body](body.md#body).\n\n"
-    "## Steps\n\n1. Do the work.\n"
+    "## Steps\n\n1. Do the work.\n\n"
+    "## Notes\n\nSee [the body](body.md#body).\n"
+)
+BRIEF_REMEDY = (
+    "write the brief 'stage.md#given' so it compiles with no alternative in "
+    "force, since the picking dispatch carrying it leaves the pick to its agent"
+)
+COPY_REMEDY = (
+    "name the alternative that fits your task in the title of the directive "
+    "or dispatch placing this copy"
 )
 
 
 @pytest.mark.parametrize(
-    ("dispatch", "remedy"),
+    ("links", "reference", "remedy"),
     [
+        (['[⇉ Stage](stage.md "?")'], "stage.md#given", BRIEF_REMEDY),
+        (["[⇉ Stage](stage.md)"], "stage.md#given", COPY_REMEDY),
         (
-            '[⇉ Stage](stage.md "?")',
-            "write the brief 'stage.md#given' so it compiles with no alternative "
-            "in force, since the picking dispatch carrying it leaves the pick to "
-            "its agent",
+            ["[↳ Steps](stage.md#steps)", '[⇉ Stage](stage.md "?")'],
+            "stage.md#given",
+            BRIEF_REMEDY,
         ),
         (
-            "[⇉ Stage](stage.md)",
-            "name the alternative that fits your task in the title of the "
-            "directive or dispatch placing this copy",
+            ["[↳ Steps](stage.md#steps)", "[↳ Notes](stage.md#notes)"],
+            "stage.md#notes",
+            COPY_REMEDY,
         ),
     ],
 )
-def test_a_dispatch_whose_brief_an_alternative_routes_is_remedied_by_its_pick(
-    tmp_path: Path, dispatch: str, remedy: str
+def test_a_copy_an_alternative_routes_is_remedied_at_the_link_placing_it(
+    tmp_path: Path, links: list[str], reference: str, remedy: str
 ) -> None:
-    """A picking dispatch's remedy names its brief, which compiles under no pick."""
+    """The failure names a link whose own copy is routed, a picking brief first.
+
+    A picking dispatch's brief compiles under no pick, so its remedy names
+    the brief; any other copy's names the alternative in its link's title.
+    """
     written(tmp_path, "stage.md", ROUTED_BRIEF)
     for name in ("body.md", "task-body.md", "epic-body.md"):
         written(tmp_path, name, DECLARED + "# Bodies\n\n## Body\n\nA body.\n")
-    written(tmp_path, "guide.md", DECLARED + f"# Guide\n\n## Plan\n\n1. {dispatch}\n")
+    steps = "".join(f"{number}. {link}\n" for number, link in enumerate(links, 1))
+    written(tmp_path, "guide.md", DECLARED + f"# Guide\n\n## Plan\n\n{steps}")
     run = invoke("-d", "json", "guide.md", cwd=tmp_path)
     assert run.status == USAGE_FAILURE, run.stderr
     [diagnostic] = run.diagnostics()
     assert diagnostic["code"] == ALTERNATIVE_UNRESOLVED
-    assert diagnostic["reference"] == "stage.md#given"
+    assert diagnostic["reference"] == reference
     assert diagnostic["remedy"] == remedy
+
+
+def test_a_default_pair_an_alternative_agrees_with_warns_in_a_copy(
+    tmp_path: Path,
+) -> None:
+    """An agreeing `default` pair stands in, so the composed link warns."""
+    written(
+        tmp_path,
+        "stage.md",
+        "---\nprosiform:\n  default:\n    subst: [{body.md: alpha-body.md}]\n"
+        "  alpha:\n    choice: Alpha.\n    subst: [{body.md: alpha-body.md}]\n"
+        "  beta:\n    choice: Beta.\n    subst: [{body.md: beta-body.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the body](body.md#body).\n",
+    )
+    for name in ("body.md", "alpha-body.md", "beta-body.md"):
+        written(tmp_path, name, DECLARED + "# Bodies\n\n## Body\n\nA body.\n")
+    written(
+        tmp_path,
+        "guide.md",
+        DECLARED + '# Guide\n\n## Plan\n\n[↳ Given](stage.md#given "alpha")\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=tmp_path)
+    assert run.status == SUCCESS, run.stderr
+    assert [(one["code"], one["resolved"]) for one in run.diagnostics()] == [
+        ("W_SUBST_USED", "alpha-body.md#body")
+    ]
 
 
 def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:

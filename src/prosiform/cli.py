@@ -983,9 +983,10 @@ def resolved(
     The failure remedies a rerun with `--pick` only where none is in
     force and an entry reaching the document carries the pick token,
     which is where `entry` admits `--pick`. A copy none is in force for
-    that is the brief of one of the bundle's dispatches `hops` holds
-    carrying the pick token is remedied as `unresolved` states for a
-    carried brief.
+    is placed, for the failure, by a composing reference whose own
+    section an alternative changes, a brief one of the bundle's
+    dispatches `hops` holds carrying the pick token taken first, which is
+    remedied as `unresolved` states for a carried brief.
     """
     carried = {
         (brief.path, brief.fragment, brief.tags)
@@ -1019,6 +1020,20 @@ def resolved(
             if count == 0 and routed(
                 path, conversion, parsed[path], reaching, entries, grouped
             ):
+                if not grouped:
+                    needing = [
+                        one
+                        for one in reaching
+                        if routed(path, conversion, parsed[path], [one], entries, False)
+                    ]
+                    placing = next(
+                        (
+                            one
+                            for one in needing
+                            if (one.path, one.fragment, one.tags) in carried
+                        ),
+                        needing[0],
+                    )
                 raise unresolved(
                     path,
                     conversion,
@@ -1107,13 +1122,14 @@ def layer(
     """Layer one selected preset's `subst` pairs into those `above` holds.
 
     `standing` holds the document's `default` pairs, as `defaults`
-    states them. A pair an alternative states agreeing with `default`'s
-    for its key, or with an ordinary preset's, stands in for material
-    under test whichever the document declares first: it is a routing
-    pair only where no `default` pair agrees with it and every preset
-    stating it is an alternative. A key `above` already maps to another
-    substitute is returned with that earlier pair and the later one,
-    which is left out, for the caller to refuse.
+    states them. A pair an alternative states stands in for material
+    under test where it agrees with `default`'s for its key, or with an
+    ordinary preset's whichever of those two presets the document
+    declares first: it is a routing pair only where no `default` pair
+    agrees with it and every preset stating it is an alternative. A key
+    `above` already maps to another substitute is returned with that
+    earlier pair and the later one, which is left out, for the caller to
+    refuse.
     """
     for pair in preset.substs:
         key = subst_identity(pair.original, path)
@@ -4712,10 +4728,10 @@ def routes(
 ) -> set[tuple[str, tuple[str, str | None], str]]:
     """The pairs only alternatives put in force, by document, key and substitute.
 
-    A pair a `default` or an ordinary preset states in any bundle of the
-    run stands in for material under test there, so it is no route. It
-    stands in only for the substitute it names, so an alternative's pair
-    naming another substitute for the same key stays a route.
+    A pair `layer` holds standing in for material under test in any
+    bundle of the run is no route. It stands in only for the substitute
+    it names, so an alternative's pair naming another substitute for the
+    same key stays a route.
     """
     routing: set[tuple[str, tuple[str, str | None], str]] = set()
     standing: set[tuple[str, tuple[str, str | None], str]] = set()
