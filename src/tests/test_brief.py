@@ -72,7 +72,22 @@ def test_a_picking_dispatch_to_an_alternative_naming_a_brief_is_unresolved() -> 
         declared=True,
         presets=(Preset("Task", choice="One task.", brief="#given"),),
     )
-    target = Reference("stage.md", "stage.md", tags=frozenset({PICK}))
+    target = Reference(
+        "stage.md",
+        "stage.md",
+        origin="guide.md:3",
+        chain=("guide.md", "stage.md"),
+        tags=frozenset({PICK}),
+    )
     with pytest.raises(Failure) as caught:
         briefed(Hop(target, Location("guide.md", 3, 1)), conversion)
-    assert caught.value.diagnostic.code == "E_ALTERNATIVE_UNRESOLVED"
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_ALTERNATIVE_UNRESOLVED"
+    assert diagnostic.reference == "stage.md"
+    assert diagnostic.chain == ("guide.md", "stage.md")
+    assert diagnostic.location == Location("guide.md", 3, 1)
+    assert diagnostic.remedy == (
+        "declare the brief in default or an ordinary preset, so it does not vary "
+        "by alternative, since the picking dispatch carrying it leaves the pick "
+        "to its agent"
+    )

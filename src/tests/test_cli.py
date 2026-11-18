@@ -1877,6 +1877,27 @@ def test_a_copy_an_alternative_routes_is_remedied_at_the_link_placing_it(
     assert diagnostic["remedy"] == remedy
 
 
+def test_a_picking_dispatch_s_brief_fails_at_the_picking_dispatch(
+    tmp_path: Path,
+) -> None:
+    """A plain dispatch of the same tags written first shares the copy alone."""
+    written(tmp_path, "stage.md", ROUTED_BRIEF)
+    for name in ("body.md", "task-body.md", "epic-body.md"):
+        written(tmp_path, name, DECLARED + "# Bodies\n\n## Body\n\nA body.\n")
+    written(
+        tmp_path,
+        "guide.md",
+        DECLARED + "# Guide\n\n## Plan\n\n"
+        '1. [⇉ Stage](stage.md)\n2. [⇉ Stage](stage.md "?")\n',
+    )
+    run = invoke("-d", "json", "guide.md", cwd=tmp_path)
+    assert run.status == USAGE_FAILURE, run.stderr
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["reference"] == "stage.md#given"
+    assert diagnostic["remedy"] == BRIEF_REMEDY
+    assert diagnostic["location"] == {"file": "guide.md", "line": 9, "column": 1}
+
+
 def test_a_default_pair_an_alternative_agrees_with_warns_in_a_copy(
     tmp_path: Path,
 ) -> None:

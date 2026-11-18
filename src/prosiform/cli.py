@@ -844,6 +844,7 @@ def unresolved(
     rerun: bool = False,
     placing: Reference | None = None,
     carried: bool = False,
+    varying: bool = False,
 ) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
@@ -859,7 +860,11 @@ def unresolved(
     `carried` states that the copy is the brief a dispatch carrying the
     pick token places, which carries it with no alternative in force as
     `briefed` states, so the remedy names that brief's section and states
-    that it must compile with none.
+    that it must compile with none. `varying` states that `placing` is
+    a dispatch carrying the pick token to a target one of whose
+    alternatives names a brief, so the brief it carries turns on the pick
+    its agent has yet to make, and the remedy states that the brief must
+    not vary by alternative.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -883,6 +888,10 @@ def unresolved(
                 "alternative in force, since the picking dispatch carrying it "
                 "leaves the pick to its agent"
                 if carried
+                else "declare the brief in default or an ordinary preset, so it "
+                "does not vary by alternative, since the picking dispatch "
+                "carrying it leaves the pick to its agent"
+                if varying
                 else "name the alternative that fits your task in the title of "
                 "the directive or dispatch placing this copy"
             ),
@@ -984,17 +993,18 @@ def resolved(
     force and an entry reaching the document carries the pick token,
     which is where `entry` admits `--pick`. A copy none is in force for
     is placed, for the failure, by a composing reference whose own
-    section an alternative changes, a brief one of the bundle's
-    dispatches `hops` holds carrying the pick token taken first, which is
+    section an alternative changes. A brief one of the bundle's
+    dispatches `hops` holds carrying the pick token is taken first, as
+    that dispatch places it, so the failure names the picking dispatch
+    whichever dispatch of the same tags the bundle writes first, and is
     remedied as `unresolved` states for a carried brief.
     """
-    carried = {
-        (brief.path, brief.fragment, brief.tags)
-        for hop in hops
-        if picks(hop.target.tags)
-        and (brief := briefing(hop.target, read[hop.target.path].conversion))
-        is not None
-    }
+    carried: dict[tuple[str, str | None, frozenset[str]], Reference] = {}
+    for hop in hops:
+        if picks(hop.target.tags):
+            brief = briefed(hop, read[hop.target.path].conversion)
+            if brief is not None:
+                carried.setdefault((brief.path, brief.fragment, brief.tags), brief)
     for path, references in selected.items():
         conversion = read[path].conversion
         if not conversion.alternatives:
@@ -1020,27 +1030,28 @@ def resolved(
             if count == 0 and routed(
                 path, conversion, parsed[path], reaching, entries, grouped
             ):
+                brief = None
                 if not grouped:
                     needing = [
                         one
                         for one in reaching
                         if routed(path, conversion, parsed[path], [one], entries, False)
                     ]
-                    placing = next(
+                    brief = next(
                         (
-                            one
+                            carried[key]
                             for one in needing
-                            if (one.path, one.fragment, one.tags) in carried
+                            if (key := (one.path, one.fragment, one.tags)) in carried
                         ),
-                        needing[0],
+                        None,
                     )
+                    placing = needing[0] if brief is None else brief
                 raise unresolved(
                     path,
                     conversion,
                     rerun=any(one in entries and picks(one.tags) for one in reaching),
                     placing=placing,
-                    carried=placing is not None
-                    and (placing.path, placing.fragment, placing.tags) in carried,
+                    carried=brief is not None,
                 )
 
 
@@ -1124,8 +1135,8 @@ def layer(
     `standing` holds the document's `default` pairs, as `defaults`
     states them. A pair an alternative states stands in for material
     under test where it agrees with `default`'s for its key, or with an
-    ordinary preset's whichever of those two presets the document
-    declares first: it is a routing pair only where no `default` pair
+    ordinary preset's, whichever of the alternative and that preset the
+    document declares first: it is a routing pair only where no `default` pair
     agrees with it and every preset stating it is an alternative. A key
     `above` already maps to another substitute is returned with that
     earlier pair and the later one, which is left out, for the caller to
@@ -2570,7 +2581,7 @@ def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
     if picks(target.tags) and any(
         one.brief is not None for one in conversion.alternatives
     ):
-        raise unresolved(target.path, conversion)
+        raise unresolved(target.path, conversion, placing=target, varying=True)
     if found is None:
         return None
     return replace(
