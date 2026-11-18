@@ -820,6 +820,10 @@ class Placing:
         """
         carrying = [key for key, _link in self.expanding]
         chain: list[tuple[tuple[str, str | None, frozenset[str]], Link]] = []
+        # A brief whose every reachable brief was walked without closing a
+        # loop closes none from any later path either, since a loop through
+        # it would have returned to it while it stood on the chain.
+        cleared: set[tuple[str, str | None, frozenset[str]]] = set()
 
         def walk(one: Link) -> None:
             found = self.brief_of(one)
@@ -828,6 +832,8 @@ class Placing:
             key = (found.path, found.fragment, found.tags)
             if key in carrying or any(each == key for each, _one in chain):
                 raise self.cycling(one, [each for _key, each in chain])
+            if key in cleared:
+                return
             chain.append((key, one))
             tokens = self.parsed[found.path]
             for region in section(tokens, found.fragment or "") or ():
@@ -841,6 +847,7 @@ class Placing:
                 ):
                     walk(each)
             chain.pop()
+            cleared.add(key)
 
         walk(link)
 
@@ -982,6 +989,8 @@ class Placing:
             served: file_destination(file) for served, file in files.items()
         }
         if len(together) > 1:
+            for link in together.values():
+                self.looping(link)
             fits(depth, next(iter(together.values())))
             at = self.heading(PARALLEL, depth, PARALLEL_SECTION)
             if any(self.briefs[link.served] is not None for link in together.values()):
