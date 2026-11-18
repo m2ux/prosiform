@@ -349,11 +349,10 @@ class Substitution:
     `documents` holds the pairs in force for a document's own group, and
     `contributions` those for each composed copy of one of its sections,
     by the document's path and the tags of the directive or dispatch
-    placing the copy, as the composition module states for a
-    contribution's presets. `composed` selects a copy's pairs, and the
-    selection names the document it was taken for, so a link another
-    document writes while that copy is read resolves under its own
-    document's group pairs.
+    placing the copy, as the run's `copies` states them. `composed`
+    selects a copy's pairs, and the selection names the document it was
+    taken for, so a link another document writes while that copy is read
+    resolves under its own document's group pairs.
 
     A lookup returns the substitute's reference whole — its path, its
     section and its authored access walk — while the text the reference

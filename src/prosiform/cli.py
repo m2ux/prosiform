@@ -854,8 +854,8 @@ def unresolved(
     holds, and otherwise one alternative named by the links reaching the
     document, as the pick rule `entry` owns admits. `placing` is the
     directive or dispatch placing a composed copy, which the diagnostic
-    names and whose title alone the remedy points at, since the copy
-    follows its presets alone.
+    names, with the position its link is written at, and whose title
+    alone the remedy points at, since the copy follows its presets alone.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -880,6 +880,11 @@ def unresolved(
             ),
             reference=None if placing is None else placing.original,
             chain=None if placing is None else placing.chain,
+            location=(
+                None
+                if placing is None or placing.origin is None
+                else located(placing.origin)
+            ),
         ),
     )
 
@@ -959,7 +964,7 @@ def resolved(
     The count is taken apart for the document's group, on the including
     references `included` keeps, and for each composed copy, on the
     composing references of one tag selection, since each resolves
-    under its own presets as the composition module states. Several
+    under its own presets as `copies` states. Several
     alternatives in force for one of them fail, and none in force fails
     where an alternative would change what that one selects, so two
     copies picking different alternatives publish. The count is taken on
@@ -1124,10 +1129,13 @@ def copies(
 ) -> dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]]:
     """The `subst` pairs in force for the links each composed copy writes.
 
-    A copy is a contribution or a brief, placed by a composing reference:
-    its document's `default` pairs, with each preset that reference's
-    tags select layered above them as `layer` states, as the composition
-    module states for a contribution's presets. Copies are keyed by the
+    A copy is a contribution or a brief, placed by a composing reference.
+    Its links are the target document's own and that reference places
+    them, so they resolve under its document's `default` pairs, with each
+    preset that reference's tags select layered above them as `layer`
+    states, and under no other preset: another reference reaching the
+    document, composing or including, routes none of them, and the
+    copy's presets route none of the group's. Copies are keyed by the
     document and those tags, and only copies stating a pair in force
     appear. Agreement among the presets one reference selects is held by
     `governing`.
