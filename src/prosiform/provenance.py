@@ -232,12 +232,17 @@ class Range:
     source order, and is held to its source's bytes alone. A preamble
     likewise stands in a folder group's arrangement rather than its
     source's outline.
+
+    `selecting` holds the tags of the directive or dispatch whose
+    composition placed the range, the key `Substitution.composed` reads
+    its links' pairs by, and is `None` for a range a group carries.
     """
 
     path: str
     lines: tuple[int, int]
     removed: tuple[int, ...]
     placing: Placing = ()
+    selecting: frozenset[str] | None = None
 
     @property
     def composed(self) -> bool:

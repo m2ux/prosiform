@@ -26,9 +26,13 @@ A directive is a reference. It resolves through the substitution in
 force for the document writing it, so that document's `subst` decides
 the section composed, and its link title selects the target's presets
 by complete comma-separated names. Their `subst`
-pairs redirect the links the contribution writes, since those are the
-target document's own. A `group` pair places a document where an
-ordinary reference bundles it, so it places no contribution.
+pairs, layered over the target's `default`, are the pairs in force for
+the links the contribution writes, since those are the target
+document's own and this directive places them: another reference
+reaching the target, composing or including, routes none of them. A
+dispatch's brief is composed the same way under the presets the
+dispatch selects. A `group` pair places a document where an ordinary
+reference bundles it, so it places no contribution.
 
 A directive a contribution carries composes as one its source writes
 anywhere: beneath the heading holding it there, which is the
@@ -290,6 +294,10 @@ class Composing:
     their source wrote, as an unmapped group's do; with one, their
     links are rewritten through it, against the source they were
     written in.
+
+    `substitution` is the mapping the content being emitted resolves
+    under: the run's for a group, and the composed copy's while `carry`
+    emits one, as the module states for a contribution's presets.
     """
 
     def __init__(
@@ -394,7 +402,7 @@ class Composing:
             found.path,
             named,
             self.declarations,
-            self.substitution,
+            self.substitution.composed(found.path, found.tags),
             conversions=self.conversions,
         )
         yield Directive(
@@ -481,7 +489,7 @@ class Composing:
             path,
             tokens,
             self.declarations,
-            self.substitution,
+            self.substitution.composed(path, one.target.tags),
             conversions=self.conversions,
         )
         contribution = Generated(
@@ -527,6 +535,20 @@ class Composing:
 
     def carry(self, one: Directive, depth: int, placing: tuple[Directive, ...]) -> None:
         """Emit one target section's body and subsections beneath a heading at `depth`.
+
+        The copy's links, its directives among them, resolve under the
+        presets `one` selects, as the module states for a contribution's
+        presets, and each range it emits holds those tags.
+        """
+        outer = self.substitution
+        self.substitution = outer.composed(one.target.path, one.target.tags)
+        try:
+            self.copy(one, depth, placing)
+        finally:
+            self.substitution = outer
+
+    def copy(self, one: Directive, depth: int, placing: tuple[Directive, ...]) -> None:
+        """Emit the copy `carry` places, under the mapping it puts in force.
 
         The directives the body carries compose beneath the heading
         holding each, as the scope's do. A link the body writes to one of
@@ -610,6 +632,7 @@ class Composing:
                     (lower, upper),
                     tuple(at for at in range(lower, upper) if at in removed),
                     placed,
+                    one.target.tags,
                 )
             )
             self.emit(region(written, tokens, token, by, removed))

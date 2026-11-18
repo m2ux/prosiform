@@ -1600,7 +1600,9 @@ def validate(
     """Hold the completed candidate to the provenance its construction recorded.
 
     A composed range's links to its own section's subsections are held to
-    the headings its copy carries, which `within` holds by its placing.
+    the headings its copy carries, which `within` holds by its placing,
+    and every link it writes resolves under its copy's pairs, which
+    `Range.selecting` names.
 
     The record is held to itself first — each selected region carried
     once, each heading at the level and in the order its source wrote —
@@ -1658,6 +1660,7 @@ def validate(
             wrote,
         )
         source, published = compaction(source, Side(emitted[id(span)], physical, span))
+        reading = substitution.composed(carried.path, carried.selecting)
         references(
             carried.path,
             source,
@@ -1665,7 +1668,7 @@ def validate(
             {**targets, **owned.get(carried.placing, {})},
             declarations,
             served.get((carried.path, carried.lines[0], carried.placing), {}),
-            substitution,
+            reading,
             contributing.get(carried.placing, {}),
             record.preamble,
             {path: one.conversion for path, one in read.items()},
@@ -1676,6 +1679,6 @@ def validate(
             source,
             published,
             declarations,
-            substitution,
+            reading,
             served.get((carried.path, carried.lines[0], carried.placing), {}),
         )
