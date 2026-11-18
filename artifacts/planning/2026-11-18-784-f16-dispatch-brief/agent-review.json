@@ -301,5 +301,18 @@
     "criteria": "The report's table renders every failing session in its columns.",
     "validation": "make check exit 0 (2257 tests, harness 1107, corpus 668 of 668); every Failing Sessions row has the header's 5 cell separators.",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "6ac7c3dd7ea50b65843d91f0aa7d9606850f849d",
+    "base": "4cfc545c8837248453f1d31bf6f67b1c603d6547",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (board 18 delivery coordinator)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The merge of main at 4cfc545c8 (F20, #797) into the reviewed head 6d4cde584. One conflict, in invocation.md: resolved with main E_ALTERNATIVE_UNRESOLVED remedy wording and this branch design pin d4a467ef4. The auto-merged src/prosiform/cli.py, docs/composition.md, docs/references.md and docs/selection.md were read for interaction between F20 deferred-target refusals and pick remedy and this branch brief, copy-link and set code; F20 changes were reviewed on #797. No file carries the old e333bb447 pin.",
+    "criteria": "AC1-AC12 unchanged by the merge; make check at the merge head covers every fixture and test they name.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree pf at 6ac7c3dd7: exit 0 (2261 tests, harness 1110, corpus 671 of 671).",
+    "findings": []
   }
 ]

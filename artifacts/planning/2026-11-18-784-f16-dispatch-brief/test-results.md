@@ -53,6 +53,8 @@ The briefed form does not measurably outperform the unbriefed one: 30% against 2
 
 `make check` with `PROSIFORM_BUILD` naming the worktree's `pf` exits 0 at `6d4cde584`: lint, format, typecheck, `make test` (2257 passed), harness (1107 passed), corpus (668 fixtures, 668 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
+At `6ac7c3dd7`, the merge of `main` at `4cfc545c8` carrying F20, it exits 0 again: `make test` (2261 passed), harness (1110 passed), corpus (671 fixtures, 671 pass) and every other target. Held.
+
 ## T12 Copy-Local Links
 
 `fixtures/composition/a-composed-section-s-link-to-its-own-subsection-points-at-its-copy`: a section composed twice links its own subsections, and each contribution's links point at its own copies, with no further copy bundled. `fixtures/composition/a-composed-subsection-an-inclusion-also-carries-keeps-its-link`: where an ordinary link also includes the subsection, the included group carries it and its link points at its own copy. Held in `make corpus`.
