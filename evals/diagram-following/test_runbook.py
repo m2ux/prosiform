@@ -66,7 +66,9 @@ def test_the_rubric_gives_the_dispositions_the_report_reads() -> None:
     )
 
 
-@pytest.mark.parametrize("runbook", ["## MVP Proof", "## Baseline", "## Edge Run"])
+@pytest.mark.parametrize(
+    "runbook", ["## MVP Proof", "## Baseline", "## Edge Run", "## Dispatch-Brief Run"]
+)
 def test_each_runbook_passes_only_options_the_runner_accepts(
     runbook: str, capsys: pytest.CaptureFixture[str]
 ) -> None:

@@ -34,6 +34,7 @@ from run import (
     FORMS,
     LINKED_TREE,
     PROSE_BUNDLE,
+    SOURCE_SETS,
     TRANSCRIPT,
     TREE,
     Ledger,
@@ -249,8 +250,8 @@ def material(session: Session) -> set[str]:
 
     A bundled form's entry bundle is `workflow.md`, and every other bundle
     of its set sits beside it under the name `pf` gave it. A form read as a
-    source tree gives its own files. The compiled form gives its sources, its
-    bundle set in the folder `pf` writes it to, and the build. A scenario
+    source tree gives its own files. A form of `SOURCE_SETS` gives its sources,
+    its bundle set in the folder `pf` writes it to, and the build. A scenario
     stating answers adds `answers.txt`.
     """
     workflow = CORPUS[session.workflow]
@@ -258,12 +259,12 @@ def material(session: Session) -> set[str]:
     inputs = {f"inputs/{name}" for name in scenario.inputs}
     if scenario.answers:
         inputs.add("answers.txt")
-    if session.form == COMPILED_SET:
-        tree = workflow.form(COMPILED_FORM)
+    if session.form in SOURCE_SETS:
+        tree = workflow.form(FORMS[session.form])
         folder = workflow.entry_bundle.parent
         return (
             {str(path.relative_to(tree)) for path in tree.rglob("*") if path.is_file()}
-            | {str(folder / name) for name in bundles_of(workflow, COMPILED_SET)}
+            | {str(folder / name) for name in bundles_of(workflow, session.form)}
             | inputs
         )
     if session.form in BUNDLED:
@@ -717,7 +718,12 @@ def test_each_session_records_its_transcript_usage_cost_and_verdict(
             found[0]
             for state in trace
             if (found := workflow.walked[state].action) is not None
-        } | {entry.action[0] for entry in scenario.trace if entry.action}
+        } | {
+            one[0]
+            for entry in scenario.trace
+            for one in (entry.action, entry.brief)
+            if one
+        }
 
 
 def test_a_failing_session_is_recorded_with_its_failure(
@@ -1625,6 +1631,7 @@ def test_a_dispatch_scenario_takes_a_session_in_each_of_its_forms(
             "presets": sorted(entry.presets),
             "together": entry.together,
             "action": None if entry.action is None else list(entry.action),
+            "brief": None if entry.brief is None else list(entry.brief),
         }
         for entry in scenario.trace
     ]

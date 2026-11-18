@@ -4,7 +4,7 @@ How well an agent, given a workflow drawn as a Mermaid diagram whose nodes link 
 
 ## Forms
 
-Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the state the branch enters, the two dispatch forms a workflow dispatching a target is written in, and a skill handing over a workflow's sources to compile. A session receives one of the forms below; every form but `bootstrap` and `compiled` is entered at `workflow.md`:
+Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py`](workflow.py) describes: a diagram, a prose form whose transitions are sentences, a linked form whose decisions name a document stating the state the branch enters, the two dispatch forms a workflow dispatching a target is written in, a compiled form whose targets declare a brief, and a skill handing over a workflow's sources to compile. A session receives one of the forms below; every form but `bootstrap`, `compiled` and `briefed` is entered at `workflow.md`:
 
 | Form | Material | What it isolates |
 | --- | --- | --- |
@@ -13,10 +13,11 @@ Each workflow in [`workflows/`](workflows) is written in the forms [`workflow.py
 | `prose` | The prose form bundled by `pf` into one file. | Against `bundle`, what the diagram adds. |
 | `linked` | The linked form's source tree, unbundled. | Whether a decision is resolved by following its link. |
 | `compiled` | The compiled form's sources, with the bundle set `pf` compiles from them in the folder `pf` writes it to: the entry's bundle and every dispatched target's beside it, each opening with the run-pf line, with the build under test as `pf` on the session's path and a shell limited to `pf`. | Whether an agent runs `pf`, follows the guide it prints and the dispatch links of each bundle, and compiles the material a bundle defers as it follows it. |
+| `briefed` | The briefed form's sources and bundle set, given as `compiled`'s are: the compiled form with each dispatched target declaring, as its `brief`, the section the compiled form composes with a `↳` line beside the dispatch. | Against `compiled`, what a brief published ahead of its dispatch adds. |
 | `authored` | The authored-protocol form's one bundle, whose state documents write the same protocol as prose. | Against `compiled`, what compilation adds. |
 | `bootstrap` | A skill placed where the agent CLI discovers skills, naming the workflow's sources, written as the compiled form is, for the session to compile with `pf`. | Whether an agent compiles a workflow it is handed as sources before following it. |
 
-A workflow gives a session only the forms it is written in: `linear`, `branching`, `looping`, `pricing` and `rework` take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the four [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
+A workflow gives a session only the forms it is written in: `linear`, `branching`, `looping`, `pricing` and `rework` take `bundle`, `tree`, `prose` and `linked`, the four dispatch scenarios take `compiled` and `authored`, the four [deferral workflows](#deferral-scenarios), the two [composition workflows](#composition-scenarios), `dispatch-depth` and `subagent-first-run` take `compiled` alone, the [brief workflow](#brief-scenarios) takes `compiled` and `briefed`, the two [bootstrap workflows](#bootstrap-scenarios) take `bootstrap` alone, and the six workflows built on a feature, `preset-selection`, `group-placement`, `subst-redirect`, `section-entry`, `section-composition` and `declared-inclusion`, take `bundle` and `tree`.
 
 The linked form's entry draws the diagram's flowchart with no branch label, and its decisions name no branch of their own. Each names a rule document, by a name that gives nothing away, stating the one state its branch enters, so the edge a branch takes is recoverable only by opening the document the section links, and the state it states is held to the edges the diagram draws out of the deciding state. Its rule document's destination resolves from the section that writes it, under `states/`.
 
@@ -59,6 +60,7 @@ Each dispatched section states an action, a file under `actions/` and the value 
 | --- | --- |
 | `dispatch` | The section the sub-agent follows, as `<document>#<heading>`. Both forms name a section, so one trace is the trace of both. |
 | `together` | Whether it started beside the entry above it, which marks every member of a set but the one opening it. |
+| `brief` | Optional. The `file` under `actions/` the target's brief section has the dispatching agent write before the start, and the `value` it holds, as [Brief scenarios](#brief-scenarios) states. |
 | `action` | The `file` under `actions/` the section has the sub-agent write, and the `value` it holds. A deferred composition's activated material states the action too, as [Sub-agent runs](#sub-agent-runs) states. |
 
 The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each state's steps in path order, following a dispatched section's own steps and the dispatches of the material each deferred composition a step reaches compiles, and the test asserts the corpus states that walk and no other. The compiled form writes a step's targets with `⇉`, and a set's with `⫽`, so `pf` compiles each target into a bundle of its own, and its step is its marks alone: `pf` publishes a `⇉` link to the target's bundle where it stands and a set as a `⫽ Dispatch Set` sub-section of `⇉` items, and the guide bare `pf` prints states what to do with each, so a sentence beside the marks would state the dispatch a second time and is a fault. The authored form writes the same steps as ordinary links to the same sections and the protocol as prose, so it publishes the entry's bundle alone and its prose is its only statement of the dispatch. The two forms therefore hold one statement of the dispatch each, and a pass rate's difference between them is what compilation adds.
@@ -70,6 +72,17 @@ The trace is held to the source: [`dispatch_walk()`](workflow.py) walks each sta
 | `dispatch-depth` | `three-hop-chain` | A chain of three sections, each dispatching the next. |
 | `dispatch-depth` | `three-hop-set` | A section whose first step starts two sections as a set at the second hop, and whose second step starts a section dispatching the third. |
 | `dispatch-depth` | `three-hop-question` | A chain of three whose last section returns a question, relayed up each hop to the user, then the chain dispatched again with the answers. |
+
+### Brief scenarios
+
+The brief workflow, `dispatch-brief`, says whether an agent acts on what a dispatched target asks of its dispatcher before it dispatches. Each target, `ledger.md` and `payroll.md`, opens with a `Given` section having the dispatching agent write `actions/given.txt`, and the `Check` section the sub-agent follows has it copy that file into `actions/finding.txt`, or write `absent` where there is none, so the sub-agent's file says whether the brief was acted on before it started. Its two forms are alike save for one thing: `briefed` declares `Given` as each target's `brief`, so `pf` publishes it in the `⇉ <text>` sub-section the step links, ahead of the dispatch link, and `compiled` composes it with a `[↳ <title>](<target>#given)` line beside the dispatch, as a dispatching document does without a brief, so `pf` publishes it after the step. A trace entry's `brief` names the file and value `Given` states, and its `action` the same value, which the [dispatch checks](#dispatch-checks) read.
+
+| Workflow | Scenario | What it dispatches |
+| --- | --- | --- |
+| `dispatch-brief` | `ledger-brief` | `Receive`, where `case.txt` reads `ledger`, then `Trace`, dispatching `ledger.md#check` once the session has written `ledger-7`, the ledger's brief. |
+| `dispatch-brief` | `payroll-brief` | `Receive`, where `case.txt` reads anything else, then `Audit`, dispatching `payroll.md#check` once the session has written `payroll-3`, the payroll's brief. |
+
+[`RUNBOOK.md`](RUNBOOK.md#dispatch-brief-run) states how the live run of both forms is made.
 
 ### Stated runs
 
@@ -175,7 +188,7 @@ A session records each state it enters as a line of `trace.log` and does each st
 
 | Class | The session |
 | --- | --- |
-| `missing_action` | walked the path and left a state's action undone or wrong, or, in a dispatch scenario, a sub-agent's. |
+| `missing_action` | walked the path and left a state's action undone or wrong, or, in a dispatch scenario, a sub-agent's or a brief's. |
 | `unfinished` | stopped partway along the path. |
 | `invented_state` | entered a state the diagram does not hold. |
 | `loop_miscount` | repeated a loop more times than its input requires. |
@@ -208,9 +221,10 @@ The checks hold the dispatch's shape, then the session's handling of each return
 | `undispatched` | left a bundle the scenario dispatches without a sub-agent, or started them in another order. |
 | `sequential_set` | started a set's bundles across more than one message, rather than its opener first and every later member alongside it in that message. |
 | `unrelayed_question` | went on from a sub-agent's returned question without starting it again with the answers. |
-| `missing_action` | left a sub-agent's action unwritten or wrong, named in the verdict's `actions`. |
+| `premature_dispatch` | started a sub-agent before acting on the brief its trace entry states: the sub-agent's action file is written and holds another value than the brief's, which its section has it copy from the brief's file. Named in the verdict's `actions`. |
+| `missing_action` | left a brief's file or a sub-agent's action unwritten or wrong, named in the verdict's `actions`. |
 
-The four are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier. A scenario that dispatches nothing passes all four.
+The five are read in that order, after the run is held to its path and its actions, so a trace that stopped short is `unfinished` however few sub-agents it started, and a record failing two checks takes the earlier: a session that never wrote a brief, whose sub-agent found it absent, is `premature_dispatch`, and one whose sub-agent wrote nothing is `missing_action`. A scenario that dispatches nothing passes all five.
 
 A run passing them is then held to each sub-agent's stated `action`, whatever its harness reports: one absent or wrong is `missing_action`, so a sub-agent that ran no `pf` on its line fails though no stream carries what it ran.
 
@@ -322,7 +336,7 @@ A run id requires fresh results and workspaces. An existing `results/<run-id>` o
 | `--session-timeout-seconds` | 600 | How long a session runs before it is ended and scored as it stands. |
 | `--models` | `openrouter/deepseek/deepseek-v4.1-flash-1017` | The models, comma-separated. |
 | `--workflows` | baseline workflows | The workflows, comma-separated. |
-| `--forms` | `bundle,tree,prose,linked,compiled,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
+| `--forms` | `bundle,tree,prose,linked,compiled,briefed,authored,bootstrap` | The forms, comma-separated. A workflow gives sessions only in the forms it is written in. |
 | `--repetitions` | 5 | Sessions per model, form and scenario. |
 | `--parallel` | 4 | Sessions running at once. |
 | `--eval-root` | `~/projects/eval/prosiform` | The directory holding the login and the workspaces. |

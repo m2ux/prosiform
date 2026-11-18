@@ -23,6 +23,7 @@ import shutil
 import sys
 from dataclasses import replace
 from pathlib import Path
+from urllib.parse import unquote
 
 import pytest
 from harness import Start
@@ -34,6 +35,7 @@ from workflow import (
     AUTHORED_FORM,
     BOOTSTRAP,
     BOOTSTRAP_DIR,
+    BRIEFED_FORM,
     COMPILED_FORM,
     COMPILED_STEP,
     DIAGRAM,
@@ -49,6 +51,7 @@ from workflow import (
     PROSE,
     SHELL_FORMS,
     SKILL_ENTRY,
+    SOURCE_FORMS,
     STATES,
     STEP_ONE,
     STEP_SET,
@@ -121,6 +124,14 @@ CORPUS = workflows()
 DISPATCHING = [workflow for workflow in CORPUS if AUTHORED_FORM in workflow.forms]
 DRAWING = [workflow for workflow in CORPUS if DIAGRAM in workflow.forms]
 COMPILING = [workflow for workflow in CORPUS if COMPILED_FORM in workflow.forms]
+SOURCED = [
+    (workflow, form, scenario)
+    for workflow in CORPUS
+    for form in SOURCE_FORMS
+    if form in workflow.forms
+    for scenario in workflow.scenarios
+]
+"""Each scenario of each form a session receives beside its sources."""
 BOOTSTRAPPING = [workflow for workflow in CORPUS if BOOTSTRAP in workflow.forms]
 LINKING = [workflow for workflow in CORPUS if LINKED_FORM in workflow.forms]
 FEATURES = ["group-placement", "preset-selection", "subst-redirect"]
@@ -478,7 +489,7 @@ def scenario_faults(workflow: Workflow, scenario: Scenario) -> list[str]:
         if walked != path:
             faults.append(f"{scenario.name}: the {form} sections lead {walked}")
     dispatching = [
-        form for form in (*DISPATCH_FORMS, BOOTSTRAP) if form in workflow.forms
+        form for form in workflow.forms if form in (*DISPATCH_FORMS, *MARKED_FORMS)
     ]
     if not dispatching:
         if scenario.trace:
@@ -514,8 +525,10 @@ def bundle_path_faults(
     return [f"{scenario.name}: {fault}" for fault in faults]
 
 
-def compiled_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
-    """How a compiled scenario's path or own runs fail to be what its bundles state.
+def compiled_faults(
+    workflow: Workflow, scenario: Scenario, output: Path, form: str = COMPILED_FORM
+) -> list[str]:
+    """How a scenario's path or own runs fail what one source form's bundles state.
 
     The walk runs `pf` on each `↳` line a state's steps reach, as a correct
     session does, so the session's stated runs are the walk's, and the path
@@ -524,12 +537,12 @@ def compiled_faults(workflow: Workflow, scenario: Scenario, output: Path) -> lis
     so the walk's listing, a run on a `?` line naming no pick, is no stated
     run.
     """
-    walked, made, faults = compiled_walk(workflow, scenario.inputs, output)
+    walked, made, faults = compiled_walk(workflow, scenario.inputs, output, form)
     if not faults and walked != scenario.path:
-        faults.append(f"the compiled bundles lead {walked}")
+        faults.append(f"the {form} bundles lead {walked}")
     runs = [run for run in made if run.pick is not None or not picks(run.presets)]
     stated = tuple(run for run in scenario.compile if run.by is None)
-    root = workflow.form(COMPILED_FORM)
+    root = workflow.form(form)
     if [run.selection(root) for run in runs] != [run.selection(root) for run in stated]:
         faults.append(f"the walk runs pf on {[run.args for run in made]}")
     return [f"{scenario.name}: {fault}" for fault in faults]
@@ -546,8 +559,10 @@ def dispatched_bundle(section: str) -> str:
     return entry_bundle(section).as_posix()
 
 
-def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> list[str]:
-    """How a compiled scenario's sub-agent runs and actions fail its bundles.
+def sub_agent_faults(
+    workflow: Workflow, scenario: Scenario, output: Path, form: str = COMPILED_FORM
+) -> list[str]:
+    """How a scenario's sub-agent runs and actions fail one source form's bundles.
 
     Each sub-agent follows the bundle `pf` wrote for its section, in the
     entry's set or in the set a run on a `↳` line wrote, and runs `pf` on
@@ -559,7 +574,7 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
     inline or as an dispatch-set item, names a file its run wrote beside it,
     and each bundle a sub-agent follows is one a `⇉` link names.
     """
-    walked, _, faults = compiled_walk(workflow, scenario.inputs, output)
+    walked, _, faults = compiled_walk(workflow, scenario.inputs, output, form)
     if faults:
         return [f"{scenario.name}: {fault}" for fault in faults]
     followed: dict[str, Path] = {}
@@ -571,7 +586,7 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         reference = request.entry
         assert reference is not None
         folder = output / f"sub-{len(runs)}"
-        root = workflow.form(COMPILED_FORM)
+        root = workflow.form(form)
         made = compile_reference(root, request, folder)
         assert made.returncode == 0, made.stderr.decode()
         return (
@@ -599,10 +614,20 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         # carries none, so the action is whichever of the two states it. A
         # scenario stating answers has its sub-agent write the answer it was
         # handed, so that section names the file and states the answer in
-        # prose rather than as a value.
+        # prose rather than as a value. A briefed target's section has its
+        # sub-agent copy the brief's file, so it names both files, states no
+        # value, and leaves the brief's own action to the dispatching bundle.
         stated = tuple(ACTION.findall(text)) + tuple(ACTION.findall(compiled))
         expected = () if entry.action is None else (entry.action,)
-        if scenario.answers and expected:
+        if entry.brief is not None and expected:
+            name, brief = expected[0][0], entry.brief[0]
+            bodies = text + compiled
+            if stated or not all(f"`actions/{f}`" in bodies for f in (name, brief)):
+                faults.append(
+                    f"{entry.section}'s runs do not copy actions/{brief} to"
+                    f" actions/{name}, stating {list(stated)}"
+                )
+        elif scenario.answers and expected:
             name = expected[0][0]
             bodies = text + compiled
             if f"`actions/{name}`" not in bodies:
@@ -613,7 +638,7 @@ def sub_agent_faults(workflow: Workflow, scenario: Scenario, output: Path) -> li
         stated_runs = [
             replace(run, by=None) for run in scenario.compile if run.by == section
         ]
-        root = workflow.form(COMPILED_FORM)
+        root = workflow.form(form)
         if [run.selection(root) for run in ran] != [
             run.selection(root) for run in stated_runs
         ]:
@@ -721,6 +746,7 @@ def test_the_corpus_holds_the_graded_workflows() -> None:
         "deferred-dispatch",
         "directive-labels",
         "dispatch-beside",
+        "dispatch-brief",
         "dispatch-chain",
         "dispatch-depth",
         "dispatch-question",
@@ -851,31 +877,31 @@ def test_each_scenario_path_is_the_walk_its_bundle_states(
 
 
 @pytest.mark.parametrize(
-    ("workflow", "scenario"),
-    [(workflow, scenario) for workflow in COMPILING for scenario in workflow.scenarios],
-    ids=lambda item: item.name,
+    ("workflow", "form", "scenario"),
+    SOURCED,
+    ids=lambda item: getattr(item, "name", item),
 )
 def test_each_compiled_scenario_states_the_runs_and_path_its_bundles_state(
-    workflow: Workflow, scenario: Scenario, tmp_path: Path
+    workflow: Workflow, form: str, scenario: Scenario, tmp_path: Path
 ) -> None:
     """AC7, AC8, AC9: each run is on a line the path reaches, and the path theirs."""
-    assert compiled_faults(workflow, scenario, tmp_path) == []
+    assert compiled_faults(workflow, scenario, tmp_path, form) == []
 
 
 @pytest.mark.parametrize(
-    ("workflow", "scenario"),
-    [(workflow, scenario) for workflow in COMPILING for scenario in workflow.scenarios],
-    ids=lambda item: item.name,
+    ("workflow", "form", "scenario"),
+    SOURCED,
+    ids=lambda item: getattr(item, "name", item),
 )
 def test_each_compiled_sub_agent_states_the_actions_its_runs_compile(
-    workflow: Workflow, scenario: Scenario, tmp_path: Path
+    workflow: Workflow, form: str, scenario: Scenario, tmp_path: Path
 ) -> None:
     """AC17, AC18, AC27: a sub-agent's actions are what its own `pf` runs compile.
 
     Each bundle a sub-agent follows opens with the run-pf line and is one a
     `⇉` link names, and each `⇉` link names a file its run wrote.
     """
-    assert sub_agent_faults(workflow, scenario, tmp_path) == []
+    assert sub_agent_faults(workflow, scenario, tmp_path, form) == []
 
 
 RETIRED = re.compile(r"\[¬[⇉⫽]|\[¬?→\]\(")
@@ -906,6 +932,7 @@ def test_no_edge_workflow_source_writes_a_retired_mark() -> None:
         "deferred-composition",
         "deferred-dispatch",
         "directive-labels",
+        "dispatch-brief",
         "preset-deferral",
         "subagent-first-run",
     }
@@ -1871,6 +1898,175 @@ def test_the_compiled_form_publishes_a_bundle_per_target_and_the_authored_none(
             assert (len(written) > 1) is several, (workflow.name, form, written)
 
 
+def declared_brief(path: Path) -> str | None:
+    """The brief a document's `default` preset declares, or nothing."""
+    block = FRONTMATTER.match(path.read_text())
+    front = YAML(typ="safe", pure=True).load(block.group()[4:-4]) if block else None
+    if not isinstance(front, dict) or not isinstance(front.get("prosiform"), dict):
+        return None
+    default = front["prosiform"].get("default")
+    return default.get("brief") if isinstance(default, dict) else None
+
+
+def brief_faults(workflow: Workflow) -> list[str]:
+    """How a workflow's briefed and compiled forms differ beyond the brief.
+
+    Both forms hold the same documents. A target the briefed form declares a
+    brief for is the compiled form's document with that declaration added, and
+    each other document is the compiled form's with its `↳` lines removed,
+    each of which composes, beside the dispatch of a target, the section that
+    target declares as its brief.
+    """
+    compiled, briefed = workflow.form(COMPILED_FORM), workflow.form(BRIEFED_FORM)
+    documents = sorted(path.relative_to(compiled) for path in compiled.rglob("*.md"))
+    if documents != sorted(path.relative_to(briefed) for path in briefed.rglob("*.md")):
+        return ["the forms hold different documents"]
+    briefs = {
+        document: brief
+        for document in documents
+        if (brief := declared_brief(briefed / document)) is not None
+    }
+    faults = []
+    for document in briefs:
+        if declared_brief(compiled / document) is not None:
+            faults.append(f"the compiled {document} declares a brief")
+        if authored(compiled / document) != authored(briefed / document):
+            faults.append(f"{document} differs beyond its brief")
+    for document in documents:
+        if document in briefs:
+            continue
+        text = (compiled / document).read_text()
+        kept = re.sub(r"^\[↳ [^\n]*\n\n", "", text, flags=re.MULTILINE)
+        if kept != (briefed / document).read_text():
+            faults.append(f"{document} differs beyond its compositions")
+        directory = (compiled / document).parent
+        dispatches = {
+            directory.joinpath(link.destination.partition("#")[0]).resolve()
+            for link in markdown_links(text)
+            if link.label.startswith("⇉ ")
+        }
+        for line in inline_lines(text):
+            path, _, fragment = line.destination.partition("#")
+            target = directory.joinpath(path).resolve()
+            named = target.relative_to(compiled.resolve())
+            if briefs.get(named) != f"#{fragment}":
+                faults.append(f"{document} composes {named}#{fragment}, no brief")
+            if target not in dispatches:
+                faults.append(f"{document} composes {named} beside no dispatch of it")
+    if not briefs:
+        faults.append("the briefed form declares no brief")
+    return faults
+
+
+def test_the_dispatch_brief_forms_differ_only_in_the_brief() -> None:
+    """AC9: the briefed form declares the section the compiled form composes."""
+    assert brief_faults(CORPUS_BY_NAME["dispatch-brief"]) == []
+
+
+def test_a_composition_of_a_section_no_brief_names_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "dispatch-brief",
+        f"{COMPILED_FORM}/{document('Trace')}",
+        "(../ledger.md#given)",
+        "(../ledger.md#check)",
+    )
+    assert brief_faults(workflow) == [
+        f"{document('Trace')} composes ledger.md#check, no brief"
+    ]
+
+
+def test_a_form_differing_beyond_the_brief_is_a_fault(tmp_path: Path) -> None:
+    workflow = broken(
+        tmp_path,
+        "dispatch-brief",
+        f"{BRIEFED_FORM}/{document('Trace')}",
+        "containing `traced`",
+        "containing `briefed`",
+    )
+    assert brief_faults(workflow) == [
+        f"{document('Trace')} differs beyond its compositions"
+    ]
+
+
+def test_each_brief_is_its_target_sections_action_which_the_sub_agent_copies() -> None:
+    """AC9: a sub-agent's action holds the brief's value only where it was written.
+
+    The brief's section states the file and value the dispatching agent
+    writes, and the dispatched section has its sub-agent copy that file into
+    its own action, so the entry's action holds the brief's value.
+    """
+    workflow = CORPUS_BY_NAME["dispatch-brief"]
+    for scenario in workflow.scenarios:
+        [entry] = scenario.trace
+        assert entry.brief is not None and entry.action is not None
+        assert entry.action[1] == entry.brief[1], scenario.name
+        name, _, heading = entry.section.partition("#")
+        brief = declared_brief(workflow.form(BRIEFED_FORM) / f"{name}.md")
+        assert brief is not None, scenario.name
+        for form in (COMPILED_FORM, BRIEFED_FORM):
+            root = workflow.form(form)
+            given = section_body(root, f"{name}.md", brief.removeprefix("#"))
+            assert ACTION.findall(given) == [entry.brief], (scenario.name, form)
+            body = section_body(root, f"{name}.md", heading)
+            assert ACTION.findall(body) == [], (scenario.name, form)
+            for file in (entry.brief[0], entry.action[0]):
+                assert f"`actions/{file}`" in body, (scenario.name, form, file)
+
+
+def test_a_brief_precedes_its_dispatch_and_a_composition_follows_it(
+    tmp_path: Path,
+) -> None:
+    """AC9: the forms differ in where the brief stands against the dispatch.
+
+    The briefed bundle publishes each brief in a `⇉ <text>` sub-section ahead
+    of the dispatch link it closes with, and the step's link names that
+    sub-section; the compiled bundle composes the same section after the
+    step that dispatches. Neither target's own bundle carries its brief.
+    """
+    workflow = CORPUS_BY_NAME["dispatch-brief"]
+    bundles = {}
+    for form in (COMPILED_FORM, BRIEFED_FORM):
+        output = tmp_path / form
+        run = bundle(workflow, form, output)
+        assert run.returncode == 0 and not run.stderr, run.stderr.decode()
+        bundles[form] = output
+    for scenario in workflow.scenarios:
+        [entry] = scenario.trace
+        assert entry.brief is not None
+        written = f"Write `actions/{entry.brief[0]}` containing `{entry.brief[1]}`."
+        linked = f"]({entry_bundle(entry.section).name})"
+        positions = {}
+        for form, output in bundles.items():
+            text = (output / workflow.entry_bundle).read_text()
+            assert text.count(written) == 1, (form, written)
+            positions[form] = (text.index(written), text.index(linked))
+            target = (output / workflow.entry_bundle.parent / linked[2:-1]).read_text()
+            assert written not in target, (form, entry.section)
+        assert positions[BRIEFED_FORM][0] < positions[BRIEFED_FORM][1]
+        assert positions[COMPILED_FORM][0] > positions[COMPILED_FORM][1]
+        text = (bundles[BRIEFED_FORM] / workflow.entry_bundle).read_text()
+        sections = bundled_sections(text)
+        [lifted] = [
+            section
+            for section in sections.values()
+            if section.title.startswith("⇉ ") and linked in section.text
+        ]
+        assert written in lifted.text and lifted.text.index(
+            written
+        ) < lifted.text.index(linked)
+        dispatching = workflow.sections[BRIEFED_FORM][scenario.path[2]]
+        assert lifted.title == f"⇉ {markdown_links(dispatching.body)[0].label[2:]}"
+        state = next(
+            section
+            for section in sections.values()
+            if section.title == scenario.path[2]
+        )
+        assert lifted.fragment in {
+            unquote(target) for _, target in fragment_links(state.text)
+        }
+
+
 def test_every_decision_is_exercised_both_ways() -> None:
     for workflow in CORPUS:
         for form in workflow.forms:
@@ -2492,14 +2688,17 @@ def scored(
     commands: tuple[str, ...] | None = None,
     withholds: str = "",
     reads: tuple[str, ...] | None = None,
+    early: bool = False,
 ) -> Failure | None:
     """The class a workspace holding one trace and its actions is scored.
 
     `commands` is what the workspace's record says the session ran, and a
     record naming none says the harness reports no command, as a form given
     no shell does; `reads` is likewise the files it says were read.
-    `withholds` names an action file the workspace leaves unwritten,
-    whichever agent would have written it.
+    `withholds` names an action or brief file the workspace leaves unwritten,
+    whichever agent would have written it. `early` has each sub-agent whose
+    entry states a brief find it unwritten, as one started before its
+    dispatching agent acted on it does.
     """
     workspace.mkdir(parents=True)
     (workspace / TRACE).write_text("".join(f"{state}\n" for state in trace))
@@ -2518,9 +2717,13 @@ def scored(
         held["reads"] = list(reads)
     (workspace / SUBAGENTS).write_text(json.dumps(held))
     for due in scenario.trace:
+        if due.brief is not None and due.brief[0] != withholds:
+            name, value = due.brief
+            (workspace / ACTIONS / name).write_text(f"{value}\n")
         if due.action is not None and due.action[0] != withholds:
             name, value = due.action
-            (workspace / ACTIONS / name).write_text(f"{value}\n")
+            found = "absent" if early and due.brief is not None else value
+            (workspace / ACTIONS / name).write_text(f"{found}\n")
     return score(workflow, scenario, workspace).failure
 
 
@@ -2536,9 +2739,10 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     left undone, the last state left out, a state the diagram does not hold,
     any diagram state entered at any index of the path or after its end, the
     sources followed without compiling them in a form that must, or read
-    beside the runs that compile them, and a dispatch record missing, split
-    or answered in a sub-agent's place. A session whose agent reported an
-    error is `errored` on any scenario.
+    beside the runs that compile them, a dispatch record missing, split
+    or answered in a sub-agent's place, and a brief left unwritten or found
+    unwritten by its sub-agent. A session whose agent reported an error is
+    `errored` on any scenario.
     """
     path = scenario.path
     correct = tuple(Start(due.section, "done", due.together) for due in scenario.trace)
@@ -2551,6 +2755,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
         commands: tuple[str, ...] | None = None,
         withholds: str = "",
         reads: tuple[str, ...] | None = None,
+        early: bool = False,
     ) -> Failure | None:
         return scored(
             workflow,
@@ -2562,6 +2767,7 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
             commands,
             withholds,
             reads,
+            early,
         )
 
     found = {
@@ -2587,6 +2793,9 @@ def produced(workflow: Workflow, scenario: Scenario, root: Path) -> set[Failure]
     for dispatch in scenario.trace:
         if dispatch.action is not None:
             found.add(departing(path, withholds=dispatch.action[0]))
+        if dispatch.brief is not None:
+            found.add(departing(path, withholds=dispatch.brief[0]))
+            found.add(departing(path, early=True))
     if correct:
         found.add(departing(path, ()))
         found.add(departing(path, tuple(replace(s, together=False) for s in correct)))
@@ -2626,6 +2835,7 @@ def test_a_class_no_scenario_produces_is_named(tmp_path: Path) -> None:
             Failure.UNDISPATCHED,
             Failure.SEQUENTIAL_SET,
             Failure.UNRELAYED_QUESTION,
+            Failure.PREMATURE_DISPATCH,
             Failure.UNCOMPILED,
             Failure.OVERCOMPILED,
             Failure.MISORDERED_COMPILE,

@@ -21,7 +21,8 @@ read as started at once. Each call is answered by a `tool_result` carrying
 the sub-agent's report inside the CLI's hand-back frame, opening `Question:`
 or `Done:`. A scenario stating answers has each sub-agent return a question,
 then starts it again, and that start returns done; a sub-agent that returned
-done writes its section's action. Where its
+done writes its section's action, and the session writes each brief the
+scenario states, as an agent acting on it before the start does. Where its
 instruction names the sub-agent trace, each call's prompt hands that name on,
 and each sub-agent writes the trace its prompt names and no other, and the
 actions the scenario states for it.
@@ -196,7 +197,12 @@ def starts(item: Scenario | None) -> list[tuple[str, str, bool]]:
 def write_sub_agent_actions(
     workspace: Path, item: Scenario | None, started: list[tuple[str, str, bool]]
 ) -> None:
-    """Write each sub-agent's action, where a start of its section returned done."""
+    """Write each dispatch's brief and each sub-agent's action.
+
+    A brief is written whatever its start returned, as its dispatching agent
+    acts on it before the start; an action where a start of its section
+    returned done.
+    """
     finished = {section for section, returned, _ in started if returned == DONE}
     for entry in item.trace if item else ():
         target = (
@@ -204,6 +210,9 @@ def write_sub_agent_actions(
             if entry.presets
             else entry.section
         )
+        if entry.brief is not None:
+            name, value = entry.brief
+            (workspace / ACTIONS / name).write_text(f"{value}\n")
         if entry.action is not None and target in finished:
             name, value = entry.action
             (workspace / ACTIONS / name).write_text(f"{value}\n")

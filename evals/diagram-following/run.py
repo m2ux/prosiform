@@ -14,6 +14,7 @@ forms are:
 - `compiled`: the compiled form's sources, with the entry's bundle set
   in the folder `pf` writes it to and the build under test as `pf` on the
   session's path;
+- `briefed`: the briefed form's sources, laid out as `compiled`'s are;
 - `authored`: the authored-protocol form's one bundle, as `workflow.md`;
 - `bootstrap`: a skill under `.claude/skills/<workflow>/` naming the sources
   it compiles.
@@ -152,6 +153,7 @@ from workflow import (
     AUTHORED_FORM,
     BOOTSTRAP,
     BOOTSTRAP_DIR,
+    BRIEFED_FORM,
     COMPILED_FORM,
     DIAGRAM,
     ENTRY,
@@ -159,6 +161,7 @@ from workflow import (
     PROSE,
     ROOT,
     SHELL_FORMS,
+    SOURCE_FORMS,
     CorpusError,
     Scenario,
     Workflow,
@@ -188,6 +191,7 @@ TREE = "tree"
 PROSE_BUNDLE = "prose"
 LINKED_TREE = "linked"
 COMPILED_SET = "compiled"
+BRIEFED_SET = "briefed"
 AUTHORED_SET = "authored"
 BOOTSTRAP_SET = "bootstrap"
 FORMS = {
@@ -196,12 +200,15 @@ FORMS = {
     PROSE_BUNDLE: PROSE,
     LINKED_TREE: LINKED_FORM,
     COMPILED_SET: COMPILED_FORM,
+    BRIEFED_SET: BRIEFED_FORM,
     AUTHORED_SET: AUTHORED_FORM,
     BOOTSTRAP_SET: BOOTSTRAP,
 }
-BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, AUTHORED_SET}
+BUNDLED = {BUNDLE, PROSE_BUNDLE, COMPILED_SET, BRIEFED_SET, AUTHORED_SET}
 PF_SETS = {form for form, written in FORMS.items() if written in SHELL_FORMS}
 """The forms whose session runs the build under test as `pf`."""
+SOURCE_SETS = {form for form, written in FORMS.items() if written in SOURCE_FORMS}
+"""The forms whose session receives its sources beside its bundle set."""
 BUILD = "build"
 """The existing folder a bootstrapping session compiles into."""
 SKILL = "SKILL.md"
@@ -430,15 +437,15 @@ def prepare(
     gave it, since a dispatching bundle names the bundles it hands to
     sub-agents by that name.
 
-    A compiled workspace is what a `pf` run over the compiled sources leaves:
-    the sources as they stand, since a `↳` line names its target from the
-    directory `pf` ran in, and the bundle set in the folder `pf` writes it to,
-    with the build available on the session path. A bootstrap skill is placed
+    A workspace of one of `SOURCE_SETS` is what a `pf` run over the form's
+    sources leaves: the sources as they stand, as `SOURCE_FORMS` states, and
+    the bundle set in the folder `pf` writes it to, with the build available
+    on the session path. A bootstrap skill is placed
     where the run's harness discovers one, and the session's workspace is the
     root it walks up from.
     """
-    if form == COMPILED_SET:
-        shutil.copytree(workflow.form(COMPILED_FORM), workspace, dirs_exist_ok=True)
+    if form in SOURCE_SETS:
+        shutil.copytree(workflow.form(FORMS[form]), workspace, dirs_exist_ok=True)
         folder = workspace / workflow.entry_bundle.parent
         folder.mkdir()
         for name, content in sets[(workflow.name, form)].items():
@@ -651,10 +658,11 @@ def start(
 def entry_named(workflow: Workflow, form: str) -> str:
     """The document a session's instruction names.
 
-    A compiled session reads the entry's bundle where `pf` wrote it, beside
-    the sources it was compiled from; every other form's entry is `workflow.md`.
+    A session of one of `SOURCE_SETS` reads the entry's bundle where `pf`
+    wrote it, beside the sources it was compiled from; every other form's
+    entry is `workflow.md`.
     """
-    return workflow.entry_bundle.as_posix() if form == COMPILED_SET else ENTRY
+    return workflow.entry_bundle.as_posix() if form in SOURCE_SETS else ENTRY
 
 
 def errored(workflow: Workflow, scenario: Scenario) -> Verdict:
@@ -781,7 +789,7 @@ def run(arguments: argparse.Namespace) -> dict[str, object]:
         workflow.form(FORMS[form])
         for workflow in corpus
         for form in forms
-        if (form not in BUNDLED or form == COMPILED_SET)
+        if (form not in BUNDLED or form in SOURCE_SETS)
         and form != BOOTSTRAP_SET
         and FORMS[form] in workflow.forms
     )

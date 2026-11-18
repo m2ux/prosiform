@@ -49,13 +49,19 @@ what the sub-agents wrote:
   answers: otherwise *unrelayed_question*, which is a question the session
   answered in the sub-agent's place or left unanswered. A start that
   returned `done` moves the session on, and asks nothing further;
-- each sub-agent's action file holds the value its trace entry states:
-  otherwise *missing_action*, named in the verdict's `actions`.
+- each sub-agent whose trace entry states a brief, and whose action file is
+  written, holds the brief's value there: otherwise *premature_dispatch*,
+  named in the verdict's `actions`. The target's section has its sub-agent
+  copy the file the brief has the dispatching agent write, so another value
+  says the sub-agent started before the brief was acted on;
+- each brief's file and each sub-agent's action file holds the value its
+  trace entry states: otherwise *missing_action*, named in the verdict's
+  `actions`.
 
 The checks are read in that order, after the run is held to its path and
 its actions, so a trace that stopped short is *unfinished* however few
 sub-agents it started, and a record failing two checks takes the earlier.
-A scenario that dispatches nothing passes all four, and a record absent
+A scenario that dispatches nothing passes all five, and a record absent
 from a session that dispatches nothing names no start.
 
 A scenario also states the `pf` runs a correct run makes, so a run that
@@ -201,6 +207,7 @@ class Failure(StrEnum):
     UNDISPATCHED = "undispatched"
     SEQUENTIAL_SET = "sequential_set"
     UNRELAYED_QUESTION = "unrelayed_question"
+    PREMATURE_DISPATCH = "premature_dispatch"
     UNCOMPILED = "uncompiled"
     OVERCOMPILED = "overcompiled"
     MISORDERED_COMPILE = "misordered_compile"
@@ -217,8 +224,9 @@ class Verdict:
     its action, or none where a sub-agent's action is the one missing; for
     an unfinished run, the trace's length. A pass carries no failure and no
     divergence. `actions` names the action files absent or wrong among the
-    diagram states the trace entered, in trace order, and, for a sub-agent's
-    missing action, its file. `picks` names, for a run passing the run
+    diagram states the trace entered, in trace order, and, for a dispatch's
+    missing action or premature start, its brief's or sub-agent's file.
+    `picks` names, for a run passing the run
     checks, the path each pick its scenario states took, `first-run` or
     `after-listing`, in stated order; it is empty for any other run.
     """
@@ -304,13 +312,37 @@ def departure(workflow: Workflow, previous: str, entered: str) -> Failure:
     return Failure.INVALID_TRANSITION
 
 
-def sub_agent_undone(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
-    """The action files a scenario's sub-agents leave undone, in trace order."""
+def premature(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
+    """The action files of sub-agents started before their brief was acted on.
+
+    Each is the file of a trace entry stating a brief, written and holding
+    another value than the brief's, in trace order, as the module's
+    *premature_dispatch* check states.
+    """
     return tuple(
         dict.fromkeys(
             due.action[0]
             for due in scenario.trace
-            if due.action is not None and not written(due.action, workspace)
+            if due.brief is not None
+            and due.action is not None
+            and (workspace / ACTIONS / due.action[0]).is_file()
+            and not written((due.action[0], due.brief[1]), workspace)
+        )
+    )
+
+
+def sub_agent_undone(scenario: Scenario, workspace: Path) -> tuple[str, ...]:
+    """The brief and action files a scenario's dispatches leave undone, in trace order.
+
+    A brief is written by the dispatching agent and an action by its
+    sub-agent, so each entry's brief is named before its action.
+    """
+    return tuple(
+        dict.fromkeys(
+            done[0]
+            for due in scenario.trace
+            for done in (due.brief, due.action)
+            if done is not None and not written(done, workspace)
         )
     )
 
@@ -853,6 +885,10 @@ def score(
         order = dispatched(scenario, starts, source_directory)
         if order is not None:
             return Verdict(False, order, None, expected, actual, actions)
+        if early := premature(scenario, workspace):
+            return Verdict(
+                False, Failure.PREMATURE_DISPATCH, None, expected, actual, early
+            )
         if undone_by := sub_agent_undone(scenario, workspace):
             return Verdict(
                 False, Failure.MISSING_ACTION, None, expected, actual, undone_by
