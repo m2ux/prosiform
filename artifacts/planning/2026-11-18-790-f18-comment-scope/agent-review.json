@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/789",
+    "head": "3e611a195d9158b297998ff159d7e90011aa99c5",
+    "base": "20d84d13ef456711d12f1fb4d50a34799000d228",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-790-f18-comment-scope/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (board 18 delivery coordinator)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The full diff of main..f17-convention-scope at 3e611a195: one sentence of AGENTS.md, section Docstrings and comments. Read the whole section at the head for wording the new scope leaves inconsistent, and searched the repository's Markdown for a restatement of the section or its former wording. The head contains main at 20d84d13e.",
+    "criteria": "AC1: the section's first sentence states that it holds for all code in the repository. AC2: make layout tables links vocabulary exit 0 at the head.",
+    "validation": "make layout tables links vocabulary at 3e611a195: exit 0.",
+    "findings": []
+  }
+]
