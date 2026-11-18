@@ -278,8 +278,21 @@ def test_a_selection_naming_no_alternative_picks_none(names: str | None) -> None
     assert cli.picked(ROUTER, [resolve("work-kind.md", tags=read(names))]) == ()
 
 
-def test_the_unresolved_failure_lists_each_alternative_beside_its_choice_line() -> None:
-    failure = cli.unresolved("work-kind.md", ROUTER)
+@pytest.mark.parametrize(
+    ("rerun", "remedy"),
+    [
+        (True, "rerun with --pick naming the alternative that fits your task"),
+        (
+            False,
+            "name the alternative that fits your task in the title or tooltip of "
+            "each link reaching it, a link entry's among them",
+        ),
+    ],
+)
+def test_the_unresolved_failure_lists_each_alternative_beside_its_choice_line(
+    rerun: bool, remedy: str
+) -> None:
+    failure = cli.unresolved("work-kind.md", ROUTER, rerun=rerun)
     assert failure.status == cli.USAGE_FAILURE
     assert failure.diagnostic.code == cli.ALTERNATIVE_UNRESOLVED
     assert failure.diagnostic.source == "work-kind.md"
@@ -289,9 +302,7 @@ def test_the_unresolved_failure_lists_each_alternative_beside_its_choice_line() 
         "  Epic        Lists its tasks in a Work Breakdown table.\n"
         "  Task        One pull request's worth of work."
     )
-    assert failure.diagnostic.remedy == (
-        "rerun with --pick naming the alternative that fits your task"
-    )
+    assert failure.diagnostic.remedy == remedy
 
 
 STAGE = (

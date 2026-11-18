@@ -826,12 +826,17 @@ def picked(
     return tuple(one for one in conversion.alternatives if one.name in names)
 
 
-def unresolved(path: str, conversion: Conversion) -> Failure:
+def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
     The document's links are written once, so they follow one kind's
     routes. The message lists each alternative beside its choice line in
-    declaration order, so its reader reruns naming the one that fits.
+    declaration order, so its reader picks the one that fits. The remedy
+    names a pick the run accepts: a rerun with `--pick` where `rerun`
+    holds, because the entry reaching the document carries `?` and
+    `--pick` stands in for it there, and otherwise one alternative named
+    by the links reaching the document, since `--pick` is invalid usage
+    beside an entry carrying no `?`.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -845,7 +850,12 @@ def unresolved(path: str, conversion: Conversion) -> Failure:
             f"{path} needs one alternative in force:{rows}",
             code=ALTERNATIVE_UNRESOLVED,
             source=path,
-            remedy="rerun with --pick naming the alternative that fits your task",
+            remedy=(
+                "rerun with --pick naming the alternative that fits your task"
+                if rerun
+                else "name the alternative that fits your task in the title or "
+                "tooltip of each link reaching it, a link entry's among them"
+            ),
         ),
     )
 
@@ -930,10 +940,14 @@ def resolved(
         if not conversion.alternatives:
             continue
         count = len(picked(conversion, references))
-        if count > 1 or (
-            count == 0 and routed(path, conversion, parsed[path], references, entries)
-        ):
+        if count > 1:
             raise unresolved(path, conversion)
+        if count == 0 and routed(path, conversion, parsed[path], references, entries):
+            raise unresolved(
+                path,
+                conversion,
+                rerun=any(one in entries and picks(one.tags) for one in references),
+            )
 
 
 def governing(
