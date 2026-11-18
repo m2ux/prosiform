@@ -90,6 +90,7 @@ from prosiform.closure import (
     Reference,
     Substitution,
     alternatives_of,
+    briefing,
     bundled,
     carried_names,
     deferred_title,
@@ -105,6 +106,7 @@ from prosiform.closure import (
 from prosiform.metadata import Conversion
 from prosiform.profile import HTML_INLINE, REFERENCES, command_block, parse
 from prosiform.provenance import (
+    BRIEF_SECTION,
     CONTRIBUTION_HEADING,
     FILENAME_WRAPPER,
     GROUP_HEADING,
@@ -113,6 +115,7 @@ from prosiform.provenance import (
     Ancestor,
     Carried,
     Contributing,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
@@ -123,6 +126,9 @@ from prosiform.provenance import (
     Served,
     click_at,
     link_at,
+)
+from prosiform.provenance import (
+    Placing as Chain,
 )
 from prosiform.source import (
     ANCHOR,
@@ -1377,20 +1383,35 @@ def preserved(
 
 def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+    dispatching: Dispatching,
     bundle_file: Callable[[Reference], str],
+    conversions: Mapping[str, Conversion],
 ) -> None:
     """Hold each dispatched link's destination to a bundle file or its sub-section.
 
-    A dispatch-set or dispatch-pick sub-section answers to no source
-    target, so what a set's link, or a `⇉` link carrying the pick token,
-    is held to is the kind of heading it reaches.
+    A dispatch-set, dispatch-pick or dispatch-brief sub-section answers
+    to no source target, so what a set's link, a `⇉` link carrying the
+    pick token, or a link whose target's presets in force name a brief,
+    is held to is the kind of heading it reaches; a `⫽` link carrying a
+    brief reaches its set's sub-section, or the one a set of one is
+    lifted into.
     A destination that is no fragment of the bundle names a file beside
     it, which no heading stands for.
     """
-    for (path, _line), served in dispatching.items():
+    for (path, _line, _placing), served in dispatching.items():
         for (target, tags, together), destination in served.items():
-            kind = PARALLEL_SECTION if together or not picks(tags) else PICK_SECTION
+            reference = Reference(target[0], target[0], target[1], tags=tags)
+            briefed = briefing(reference, conversions[target[0]]) is not None
+            kinds = (
+                (PICK_SECTION,)
+                if picks(tags) and not together
+                else (PARALLEL_SECTION, BRIEF_SECTION)
+                if together and briefed
+                else (PARALLEL_SECTION,)
+                if together
+                else (BRIEF_SECTION,)
+            )
+            kind = kinds[0]
             if filed(destination):
                 if kind == PICK_SECTION:
                     raise Invalid(
@@ -1399,7 +1420,6 @@ def dispatches(
                         f"in {path!r} carries the pick token and points at the "
                         f"file {destination!r}",
                     )
-                reference = Reference(target[0], target[0], target[1], tags=tags)
                 expected = quote(bundle_file(reference), safe="")
                 if destination != expected:
                     raise Invalid(
@@ -1411,7 +1431,7 @@ def dispatches(
                 continue
             found = reached.get(destination.removeprefix(ANCHOR))
             if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == kind
+                isinstance(found[1], Generated) and found[1].kind in kinds
             ):
                 raise Invalid(
                     TARGET_INTEGRITY,
@@ -1423,20 +1443,67 @@ def dispatches(
 def parallel_sets(
     tokens: Sequence[Token],
     assigned: Sequence[str],
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+    dispatching: Dispatching,
     bundle_file: Callable[[Reference], str],
     read: Mapping[str, Source],
+    paired: Sequence[tuple[Record, Part, Token]],
 ) -> None:
     """Each generated dispatch sub-section lists exactly its effective selection files.
 
-    A set's sub-section lists its members' files, and a dispatch-pick
-    sub-section the file of each alternative its target declares.
+    A set's sub-section lists its members' files, a dispatch-pick
+    sub-section the file of each alternative its target declares, and a
+    sub-section a dispatch carrying a brief is lifted into its target's
+    file. What a sub-section lists is the dispatch lines the bundle
+    writes beneath it, up to the next heading at its level or above,
+    outside every dispatch sub-section nested in it: a brief it carries is
+    source content, and lists nothing. A set lists the lines of each
+    member sub-section lifted one level below it as well.
     """
+    lines = {
+        id(span)
+        for _record, part, span in paired
+        if isinstance(part, Instruction) and part.activates is None
+    }
+    nested = {
+        id(span): part.kind
+        for _record, part, span in paired
+        if isinstance(part, Generated)
+        and part.kind in (PARALLEL_SECTION, PICK_SECTION, BRIEF_SECTION)
+    }
     openings = dict(
         zip(assigned, (one for one, _inline in headings(tokens)), strict=True)
     )
     spans = list(regions(tokens))
     positions = {id(span): at for at, span in enumerate(spans)}
+
+    def own(opening: Token) -> tuple[list[str], list[Token]]:
+        found: list[str] = []
+        members: list[Token] = []
+        skipping: int | None = None
+        for span in spans[positions[id(opening)] + 1 :]:
+            if span.type == HEADING_OPEN:
+                if level(span) <= level(opening):
+                    break
+                if skipping is not None and level(span) <= skipping:
+                    skipping = None
+                if skipping is None and id(span) in nested:
+                    skipping = level(span)
+                    if (
+                        nested[id(opening)] == PARALLEL_SECTION
+                        and nested[id(span)] == BRIEF_SECTION
+                        and level(span) == level(opening) + 1
+                    ):
+                        members.append(span)
+                continue
+            if skipping is not None or id(span) not in lines:
+                continue
+            found.extend(
+                one.destination
+                for _children, _at, one in carried(tokens, span)
+                if one.kind == LINK
+            )
+        return found, members
+
     expected: dict[str, set[str]] = {}
     for served in dispatching.values():
         for (target, tags, together), destination in served.items():
@@ -1457,16 +1524,9 @@ def parallel_sets(
                 quote(bundle_file(one), safe="") for one in listed
             )
     for destination, files in expected.items():
-        opening = openings[destination.removeprefix(ANCHOR)]
-        found: list[str] = []
-        for span in spans[positions[id(opening)] + 1 :]:
-            if span.type == HEADING_OPEN:
-                break
-            found.extend(
-                one.destination
-                for _children, _at, one in carried(tokens, span)
-                if one.kind == LINK
-            )
+        found, members = own(openings[destination.removeprefix(ANCHOR)])
+        for member in members:
+            found.extend(own(member)[0])
         if len(found) != len(files) or set(found) != files:
             raise Invalid(
                 TARGET_INTEGRITY,
@@ -1528,14 +1588,18 @@ def validate(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     budget: int,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,
     *,
     bundle_file: Callable[[Reference], str],
+    within: Mapping[Chain, Mapping[tuple[str, str | None], str]] | None = None,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
+
+    A composed range's links to its own section's subsections are held to
+    the headings its copy carries, which `within` holds by its placing.
 
     The record is held to itself first — each selected region carried
     once, each heading at the level and in the order its source wrote —
@@ -1565,9 +1629,15 @@ def validate(
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
     one_member(groups)
-    dispatches(reached, served, bundle_file)
-    parallel_sets(tokens, assigned, served, bundle_file, read)
+    dispatches(
+        reached,
+        served,
+        bundle_file,
+        {path: one.conversion for path, one in read.items()},
+    )
+    parallel_sets(tokens, assigned, served, bundle_file, read, paired)
     contributing = {} if composing is None else composing
+    owned = {} if within is None else within
     contributions(reached, contributing)
     for record, part, span in paired:
         if isinstance(part, Ancestor):
@@ -1591,9 +1661,9 @@ def validate(
             carried.path,
             source,
             published,
-            targets,
+            {**targets, **owned.get(carried.placing, {})},
             declarations,
-            served.get((carried.path, carried.lines[0]), {}),
+            served.get((carried.path, carried.lines[0], carried.placing), {}),
             substitution,
             contributing.get(carried.placing, {}),
             record.preamble,
@@ -1606,5 +1676,5 @@ def validate(
             published,
             declarations,
             substitution,
-            served.get((carried.path, carried.lines[0]), {}),
+            served.get((carried.path, carried.lines[0], carried.placing), {}),
         )

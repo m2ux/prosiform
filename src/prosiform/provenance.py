@@ -54,6 +54,7 @@ group carries cannot be, and the group's emitted headings are read from
 it rather than written twice.
 """
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 
 from markdown_it.token import Token
@@ -71,6 +72,7 @@ STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
 PARALLEL_SECTION = "dispatch-set sub-section"
 PICK_SECTION = "dispatch-pick sub-section"
+BRIEF_SECTION = "dispatch-brief sub-section"
 DESTINATION_SECTION = "destination section"
 CONTRIBUTION_HEADING = "contribution heading"
 
@@ -114,6 +116,14 @@ stands for as many contributions as there are chains reaching it.
 
 Contributing = dict[Placing, dict[Located, str]]
 """Each composing link's destination, by the placing of the region it is in."""
+
+Region = tuple[str, int, Placing]
+"""One copy of a source region: its document, the first line of content it
+opens on, and the placing of the composition that placed the copy, none for
+an authored region."""
+
+Dispatching = Mapping[Region, Mapping[Served, str]]
+"""The destination each copy of a region gives the dispatched links it writes."""
 
 
 @dataclass(frozen=True)

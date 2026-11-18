@@ -1,0 +1,25 @@
+description = "A preset's brief names a section of another document, which is no section of the document a dispatch names; the run fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing."
+
+clauses = [
+  "Conversion metadata — brief names a section of its own document",
+  "Metadata failures — E_INVALID_CONVERSION_METADATA",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.brief"]
+reference = "investigate.md"
+chain = ["guide.md", "investigate.md"]
+
+[expected.diagnostics.location]
+file = "investigate.md"
+line = 4
+column = 12

@@ -125,10 +125,13 @@ from markdown_it.token import Token
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    Briefs,
     BundleSelection,
     Declarations,
     Reference,
     Substitution,
+    Unresolvable,
+    briefing,
     bundle_selection,
     bundled,
     carried_names,
@@ -150,12 +153,14 @@ from prosiform.provenance import (
     FILENAME_WRAPPER,
     Ancestor,
     Carried,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
     Located,
     Origin,
     Part,
+    Placing,
     Range,
     Record,
     Served,
@@ -387,23 +392,29 @@ def pointing(
     opening: str,
     dispatched_to: Mapping[Served, str] | None,
     alone: bool = False,
+    lifted: bool = False,
 ) -> bool:
     """Whether a withheld link points at a bundle file the dispatch map names.
 
-    A `⇉` link does, unless it carries the pick token, which points it at
-    its dispatch-pick sub-section. A `⫽` link does where the map gives its
-    target a file, and a link the map says nothing of points at its set's
-    sub-section. Where there is no map, `alone` states that the link's
-    set holds one target, which is published as a dispatch to its file.
+    A link carrying the pick token points at its dispatch-pick
+    sub-section. Any other dispatched link does where the map gives its
+    target a file, and a link the map says nothing of points at a file
+    for a `⇉` link and at its set's sub-section for a `⫽` one, so a
+    sub-section a brief lifts it into is one the map names. Where there
+    is no map, `lifted` states that the link carries a brief, which
+    points it at the sub-section it is lifted into, a `⇉` link carrying
+    none points at a file, and `alone` states that a `⫽` link's set holds
+    one target, which is published as a dispatch to its file.
     """
     if picking(opening, target.tags):
         return False
-    if not parallel(opening):
-        return True
+    together = parallel(opening)
     if dispatched_to is None:
-        return alone
-    given = dispatched_to.get(((target.path, target.fragment), target.tags, True))
-    return given is not None and filed(given)
+        return not lifted and (alone or not together)
+    given = dispatched_to.get(((target.path, target.fragment), target.tags, together))
+    if given is None:
+        return not together
+    return filed(given)
 
 
 def sole_set(
@@ -454,6 +465,20 @@ def sole_set(
     return len(targets) == 1
 
 
+def briefs(target: Reference, conversions: Mapping[str, Conversion] | None) -> bool:
+    """Whether a dispatch of one read target carries a brief, as `briefing` names it.
+
+    Presets naming two briefs, or a brief naming no fragment, carry none
+    here: the traversal refuses them.
+    """
+    if conversions is None or target.path not in conversions:
+        return False
+    try:
+        return briefing(target, conversions[target.path]) is not None
+    except (Briefs, Unresolvable):
+        return False
+
+
 def emitted_visible(
     path: str,
     inline: Token,
@@ -461,6 +486,7 @@ def emitted_visible(
     substitution: Substitution = UNSUBSTITUTED,
     dispatched_to: Mapping[Served, str] | None = None,
     alone: bool = False,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> str:
     """The text one inline token shows once the bundle has rewritten its links.
 
@@ -473,7 +499,9 @@ def emitted_visible(
 
     A `⫽` link points at a bundle file where its set holds one target,
     which the dispatch map states for the region carrying it. Without a
-    map, `alone` states whether its set holds one target.
+    map, `alone` states whether its set holds one target, and the
+    conversions read decide whether a dispatch carries a brief, as
+    `briefs` states.
 
     A link the bundle took no destination for shows the text its author
     wrote. That covers a markup or resource reference and a reference
@@ -501,7 +529,13 @@ def emitted_visible(
             if target is not None:
                 shown_label = published_text(
                     child.content,
-                    pointing(target, child.content, dispatched_to, alone),
+                    pointing(
+                        target,
+                        child.content,
+                        dispatched_to,
+                        alone,
+                        briefs(target, conversions),
+                    ),
                 )
             elif directive(child.content):
                 shown_label = unmarked(child.content)
@@ -541,6 +575,7 @@ def shown_text(
                 substitution,
                 conversions=conversions,
             ),
+            conversions=conversions,
         )
         for opening, inline in headings(tokens)
     }
@@ -567,10 +602,11 @@ def rewrite(
     path: str,
     defined: Mapping[str, Definition],
     declarations: Declarations = DECLARING,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
+    placing: Placing = (),
     *,
     conversions: Mapping[str, Conversion] | None = None,
 ) -> list[str]:
@@ -597,8 +633,9 @@ def rewrite(
     on one line are replaced in written order.
 
     A dispatched link takes the destination its region carries for its
-    target, which the dispatch map holds by the region's first line: a
-    bundle file, or the dispatch-set sub-section of a set. A dispatch the
+    target, which the dispatch map holds by the region's first line and
+    the placing of the copy being rewritten: a bundle file, or a dispatch
+    sub-section. A dispatch the
     map holds none for is refused, and the line the refusal names is the
     line of the file the source was read from, which the first line of its
     content states.
@@ -618,7 +655,7 @@ def rewrite(
     contributing = {} if composing is None else composing
     titles = {id(inline) for _, inline in headings(tokens)}
     for region in selected:
-        here = served.get((path, (region.map or (0, 0))[0]), {})
+        here = served.get((path, (region.map or (0, 0))[0], placing), {})
         for inline in inlines(tokens, [region]):
             found = destinations(inline)
             if inline.map is None or (
@@ -655,7 +692,7 @@ def rewrite(
             ]
             written[start:end] = rewritten(written[start:end], inline, targets, defined)
     for region in selected:
-        here = served.get((path, (region.map or (0, 0))[0]), {})
+        here = served.get((path, (region.map or (0, 0))[0], placing), {})
         for fence in within(tokens, [region]):
             if fence.type != FENCE:
                 continue
@@ -1107,7 +1144,7 @@ def group(
     assigned: dict[tuple[str, str | None], str] | None = None,
     declarations: Declarations = DECLARING,
     situate: bool = False,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,

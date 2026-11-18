@@ -65,7 +65,8 @@ counts.
 Composition runs on the built groups ahead of the dispatch pass, which
 reads what a destination section carries as the scope's own content:
 a scope's dispatch-set sub-sections follow its destination sections, and
-its child sections follow both.
+its child sections follow both. That pass composes each dispatch's
+brief through `Composing.brief`, beneath the sub-section it emits.
 
 Titles are matched exactly as their headings show them: no case
 folding, Unicode normalisation or trimming joins two titles, so one
@@ -120,7 +121,7 @@ from prosiform.closure import (
     rebased,
     resolvable,
 )
-from prosiform.dispatch import region_of
+from prosiform.dispatch import Link, region_of
 from prosiform.limits import OUTPUT_BYTES, Limits
 from prosiform.marks import INLINE_MARK
 from prosiform.provenance import (
@@ -129,6 +130,7 @@ from prosiform.provenance import (
     Ancestor,
     Carried,
     Contributing,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
@@ -138,7 +140,7 @@ from prosiform.provenance import (
     Placing,
     Preamble,
     Range,
-    Served,
+    Target,
     click_at,
     link_at,
 )
@@ -163,6 +165,14 @@ from prosiform.tags import read as read_tags
 Composed = dict[Placing, Generated]
 """Each contribution's heading, by the placing of the composition it heads."""
 
+Held = dict[Placing, dict[Target, Carried]]
+"""Each heading a copy of a composed section carries, by that copy's placing
+and the source target it stands for."""
+
+Within = Mapping[Placing, Mapping[Target, str]]
+"""The destination each copy of a composed section gives its own headings,
+by that copy's placing and the source target each stands for."""
+
 
 class Parentless(Exception):
     """A directive whose target has no heading above it to name a parent by."""
@@ -178,15 +188,26 @@ class Parentless(Exception):
 
 
 class Overflowing(Exception):
-    """A directive whose composed heading would stand beyond the sixth level."""
+    """A link whose composed heading would stand beyond the sixth level.
+
+    The link is a directive, or a dispatch whose brief holds the heading,
+    which `kind` names.
+    """
 
     def __init__(
-        self, path: str, line: int | None, destination: str, heading: str, depth: int
+        self,
+        path: str,
+        line: int | None,
+        destination: str,
+        heading: str,
+        depth: int,
+        kind: str = "directive",
     ) -> None:
         super().__init__(
-            f"the directive {destination!r} in {path!r} composes the heading "
+            f"the {kind} {destination!r} in {path!r} composes the heading "
             f"{heading!r} at level {depth}"
         )
+        self.kind = kind
         self.path = path
         self.line = line
         self.destination = destination
@@ -253,10 +274,13 @@ class Directive:
     title: str
     deferred: bool = False
     link_title: str | None = None
+    kind: str = "directive"
 
     def overflowing(self, heading: str, depth: int) -> Overflowing:
         """The refusal of a heading this directive would compose past H6."""
-        return Overflowing(self.at[0], self.line, self.written, heading, depth)
+        return Overflowing(
+            self.at[0], self.line, self.written, heading, depth, self.kind
+        )
 
 
 class Composing:
@@ -275,10 +299,12 @@ class Composing:
         defined: Mapping[str, Mapping[str, Definition]],
         limits: Limits,
         assigned: Mapping[tuple[str, str | None], str] | None = None,
-        dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+        dispatching: Dispatching | None = None,
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
         composing: Contributing | None = None,
+        held: Held | None = None,
+        within: Within | None = None,
     ) -> None:
         self.parsed = parsed
         self.read = read
@@ -290,6 +316,10 @@ class Composing:
         self.declarations = declarations
         self.substitution = substitution
         self.composing = {} if composing is None else composing
+        self.held: Held = {} if held is None else held
+        self.within: Within = {} if within is None else within
+        self.outer: Placing = ()
+        """The placing of the copy writing the dispatch whose brief is composed."""
         self.counted = 0
         self.placed: Composed = {}
         self.emitted: list[str] = []
@@ -459,12 +489,64 @@ class Composing:
         )
         if depth > MAX_LEVEL:
             raise one.overflowing(contribution.text, depth)
-        placed = tuple(each.at for each in placing)
+        placed = (*self.outer, *(each.at for each in placing))
         self.placed.setdefault(placed, contribution)
         self.heading(contribution)
         if one.deferred:
             self.activation(one)
             return
+        self.carry(one, depth, placing)
+
+    def brief(
+        self, link: Link, target: Reference, depth: int, outer: Placing
+    ) -> tuple[list[str], list[Part], list[Emitted]]:
+        """One dispatch's brief, as the text, parts and headings it emits.
+
+        The brief is its section's body and subsections composed beneath a
+        heading at depth the dispatch stage emits for it, so the section's
+        own heading gives way to that one and its subsections nest one
+        level below. Its links are rewritten against the document writing
+        them, as a contribution's are. Its placing is the dispatch's,
+        beneath the placing `outer` of the copy writing the dispatch, so
+        each copy of a brief, and each composition a directive it writes
+        places, is a copy of its own. A destination section the brief's
+        directives place is held to its child sections as a scope's is.
+        """
+        one = Directive(
+            target, link.written, link.location.line, link.at, "", kind="dispatch"
+        )
+        self.emitted, self.parts, self.headings = [], [], []
+        self.opened = {}
+        self.outer = outer
+        try:
+            self.carry(one, depth, (one,))
+            self.collide()
+        finally:
+            self.outer = ()
+        return self.emitted, self.parts, self.headings
+
+    def carry(self, one: Directive, depth: int, placing: tuple[Directive, ...]) -> None:
+        """Emit one target section's body and subsections beneath a heading at `depth`.
+
+        The directives the body carries compose beneath the heading
+        holding each, as the scope's do. A link the body writes to one of
+        the section's own subsections points at this copy's heading for
+        it, which `within` holds by the copy's placing, so each copy reads
+        as the section does; each heading the copy carries is recorded in
+        `held` for that map.
+        """
+        path = one.target.path
+        tokens = self.parsed[path]
+        chosen = section(tokens, one.target.fragment or "") or ()
+        opening = chosen[0]
+        placed = (*self.outer, *(each.at for each in placing))
+        shows = shown_text(
+            path,
+            tokens,
+            self.declarations,
+            self.substitution,
+            conversions=self.conversions,
+        )
         body = list(chosen[1:])
         by = depth - level(opening)
         source = self.read[path]
@@ -478,7 +560,7 @@ class Composing:
                 physical,
                 tokens,
                 body,
-                dict(self.assigned),
+                {**self.assigned, **self.within.get(placed, {})},
                 path,
                 defined,
                 self.declarations,
@@ -486,6 +568,7 @@ class Composing:
                 source.first_line,
                 self.substitution,
                 self.composing.get(placed, {}),
+                placed,
                 conversions=self.conversions,
             )
         )
@@ -501,8 +584,8 @@ class Composing:
                 self.flush(pending, holding, placing)
                 pending = {}
                 holding = level(token) + by
-            self.headings.extend(
-                Carried(
+            for held in carried:
+                heading = Carried(
                     emitted_text(held, shows[id(held)], by),
                     level(held) + by,
                     (
@@ -516,8 +599,10 @@ class Composing:
                     ),
                     composed=True,
                 )
-                for held in carried
-            )
+                self.headings.append(heading)
+                self.held.setdefault(placed, {}).setdefault(
+                    (path, named[id(held)]), heading
+                )
             lower, upper = token.map or (0, 0)
             self.parts.append(
                 Range(
@@ -660,10 +745,12 @@ def compositions(
     defined: Mapping[str, Mapping[str, Definition]],
     limits: Limits,
     assigned: Mapping[tuple[str, str | None], str] | None = None,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,
+    held: Held | None = None,
+    within: Within | None = None,
 ) -> tuple[list[Group], Composed]:
     """Every group with the sections its directives compose, and each contribution.
 
@@ -683,6 +770,8 @@ def compositions(
         declarations,
         substitution,
         composing,
+        held,
+        within,
     )
     return [composer.group(one) for one in groups], composer.placed
 
@@ -707,3 +796,21 @@ def contributions(
             position[id(heading)]
         ]
     return found
+
+
+def owned(held: Held, headed: Sequence[Group], assigned: Sequence[str]) -> Within:
+    """The destination each copy of a composed section gives its own headings."""
+    position = {
+        id(heading): at
+        for at, heading in enumerate(
+            heading for one in headed for heading in one.record.headings
+        )
+    }
+    return {
+        placing: {
+            target: assigned[position[id(heading)]]
+            for target, heading in headings.items()
+            if id(heading) in position
+        }
+        for placing, headings in held.items()
+    }

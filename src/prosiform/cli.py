@@ -68,6 +68,7 @@ from prosiform.closure import (
     DRIVE,
     SEPARATOR,
     UNSUBSTITUTED,
+    Briefs,
     BundleSelection,
     Declarations,
     Malformed,
@@ -75,8 +76,10 @@ from prosiform.closure import (
     Probed,
     Reference,
     Substitution,
+    Unresolvable,
     alternatives_of,
     arrowed,
+    briefing,
     bundle_selection,
     compiled_pick,
     components,
@@ -98,11 +101,15 @@ from prosiform.closure import (
 from prosiform.composition import (
     Colliding,
     Composed,
+    Composing,
     Cycling,
+    Held,
     Overflowing,
     Parentless,
+    Within,
     compositions,
     contributions,
+    owned,
 )
 from prosiform.diagnostics import (
     ERROR,
@@ -117,6 +124,7 @@ from prosiform.diagnostics import (
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
+    DISPATCH_CYCLE,
     HEADING_COLLISION,
     Anchors,
     Hop,
@@ -365,7 +373,10 @@ Symbol grammar:
      bundle whole, keep it in context, and follow it where the link stands
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
      which it reads there, with the inputs the dispatching step states as
-     given, and continue with its answer
+     given, and continue with its answer.
+     The text above a ⇉ line in the sub-section a link points at, and
+     the sections beneath that line, are the bundle's brief: do what it
+     asks before you hand the bundle on
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
      ⇉ lines in the sub-section headed ⫽ Dispatch Set.
      Give each bundle's file path to its own sub-agent at once, with the
@@ -1646,7 +1657,11 @@ def reaching(selected: dict[str, list[Reference]]) -> dict[str, tuple[str, ...]]
     }
 
 
-def included(found: Sequence[Reference]) -> list[Reference]:
+def included(
+    found: Sequence[Reference],
+    parsed: Mapping[str, Sequence[Token]],
+    read: Mapping[str, Source],
+) -> list[Reference]:
     """Every reference that includes what it names: each one composing nothing.
 
     A document only composition directives reach contributes its content
@@ -1654,8 +1669,84 @@ def included(found: Sequence[Reference]) -> list[Reference]:
     merged group and is carried nowhere else. A document an inclusion
     also reaches keeps that inclusion, carrying what the inclusions
     select, beside its contributions.
+
+    A link a composed section writes to one of its own subsections names
+    a heading each copy of that section carries, where it points as
+    `Composing.carry` states, so it includes nothing, unless an inclusion
+    carries the region writing it too: that group's copy of the link
+    names the subsection as any link does. The same section linked from
+    anywhere else is included as any is.
     """
-    return [one for one in found if not one.composes]
+
+    def spanned(path: str, chosen: Sequence[Token]) -> tuple[int, int]:
+        source = read[path]
+        start = (chosen[0].map or (0, 0))[0]
+        end = max((token.map or (0, 0))[1] for token in chosen)
+        return source.line(start + 1) or 1, source.line(end) or 1
+
+    composed: dict[str, list[tuple[int, int, set[int]]]] = {}
+    for one in found:
+        if not one.composes or one.fragment is None:
+            continue
+        chosen = section(parsed[one.path], one.fragment) or ()
+        if not chosen:
+            continue
+        low, high = spanned(one.path, chosen)
+        composed.setdefault(one.path, []).append(
+            (low, high, {id(token) for token in chosen[1:]})
+        )
+
+    def written(one: Reference) -> tuple[str, int] | None:
+        if one.origin is None:
+            return None
+        path, _, line = one.origin.rpartition(":")
+        return (path, int(line)) if line.isdigit() else None
+
+    def carries(one: Reference, at: tuple[str, int]) -> bool:
+        if one.path != at[0]:
+            return False
+        if one.fragment is None:
+            return True
+        try:
+            chosen = section(parsed[one.path], one.fragment) or ()
+        except (Ambiguous, Nested):
+            return False
+        if not chosen:
+            return False
+        low, high = spanned(one.path, chosen)
+        return low <= at[1] <= high
+
+    def within(one: Reference) -> bool:
+        if one.origin is None or one.fragment is None or one.path not in composed:
+            return False
+        path, _, line = one.origin.rpartition(":")
+        if path != one.path or not line.isdigit():
+            return False
+        try:
+            named = section(parsed[one.path], one.fragment) or ()
+        except (Ambiguous, Nested):
+            return False
+        return bool(named) and any(
+            low <= int(line) <= high and id(named[0]) in held
+            for low, high, held in composed[one.path]
+        )
+
+    including = [one for one in found if not one.composes]
+    dropped = {id(one) for one in including if within(one)}
+    # A kept link can carry the region another dropped link is written
+    # in, so the set shrinks to its fixed point.
+    while True:
+        kept = [one for one in including if id(one) not in dropped]
+        restored = {
+            id(one)
+            for one in including
+            if id(one) in dropped
+            and (at := written(one)) is not None
+            and any(carries(each, at) for each in kept)
+        }
+        if not restored:
+            return kept
+        dropped -= restored
 
 
 def rooted(
@@ -2269,6 +2360,60 @@ def dispatches(
             )
 
 
+def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
+    """The brief one dispatch carries into the bundle writing it, or none.
+
+    The brief is the composing reference `briefing` states, one hop
+    beyond the document writing the dispatch, so its links are followed
+    into this bundle's closure as a directive's are. A dispatch carrying
+    the pick token carries the brief no alternative is in force for, so
+    an alternative naming a brief of its own changes the brief, and the
+    pick is left unresolved as `unresolved` reports. Two selected presets
+    naming different briefs are invalid usage naming both, and a brief
+    naming no fragment the reference grammar reads is invalid metadata
+    of the target, each named with the dispatch and its route.
+    """
+    target = hop.target
+    try:
+        found = briefing(target, conversion)
+    except Briefs as two:
+        raise Failure(
+            USAGE_FAILURE,
+            Diagnostic(
+                ERROR,
+                f"{two}, both selected by the dispatch {target.original!r}, so "
+                f"nothing says which section the dispatch carries",
+                code=INVALID_USAGE,
+                reference=target.original,
+                chain=target.chain or None,
+                remedy="select one preset naming a brief",
+                location=hop.location,
+            ),
+        ) from two
+    except Unresolvable as malformed:
+        raise input_failure(
+            f"the brief of {target.path!r}, carried by the dispatch "
+            f"{target.original!r}, {malformed}",
+            code=INVALID_CONVERSION_METADATA,
+            remedy="name the brief by a fragment of a heading the document carries",
+            reference=target.original,
+            resolved=target.path,
+            chain=target.chain,
+        ) from malformed
+    if picks(target.tags) and any(
+        one.brief is not None for one in conversion.alternatives
+    ):
+        raise unresolved(target.path, conversion)
+    if found is None:
+        return None
+    return replace(
+        found,
+        origin=target.origin,
+        chain=(*target.chain[:-1], identity(found)),
+        title=None,
+    )
+
+
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
     """Every referring route must retain no-follow access to a cached identity."""
     if one.path not in captured:
@@ -2380,7 +2525,10 @@ def traverse(
 
     Discovered dispatch occurrences and self-composition warnings describe
     the current mapping. Final composition determines the published
-    handoffs from the source ranges its groups actually carry.
+    handoffs from the source ranges its groups actually carry. Each
+    dispatched target is read in the round that discovers it, so the
+    brief its presets name, as `briefed` states it, is a dependency of
+    that round.
 
     Every source is held with the run's names, the names its entry
     title gives, so each document's stubs they name are in force
@@ -2406,30 +2554,35 @@ def traverse(
     dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
+
+    def load(one: Reference) -> None:
+        nonlocal total
+        verify_cached(root, one, captured)
+        if one.path in read:
+            return
+        limits.hold(FILES, len(read) + 1)
+        opened = read_document(root, one, limits, total)
+        source = stubbed(opened.source, run)
+        environment: dict[str, Any] = {}
+        try:
+            tokens = parse(source.text, limits.of(NESTING), environment)
+            limits.hold(NESTING, nesting(tokens))
+        except Crossed as crossed:
+            raise unindexable(crossed, one.path, one.chain) from crossed
+        except Suppressed as suppressed:
+            raise declined(suppressed, one.path, source, one.chain) from suppressed
+        total += opened.size
+        read[one.path] = source
+        captured[one.path] = opened.capture
+        parsed[one.path] = tokens
+        defined[one.path] = definitions(
+            environment.get(REFERENCES, {}), lines(source.text)
+        )
+
     frontier = list(requested)
     while frontier:
         for one in frontier:
-            verify_cached(root, one, captured)
-            if one.path in read:
-                continue
-            limits.hold(FILES, len(read) + 1)
-            opened = read_document(root, one, limits, total)
-            source = stubbed(opened.source, run)
-            environment: dict[str, Any] = {}
-            try:
-                tokens = parse(source.text, limits.of(NESTING), environment)
-                limits.hold(NESTING, nesting(tokens))
-            except Crossed as crossed:
-                raise unindexable(crossed, one.path, one.chain) from crossed
-            except Suppressed as suppressed:
-                raise declined(suppressed, one.path, source, one.chain) from suppressed
-            total += opened.size
-            read[one.path] = source
-            captured[one.path] = opened.capture
-            parsed[one.path] = tokens
-            defined[one.path] = definitions(
-                environment.get(REFERENCES, {}), lines(source.text)
-            )
+            load(one)
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
         carried = contributing(found)
@@ -2510,6 +2663,7 @@ def traverse(
                     ),
                     one,
                 )
+            briefs: list[Reference] = []
             for link in dispatches(
                 path,
                 read[path],
@@ -2520,15 +2674,22 @@ def traverse(
                 mapping,
             ):
                 dispatching.setdefault((link.name, link.target.tags), link)
-            for one in required(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                mapping,
-            ):
+                load(link.target)
+                brief = briefed(link, read[link.target.path].conversion)
+                if brief is not None:
+                    briefs.append(brief)
+            for one in [
+                *required(
+                    path,
+                    read[path],
+                    parsed[path],
+                    chosen,
+                    reached,
+                    declarations,
+                    mapping,
+                ),
+                *briefs,
+            ]:
                 verify_cached(root, one, captured)
                 occurrence = (one.path, one.fragment, one.title, one.composes, one.tags)
                 if occurrence in titled:
@@ -3079,7 +3240,9 @@ def placement(
     content of the document whose group carries the directive, so that
     section is read where the directive is written, once, and a link
     it carries places a document as one its scope's document writes,
-    a directive it carries reading its own section the same way.
+    a directive it carries reading its own section the same way. The
+    brief a dispatch carries, as `briefed` states it, is read the same
+    way, after the links its scope's document writes.
 
     The first mapping holds the references including each document,
     as `included` keeps them. The second names, for each document a
@@ -3092,7 +3255,7 @@ def placement(
     rather than by a document, so a group an entry places a document in
     is absent there.
     """
-    selected = contributing(included(found))
+    selected = contributing(included(found, parsed, read))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
     placers: dict[tuple[str, str], str] = {}
     entered: set[tuple[str, str]] = set()
@@ -3105,9 +3268,18 @@ def placement(
     composed: set[tuple[str, str | None]] = set()
 
     def place(path: str, chosen: Selection | None, holder: str) -> None:
-        for one in required(
-            path, read[path], parsed[path], chosen, (), declarations, substitution
-        ):
+        briefs = (
+            briefed(hop, read[hop.target.path].conversion)
+            for hop in dispatches(
+                path, read[path], parsed[path], chosen, (), declarations, substitution
+            )
+        )
+        for one in [
+            *required(
+                path, read[path], parsed[path], chosen, (), declarations, substitution
+            ),
+            *(brief for brief in briefs if brief is not None),
+        ]:
             if one.composes:
                 if (one.path, one.fragment) not in composed:
                     composed.add((one.path, one.fragment))
@@ -3249,6 +3421,8 @@ def assembled(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,
+    copies: Held | None = None,
+    within: Within | None = None,
 ) -> tuple[list[Group], Composed]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -3383,6 +3557,8 @@ def assembled(
             declarations,
             substitution,
             composing,
+            copies,
+            within,
         )
 
 
@@ -3431,11 +3607,13 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
         ) from parentless
     except Overflowing as beyond:
         raise input_failure(
-            f"the directive {beyond.destination!r} in {beyond.path!r} composes "
-            f"the heading {beyond.heading!r} at level {beyond.level}, which is "
-            f"beyond H{MAX_LEVEL}",
+            f"the {beyond.kind} {beyond.destination!r} in {beyond.path!r} "
+            f"composes the heading {beyond.heading!r} at level {beyond.level}, "
+            f"which is beyond H{MAX_LEVEL}",
             code=HEADING_DEPTH_OVERFLOW,
-            remedy="write the directive in a shallower section, or name a "
+            remedy="write the dispatch in a shallower section"
+            if beyond.kind == "dispatch"
+            else "write the directive in a shallower section, or name a "
             "shallower section of its target",
             reference=beyond.destination,
             source=location(beyond.path, beyond.line),
@@ -3444,18 +3622,26 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     except Cycling as cycling:
         first, closing = cycling.chain[0], cycling.chain[-1]
         sections = tuple(identity(each.target) for each in cycling.chain)
+        briefing = first.kind == "dispatch"
         raise Failure(
             INPUT_FAILURE,
             Diagnostic(
                 ERROR,
                 f"the directive {closing.written!r} in {closing.at[0]!r} composes "
                 f"{sections[-1]!r}, which holds a directive on the chain of "
-                f"compositions that placed it, so the composition would not end",
-                code=UNSUPPORTED_CONSTRUCT,
+                f"compositions that placed it, so the composition would not end"
+                if not briefing
+                else f"the brief the dispatch {first.written!r} in {first.at[0]!r} "
+                f"carries composes {sections[-1]!r}, which holds that dispatch, so "
+                f"the brief would be lifted inside itself without end",
+                code=DISPATCH_CYCLE if briefing else UNSUPPORTED_CONSTRUCT,
                 reference=closing.written,
                 source=location(closing.at[0], closing.line),
                 chain=(*chains.get(first.at[0], ()), *sections),
-                remedy="remove a directive from the chain, or write one without the "
+                remedy="remove the directive from the brief, or dispatch its target "
+                "without a brief"
+                if briefing
+                else "remove a directive from the chain, or write one without the "
                 "composition mark",
                 location=Location(closing.at[0], closing.line or 1, 1),
                 related=tuple(
@@ -3463,7 +3649,9 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
                         each.at[0],
                         each.line or 1,
                         1,
-                        f"composes {identity(each.target)!r}",
+                        f"{each.kind} carrying {identity(each.target)!r}"
+                        if each.kind == "dispatch"
+                        else f"composes {identity(each.target)!r}",
                     )
                     for each in cycling.chain[:-1]
                 )
@@ -3568,13 +3756,13 @@ def compose(
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the dispatch-set
-    sub-sections its sections need, inserted once the group
-    exists, and the run-pf line that opens the bundle, so the headings
-    the map is built from are every heading the bundle emits. The
-    second pass emits the same headings as the first, because a rewrite
-    edits a link's destination and its mark and nothing a heading is
-    slugged from.
+    compiled link is rewritten through. Each build carries the dispatch
+    sub-sections its sections need, with the briefs they hold composed as
+    a contribution is, inserted once the group exists, and the run-pf
+    line that opens the bundle, so the headings the map is built from
+    are every heading the bundle emits. The second pass emits the same
+    headings as the first, because a rewrite edits a link's destination
+    and its mark and nothing a heading is slugged from.
 
     Candidate validation closes the pass. Every invariant it holds is
     a property of the construction, which an author cannot reach, so a
@@ -3591,6 +3779,7 @@ def compose(
         read, parsed, found, entries, declarations, substitution
     )
     joins = joined(read, parsed, selected, entries)
+    copies: Held = {}
     try:
         built, contributed = assembled(
             read,
@@ -3606,15 +3795,28 @@ def compose(
             None,
             declarations,
             substitution,
+            copies=copies,
         )
-        headed, placed = subsections(
-            built,
+        briefs = Composing(
             parsed,
             read,
-            bundle_file,
-            declarations,
-            substitution,
+            defined,
+            limits,
+            declarations=declarations,
+            substitution=substitution,
+            held=copies,
         )
+        with assembling(chains):
+            headed, placed = subsections(
+                built,
+                parsed,
+                read,
+                bundle_file,
+                briefs.brief,
+                declarations,
+                substitution,
+            )
+        contributed.update(briefs.placed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
@@ -3631,6 +3833,7 @@ def compose(
     targets = destination_map(headed, assigned)
     dispatching = anchors(placed, assigned)
     composing = contributions(contributed, headed, assigned)
+    within = owned(copies, headed, assigned)
     built, _ = assembled(
         read,
         parsed,
@@ -3646,15 +3849,30 @@ def compose(
         declarations,
         substitution,
         composing,
+        within=within,
     )
-    groups, _ = subsections(
-        built,
+    briefs = Composing(
         parsed,
         read,
-        bundle_file,
+        defined,
+        limits,
+        targets,
+        dispatching,
         declarations,
         substitution,
+        composing,
+        within=within,
     )
+    with assembling(chains):
+        groups, _ = subsections(
+            built,
+            parsed,
+            read,
+            bundle_file,
+            briefs.brief,
+            declarations,
+            substitution,
+        )
     groups = opened(groups)
     bundled = assemble(groups)
     try:
@@ -3671,6 +3889,7 @@ def compose(
             substitution,
             composing,
             bundle_file=bundle_file,
+            within=within,
         )
     except Unsafe as boundary:
         reached = chains.get(boundary.path or "", ())

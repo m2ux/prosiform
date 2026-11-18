@@ -1,0 +1,19 @@
+description = "A Mermaid click on a node whose text opens with the dispatch mark, naming a target that declares a brief, points at the sub-section the dispatch is lifted into, headed by the mark and the node's text, which holds the brief and then the dispatch link to the target's bundle."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch links",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

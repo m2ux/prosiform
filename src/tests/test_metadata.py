@@ -688,3 +688,21 @@ def test_one_scalar_beyond_the_ceiling_is_refused_inside_the_byte_budget() -> No
 
 def test_metadata_has_no_conversion_meaning() -> None:
     assert parse("metadata: {dispatch: One rule.}") == Conversion()
+
+
+def test_a_brief_names_a_section_of_its_own_document() -> None:
+    result = parse('prosiform:\n  default: {brief: "#given"}\n  deep: {}')
+    assert [one.brief for one in result.presets] == ["#given", None]
+    assert result.default.brief == "#given"
+
+
+@pytest.mark.parametrize(
+    "value",
+    ['"other.md#given"', '"#"', '"given"', '"#a#b"', "3", "[a]", '""'],
+)
+def test_a_brief_naming_no_section_of_its_own_document_is_refused(value: str) -> None:
+    with pytest.raises(InvalidMetadata) as caught:
+        parse("prosiform:\n  default: {brief: " + value + "}")
+    diagnostic = caught.value.diagnostic
+    assert diagnostic.code == "E_INVALID_CONVERSION_METADATA"
+    assert "prosiform.default.brief must be a fragment" in diagnostic.message

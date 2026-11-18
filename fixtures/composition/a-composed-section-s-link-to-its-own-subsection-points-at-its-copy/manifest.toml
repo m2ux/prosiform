@@ -1,0 +1,17 @@
+description = "A section composed twice links its own subsections; each contribution's links point at that contribution's copies of them, and the subsections are bundled nowhere else."
+
+clauses = [
+  "Section composition — The source of composed content",
+  "Adversarial acceptance fixtures — Composition",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+]
+diagnostics = []

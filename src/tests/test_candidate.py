@@ -49,6 +49,7 @@ from prosiform.closure import BundleSelection, Reference, bundle_selection
 from prosiform.composition import contributions
 from prosiform.grouping import merged, prepared
 from prosiform.limits import NESTING, in_force
+from prosiform.metadata import Conversion
 from prosiform.profile import REFERENCES, parse
 from prosiform.provenance import (
     FILENAME_WRAPPER,
@@ -57,13 +58,15 @@ from prosiform.provenance import (
     Carried,
     Contributing,
     Generated,
+    Instruction,
     Origin,
+    Part,
     Range,
     Record,
     Served,
 )
 from prosiform.rewrite import Definition, definitions
-from prosiform.source import Source, fragments, lines
+from prosiform.source import HEADING_OPEN, Source, fragments, level, lines, regions
 
 BUDGET = NESTING.default
 
@@ -933,8 +936,9 @@ def pointing(destination: str) -> None:
     }
     dispatches(
         reached,
-        {("guide.md", 0): {(("plan.md", None), frozenset(), True): destination}},
+        {("guide.md", 0, ()): {(("plan.md", None), frozenset(), True): destination}},
         lambda _reference: "plan.bundle.md",
+        {"plan.md": Conversion(declared=True)},
     )
 
 
@@ -943,9 +947,29 @@ def test_a_dispatch_map_naming_the_other_preset_variant_fails() -> None:
     drafted = bundle_file(BundleSelection("plan.md", presets=frozenset({"draft"})))
     served = (("plan.md", None), frozenset({"checks"}), False)
     with pytest.raises(Invalid) as raised:
-        dispatches({}, {("guide.md", 0): {served: drafted}}, lambda _reference: checked)
+        dispatches(
+            {},
+            {("guide.md", 0, ()): {served: drafted}},
+            lambda _reference: checked,
+            {"plan.md": Conversion(declared=True)},
+        )
     assert raised.value.invariant == TARGET_INTEGRITY
     assert "selection differs" in str(raised.value)
+
+
+def listed(tokens: Sequence[Token]) -> list[tuple[Record, Part, Token]]:
+    """Each region of a bundle of generated sub-sections, paired as it is written."""
+    record = Record("guide.md", None, (), ())
+    return [
+        (
+            record,
+            Generated(span.content, level(span), PARALLEL_SECTION)
+            if span.type == HEADING_OPEN
+            else Instruction(""),
+            span,
+        )
+        for span in regions(tokens)
+    ]
 
 
 def test_a_parallel_set_listing_the_other_preset_variant_twice_fails() -> None:
@@ -961,9 +985,10 @@ def test_a_parallel_set_listing_the_other_preset_variant_twice_fails() -> None:
         parallel_sets(
             tokens,
             ["guide", "⫽-dispatch-set"],
-            {("guide.md", 0): serving},
+            {("guide.md", 0, ()): serving},
             lambda reference: next(iter(reference.tags)) + ".bundle.md",
             {},
+            listed(tokens),
         )
     assert raised.value.invariant == TARGET_INTEGRITY
     assert "effective bundle files" in str(raised.value)

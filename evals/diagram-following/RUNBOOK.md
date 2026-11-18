@@ -39,6 +39,7 @@ Each class the [scorer](score.py) defines, and `errored`:
 | `undispatched` | The transcript holds no `Agent` prompt naming a dispatched section's compiled file or authored reference, or holds them in another order, while the form states the dispatch. | The transcript holds those prompt targets in the scenario's order and `subagents.json` omits or reorders them. | A prompt's target cannot be matched to the form's files or authored references. |
 | `sequential_set` | The transcript starts the set's members across more than one assistant message. | The transcript starts them in one message and `subagents.json` records them apart. | The stream's message boundaries are absent. |
 | `unrelayed_question` | The sub-agent's report in the transcript opens with a question, and the session went on without starting it again with the answers. | `subagents.json` reads the return otherwise than the report inside the transcript's hand-back frame holds it. | The report's text is cut off. |
+| `premature_dispatch` | The session's form states the target's brief, the transcript starts the sub-agent before any write of the brief's file with its value, as a session that read the brief's lead content and not the child sections it links does, and the sub-agent's own calls find that file absent or holding another value and write `absent` or that value. | The transcript writes the brief's file with its value before the start, and the sub-agent read it and wrote it, or `actions/` holds another value than the transcript wrote; or the form states no brief, or another file than the scenario's `brief`, for the target. | The sub-agent's calls neither read the brief's file nor show where its value came from. |
 | `uncompiled` | A run a `[[scenario.compile]]` table states for an agent is in neither that agent's `commands` in `subagents.json` nor the transcript's shell calls, while the session's form states the line, link or guide run it compiles on a step the path reached. | The transcript's shell calls make that run and `subagents.json` omits it or gives it to another agent; or the form states no line, link or guide run for it on the path. | The transcript's shell calls are cut short, or a command's words cannot be split to read its references. |
 | `overcompiled` | An agent's `commands` run `pf` on a reference no `[[scenario.compile]]` table states for it, as on a line whose step does not hold for the scenario's `inputs/`, and the form states no such line on the path. | The form states that reference on the path and the tables omit it; the reference is a stated one spelled in a way the scorer does not match; or the harness, not the agent, ran the command. | The step's condition admits reaching the line either way. |
 | `misordered_compile` | The agent made every stated run, the transcript's shell calls make them in the order its `commands` record, and the form's steps reach their lines in the tables' order. | The transcript's shell calls make them in the tables' order and `subagents.json` records another; or the form's steps reach the lines in another order than the tables state. | One assistant message holds several of the runs, so their order is not settled. |
@@ -241,4 +242,46 @@ One repetition of each agent-pick scenario, on the run's harness and model, at t
 
 ```bash
 make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows agent-pick --forms compiled --repetitions 1 --session-budget-tokens 2830000 --budget-tokens 11320000 --run-id agent-pick-shakedown-4'
+```
+
+## Dispatch-Brief Run
+
+The `dispatch-brief` [brief scenarios](README.md#brief-scenarios) in both their forms, on the baseline's harness and model, run and shaken down by [#784](https://github.com/m2ux/prosiform/issues/784). The two forms differ only in where the target's `Contract` section reaches the dispatching agent, so each form's pass rate and its `premature_dispatch` count say what a brief published ahead of its dispatch changes. Each `Contract` section is a brief whose lead content links its `Given`, `Leaves` and `Answers` sub-sections by fragment and has the agent act on them before dispatching, and the value the sub-agent copies lives in `Given` alone, so a session that dispatched on the lead alone is `premature_dispatch`. The run holds the [stop rules](#stop-rules), and each failing session takes its disposition from the [triage rubric](#triage-rubric) before anything is committed.
+
+| Item | Value |
+| --- | --- |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
+| Workflows | `dispatch-brief` |
+| Forms | `compiled,briefed`, the two forms the workflow is written in. |
+| Repetitions | 5 |
+| Sessions | 20: two scenarios, two forms, five repetitions. |
+| Session cap | 530 000 tokens: the shakedown's largest session, 260 255 tokens, doubled and rounded up to the next 10 000. |
+| Token budget | 10 600 000 tokens: 20 times the session cap. |
+| Cost cap | USD 5, approved by the user on 2026-11-18. Where the shakedown's mean session cost, doubled, puts 20 sessions above USD 5, the run waits for the user to approve a cap set from that mean: 20 times it, doubled and rounded up to the next dollar. |
+| Committed | `report.json` as `evals/diagram-following/dispatch-brief.json`, with its `dispositions.json` read into it, and its `report.md` as `evals/diagram-following/dispatch-brief.md`; each form's pass rate and failure classes, and the run's measured cost, in the README. `baseline.json`, `report.md`, `mvp-proof.json` and `agent-pick.json` are untouched. |
+| Run | `dispatch-brief`, 2026-11-18, at `4cbd9db52`: all 20 sessions started, 5 passed, USD 0.116679 spent over 3 583 711 tokens. `briefed` passed 3 of 10, failing on `overcompiled` 4 and `read_source` 3; `compiled` passed 2 of 10, failing on `overcompiled` 5 and `read_source` 3; no session in either form took `premature_dispatch`. Each failure is triaged `miss`: the `overcompiled` sessions ran `pf` on a bundle file, a published dispatch link, a source section, a directory or no entry, none of which a line of the form states, and the `read_source` sessions opened the workflow's sources beside the bundles. |
+
+```bash
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows dispatch-brief --forms compiled,briefed --repetitions 5 --session-budget-tokens 530000 --budget-tokens 10600000 --run-id dispatch-brief'
+```
+
+### Shakedown
+
+One repetition of each scenario in each form, on the run's harness and model, at the baseline's session cap. Its measured tokens and cost set the run's session cap and token budget above, and test its cost cap.
+
+| Item | Value |
+| --- | --- |
+| Harness | `opencode` |
+| Model | `openrouter/deepseek/deepseek-v4.1-flash-1017`, named by the user on 2026-11-04. |
+| Spending cap | USD 1 for every live run of the shakedown together. |
+| Sessions | 4: two scenarios, two forms, one repetition. |
+| Session cap | 2 830 000 tokens: the baseline's session cap. |
+| Token budget | 11 320 000 tokens: 4 times the session cap. |
+| Estimate | USD 0.06: 4 sessions at the baseline's mean `compiled` session cost of USD 0.01477, over 384 021 tokens a session. |
+| Run | `dispatch-brief-shakedown`, 2026-11-18, at `4cbd9db52`: `completed`, all 4 sessions started, 1 passed, each failure triaged `miss`: `ledger-brief` and `payroll-brief` in `briefed`, and `payroll-brief` in `compiled`, took `read_source`, opening the workflow's sources beside the bundles. |
+| Measured | USD 0.024484 in all, USD 0.006121 a session; 800 977 tokens, 200 244 a session, the largest 260 255. These set the run's session cap and token budget above; 20 sessions at the mean, doubled, come to about USD 0.25, inside the USD 5 cap. |
+
+```bash
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows dispatch-brief --forms compiled,briefed --repetitions 1 --session-budget-tokens 2830000 --budget-tokens 11320000 --run-id dispatch-brief-shakedown'
 ```

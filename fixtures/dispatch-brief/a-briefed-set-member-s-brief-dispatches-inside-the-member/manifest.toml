@@ -1,0 +1,21 @@
+description = "A briefed set member's brief writes a dispatch of its own, which compiles a bundle of its own and publishes where the brief writes it, inside the member's sub-section, and is no member of the set: the set's lines name its two members alone."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/helper.bundle.md",
+  "expected/investigate.bundle.md",
+  "expected/review.bundle.md",
+]
+diagnostics = []

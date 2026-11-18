@@ -665,6 +665,60 @@ def alternatives_of(
     )
 
 
+class Briefs(Exception):
+    """Two presets one dispatch selects, each naming a different brief."""
+
+    def __init__(self, first: Preset, later: Preset) -> None:
+        super().__init__(
+            f"prosiform.{first.name}.brief and prosiform.{later.name}.brief name "
+            f"{first.brief!r} and {later.brief!r}"
+        )
+        self.first = first
+        self.later = later
+
+
+def brief_of(tags: frozenset[str], conversion: Conversion) -> str | None:
+    """The fragment naming the section a dispatch selecting `tags` carries as its brief.
+
+    A named preset the tags select layers over `default`, so its brief
+    holds over `default`'s. Two selected presets naming different briefs
+    leave nothing saying which is carried, so they raise `Briefs`. A
+    dispatch whose presets in force name none carries no brief.
+    """
+    found: Preset | None = None
+    for preset in matching_presets(conversion, tags):
+        if preset.brief is None:
+            continue
+        if found is not None and found.brief != preset.brief:
+            raise Briefs(found, preset)
+        found = found or preset
+    if found is not None:
+        return found.brief
+    return conversion.default.brief
+
+
+def briefing(target: Reference, conversion: Conversion) -> Reference | None:
+    """The brief one dispatched target carries, as the composing reference it is.
+
+    The brief is compiled into the dispatching bundle as a composition
+    of the section `brief_of` names, under the presets the dispatch
+    selects, so the reference holds the dispatch's tags, the pick token
+    aside, and states that it composes. A dispatch carrying no brief
+    yields none.
+    """
+    brief = brief_of(target.tags, conversion)
+    if brief is None:
+        return None
+    return replace(
+        target,
+        original=f"{target.walk or target.path}{brief}",
+        fragment=admissible(decoded(brief[1:], FRAGMENT_PART), FRAGMENT_PART),
+        tags=target.tags - {PICK},
+        composes=True,
+        defers=False,
+    )
+
+
 def dispatched(opening: str) -> bool:
     """Whether a link states that a sub-agent follows its material.
 

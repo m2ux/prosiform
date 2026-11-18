@@ -102,11 +102,12 @@ def workspace(
 
 
 def done_by_sub_agents(held: Path, item: Scenario) -> Path:
-    """Write the actions a scenario states its sub-agents do, as they would."""
+    """Write the briefs and actions a scenario's dispatches do, as they would."""
     for entry in item.trace:
-        if entry.action is not None:
-            name, value = entry.action
-            (held / ACTIONS / name).write_text(f"{value}\n")
+        for done in (entry.brief, entry.action):
+            if done is not None:
+                name, value = done
+                (held / ACTIONS / name).write_text(f"{value}\n")
     return held
 
 
@@ -556,6 +557,133 @@ def test_a_sub_agent_that_wrote_no_action_is_missing_action(tmp_path: Path) -> N
         None,
         ("tests.txt",),
     )
+
+
+def briefed(tmp_path: Path, name: str, starts: list[Start] | None = None) -> Path:
+    """A `dispatch-brief` workspace on its scenario's path with every file written."""
+    held = CORPUS["dispatch-brief"]
+    item = scenario("dispatch-brief", name)
+    records = workspace(
+        tmp_path,
+        held,
+        list(item.path),
+        starts=starts_of(item) if starts is None else starts,
+    )
+    return done_by_sub_agents(records, item)
+
+
+@pytest.mark.parametrize("name", ["ledger-brief", "payroll-brief"])
+def test_a_sub_agent_that_found_its_brief_written_passes(
+    tmp_path: Path, name: str
+) -> None:
+    """AC9: a session that acted on the brief before the start passes."""
+    verdict = score(
+        CORPUS["dispatch-brief"],
+        scenario("dispatch-brief", name),
+        briefed(tmp_path, name),
+    )
+    assert (verdict.passed, verdict.failure) == (True, None)
+
+
+@pytest.mark.parametrize("name", ["ledger-brief", "payroll-brief"])
+def test_a_sub_agent_started_before_its_brief_was_acted_on_is_premature(
+    tmp_path: Path, name: str
+) -> None:
+    """AC9: a sub-agent that copied no brief started before the session wrote it.
+
+    The session wrote the brief's file in the end, but its sub-agent found
+    none, so the start came first and the verdict names the sub-agent's file.
+    """
+    item = scenario("dispatch-brief", name)
+    held = briefed(tmp_path, name)
+    [entry] = item.trace
+    assert entry.action is not None
+    (held / ACTIONS / entry.action[0]).write_text("absent\n")
+    verdict = score(CORPUS["dispatch-brief"], item, held)
+    assert (verdict.passed, verdict.failure, verdict.divergence, verdict.actions) == (
+        False,
+        Failure.PREMATURE_DISPATCH,
+        None,
+        (entry.action[0],),
+    )
+
+
+@pytest.mark.parametrize("name", ["ledger-brief", "payroll-brief"])
+@pytest.mark.parametrize("guessed", [None, "ledger", "payroll"])
+def test_a_dispatch_on_the_brief_lead_alone_is_premature(
+    tmp_path: Path, name: str, guessed: str | None
+) -> None:
+    """AC9: a session that read only the brief's lead content dispatched early.
+
+    The brief's value lives in a child section its lead links, so a session
+    that dispatched without following the links wrote no brief, or one
+    holding a value of its own, and its sub-agent copied that rather than
+    the brief's value. The start's order is read before the brief's own
+    file, so the verdict is `premature_dispatch` rather than the later
+    `missing_action`.
+    """
+    item = scenario("dispatch-brief", name)
+    held = briefed(tmp_path, name)
+    [entry] = item.trace
+    assert entry.brief is not None and entry.action is not None
+    if guessed is None:
+        (held / ACTIONS / entry.brief[0]).unlink()
+    else:
+        (held / ACTIONS / entry.brief[0]).write_text(f"{guessed}\n")
+    (held / ACTIONS / entry.action[0]).write_text(f"{guessed or 'absent'}\n")
+    verdict = score(CORPUS["dispatch-brief"], item, held)
+    assert (verdict.failure, verdict.actions) == (
+        Failure.PREMATURE_DISPATCH,
+        (entry.action[0],),
+    )
+
+
+def test_a_brief_left_unwritten_beside_a_copied_value_is_missing_action(
+    tmp_path: Path,
+) -> None:
+    """A sub-agent holding the brief's value passes the order check.
+
+    A session that handed the brief's value on without writing its file
+    still read it before the start, so the file it left unwritten is a
+    `missing_action` naming the brief's file.
+    """
+    item = scenario("dispatch-brief", "ledger-brief")
+    held = briefed(tmp_path, "ledger-brief")
+    [entry] = item.trace
+    assert entry.brief is not None
+    (held / ACTIONS / entry.brief[0]).unlink()
+    verdict = score(CORPUS["dispatch-brief"], item, held)
+    assert (verdict.failure, verdict.actions) == (
+        Failure.MISSING_ACTION,
+        (entry.brief[0],),
+    )
+
+
+def test_a_sub_agent_that_wrote_nothing_is_missing_action_not_premature(
+    tmp_path: Path,
+) -> None:
+    """An unwritten action says nothing of when its sub-agent started."""
+    item = scenario("dispatch-brief", "ledger-brief")
+    held = briefed(tmp_path, "ledger-brief")
+    [entry] = item.trace
+    assert entry.action is not None
+    (held / ACTIONS / entry.action[0]).unlink()
+    verdict = score(CORPUS["dispatch-brief"], item, held)
+    assert (verdict.failure, verdict.actions) == (
+        Failure.MISSING_ACTION,
+        (entry.action[0],),
+    )
+
+
+def test_the_brief_check_follows_the_dispatch_shape(tmp_path: Path) -> None:
+    """A sub-agent never started is `undispatched`, whatever its file holds."""
+    item = scenario("dispatch-brief", "ledger-brief")
+    held = briefed(tmp_path, "ledger-brief", starts=[])
+    [entry] = item.trace
+    assert entry.action is not None
+    (held / ACTIONS / entry.action[0]).write_text("absent\n")
+    verdict = score(CORPUS["dispatch-brief"], item, held)
+    assert verdict.failure == Failure.UNDISPATCHED
 
 
 def test_a_run_that_stopped_short_is_unfinished_though_nothing_was_dispatched(

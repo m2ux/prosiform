@@ -1,0 +1,25 @@
+description = "A brief composes the section holding the dispatch that carries it, so the brief would be lifted inside itself without end; the run fails with E_DISPATCH_CYCLE naming the dispatch and the composed section, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch cycles",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_DISPATCH_CYCLE"
+reference = "guide.md#plan"
+chain = ["guide.md", "investigate.md#given", "guide.md#plan"]
+
+[expected.diagnostics.location]
+file = "investigate.md"
+line = 10
+column = 1

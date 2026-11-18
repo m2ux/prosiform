@@ -1,0 +1,21 @@
+description = "A preset's brief writes a percent escape no fragment decodes, so the dispatch carrying it names no section; the run fails with E_INVALID_CONVERSION_METADATA naming the dispatch and its route, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Conversion metadata — brief names a section of its own document",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["%zz"]
+reference = "investigate.md"
+resolved = "investigate.md"
+chain = ["guide.md", "investigate.md"]

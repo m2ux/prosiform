@@ -1,0 +1,19 @@
+description = "A dispatch carrying a brief written in a section's heading publishes there without its mark, pointing at the sub-section it is lifted into beneath that section, and the heading's slug is taken from the text it publishes."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch links",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

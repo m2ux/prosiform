@@ -1,0 +1,20 @@
+description = "A brief declared in a named preset is carried by the dispatch whose title selects that preset, which is lifted into a sub-section, and by no other: a dispatch of the same target selecting no preset publishes in place with its mark, pointing at its own bundle file."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Presets — Selection by tags",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate--p-d8c251f92c409219128a07fd495d7dfdb198bddea6cc8ccdd7daaf88341aef70.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

@@ -1,0 +1,19 @@
+description = "A Contract brief's lead content links each of its child sections; in each of two lifted copies the links point at that copy's children, and the children are bundled nowhere else, while the target's own bundle keeps the section unchanged."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Section composition — The source of composed content",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

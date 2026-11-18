@@ -1,0 +1,21 @@
+description = "Two sections dispatch one briefed target whose brief dispatches a second briefed target, whose brief composes a section and holds a set; each copy of the outer brief carries its own copy of the inner one, whose composed section and set sub-section are its own, so each copy's links point within that copy."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/a.bundle.md",
+  "expected/b.bundle.md",
+  "expected/c.bundle.md",
+  "expected/d.bundle.md",
+]
+diagnostics = []

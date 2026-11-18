@@ -1,0 +1,25 @@
+description = "Two briefs dispatching each other, reached from a level-5 section, are found on the chain of briefs being carried before any sub-section passes H6; the run fails with E_DISPATCH_CYCLE naming the chain and the dispatch closing it, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch cycles",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_DISPATCH_CYCLE"
+reference = "a.md"
+chain = ["guide.md", "a.md", "b.md", "a.md"]
+
+[expected.diagnostics.location]
+file = "b.md"
+line = 10
+column = 1

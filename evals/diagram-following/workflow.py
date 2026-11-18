@@ -30,6 +30,11 @@ case and headed with the state's name.
   session receives the bundle set `pf` compiles from `compiled/` beside the
   sources and the build, so a `↳` line its bundle carries is compiled where
   it stands.
+- `briefed/` holds a compiled form whose dispatched targets declare the
+  section their dispatching agent acts on as a `brief`, where `compiled/`
+  composes that section with a `↳` line beside the dispatch, so `pf`
+  publishes the section ahead of the dispatch rather than after it. A
+  briefed session receives what a compiled one does.
 
 A state's section states its action, then a paragraph opening `**Next.**`
 that states its transition, and that paragraph alone differs between the
@@ -50,8 +55,9 @@ lists the trace a correct run produces: one `[[scenario.trace]]` table per
 sub-agent start, in the order the walk dispatches them, naming the section
 the sub-agent follows as the document and heading it was compiled from,
 `presets` for the effective declared names selecting its bundle,
-`together` on each entry of a set started at once, and the `action` its
-section states, as the `file` under `actions/` and the `value` it holds. A
+`together` on each entry of a set started at once, the `brief` its
+dispatching agent acts on before starting it, and the `action` its
+section states, each as the `file` under `actions/` and the `value` it holds. A
 scenario whose sub-agent returns a question states its `answers`, the text
 a run writes to `answers.txt` for the session to hand back.
 A run writes each input to `inputs/<name>` as the value followed by a
@@ -147,6 +153,7 @@ EDGE_WORKFLOWS = (
     "deferred-composition",
     "deferred-dispatch",
     "directive-labels",
+    "dispatch-brief",
     "dispatch-depth",
     "inline-bootstrap",
     "preset-deferral",
@@ -174,9 +181,18 @@ DIAGRAM = "diagram"
 PROSE = "prose"
 LINKED_FORM = "linked"
 COMPILED_FORM = "compiled"
+BRIEFED_FORM = "briefed"
 AUTHORED_FORM = "authored"
 BOOTSTRAP = "bootstrap"
-FORMS = (DIAGRAM, PROSE, LINKED_FORM, COMPILED_FORM, AUTHORED_FORM, BOOTSTRAP)
+FORMS = (
+    DIAGRAM,
+    PROSE,
+    LINKED_FORM,
+    COMPILED_FORM,
+    BRIEFED_FORM,
+    AUTHORED_FORM,
+    BOOTSTRAP,
+)
 BOOTSTRAP_DIR = "skill"
 """The directory a bootstrap form's SKILL.md sits in, beside its documents."""
 
@@ -188,14 +204,20 @@ FORM_DIR = {form: form for form in FORMS} | {BOOTSTRAP: BOOTSTRAP_DIR}
 
 A bootstrap form's tree is its skill, which carries the documents it names.
 """
-MARKED_FORMS = (COMPILED_FORM, BOOTSTRAP)
+MARKED_FORMS = (COMPILED_FORM, BRIEFED_FORM, BOOTSTRAP)
 """The forms whose dispatch steps are written as marked links and no prose.
 
 A bootstrap skill's documents are the ones its compiled bundle carries, so a
 step states its dispatch by its marks in each.
 """
-SHELL_FORMS = (COMPILED_FORM, BOOTSTRAP)
+SHELL_FORMS = (COMPILED_FORM, BRIEFED_FORM, BOOTSTRAP)
 """The forms whose session is given the build under test as `pf` and a shell."""
+SOURCE_FORMS = (COMPILED_FORM, BRIEFED_FORM)
+"""The forms whose session receives its sources beside the bundle set `pf` compiles.
+
+A `↳` line such a bundle carries names its target from the directory `pf`
+ran in, so the sources stand where they were compiled from.
+"""
 
 DISPATCH_FORMS = (COMPILED_FORM, AUTHORED_FORM)
 UNDRAWN = (PROSE,)
@@ -226,6 +248,7 @@ TRANSITION = {
     PROSE: PROSE,
     LINKED_FORM: LINKED_FORM,
     COMPILED_FORM: DIAGRAM,
+    BRIEFED_FORM: DIAGRAM,
     AUTHORED_FORM: DIAGRAM,
     BOOTSTRAP: DIAGRAM,
 }
@@ -591,6 +614,9 @@ class Dispatch:
     it holds; a section stating no action carries none, and nothing is
     checked for it. The action a deferred composition activates is stated
     here too, since only the material a run on that line compiles states it.
+    `brief` is the file and value the target's brief section has the
+    dispatching agent write before the start, or nothing for a target
+    stating no brief.
     """
 
     section: str
@@ -598,6 +624,7 @@ class Dispatch:
     action: tuple[str, str] | None = None
     presets: frozenset[str] = frozenset()
     """Declared named presets identifying the dispatched bundle selection."""
+    brief: tuple[str, str] | None = None
 
 
 @dataclass(frozen=True)
@@ -1031,27 +1058,38 @@ def read_compile(row: dict[str, object], named: str) -> Compile:
     return Compile(by, entry, read_tags(presets), pick)
 
 
-def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
-    """One sub-agent start, as a `[[scenario.trace]]` table writes it.
-
-    A section states one action, which is the file it has its sub-agent
-    write; a start whose section states none carries none.
-    """
-    action = row.get("action")
-    presets = row.get("presets")
-    if presets is not None and not isinstance(presets, str):
-        raise CorpusError(f"{named}: a start's presets need a string list")
-    if action is not None and (
+def read_action(
+    row: dict[str, object], field: str, named: str
+) -> tuple[str, str] | None:
+    """One file and value a trace table's field names, or nothing where it is absent."""
+    action = row.get(field)
+    if action is None:
+        return None
+    if (
         not isinstance(action, dict)
         or not isinstance(action.get("file"), str)
         or not isinstance(action.get("value"), str)
     ):
-        raise CorpusError(f"{named}: a start's action is {action!r}, not a file")
+        raise CorpusError(f"{named}: a start's {field} is {action!r}, not a file")
+    return action["file"], action["value"]
+
+
+def read_dispatch(row: dict[str, object], named: str) -> Dispatch:
+    """One sub-agent start, as a `[[scenario.trace]]` table writes it.
+
+    A section states one action, which is the file it has its sub-agent
+    write; a start whose section states none carries none. A target's brief
+    states the one action its dispatching agent does before the start.
+    """
+    presets = row.get("presets")
+    if presets is not None and not isinstance(presets, str):
+        raise CorpusError(f"{named}: a start's presets need a string list")
     return Dispatch(
         str(row["dispatch"]),
         bool(row.get("together", False)),
-        (action["file"], action["value"]) if action is not None else None,
+        read_action(row, "action", named),
         read_tags(presets),
+        read_action(row, "brief", named),
     )
 
 
@@ -1162,12 +1200,13 @@ def instruction(entry: str, form: str = "") -> str:
 
     A bootstrap session is given its own text, which names the skill it reads
     rather than a bundle, since that form's document is a skill that states a
-    compile rather than a workflow to follow. A compiled session is given its
-    own too, naming the entry's bundle and the `pf` beside it.
+    compile rather than a workflow to follow. A session given its sources
+    beside the bundle set is given its own too, naming the entry's bundle and
+    the `pf` beside it.
     """
     source = {
         BOOTSTRAP: INSTRUCTION_BOOTSTRAP,
-        COMPILED_FORM: INSTRUCTION_COMPILED,
+        **dict.fromkeys(SOURCE_FORMS, INSTRUCTION_COMPILED),
     }.get(form, INSTRUCTION)
     blocks: list[str] = [
         body for kind, body in FENCE.findall(source.read_text()) if kind == "text"
@@ -1496,11 +1535,15 @@ def bundle_walk(
 
 
 def compiled_walk(
-    workflow: Workflow, inputs: dict[str, str], output: Path
+    workflow: Workflow,
+    inputs: dict[str, str],
+    output: Path,
+    form: str = COMPILED_FORM,
 ) -> tuple[tuple[str, ...], tuple[Compile, ...], list[str]]:
-    """The path and the session's runs the compiled form's bundles state, and faults.
+    """The path and the session's runs one source form's bundles state, and faults.
 
-    The walk reads the entry's bundle `pf` compiles from the compiled sources,
+    `form` is one of `SOURCE_FORMS`. The walk reads the entry's bundle `pf`
+    compiles from that form's sources,
     and runs `pf` from them on each `↳` line a state's steps reach, as a
     session does, so the runs are the ones a correct
     session makes and the path is the one the bundles they write state. A
@@ -1510,11 +1553,11 @@ def compiled_walk(
     run writes under `output`, and one failing is a fault.
     """
     entry = output / "entry"
-    run = bundle(workflow, COMPILED_FORM, entry)
+    run = bundle(workflow, form, entry)
     if run.returncode != 0:
         return (), (), [f"pf exited {run.returncode}: {run.stderr.decode()}"]
     runs: list[Compile] = []
-    root = workflow.form(COMPILED_FORM)
+    root = workflow.form(form)
 
     def compiled(request: Compile) -> subprocess.CompletedProcess[bytes]:
         runs.append(request)

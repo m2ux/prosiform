@@ -1,0 +1,25 @@
+description = "Two dispatches carrying a brief write one link text and select two presets of their target, so their sub-sections would share one heading naming two bundles; the run fails with E_HEADING_COLLISION naming the second dispatch and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+reference = "investigate.md"
+message_contains = ["carries a brief under the heading"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 9
+column = 1

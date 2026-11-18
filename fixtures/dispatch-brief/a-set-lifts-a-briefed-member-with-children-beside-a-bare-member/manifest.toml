@@ -1,0 +1,20 @@
+description = "A set of a member whose brief holds a subsection and a composition directive, and a member carrying no brief, lifts every member into a sub-section one level below the set's, in written order: the briefed member's holds the brief's lead content, its line and then the brief's sections one level further down, and the bare member's holds its line alone."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+  "expected/review.bundle.md",
+]
+diagnostics = []
