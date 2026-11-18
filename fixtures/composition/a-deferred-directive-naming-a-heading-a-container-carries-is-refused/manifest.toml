@@ -1,0 +1,23 @@
+description = "A deferred directive names notes.md#inner, a heading a block quote carries. The run names the directive's contribution by the heading its target section opens with, and a heading a container carries roots no section, so the run refuses the fragment as an ordinary reference naming it is refused, with the reference, the document it resolved to and the chain, and publishes nothing."
+
+clauses = [
+  "Section extraction and output hierarchy — Nested target",
+  "Section composition — Deferred composition",
+  "Validation and failure contract — Publication",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_NESTED_SECTION_TARGET"
+reference = "notes.md#inner"
+resolved = "notes.md"
+source = "guide.md:8"
+chain = ["guide.md", "notes.md#inner"]

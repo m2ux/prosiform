@@ -48,7 +48,7 @@ Each inline or reference-style Markdown link occurrence supplies its own comma-s
 
 A reference with no fragment, or an empty one, selects the whole document: its body, its preamble included, less frontmatter. A reference with a fragment selects one section — a document-level heading and its subsections, ending before the next heading of equal or higher level.
 
-Only a heading names a section. A fragment is looked up in the original document's own heading index, exactly as spelled, so `#Run` and `#run` name different things. A fragment naming no heading in its document fails with `E_TARGET_NOT_FOUND`, one naming a heading nested inside a list or a block quote with `E_NESTED_SECTION_TARGET`, and one naming a slug two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`.
+Only a heading names a section. A fragment is looked up in the original document's own heading index, exactly as spelled, so `#Run` and `#run` name different things. A fragment naming no heading in its document fails with `E_TARGET_NOT_FOUND`, one naming a heading nested inside a list or a block quote with `E_NESTED_SECTION_TARGET`, and one naming a slug two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`. Each is reported ahead of a failure of the alternatives or presets the run's references pick and select, since the run selects every document before it reads their presets.
 
 ## Operators
 
