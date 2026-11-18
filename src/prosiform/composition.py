@@ -65,7 +65,8 @@ counts.
 Composition runs on the built groups ahead of the dispatch pass, which
 reads what a destination section carries as the scope's own content:
 a scope's dispatch-set sub-sections follow its destination sections, and
-its child sections follow both.
+its child sections follow both. That pass composes each dispatch's
+brief through `Composing.brief`, beneath the sub-section it emits.
 
 Titles are matched exactly as their headings show them: no case
 folding, Unicode normalisation or trimming joins two titles, so one
@@ -120,7 +121,7 @@ from prosiform.closure import (
     rebased,
     resolvable,
 )
-from prosiform.dispatch import region_of
+from prosiform.dispatch import Link, region_of
 from prosiform.limits import OUTPUT_BYTES, Limits
 from prosiform.marks import INLINE_MARK
 from prosiform.provenance import (
@@ -465,6 +466,43 @@ class Composing:
         if one.deferred:
             self.activation(one)
             return
+        self.carry(one, depth, placing)
+
+    def brief(
+        self, link: Link, target: Reference, depth: int
+    ) -> tuple[list[str], list[Part], list[Emitted]]:
+        """One dispatch's brief, as the text, parts and headings it emits.
+
+        The brief is its section's body and subsections composed beneath
+        a heading at `depth` the dispatch stage emits for it, so the
+        section's own heading gives way to that one. Its links are
+        rewritten against the document writing them, as a contribution's
+        are, under the placing of the dispatch carrying it, which a
+        directive the brief writes composes beneath.
+        """
+        one = Directive(target, link.written, link.location.line, link.at, "")
+        self.emitted, self.parts, self.headings = [], [], []
+        self.carry(one, depth, (one,))
+        return self.emitted, self.parts, self.headings
+
+    def carry(self, one: Directive, depth: int, placing: tuple[Directive, ...]) -> None:
+        """Emit one target section's body and subsections beneath a heading at `depth`.
+
+        The directives the body carries compose beneath the heading
+        holding each, as the scope's do.
+        """
+        path = one.target.path
+        tokens = self.parsed[path]
+        chosen = section(tokens, one.target.fragment or "") or ()
+        opening = chosen[0]
+        placed = tuple(each.at for each in placing)
+        shows = shown_text(
+            path,
+            tokens,
+            self.declarations,
+            self.substitution,
+            conversions=self.conversions,
+        )
         body = list(chosen[1:])
         by = depth - level(opening)
         source = self.read[path]

@@ -71,6 +71,7 @@ STRUCTURAL_ANCESTOR = "structural ancestor"
 INSTRUCTION = "instruction"
 PARALLEL_SECTION = "dispatch-set sub-section"
 PICK_SECTION = "dispatch-pick sub-section"
+BRIEF_SECTION = "dispatch-brief sub-section"
 DESTINATION_SECTION = "destination section"
 CONTRIBUTION_HEADING = "contribution heading"
 

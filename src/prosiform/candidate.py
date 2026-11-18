@@ -90,6 +90,7 @@ from prosiform.closure import (
     Reference,
     Substitution,
     alternatives_of,
+    briefing,
     bundled,
     carried_names,
     deferred_title,
@@ -105,6 +106,7 @@ from prosiform.closure import (
 from prosiform.metadata import Conversion
 from prosiform.profile import HTML_INLINE, REFERENCES, command_block, parse
 from prosiform.provenance import (
+    BRIEF_SECTION,
     CONTRIBUTION_HEADING,
     FILENAME_WRAPPER,
     GROUP_HEADING,
@@ -1379,18 +1381,33 @@ def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
     bundle_file: Callable[[Reference], str],
+    conversions: Mapping[str, Conversion],
 ) -> None:
     """Hold each dispatched link's destination to a bundle file or its sub-section.
 
-    A dispatch-set or dispatch-pick sub-section answers to no source
-    target, so what a set's link, or a `⇉` link carrying the pick token,
-    is held to is the kind of heading it reaches.
+    A dispatch-set, dispatch-pick or dispatch-brief sub-section answers
+    to no source target, so what a set's link, a `⇉` link carrying the
+    pick token, or a link whose target's presets in force name a brief,
+    is held to is the kind of heading it reaches; a `⫽` link carrying a
+    brief reaches its set's sub-section, or the one a set of one is
+    lifted into.
     A destination that is no fragment of the bundle names a file beside
     it, which no heading stands for.
     """
     for (path, _line), served in dispatching.items():
         for (target, tags, together), destination in served.items():
-            kind = PARALLEL_SECTION if together or not picks(tags) else PICK_SECTION
+            reference = Reference(target[0], target[0], target[1], tags=tags)
+            briefed = briefing(reference, conversions[target[0]]) is not None
+            kinds = (
+                (PICK_SECTION,)
+                if picks(tags) and not together
+                else (PARALLEL_SECTION, BRIEF_SECTION)
+                if together and briefed
+                else (PARALLEL_SECTION,)
+                if together
+                else (BRIEF_SECTION,)
+            )
+            kind = kinds[0]
             if filed(destination):
                 if kind == PICK_SECTION:
                     raise Invalid(
@@ -1399,7 +1416,6 @@ def dispatches(
                         f"in {path!r} carries the pick token and points at the "
                         f"file {destination!r}",
                     )
-                reference = Reference(target[0], target[0], target[1], tags=tags)
                 expected = quote(bundle_file(reference), safe="")
                 if destination != expected:
                     raise Invalid(
@@ -1411,7 +1427,7 @@ def dispatches(
                 continue
             found = reached.get(destination.removeprefix(ANCHOR))
             if found is None or not (
-                isinstance(found[1], Generated) and found[1].kind == kind
+                isinstance(found[1], Generated) and found[1].kind in kinds
             ):
                 raise Invalid(
                     TARGET_INTEGRITY,
@@ -1426,12 +1442,29 @@ def parallel_sets(
     dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
     bundle_file: Callable[[Reference], str],
     read: Mapping[str, Source],
+    paired: Sequence[tuple[Record, Part, Token]],
 ) -> None:
     """Each generated dispatch sub-section lists exactly its effective selection files.
 
-    A set's sub-section lists its members' files, and a dispatch-pick
-    sub-section the file of each alternative its target declares.
+    A set's sub-section lists its members' files, a dispatch-pick
+    sub-section the file of each alternative its target declares, and a
+    sub-section a dispatch carrying a brief is lifted into its target's
+    file. What a sub-section lists is the dispatch lines the bundle
+    writes beneath it, up to the next heading at its level or above, or
+    the next dispatch sub-section nested in it: a brief it carries is
+    source content, and lists nothing.
     """
+    lines = {
+        id(span)
+        for _record, part, span in paired
+        if isinstance(part, Instruction) and part.activates is None
+    }
+    nested = {
+        id(span)
+        for _record, part, span in paired
+        if isinstance(part, Generated)
+        and part.kind in (PARALLEL_SECTION, PICK_SECTION, BRIEF_SECTION)
+    }
     openings = dict(
         zip(assigned, (one for one, _inline in headings(tokens)), strict=True)
     )
@@ -1460,8 +1493,12 @@ def parallel_sets(
         opening = openings[destination.removeprefix(ANCHOR)]
         found: list[str] = []
         for span in spans[positions[id(opening)] + 1 :]:
-            if span.type == HEADING_OPEN:
+            if span.type == HEADING_OPEN and (
+                level(span) <= level(opening) or id(span) in nested
+            ):
                 break
+            if id(span) not in lines:
+                continue
             found.extend(
                 one.destination
                 for _children, _at, one in carried(tokens, span)
@@ -1565,8 +1602,13 @@ def validate(
     reached = named(tokens, groups, assigned)
     integrity(reached, targets)
     one_member(groups)
-    dispatches(reached, served, bundle_file)
-    parallel_sets(tokens, assigned, served, bundle_file, read)
+    dispatches(
+        reached,
+        served,
+        bundle_file,
+        {path: one.conversion for path, one in read.items()},
+    )
+    parallel_sets(tokens, assigned, served, bundle_file, read, paired)
     contributing = {} if composing is None else composing
     contributions(reached, contributing)
     for record, part, span in paired:

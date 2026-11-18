@@ -1,0 +1,19 @@
+description = "A set of one target declaring a brief is a single dispatch, so it is lifted into a sub-section headed by the dispatch mark and its text, holding the brief and then the dispatch link, as a ⇉ link is."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Parallel dispatch sub-sections",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

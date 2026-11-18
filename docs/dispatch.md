@@ -64,9 +64,45 @@ A set or a `⇉` link carrying `?` in a level-6 section leaves no level for its 
 
 A dispatch in a heading the bundle emits as text alone has no link to publish, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
 
+## Briefs
+
+A target can state what its dispatcher must do before handing it on: the inputs it needs written down, a check to run first. Its preset names that section as a **brief**, a fragment of its own document, as [Sources](sources.md#frontmatter) states:
+
+```yaml
+prosiform:
+  default:
+    brief: "#given"
+```
+
+A dispatch whose presets in force for its target name a brief carries it. In `default`, every dispatch of the target does; in a named preset, a dispatch selects it by its link title, and one selecting no preset declaring `brief` publishes as the sections above state. A named preset's brief holds over `default`'s, and two selected presets naming different briefs fail with `E_INVALID_USAGE`, naming both.
+
+A `⇉` link carrying a brief, and a set of one, is lifted into a sub-section one level below the section writing it, headed by its mark and its link text, as `### ⇉ Investigate`. Its body is the brief, then the dispatch line naming the target's bundle file. The link is published without its mark, its title as authored, pointing at the sub-section, and so is a diagram link naming it. The sub-section stands where a dispatch-set sub-section does, after the section's own content and composed destinations and before its child sections, after the set's own sub-section and beside the section's dispatch-pick sub-sections in the order their first links are written:
+
+```markdown
+## Plan
+
+1. [Investigate](#⇉-investigate)
+
+### ⇉ Investigate
+
+Write the case number to the case file before you dispatch.
+
+[⇉ Investigate](investigate.bundle.md)
+```
+
+*From [a-dispatch-to-a-target-declaring-a-brief-is-lifted-into-a-sub-section](../fixtures/dispatch-brief/a-dispatch-to-a-target-declaring-a-brief-is-lifted-into-a-sub-section).*
+
+The brief is compiled as a `↳` composition of its section is: its links are followed into the dispatching bundle's closure, its own heading gives way to the generated one, and its child sections nest one level below it. The target's own bundle carries the section unchanged. A dispatch the brief writes takes its own sub-section one level below the one holding the brief, after that sub-section's dispatch lines.
+
+A `⇉` link carrying `?` places its brief in its `⇉ Dispatch Pick` sub-section, above the pick lines. The brief compiles with no alternative in force, so it publishes where no alternative changes it, as [Presets in force](selection.md#presets-in-force) states for a link, and the run fails with `E_ALTERNATIVE_UNRESOLVED`, listing the alternatives, where one changes it: an alternative routing a link the brief writes, or one naming a brief of its own.
+
+In a `⫽ Dispatch Set` sub-section, each member carrying a brief is published as its brief followed by its own dispatch line, in the set's order, and a member carrying none keeps its bare line.
+
+Two `⇉` links in one section naming one effective selection share one sub-section, headed by the first one's text, as they share one destination. A lifted heading equal to an authored heading, to `⇉ Dispatch Pick`, or to another lifted heading naming a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
+
 ## The guide
 
-The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there. Its inputs are those the dispatching step states as given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, that a brief standing above a `⇉` line is done before that bundle is handed on, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there. Its inputs are those the dispatching step states as given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
 
 ## The run-pf line
 
@@ -93,7 +129,7 @@ A dispatched link naming the document that writes it warns where it closes no cy
 
 ## Generated headings
 
-An authored heading whose text equals the dispatch-set or dispatch-pick heading pf emits in the same bundle would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
+An authored heading whose text equals the dispatch-set, dispatch-pick or a lifted [brief](#briefs) heading pf emits in the same bundle would give two sections one name, so the run refuses it with `E_HEADING_COLLISION`, naming the heading and the text it equals.
 
 The comparison is exact, and case-sensitive: an authored heading differs from the derived one in any character publishes, and takes the ordinal the renderer gives a repeated slug.
 

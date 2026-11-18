@@ -1,0 +1,20 @@
+description = "A dispatch carrying a brief is lifted into a sub-section headed by its mark and link text, and the section writing it carries an authored heading of that text, which would give two sections one name; the run fails with E_HEADING_COLLISION naming the authored heading and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Generated heading collisions",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+source = "guide.md"
+message_contains = ["guide.md:10"]

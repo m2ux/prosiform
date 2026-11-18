@@ -68,6 +68,7 @@ from prosiform.closure import (
     DRIVE,
     SEPARATOR,
     UNSUBSTITUTED,
+    Briefs,
     BundleSelection,
     Declarations,
     Malformed,
@@ -77,6 +78,7 @@ from prosiform.closure import (
     Substitution,
     alternatives_of,
     arrowed,
+    briefing,
     bundle_selection,
     compiled_pick,
     components,
@@ -98,6 +100,7 @@ from prosiform.closure import (
 from prosiform.composition import (
     Colliding,
     Composed,
+    Composing,
     Cycling,
     Overflowing,
     Parentless,
@@ -365,7 +368,10 @@ Symbol grammar:
      bundle whole, keep it in context, and follow it where the link stands
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
      which it reads there, with the inputs the dispatching step states as
-     given, and continue with its answer
+     given, and continue with its answer.
+     Where text stands above a ⇉ line in the sub-section a link points
+     at, that text is the bundle's brief: do what it asks before you hand
+     the bundle on
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
      ⇉ lines in the sub-section headed ⫽ Dispatch Set.
      Give each bundle's file path to its own sub-agent at once, with the
@@ -2236,6 +2242,40 @@ def dispatches(
             )
 
 
+def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
+    """The brief one dispatch carries into the bundle writing it, or none.
+
+    The brief is the composing reference `briefing` states, one hop
+    beyond the document writing the dispatch, so its links are followed
+    into this bundle's closure as a directive's are. A dispatch carrying
+    the pick token carries the brief no alternative is in force for, so
+    an alternative naming a brief of its own changes the brief, and the
+    pick is left unresolved as `unresolved` reports. Two selected presets
+    naming different briefs are invalid usage naming both.
+    """
+    target = hop.target
+    try:
+        found = briefing(target, conversion)
+    except Briefs as two:
+        raise usage_failure(
+            f"{two}, both selected by the dispatch {target.original!r}, so "
+            f"nothing says which section the dispatch carries",
+            reference=target.original,
+        ) from two
+    if picks(target.tags) and any(
+        one.brief is not None for one in conversion.alternatives
+    ):
+        raise unresolved(target.path, conversion)
+    if found is None:
+        return None
+    return replace(
+        found,
+        origin=target.origin,
+        chain=(*target.chain[:-1], identity(found)),
+        title=None,
+    )
+
+
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
     """Every referring route must retain no-follow access to a cached identity."""
     if one.path not in captured:
@@ -2342,7 +2382,10 @@ def traverse(
 
     Discovered dispatch occurrences and self-composition warnings describe
     the current mapping. Final composition determines the published
-    handoffs from the source ranges its groups actually carry.
+    handoffs from the source ranges its groups actually carry. Each
+    dispatched target is read in the round that discovers it, so the
+    brief its presets name, as `briefed` states it, is a dependency of
+    that round.
 
     Every source is held with the run's names, the names its entry
     title gives, so each document's stubs they name are in force
@@ -2368,30 +2411,35 @@ def traverse(
     dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
+
+    def load(one: Reference) -> None:
+        nonlocal total
+        verify_cached(root, one, captured)
+        if one.path in read:
+            return
+        limits.hold(FILES, len(read) + 1)
+        opened = read_document(root, one, limits, total)
+        source = stubbed(opened.source, run)
+        environment: dict[str, Any] = {}
+        try:
+            tokens = parse(source.text, limits.of(NESTING), environment)
+            limits.hold(NESTING, nesting(tokens))
+        except Crossed as crossed:
+            raise unindexable(crossed, one.path, one.chain) from crossed
+        except Suppressed as suppressed:
+            raise declined(suppressed, one.path, source, one.chain) from suppressed
+        total += opened.size
+        read[one.path] = source
+        captured[one.path] = opened.capture
+        parsed[one.path] = tokens
+        defined[one.path] = definitions(
+            environment.get(REFERENCES, {}), lines(source.text)
+        )
+
     frontier = list(requested)
     while frontier:
         for one in frontier:
-            verify_cached(root, one, captured)
-            if one.path in read:
-                continue
-            limits.hold(FILES, len(read) + 1)
-            opened = read_document(root, one, limits, total)
-            source = stubbed(opened.source, run)
-            environment: dict[str, Any] = {}
-            try:
-                tokens = parse(source.text, limits.of(NESTING), environment)
-                limits.hold(NESTING, nesting(tokens))
-            except Crossed as crossed:
-                raise unindexable(crossed, one.path, one.chain) from crossed
-            except Suppressed as suppressed:
-                raise declined(suppressed, one.path, source, one.chain) from suppressed
-            total += opened.size
-            read[one.path] = source
-            captured[one.path] = opened.capture
-            parsed[one.path] = tokens
-            defined[one.path] = definitions(
-                environment.get(REFERENCES, {}), lines(source.text)
-            )
+            load(one)
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
         carried = contributing(found)
@@ -2468,6 +2516,7 @@ def traverse(
                     ),
                     one,
                 )
+            briefs: list[Reference] = []
             for link in dispatches(
                 path,
                 read[path],
@@ -2478,15 +2527,22 @@ def traverse(
                 mapping,
             ):
                 dispatching.setdefault((link.name, link.target.tags), link)
-            for one in required(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                mapping,
-            ):
+                load(link.target)
+                brief = briefed(link, read[link.target.path].conversion)
+                if brief is not None:
+                    briefs.append(brief)
+            for one in [
+                *required(
+                    path,
+                    read[path],
+                    parsed[path],
+                    chosen,
+                    reached,
+                    declarations,
+                    mapping,
+                ),
+                *briefs,
+            ]:
                 verify_cached(root, one, captured)
                 occurrence = (one.path, one.fragment, one.title, one.composes, one.tags)
                 if occurrence in titled:
@@ -3031,7 +3087,9 @@ def placement(
     content of the document whose group carries the directive, so that
     section is read where the directive is written, once, and a link
     it carries places a document as one its scope's document writes,
-    a directive it carries reading its own section the same way.
+    a directive it carries reading its own section the same way. The
+    brief a dispatch carries, as `briefed` states it, is read the same
+    way, after the links its scope's document writes.
 
     The first mapping holds the references including each document,
     as `included` keeps them. The second names, for each document a
@@ -3057,9 +3115,18 @@ def placement(
     composed: set[tuple[str, str | None]] = set()
 
     def place(path: str, chosen: Selection | None, holder: str) -> None:
-        for one in required(
-            path, read[path], parsed[path], chosen, (), declarations, substitution
-        ):
+        briefs = (
+            briefed(hop, read[hop.target.path].conversion)
+            for hop in dispatches(
+                path, read[path], parsed[path], chosen, (), declarations, substitution
+            )
+        )
+        for one in [
+            *required(
+                path, read[path], parsed[path], chosen, (), declarations, substitution
+            ),
+            *(brief for brief in briefs if brief is not None),
+        ]:
             if one.composes:
                 if (one.path, one.fragment) not in composed:
                     composed.add((one.path, one.fragment))
@@ -3520,13 +3587,13 @@ def compose(
     is known only once every group exists. The groups are therefore
     built twice: once to learn the headings the bundle emits, and once
     more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the dispatch-set
-    sub-sections its sections need, inserted once the group
-    exists, and the run-pf line that opens the bundle, so the headings
-    the map is built from are every heading the bundle emits. The
-    second pass emits the same headings as the first, because a rewrite
-    edits a link's destination and its mark and nothing a heading is
-    slugged from.
+    compiled link is rewritten through. Each build carries the dispatch
+    sub-sections its sections need, with the briefs they hold composed as
+    a contribution is, inserted once the group exists, and the run-pf
+    line that opens the bundle, so the headings the map is built from
+    are every heading the bundle emits. The second pass emits the same
+    headings as the first, because a rewrite edits a link's destination
+    and its mark and nothing a heading is slugged from.
 
     Candidate validation closes the pass. Every invariant it holds is
     a property of the construction, which an author cannot reach, so a
@@ -3559,14 +3626,25 @@ def compose(
             declarations,
             substitution,
         )
-        headed, placed = subsections(
-            built,
+        briefs = Composing(
             parsed,
             read,
-            bundle_file,
-            declarations,
-            substitution,
+            defined,
+            limits,
+            declarations=declarations,
+            substitution=substitution,
         )
+        with assembling(chains):
+            headed, placed = subsections(
+                built,
+                parsed,
+                read,
+                bundle_file,
+                briefs.brief,
+                declarations,
+                substitution,
+            )
+        contributed.update(briefs.placed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
@@ -3599,14 +3677,27 @@ def compose(
         substitution,
         composing,
     )
-    groups, _ = subsections(
-        built,
+    briefs = Composing(
         parsed,
         read,
-        bundle_file,
+        defined,
+        limits,
+        targets,
+        dispatching,
         declarations,
         substitution,
+        composing,
     )
+    with assembling(chains):
+        groups, _ = subsections(
+            built,
+            parsed,
+            read,
+            bundle_file,
+            briefs.brief,
+            declarations,
+            substitution,
+        )
     groups = opened(groups)
     bundled = assemble(groups)
     try:

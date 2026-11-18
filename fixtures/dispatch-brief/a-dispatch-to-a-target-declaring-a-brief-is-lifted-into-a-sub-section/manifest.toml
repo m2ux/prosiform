@@ -1,0 +1,20 @@
+description = "A ⇉ link to a target whose default preset declares a brief publishes a sub-section one level below the section writing it, headed by the mark and the link text, holding the brief's body and then the dispatch link to the target's bundle, after the section's own content and before its child section; the authored link points at the sub-section without its mark, and the target's own bundle carries the brief section unchanged."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Conversion metadata — brief names a section of its own document",
+  "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

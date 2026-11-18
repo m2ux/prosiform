@@ -37,7 +37,8 @@ GROUP = "group"
 SUBST = "subst"
 CHOICE = "choice"
 STUB = "stub"
-FIELDS = (GROUP, SUBST, CHOICE, STUB)
+BRIEF = "brief"
+FIELDS = (GROUP, SUBST, CHOICE, STUB, BRIEF)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -121,6 +122,8 @@ class Preset:
     order. `choice` holds the choice line of an alternative, stating
     when to pick it, and `stub` the line of a stub, stating what it
     stands in for; a preset holding neither is an ordinary preset.
+    `brief` holds the fragment, `#` included, naming the section of the
+    declaring document a dispatch of it carries.
     """
 
     name: str
@@ -128,6 +131,7 @@ class Preset:
     substs: tuple[Subst, ...] = ()
     choice: str | None = None
     stub: str | None = None
+    brief: str | None = None
 
 
 @dataclass(frozen=True)
@@ -563,6 +567,14 @@ def _preset(preset: str, mapping: _Node) -> Preset:
                 "since it states in one line what the stub stands in for",
                 value.location,
             )
+        if key.value == BRIEF and not _fragment(value):
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} must be a fragment naming a heading of its own "
+                "document, as '#given', since a brief is a section of the "
+                "document a dispatch names",
+                value.location,
+            )
         if {key.value, *fields} >= {CHOICE, STUB}:
             raise _fail(
                 INVALID_CONVERSION_METADATA,
@@ -581,6 +593,17 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         tuple(_subst(f"{named}{SUBST}[{at}]", entry) for at, entry in enumerate(held)),
         fields[CHOICE].value if CHOICE in fields else None,
         fields[STUB].value if STUB in fields else None,
+        fields[BRIEF].value if BRIEF in fields else None,
+    )
+
+
+def _fragment(node: _Node) -> bool:
+    """Whether one value is a string naming a section of its own document alone."""
+    return (
+        _one_line(node)
+        and node.value.startswith("#")
+        and len(node.value) > 1
+        and "#" not in node.value[1:]
     )
 
 

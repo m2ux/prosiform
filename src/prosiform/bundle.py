@@ -390,20 +390,24 @@ def pointing(
 ) -> bool:
     """Whether a withheld link points at a bundle file the dispatch map names.
 
-    A `⇉` link does, unless it carries the pick token, which points it at
-    its dispatch-pick sub-section. A `⫽` link does where the map gives its
-    target a file, and a link the map says nothing of points at its set's
-    sub-section. Where there is no map, `alone` states that the link's
-    set holds one target, which is published as a dispatch to its file.
+    A link carrying the pick token points at its dispatch-pick
+    sub-section. Any other dispatched link does where the map gives its
+    target a file, and a link the map says nothing of points at a file
+    for a `⇉` link and at its set's sub-section for a `⫽` one, so a
+    sub-section a brief lifts it into is one the map names. Where there
+    is no map, a `⇉` link points at a file, and `alone` states that a `⫽`
+    link's set holds one target, which is published as a dispatch to
+    its file.
     """
     if picking(opening, target.tags):
         return False
-    if not parallel(opening):
-        return True
+    together = parallel(opening)
     if dispatched_to is None:
-        return alone
-    given = dispatched_to.get(((target.path, target.fragment), target.tags, True))
-    return given is not None and filed(given)
+        return alone or not together
+    given = dispatched_to.get(((target.path, target.fragment), target.tags, together))
+    if given is None:
+        return not together
+    return filed(given)
 
 
 def sole_set(
