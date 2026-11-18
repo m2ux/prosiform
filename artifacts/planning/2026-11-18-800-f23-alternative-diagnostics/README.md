@@ -12,6 +12,8 @@ The fix counts an agreeing `default` pair as a stand-in, and gives a picking dis
 
 | Artifact | What it holds |
 | --- | --- |
+| [f23.md](f23.md) | The work item: the agreeing `default` pair and the picking dispatch's remedy |
+| [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
 
 ## Links
 
