@@ -211,7 +211,10 @@ SELF_REMEDY = (
 CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching it"
 LEVEL_REMEDY = "move the dispatch to a shallower section"
 COLLISION_REMEDY = "retitle the authored heading"
-LIFT_REMEDY = "write one of the two dispatches with other link text"
+LIFT_REMEDY = (
+    "write one of the two dispatches with other link text, or compose the "
+    "section writing it under presets routing it alike"
+)
 BRIEF_CYCLE_REMEDY = "dispatch one target of the cycle without a brief"
 
 Placed = dict[Region, dict[Served, int | str]]
@@ -651,13 +654,14 @@ class Placing:
     document and first line naming each. A dispatch a contribution
     carries points where its source's own region is given where a group
     carries that region. Where none does, the region's first contribution
-    gives the dispatch a place of its own, which every later copy of the
-    region shares. A copy whose links, read under its own presets as
-    `Substitution.composed` reads them, serve other targets than the
-    group's region or that first copy shares neither, and places its own
-    as a first copy does: a set's sub-section sits beneath the composed section
-    holding the link and ahead of the next composed heading, so a scope's
-    own sub-sections still follow its destination sections. A brief is
+    gives the dispatch a place of its own: a set's sub-section sits
+    beneath the composed section holding the link and ahead of the next
+    composed heading, so a scope's own sub-sections still follow its
+    destination sections. Every later copy of the region shares that
+    place, and a copy shares the group's or the first copy's only where
+    its dispatched links, read under its own presets as
+    `Substitution.composed` reads them, name the same targets; one
+    naming others places its own as a first copy does. A brief is
     lifted with the dispatch carrying it, so each copy of a brief places
     the dispatches it writes beneath its own sub-section.
     """
@@ -833,7 +837,7 @@ class Placing:
                     tokens,
                     region,
                     self.declarations,
-                    self.substitution,
+                    self.substitution.composed(found.path, found.tags),
                 ):
                     walk(each)
             chain.pop()
