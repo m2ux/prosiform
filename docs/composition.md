@@ -193,13 +193,14 @@ Design rule: *Budgets*. Fixtures:
 
 ## Presets and `subst`
 
-A directive is a reference, so its own title tags select the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: their `subst` redirects the links the contribution writes. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
+A directive is a reference, so its own title tags select the target's presets as [Selection](selection.md#presets-in-force) states, and they govern the contribution: the links the contribution writes resolve through their `subst` pairs layered over the target's `default`, and through no other preset. Each contribution follows its own directive, so a section composed once with a tag selecting a preset that routes one of its links and once without publishes each copy with its own route, and another reference reaching the document, composing or including, routes neither. The document's own group, where an ordinary link includes it, resolves under the presets every reference reaching it selects, as [The substitution mapping](selection.md#the-substitution-mapping) states. A dispatch's brief is a contribution in this respect, following the presets its dispatch selects, as [Dispatch briefs](dispatch.md#briefs) states. The writer's own `subst` redirects the directive itself. A `group` pair places a document's sections where an ordinary reference bundles it, so it places no contribution.
 
 An immediate directive and a later compilation of its deferred form use the same title tags. The deferred contribution preserves them in the title of its generated `↳` line, the link the later command runs as written. Scope and target headings supply no selection.
 
 Design rule: *Presets and `subst`*. Fixtures:
 
 - [a-selected-preset-governs-the-contribution](../fixtures/composition/a-selected-preset-governs-the-contribution)
+- [each-contribution-follows-its-own-presets](../fixtures/composition/each-contribution-follows-its-own-presets)
 - [the-writers-subst-redirects-a-directive](../fixtures/composition/the-writers-subst-redirects-a-directive)
 - [a-selected-group-pair-places-no-contribution](../fixtures/composition/a-selected-group-pair-places-no-contribution)
 - [an-immediate-directive-is-held-to-no-target-heading](../fixtures/composition/an-immediate-directive-is-held-to-no-target-heading)
