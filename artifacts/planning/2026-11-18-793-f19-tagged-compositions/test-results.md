@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F19 at `e08c4606b` on `f19-tagged-compositions`, stacked on `f16-dispatch-brief` at `4cbd9db52`, run on 2026-11-18 in the unit checkout. Each refusal or wrong route a fixture names for the base was observed with the build of `f16-dispatch-brief` at `d252f2233`.
+Results for F19 at `6cac09431` on `f19-tagged-compositions`, merged with `main` at `d4e3695e1`, run on 2026-11-18 in the unit checkout. Each refusal or wrong route a fixture names for the base was observed with the build of `f16-dispatch-brief` at `d252f2233`; the stand-in warning in T2 was observed on `main` at `d4e3695e1`.
 
 ## T1 Contributions Under Their Own Presets
 
@@ -15,6 +15,8 @@ In `src/tests/test_subst.py`:
 - `test_a_default_pair_in_force_for_a_copy_alone_warns_where_unused`: a `default` pair in force for a copy alone that no reference used warns as `W_SUBST_UNUSED`.
 - `test_a_copys_route_stays_quiet_beside_a_groups_standing_pair`: a copy taking its alternative's route raises no `W_SUBST_USED` where the group's ordinary preset states a stand-in for the same key.
 
+`fixtures/composition/an-ordinary-preset-agreeing-with-a-copys-alternative-stands-in`: a directive selecting an ordinary preset declared before an alternative agreeing with it warns `W_SUBST_USED` at `stage.md:16`, as `main` does.
+
 Held.
 
 ## T3 Briefs Under Their Own Dispatch's Presets
@@ -23,7 +25,7 @@ Held.
 
 ## T4 Full Check
 
-`make check`, with `PROSIFORM_BUILD` naming the unit checkout's `pf` and its `src/.venv/bin` first on `PATH`, exits 0: lock, lint, format, typecheck, `make test` (2266 passed), harness (1116 passed), corpus (677 fixtures, 677 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check`, with `PROSIFORM_BUILD` naming the unit checkout's `pf` and its `src/.venv/bin` first on `PATH`, exits 0: lock, lint, format, typecheck, `make test` (2270 passed), harness (1120 passed), corpus (681 fixtures, 681 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
 ## T5 Copies Mapping One Key Apart
 
@@ -31,4 +33,4 @@ Held.
 
 ## T6 Copies Picking Different Alternatives
 
-`fixtures/composition/two-copies-picking-different-alternatives-publish` and `fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish`: two directives, and two dispatches, picking the alpha and beta alternatives that route one key. Each run publishes at exit status 0 with no diagnostic, each copy under its own pick. The base fails both with `E_ALTERNATIVE_UNRESOLVED`. `fixtures/composition/a-copy-picking-no-alternative-beside-one-picking-one-is-refused`: a copy needing an alternative and picking none fails with `E_ALTERNATIVE_UNRESOLVED` beside one picking alpha. In `test_subst.py`, `test_a_copy_needs_no_alternative_that_states_only_a_group_pair` publishes a copy whose alternatives state only `group` pairs. Held.
+`fixtures/composition/two-copies-picking-different-alternatives-publish` and `fixtures/dispatch-brief/two-briefs-picking-different-alternatives-publish`: two directives, and two dispatches, picking the alpha and beta alternatives that route one key. Each run publishes at exit status 0 with no diagnostic, each copy under its own pick. The base fails both with `E_ALTERNATIVE_UNRESOLVED`. `fixtures/composition/a-copy-picking-no-alternative-beside-one-picking-one-is-refused`: a copy needing an alternative and picking none fails with `E_ALTERNATIVE_UNRESOLVED` beside one picking alpha, naming the directive placing it as `reference` with its chain and its link's position `guide.md:12:1`, under a remedy pointing at that directive's title. In `test_subst.py`, `test_a_copy_needs_no_alternative_that_states_only_a_group_pair` publishes a copy whose alternatives state only `group` pairs. Held.

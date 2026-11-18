@@ -177,5 +177,76 @@
     "criteria": "AC1-AC5 met; the fifth-round finding confirmed fixed and no finding remains.",
     "validation": "Read the diff; make check exits 0 at e08c4606b (2266 tests, harness 1116, corpus 677 of 677). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/test-results.md",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "e19511f0147297fd50b20bb8d108209bc1502382",
+    "base": "d4e3695e1d0c0eb6ac3835873b41d574ae9c7c59",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (fresh independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The merge e19511f01 of main at d4e3695e1, carrying F16 and F20 (#797), into F19, and the full diff d4e3695e1..e19511f01. Checked F20's fragment-first ordering, its --pick remedy and the pick token kept in entry tags under per-copy counting; probed entries with ? and --pick beside copies, ambiguous composed and brief fragments with two picks, deferred directives with ?, copies picking apart, group-pair alternatives, nested copies, stubs, dispatch placement and stand-in warnings. Excluded observations, each pre-existing on main at d4e3695e1: (1) a default pair agreeing with a picked alternative leaves its redirect silent; arising issue https://github.com/m2ux/prosiform/issues/800. (2) A picking dispatch whose brief an alternative routes is refused under a remedy naming titles, which defeats the pick; arising issue https://github.com/m2ux/prosiform/issues/801.",
+    "criteria": "AC1, AC2, AC4 and AC5 fixtures pass; AC3 by make check. Finding 1 regressed a warning main gives.",
+    "validation": "pytest without the bootstrap test, corpus 680 of 680, ruff and mypy at e19511f01; make check exits 0 there (2270 tests, harness 1119, corpus 680 of 680).",
+    "findings": [
+      {
+        "description": "copies let the last preset stating a key win, so a copy selecting an ordinary preset declared before an agreeing alternative lost the stand-in W_SUBST_USED warning main gives.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/545042798"
+      },
+      {
+        "description": "A copy's E_ALTERNATIVE_UNRESOLVED named only the document, and its remedy pointed at the titles of every link reaching it, the entry's among them.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/545042798"
+      },
+      {
+        "description": "The composition module docstring owned the per-copy pair rule that copies applies.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6cac09431"
+      },
+      {
+        "description": "The composition module docstring named governing and resolved, internals of another module.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6cac09431"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "54504279809400040a1c5d894a8514d5f24233b1",
+    "base": "d4e3695e1d0c0eb6ac3835873b41d574ae9c7c59",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (fresh independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fixes e19511f01..545042798 and design commit 303dd3585: layer owning the stand-in rule for groups and copies, and a copy's E_ALTERNATIVE_UNRESOLVED naming the reference placing it. Re-ran s1, s2, s3, s5, p1, p2, p6, p8, q3 and q8.",
+    "criteria": "AC1-AC5 met; both seventh-round findings confirmed fixed.",
+    "validation": "pytest and corpus 681 of 681 at 545042798; make check exits 0 there (2270 tests, harness 1120, corpus 681 of 681).",
+    "findings": [
+      {
+        "description": "A copy's E_ALTERNATIVE_UNRESOLVED named the placing reference but not where its link is written, so two copies of one section read alike.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/6cac09431"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "6cac09431103a048d13ca5813f4e74c8e072385e",
+    "base": "d4e3695e1d0c0eb6ac3835873b41d574ae9c7c59",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (fresh independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fixes 545042798..6cac09431 and design commit f46886c58: a copy's E_ALTERNATIVE_UNRESOLVED located at its placing link, and the per-copy pair rule owned by copies with every other unit naming it. Re-ran p6 and q3.",
+    "criteria": "AC1-AC5 met; every finding of rounds seven and eight confirmed fixed and none remains.",
+    "validation": "pytest and corpus 681 of 681 at 6cac09431; make check exits 0 there (2270 tests, harness 1120, corpus 681 of 681). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/test-results.md",
+    "findings": []
   }
 ]
