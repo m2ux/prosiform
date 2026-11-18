@@ -12,6 +12,7 @@ The fix has each contribution, and each dispatch brief, resolve under the preset
 
 | Artifact | What it holds |
 | --- | --- |
+| [f19.md](f19.md) | The work item: each composed copy resolving under its own presets |
 
 ## Links
 
