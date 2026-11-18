@@ -1,0 +1,27 @@
+description = "One section is composed twice: once by a directive whose title selects stage.md's task preset, which redirects body.md to task-body.md, and once by a directive selecting none. Each contribution follows its own directive's presets: the tagged copy's link points at the task body and the untagged copy's at the body, both bundled, and the run reports the one substitution at the tagged copy's source line."
+
+clauses = [
+  "Section composition — Presets and subst",
+  "Presets — What a selection governs",
+  "Section composition — Every occurrence composes",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "body.md#body"
+resolved = "task-body.md#body"
+
+[expected.diagnostics.location]
+file = "stage.md"
+line = 10
+column = 1

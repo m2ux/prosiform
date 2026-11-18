@@ -1,0 +1,31 @@
+description = "One target is dispatched twice: once by a link whose title selects investigate.md's task preset, which redirects rules.md to task-rules.md, and once by a link selecting none, each carrying the default brief. Each brief copy follows its own dispatch's presets: the tagged copy's link points at the task rules and the untagged copy's at the rules, both bundled beside the briefs, and each dispatched bundle carries the section under its own presets. The run reports the one substitution at the brief's source line."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Section composition — Presets and subst",
+  "Presets — What a selection governs",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate--p-9aae63ebb71992854bd7a2a3c1b43c39a44ce2599fc6c4121ab823a94d703892.bundle.md",
+  "expected/investigate.bundle.md",
+]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "rules.md#tests"
+resolved = "task-rules.md#tests"
+
+[expected.diagnostics.location]
+file = "investigate.md"
+line = 12
+column = 1
