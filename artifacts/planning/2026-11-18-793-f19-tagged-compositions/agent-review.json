@@ -144,5 +144,25 @@
         "evidence": "https://github.com/m2ux/prosiform/commit/622c1f6ff"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "622c1f6ff71a1f57042c0c43018db6a1ef82b4ed",
+    "base": "4cbd9db525e452aae4824427eeb667e2c7c0b438",
+    "base_ref": "f16-dispatch-brief",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fix d93852e77..622c1f6ff: the routes docstring in cli.py and the routing-pair exception in docs/selection.md.",
+    "criteria": "AC1-AC5 met; the fourth-round finding confirmed fixed.",
+    "validation": "Read the diff; make check exits 0 at 622c1f6ff (2266 tests, harness 1116, corpus 677 of 677).",
+    "findings": [
+      {
+        "description": "The routing-pair exception in docs/selection.md named a default or ordinary preset and left out a stub, whose pair also stands in.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/e08c4606b"
+      }
+    ]
   }
 ]
