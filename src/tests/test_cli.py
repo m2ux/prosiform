@@ -293,7 +293,7 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "1 a failure stopped the run: report its diagnostics and go no further",
         "2 invalid usage or option combination",
         "Run pf on a link in a bundle as written, quoted as one argument, "
-        "from the directory pf compiled that bundle in.",
+        "from the directory pf compiled that bundle in, never on a ⇉ or ⫽ link.",
         "When its title carries ?, add --pick naming the alternative that fits "
         "your task if you know it, or when pf lists the alternatives",
         "\u21b3 names a section to inline",

@@ -352,9 +352,9 @@ Usage:
 Compiling a link:
 
   Run pf on a link in a bundle as written, quoted as one argument, from
-  the directory pf compiled that bundle in. When its title carries ?, add
-  --pick naming the alternative that fits your task if you know it, or
-  when pf lists the alternatives:
+  the directory pf compiled that bundle in, never on a ⇉ or ⫽ link. When
+  its title carries ?, add --pick naming the alternative that fits your
+  task if you know it, or when pf lists the alternatives:
 
     pf -o out '[¬ Review](modes/review.md#review "checks, final draft")'
     pf -o out 'click Intake "activities/intake.md" "?"' --pick Epic
