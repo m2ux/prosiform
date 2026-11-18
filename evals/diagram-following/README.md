@@ -235,7 +235,7 @@ A run that passes the dispatch checks and its sub-agents' actions is held to the
 | Class | The session |
 | --- | --- |
 | `uncompiled` | left a stated run unmade, or a sub-agent did. |
-| `overcompiled` | made a run naming a reference no stated run names, as one on a deferred line its path did not reach does, or a sub-agent did. A bare `pf` beyond those stated prints the guide and compiles nothing, so it is no departure. |
+| `overcompiled` | made a run naming a reference no stated run names, as one on a deferred line its path did not reach does, or a `pf` call the compiler refuses or that carries words but no entry, as `pf -o .` does, or a sub-agent did. A command whose words cannot be split counts as a refused call whatever its first word. A bare `pf` beyond those stated prints the guide and compiles nothing, and an informational call compiles nothing, so neither is a departure. |
 | `misordered_compile` | made its stated runs in another order, or a sub-agent did. |
 
 The three are read in that order, after the dispatch checks, so a sub-agent that never started is `undispatched` rather than leaving its runs unmade.
