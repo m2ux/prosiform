@@ -2360,9 +2360,9 @@ def traverse(
     adds is held to the same checks in the round that adds it. Each
     round selects every carried document before it counts the presets
     the references select or reads a selected region, so a fragment
-    naming no one section reports its own defect ahead of the
-    alternatives or presets its title picks and of a refusal in another
-    document's regions.
+    naming no one section reports its own defect ahead of any failure of
+    the alternatives the references pick or the presets they select, and
+    of a refusal in another document's regions.
 
     Expansion depth counts the reference chain from the nearest entry,
     independently of the fixed-point rounds needed to activate presets. The
