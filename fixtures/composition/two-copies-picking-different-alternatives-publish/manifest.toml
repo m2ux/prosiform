@@ -1,0 +1,18 @@
+description = "One section is composed twice, by directives picking stage.md's alpha and beta alternatives, each routing body.md. Alternatives are counted for each copy on its own, so each copy has exactly one in force and publishes with its own route."
+
+clauses = [
+  "Section composition — Presets and subst",
+  "Presets — What a selection governs",
+  "Presets — Exactly one alternative",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+diagnostics = []
+bundles = [
+  "expected/guide.bundle.md",
+]

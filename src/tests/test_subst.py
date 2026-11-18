@@ -1021,3 +1021,170 @@ def test_a_folder_side_is_refused_naming_the_entry(tree: Path) -> None:
     assert status == 1
     assert [one["code"] for one in said] == ["E_INVALID_CONVERSION_METADATA"]
     assert "prosiform.default.subst[0] side 'rules/'" in said[0]["message"]
+
+
+TAGGED = frozenset({"task"})
+COPIES = Substitution().governed(
+    {"stage.md": {("rules.md", None): SUBSTITUTE}},
+    {("stage.md", TAGGED): {("rules.md", None): SECTION}},
+)
+
+
+def test_a_composed_copy_resolves_under_its_own_selections_pairs() -> None:
+    copy = COPIES.composed("stage.md", TAGGED)
+    assert identity(inside("stage.md", "rules.md", copy)) == "stand-in.md#one"
+    assert identity(inside("stage.md", "rules.md", COPIES)) == "stand-in.md"
+
+
+def test_a_copy_whose_selection_puts_no_pair_in_force_redirects_nothing() -> None:
+    """The group's pairs stay with the group: a copy stating none keeps its links."""
+    copy = COPIES.composed("stage.md", frozenset())
+    assert identity(inside("stage.md", "rules.md", copy)) == "rules.md"
+
+
+def test_a_copys_selection_leaves_another_documents_links_to_its_group() -> None:
+    mapped = Substitution().governed(
+        {"notes.md": {("rules.md", None): SUBSTITUTE}},
+        {("stage.md", TAGGED): {("rules.md", None): SECTION}},
+    )
+    copy = mapped.composed("stage.md", TAGGED)
+    assert identity(inside("notes.md", "rules.md", copy)) == "stand-in.md"
+    assert identity(
+        inside("stage.md", "rules.md", copy.composed("stage.md", None))
+    ) == ("rules.md")
+
+
+def test_a_copy_routing_its_dispatches_apart_from_the_group_places_its_own(
+    tmp_path: Path,
+) -> None:
+    """A copy routed as the group is shares its set; one routed apart takes its own.
+
+    The group takes no copy's presets, so the untagged copy routes as it does.
+    """
+    (tmp_path / "out").mkdir()
+    (tmp_path / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "task").\n\n'
+        "## Review\n\nCheck the [↳ Given](stage.md#given).\n\n"
+        "## Read\n\nSee [the stage](stage.md#given).\n"
+    )
+    (tmp_path / "stage.md").write_text(
+        "---\nprosiform:\n  task:\n    subst: [{run.md: task-run.md}]\n---\n"
+        "# Stage\n\n## Given\n\n"
+        "Hand on [⫽ Run](run.md) and [⫽ Other](other.md).\n"
+    )
+    for name, title in [("run", "Run"), ("task-run", "Task Run"), ("other", "Other")]:
+        (tmp_path / f"{name}.md").write_text(DECLARED + f"# {title}\n\n{title}.\n")
+    status, published = invoke(tmp_path, "guide.md")
+    assert status == 0
+    plan, review = published.split("## Review", 1)
+    review, read = review.split("## Read", 1)
+    assert "[Run](#⫽-dispatch-set)" in plan
+    assert "[⇉ Run](task-run.bundle.md)" in plan
+    assert "[Run](#⫽-dispatch-set-1)" in review
+    assert "[⇉ Run](run.bundle.md)" in read
+
+
+def test_a_default_pair_in_force_for_a_copy_alone_warns_where_unused(
+    tree: Path,
+) -> None:
+    """A copy puts the default pair in force where the group's union overrides it."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "task").\n\n'
+        "## Review\n\nCheck the [↳ Other](stage.md#other).\n"
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n  default:\n    subst: [{rules.md: other.md}]\n"
+        "  task:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n\n"
+        "## Other\n\nNothing.\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 0
+    assert [(one["code"], one["source"]) for one in said] == [
+        ("W_SUBST_USED", "rules.md"),
+        ("W_SUBST_UNUSED", "rules.md"),
+    ]
+    assert "prosiform.default" in said[1]["message"]
+
+
+def test_a_copys_presets_clash_with_no_including_references(tree: Path) -> None:
+    """A group under one preset and a copy under another mapping its key apart."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "second").\n\n'
+        '## Read\n\nSee [the stage](stage.md#given "first").\n'
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n  first:\n    subst: [{rules.md: other.md}]\n"
+        "  second:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, published = invoke(tree, "guide.md")
+    assert status == 0
+    plan, read = published.split("## Read", 1)
+    assert "# Stand-in" in published and "# Other" in published
+    assert "(#stand-in)" in plan
+    assert "(#other)" in read
+
+
+def test_two_including_references_mapping_one_key_apart_are_refused(
+    tree: Path,
+) -> None:
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nSee [the stage](stage.md#given "second").\n\n'
+        '## Read\n\nSee [the stage](stage.md#given "first").\n'
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n  first:\n    subst: [{rules.md: other.md}]\n"
+        "  second:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 2
+    assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
+
+
+def test_a_copy_needs_no_alternative_that_states_only_a_group_pair(
+    tree: Path,
+) -> None:
+    """A group pair places no copy, so it changes nothing a copy compiles to."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n## Plan\n\nStart from the [↳ Given](stage.md#given).\n"
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n"
+        "  alpha:\n    choice: A.\n    group: {xs: 1}\n"
+        "  beta:\n    choice: B.\n    group: {ys: 1}\n---\n"
+        "# Stage\n\n## Given\n\nPlain.\n"
+    )
+    status, published = invoke(tree, "guide.md")
+    assert status == 0
+    assert "Plain." in published
+
+
+def test_a_copys_route_stays_quiet_beside_a_groups_standing_pair(tree: Path) -> None:
+    """The route a copy takes is its alternative's pair, not the group's stand-in."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "alpha").\n\n'
+        '## Read\n\nSee [the stage](stage.md#given "test, beta").\n'
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n"
+        "  test:\n    subst: [{rules.md: stand-in.md}]\n"
+        "  alpha:\n    choice: A.\n    subst: [{rules.md: other.md}]\n"
+        "  beta:\n    choice: B.\n    subst: [{notes.md: other.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 0
+    assert [one["resolved"] for one in said if one["code"] == "W_SUBST_USED"] == [
+        "stand-in.md"
+    ]

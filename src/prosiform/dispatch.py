@@ -211,7 +211,10 @@ SELF_REMEDY = (
 CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching it"
 LEVEL_REMEDY = "move the dispatch to a shallower section"
 COLLISION_REMEDY = "retitle the authored heading"
-LIFT_REMEDY = "write one of the two dispatches with other link text"
+LIFT_REMEDY = (
+    "write one of the two dispatches with other link text, or compose the "
+    "section writing it under presets routing it alike"
+)
 BRIEF_CYCLE_REMEDY = "dispatch one target of the cycle without a brief"
 
 Placed = dict[Region, dict[Served, int | str]]
@@ -651,10 +654,14 @@ class Placing:
     document and first line naming each. A dispatch a contribution
     carries points where its source's own region is given where a group
     carries that region. Where none does, the region's first contribution
-    gives the dispatch a place of its own, which every later copy of the
-    region shares: a set's sub-section sits beneath the composed section
-    holding the link and ahead of the next composed heading, so a scope's
-    own sub-sections still follow its destination sections. A brief is
+    gives the dispatch a place of its own: a set's sub-section sits
+    beneath the composed section holding the link and ahead of the next
+    composed heading, so a scope's own sub-sections still follow its
+    destination sections. Every later copy of the region shares that
+    place, and a copy shares the group's or the first copy's only where
+    its dispatched links, read under its own presets as
+    `Substitution.composed` reads them, name the same targets; one
+    naming others places its own as a first copy does. A brief is
     lifted with the dispatch carrying it, so each copy of a brief places
     the dispatches it writes beneath its own sub-section.
     """
@@ -692,8 +699,11 @@ class Placing:
         self.briefs: dict[Served, Reference | None] = {}
         self.lifts: dict[str, str] = {}
         """The bundle file each lifted sub-section's heading names."""
-        self.first: dict[tuple[str, int], Region] = {}
-        """The copy of each composed region whose dispatches its later copies share."""
+        self.first: dict[tuple[str, int, tuple[Served, ...]], Region] = {}
+        """The copy of each composed region whose dispatches its later copies share.
+
+        A copy is held by the targets its dispatched links serve, in order.
+        """
         self.aliases: list[tuple[Region, Region]] = []
         """Each later copy of a region, beside the copy whose places it takes."""
         self.expanding: list[tuple[tuple[str, str | None, frozenset[str]], Link]] = []
@@ -771,15 +781,19 @@ class Placing:
                 sections.append(({}, []))
             nested, nesting = sections[-1]
             region: Region = (part.path, part.lines[0], part.placing)
-            self.first.setdefault((part.path, part.lines[0]), region)
-            for each in written_in(
+            links = written_in(
                 part.path,
                 self.read[part.path],
                 tokens,
                 region_of(tokens, part),
                 self.declarations,
-                self.substitution,
-            ):
+                self.substitution.composed(part.path, part.selecting),
+            )
+            self.first.setdefault(
+                (part.path, part.lines[0], tuple(each.served for each in links)),
+                region,
+            )
+            for each in links:
                 nested.setdefault(each.served, each)
                 if (region, each.served) not in nesting:
                     nesting.append((region, each.served))
@@ -829,7 +843,7 @@ class Placing:
                     tokens,
                     region,
                     self.declarations,
-                    self.substitution,
+                    self.substitution.composed(found.path, found.tags),
                 ):
                     walk(each)
             chain.pop()
@@ -1061,11 +1075,18 @@ class Placing:
                 at += held
                 written = (part.path, part.lines[0])
                 key: Region = (part.path, part.lines[0], part.placing)
-                if written in self.grouped:
-                    self.aliases.append((key, (part.path, part.lines[0], ())))
-                elif self.first.setdefault(written, key) != key:
-                    self.aliases.append((key, self.first[written]))
-                else:
+                links = written_in(
+                    part.path,
+                    self.read[part.path],
+                    tokens,
+                    region,
+                    self.declarations,
+                    self.substitution.composed(part.path, part.selecting),
+                )
+                serves = tuple(link.served for link in links)
+                copied = (*written, serves)
+                if written in self.grouped and serves == tuple(
+                    link.served
                     for link in written_in(
                         part.path,
                         self.read[part.path],
@@ -1073,7 +1094,13 @@ class Placing:
                         region,
                         self.declarations,
                         self.substitution,
-                    ):
+                    )
+                ):
+                    self.aliases.append((key, (part.path, part.lines[0], ())))
+                elif self.first.setdefault(copied, key) != key:
+                    self.aliases.append((key, self.first[copied]))
+                else:
+                    for link in links:
                         self.inner.setdefault(link.served, link)
                         if (key, link.served) not in self.inner_serving:
                             self.inner_serving.append((key, link.served))

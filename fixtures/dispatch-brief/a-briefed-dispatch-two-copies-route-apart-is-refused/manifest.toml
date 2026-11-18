@@ -1,0 +1,26 @@
+description = "One section writing a dispatch to a target declaring a brief is composed once under stage.md's task preset, which routes the dispatch to task-run.md, and once under none. Each copy follows its own presets, so the two lift one heading naming two bundles; the run fails with E_HEADING_COLLISION at the one source link and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Generated heading collisions",
+  "Section composition — Presets and subst",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+reference = "run.md"
+message_contains = ["carries a brief under the heading '⇉ Run'"]
+
+[expected.diagnostics.location]
+file = "stage.md"
+line = 10
+column = 1

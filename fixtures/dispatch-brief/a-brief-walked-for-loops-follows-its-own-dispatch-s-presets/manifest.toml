@@ -1,0 +1,39 @@
+description = "A dispatch selecting inv.md's task preset, which redirects safe.md to loop.md, carries the brief whose dispatch reaches loop.md, and loop.md's brief dispatches inv.md with no preset. The untagged brief copy follows its own dispatch's presets, so its dispatch names safe.md and closes no loop: the run publishes every brief nested in turn and warns that the chain reaches a fourth dispatch and that the tagged copy took the substitute."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch depth",
+  "Section composition — Presets and subst",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/inv--p-9aae63ebb71992854bd7a2a3c1b43c39a44ce2599fc6c4121ab823a94d703892.bundle.md",
+  "expected/inv.bundle.md",
+  "expected/loop.bundle.md",
+  "expected/safe.bundle.md",
+]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_DISPATCH_DEPTH"
+reference = "inv.md"
+chain = ["guide.md", "inv.md", "loop.md", "inv.md", "safe.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "safe.md"
+resolved = "loop.md"
+
+[expected.diagnostics.location]
+file = "inv.md"
+line = 12
+column = 1

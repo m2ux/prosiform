@@ -194,7 +194,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Contributing
+from prosiform.provenance import Contributing, Range
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -825,9 +825,11 @@ def picked(
 ) -> tuple[Preset, ...]:
     """The alternatives in force for one document, in declaration order.
 
-    They are the union every reference reaching the document selects: the
-    set its `subst` pairs resolve through. A name the document does not
-    declare, `?` and a diagram link carrying no tooltip pick none.
+    They are the union the references given select: for the including
+    references reaching the document, the set its group's `subst` pairs
+    resolve through, and for one copy's composing references, that
+    copy's. A name the document does not declare, `?` and a diagram link
+    carrying no tooltip pick none.
     """
     names = {
         preset.name
@@ -837,15 +839,23 @@ def picked(
     return tuple(one for one in conversion.alternatives if one.name in names)
 
 
-def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failure:
+def unresolved(
+    path: str,
+    conversion: Conversion,
+    rerun: bool = False,
+    placing: Reference | None = None,
+) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
-    The document's links are written once, so they follow one kind's
-    routes. The message lists each alternative beside its choice line in
-    declaration order, so its reader picks the one that fits. The remedy
-    is a rerun with `--pick` where `rerun` holds, and otherwise one
-    alternative named by the links reaching the document, as the pick
-    rule `entry` owns admits.
+    The links one group or one composed copy writes are written once, so
+    they follow one kind's routes. The message lists each alternative
+    beside its choice line in declaration order, so its reader picks the
+    one that fits. The remedy is a rerun with `--pick` where `rerun`
+    holds, and otherwise one alternative named by the links reaching the
+    document, as the pick rule `entry` owns admits. `placing` is the
+    directive or dispatch placing a composed copy, which the diagnostic
+    names, with the position its link is written at, and whose title
+    alone the remedy points at, since the copy follows its presets alone.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -864,6 +874,16 @@ def unresolved(path: str, conversion: Conversion, rerun: bool = False) -> Failur
                 if rerun
                 else "name the alternative that fits your task in the title or "
                 "tooltip of each link reaching it, a link entry's among them"
+                if placing is None
+                else "name the alternative that fits your task in the title of "
+                "the directive or dispatch placing this copy"
+            ),
+            reference=None if placing is None else placing.original,
+            chain=None if placing is None else placing.chain,
+            location=(
+                None
+                if placing is None or placing.origin is None
+                else located(placing.origin)
             ),
         ),
     )
@@ -897,18 +917,21 @@ def routed(
     tokens: Sequence[Token],
     references: Sequence[Reference],
     entries: Collection[Reference],
+    grouped: bool = True,
 ) -> bool:
     """Whether one document's alternatives change what its selected content compiles to.
 
     An alternative changes it where one of them states a `group` pair,
     which decides the group the selected content joins, or a `subst`
     pair whose key a link in the selected content names, which routes
-    that link. The selected content is what the references select, and
-    the title and introduction a folder's preamble group carries for
-    the document. Content none of them changes compiles under `default`
-    and the ordinary presets its references select.
+    that link. `grouped` is false for a composed copy's references,
+    which place no group, so a `group` pair changes nothing there. The
+    selected content is what the references select, and the title and
+    introduction a folder's preamble group carries for the document.
+    Content none of them changes compiles under `default` and the
+    ordinary presets its references select.
     """
-    if any(one.membership is not None for one in conversion.alternatives):
+    if grouped and any(one.membership is not None for one in conversion.alternatives):
         return True
     chosen = selection(path, tokens, references, entries)
     read_regions = tuple(regions(tokens)) if chosen is None else chosen.regions
@@ -938,10 +961,14 @@ def resolved(
 ) -> None:
     """Hold every carried document declaring alternatives to the pick it needs.
 
-    Several alternatives in force fail wherever the document is
-    compiled, and none in force fails where an alternative would change
-    what its selected content compiles to. The count is taken on the
-    references one bundle carries, so a dispatched bundle counts the
+    The count is taken apart for the document's group, on the including
+    references `included` keeps, and for each composed copy, on the
+    composing references of one tag selection, since each resolves
+    under its own presets as `copies` states. Several
+    alternatives in force for one of them fail, and none in force fails
+    where an alternative would change what that one selects, so two
+    copies picking different alternatives publish. The count is taken on
+    the references one bundle carries, so a dispatched bundle counts the
     references reaching the document within it.
 
     The failure remedies a rerun with `--pick` only where none is in
@@ -952,15 +979,33 @@ def resolved(
         conversion = read[path].conversion
         if not conversion.alternatives:
             continue
-        count = len(picked(conversion, references))
-        if count > 1:
-            raise unresolved(path, conversion)
-        if count == 0 and routed(path, conversion, parsed[path], references, entries):
-            raise unresolved(
-                path,
-                conversion,
-                rerun=any(one in entries and picks(one.tags) for one in references),
-            )
+        including = included(references, parsed, read)
+        held = [
+            *([(including, True)] if including else []),
+            *(
+                (
+                    [one for one in references if one.composes and one.tags == tags],
+                    False,
+                )
+                for tags in dict.fromkeys(
+                    one.tags for one in references if one.composes
+                )
+            ),
+        ]
+        for reaching, grouped in held:
+            placing = None if grouped else reaching[0]
+            count = len(picked(conversion, reaching))
+            if count > 1:
+                raise unresolved(path, conversion, placing=placing)
+            if count == 0 and routed(
+                path, conversion, parsed[path], reaching, entries, grouped
+            ):
+                raise unresolved(
+                    path,
+                    conversion,
+                    rerun=any(one in entries and picks(one.tags) for one in reaching),
+                    placing=placing,
+                )
 
 
 def governing(
@@ -969,63 +1014,94 @@ def governing(
     selected: Mapping[str, Sequence[Reference]],
     entries: Collection[Reference],
 ) -> dict[str, dict[tuple[str, str | None], Governed]]:
-    """The `subst` pairs in force for the links each carried document writes.
+    """The `subst` pairs in force for the links each carried document's group writes.
 
-    A document's `default` pairs are in force wherever it is compiled,
-    and every preset a reference reaching it selects layers above them,
-    so a selected preset's pair holds over `default`'s for one key. The
-    presets one reference selects are held to agreeing first, and two
-    presets selected by different references reaching the document,
-    mapping one key to two substitutes, are refused the same way: the
-    document's links are written once, so the union would leave nothing
-    saying which substitute they resolve to.
+    A composed copy of a document's section writes its links under the
+    pairs `copies` states, so the group's are those of the including
+    references `included` keeps. A document's `default` pairs are in
+    force wherever it is compiled, and every preset an including
+    reference selects layers above them, so a selected preset's pair
+    holds over `default`'s for one key. The presets one reference
+    selects, composing or including, are held to agreeing first, and
+    two presets selected by different including references, mapping one
+    key to two substitutes, are refused the same way: the group's links
+    are written once, so the union would leave nothing saying which
+    substitute they resolve to.
 
-    Several alternatives in force are refused before their pairs are
-    compared, since alternatives route one key to different kinds'
-    material by design: the references reaching a document only grow
-    across the traversal's rounds, so several in force in any round are
-    several at its fixed point.
+    Several alternatives the including references pick are refused
+    before their pairs are compared, since alternatives route one key to
+    different kinds' material by design: the references reaching a
+    document only grow across the traversal's rounds, so several in
+    force in any round are several at its fixed point.
 
-    A pair an alternative and an ordinary preset both state, agreeing,
-    stands in for material under test whichever the document declares
-    first: it is a routing pair only where every preset stating it is an
-    alternative.
-
-    A key is the identity its original names from the declaring document,
-    and only documents stating a pair in force appear.
+    Each selected preset's pairs are layered as `layer` states. A key is
+    the identity its original names from the declaring document, and
+    only documents stating a pair in force appear.
     """
     table: dict[str, dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
         conversion = read[path].conversion
-        if len(picked(conversion, references)) > 1:
+        including = included(references, parsed, read)
+        if len(picked(conversion, including)) > 1:
             raise unresolved(path, conversion)
-        in_force = {
-            subst_identity(pair.original, path): Governed(
-                DEFAULT, pair, subst_reference(pair.substitute, path)
-            )
-            for pair in conversion.default.substs
-        }
-        above: dict[tuple[str, str | None], Governed] = {}
         for reference in references:
+            if len(picked(conversion, [reference])) > 1:
+                raise unresolved(
+                    path,
+                    conversion,
+                    placing=reference if reference.composes else None,
+                )
             agreed(conversion, reference.tags, reference, path)
+        above: dict[tuple[str, str | None], Governed] = {}
+        for reference in including:
             for preset in matching_presets(conversion, reference.tags):
-                for pair in preset.substs:
-                    one = Governed(
-                        preset.name,
-                        pair,
-                        subst_reference(pair.substitute, path),
-                        preset.choice is not None,
-                    )
-                    key = subst_identity(pair.original, path)
-                    first = above.setdefault(key, one)
-                    if identity(first.substitute) != identity(one.substitute):
-                        raise disagreeing(first, one, path, reference)
-                    if first.routing and not one.routing:
-                        above[key] = one
-        in_force.update(above)
+                clash = layer(above, preset, path)
+                if clash is not None:
+                    raise disagreeing(*clash, path, reference)
+        in_force = {**defaults(conversion, path), **above}
         if in_force:
             table[path] = in_force
     return table
+
+
+def defaults(
+    conversion: Conversion, path: str
+) -> dict[tuple[str, str | None], Governed]:
+    """The `subst` pairs a document's `default` puts in force wherever it compiles."""
+    return {
+        subst_identity(pair.original, path): Governed(
+            DEFAULT, pair, subst_reference(pair.substitute, path)
+        )
+        for pair in conversion.default.substs
+    }
+
+
+def layer(
+    above: dict[tuple[str, str | None], Governed], preset: Preset, path: str
+) -> tuple[Governed, Governed] | None:
+    """Layer one selected preset's `subst` pairs into those `above` holds.
+
+    A pair an alternative and an ordinary preset both state, agreeing,
+    stands in for material under test whichever the document declares
+    first: it is a routing pair only where every preset stating it is an
+    alternative. A key `above` already maps to another substitute is
+    returned with that earlier pair and the later one, which is left
+    out, for the caller to refuse.
+    """
+    for pair in preset.substs:
+        one = Governed(
+            preset.name,
+            pair,
+            subst_reference(pair.substitute, path),
+            preset.choice is not None,
+        )
+        key = subst_identity(pair.original, path)
+        first = above.setdefault(key, one)
+        if identity(first.substitute) != identity(one.substitute):
+            return first, one
+        if first.routing and not one.routing:
+            above[key] = one
+    return None
 
 
 def disagreeing(
@@ -1047,16 +1123,56 @@ def disagreeing(
     )
 
 
+def copies(
+    read: Mapping[str, Source],
+    selected: Mapping[str, Sequence[Reference]],
+) -> dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]]:
+    """The `subst` pairs in force for the links each composed copy writes.
+
+    A copy is a contribution or a brief, placed by a composing reference.
+    Its links are the target document's own and that reference places
+    them, so they resolve under its document's `default` pairs, with each
+    preset that reference's tags select layered above them as `layer`
+    states, and under no other preset: another reference reaching the
+    document, composing or including, routes none of them, and the
+    copy's presets route none of the group's. Copies are keyed by the
+    document and those tags, and only copies stating a pair in force
+    appear. Agreement among the presets one reference selects is held by
+    `governing`.
+    """
+    table: dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]] = {}
+    for path, references in selected.items():
+        conversion = read[path].conversion
+        for reference in references:
+            copy = (path, reference.tags)
+            if not reference.composes or copy in table:
+                continue
+            above: dict[tuple[str, str | None], Governed] = {}
+            for preset in matching_presets(conversion, reference.tags):
+                layer(above, preset, path)
+            pairs = {**defaults(conversion, path), **above}
+            if pairs:
+                table[copy] = pairs
+    return table
+
+
 def governed(
     mapping: Substitution,
     table: Mapping[str, Mapping[tuple[str, str | None], Governed]],
+    composed: Mapping[
+        tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Governed]
+    ],
 ) -> Substitution:
-    """The run's mapping with each document's pairs in force for its own links."""
+    """The run's mapping with the pairs each group's and each copy's links take."""
     return mapping.governed(
         {
             path: {key: one.substitute for key, one in pairs.items()}
             for path, pairs in table.items()
-        }
+        },
+        {
+            copy: {key: one.substitute for key, one in pairs.items()}
+            for copy, pairs in composed.items()
+        },
     )
 
 
@@ -1688,7 +1804,11 @@ def included(
     for one in found:
         if not one.composes or one.fragment is None:
             continue
-        chosen = section(parsed[one.path], one.fragment) or ()
+        try:
+            chosen = section(parsed[one.path], one.fragment) or ()
+        except (Ambiguous, Nested):
+            # `selection` refuses this reference with its own diagnostic.
+            continue
         if not chosen:
             continue
         low, high = spanned(one.path, chosen)
@@ -2517,7 +2637,10 @@ def traverse(
 
     Each round reads every carried document's links under the `subst`
     pairs its presets put in force, as the references found so far
-    select them, so a link is resolved under its own document's pairs.
+    select them, so a link is resolved under its own document's pairs:
+    what the including references select under the pairs `governing`
+    states, and what the composing references of each tag selection
+    select under the pairs `copies` states for it.
     A round records no substitution: a reference a later round finds can
     select a preset whose pair holds over the one an earlier round
     resolved a link by, so the run's record is written as the bundle is
@@ -2591,7 +2714,9 @@ def traverse(
             for path, selecting in carried.items()
         }
         mapping = governed(
-            substitution, governing(read, parsed, carried, requested)
+            substitution,
+            governing(read, parsed, carried, requested),
+            copies(read, carried),
         ).unrecorded()
         # These answers describe the current mapping. Captures and selecting
         # occurrences retain their monotonic union across rounds.
@@ -2609,99 +2734,120 @@ def traverse(
             refusal = next(refusals(within(parsed[path], regions_read)), None)
             if refusal is not None:
                 raise refused(path, read[path], refusal, reached)
-            refusals_of_operators(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                mapping,
-            )
-            refusals_of_picks(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                mapping,
-            )
-            refusals_of_directives(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                substitution,
-            )
-            for warning in composing_itself(
-                path, read[path], parsed[path], chosen, reached, mapping
-            ):
-                composed_itself.setdefault(
-                    (warning.location, warning.reference), warning
-                )
-            for one in withheld(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                mapping,
-            ):
-                verify_cached(root, one, captured)
-                postponed.setdefault(
+            kept = {id(one) for one in included(selecting, parsed, read)}
+            readings = [
+                ([one for one in selecting if id(one) in kept], mapping),
+                *(
                     (
+                        [one for one in selecting if one.composes and one.tags == tags],
+                        mapping.composed(path, tags),
+                    )
+                    for tags in dict.fromkeys(
+                        one.tags for one in selecting if one.composes
+                    )
+                ),
+            ]
+            for references, reading in readings:
+                part = selection(path, parsed[path], references, requested)
+                refusals_of_operators(
+                    path,
+                    read[path],
+                    parsed[path],
+                    part,
+                    reached,
+                    declarations,
+                    reading,
+                )
+                refusals_of_picks(
+                    path,
+                    read[path],
+                    parsed[path],
+                    part,
+                    reached,
+                    declarations,
+                    reading,
+                )
+                refusals_of_directives(
+                    path,
+                    read[path],
+                    parsed[path],
+                    part,
+                    reached,
+                    declarations,
+                    substitution,
+                )
+                for warning in composing_itself(
+                    path, read[path], parsed[path], part, reached, reading
+                ):
+                    composed_itself.setdefault(
+                        (warning.location, warning.reference), warning
+                    )
+                for one in withheld(
+                    path,
+                    read[path],
+                    parsed[path],
+                    part,
+                    reached,
+                    declarations,
+                    reading,
+                ):
+                    verify_cached(root, one, captured)
+                    postponed.setdefault(
+                        (
+                            one.path,
+                            one.fragment,
+                            one.title,
+                            one.composes,
+                            one.tags,
+                            one.defers,
+                        ),
+                        one,
+                    )
+                briefs: list[Reference] = []
+                for link in dispatches(
+                    path,
+                    read[path],
+                    parsed[path],
+                    part,
+                    reached,
+                    declarations,
+                    reading,
+                ):
+                    dispatching.setdefault((link.name, link.target.tags), link)
+                    load(link.target)
+                    brief = briefed(link, read[link.target.path].conversion)
+                    if brief is not None:
+                        briefs.append(brief)
+                for one in [
+                    *required(
+                        path,
+                        read[path],
+                        parsed[path],
+                        part,
+                        reached,
+                        declarations,
+                        reading,
+                    ),
+                    *briefs,
+                ]:
+                    verify_cached(root, one, captured)
+                    occurrence = (
                         one.path,
                         one.fragment,
                         one.title,
                         one.composes,
                         one.tags,
-                        one.defers,
-                    ),
-                    one,
-                )
-            briefs: list[Reference] = []
-            for link in dispatches(
-                path,
-                read[path],
-                parsed[path],
-                chosen,
-                reached,
-                declarations,
-                mapping,
-            ):
-                dispatching.setdefault((link.name, link.target.tags), link)
-                load(link.target)
-                brief = briefed(link, read[link.target.path].conversion)
-                if brief is not None:
-                    briefs.append(brief)
-            for one in [
-                *required(
-                    path,
-                    read[path],
-                    parsed[path],
-                    chosen,
-                    reached,
-                    declarations,
-                    mapping,
-                ),
-                *briefs,
-            ]:
-                verify_cached(root, one, captured)
-                occurrence = (one.path, one.fragment, one.title, one.composes, one.tags)
-                if occurrence in titled:
-                    continue
-                titled.add(occurrence)
-                if (one.path, one.fragment) in seen:
-                    reselecting.append(one)
-                    continue
-                limits.hold(EXPANSION_DEPTH, len(one.chain) - 1)
-                seen.add((one.path, one.fragment))
-                limits.hold(TARGETS, len(seen))
-                discovered.append(one)
+                    )
+                    if occurrence in titled:
+                        continue
+                    titled.add(occurrence)
+                    if (one.path, one.fragment) in seen:
+                        reselecting.append(one)
+                        continue
+                    limits.hold(EXPANSION_DEPTH, len(one.chain) - 1)
+                    seen.add((one.path, one.fragment))
+                    limits.hold(TARGETS, len(seen))
+                    discovered.append(one)
         found.extend(discovered)
         found.extend(reselecting)
         frontier = [*discovered, *reselecting]
@@ -2802,8 +2948,8 @@ def later_needs_pick(
     marks ignored, selecting by the deferral's title and the run's names
     the bundle carries for the target, at the default budgets a link run
     as written holds. Its traversal is read here, and the alternatives in
-    force for the target are counted on every reference reaching it
-    there, as that run counts them.
+    force for the target's group are counted on the including references
+    reaching it there, as `resolved` counts them for that run.
 
     A traversal that fails with no alternative in force needs a pick
     where one alternative's traversal succeeds, since that pick is what
@@ -2846,7 +2992,7 @@ def later_needs_pick(
         )
     read, parsed, found = unpicked
     conversion = read[one.path].conversion
-    references = contributing(found)[one.path]
+    references = included(contributing(found)[one.path], parsed, read)
     return not picked(conversion, references) and routed(
         one.path, conversion, parsed[one.path], references, [entry]
     )
@@ -3238,11 +3384,13 @@ def placement(
 
     A composition directive places nothing: the section it names is
     content of the document whose group carries the directive, so that
-    section is read where the directive is written, once, and a link
-    it carries places a document as one its scope's document writes,
-    a directive it carries reading its own section the same way. The
-    brief a dispatch carries, as `briefed` states it, is read the same
-    way, after the links its scope's document writes.
+    section is read where the directive is written, once for each tag
+    selection reaching it and under the pairs that selection puts in
+    force, as `Substitution.composed` reads them, and a link it carries
+    places a document as one its scope's document writes, a directive
+    it carries reading its own section the same way. The brief a
+    dispatch carries, as `briefed` states it, is read the same way,
+    after the links its scope's document writes.
 
     The first mapping holds the references including each document,
     as `included` keeps them. The second names, for each document a
@@ -3265,26 +3413,33 @@ def placement(
         held = pair(read[one.path].conversion, one.tags)
         if held is not None:
             entered.add((one.path, held.group))
-    composed: set[tuple[str, str | None]] = set()
+    composed: set[tuple[str, str | None, frozenset[str]]] = set()
 
-    def place(path: str, chosen: Selection | None, holder: str) -> None:
+    def place(
+        path: str, chosen: Selection | None, holder: str, reading: Substitution
+    ) -> None:
         briefs = (
             briefed(hop, read[hop.target.path].conversion)
             for hop in dispatches(
-                path, read[path], parsed[path], chosen, (), declarations, substitution
+                path, read[path], parsed[path], chosen, (), declarations, reading
             )
         )
         for one in [
             *required(
-                path, read[path], parsed[path], chosen, (), declarations, substitution
+                path, read[path], parsed[path], chosen, (), declarations, reading
             ),
             *(brief for brief in briefs if brief is not None),
         ]:
             if one.composes:
-                if (one.path, one.fragment) not in composed:
-                    composed.add((one.path, one.fragment))
+                if (one.path, one.fragment, one.tags) not in composed:
+                    composed.add((one.path, one.fragment, one.tags))
                     section_of = selection(one.path, parsed[one.path], [one], entries)
-                    place(one.path, section_of, holder)
+                    place(
+                        one.path,
+                        section_of,
+                        holder,
+                        substitution.composed(one.path, one.tags),
+                    )
                 continue
             if one.path not in selected:
                 continue
@@ -3298,7 +3453,12 @@ def placement(
     while at < len(order):
         path = order[at]
         at += 1
-        place(path, selection(path, parsed[path], selected[path], entries), path)
+        place(
+            path,
+            selection(path, parsed[path], selected[path], entries),
+            path,
+            substitution,
+        )
     return {path: selected[path] for path in order}, placers
 
 
@@ -3717,15 +3877,19 @@ def destination_map(
 
 def emitted_regions(
     groups: Sequence[Group], parsed: Mapping[str, Sequence[Token]]
-) -> Iterator[tuple[str, Token]]:
-    """Each source region the published groups carry, in first-emitted order."""
-    seen: set[tuple[str, tuple[int, int]]] = set()
+) -> Iterator[tuple[Range, Token]]:
+    """Each source region the published groups carry, in first-emitted order.
+
+    A region is yielded once for each selection its links are read under:
+    a group's, and each tag selection of the composed copies carrying it.
+    """
+    seen: set[tuple[str, tuple[int, int], frozenset[str] | None]] = set()
     for one in groups:
         for part in one.record.ranges:
-            key = (part.path, part.lines)
+            key = (part.path, part.lines, part.selecting)
             if key not in seen:
                 seen.add(key)
-                yield part.path, region_of(parsed[part.path], part)
+                yield part, region_of(parsed[part.path], part)
 
 
 def compose(
@@ -3896,15 +4060,17 @@ def compose(
         raise unsafe(boundary, reached) from boundary
     hops: dict[tuple[str, frozenset[str]], Hop] = {}
     itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
-    for path, region in emitted_regions(groups, parsed):
+    for part, region in emitted_regions(groups, parsed):
+        path = part.path
         chosen = Selection((region,))
         chain = chains.get(path, ())
+        reading = substitution.composed(path, part.selecting)
         for hop in dispatches(
-            path, read[path], parsed[path], chosen, chain, declarations, substitution
+            path, read[path], parsed[path], chosen, chain, declarations, reading
         ):
             hops.setdefault((hop.name, hop.target.tags), hop)
         for warning in composing_itself(
-            path, read[path], parsed[path], chosen, chain, substitution
+            path, read[path], parsed[path], chosen, chain, reading
         ):
             itself.setdefault((warning.location, warning.reference), warning)
     return (
@@ -3950,7 +4116,8 @@ def resourced(bundled: str, budget: int) -> bool:
 
 
 def substituted(
-    mapping: Substitution, quiet: Collection[tuple[str, tuple[str, str | None]]]
+    mapping: Substitution,
+    quiet: Collection[tuple[str, tuple[str, str | None], str]],
 ) -> list[Diagnostic]:
     """One warning for each `subst` pair other than a routing pair a reference named.
 
@@ -3974,7 +4141,7 @@ def substituted(
             location=None if one.origin is None else located(one.origin),
         )
         for one in mapping.redirects.targets()
-        if one.pair not in quiet
+        if (*one.pair, one.declared) not in quiet
     ]
 
 
@@ -4299,10 +4466,11 @@ class Compiled:
     presets are those `unselected` returns for the documents the bundle
     carries, which the run weighs against its other bundles'. The pairs
     are those `governing` puts in force for the documents the bundle
-    carries, which the run weighs against every reference it resolved.
-    The linked identities are those `linked` reads from each document
-    a routing pair is in force for, which a routing pair is weighed
-    against.
+    carries, and the copied pairs those `copies` puts in force for its
+    composed copies, which the run weighs against every reference it
+    resolved. The linked identities are those `linked` reads from each
+    document a routing pair is in force for, which a routing pair is
+    weighed against.
     """
 
     text: str
@@ -4314,7 +4482,23 @@ class Compiled:
     captured: Mapping[str, Capture]
     unselected: Mapping[str, tuple[str, ...]]
     pairs: Mapping[str, Mapping[tuple[str, str | None], Governed]]
+    copied: Mapping[
+        tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Governed]
+    ]
     linked: Mapping[str, frozenset[tuple[str, str | None]]]
+
+    def in_force(self) -> Iterator[tuple[str, tuple[str, str | None], Governed]]:
+        """Each pair in force for a document, its group's then its copies', by path."""
+        held = [
+            *(((path, 0, ()), pairs) for path, pairs in self.pairs.items()),
+            *(
+                ((path, 1, tuple(sorted(tags))), pairs)
+                for (path, tags), pairs in self.copied.items()
+            ),
+        ]
+        for (path, _kind, _tags), pairs in sorted(held, key=lambda one: one[0]):
+            for key, pair in pairs.items():
+                yield path, key, pair
 
 
 def compiled(
@@ -4360,6 +4544,7 @@ def compiled(
         return file
 
     pairs = governing(read, parsed, contributing(found), requested)
+    copied = copies(read, contributing(found))
     bundled, coinciding, hops, itself = compose(
         read,
         parsed,
@@ -4369,7 +4554,7 @@ def compiled(
         limits,
         dispatched_file,
         declarations,
-        governed(substitution, pairs),
+        governed(substitution, pairs, copied),
     )
     dispatching: dict[BundleSelection, Hop] = {}
     own: list[Hop] = []
@@ -4412,10 +4597,21 @@ def compiled(
         captured,
         unselected(read, parsed, contributing(found), requested),
         pairs,
+        copied,
         {
             path: linked(path, parsed[path], tuple(regions(parsed[path])))
-            for path, held in pairs.items()
-            if any(one.routing for one in held.values())
+            for path in {
+                *(
+                    path
+                    for path, held in pairs.items()
+                    if any(one.routing for one in held.values())
+                ),
+                *(
+                    path
+                    for (path, _tags), held in copied.items()
+                    if any(one.routing for one in held.values())
+                ),
+            }
         },
     )
 
@@ -4480,18 +4676,22 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
     ]
 
 
-def routes(bundles: Iterable[Compiled]) -> set[tuple[str, tuple[str, str | None]]]:
-    """The pairs, as declaring document and key, only alternatives put in force.
+def routes(
+    bundles: Iterable[Compiled],
+) -> set[tuple[str, tuple[str, str | None], str]]:
+    """The pairs only alternatives put in force, by document, key and substitute.
 
     A pair a `default` or an ordinary preset states in any bundle of the
-    run stands in for material under test there, so it is no route.
+    run stands in for material under test there, so it is no route. It
+    stands in only for the substitute it names, so an alternative's pair
+    naming another substitute for the same key stays a route.
     """
-    routing: set[tuple[str, tuple[str, str | None]]] = set()
-    standing: set[tuple[str, tuple[str, str | None]]] = set()
+    routing: set[tuple[str, tuple[str, str | None], str]] = set()
+    standing: set[tuple[str, tuple[str, str | None], str]] = set()
     for one in bundles:
-        for path, pairs in one.pairs.items():
-            for key, pair in pairs.items():
-                (routing if pair.routing else standing).add((path, key))
+        for path, key, pair in one.in_force():
+            named = (path, key, identity(pair.substitute))
+            (routing if pair.routing else standing).add(named)
     return routing - standing
 
 
@@ -4514,9 +4714,8 @@ def unused_pairs(
     written: dict[str, frozenset[tuple[str, str | None]]] = {}
     for one in bundles:
         written.update(one.linked)
-        for path in sorted(one.pairs):
-            for key, pair in one.pairs[path].items():
-                held.setdefault((path, pair.preset, key), pair)
+        for path, key, pair in one.in_force():
+            held.setdefault((path, pair.preset, key), pair)
     return [
         Diagnostic(
             WARNING,
@@ -4525,7 +4724,7 @@ def unused_pairs(
             + (
                 "no link its document writes"
                 if one.routing
-                else "no reference the run resolved"
+                else "no reference the run resolved where it is in force"
             )
             + ", so it substitutes nothing",
             code=SUBST_UNUSED,

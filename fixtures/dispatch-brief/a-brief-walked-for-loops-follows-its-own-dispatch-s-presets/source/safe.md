@@ -1,0 +1,6 @@
+---
+prosiform: {}
+---
+# Safe
+
+Safe.

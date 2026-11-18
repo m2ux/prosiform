@@ -256,7 +256,8 @@ class Redirect:
     the identity the first reference to reach it was written to name,
     `source` the destination that reference was written as, and `origin`
     the source position it stands at, absent where no caller that reached
-    it knew one. `pair` is the pair that served it.
+    it knew one. `pair` is the pair that served it, and `declared` the
+    identity of the substitute that pair states.
     """
 
     resolved: str
@@ -264,6 +265,7 @@ class Redirect:
     source: str
     origin: str | None
     pair: Served
+    declared: str
 
 
 class Redirects:
@@ -308,7 +310,12 @@ class Redirects:
         earlier = self._records.get(named)
         if earlier is None:
             self._records[named] = Redirect(
-                identity(substitute), identity(found), found.original, origin, pair
+                identity(substitute),
+                identity(found),
+                found.original,
+                origin,
+                pair,
+                identity(declared),
             )
         elif earlier.origin is None and origin is not None:
             self._records[named] = replace(earlier, origin=origin)
@@ -339,6 +346,14 @@ class Substitution:
     declaring document writes and no other document's. A mapping naming
     no `writer` redirects nothing.
 
+    `documents` holds the pairs in force for a document's own group, and
+    `contributions` those for each composed copy of one of its sections,
+    by the document's path and the tags of the directive or dispatch
+    placing the copy, as the run's `copies` states them. `composed`
+    selects a copy's pairs, and the selection names the document it was
+    taken for, so a link another document writes while that copy is read
+    resolves under its own document's group pairs.
+
     A lookup returns the substitute's reference whole — its path, its
     section and its authored access walk — while the text the reference
     was written as stays the author's, because that is what a diagnostic
@@ -357,6 +372,10 @@ class Substitution:
     )
     redirects: Redirects = field(default_factory=Redirects, compare=False, repr=False)
     writer: str | None = None
+    contributions: Mapping[
+        tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Reference]
+    ] = MappingProxyType({})
+    selection: tuple[str, frozenset[str]] | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -369,12 +388,34 @@ class Substitution:
                 }
             ),
         )
+        object.__setattr__(
+            self,
+            "contributions",
+            MappingProxyType(
+                {
+                    copy: MappingProxyType(dict(pairs))
+                    for copy, pairs in self.contributions.items()
+                }
+            ),
+        )
 
     def governed(
-        self, documents: Mapping[str, Mapping[tuple[str, str | None], Reference]]
+        self,
+        documents: Mapping[str, Mapping[tuple[str, str | None], Reference]],
+        contributions: Mapping[
+            tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Reference]
+        ] = MappingProxyType({}),
     ) -> "Substitution":
-        """This mapping with each document's governing pairs, sharing its record."""
-        return replace(self, documents=documents)
+        """This mapping with each group's and each copy's pairs, sharing its record."""
+        return replace(self, documents=documents, contributions=contributions)
+
+    def composed(self, document: str, tags: frozenset[str] | None) -> "Substitution":
+        """The mapping in force for the links a composed copy of `document` writes.
+
+        `tags` select the presets of the directive or dispatch placing the
+        copy, and `None` names the document's own group.
+        """
+        return replace(self, selection=None if tags is None else (document, tags))
 
     def unrecorded(self) -> "Substitution":
         """This mapping, recording what it serves apart from the run's record.
@@ -416,7 +457,11 @@ class Substitution:
         resolves the same link again adds no position of its own, so
         which caller answers does not change what the record states.
         """
-        pairs = self.documents.get(self.writer or "", {})
+        pairs = (
+            self.contributions.get(self.selection, {})
+            if self.selection is not None and self.selection[0] == self.writer
+            else self.documents.get(self.writer or "", {})
+        )
         if found.external or not pairs:
             return found
         key: tuple[str, str | None] = (found.path, found.fragment)
