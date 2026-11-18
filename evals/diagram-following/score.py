@@ -70,10 +70,10 @@ A scenario also states the `pf` runs a correct run makes, so a run that
 passes the dispatch checks and its sub-agents' actions is held to them
 wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
-own sub-agent ran. A command is a
-`pf` run in each segment `;`, `&&`, `||`, `|`, `&` or a newline separate
-whose first word is `pf` or a path ending `/pf`. The compiler's own grammar and entry reader read
-its one positional entry, a published link or a plain path, and an optional
+own sub-agent ran. A command is a `pf` run in each segment `;`, `&&`,
+`||`, `|`, `&` or a newline separate whose first word is `pf` or a path
+ending `/pf`. The compiler's own grammar and entry reader read its one
+positional entry, a published link or a plain path, and an optional
 `--pick`: a link's destination is the run's reference and its title the
 names it selects, the pick standing where `?` stands, and a plain path
 selects none. A run the compiler refuses, a stray or repeated `--pick`
@@ -585,7 +585,7 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 runs.append(None)
                 continue
             fragment = "" if reference.fragment is None else f"#{reference.fragment}"
-            tags = reference.tags - {PICK} if parsed.pick else reference.tags
+            tags = reference.tags if parsed.pick is None else reference.tags - {PICK}
             runs.append(Compile(None, reference.path + fragment, tags))
     return runs
 
