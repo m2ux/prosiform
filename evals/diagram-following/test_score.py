@@ -1328,9 +1328,7 @@ def test_runs_beside_a_heredoc_stay_observable(command: str) -> None:
     [
         (f"pf target.md <<EOF\n{HEREDOC_BODY}", [None]),
         ("pf target.md <<EOF", [None]),
-        (f"pf a.md\ncat <<EOF\n{HEREDOC_BODY}", [Compile(None, "a.md"), None]),
-        (f"pf a.md; cat <<EOF\n{HEREDOC_BODY}\tEOF\n", [Compile(None, "a.md"), None]),
-        (f"cat <<A <<B\n{HEREDOC_BODY}A\npf a.md\n", [None]),
+        (f"cat <<A <<B\n{HEREDOC_BODY}A\npf a.md\n", []),
     ],
 )
 def test_an_unterminated_heredoc_invalidates_its_segment(
@@ -1339,6 +1337,24 @@ def test_an_unterminated_heredoc_invalidates_its_segment(
     assert pf_runs((command,)) == runs
     item = Scenario("heredoc", {}, (), compile=(Compile(None, "a.md"),))
     assert compiles(item, (command,), ()) is not None
+
+
+@pytest.mark.parametrize(
+    "malformed",
+    [
+        "ls >",
+        "echo 'open",
+        f"cat <<EOF\n{HEREDOC_BODY}",
+        f"cat <<EOF\n{HEREDOC_BODY}\tEOF\n",
+    ],
+)
+def test_a_malformed_command_running_no_pf_passes_the_run_checks(
+    malformed: str,
+) -> None:
+    commands = ("pf a.md", malformed)
+    assert pf_runs(commands) == [Compile(None, "a.md")]
+    item = Scenario("malformed", {}, (), compile=(Compile(None, "a.md"),))
+    assert compiles(item, commands, ()) is None
 
 
 @pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
