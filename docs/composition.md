@@ -96,7 +96,7 @@ Design rules: *Operator marks*, and *Operators that combine* under [Link classif
 
 ## The target
 
-A directive names a section of a document that declares `prosiform`, resolved as any reference is, the writing document's `subst` included. A missing document or section fails with `E_TARGET_NOT_FOUND`, a fragment two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`, and one naming a heading a container carries with `E_NESTED_SECTION_TARGET`. A deferred directive is held to the same, because the run names its contribution by the heading its target section opens with. A whole document, a document that declares nothing, a remote address and a resource are refused with `E_UNSUPPORTED_CONSTRUCT`, because none of them is a section to place.
+A directive names a section of a document that declares `prosiform`, resolved as any reference is, the writing document's `subst` included. A missing document or section fails with `E_TARGET_NOT_FOUND`, a fragment two headings of the document share with `E_AMBIGUOUS_SOURCE_HEADING`, and one naming a heading a container carries with `E_NESTED_SECTION_TARGET`. A deferred directive is held to the same, because the run names its contribution by the heading its target section opens with. A fragment's defect is reported ahead of the alternatives its title picks. A whole document, a document that declares nothing, a remote address and a resource are refused with `E_UNSUPPORTED_CONSTRUCT`, because none of them is a section to place.
 
 Design rule: *The eligible target*. Fixtures:
 
@@ -107,6 +107,7 @@ Design rule: *The eligible target*. Fixtures:
 - [a-deferred-directive-naming-a-document-that-declares-nothing-is-refused](../fixtures/composition/a-deferred-directive-naming-a-document-that-declares-nothing-is-refused)
 - [a-deferred-directive-in-composed-content-naming-a-shared-fragment-is-refused](../fixtures/composition/a-deferred-directive-in-composed-content-naming-a-shared-fragment-is-refused)
 - [a-deferred-directive-naming-a-heading-a-container-carries-is-refused](../fixtures/composition/a-deferred-directive-naming-a-heading-a-container-carries-is-refused)
+- [a-directive-naming-a-shared-fragment-and-two-alternatives-reports-the-fragment](../fixtures/composition/a-directive-naming-a-shared-fragment-and-two-alternatives-reports-the-fragment)
 - [a-directive-naming-a-remote-address-is-refused](../fixtures/composition/a-directive-naming-a-remote-address-is-refused)
 - [a-directive-naming-a-resource-is-refused](../fixtures/composition/a-directive-naming-a-resource-is-refused)
 

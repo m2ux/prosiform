@@ -2357,7 +2357,10 @@ def traverse(
     the dependencies they mark and the constructs the profile refuses
     there, so an unselected section is content the run parsed and
     never asked for. A selection only grows, so a region a later round
-    adds is held to the same checks in the round that adds it.
+    adds is held to the same checks in the round that adds it. Each
+    round selects before it counts the alternatives the references pick,
+    so a fragment naming no one section reports its own defect whatever
+    its reference's title picks.
 
     Expansion depth counts the reference chain from the nearest entry,
     independently of the fixed-point rounds needed to activate presets. The
@@ -2428,6 +2431,10 @@ def traverse(
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
         carried = contributing(found)
+        chosen_of = {
+            path: selection(path, parsed[path], selecting, requested)
+            for path, selecting in carried.items()
+        }
         mapping = governed(
             substitution, governing(read, parsed, carried, requested)
         ).unrecorded()
@@ -2437,7 +2444,7 @@ def traverse(
         dispatching.clear()
         composed_itself.clear()
         for path, selecting in carried.items():
-            chosen = selection(path, parsed[path], selecting, requested)
+            chosen = chosen_of[path]
             regions_read = (
                 tuple(regions(parsed[path])) if chosen is None else chosen.regions
             )
