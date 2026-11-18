@@ -55,8 +55,9 @@ place, so four dispatches publish nothing:
 - A chain of bundles returning to one already on it is a cycle: its
   sub-agents would dispatch one another without end. A dispatch naming
   the run's own single selection closes the shortest one.
-- A set, a picking dispatch or a briefed one in a level-6 section
-  leaves no level for its sub-section.
+- A set, a picking dispatch or a briefed one whose sub-section would
+  stand past the sixth level, in a level-6 section or nested in another
+  dispatch's sub-section, leaves no level for it.
 - A brief whose dispatches carry briefs leading back to it would be
   lifted into itself without end, a cycle as a chain of bundles
   returning to one already on it is.
@@ -155,6 +156,7 @@ from prosiform.source import (
     events,
     opening_text,
     regions,
+    section,
     shown,
     within,
 )
@@ -694,8 +696,6 @@ class Placing:
         """The copy of each composed region whose dispatches its later copies share."""
         self.aliases: list[tuple[Region, Region]] = []
         """Each later copy of a region, beside the copy whose places it takes."""
-        self.writing: dict[Served, Chain] = {}
-        """The placing of the copy writing each dispatch while its section is placed."""
         self.expanding: list[tuple[tuple[str, str | None, frozenset[str]], Link]] = []
         """The briefs being lifted, outermost first, with the dispatch carrying each."""
 
@@ -717,6 +717,7 @@ class Placing:
         link: Link,
         depth: int,
         lines: Sequence[Instruction],
+        outer: Chain,
     ) -> None:
         """Emit the brief one dispatch carries around the lines handing it on.
 
@@ -727,22 +728,16 @@ class Placing:
         dispatches it writes then take their sub-sections one level below
         as well, each section of the brief placing its own as a section of
         a group does. A dispatch carrying no brief is followed by its lines
-        alone.
-
-        A brief already being lifted on the chain of briefs reaching this
-        one would be lifted inside itself without end, so it is refused as
-        a dispatch cycle naming each dispatch on that chain.
+        alone. `outer` is the placing of the copy writing the dispatch,
+        which the brief's own placing extends.
         """
         found = self.briefs.get(link.served)
         if found is None:
             for one in lines:
                 self.say(one)
             return
-        self.looping(link)
         self.expanding.append(((found.path, found.fragment, found.tags), link))
-        emitted, parts, headings = self.briefer(
-            link, found, depth, self.writing.get(link.served, ())
-        )
+        emitted, parts, headings = self.briefer(link, found, depth, outer)
         lead = next(
             (
                 at
@@ -792,28 +787,59 @@ class Placing:
             self.place(nested, nesting, depth + 1)
         self.expanding.pop()
 
+    def brief_of(self, link: Link) -> Reference | None:
+        """The brief one dispatch carries, as `briefing` names it."""
+        if link.served not in self.briefs:
+            self.briefs[link.served] = briefing(
+                link.reference, self.read[link.reference.path].conversion
+            )
+        return self.briefs[link.served]
+
     def looping(self, link: Link) -> None:
-        """Refuse a dispatch whose brief the chain of briefs carrying it carries.
+        """Refuse a dispatch whose brief leads back to a brief carrying it.
 
-        It runs before the dispatch's sub-section is fitted to a level, so
-        a loop is reported as the cycle it is wherever it starts.
+        The briefs a dispatch's brief reaches are walked through the
+        dispatches each brief writes, before the dispatch's sub-section is
+        fitted to a level, so a loop is reported as the dispatch cycle it
+        is wherever it starts, naming each dispatch on it. A brief being
+        lifted around this dispatch is on the loop's chain already.
         """
-        found = self.briefs.get(link.served)
-        if found is None:
-            return
-        key = (found.path, found.fragment, found.tags)
-        if any(each == key for each, _link in self.expanding):
-            raise self.cycling(link)
+        carrying = [key for key, _link in self.expanding]
+        chain: list[tuple[tuple[str, str | None, frozenset[str]], Link]] = []
 
-    def cycling(self, link: Link) -> Refused:
+        def walk(one: Link) -> None:
+            found = self.brief_of(one)
+            if found is None:
+                return
+            key = (found.path, found.fragment, found.tags)
+            if key in carrying or any(each == key for each, _one in chain):
+                raise self.cycling(one, [each for _key, each in chain])
+            chain.append((key, one))
+            tokens = self.parsed[found.path]
+            for region in section(tokens, found.fragment or "") or ():
+                for each in written_in(
+                    found.path,
+                    self.read[found.path],
+                    tokens,
+                    region,
+                    self.declarations,
+                    self.substitution,
+                ):
+                    walk(each)
+            chain.pop()
+
+        walk(link)
+
+    def cycling(self, link: Link, reaching: Sequence[Link] = ()) -> Refused:
         """The refusal of a brief reached again through the briefs carrying it.
 
         It names the chain from the document writing the outermost
-        dispatch through each target whose brief is being carried, the
-        location of the dispatch closing the loop, and each earlier
-        dispatch as related, as a composition cycle is refused.
+        dispatch through each target whose brief is carried, or reached
+        through the dispatches the briefs write, to the location of the
+        dispatch closing the loop, with each earlier dispatch as related,
+        as a composition cycle is refused.
         """
-        earlier = [each for _key, each in self.expanding]
+        earlier = [*(each for _key, each in self.expanding), *reaching]
         names = tuple(identity(each.reference) for each in (*earlier, link))
         return Refused(
             Diagnostic(
@@ -838,7 +864,7 @@ class Placing:
             )
         )
 
-    def lifted(self, link: Link, file: str, depth: int) -> int:
+    def lifted(self, link: Link, file: str, depth: int, outer: Chain) -> int:
         """Emit the sub-section a dispatch carrying a brief is lifted into.
 
         Its heading is the dispatch mark and the link's text, its body
@@ -868,7 +894,7 @@ class Placing:
         self.looping(link)
         fits(depth, link)
         at = self.heading(text, depth, BRIEF_SECTION)
-        self.briefed(link, depth, [Instruction(listing([(file, link.text)]))])
+        self.briefed(link, depth, [Instruction(listing([(file, link.text)]))], outer)
         return at
 
     def flush(self, following: int | None) -> None:
@@ -924,18 +950,16 @@ class Placing:
         emits, which links sharing their text and effective selection
         share.
         """
+        writing: dict[Served, Chain] = {}
         for key, served in links:
-            self.writing.setdefault(served, key[2])
+            writing.setdefault(served, key[2])
         files = {
             served: self.bundle_file(link.reference)
             for served, link in pending.items()
             if not link.picking
         }
-        for served, link in pending.items():
-            if served not in self.briefs:
-                self.briefs[served] = briefing(
-                    link.reference, self.read[link.reference.path].conversion
-                )
+        for link in pending.values():
+            self.brief_of(link)
         together: dict[str, Link] = {}
         for served, link in pending.items():
             if link.parallel:
@@ -948,7 +972,7 @@ class Placing:
             at = self.heading(PARALLEL, depth, PARALLEL_SECTION)
             if any(self.briefs[link.served] is not None for link in together.values()):
                 for file, link in together.items():
-                    self.lifted(link, file, depth + 1)
+                    self.lifted(link, file, depth + 1, writing.get(link.served, ()))
             else:
                 self.say(
                     Instruction(
@@ -961,19 +985,20 @@ class Placing:
         lifts: dict[tuple[str, str], int] = {}
         for served, link in pending.items():
             if link.picking:
-                serving[served] = self.picked(link, depth)
+                serving[served] = self.picked(link, depth, writing.get(served, ()))
                 continue
             if self.briefs[served] is None or (link.parallel and len(together) > 1):
                 continue
             lift = (link.text, files[served])
             if lift not in lifts:
-                lifts[lift] = self.lifted(link, files[served], depth)
+                lifts[lift] = self.lifted(
+                    link, files[served], depth, writing.get(served, ())
+                )
             serving[served] = lifts[lift]
         for key, served in links:
             self.placed.setdefault(key, {})[served] = serving[served]
-            self.writing.pop(served, None)
 
-    def picked(self, link: Link, depth: int) -> int:
+    def picked(self, link: Link, depth: int, outer: Chain) -> int:
         """Emit the dispatch-pick sub-section of one dispatch carrying the pick token.
 
         Its body is the brief the dispatch carries, where it carries one,
@@ -990,7 +1015,7 @@ class Placing:
                 for one, alternative in alternatives_of(link.reference, conversion)
             ]
         )
-        self.briefed(link, depth, [Instruction(listed)])
+        self.briefed(link, depth, [Instruction(listed)], outer)
         return at
 
     def group(self, one: Group) -> Group:

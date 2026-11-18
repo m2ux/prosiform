@@ -60,7 +60,7 @@ A run carrying both kinds shows them together. Two `⫽` links form one set and 
 
 *The entry's bundle links what to hand over; the three procedures are compiled as if each had been asked for on its own.*
 
-A set, a `⇉` link carrying `?`, or one carrying a brief, in a level-6 section leaves no level for its sub-section, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
+A set, a `⇉` link carrying `?`, or one carrying a brief, whose sub-section would stand past H6, in a level-6 section or nested in a brief's or a set's sub-section, leaves no level for it, so the run fails rather than inventing one. A dispatched link with no text after its mark shows its reader nothing, and is refused too.
 
 A dispatch in a heading the bundle emits as text alone has no link to publish, so the run publishes nothing and fails with `E_UNSUPPORTED_CONSTRUCT`, naming the link. Such a heading is a referenced document's title its file heading absorbs, a merged group member's title its subsection absorbs, or a title standing above the selection. The entry's own title heads its bundle, so a dispatch there publishes. Its author writes the dispatch in the body beneath the heading.
 
@@ -116,7 +116,7 @@ The brief is compiled as a `↳` composition of its section is: its links are fo
 
 A dispatch the brief writes is a dispatch of its own: it compiles its own bundle and publishes where the brief writes it, a brief its target declares lifted by the same rules, its sub-section one level below the one holding the brief, after the brief. It is never a member of a set around the brief. A brief whose dispatches carry briefs leading back to it would be lifted inside itself without end, so the run publishes nothing and fails with `E_DISPATCH_CYCLE`, naming the chain, as `guide.md`, `a.md`, `b.md`, `a.md`, and the dispatch closing it.
 
-A `⇉` link carrying `?` places its brief in its `⇉ Dispatch Pick` sub-section, above the pick lines. The brief compiles with no alternative in force, so it publishes where no alternative changes it, as [Presets in force](selection.md#presets-in-force) states for a link, and the run fails with `E_ALTERNATIVE_UNRESOLVED`, listing the alternatives, where one changes it: an alternative routing a link the brief writes, or one naming a brief of its own.
+A `⇉` link carrying `?` places its brief in its `⇉ Dispatch Pick` sub-section around the pick lines, as a lifted sub-section places it around its dispatch line: the lead content above them, the child sections beneath. The brief compiles with no alternative in force, so it publishes where no alternative changes it, as [Presets in force](selection.md#presets-in-force) states for a link, and the run fails with `E_ALTERNATIVE_UNRESOLVED`, listing the alternatives, where one changes it: an alternative routing a link the brief writes, or one naming a brief of its own.
 
 In a `⫽ Dispatch Set` sub-section holding a member that carries a brief, every member is lifted into a sub-section of its own one level below the set's, headed by its mark and link text, as `#### ⇉ Investigate`, in the set's written order. A briefed member's sub-section holds the brief's lead content, the member's own dispatch line, and the brief's sections one level further down; a member carrying no brief holds its dispatch line alone. Each member's line therefore stays with its brief, and no line stands beneath another member's headings. A set none of whose members carries a brief lists its bare lines as the sections above state.
 
@@ -124,7 +124,7 @@ Two `⇉` links in one section with the same text and effective selection share 
 
 ## The guide
 
-The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, that a brief standing above a `⇉` line is done before that bundle is handed on, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there. Its inputs are those the dispatching step states as given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, that a brief, the text above a `⇉` line in the sub-section a link points at and the sections beneath that line, is done before that bundle is handed on, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there. Its inputs are those the dispatching step states as given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
 
 ## The run-pf line
 

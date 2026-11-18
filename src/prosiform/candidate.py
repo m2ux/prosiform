@@ -1456,9 +1456,8 @@ def parallel_sets(
     file. What a sub-section lists is the dispatch lines the bundle
     writes beneath it, up to the next heading at its level or above,
     outside every dispatch sub-section nested in it: a brief it carries is
-    source content, and lists nothing, and the dispatch-line heading a
-    brief gives its lines is no sub-section of its own. A set lists the
-    lines of each member sub-section lifted one level below it as well.
+    source content, and lists nothing. A set lists the lines of each
+    member sub-section lifted one level below it as well.
     """
     lines = {
         id(span)
