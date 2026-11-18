@@ -1,0 +1,22 @@
+# Alternative Diagnostics — November 2026
+
+> Hot-fix · Created 2026-11-18
+
+## Executive Summary
+
+A `default` pair agreeing with a picked alternative's pair leaves the redirect silent, where the routing-pair rule makes it a stand-in that warns `W_SUBST_USED`. A `?` dispatch whose brief an alternative routes is refused under a remedy that would remove the pick.
+
+The fix counts an agreeing `default` pair as a stand-in, and gives a picking dispatch's brief a remedy naming the brief's section and stating that it must compile with no alternative in force.
+
+## Artifacts
+
+| Artifact | What it holds |
+| --- | --- |
+
+## Links
+
+| Resource | Link |
+| --- | --- |
+| Hot-fix issue | [[F23] Alternative Diagnostics](https://github.com/m2ux/prosiform/issues/800) |
+| Folded issue | [#801](https://github.com/m2ux/prosiform/issues/801) |
+| Found by | [[F19] Tagged Compositions](https://github.com/m2ux/prosiform/pull/794) |
