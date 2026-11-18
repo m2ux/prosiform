@@ -780,7 +780,7 @@ error: artifacts/work-kind.md needs one alternative in force:
 remedy: rerun with --pick naming the alternative that fits your task
 ```
 
-Otherwise, since `--pick` beside an entry carrying no `?` is invalid usage, it names the alternative in the title or tooltip of each link reaching the document, a link entry's among them. A composed copy's failure names the directive or dispatch placing the copy as `reference`, with its chain, and its remedy names the alternative in that link's title alone, since the copy follows its presets alone.
+Otherwise, since `--pick` beside an entry carrying no `?` is invalid usage, it names the alternative in the title or tooltip of each link reaching the document, a link entry's among them. A composed copy's failure names the directive or dispatch placing the copy as `reference`, with its chain and the position its link is written at as `location`, and its remedy names the alternative in that link's title alone, since the copy follows its presets alone.
 
 `W_EARLIER_SET_RETAINED` reports a published run whose earlier set, moved aside, could not be removed, naming that path in its message and remedy.
 
