@@ -101,5 +101,68 @@
     "criteria": "AC1: the miss condition leads its three malformed calls, and every counted call matches score.py. AC2: make check exits 0 at aebc17ade.",
     "validation": "make check exits 0 at aebc17ade; make eval-harness 854 passed, 1 failed in the unchanged pick reading, arising issue https://github.com/m2ux/prosiform/issues/804.",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/806",
+    "head": "154fff13c04528a8abaac48e091b42d992eb94e0",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-798-f21-overcompiled-rubric/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F21 delivery session, folded #804 and #805)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change aebc17ade..154fff13c folding #804 and #805, within the full diff against main: pf_runs' pick reading against Compile.tags and _picked, _commands' per-segment split flag, heredoc bodies, an unreadable first token, |&, a lone &, paths ending /pf, a pick beside other presets, the score.py docstring, the README Run checks section and overcompiled line, and the RUNBOOK overcompiled row. Out of scope, unchanged on main at 4b0466803: pf a.md # note scores invalid since comments are not removed, and (pf a.md) and command substitutions are not read as runs. Rejected observation, held for the user: a run beside a redirect a separator cuts short, as in ls > ; pf a.md, counts as made though bash runs nothing of a line holding a syntax error; the user's #805 rule counts an unsplit segment only when its first word names pf, and the shell's whole-line syntax errors are a wider design.",
+    "criteria": "AC1, AC4 and AC5 met in substance; AC2 failed on ruff E501 at 154fff13c; AC3 test_score.py 248 passed.",
+    "validation": "test_score.py 248 passed; probes of pf_runs and compiles under the unit checkout's venv.",
+    "findings": [
+      {
+        "description": "The rewrapped score.py docstring line exceeded the 88-character limit, so ruff check failed.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a29c9409546fb04a9d67ba8cbbc634864d413fa0"
+      },
+      {
+        "description": "pf_runs tested the pick by truthiness while Compile.tags tests it for None, so an empty pick read as the listing.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a29c9409546fb04a9d67ba8cbbc634864d413fa0"
+      },
+      {
+        "description": "test_an_unterminated_heredoc_invalidates_its_segment held a case showing a heredoc body as data rather than an invalidated segment.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a29c9409546fb04a9d67ba8cbbc634864d413fa0"
+      },
+      {
+        "description": "No test held a malformed non-pf segment in the same command string as a pf run.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a29c9409546fb04a9d67ba8cbbc634864d413fa0"
+      },
+      {
+        "description": "test_a_pick_stands_where_the_pick_token_stands repeated its equality assertion.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a29c9409546fb04a9d67ba8cbbc634864d413fa0"
+      },
+      {
+        "description": "The RUNBOOK overcompiled defect conditions omitted a pf call whose heredoc runs to the end of the input, which the shell runs with a warning.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/fb06ad50f38a9e61647212519e6d0304b4848dee"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/806",
+    "head": "fb06ad50f38a9e61647212519e6d0304b4848dee",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-798-f21-overcompiled-rubric/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F21 delivery session, folded #804 and #805)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change 154fff13c..fb06ad50f and the six findings it fixes. Rejected observation, held for the user: in pf a.md; ls >, bash parses the line and runs nothing, while the scorer counts pf a.md as made. That is the rule the user decided for #805, under which a segment that does not split whole counts only when its readable first word names pf; modelling the shell's whole-line syntax errors is a wider design the delivery holds as a question rather than applies. A partial fix stopping the reading at a redirect a separator cuts short was applied and withdrawn, leaving no break, docstring clause or test behind.",
+    "criteria": "AC1 and AC5: the RUNBOOK row, README line, README Run checks and score.py docstring match _commands, pf_runs and _held_to. AC2: make check exits 0. AC3: make eval-harness exits 0. AC4: test_a_malformed_command_running_no_pf_passes_the_run_checks passes.",
+    "validation": "make check exits 0 at fb06ad50f; make eval-harness 858 passed; test_score.py 249 passed; ruff clean.",
+    "findings": []
   }
 ]

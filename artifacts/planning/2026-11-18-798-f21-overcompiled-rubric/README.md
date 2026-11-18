@@ -21,4 +21,6 @@ The fix has the rubric's `overcompiled` row, and the README's failure-class line
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F21] Overcompiled Rubric](https://github.com/m2ux/prosiform/issues/798) |
+| Folded | [Eval Pick Reading](https://github.com/m2ux/prosiform/issues/804), [Scorer Command Reading](https://github.com/m2ux/prosiform/issues/805) |
+| Delivering pull request | [[F21] Overcompiled Rubric](https://github.com/m2ux/prosiform/pull/806) |
 | Found by | [[F16] Dispatch Brief](https://github.com/m2ux/prosiform/pull/792) |
