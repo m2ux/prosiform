@@ -370,9 +370,9 @@ Symbol grammar:
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
      which it reads there, with the inputs the dispatching step states as
      given, and continue with its answer.
-     Where text stands above a ⇉ line in the sub-section a link points
-     at, that text is the bundle's brief: do what it asks before you hand
-     the bundle on
+     The text above a ⇉ line in the sub-section a link points at, and
+     the sections beneath that line, are the bundle's brief: do what it
+     asks before you hand the bundle on
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
      ⇉ lines in the sub-section headed ⫽ Dispatch Set.
      Give each bundle's file path to its own sub-agent at once, with the
@@ -3471,11 +3471,11 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
         ) from parentless
     except Overflowing as beyond:
         raise input_failure(
-            f"the directive {beyond.destination!r} in {beyond.path!r} composes "
-            f"the heading {beyond.heading!r} at level {beyond.level}, which is "
-            f"beyond H{MAX_LEVEL}",
+            f"the {beyond.kind} {beyond.destination!r} in {beyond.path!r} "
+            f"composes the heading {beyond.heading!r} at level {beyond.level}, "
+            f"which is beyond H{MAX_LEVEL}",
             code=HEADING_DEPTH_OVERFLOW,
-            remedy="write the directive in a shallower section, or name a "
+            remedy=f"write the {beyond.kind} in a shallower section, or name a "
             "shallower section of its target",
             reference=beyond.destination,
             source=location(beyond.path, beyond.line),
@@ -3665,6 +3665,7 @@ def compose(
                 declarations,
                 substitution,
             )
+        contributed.update(briefs.placed)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal

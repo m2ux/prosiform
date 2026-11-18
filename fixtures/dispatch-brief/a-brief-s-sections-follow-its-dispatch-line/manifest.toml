@@ -1,0 +1,19 @@
+description = "A brief holding a composition directive and a subsection publishes in the sub-section its dispatch is lifted into as its lead content, then the dispatch line, then the section the directive composes and its subsection, each one level below the sub-section, so the dispatch line stands under no heading the brief emits."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Section composition — Nested directives",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate.bundle.md",
+]
+diagnostics = []

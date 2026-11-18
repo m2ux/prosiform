@@ -3,12 +3,12 @@ prosiform:
   default:
     brief: "#given"
 ---
-# Investigate
+# Beta
 
 ## Given
 
-First [⇉ Review](review.md).
+First [⇉ Alpha](a.md).
 
 ## Steps
 
-1. Read the case file.
+1. Do beta.

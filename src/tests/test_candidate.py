@@ -936,7 +936,7 @@ def pointing(destination: str) -> None:
     }
     dispatches(
         reached,
-        {("guide.md", 0): {(("plan.md", None), frozenset(), True): destination}},
+        {("guide.md", 0, ()): {(("plan.md", None), frozenset(), True): destination}},
         lambda _reference: "plan.bundle.md",
         {"plan.md": Conversion(declared=True)},
     )
@@ -949,7 +949,7 @@ def test_a_dispatch_map_naming_the_other_preset_variant_fails() -> None:
     with pytest.raises(Invalid) as raised:
         dispatches(
             {},
-            {("guide.md", 0): {served: drafted}},
+            {("guide.md", 0, ()): {served: drafted}},
             lambda _reference: checked,
             {"plan.md": Conversion(declared=True)},
         )
@@ -985,7 +985,7 @@ def test_a_parallel_set_listing_the_other_preset_variant_twice_fails() -> None:
         parallel_sets(
             tokens,
             ["guide", "⫽-dispatch-set"],
-            {("guide.md", 0): serving},
+            {("guide.md", 0, ()): serving},
             lambda reference: next(iter(reference.tags)) + ".bundle.md",
             {},
             listed(tokens),

@@ -5,4 +5,4 @@ prosiform: {}
 
 ## Plan
 
-1. [⇉ Investigate](investigate.md)
+1. [⇉ Alpha](a.md)

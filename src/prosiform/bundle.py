@@ -153,12 +153,14 @@ from prosiform.provenance import (
     FILENAME_WRAPPER,
     Ancestor,
     Carried,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
     Located,
     Origin,
     Part,
+    Placing,
     Range,
     Record,
     Served,
@@ -600,10 +602,11 @@ def rewrite(
     path: str,
     defined: Mapping[str, Definition],
     declarations: Declarations = DECLARING,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,
+    placing: Placing = (),
     *,
     conversions: Mapping[str, Conversion] | None = None,
 ) -> list[str]:
@@ -630,8 +633,9 @@ def rewrite(
     on one line are replaced in written order.
 
     A dispatched link takes the destination its region carries for its
-    target, which the dispatch map holds by the region's first line: a
-    bundle file, or the dispatch-set sub-section of a set. A dispatch the
+    target, which the dispatch map holds by the region's first line and
+    the placing of the copy being rewritten: a bundle file, or a dispatch
+    sub-section. A dispatch the
     map holds none for is refused, and the line the refusal names is the
     line of the file the source was read from, which the first line of its
     content states.
@@ -651,7 +655,7 @@ def rewrite(
     contributing = {} if composing is None else composing
     titles = {id(inline) for _, inline in headings(tokens)}
     for region in selected:
-        here = served.get((path, (region.map or (0, 0))[0]), {})
+        here = served.get((path, (region.map or (0, 0))[0], placing), {})
         for inline in inlines(tokens, [region]):
             found = destinations(inline)
             if inline.map is None or (
@@ -688,7 +692,7 @@ def rewrite(
             ]
             written[start:end] = rewritten(written[start:end], inline, targets, defined)
     for region in selected:
-        here = served.get((path, (region.map or (0, 0))[0]), {})
+        here = served.get((path, (region.map or (0, 0))[0], placing), {})
         for fence in within(tokens, [region]):
             if fence.type != FENCE:
                 continue
@@ -1140,7 +1144,7 @@ def group(
     assigned: dict[tuple[str, str | None], str] | None = None,
     declarations: Declarations = DECLARING,
     situate: bool = False,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,

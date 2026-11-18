@@ -115,6 +115,7 @@ from prosiform.provenance import (
     Ancestor,
     Carried,
     Contributing,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
@@ -1379,7 +1380,7 @@ def preserved(
 
 def dispatches(
     reached: Mapping[str, tuple[Record, Emitted]],
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+    dispatching: Dispatching,
     bundle_file: Callable[[Reference], str],
     conversions: Mapping[str, Conversion],
 ) -> None:
@@ -1394,7 +1395,7 @@ def dispatches(
     A destination that is no fragment of the bundle names a file beside
     it, which no heading stands for.
     """
-    for (path, _line), served in dispatching.items():
+    for (path, _line, _placing), served in dispatching.items():
         for (target, tags, together), destination in served.items():
             reference = Reference(target[0], target[0], target[1], tags=tags)
             briefed = briefing(reference, conversions[target[0]]) is not None
@@ -1439,7 +1440,7 @@ def dispatches(
 def parallel_sets(
     tokens: Sequence[Token],
     assigned: Sequence[str],
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]],
+    dispatching: Dispatching,
     bundle_file: Callable[[Reference], str],
     read: Mapping[str, Source],
     paired: Sequence[tuple[Record, Part, Token]],
@@ -1450,9 +1451,11 @@ def parallel_sets(
     sub-section the file of each alternative its target declares, and a
     sub-section a dispatch carrying a brief is lifted into its target's
     file. What a sub-section lists is the dispatch lines the bundle
-    writes beneath it, up to the next heading at its level or above, or
-    the next dispatch sub-section nested in it: a brief it carries is
-    source content, and lists nothing.
+    writes beneath it, up to the next heading at its level or above,
+    outside every dispatch sub-section nested in it: a brief it carries is
+    source content, and lists nothing, and the dispatch-line heading a
+    brief gives its lines is no sub-section of its own. A set lists the
+    lines of each member sub-section lifted one level below it as well.
     """
     lines = {
         id(span)
@@ -1460,7 +1463,7 @@ def parallel_sets(
         if isinstance(part, Instruction) and part.activates is None
     }
     nested = {
-        id(span)
+        id(span): part.kind
         for _record, part, span in paired
         if isinstance(part, Generated)
         and part.kind in (PARALLEL_SECTION, PICK_SECTION, BRIEF_SECTION)
@@ -1470,6 +1473,35 @@ def parallel_sets(
     )
     spans = list(regions(tokens))
     positions = {id(span): at for at, span in enumerate(spans)}
+
+    def own(opening: Token) -> tuple[list[str], list[Token]]:
+        found: list[str] = []
+        members: list[Token] = []
+        skipping: int | None = None
+        for span in spans[positions[id(opening)] + 1 :]:
+            if span.type == HEADING_OPEN:
+                if level(span) <= level(opening):
+                    break
+                if skipping is not None and level(span) <= skipping:
+                    skipping = None
+                if skipping is None and id(span) in nested:
+                    skipping = level(span)
+                    if (
+                        nested[id(opening)] == PARALLEL_SECTION
+                        and nested[id(span)] == BRIEF_SECTION
+                        and level(span) == level(opening) + 1
+                    ):
+                        members.append(span)
+                continue
+            if skipping is not None or id(span) not in lines:
+                continue
+            found.extend(
+                one.destination
+                for _children, _at, one in carried(tokens, span)
+                if one.kind == LINK
+            )
+        return found, members
+
     expected: dict[str, set[str]] = {}
     for served in dispatching.values():
         for (target, tags, together), destination in served.items():
@@ -1490,20 +1522,9 @@ def parallel_sets(
                 quote(bundle_file(one), safe="") for one in listed
             )
     for destination, files in expected.items():
-        opening = openings[destination.removeprefix(ANCHOR)]
-        found: list[str] = []
-        for span in spans[positions[id(opening)] + 1 :]:
-            if span.type == HEADING_OPEN and (
-                level(span) <= level(opening) or id(span) in nested
-            ):
-                break
-            if id(span) not in lines:
-                continue
-            found.extend(
-                one.destination
-                for _children, _at, one in carried(tokens, span)
-                if one.kind == LINK
-            )
+        found, members = own(openings[destination.removeprefix(ANCHOR)])
+        for member in members:
+            found.extend(own(member)[0])
         if len(found) != len(files) or set(found) != files:
             raise Invalid(
                 TARGET_INTEGRITY,
@@ -1565,7 +1586,7 @@ def validate(
     read: Mapping[str, Source],
     parsed: Mapping[str, Sequence[Token]],
     budget: int,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,
@@ -1635,7 +1656,7 @@ def validate(
             published,
             targets,
             declarations,
-            served.get((carried.path, carried.lines[0]), {}),
+            served.get((carried.path, carried.lines[0], carried.placing), {}),
             substitution,
             contributing.get(carried.placing, {}),
             record.preamble,
@@ -1648,5 +1669,5 @@ def validate(
             published,
             declarations,
             substitution,
-            served.get((carried.path, carried.lines[0]), {}),
+            served.get((carried.path, carried.lines[0], carried.placing), {}),
         )

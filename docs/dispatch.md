@@ -76,7 +76,7 @@ prosiform:
 
 A dispatch whose presets in force for its target name a brief carries it. In `default`, every dispatch of the target does; in a named preset, a dispatch selects it by its link title, and one selecting no preset declaring `brief` publishes as the sections above state. A named preset's brief holds over `default`'s, and two selected presets naming different briefs fail with `E_INVALID_USAGE`, naming both.
 
-A `⇉` link carrying a brief, and a set of one, is lifted into a sub-section one level below the section writing it, headed by its mark and its link text, as `### ⇉ Investigate`. Its body is the brief, then the dispatch line naming the target's bundle file. The link is published without its mark, its title as authored, pointing at the sub-section, and so is a diagram link naming it. The sub-section stands where a dispatch-set sub-section does, after the section's own content and composed destinations and before its child sections, after the set's own sub-section and beside the section's dispatch-pick sub-sections in the order their first links are written:
+A `⇉` link carrying a brief, and a set of one, is lifted into a sub-section one level below the section writing it, headed by its mark and its link text, as `### ⇉ Investigate`. Its body is the brief's lead content, the content above its first heading, then the dispatch line naming the target's bundle file, then the brief's child sections and the sections its directives compose, each one level below the sub-section. The dispatch line therefore stands under no heading the brief emits, and its reader meets the brief's own instruction first. The link is published without its mark, its title as authored, pointing at the sub-section, and so is a diagram link naming it. The sub-section stands where a dispatch-set sub-section does, after the section's own content and composed destinations and before its child sections, after the set's own sub-section and beside the section's dispatch-pick sub-sections in the order their first links are written:
 
 ```markdown
 ## Plan
@@ -92,13 +92,35 @@ Write the case number to the case file before you dispatch.
 
 *From [a-dispatch-to-a-target-declaring-a-brief-is-lifted-into-a-sub-section](../fixtures/dispatch-brief/a-dispatch-to-a-target-declaring-a-brief-is-lifted-into-a-sub-section).*
 
-The brief is compiled as a `↳` composition of its section is: its links are followed into the dispatching bundle's closure, and its own heading gives way to the generated one. The target's own bundle carries the section unchanged. A brief is what its dispatcher reads before the dispatch line, so a brief that would emit a heading, for a subsection or a `↳` or `¬↳` directive it holds, would put that line beneath the heading, and one writing a dispatch would hand on a bundle beside it; each fails with `E_UNSUPPORTED_CONSTRUCT`, naming the dispatch and the brief.
+```markdown
+### ⇉ Investigate
+
+Write the case number to the case file, then [Tests](#rules).
+
+[⇉ Investigate](investigate.bundle.md)
+
+#### Tests
+
+##### Rules
+
+Run the tests.
+
+#### Case
+
+The case number is on the ticket.
+```
+
+*From [a-brief-s-sections-follow-its-dispatch-line](../fixtures/dispatch-brief/a-brief-s-sections-follow-its-dispatch-line).*
+
+The brief is compiled as a `↳` composition of its section is: its links are followed into the dispatching bundle's closure, its own heading gives way to the generated one, and its child sections nest one level below it. The target's own bundle carries the section unchanged. Every dispatch of a briefed target carries its own complete copy of the brief, alike in content, its headings at the level its copy stands at; two dispatches sharing a sub-section share one copy.
+
+A dispatch the brief writes is a dispatch of its own: it compiles its own bundle and publishes where the brief writes it, a brief its target declares lifted by the same rules, its sub-section one level below the one holding the brief, after the brief. It is never a member of a set around the brief. A brief whose dispatches carry briefs leading back to it would be lifted inside itself without end, so the run publishes nothing and fails with `E_DISPATCH_CYCLE`, naming the chain, as `guide.md`, `a.md`, `b.md`, `a.md`, and the dispatch closing it.
 
 A `⇉` link carrying `?` places its brief in its `⇉ Dispatch Pick` sub-section, above the pick lines. The brief compiles with no alternative in force, so it publishes where no alternative changes it, as [Presets in force](selection.md#presets-in-force) states for a link, and the run fails with `E_ALTERNATIVE_UNRESOLVED`, listing the alternatives, where one changes it: an alternative routing a link the brief writes, or one naming a brief of its own.
 
-In a `⫽ Dispatch Set` sub-section, each member carrying a brief is published as its brief followed by its own dispatch line, in the set's order, and a member carrying none keeps its bare line.
+In a `⫽ Dispatch Set` sub-section, the members carrying no brief are listed first as bare lines, in the set's order, and each member carrying a brief is then lifted into a sub-section of its own one level below the set's, headed by its mark and link text, as `#### ⇉ Investigate`, in the set's order. That sub-section holds the brief's lead content, the member's own dispatch line, and the brief's sections one level further down, so each member's line stays with its brief and no line stands beneath another member's headings.
 
-Two `⇉` links in one section with the same text and effective selection share one sub-section, and so do two naming one target with the same title tags, under the first one's text, as they share one destination. A briefed `⇉` link in a level-6 section leaves no level for its sub-section and fails with `E_HEADING_DEPTH_OVERFLOW`, as a set's does. A lifted heading equal to an authored heading, to `⇉ Dispatch Pick`, or to another lifted heading naming a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document, or a fragment no reference decodes, fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
+Two `⇉` links in one section with the same text and effective selection share one sub-section, and so do two naming one target with the same title tags, under the first one's text, as they share one destination. A lifted sub-section, or a heading a brief emits, past H6 fails with `E_HEADING_DEPTH_OVERFLOW`, as a set's does. A lifted heading equal to an authored heading, to `⇉ Dispatch Pick`, or to another lifted heading naming a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document, or a fragment no reference decodes, fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
 
 ## The guide
 

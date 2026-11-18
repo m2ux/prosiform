@@ -36,9 +36,18 @@ the dispatching agent reads it before handing the bundle on. A `⇉`
 link carrying one, or a set of one, is lifted into a sub-section of its
 own, headed by its mark and its text and placed as a set's is and after
 it, beside the section's pick sub-sections in the order their links are
-written; a picking dispatch's sub-section
-holds its brief above its pick lines; a set's holds each briefed
-member's brief above that member's line.
+written; a picking dispatch's sub-section holds its brief around its
+pick lines; a set's lists its members carrying no brief as bare lines,
+then lifts each briefed member into a sub-section of its own one level
+below the set's, each in the set's order. A brief is published as its lead content, the
+content above its first heading, then the dispatch line, then its child
+sections and the sections its directives compose, each one level below
+the sub-section holding it, so the line stands under no heading the
+brief emits. A dispatch a brief writes is a dispatch of its own, never a
+member of a set around it: it publishes where the brief writes it, and
+takes its sub-sections one level below the sub-section holding the
+brief, after the brief. Each copy of a brief places its dispatches
+anew, as `Placing` states.
 
 A dispatch has to be one a sub-agent can finish and one the bundle can
 place, so four dispatches publish nothing:
@@ -48,9 +57,9 @@ place, so four dispatches publish nothing:
   the run's own single selection closes the shortest one.
 - A set, a picking dispatch or a briefed one in a level-6 section
   leaves no level for its sub-section.
-- A brief emitting a heading or writing a dispatch leaves its dispatch
-  line governed by something other than the brief, as `unbriefable`
-  states.
+- A brief whose dispatches carry briefs leading back to it would be
+  lifted into itself without end, a cycle as a chain of bundles
+  returning to one already on it is.
 - An authored heading whose text equals `⫽ Dispatch Set`,
   `⇉ Dispatch Pick` or a lifted sub-section's heading in a bundle that
   emits one would give two sections one name, as would one lifted
@@ -111,7 +120,6 @@ from prosiform.diagnostics import (
     RelatedLocation,
 )
 from prosiform.marks import DISPATCH_MARK
-from prosiform.profile import UNSUPPORTED_CONSTRUCT
 from prosiform.provenance import (
     BRIEF_SECTION,
     COMPOSED_HEADINGS,
@@ -120,6 +128,7 @@ from prosiform.provenance import (
     PICK_SECTION,
     Ancestor,
     Carried,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
@@ -128,6 +137,7 @@ from prosiform.provenance import (
     Preamble,
     Range,
     Record,
+    Region,
     Served,
     Target,
     click_at,
@@ -199,22 +209,21 @@ CYCLE_REMEDY = "compile or cite one target of the cycle rather than dispatching 
 LEVEL_REMEDY = "move the dispatch to a section above the sixth level"
 COLLISION_REMEDY = "retitle the authored heading"
 LIFT_REMEDY = "write one of the two dispatches with other link text"
-BRIEF_REMEDY = (
-    "name a brief holding no heading and no dispatch, and link the rest of its material"
-)
+BRIEF_CYCLE_REMEDY = "dispatch one target of the cycle without a brief"
 
-Placed = dict[tuple[str, int], dict[Served, int | str]]
-"""Where each dispatched link points, by the region and link it serves.
+Placed = dict[Region, dict[Served, int | str]]
+"""Where each dispatched link points, by the placed region and link it serves.
 
-A region is the document and the first line of content it opens on, so
-every link one region writes naming one target with the same requested
-tags and operator points at one place. The place is the position of a dispatch-set
+A placed region is the document, the first line of content it opens on
+and the placing of the copy carrying it, so every link one copy of a
+region writes naming one target with the same requested tags and
+operator points at one place. The place is the position of a dispatch-set
 sub-section among every heading the bundle emits, or the destination of
 a bundle file.
 """
 
-Anchors = Mapping[tuple[str, int], Mapping[Served, str]]
-"""The destination each region's dispatched links take, by link."""
+Anchors = Dispatching
+"""The destination each placed region's dispatched links take, by link."""
 
 
 class Refused(Exception):
@@ -458,30 +467,6 @@ and gives the text, parts and headings the brief emits.
 """
 
 
-def unbriefable(link: Link, brief: Reference, what: str) -> Refused:
-    """The refusal of a brief its dispatch line could not follow as it governs.
-
-    A brief is content its dispatcher reads before the dispatch line, so
-    a brief emitting a heading, for a subsection or a composition
-    directive it holds, would put that line beneath the heading, and one
-    writing a dispatch would hand on a bundle of its own beside the
-    line. `what` names which the brief does.
-    """
-    return Refused(
-        Diagnostic(
-            ERROR,
-            f"the dispatch {link.written!r} carries the brief "
-            f"{identity(brief)!r}, which {what}, so its dispatch line would "
-            f"not follow the brief it governs",
-            code=UNSUPPORTED_CONSTRUCT,
-            reference=link.written,
-            resolved=identity(brief),
-            remedy=BRIEF_REMEDY,
-            location=link.location,
-        )
-    )
-
-
 def fits(depth: int, first: Link) -> None:
     """Refuse a sub-section a level-6 section would emit beyond the last level."""
     if depth <= MAX_LEVEL:
@@ -655,16 +640,18 @@ def region_of(tokens: Sequence[Token], part: Range) -> Token:
 
 
 class Placing:
-    """One bundle's groups rebuilt with the dispatch-set sub-sections its sets take.
+    """One bundle's groups rebuilt with the dispatch sub-sections its sections take.
 
     The grouped regions are those a group carries as its own, by the
     document and first line naming each. A dispatch a contribution
     carries points where its source's own region is given where a group
     carries that region. Where none does, the region's first contribution
-    gives the dispatch a place of its own: a set's sub-section sits
-    beneath the composed section holding the link and ahead of the next
-    composed heading, so a scope's own sub-sections still follow its
-    destination sections.
+    gives the dispatch a place of its own, which every later copy of the
+    region shares: a set's sub-section sits beneath the composed section
+    holding the link and ahead of the next composed heading, so a scope's
+    own sub-sections still follow its destination sections. A brief is
+    lifted with the dispatch carrying it, so each copy of a brief places
+    the dispatches it writes beneath its own sub-section.
     """
 
     def __init__(
@@ -689,17 +676,23 @@ class Placing:
         self.parts: list[Part] = []
         self.headings: list[Emitted] = []
         self.pending: dict[Served, Link] = {}
-        self.serving: list[tuple[tuple[str, int], Served]] = []
+        self.serving: list[tuple[Region, Served]] = []
         self.level: int | None = None
         self.title = ""
         """The title of the heading whose section a set's sub-section sits under."""
         self.inner: dict[Served, Link] = {}
-        self.inner_serving: list[tuple[tuple[str, int], Served]] = []
+        self.inner_serving: list[tuple[Region, Served]] = []
         self.inner_level = 0
         self.briefer = briefer
         self.briefs: dict[Served, Reference | None] = {}
         self.lifts: dict[str, str] = {}
         """The bundle file each lifted sub-section's heading names."""
+        self.first: dict[tuple[str, int], Region] = {}
+        """The copy of each composed region whose dispatches its later copies share."""
+        self.aliases: list[tuple[Region, Region]] = []
+        """Each later copy of a region, beside the copy whose places it takes."""
+        self.expanding: list[tuple[tuple[str, str | None, frozenset[str]], Link]] = []
+        """The briefs being lifted, outermost first, with the dispatch carrying each."""
 
     def heading(self, text: str, depth: int, kind: str) -> int:
         """Emit one generated heading, returning its bundle position."""
@@ -714,43 +707,120 @@ class Placing:
         self.emitted.append(one.text)
         self.parts.append(one)
 
-    def brief(self, link: Link, depth: int) -> None:
-        """Emit the brief one dispatch carries, as `briefing` names it, or nothing.
+    def briefed(
+        self,
+        link: Link,
+        depth: int,
+        lines: Sequence[Instruction],
+    ) -> None:
+        """Emit the brief one dispatch carries around the lines handing it on.
 
         The brief stands beneath a sub-section heading at `depth`, as the
-        briefer composes it, and the dispatch line follows it. A brief
-        writing a dispatch is refused, as `unbriefable` states.
+        briefer composes it: its lead content, the content above the
+        first heading it emits, then the lines, then its child sections
+        and the sections its directives compose, one level below. The
+        dispatches it writes then take their sub-sections one level below
+        as well. A dispatch carrying no brief is followed by its lines
+        alone.
+
+        A brief already being lifted on the chain of briefs reaching this
+        one would be lifted inside itself without end, so it is refused as
+        a dispatch cycle naming each dispatch on that chain.
         """
         found = self.briefs.get(link.served)
         if found is None:
+            for one in lines:
+                self.say(one)
             return
+        key = (found.path, found.fragment, found.tags)
+        if any(each == key for each, _link in self.expanding):
+            raise self.cycling(link)
+        self.expanding.append((key, link))
         emitted, parts, headings = self.briefer(link, found, depth)
-        if any(
-            written_in(
+        lead = next(
+            (
+                at
+                for at, part in enumerate(parts)
+                if isinstance(part, Generated)
+                or (
+                    isinstance(part, Range)
+                    and region_of(self.parsed[part.path], part).type == HEADING_OPEN
+                )
+            ),
+            len(parts),
+        )
+        self.emitted.extend(emitted[:lead])
+        self.parts.extend(parts[:lead])
+        for one in lines:
+            self.say(one)
+        self.emitted.extend(emitted[lead:])
+        self.parts.extend(parts[lead:])
+        self.headings.extend(headings)
+        nested: dict[Served, Link] = {}
+        nesting: list[tuple[Region, Served]] = []
+        for part in parts:
+            if not isinstance(part, Range):
+                continue
+            region: Region = (part.path, part.lines[0], part.placing)
+            tokens = self.parsed[part.path]
+            self.first.setdefault((part.path, part.lines[0]), region)
+            for each in written_in(
                 part.path,
                 self.read[part.path],
-                self.parsed[part.path],
-                region_of(self.parsed[part.path], part),
+                tokens,
+                region_of(tokens, part),
                 self.declarations,
                 self.substitution,
+            ):
+                nested.setdefault(each.served, each)
+                if (region, each.served) not in nesting:
+                    nesting.append((region, each.served))
+        self.place(nested, nesting, depth + 1)
+        self.expanding.pop()
+
+    def cycling(self, link: Link) -> Refused:
+        """The refusal of a brief reached again through the briefs carrying it.
+
+        It names the chain from the document writing the outermost
+        dispatch through each target whose brief is being carried, the
+        location of the dispatch closing the loop, and each earlier
+        dispatch as related, as a composition cycle is refused.
+        """
+        earlier = [each for _key, each in self.expanding]
+        names = tuple(identity(each.reference) for each in (*earlier, link))
+        return Refused(
+            Diagnostic(
+                ERROR,
+                f"the dispatch {link.written!r} carries the brief of "
+                f"{names[-1]!r}, which the chain of briefs carrying it already "
+                f"carries, so the brief would be lifted inside itself without end",
+                code=DISPATCH_CYCLE,
+                reference=link.written,
+                chain=(earlier[0].location.file, *names),
+                remedy=BRIEF_CYCLE_REMEDY,
+                location=link.location,
+                related=tuple(
+                    RelatedLocation(
+                        each.location.file,
+                        each.location.line,
+                        each.location.column,
+                        f"carries the brief of {identity(each.reference)!r}",
+                    )
+                    for each in earlier
+                ),
             )
-            for part in parts
-            if isinstance(part, Range)
-        ):
-            raise unbriefable(link, found, "writes a dispatch")
-        self.emitted.extend(emitted)
-        self.parts.extend(parts)
-        self.headings.extend(headings)
+        )
 
     def lifted(self, link: Link, file: str, depth: int) -> int:
         """Emit the sub-section a dispatch carrying a brief is lifted into.
 
         Its heading is the dispatch mark and the link's text, its body
         the brief and then the dispatch line naming the target's bundle
-        file. A heading is held to one effective selection across the
-        bundle, so a second dispatch naming another selection under the
-        same heading, or one equal to the dispatch-pick heading, is
-        refused.
+        file, as `briefed` places them, and the sub-sections of the
+        dispatches the brief writes. A heading is held to one effective
+        selection across the bundle, so a second dispatch naming another
+        selection under the same heading, or one equal to the dispatch-pick
+        heading, is refused.
         """
         text = f"{DISPATCH_MARK} {link.text}"
         earlier = self.lifts.get(text)
@@ -770,8 +840,7 @@ class Placing:
         self.lifts[text] = file
         fits(depth, link)
         at = self.heading(text, depth, BRIEF_SECTION)
-        self.brief(link, depth)
-        self.say(Instruction(listing([(file, link.text)])))
+        self.briefed(link, depth, [Instruction(listing([(file, link.text)]))])
         return at
 
     def flush(self, following: int | None) -> None:
@@ -805,7 +874,7 @@ class Placing:
     def place(
         self,
         pending: Mapping[Served, Link],
-        links: Sequence[tuple[tuple[str, int], Served]],
+        links: Sequence[tuple[Region, Served]],
         depth: int,
         title: str = "",
     ) -> None:
@@ -815,12 +884,17 @@ class Placing:
         point at their target's bundle file. A set of two or more
         selections points at the dispatch-set sub-section emitted here.
         Equivalent requests share one member, retaining its first link's
-        label. Each distinct `⇉` link carrying the pick token, and each
-        link outside a set of two or more carrying a brief, then points at
-        a sub-section of its own, in the order its first link is written:
-        a dispatch-pick sub-section listing its target's alternatives in
-        declaration order, or the one `lifted` emits, which links sharing
-        their text and effective selection share.
+        label. Its members carrying no brief are listed first, in the
+        set's order, since a line after a member's sub-section would stand
+        beneath it, and each carrying one is then lifted into a sub-section
+        one level below the set's, in the set's order. Each
+        distinct `⇉` link carrying the pick token, and each link outside a
+        set of two or more carrying a brief, then points at a sub-section
+        of its own, in the order its first link is written: a
+        dispatch-pick sub-section holding its brief and listing its
+        target's alternatives in declaration order, or the one `lifted`
+        emits, which links sharing their text and effective selection
+        share.
         """
         files = {
             served: self.bundle_file(link.reference)
@@ -842,18 +916,16 @@ class Placing:
         if len(together) > 1:
             fits(depth, next(iter(together.values())))
             at = self.heading(PARALLEL, depth, PARALLEL_SECTION)
-            bare: list[tuple[str, str]] = []
-            for file, link in together.items():
-                if self.briefs[link.served] is None:
-                    bare.append((file, link.text))
-                    continue
-                if bare:
-                    self.say(Instruction(listing(bare)))
-                bare = []
-                self.brief(link, depth)
-                self.say(Instruction(listing([(file, link.text)])))
+            bare = [
+                (file, link.text)
+                for file, link in together.items()
+                if self.briefs[link.served] is None
+            ]
             if bare:
                 self.say(Instruction(listing(bare)))
+            for file, link in together.items():
+                if self.briefs[link.served] is not None:
+                    self.lifted(link, file, depth + 1)
             serving.update(
                 (served, at) for served, link in pending.items() if link.parallel
             )
@@ -875,19 +947,19 @@ class Placing:
         """Emit the dispatch-pick sub-section of one dispatch carrying the pick token.
 
         Its body is the brief the dispatch carries, where it carries one,
-        then one line for each alternative its target declares.
+        then one line for each alternative its target declares, as
+        `briefed` places them.
         """
         fits(depth, link)
         conversion = self.read[link.reference.path].conversion
         at = self.heading(PICKING, depth, PICK_SECTION)
-        self.brief(link, depth)
         listed = choices(
             [
                 (self.bundle_file(one), link.text, alternative.choice or "")
                 for one, alternative in alternatives_of(link.reference, conversion)
             ]
         )
-        self.say(Instruction(listed))
+        self.briefed(link, depth, [Instruction(listed)])
         return at
 
     def group(self, one: Group) -> Group:
@@ -922,8 +994,13 @@ class Placing:
                     self.inner_level = one.record.headings[at].level
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
-                key = (part.path, part.lines[0])
-                if key not in self.grouped and key not in self.placed:
+                written = (part.path, part.lines[0])
+                key: Region = (part.path, part.lines[0], part.placing)
+                if written in self.grouped:
+                    self.aliases.append((key, (part.path, part.lines[0], ())))
+                elif self.first.setdefault(written, key) != key:
+                    self.aliases.append((key, self.first[written]))
+                else:
                     for link in written_in(
                         part.path,
                         self.read[part.path],
@@ -952,7 +1029,7 @@ class Placing:
                     self.title = one.record.headings[at].text
                 self.headings.extend(one.record.headings[at : at + held])
                 at += held
-                key = (part.path, part.lines[0])
+                key = (part.path, part.lines[0], ())
                 if preamble:
                     self.emitted.append(text)
                     self.parts.append(part)
@@ -978,6 +1055,13 @@ class Placing:
             wrapped=one.wrapped,
             level=one.level,
         )
+
+    def shared(self) -> Placed:
+        """Where each placed region's links point, a later copy sharing its first's."""
+        for later, first in self.aliases:
+            if first in self.placed:
+                self.placed[later] = dict(self.placed[first])
+        return self.placed
 
 
 def subsections(
@@ -1012,7 +1096,7 @@ def subsections(
         parsed, read, bundle_file, grouped, briefer, declarations, substitution
     )
     rebuilt = [placing.group(one) for one in groups]
-    return rebuilt, placing.placed
+    return rebuilt, placing.shared()
 
 
 def authored(
@@ -1063,10 +1147,8 @@ def collisions(groups: Sequence[Group], read: Mapping[str, Source]) -> None:
             )
 
 
-def anchors(
-    placed: Placed, assigned: Sequence[str]
-) -> dict[tuple[str, int], dict[Served, str]]:
-    """The destination each region's dispatched links take, by link."""
+def anchors(placed: Placed, assigned: Sequence[str]) -> dict[Region, dict[Served, str]]:
+    """The destination each placed region's dispatched links take, by link."""
     return {
         key: {
             link: f"{ANCHOR}{assigned[at]}" if isinstance(at, int) else at

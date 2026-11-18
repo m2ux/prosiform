@@ -1,0 +1,25 @@
+description = "A brief dispatches the target declaring it, so carrying it would lift the brief inside itself without end; the run fails with E_DISPATCH_CYCLE naming the chain and the dispatch closing it, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch cycles",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_DISPATCH_CYCLE"
+reference = "investigate.md"
+chain = [   "guide.md",   "investigate.md",   "investigate.md", ]
+
+[expected.diagnostics.location]
+file = "investigate.md"
+line = 10
+column = 1

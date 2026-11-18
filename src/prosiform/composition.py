@@ -121,7 +121,7 @@ from prosiform.closure import (
     rebased,
     resolvable,
 )
-from prosiform.dispatch import Link, region_of, unbriefable
+from prosiform.dispatch import Link, region_of
 from prosiform.limits import OUTPUT_BYTES, Limits
 from prosiform.marks import INLINE_MARK
 from prosiform.provenance import (
@@ -130,6 +130,7 @@ from prosiform.provenance import (
     Ancestor,
     Carried,
     Contributing,
+    Dispatching,
     Emitted,
     Generated,
     Instruction,
@@ -139,7 +140,6 @@ from prosiform.provenance import (
     Placing,
     Preamble,
     Range,
-    Served,
     click_at,
     link_at,
 )
@@ -179,15 +179,26 @@ class Parentless(Exception):
 
 
 class Overflowing(Exception):
-    """A directive whose composed heading would stand beyond the sixth level."""
+    """A link whose composed heading would stand beyond the sixth level.
+
+    The link is a directive, or a dispatch whose brief holds the heading,
+    which `kind` names.
+    """
 
     def __init__(
-        self, path: str, line: int | None, destination: str, heading: str, depth: int
+        self,
+        path: str,
+        line: int | None,
+        destination: str,
+        heading: str,
+        depth: int,
+        kind: str = "directive",
     ) -> None:
         super().__init__(
-            f"the directive {destination!r} in {path!r} composes the heading "
+            f"the {kind} {destination!r} in {path!r} composes the heading "
             f"{heading!r} at level {depth}"
         )
+        self.kind = kind
         self.path = path
         self.line = line
         self.destination = destination
@@ -254,10 +265,13 @@ class Directive:
     title: str
     deferred: bool = False
     link_title: str | None = None
+    kind: str = "directive"
 
     def overflowing(self, heading: str, depth: int) -> Overflowing:
         """The refusal of a heading this directive would compose past H6."""
-        return Overflowing(self.at[0], self.line, self.written, heading, depth)
+        return Overflowing(
+            self.at[0], self.line, self.written, heading, depth, self.kind
+        )
 
 
 class Composing:
@@ -276,7 +290,7 @@ class Composing:
         defined: Mapping[str, Mapping[str, Definition]],
         limits: Limits,
         assigned: Mapping[tuple[str, str | None], str] | None = None,
-        dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+        dispatching: Dispatching | None = None,
         declarations: Declarations = DECLARING,
         substitution: Substitution = UNSUBSTITUTED,
         composing: Contributing | None = None,
@@ -473,21 +487,16 @@ class Composing:
     ) -> tuple[list[str], list[Part], list[Emitted]]:
         """One dispatch's brief, as the text, parts and headings it emits.
 
-        The brief is its section's body composed beneath a heading at
-        `depth` the dispatch stage emits for it, so the section's own
-        heading gives way to that one. Its links are rewritten against the
-        document writing them, as a contribution's are. A brief holding a
-        subsection or a composition directive would emit a heading of its
-        own, which `unbriefable` refuses.
+        The brief is its section's body and subsections composed beneath a
+        heading at depth the dispatch stage emits for it, so the section's
+        own heading gives way to that one and its subsections nest one
+        level below. Its links are rewritten against the document writing
+        them, as a contribution's are, under the placing of the dispatch
+        carrying it, which a directive the brief writes composes beneath.
         """
-        tokens = self.parsed[target.path]
-        body = (section(tokens, target.fragment or "") or ())[1:]
-        if any(token.type == HEADING_OPEN for token in body) or any(
-            next(self.directives(target.path, token), None) is not None
-            for token in body
-        ):
-            raise unbriefable(link, target, "emits a heading")
-        one = Directive(target, link.written, link.location.line, link.at, "")
+        one = Directive(
+            target, link.written, link.location.line, link.at, "", kind="dispatch"
+        )
         self.emitted, self.parts, self.headings = [], [], []
         self.carry(one, depth, (one,))
         return self.emitted, self.parts, self.headings
@@ -531,6 +540,7 @@ class Composing:
                 source.first_line,
                 self.substitution,
                 self.composing.get(placed, {}),
+                placed,
                 conversions=self.conversions,
             )
         )
@@ -705,7 +715,7 @@ def compositions(
     defined: Mapping[str, Mapping[str, Definition]],
     limits: Limits,
     assigned: Mapping[tuple[str, str | None], str] | None = None,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,

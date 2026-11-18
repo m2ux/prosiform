@@ -7,7 +7,7 @@ prosiform:
 
 ## Given
 
-Write the case number, then [↳ Tests](rules.md#tests).
+First [⇉ Helper](helper.md), then write the case number.
 
 ## Steps
 

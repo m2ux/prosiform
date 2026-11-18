@@ -137,6 +137,7 @@ from prosiform.provenance import (
     VARIANT_HEADING,
     Ancestor,
     Carried,
+    Dispatching,
     Emitted,
     Generated,
     Located,
@@ -144,7 +145,6 @@ from prosiform.provenance import (
     Part,
     Range,
     Record,
-    Served,
     Target,
 )
 from prosiform.rewrite import Definition
@@ -280,7 +280,7 @@ def prepared(
     depth: int,
     declarations: Declarations = DECLARING,
     keep_title: bool = False,
-    dispatching: Mapping[tuple[str, int], Mapping[Served, str]] | None = None,
+    dispatching: Dispatching | None = None,
     first_line: int = 1,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Mapping[Located, str] | None = None,

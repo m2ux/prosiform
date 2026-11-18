@@ -1,0 +1,25 @@
+description = "Two targets' briefs dispatch each other, so carrying the first brief would lift it again inside the second's; the run fails with E_DISPATCH_CYCLE naming the chain from the guide through both targets back to the first and the dispatch closing it, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Link classification and resource handling — Dispatch cycles",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_DISPATCH_CYCLE"
+reference = "a.md"
+chain = [   "guide.md",   "a.md",   "b.md",   "a.md", ]
+
+[expected.diagnostics.location]
+file = "b.md"
+line = 10
+column = 1

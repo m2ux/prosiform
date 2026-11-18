@@ -7,11 +7,7 @@ prosiform:
 
 ## Given
 
-Write the case number.
-
-### Case
-
-The case number is on the ticket.
+If the case is open, [⇉ Investigate again](investigate.md).
 
 ## Steps
 
