@@ -339,12 +339,12 @@ class Substitution:
     declaring document writes and no other document's. A mapping naming
     no `writer` redirects nothing.
 
-    `documents` holds the pairs in force for a document's own group. A
-    composed copy of one of its sections, a contribution or a brief,
-    writes its links under the pairs the presets of the directive or
-    dispatch placing it put in force, which `contributions` holds by the
-    document's path and the tags selecting them, and `composed` selects.
-    A selection names the document it was taken for, so a link another
+    `documents` holds the pairs in force for a document's own group, and
+    `contributions` those for each composed copy of one of its sections,
+    by the document's path and the tags of the directive or dispatch
+    placing the copy, as the composition module states for a
+    contribution's presets. `composed` selects a copy's pairs, and the
+    selection names the document it was taken for, so a link another
     document writes while that copy is read resolves under its own
     document's group pairs.
 

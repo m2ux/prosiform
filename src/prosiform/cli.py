@@ -825,9 +825,11 @@ def picked(
 ) -> tuple[Preset, ...]:
     """The alternatives in force for one document, in declaration order.
 
-    They are the union every reference reaching the document selects: the
-    set its `subst` pairs resolve through. A name the document does not
-    declare, `?` and a diagram link carrying no tooltip pick none.
+    They are the union the references given select: for every reference
+    reaching the document, the set its group's `subst` pairs resolve
+    through, and for one copy's composing references, that copy's. A
+    name the document does not declare, `?` and a diagram link carrying
+    no tooltip pick none.
     """
     names = {
         preset.name
@@ -935,6 +937,11 @@ def resolved(
     what its selected content compiles to. The count is taken on the
     references one bundle carries, so a dispatched bundle counts the
     references reaching the document within it.
+
+    A composed copy resolves under its own presets, as the composition
+    module states, so the composing references of each tag selection
+    are held apart as well: a copy none of whose presets is an
+    alternative fails where one would change what it selects.
     """
     for path, references in selected.items():
         conversion = read[path].conversion
@@ -945,6 +952,12 @@ def resolved(
             count == 0 and routed(path, conversion, parsed[path], references, entries)
         ):
             raise unresolved(path, conversion)
+        for tags in dict.fromkeys(one.tags for one in references if one.composes):
+            copy = [one for one in references if one.composes and one.tags == tags]
+            if not picked(conversion, copy) and routed(
+                path, conversion, parsed[path], copy, entries
+            ):
+                raise unresolved(path, conversion)
 
 
 def governing(
@@ -963,7 +976,7 @@ def governing(
     presets one reference selects are held to agreeing first, and two
     presets selected by different references reaching the document,
     mapping one key to two substitutes, are refused the same way: the
-    document's links are written once, so the union would leave nothing
+    group's links are written once, so the union would leave nothing
     saying which substitute they resolve to.
 
     Several alternatives in force are refused before their pairs are
@@ -1036,7 +1049,7 @@ def disagreeing(
 def copies(
     read: Mapping[str, Source],
     selected: Mapping[str, Sequence[Reference]],
-) -> dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Reference]]:
+) -> dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]]:
     """The `subst` pairs in force for the links each composed copy writes.
 
     A copy is a contribution or a brief, placed by a composing reference:
@@ -1046,9 +1059,7 @@ def copies(
     tags, and only copies stating a pair in force appear. Agreement among
     the presets one reference selects is held by `governing`.
     """
-    table: dict[
-        tuple[str, frozenset[str]], dict[tuple[str, str | None], Reference]
-    ] = {}
+    table: dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
         conversion = read[path].conversion
         for reference in references:
@@ -1056,8 +1067,11 @@ def copies(
             if not reference.composes or copy in table:
                 continue
             pairs = {
-                subst_identity(pair.original, path): subst_reference(
-                    pair.substitute, path
+                subst_identity(pair.original, path): Governed(
+                    preset.name,
+                    pair,
+                    subst_reference(pair.substitute, path),
+                    preset.choice is not None,
                 )
                 for preset in (
                     conversion.default,
@@ -1074,7 +1088,7 @@ def governed(
     mapping: Substitution,
     table: Mapping[str, Mapping[tuple[str, str | None], Governed]],
     composed: Mapping[
-        tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Reference]
+        tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Governed]
     ],
 ) -> Substitution:
     """The run's mapping with the pairs each group's and each copy's links take."""
@@ -1083,7 +1097,10 @@ def governed(
             path: {key: one.substitute for key, one in pairs.items()}
             for path, pairs in table.items()
         },
-        composed,
+        {
+            copy: {key: one.substitute for key, one in pairs.items()}
+            for copy, pairs in composed.items()
+        },
     )
 
 
@@ -4340,10 +4357,11 @@ class Compiled:
     presets are those `unselected` returns for the documents the bundle
     carries, which the run weighs against its other bundles'. The pairs
     are those `governing` puts in force for the documents the bundle
-    carries, which the run weighs against every reference it resolved.
-    The linked identities are those `linked` reads from each document
-    a routing pair is in force for, which a routing pair is weighed
-    against.
+    carries, and the copied pairs those `copies` puts in force for its
+    composed copies, which the run weighs against every reference it
+    resolved. The linked identities are those `linked` reads from each
+    document a routing pair is in force for, which a routing pair is
+    weighed against.
     """
 
     text: str
@@ -4355,7 +4373,23 @@ class Compiled:
     captured: Mapping[str, Capture]
     unselected: Mapping[str, tuple[str, ...]]
     pairs: Mapping[str, Mapping[tuple[str, str | None], Governed]]
+    copied: Mapping[
+        tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Governed]
+    ]
     linked: Mapping[str, frozenset[tuple[str, str | None]]]
+
+    def in_force(self) -> Iterator[tuple[str, tuple[str, str | None], Governed]]:
+        """Each pair in force for a document, its group's then its copies', by path."""
+        held = [
+            *(((path, 0, ()), pairs) for path, pairs in self.pairs.items()),
+            *(
+                ((path, 1, tuple(sorted(tags))), pairs)
+                for (path, tags), pairs in self.copied.items()
+            ),
+        ]
+        for (path, _kind, _tags), pairs in sorted(held, key=lambda one: one[0]):
+            for key, pair in pairs.items():
+                yield path, key, pair
 
 
 def compiled(
@@ -4401,6 +4435,7 @@ def compiled(
         return file
 
     pairs = governing(read, parsed, contributing(found), requested)
+    copied = copies(read, contributing(found))
     bundled, coinciding, hops, itself = compose(
         read,
         parsed,
@@ -4410,7 +4445,7 @@ def compiled(
         limits,
         dispatched_file,
         declarations,
-        governed(substitution, pairs, copies(read, contributing(found))),
+        governed(substitution, pairs, copied),
     )
     dispatching: dict[BundleSelection, Hop] = {}
     own: list[Hop] = []
@@ -4453,10 +4488,21 @@ def compiled(
         captured,
         unselected(read, parsed, contributing(found), requested),
         pairs,
+        copied,
         {
             path: linked(path, parsed[path], tuple(regions(parsed[path])))
-            for path, held in pairs.items()
-            if any(one.routing for one in held.values())
+            for path in {
+                *(
+                    path
+                    for path, held in pairs.items()
+                    if any(one.routing for one in held.values())
+                ),
+                *(
+                    path
+                    for (path, _tags), held in copied.items()
+                    if any(one.routing for one in held.values())
+                ),
+            }
         },
     )
 
@@ -4530,9 +4576,8 @@ def routes(bundles: Iterable[Compiled]) -> set[tuple[str, tuple[str, str | None]
     routing: set[tuple[str, tuple[str, str | None]]] = set()
     standing: set[tuple[str, tuple[str, str | None]]] = set()
     for one in bundles:
-        for path, pairs in one.pairs.items():
-            for key, pair in pairs.items():
-                (routing if pair.routing else standing).add((path, key))
+        for path, key, pair in one.in_force():
+            (routing if pair.routing else standing).add((path, key))
     return routing - standing
 
 
@@ -4555,9 +4600,8 @@ def unused_pairs(
     written: dict[str, frozenset[tuple[str, str | None]]] = {}
     for one in bundles:
         written.update(one.linked)
-        for path in sorted(one.pairs):
-            for key, pair in one.pairs[path].items():
-                held.setdefault((path, pair.preset, key), pair)
+        for path, key, pair in one.in_force():
+            held.setdefault((path, pair.preset, key), pair)
     return [
         Diagnostic(
             WARNING,

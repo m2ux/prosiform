@@ -1080,3 +1080,28 @@ def test_a_copy_routing_its_dispatches_apart_from_the_group_places_its_own(
     assert "[Run](#⫽-dispatch-set)" in review
     assert "[⇉ Run](run.bundle.md)" in review
     assert "[⇉ Run](task-run.bundle.md)" in read
+
+
+def test_a_default_pair_in_force_for_a_copy_alone_warns_where_unused(
+    tree: Path,
+) -> None:
+    """A copy puts the default pair in force where the group's union overrides it."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "task").\n\n'
+        "## Review\n\nCheck the [↳ Other](stage.md#other).\n"
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n  default:\n    subst: [{rules.md: other.md}]\n"
+        "  task:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n\n"
+        "## Other\n\nNothing.\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 0
+    assert [(one["code"], one["source"]) for one in said] == [
+        ("W_SUBST_USED", "rules.md"),
+        ("W_SUBST_UNUSED", "rules.md"),
+    ]
+    assert "prosiform.default" in said[1]["message"]
