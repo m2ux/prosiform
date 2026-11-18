@@ -1697,9 +1697,18 @@ def included(
 
     A link a composed section writes to one of its own subsections names
     a heading each copy of that section carries, where it points as
-    `Composing.carry` states, so it includes nothing; the same section
-    linked from anywhere else is included as any is.
+    `Composing.carry` states, so it includes nothing, unless an inclusion
+    carries the region writing it too: that group's copy of the link
+    names the subsection as any link does. The same section linked from
+    anywhere else is included as any is.
     """
+
+    def spanned(path: str, chosen: Sequence[Token]) -> tuple[int, int]:
+        source = read[path]
+        start = (chosen[0].map or (0, 0))[0]
+        end = max((token.map or (0, 0))[1] for token in chosen)
+        return source.line(start + 1) or 1, source.line(end) or 1
+
     composed: dict[str, list[tuple[int, int, set[int]]]] = {}
     for one in found:
         if not one.composes or one.fragment is None:
@@ -1707,16 +1716,30 @@ def included(
         chosen = section(parsed[one.path], one.fragment) or ()
         if not chosen:
             continue
-        source = read[one.path]
-        start = (chosen[0].map or (0, 0))[0]
-        end = max((token.map or (0, 0))[1] for token in chosen)
+        low, high = spanned(one.path, chosen)
         composed.setdefault(one.path, []).append(
-            (
-                source.line(start + 1) or 1,
-                source.line(end) or 1,
-                {id(token) for token in chosen[1:]},
-            )
+            (low, high, {id(token) for token in chosen[1:]})
         )
+
+    def written(one: Reference) -> tuple[str, int] | None:
+        if one.origin is None:
+            return None
+        path, _, line = one.origin.rpartition(":")
+        return (path, int(line)) if line.isdigit() else None
+
+    def carries(one: Reference, at: tuple[str, int]) -> bool:
+        if one.path != at[0]:
+            return False
+        if one.fragment is None:
+            return True
+        try:
+            chosen = section(parsed[one.path], one.fragment) or ()
+        except (Ambiguous, Nested):
+            return False
+        if not chosen:
+            return False
+        low, high = spanned(one.path, chosen)
+        return low <= at[1] <= high
 
     def within(one: Reference) -> bool:
         if one.origin is None or one.fragment is None or one.path not in composed:
@@ -1733,7 +1756,22 @@ def included(
             for low, high, held in composed[one.path]
         )
 
-    return [one for one in found if not one.composes and not within(one)]
+    including = [one for one in found if not one.composes]
+    dropped = {id(one) for one in including if within(one)}
+    # A kept link can carry the region another dropped link is written
+    # in, so the set shrinks to its fixed point.
+    while True:
+        kept = [one for one in including if id(one) not in dropped]
+        restored = {
+            id(one)
+            for one in including
+            if id(one) in dropped
+            and (at := written(one)) is not None
+            and any(carries(each, at) for each in kept)
+        }
+        if not restored:
+            return kept
+        dropped -= restored
 
 
 def selection(

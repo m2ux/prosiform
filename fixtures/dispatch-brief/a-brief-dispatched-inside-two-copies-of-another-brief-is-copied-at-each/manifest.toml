@@ -1,0 +1,19 @@
+description = "Two sections each dispatch a briefed target directly and through another target's brief; each of the four copies of its brief points its link to its own child at the child it carries."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/x.bundle.md",
+  "expected/y.bundle.md",
+]
+diagnostics = []

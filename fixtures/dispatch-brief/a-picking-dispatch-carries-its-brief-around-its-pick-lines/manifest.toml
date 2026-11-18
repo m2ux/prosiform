@@ -1,4 +1,4 @@
-description = "A ⇉ link carrying the pick token to a target whose default preset declares a brief no alternative changes places the brief in its dispatch-pick sub-section, above the line listing each alternative's bundle beside its choice line."
+description = "A ⇉ link carrying the pick token to a target whose default preset declares a brief no alternative changes places the brief in its dispatch-pick sub-section around its pick lines, its lead content above the lines listing each alternative's bundle beside its choice line."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",
