@@ -201,6 +201,7 @@ Design rule: *Presets and `subst`*. Fixtures:
 
 - [a-selected-preset-governs-the-contribution](../fixtures/composition/a-selected-preset-governs-the-contribution)
 - [each-contribution-follows-its-own-presets](../fixtures/composition/each-contribution-follows-its-own-presets)
+- [a-copy-picking-no-alternative-beside-one-picking-one-is-refused](../fixtures/composition/a-copy-picking-no-alternative-beside-one-picking-one-is-refused)
 - [the-writers-subst-redirects-a-directive](../fixtures/composition/the-writers-subst-redirects-a-directive)
 - [a-selected-group-pair-places-no-contribution](../fixtures/composition/a-selected-group-pair-places-no-contribution)
 - [an-immediate-directive-is-held-to-no-target-heading](../fixtures/composition/an-immediate-directive-is-held-to-no-target-heading)
