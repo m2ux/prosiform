@@ -794,10 +794,9 @@ class Governed:
 
     `preset` names the preset stating it, `pair` the entry as written and
     `substitute` the reference the entry's substitute resolves to from the
-    declaring document. A pair is `routing` where only alternatives state
-    it: it routes the document's links to the picked kind's material,
-    and a pair of `default` or of an ordinary preset stands in for
-    material under test.
+    declaring document. `routing` holds for a pair that routes the
+    document's links to the picked kind's material, as `layer` decides,
+    and is false for one standing in for material under test.
     """
 
     preset: str
@@ -844,6 +843,7 @@ def unresolved(
     conversion: Conversion,
     rerun: bool = False,
     placing: Reference | None = None,
+    carried: bool = False,
 ) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
@@ -856,6 +856,10 @@ def unresolved(
     directive or dispatch placing a composed copy, which the diagnostic
     names, with the position its link is written at, and whose title
     alone the remedy points at, since the copy follows its presets alone.
+    `carried` states that the copy is the brief a dispatch carrying the
+    pick token places, which carries it with no alternative in force as
+    `briefed` states, so the remedy names that brief's section and states
+    that it must compile with none.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -875,6 +879,10 @@ def unresolved(
                 else "name the alternative that fits your task in the title or "
                 "tooltip of each link reaching it, a link entry's among them"
                 if placing is None
+                else f"write the brief {placing.original!r} so it compiles with no "
+                "alternative in force, since the picking dispatch carrying it "
+                "leaves the pick to its agent"
+                if carried
                 else "name the alternative that fits your task in the title of "
                 "the directive or dispatch placing this copy"
             ),
@@ -958,6 +966,7 @@ def resolved(
     parsed: Mapping[str, Sequence[Token]],
     selected: Mapping[str, Sequence[Reference]],
     entries: Collection[Reference],
+    hops: Iterable[Hop],
 ) -> None:
     """Hold every carried document declaring alternatives to the pick it needs.
 
@@ -973,8 +982,18 @@ def resolved(
 
     The failure remedies a rerun with `--pick` only where none is in
     force and an entry reaching the document carries the pick token,
-    which is where `entry` admits `--pick`.
+    which is where `entry` admits `--pick`. A copy none is in force for
+    that is the brief of one of the bundle's dispatches `hops` holds
+    carrying the pick token is remedied as `unresolved` states for a
+    carried brief.
     """
+    carried = {
+        (brief.path, brief.fragment, brief.tags)
+        for hop in hops
+        if picks(hop.target.tags)
+        and (brief := briefing(hop.target, read[hop.target.path].conversion))
+        is not None
+    }
     for path, references in selected.items():
         conversion = read[path].conversion
         if not conversion.alternatives:
@@ -1005,6 +1024,8 @@ def resolved(
                     conversion,
                     rerun=any(one in entries and picks(one.tags) for one in reaching),
                     placing=placing,
+                    carried=placing is not None
+                    and (placing.path, placing.fragment, placing.tags) in carried,
                 )
 
 
@@ -1052,13 +1073,14 @@ def governing(
                     placing=reference if reference.composes else None,
                 )
             agreed(conversion, reference.tags, reference, path)
+        standing = defaults(conversion, path)
         above: dict[tuple[str, str | None], Governed] = {}
         for reference in including:
             for preset in matching_presets(conversion, reference.tags):
-                clash = layer(above, preset, path)
+                clash = layer(above, preset, path, standing)
                 if clash is not None:
                     raise disagreeing(*clash, path, reference)
-        in_force = {**defaults(conversion, path), **above}
+        in_force = {**standing, **above}
         if in_force:
             table[path] = in_force
     return table
@@ -1077,25 +1099,33 @@ def defaults(
 
 
 def layer(
-    above: dict[tuple[str, str | None], Governed], preset: Preset, path: str
+    above: dict[tuple[str, str | None], Governed],
+    preset: Preset,
+    path: str,
+    standing: Mapping[tuple[str, str | None], Governed],
 ) -> tuple[Governed, Governed] | None:
     """Layer one selected preset's `subst` pairs into those `above` holds.
 
-    A pair an alternative and an ordinary preset both state, agreeing,
-    stands in for material under test whichever the document declares
-    first: it is a routing pair only where every preset stating it is an
-    alternative. A key `above` already maps to another substitute is
-    returned with that earlier pair and the later one, which is left
-    out, for the caller to refuse.
+    `standing` holds the document's `default` pairs, as `defaults`
+    states them. A pair an alternative states agreeing with `default`'s
+    for its key, or with an ordinary preset's, stands in for material
+    under test whichever the document declares first: it is a routing
+    pair only where no `default` pair agrees with it and every preset
+    stating it is an alternative. A key `above` already maps to another
+    substitute is returned with that earlier pair and the later one,
+    which is left out, for the caller to refuse.
     """
     for pair in preset.substs:
+        key = subst_identity(pair.original, path)
+        substitute = subst_reference(pair.substitute, path)
+        held = standing.get(key)
         one = Governed(
             preset.name,
             pair,
-            subst_reference(pair.substitute, path),
-            preset.choice is not None,
+            substitute,
+            preset.choice is not None
+            and (held is None or identity(held.substitute) != identity(substitute)),
         )
-        key = subst_identity(pair.original, path)
         first = above.setdefault(key, one)
         if identity(first.substitute) != identity(one.substitute):
             return first, one
@@ -1147,10 +1177,11 @@ def copies(
             copy = (path, reference.tags)
             if not reference.composes or copy in table:
                 continue
+            standing = defaults(conversion, path)
             above: dict[tuple[str, str | None], Governed] = {}
             for preset in matching_presets(conversion, reference.tags):
-                layer(above, preset, path)
-            pairs = {**defaults(conversion, path), **above}
+                layer(above, preset, path, standing)
+            pairs = {**standing, **above}
             if pairs:
                 table[copy] = pairs
     return table
@@ -4525,12 +4556,12 @@ def compiled(
     declarations = Declarations(lambda found: probe(root, found, limits))
     declared_entries(requested, declarations)
     try:
-        read, parsed, defined, captured, found, _, _ = traverse(
+        read, parsed, defined, captured, found, hops, _ = traverse(
             root, requested, limits, declarations, substitution, run
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
-    resolved(read, parsed, contributing(found), requested)
+    resolved(read, parsed, contributing(found), requested, hops)
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
     named = {name: selected}

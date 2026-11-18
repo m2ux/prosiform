@@ -1,0 +1,26 @@
+description = "The link title alpha picks the alpha alternative of stage.md, whose pair maps body.md to alpha-body.md as stage.md's default pair does. A pair default states stands in for material under test, so the agreeing alternative's pair is no routing pair, and the link the pair redirected warns W_SUBST_USED."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "body.md#body"
+resolved = "alpha-body.md#body"
+
+[expected.diagnostics.location]
+file = "stage.md"
+line = 16
+column = 1

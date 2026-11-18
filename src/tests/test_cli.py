@@ -1821,6 +1821,47 @@ def test_an_entry_carrying_no_pick_token_is_refused_with_a_remedy_the_run_accept
     assert "# Epic-Body" in run.bundle
 
 
+ROUTED_BRIEF = (
+    '---\nprosiform:\n  default:\n    brief: "#given"\n'
+    "  Task:\n    choice: One task.\n    subst: [{body.md: task-body.md}]\n"
+    "  Epic:\n    choice: Many tasks.\n    subst: [{body.md: epic-body.md}]\n---\n"
+    "# Stage\n\n## Given\n\nRead [the body](body.md#body).\n\n"
+    "## Steps\n\n1. Do the work.\n"
+)
+
+
+@pytest.mark.parametrize(
+    ("dispatch", "remedy"),
+    [
+        (
+            '[⇉ Stage](stage.md "?")',
+            "write the brief 'stage.md#given' so it compiles with no alternative "
+            "in force, since the picking dispatch carrying it leaves the pick to "
+            "its agent",
+        ),
+        (
+            "[⇉ Stage](stage.md)",
+            "name the alternative that fits your task in the title of the "
+            "directive or dispatch placing this copy",
+        ),
+    ],
+)
+def test_a_dispatch_whose_brief_an_alternative_routes_is_remedied_by_its_pick(
+    tmp_path: Path, dispatch: str, remedy: str
+) -> None:
+    """A picking dispatch's remedy names its brief, which compiles under no pick."""
+    written(tmp_path, "stage.md", ROUTED_BRIEF)
+    for name in ("body.md", "task-body.md", "epic-body.md"):
+        written(tmp_path, name, DECLARED + "# Bodies\n\n## Body\n\nA body.\n")
+    written(tmp_path, "guide.md", DECLARED + f"# Guide\n\n## Plan\n\n1. {dispatch}\n")
+    run = invoke("-d", "json", "guide.md", cwd=tmp_path)
+    assert run.status == USAGE_FAILURE, run.stderr
+    [diagnostic] = run.diagnostics()
+    assert diagnostic["code"] == ALTERNATIVE_UNRESOLVED
+    assert diagnostic["reference"] == "stage.md#given"
+    assert diagnostic["remedy"] == remedy
+
+
 def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:
     run = invoke("-d", "json", '[Body](work-kind.md "task")', cwd=kinds)
     assert run.status == SUCCESS, run.stderr
