@@ -1,0 +1,21 @@
+description = "A brief composes a section titled as one of its own child sections, which would give its lifted copy two sections of one name; the run fails with E_HEADING_COLLISION naming the directive and the authored heading, and publishes nothing, though the dispatched bundle leaves the brief out."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Section composition — Generated heading collisions",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_HEADING_COLLISION"
+reference = "rules.md#tests"
+source = "investigate.md:10"
+message_contains = ["investigate.md:12"]

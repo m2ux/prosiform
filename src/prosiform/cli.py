@@ -103,10 +103,13 @@ from prosiform.composition import (
     Composed,
     Composing,
     Cycling,
+    Held,
     Overflowing,
     Parentless,
+    Within,
     compositions,
     contributions,
+    owned,
 )
 from prosiform.diagnostics import (
     ERROR,
@@ -121,6 +124,7 @@ from prosiform.diagnostics import (
 )
 from prosiform.dispatch import CODES as DISPATCH_CODES
 from prosiform.dispatch import (
+    DISPATCH_CYCLE,
     HEADING_COLLISION,
     Anchors,
     Hop,
@@ -1635,7 +1639,11 @@ def reaching(selected: dict[str, list[Reference]]) -> dict[str, tuple[str, ...]]
     }
 
 
-def included(found: Sequence[Reference]) -> list[Reference]:
+def included(
+    found: Sequence[Reference],
+    parsed: Mapping[str, Sequence[Token]],
+    read: Mapping[str, Source],
+) -> list[Reference]:
     """Every reference that includes what it names: each one composing nothing.
 
     A document only composition directives reach contributes its content
@@ -1643,8 +1651,46 @@ def included(found: Sequence[Reference]) -> list[Reference]:
     merged group and is carried nowhere else. A document an inclusion
     also reaches keeps that inclusion, carrying what the inclusions
     select, beside its contributions.
+
+    A link a composed section writes to one of its own subsections names
+    a heading each copy of that section carries, where it points as
+    `Composing.carry` states, so it includes nothing; the same section
+    linked from anywhere else is included as any is.
     """
-    return [one for one in found if not one.composes]
+    composed: dict[str, list[tuple[int, int, set[int]]]] = {}
+    for one in found:
+        if not one.composes or one.fragment is None:
+            continue
+        chosen = section(parsed[one.path], one.fragment) or ()
+        if not chosen:
+            continue
+        source = read[one.path]
+        start = (chosen[0].map or (0, 0))[0]
+        end = max((token.map or (0, 0))[1] for token in chosen)
+        composed.setdefault(one.path, []).append(
+            (
+                source.line(start + 1) or 1,
+                source.line(end) or 1,
+                {id(token) for token in chosen[1:]},
+            )
+        )
+
+    def within(one: Reference) -> bool:
+        if one.origin is None or one.fragment is None or one.path not in composed:
+            return False
+        path, _, line = one.origin.rpartition(":")
+        if path != one.path or not line.isdigit():
+            return False
+        try:
+            named = section(parsed[one.path], one.fragment) or ()
+        except (Ambiguous, Nested):
+            return False
+        return bool(named) and any(
+            low <= int(line) <= high and id(named[0]) in held
+            for low, high, held in composed[one.path]
+        )
+
+    return [one for one in found if not one.composes and not within(one)]
 
 
 def selection(
@@ -3123,7 +3169,7 @@ def placement(
     rather than by a document, so a group an entry places a document in
     is absent there.
     """
-    selected = contributing(included(found))
+    selected = contributing(included(found, parsed, read))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
     placers: dict[tuple[str, str], str] = {}
     entered: set[tuple[str, str]] = set()
@@ -3289,6 +3335,8 @@ def assembled(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     composing: Contributing | None = None,
+    copies: Held | None = None,
+    within: Within | None = None,
 ) -> tuple[list[Group], Composed]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -3423,6 +3471,8 @@ def assembled(
             declarations,
             substitution,
             composing,
+            copies,
+            within,
         )
 
 
@@ -3475,7 +3525,9 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
             f"composes the heading {beyond.heading!r} at level {beyond.level}, "
             f"which is beyond H{MAX_LEVEL}",
             code=HEADING_DEPTH_OVERFLOW,
-            remedy=f"write the {beyond.kind} in a shallower section, or name a "
+            remedy="write the dispatch in a shallower section"
+            if beyond.kind == "dispatch"
+            else "write the directive in a shallower section, or name a "
             "shallower section of its target",
             reference=beyond.destination,
             source=location(beyond.path, beyond.line),
@@ -3484,18 +3536,26 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
     except Cycling as cycling:
         first, closing = cycling.chain[0], cycling.chain[-1]
         sections = tuple(identity(each.target) for each in cycling.chain)
+        briefing = first.kind == "dispatch"
         raise Failure(
             INPUT_FAILURE,
             Diagnostic(
                 ERROR,
                 f"the directive {closing.written!r} in {closing.at[0]!r} composes "
                 f"{sections[-1]!r}, which holds a directive on the chain of "
-                f"compositions that placed it, so the composition would not end",
-                code=UNSUPPORTED_CONSTRUCT,
+                f"compositions that placed it, so the composition would not end"
+                if not briefing
+                else f"the brief the dispatch {first.written!r} in {first.at[0]!r} "
+                f"carries composes {sections[-1]!r}, which holds that dispatch, so "
+                f"the brief would be lifted inside itself without end",
+                code=DISPATCH_CYCLE if briefing else UNSUPPORTED_CONSTRUCT,
                 reference=closing.written,
                 source=location(closing.at[0], closing.line),
                 chain=(*chains.get(first.at[0], ()), *sections),
-                remedy="remove a directive from the chain, or write one without the "
+                remedy="remove the directive from the brief, or dispatch its target "
+                "without a brief"
+                if briefing
+                else "remove a directive from the chain, or write one without the "
                 "composition mark",
                 location=Location(closing.at[0], closing.line or 1, 1),
                 related=tuple(
@@ -3503,7 +3563,9 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
                         each.at[0],
                         each.line or 1,
                         1,
-                        f"composes {identity(each.target)!r}",
+                        f"{each.kind} carrying {identity(each.target)!r}"
+                        if each.kind == "dispatch"
+                        else f"composes {identity(each.target)!r}",
                     )
                     for each in cycling.chain[:-1]
                 )
@@ -3631,6 +3693,7 @@ def compose(
         read, parsed, found, entries, declarations, substitution
     )
     joins = joined(read, parsed, selected, entries)
+    copies: Held = {}
     try:
         built, contributed = assembled(
             read,
@@ -3646,6 +3709,7 @@ def compose(
             None,
             declarations,
             substitution,
+            copies=copies,
         )
         briefs = Composing(
             parsed,
@@ -3654,6 +3718,7 @@ def compose(
             limits,
             declarations=declarations,
             substitution=substitution,
+            held=copies,
         )
         with assembling(chains):
             headed, placed = subsections(
@@ -3682,6 +3747,7 @@ def compose(
     targets = destination_map(headed, assigned)
     dispatching = anchors(placed, assigned)
     composing = contributions(contributed, headed, assigned)
+    within = owned(copies, headed, assigned)
     built, _ = assembled(
         read,
         parsed,
@@ -3697,6 +3763,7 @@ def compose(
         declarations,
         substitution,
         composing,
+        within=within,
     )
     briefs = Composing(
         parsed,
@@ -3708,6 +3775,7 @@ def compose(
         declarations,
         substitution,
         composing,
+        within=within,
     )
     with assembling(chains):
         groups, _ = subsections(
@@ -3735,6 +3803,7 @@ def compose(
             substitution,
             composing,
             bundle_file=bundle_file,
+            within=within,
         )
     except Unsafe as boundary:
         reached = chains.get(boundary.path or "", ())

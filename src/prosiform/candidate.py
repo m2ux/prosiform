@@ -127,6 +127,9 @@ from prosiform.provenance import (
     click_at,
     link_at,
 )
+from prosiform.provenance import (
+    Placing as Chain,
+)
 from prosiform.source import (
     ANCHOR,
     FENCE,
@@ -1592,8 +1595,12 @@ def validate(
     composing: Contributing | None = None,
     *,
     bundle_file: Callable[[Reference], str],
+    within: Mapping[Chain, Mapping[tuple[str, str | None], str]] | None = None,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
+
+    A composed range's links to its own section's subsections are held to
+    the headings its copy carries, which `within` holds by its placing.
 
     The record is held to itself first — each selected region carried
     once, each heading at the level and in the order its source wrote —
@@ -1631,6 +1638,7 @@ def validate(
     )
     parallel_sets(tokens, assigned, served, bundle_file, read, paired)
     contributing = {} if composing is None else composing
+    owned = {} if within is None else within
     contributions(reached, contributing)
     for record, part, span in paired:
         if isinstance(part, Ancestor):
@@ -1654,7 +1662,7 @@ def validate(
             carried.path,
             source,
             published,
-            targets,
+            {**targets, **owned.get(carried.placing, {})},
             declarations,
             served.get((carried.path, carried.lines[0], carried.placing), {}),
             substitution,
