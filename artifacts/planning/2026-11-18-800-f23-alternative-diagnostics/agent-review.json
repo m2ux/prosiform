@@ -1,0 +1,123 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/803",
+    "head": "5a11be68b6fe7b1fc2a3d3120fcbebfffd403e5a",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-800-f23-alternative-diagnostics/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F23 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The full diff main..f23-alternative-diagnostics at 5a11be68b and the design hunk of engineering 6b26f1e0d: Governed, unresolved, resolved, governing, defaults, layer, copies, compiled, briefed, routes, unused_pairs and substituted in cli.py; closure.py brief_of and briefing; tags.py; test_cli.py; both fixtures; docs/selection.md, dispatch.md, composition.md, glossary.md, invocation.md and fixtures/README.md. Twelve scratch scenarios covered composed copies beside a default pair, fragment keys, picking dispatches with other tags, a picking and a plain dispatch of equal tags, dispatched bundles and parallel dispatch. Excluded with its arising issue: a picking dispatch to an alternative naming its own brief (https://github.com/m2ux/prosiform/issues/807), later folded into #800 as AC4 and reviewed in round three.",
+    "criteria": "AC1: the agreeing-default-pair fixture passes and a composed copy warns. AC2: the routed-brief fixture names the brief; the remedy text held by the test_cli test. AC3: each make check target. AC2 failed under finding 1.",
+    "validation": "pytest, corpus 682 of 682, ruff, mypy, invocation, conformance, independence, harness, links and vocabulary passed at 5a11be68b.",
+    "findings": [
+      {
+        "description": "resolved tested the brief remedy on the first composing reference of a copy group keyed by tags alone, so an unrouted directive written first was blamed, and a routed picking brief behind it got the copy remedy.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/633a01fb08505926b70d428948cec16bc4d621a7"
+      },
+      {
+        "description": "A picking dispatch whose target's alternative names its own brief is remedied by naming an alternative, and the failure names no dispatch.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ea1094860bd30eeea3ba68423a0edd075b87f9f3"
+      },
+      {
+        "description": "With a plain and a picking dispatch of equal tags, the location could name the plain dispatch while the remedy names the picking one.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ea1094860bd30eeea3ba68423a0edd075b87f9f3"
+      },
+      {
+        "description": "invocation.md stated the alternative remedy without the picking-dispatch brief case.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ff0958797dc87749f93c5adda61f469a81498ebc"
+      },
+      {
+        "description": "docs/glossary.md and design.md:515 defined a routing pair without the stand-in exception docs/selection.md states.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ff0958797dc87749f93c5adda61f469a81498ebc"
+      },
+      {
+        "description": "The routes docstring restated the stand-in rule layer owns, and the layer docstring's declaration-order phrase read as covering default.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/633a01fb08505926b70d428948cec16bc4d621a7"
+      },
+      {
+        "description": "The routed-brief fixture's description promised a remedy its manifest cannot assert.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ff0958797dc87749f93c5adda61f469a81498ebc"
+      },
+      {
+        "description": "No test held an agreeing default pair in a composed copy.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/633a01fb08505926b70d428948cec16bc4d621a7"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/803",
+    "head": "ff0958797dc87749f93c5adda61f469a81498ebc",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-800-f23-alternative-diagnostics/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F23 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change 5a11be68b..ff0958797 and the uncommitted design diff, against round one's findings, rerunning the scratch cases that reproduced finding 1.",
+    "criteria": "AC1 to AC3 as in round one; finding 1 rechecked on both reproducing trees.",
+    "validation": "test_cli.py and the scratch cases at ff0958797; make check exited 0 (683 fixtures after the AC4 fixture landed in round three).",
+    "findings": [
+      {
+        "description": "A plain dispatch written before a picking dispatch of the same tags still took the location, since the copy's surviving reference is the plain dispatch's brief.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ea1094860bd30eeea3ba68423a0edd075b87f9f3"
+      },
+      {
+        "description": "Wording: the layer docstring's declaration-order clause and design.md:515's run-on stand-in sentence.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/ea1094860bd30eeea3ba68423a0edd075b87f9f3"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/803",
+    "head": "30da1f7e6be8950d02e69471499ec87033a8223c",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-800-f23-alternative-diagnostics/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F23 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change ff0958797..30da1f7e6 and engineering d3e060deb: unresolved, resolved, layer and briefed in cli.py, test_brief.py, test_cli.py, docs/dispatch.md, docs/selection.md and both alternative-brief fixtures, with six scratch cases rerun, plain and picking dispatches of equal tags in both orders among them.",
+    "criteria": "AC4 (folded #807): both fixtures name the dispatch with chain and location, and the test_brief test holds the remedy. Round two's findings rechecked.",
+    "validation": "test_brief.py and test_cli.py at 30da1f7e6; make check exited 0 with 683 of 683 fixtures.",
+    "findings": [
+      {
+        "description": "docs/dispatch.md:119 read as if the remedy itself declares the brief.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/2a2f6fd154d0394fb0cb13e918514d5af8945b9f"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/803",
+    "head": "2a2f6fd154d0394fb0cb13e918514d5af8945b9f",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-800-f23-alternative-diagnostics/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F23 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change 30da1f7e6..2a2f6fd15, one line of docs/dispatch.md fixing round three's finding.",
+    "criteria": "AC1 to AC4 as verified in rounds one to three; the round-three finding rechecked.",
+    "validation": "make check exited 0 at 2a2f6fd15: 2276 tests, 1122 harness, 683 of 683 fixtures.",
+    "findings": []
+  }
+]
