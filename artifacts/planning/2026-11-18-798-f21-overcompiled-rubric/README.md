@@ -12,6 +12,9 @@ The fix has the rubric's `overcompiled` row, and the README's failure-class line
 
 | Artifact | What it holds |
 | --- | --- |
+| [f21.md](f21.md) | The work item: the rubric row and class line stating every call the scorer counts |
+| [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review records of the delivering pull request's reviewed heads and bases |
 
 ## Links
 
