@@ -1,0 +1,148 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "151462ea3a2002eda225c426dd3572c188237a2c",
+    "base": "d252f22339a5024efe77b531b9cfa0ed60c7691d",
+    "base_ref": "f16-dispatch-brief",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The F19 diff against f16-dispatch-brief at 151462ea3 and the design change c243266f0, and the tree merged with f16-dispatch-brief at a187463ce. Probed nested and deferred directives in copies, a section included and composed, dispatches and briefed dispatches in copies routed apart, briefs composing sections, picks and sets, W_SUBST_UNUSED cases and subfolder documents. Excluded observations: (1) a deferred directive naming an ambiguous fragment fails with E_UNEXPECTED_INTERNAL_ERROR; scope evidence: f16-dispatch-brief at d252f2233 fails alike; arising issue https://github.com/m2ux/prosiform/issues/795. (2) Two directives whose presets map one key apart were refused with E_INVALID_USAGE; scope evidence: the Proposal kept the union refusal, and the user's later decision is applied in round three.",
+    "criteria": "AC1 and AC2: the two fixtures pass in make corpus. AC3: make check passes at 151462ea3. Findings 1 and 2 broke the Proposal's rule once merged with the moved base.",
+    "validation": "pytest without the bootstrap test, corpus 667 of 667, ruff and mypy at 151462ea3; the tree merged with a187463ce passed pytest and corpus 669 of 669.",
+    "findings": [
+      {
+        "description": "Merged with f16-dispatch-brief's loop walk, a brief was walked under the group's union, so a brief only the tagged copy routes into a loop was refused with E_DISPATCH_CYCLE.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d515dbd3d"
+      },
+      {
+        "description": "A copy picking no alternative escaped E_ALTERNATIVE_UNRESOLVED when another copy picked one, since alternatives were counted on the union alone.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d5c850b80"
+      },
+      {
+        "description": "A briefed dispatch two copies route apart was refused with E_HEADING_COLLISION under a remedy an author could not follow, and no document stated the refusal.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d515dbd3d"
+      },
+      {
+        "description": "invocation.md, the governing and picked docstrings, docs/selection.md and the glossary still described union routing for every copy.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a8260a1af"
+      },
+      {
+        "description": "The copy rule was restated in the Substitution docstring rather than named by its owner.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d5c850b80"
+      },
+      {
+        "description": "Two sentences, in docs/dispatch.md and the Placing docstring, read ambiguously.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d515dbd3d"
+      },
+      {
+        "description": "A default pair in force for a copy alone that no reference used raised no W_SUBST_UNUSED.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d5c850b80"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "a8260a1af36da7f262a9a5cdddca8d659930fe2c",
+    "base": "a187463ce206898a6a3a23957a9f891bf6f03bc6",
+    "base_ref": "f16-dispatch-brief",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fixes d515dbd3d, d5c850b80 and a8260a1af and the design change c3cd35a04. Re-ran the first-round probes against the head and against the head merged with f16-dispatch-brief at 4cbd9db52.",
+    "criteria": "AC1-AC3 met at a8260a1af; every first-round finding confirmed fixed.",
+    "validation": "pytest, corpus 672 of 672, ruff and mypy at a8260a1af; the tree merged with 4cbd9db52 passed pytest and corpus 673 of 673.",
+    "findings": [
+      {
+        "description": "The branch did not contain f16-dispatch-brief at 4cbd9db52, so it was not tested against its real base.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/2cff2e21b"
+      },
+      {
+        "description": "The unresolved docstring and docs/selection.md still said a document's links are written once, beside the per-copy count.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c4098f7ef"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "c4098f7efe5406a79496f03258916cb1fc19c6a9",
+    "base": "4cbd9db525e452aae4824427eeb667e2c7c0b438",
+    "base_ref": "f16-dispatch-brief",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The merge 2cff2e21b of f16-dispatch-brief at 4cbd9db52, the user's two decisions in 40d0d51c6 and c4098f7ef (a group governed by its including references, alternatives counted per copy), and the design change 61c8250f7. Probed copies and includes picking and clashing in every combination, whole-document includes, group-pair alternatives, a picking dispatch with briefs, deferred directives and later_needs_pick, dispatched bundles composing twice, and error ordering. Excluded observation: a directive naming an ambiguous fragment and two alternatives reports E_ALTERNATIVE_UNRESOLVED before E_AMBIGUOUS_SOURCE_HEADING; scope evidence: the pick was checked in traversal before selection on f16-dispatch-brief too; arising issue https://github.com/m2ux/prosiform/issues/796.",
+    "criteria": "AC1-AC5 met: the AC4 and AC5 fixtures publish, the old refusals stand where the decisions keep them, and make check passes.",
+    "validation": "pytest and corpus 677 of 677 at c4098f7ef.",
+    "findings": [
+      {
+        "description": "A copy's alternative route warned W_SUBST_USED where the group's ordinary preset stated a stand-in for the same key, since quiet routes were keyed on document and key alone.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d93852e77"
+      },
+      {
+        "description": "invocation.md still said conflicting substitutes for one document's key fail, which two copies no longer do.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d93852e77"
+      },
+      {
+        "description": "The W_SUBST_UNUSED message for a copy's pair said no reference the run resolved, though the run resolved it elsewhere.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d93852e77"
+      },
+      {
+        "description": "A copy was refused for want of an alternative whose only effect is a group pair, which places no copy.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d93852e77"
+      },
+      {
+        "description": "The composition module docstring restated rules governing and resolved own.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/d93852e77"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/794",
+    "head": "d93852e77fe3aea44e60df56facbd147a331323f",
+    "base": "4cbd9db525e452aae4824427eeb667e2c7c0b438",
+    "base_ref": "f16-dispatch-brief",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-793-f19-tagged-compositions/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F19 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fixes c4098f7ef..d93852e77 and the design change e3101cb66. Re-ran q6, q6b, p5, p5b, q1, p2, p3, p4, p6 and q2, and added p5c, p5d, p5e and q7.",
+    "criteria": "AC1-AC5 met; each third-round finding confirmed fixed.",
+    "validation": "tests/test_subst.py at d93852e77; make check exits 0 at d93852e77 and at 622c1f6ff (2266 tests, harness 1116, corpus 677 of 677).",
+    "findings": [
+      {
+        "description": "The routes docstring still named its set by document and key, and docs/selection.md said a routing pair's use raises nothing without the stand-in exception.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/622c1f6ff"
+      }
+    ]
+  }
+]

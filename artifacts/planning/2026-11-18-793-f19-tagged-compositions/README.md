@@ -14,11 +14,13 @@ The fix has each contribution, and each dispatch brief, resolve under the preset
 | --- | --- |
 | [f19.md](f19.md) | The work item: each composed copy resolving under its own presets |
 | [test-results.md](test-results.md) | The checks run on the delivering branch and their results |
+| [agent-review.json](agent-review.json) | The agent review records of the delivering pull request's reviewed heads and bases |
 
 ## Links
 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F19] Tagged Compositions](https://github.com/m2ux/prosiform/issues/793) |
+| Delivering pull request | [[F19] Tagged Compositions](https://github.com/m2ux/prosiform/pull/794) |
 | Precedent | [[F16] Dispatch Brief](https://github.com/m2ux/prosiform/issues/784) |
 | Convention | [Docstrings and comments](https://github.com/m2ux/prosiform/blob/main/AGENTS.md#docstrings-and-comments) |
