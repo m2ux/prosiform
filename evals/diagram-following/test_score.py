@@ -1296,6 +1296,7 @@ HEREDOC_BODY = "pf target.md\npf other.md 2>&1>out; pf\n"
         "cat <<-'EOF'\n\tpf target.md\n\t\tEOF",
         f"cat <<A <<'B'\n{HEREDOC_BODY}A\n{HEREDOC_BODY}B\n",
         f"cat <<EOF >notes.md\nEOF is not the delimiter line\n{HEREDOC_BODY}EOF",
+        f"cat <<A <<B\n{HEREDOC_BODY}A\npf target.md\n",
     ],
 )
 def test_a_heredoc_body_is_data_rather_than_commands(command: str) -> None:
@@ -1328,9 +1329,6 @@ def test_runs_beside_a_heredoc_stay_observable(command: str) -> None:
     [
         (f"pf target.md <<EOF\n{HEREDOC_BODY}", [None]),
         ("pf target.md <<EOF", [None]),
-        (f"pf a.md\ncat <<EOF\n{HEREDOC_BODY}", [Compile(None, "a.md"), None]),
-        (f"pf a.md; cat <<EOF\n{HEREDOC_BODY}\tEOF\n", [Compile(None, "a.md"), None]),
-        (f"cat <<A <<B\n{HEREDOC_BODY}A\npf a.md\n", [None]),
     ],
 )
 def test_an_unterminated_heredoc_invalidates_its_segment(
@@ -1339,6 +1337,24 @@ def test_an_unterminated_heredoc_invalidates_its_segment(
     assert pf_runs((command,)) == runs
     item = Scenario("heredoc", {}, (), compile=(Compile(None, "a.md"),))
     assert compiles(item, (command,), ()) is not None
+
+
+@pytest.mark.parametrize(
+    "commands",
+    [
+        ("pf a.md", "ls >"),
+        ("pf a.md", "echo 'open"),
+        ("pf a.md", f"cat <<EOF\n{HEREDOC_BODY}"),
+        (f"pf a.md\ncat <<EOF\n{HEREDOC_BODY}",),
+        (f"pf a.md; cat <<EOF\n{HEREDOC_BODY}\tEOF\n",),
+    ],
+)
+def test_a_malformed_command_running_no_pf_passes_the_run_checks(
+    commands: tuple[str, ...],
+) -> None:
+    assert pf_runs(commands) == [Compile(None, "a.md")]
+    item = Scenario("malformed", {}, (), compile=(Compile(None, "a.md"),))
+    assert compiles(item, commands, ()) is None
 
 
 @pytest.mark.parametrize("option", ["--help", "--version", "--codes", "-h", "-v", "-C"])
@@ -1474,7 +1490,6 @@ def test_a_published_link_runs_its_destination_under_its_title(command: str) -> 
 def test_a_pick_stands_where_the_pick_token_stands() -> None:
     [run] = pf_runs(("""pf '[Target](target.md "checks,?")' --pick Draft""",))
     assert run == Compile(None, "target.md", frozenset({"checks", "draft"}))
-    assert run is not None and run.tags == frozenset({"checks", "draft"})
 
 
 ROUTE = """'[Route](reference/work-kind.md#route "?")'"""

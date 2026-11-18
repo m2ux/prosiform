@@ -70,23 +70,25 @@ A scenario also states the `pf` runs a correct run makes, so a run that
 passes the dispatch checks and its sub-agents' actions is held to them
 wherever its harness reports the commands a session ran. The record holds
 the session's commands beside its starts, and each start the commands its
-own sub-agent ran. A command is a
-`pf` run in each segment `;`, `&&`, `||` or `|` separate whose first word is
-`pf` or a path ending `/pf`. The compiler's own grammar and entry reader read
-its one positional entry, a published link or a plain path, and an optional
+own sub-agent ran. A command is a `pf` run in each segment `;`, `&&`,
+`||`, `|`, `&` or a newline separate whose first word is `pf` or a path
+ending `/pf`. The compiler's own grammar and entry reader read its one
+positional entry, a published link or a plain path, and an optional
 `--pick`: a link's destination is the run's reference and its title the
 names it selects, the pick standing where `?` stands, and a plain path
 selects none. A run the compiler refuses, a stray or repeated `--pick`
-among them, compiles nothing. A reference names a stated one when it is
+among them, or one in a segment that does not split whole, is malformed
+and compiles nothing. A reference names a stated one when it is
 that reference or ends `/` and that reference, and its effective matching
 named presets agree. Informational
 calls compile nothing and satisfy no bare guide run. Each agent's runs, the
 session's and each started sub-agent's, are held to the runs stated for it:
 
 - every stated run was made: otherwise *uncompiled*;
-- every run naming a reference is a stated one: otherwise *overcompiled*,
-  as a run on a deferred line the path did not reach is. A bare `pf` beyond
-  those stated prints the guide and compiles nothing, so it is no departure;
+- every run naming a reference is a stated one, and no run is malformed:
+  otherwise *overcompiled*, as a run on a deferred line the path did not
+  reach is. A bare `pf` beyond those stated prints the guide and compiles
+  nothing, so it is no departure;
 - the stated runs were made in their order: otherwise *misordered_compile*.
 
 The checks are read in that order, after the dispatch checks, so a sub-agent
@@ -170,6 +172,7 @@ from prosiform.cli import (
 from prosiform.cli import (
     parser as command_parser,
 )
+from prosiform.tags import PICK
 
 PF = "pf"
 
@@ -486,17 +489,19 @@ def _body_end(command: str, at: int, delimiter: str, tabs: bool) -> int | None:
         at = end + 1
 
 
-def _commands(command: str) -> list[list[str] | None]:
+def _commands(command: str) -> list[tuple[list[str], bool]]:
     """Read literal shell words and redirects without evaluating shell input.
 
     Redirection operators and their one operand belong to the shell, not
     the compiler grammar; a duplication carries its descriptor as its
     operand. A heredoc's delimiter is its operand, and its body, the lines
     after the next newline up to the delimiter line, is data, never commands.
-    Quoted or escaped operators remain argument text. An incomplete token or
-    redirect, or a heredoc no line closes, invalidates its command segment.
+    Quoted or escaped operators remain argument text. Each segment is its
+    words read up to its end or its first unreadable token, beside whether
+    it split whole: an incomplete token or redirect, or a heredoc no line
+    closes, leaves its segment unsplit.
     """
-    found: list[list[str] | None] = []
+    found: list[tuple[list[str], bool]] = []
     words: list[str] = []
     redirect: re.Match[str] | None = None
     bodies: list[tuple[str, bool, int]] = []
@@ -511,7 +516,7 @@ def _commands(command: str) -> list[list[str] | None]:
         if token.lastgroup == "space":
             continue
         if token.lastgroup == "separator":
-            found.append(None if invalid or redirect else words)
+            found.append((words, not (invalid or redirect)))
             words, redirect, invalid = [], None, False
             while token.group() == "\n" and bodies:
                 end = _body_end(command, at, *bodies[0][:2])
@@ -538,9 +543,9 @@ def _commands(command: str) -> list[list[str] | None]:
             if redirect.lastgroup == "heredoc":
                 bodies.append((word, redirect.group().endswith("-"), len(found)))
             redirect = None
-    found.append(None if invalid or redirect else words)
+    found.append((words, not (invalid or redirect)))
     for _, _, segment in bodies:
-        found[segment] = None
+        found[segment] = (found[segment][0], False)
     return found
 
 
@@ -551,16 +556,18 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
     a command may name the build by a directory. The compiler's own grammar
     reads its positional entry and its pick, and its own entry reader the
     link the entry publishes: the link's destination and title tags, or a
-    plain path carrying none. An entry the compiler refuses, a pick beside
-    an entry whose title carries no `?` among them, is invalid usage.
+    plain path carrying none. A pick stands where `?` stands, the token
+    itself selecting nothing. An entry the compiler refuses, a pick beside
+    an entry whose title carries no `?` among them, is invalid usage, as is
+    a command that does not split whole and whose first word names `pf`.
     """
     runs: list[Compile | None] = []
     for command in commands:
-        for words in _commands(command):
-            if words is None:
-                runs.append(None)
-                continue
+        for words, whole in _commands(command):
             if not words or words[0].rsplit("/", 1)[-1] != PF:
+                continue
+            if not whole:
+                runs.append(None)
                 continue
             try:
                 parsed = command_parser().parse_args(words[1:])
@@ -578,7 +585,8 @@ def pf_runs(commands: tuple[str, ...]) -> list[Compile | None]:
                 runs.append(None)
                 continue
             fragment = "" if reference.fragment is None else f"#{reference.fragment}"
-            runs.append(Compile(None, reference.path + fragment, reference.tags))
+            tags = reference.tags if parsed.pick is None else reference.tags - {PICK}
+            runs.append(Compile(None, reference.path + fragment, tags))
     return runs
 
 
