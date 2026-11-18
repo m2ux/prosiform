@@ -1,0 +1,840 @@
+{
+  "run_id": "dispatch-brief",
+  "date": "2026-11-18T12:24:38+00:00",
+  "state": "completed",
+  "reason": null,
+  "models": [
+    "openrouter/deepseek/deepseek-v4.1-flash-1017"
+  ],
+  "repetitions": 5,
+  "sessions": 20,
+  "started": 20,
+  "harness": "opencode",
+  "managed": {
+    "plugins": 0,
+    "environment": 0,
+    "hooks": 0,
+    "fingerprint": null
+  },
+  "tokens": 3583711,
+  "cost_usd": 0.116679,
+  "not_started": [],
+  "failing": [
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/briefed/4",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run [\"pf -o /tmp/opencode/pfout 'workflow.bundles/ledger__steps.bundle.md#ledger'\"]: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/briefed/5",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run [\"pf -o workflow.bundles 'workflow.md#trace'\"]: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/1",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/2",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/4",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run ['pf -o . workflow.bundles/workflow.bundle.md']: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/ledger-brief/compiled/5",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run ['pf .', 'pf -h']: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/1",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run [\"pf -o . 'workflow.bundles/workflow.bundle.md'\", \"pf -o out '[\u21c9 Payroll](payroll__steps.bundle.md)'\"]: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/2",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/3",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/4",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open the source documents ['payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/briefed/5",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run [\"pf -o out 'payroll__steps.bundle.md'\"]: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/1",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run ['pf -o . 2>/dev/null || true']: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/2",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run [\"pf -o . '[\u21c9 Payroll](payroll__steps.bundle.md)'\", \"pf -o . 'workflow.bundles/payroll__steps.bundle.md'\"]: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/3",
+      "failure": "overcompiled",
+      "disposition": "miss",
+      "evidence": "the transcript's own bash calls run [\"pf -o inputs-out 'x' 2>&1 | head -5; ls inputs\"]: pf on a bundle file, a dispatch link, a source section, a directory or with no entry, none of which the form states; workflows/dispatch-brief/scenarios.toml states no [[scenario.compile]] run, so bare pf, the guide, is the only run a correct session makes; the form's bundles carry no deferred or \u21b3 line and the Contract preamble's links are fragments of the bundle, so no stated line names any other reference; the agent, not the harness, made each call"
+    },
+    {
+      "session": "openrouter/deepseek/deepseek-v4.1-flash-1017/dispatch-brief/payroll-brief/compiled/5",
+      "failure": "read_source",
+      "disposition": "miss",
+      "evidence": "the transcript's read calls open the source documents ['ledger.md', 'payroll.md', 'states/audit.md', 'states/entry.md', 'states/exit.md', 'states/receive.md', 'states/trace.md', 'workflow.md'] beside the compiled bundles, which the form hands it as workflow.bundles/; subagents.json records the same reads"
+    }
+  ],
+  "baseline": {
+    "run_id": "baseline",
+    "date": "2026-11-05T05:49:46+00:00"
+  },
+  "baseline_only": {
+    "cells": [
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored",
+        "workflow": "dispatch-beside",
+        "scenario": "set-beside-a-dispatch"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored",
+        "workflow": "dispatch-question",
+        "scenario": "returned-question"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored",
+        "workflow": "dispatch-set",
+        "scenario": "parallel-set"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "declared-inclusion",
+        "scenario": "declared-link-followed"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "declared-inclusion",
+        "scenario": "undeclared-link-as-text"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "group-placement",
+        "scenario": "leaf-group"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "group-placement",
+        "scenario": "nested-intermediate"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "group-placement",
+        "scenario": "two-presets-one-document"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "preset-selection",
+        "scenario": "default-alone"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "preset-selection",
+        "scenario": "title-selected"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "preset-selection",
+        "scenario": "two-presets-one-title"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-composition",
+        "scenario": "deferred-occurrence"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-composition",
+        "scenario": "merged-sources"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-composition",
+        "scenario": "nested-composition"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "section-entry",
+        "scenario": "document-fragment"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "subst-redirect",
+        "scenario": "document-redirect"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "subst-redirect",
+        "scenario": "preset-over-default"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle",
+        "workflow": "subst-redirect",
+        "scenario": "section-redirect"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "compiled",
+        "workflow": "dispatch-beside",
+        "scenario": "set-beside-a-dispatch"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "compiled",
+        "workflow": "dispatch-question",
+        "scenario": "returned-question"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "compiled",
+        "workflow": "dispatch-set",
+        "scenario": "parallel-set"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "high-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "branching",
+        "scenario": "low-severity"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "declared-inclusion",
+        "scenario": "declared-link-followed"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "declared-inclusion",
+        "scenario": "undeclared-link-as-text"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "group-placement",
+        "scenario": "leaf-group"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "group-placement",
+        "scenario": "nested-intermediate"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "group-placement",
+        "scenario": "two-presets-one-document"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "linear",
+        "scenario": "straight-through"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "no-rework"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "looping",
+        "scenario": "two-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "preset-selection",
+        "scenario": "default-alone"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "preset-selection",
+        "scenario": "title-selected"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "preset-selection",
+        "scenario": "two-presets-one-title"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "pricing",
+        "scenario": "clear-discount"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "pricing",
+        "scenario": "flagged-list-price"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "rework",
+        "scenario": "four-rounds"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "rework",
+        "scenario": "one-round"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-composition",
+        "scenario": "deferred-occurrence"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-composition",
+        "scenario": "merged-sources"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-composition",
+        "scenario": "nested-composition"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "section-entry",
+        "scenario": "document-fragment"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "subst-redirect",
+        "scenario": "document-redirect"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "subst-redirect",
+        "scenario": "preset-over-default"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree",
+        "workflow": "subst-redirect",
+        "scenario": "section-redirect"
+      }
+    ],
+    "by_form": [
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "authored"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "bundle"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "linked"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "prose"
+      },
+      {
+        "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+        "form": "tree"
+      }
+    ],
+    "by_model": []
+  },
+  "cells": [
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "briefed",
+      "workflow": "dispatch-brief",
+      "scenario": "ledger-brief",
+      "sessions": 5,
+      "passed": 3,
+      "pass_rate": 0.6,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 2,
+        "misordered_compile": 0,
+        "read_source": 0,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 164993.0,
+      "cost_usd": 0.005909,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "briefed",
+      "workflow": "dispatch-brief",
+      "scenario": "payroll-brief",
+      "sessions": 5,
+      "passed": 0,
+      "pass_rate": 0.0,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 2,
+        "misordered_compile": 0,
+        "read_source": 3,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 174794.2,
+      "cost_usd": 0.005587,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "workflow": "dispatch-brief",
+      "scenario": "ledger-brief",
+      "sessions": 5,
+      "passed": 1,
+      "pass_rate": 0.2,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 2,
+        "misordered_compile": 0,
+        "read_source": 2,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 187363.8,
+      "cost_usd": 0.006935,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "workflow": "dispatch-brief",
+      "scenario": "payroll-brief",
+      "sessions": 5,
+      "passed": 1,
+      "pass_rate": 0.2,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 3,
+        "misordered_compile": 0,
+        "read_source": 1,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 189591.2,
+      "cost_usd": 0.004904,
+      "in_baseline": false,
+      "difference": null
+    }
+  ],
+  "by_form": [
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "briefed",
+      "sessions": 10,
+      "passed": 3,
+      "pass_rate": 0.3,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 4,
+        "misordered_compile": 0,
+        "read_source": 3,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 169893.6,
+      "cost_usd": 0.005748,
+      "in_baseline": false,
+      "difference": null
+    },
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "form": "compiled",
+      "sessions": 10,
+      "passed": 2,
+      "pass_rate": 0.2,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 5,
+        "misordered_compile": 0,
+        "read_source": 3,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 188477.5,
+      "cost_usd": 0.00592,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": -0.5333,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 0,
+          "unfinished": 0,
+          "undispatched": -4,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "premature_dispatch": 0,
+          "uncompiled": 0,
+          "overcompiled": 5,
+          "misordered_compile": 0,
+          "read_source": 3,
+          "errored": 0
+        }
+      }
+    }
+  ],
+  "by_model": [
+    {
+      "model": "openrouter/deepseek/deepseek-v4.1-flash-1017",
+      "sessions": 20,
+      "passed": 5,
+      "pass_rate": 0.25,
+      "failures": {
+        "wrong_branch": 0,
+        "skipped_state": 0,
+        "invented_state": 0,
+        "invalid_transition": 0,
+        "loop_miscount": 0,
+        "missing_action": 0,
+        "unfinished": 0,
+        "undispatched": 0,
+        "sequential_set": 0,
+        "unrelayed_question": 0,
+        "premature_dispatch": 0,
+        "uncompiled": 0,
+        "overcompiled": 9,
+        "misordered_compile": 0,
+        "read_source": 6,
+        "errored": 0
+      },
+      "timeouts": 0,
+      "tokens": 179185.5,
+      "cost_usd": 0.005834,
+      "in_baseline": true,
+      "difference": {
+        "pass_rate": -0.6972,
+        "failures": {
+          "wrong_branch": 0,
+          "skipped_state": 0,
+          "invented_state": 0,
+          "invalid_transition": 0,
+          "loop_miscount": 0,
+          "missing_action": 0,
+          "unfinished": 0,
+          "undispatched": -19,
+          "sequential_set": 0,
+          "unrelayed_question": 0,
+          "premature_dispatch": 0,
+          "uncompiled": 0,
+          "overcompiled": 9,
+          "misordered_compile": 0,
+          "read_source": 6,
+          "errored": 0
+        }
+      }
+    }
+  ]
+}

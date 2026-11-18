@@ -256,13 +256,14 @@ The `dispatch-brief` [brief scenarios](README.md#brief-scenarios) in both their 
 | Forms | `compiled,briefed`, the two forms the workflow is written in. |
 | Repetitions | 5 |
 | Sessions | 20: two scenarios, two forms, five repetitions. |
-| Session cap | Set by the shakedown below, by the proof's rule: its largest session's tokens, doubled and rounded up to the next 10 000, and at most the baseline's 2 830 000. |
-| Token budget | 20 times the session cap, at most 56 600 000 tokens. |
+| Session cap | 530 000 tokens: the shakedown's largest session, 260 255 tokens, doubled and rounded up to the next 10 000. |
+| Token budget | 10 600 000 tokens: 20 times the session cap. |
 | Cost cap | USD 5, approved by the user on 2026-11-18. Where the shakedown's mean session cost, doubled, puts 20 sessions above USD 5, the run waits for the user to approve a cap set from that mean: 20 times it, doubled and rounded up to the next dollar. |
 | Committed | `report.json` as `evals/diagram-following/dispatch-brief.json`, with its `dispositions.json` read into it, and its `report.md` as `evals/diagram-following/dispatch-brief.md`; each form's pass rate and failure classes, and the run's measured cost, in the README. `baseline.json`, `report.md`, `mvp-proof.json` and `agent-pick.json` are untouched. |
+| Run | `dispatch-brief`, 2026-11-18, at `4cbd9db52`: all 20 sessions started, 5 passed, USD 0.116679 spent over 3 583 711 tokens. `briefed` passed 3 of 10, failing on `overcompiled` 4 and `read_source` 3; `compiled` passed 2 of 10, failing on `overcompiled` 5 and `read_source` 3; no session in either form took `premature_dispatch`. Each failure is triaged `miss`: the `overcompiled` sessions ran `pf` on a bundle file, a published dispatch link, a source section, a directory or no entry, none of which a line of the form states, and the `read_source` sessions opened the workflow's sources beside the bundles. |
 
 ```bash
-make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows dispatch-brief --forms compiled,briefed --repetitions 5 --session-budget-tokens <session cap> --budget-tokens <token budget> --run-id dispatch-brief'
+make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows dispatch-brief --forms compiled,briefed --repetitions 5 --session-budget-tokens 530000 --budget-tokens 10600000 --run-id dispatch-brief'
 ```
 
 ### Shakedown
@@ -278,6 +279,8 @@ One repetition of each scenario in each form, on the run's harness and model, at
 | Session cap | 2 830 000 tokens: the baseline's session cap. |
 | Token budget | 11 320 000 tokens: 4 times the session cap. |
 | Estimate | USD 0.06: 4 sessions at the baseline's mean `compiled` session cost of USD 0.01477, over 384 021 tokens a session. |
+| Run | `dispatch-brief-shakedown`, 2026-11-18, at `4cbd9db52`: `completed`, all 4 sessions started, 1 passed, each failure triaged `miss`: `ledger-brief` and `payroll-brief` in `briefed`, and `payroll-brief` in `compiled`, took `read_source`, opening the workflow's sources beside the bundles. |
+| Measured | USD 0.024484 in all, USD 0.006121 a session; 800 977 tokens, 200 244 a session, the largest 260 255. These set the run's session cap and token budget above; 20 sessions at the mean, doubled, come to about USD 0.25, inside the USD 5 cap. |
 
 ```bash
 make eval-diagrams HARNESS=opencode ARGS='--models openrouter/deepseek/deepseek-v4.1-flash-1017 --workflows dispatch-brief --forms compiled,briefed --repetitions 1 --session-budget-tokens 2830000 --budget-tokens 11320000 --run-id dispatch-brief-shakedown'
