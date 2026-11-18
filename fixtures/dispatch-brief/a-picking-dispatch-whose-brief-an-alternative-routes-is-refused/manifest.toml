@@ -1,4 +1,4 @@
-description = "A ⇉ link carrying the pick token names a target whose brief writes a link each alternative routes by a subst pair, so the brief compiled with no alternative in force would follow no kind's route; the run fails with E_ALTERNATIVE_UNRESOLVED listing the alternatives and publishes nothing."
+description = "A ⇉ link carrying the pick token names a target whose brief writes a link each alternative routes by a subst pair, so the brief compiled with no alternative in force would follow no kind's route; the run fails with E_ALTERNATIVE_UNRESOLVED listing the alternatives, naming the brief stage.md#given as its reference at the dispatch's link, and publishes nothing."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",
@@ -17,4 +17,11 @@ exit_status = 2
 severity = "error"
 code = "E_ALTERNATIVE_UNRESOLVED"
 source = "stage.md"
+reference = "stage.md#given"
+chain = ["guide.md", "stage.md#given"]
 message_contains = ["stage.md needs one alternative in force:\n  Task  One pull request's worth of work.\n  Epic  Lists its tasks in a Work Breakdown table."]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 8
+column = 1
