@@ -4592,10 +4592,12 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
 def routes(
     bundles: Iterable[Compiled],
 ) -> set[tuple[str, tuple[str, str | None], str]]:
-    """The pairs, as declaring document and key, only alternatives put in force.
+    """The pairs only alternatives put in force, by document, key and substitute.
 
     A pair a `default` or an ordinary preset states in any bundle of the
-    run stands in for material under test there, so it is no route.
+    run stands in for material under test there, so it is no route. It
+    stands in only for the substitute it names, so an alternative's pair
+    naming another substitute for the same key stays a route.
     """
     routing: set[tuple[str, tuple[str, str | None], str]] = set()
     standing: set[tuple[str, tuple[str, str | None], str]] = set()

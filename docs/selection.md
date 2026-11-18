@@ -59,7 +59,7 @@ The mapping is consulted before the target is asked whether it declares, so a ke
 
 An entry reference is written by no document, so no pair redirects it: the run compiles the document it names and is named for the path the caller wrote. A pair is used only by a link in content the run selected. A pair `default`, an ordinary preset or a stub states stands in for material under test, so the run flags it: one a link used warns with `W_SUBST_USED` once, at the first link that used it, naming that link, the identity it would have resolved to and the substitute, and one no link used, a pair whose only link sits in a heading outside the selection included, warns with `W_SUBST_UNUSED`, naming its document.
 
-A pair an alternative states is a [routing pair](glossary.md#sources): it routes its document's links to the picked kind's material, so a link using it follows the route its author declared and raises nothing. It warns with `W_SUBST_UNUSED` only where no link its document writes names its key, and a pair whose link sits in a section the run did not compile stays silent.
+A pair an alternative states is a [routing pair](glossary.md#sources): it routes its document's links to the picked kind's material, so a link using it follows the route its author declared and raises nothing, unless a `default` or ordinary preset in force anywhere in the run maps the same key to the same substitute, which makes that pair a stand-in. It warns with `W_SUBST_UNUSED` only where no link its document writes names its key, and a pair whose link sits in a section the run did not compile stays silent.
 
 ## Consolidation
 
