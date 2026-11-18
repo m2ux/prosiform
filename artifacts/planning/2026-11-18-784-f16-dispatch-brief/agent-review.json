@@ -1,0 +1,240 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "7bcf48ac0ca61b029ca119d8869b71636ffaef72",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T12:00:00Z",
+    "scope": "The full diff of main..f16-dispatch-brief at 7bcf48ac0 and the design change on engineering; probed briefs in headings, chains, included targets, nested directives and dispatches in briefs, sets, picks, -c mode and the eval's premature_dispatch rule.",
+    "criteria": "AC1-AC9 and AC11 against the fixtures, unit tests, docs and eval tests.",
+    "validation": "make check exit 0 (2257 tests, harness 1089, corpus 650 of 650); make eval-harness 849 passed.",
+    "findings": [
+      {
+        "description": "A briefed dispatch written in a heading crashed with E_UNEXPECTED_INTERNAL_ERROR: the heading's slug kept the mark the lifted link drops.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/7f427bfccf950607b959bbf2831fcceaf5c42c33"
+      },
+      {
+        "description": "A malformed brief fragment such as #given%zz crashed with E_UNEXPECTED_INTERNAL_ERROR instead of E_INVALID_CONVERSION_METADATA.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/7f427bfccf950607b959bbf2831fcceaf5c42c33"
+      },
+      {
+        "description": "The dispatch line landed under the brief's last child heading or composed destination, and in a set later members' lines did too.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/b69b9b6b0a063d9286c23756fc8f9ac291a2678b"
+      },
+      {
+        "description": "A brief's own dispatch lines in a set read as extra set members.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/b69b9b6b0a063d9286c23756fc8f9ac291a2678b"
+      },
+      {
+        "description": "Briefs dispatching each other reported E_HEADING_DEPTH_OVERFLOW instead of E_DISPATCH_CYCLE.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/b69b9b6b0a063d9286c23756fc8f9ac291a2678b"
+      },
+      {
+        "description": "New diagnostics lacked location or chain, or described a dispatch as a directive.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/7f427bfccf950607b959bbf2831fcceaf5c42c33"
+      },
+      {
+        "description": "docs/dispatch.md overclaimed when briefed dispatches share a sub-section.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/7f427bfccf950607b959bbf2831fcceaf5c42c33"
+      },
+      {
+        "description": "Docs and docstrings were stale on level-6 overflow and generated structure.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/7f427bfccf950607b959bbf2831fcceaf5c42c33"
+      },
+      {
+        "description": "A brief copied twice carried its nested dispatch sub-sections only in its first copy.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/b69b9b6b0a063d9286c23756fc8f9ac291a2678b"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "7f427bfccf950607b959bbf2831fcceaf5c42c33",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T13:00:00Z",
+    "scope": "The change 7bcf48ac0..7f427bfcc and the findings it fixed; B3, N1, N2 and N6 were fixed there by a flat-brief refusal the user later withdrew, and are fixed again under nesting in b69b9b6b0.",
+    "criteria": "The fixes for B1, B2, N3, N4 and N5 hold; no new defect.",
+    "validation": "make check exit 0; make eval-harness 849 passed.",
+    "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "b69b9b6b0a063d9286c23756fc8f9ac291a2678b",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T15:00:00Z",
+    "scope": "The full diff of main..b69b9b6b0 with the nested brief layout, the per-copy dispatch map and brief cycles; probed nested briefs in copied briefs, sets in briefs, deep cycles, included targets, deferred directives and tagged presets.",
+    "criteria": "AC1-AC9 and AC11 under the user's nesting decisions.",
+    "validation": "make check exit 0 (corpus 658 of 658); make eval-harness 849 passed.",
+    "findings": [
+      {
+        "description": "A brief nested two deep shared one placing across its copies, so copies pointed into each other.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "A brief merged parallel links from different sections into one set.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "A brief cycle starting deep reported E_HEADING_DEPTH_OVERFLOW.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "A brief skipped the destination-heading collision check.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "The overflow message misstated the dispatch's section level.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "The overflow remedy suggested naming a shallower section of the target, which a dispatch cannot do.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "A brief composing the section dispatching it was reported as a composition cycle naming a directive.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      },
+      {
+        "description": "docs/dispatch.md omitted that a region a composition copies more than once shares its first copy's dispatch places.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/c2760672789b1ae79e0e3cdf18cd7988622a07cf"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "d252f22339a5024efe77b531b9cfa0ed60c7691d",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T18:00:00Z",
+    "scope": "The change b69b9b6b0..d252f2233 and a full pass of main..d252f2233, including the every-member set layout, copy-local links and the Contract eval. Excluded: a tagged composition compiling every copy under the union of its presets, which predates this change on main and is saved as #793 (https://github.com/m2ux/prosiform/issues/793).",
+    "criteria": "AC1-AC9, AC11 and AC12.",
+    "validation": "make check exit 0 (corpus 665 of 665); make eval-harness 855 passed.",
+    "findings": [
+      {
+        "description": "cli.included dropped a composed section's link to its own subsection even where an inclusion carries the region writing it, crashing with a KeyError.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a187463ce206898a6a3a23957a9f891bf6f03bc6"
+      },
+      {
+        "description": "Placing.writing keyed by the served link alone made nested brief copies share one placing.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a187463ce206898a6a3a23957a9f891bf6f03bc6"
+      },
+      {
+        "description": "A brief cycle starting in a level-5 section reported overflow.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a187463ce206898a6a3a23957a9f891bf6f03bc6"
+      },
+      {
+        "description": "candidate.parallel_sets named a dispatch-line heading that no longer exists.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a187463ce206898a6a3a23957a9f891bf6f03bc6"
+      },
+      {
+        "description": "docs/dispatch.md described the pick brief and the guide sentence in their old layout.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a187463ce206898a6a3a23957a9f891bf6f03bc6"
+      },
+      {
+        "description": "The overflow causes in docs and the module docstring named level-6 sections alone.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/a187463ce206898a6a3a23957a9f891bf6f03bc6"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "a187463ce206898a6a3a23957a9f891bf6f03bc6",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T20:00:00Z",
+    "scope": "The change d252f2233..a187463ce and the findings it fixed, by two independent reviewers; probed missing, undeclared and remote nested targets, self-dispatch, picking briefs, deferred links, mutually linking composed sections, whole-document inclusion beside composition and -c mode.",
+    "criteria": "The round-3 fixes hold.",
+    "validation": "make check exit 0 (corpus 667 of 667); make eval-harness 855 passed.",
+    "findings": [
+      {
+        "description": "The brief-loop walk kept no memo, so diamond-shaped brief graphs were walked once per path.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/4cbd9db525e452aae4824427eeb667e2c7c0b438"
+      },
+      {
+        "description": "A looping member of a set in a level-6 section reported E_HEADING_DEPTH_OVERFLOW, since the set was fitted before its members' loop check.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/4cbd9db525e452aae4824427eeb667e2c7c0b438"
+      },
+      {
+        "description": "docs/dispatch.md promised the cycle before every depth error, though a section a brief composes past H6 fails first.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/4cbd9db525e452aae4824427eeb667e2c7c0b438"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/792",
+    "head": "4cbd9db525e452aae4824427eeb667e2c7c0b438",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-784-f16-dispatch-brief/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F16 delivery session)",
+    "reviewed_at": "2026-11-18T21:00:00Z",
+    "scope": "The change a187463ce..4cbd9db52 and the findings it fixed: the memo's soundness against the chain and the carried briefs, a 30-level diamond with a trailing loop, the set's member loop check and the docs wording.",
+    "criteria": "The fixes hold; no new defect.",
+    "validation": "make check exit 0 (2257 tests, harness 1107, corpus 668 of 668); make eval-harness 855 passed.",
+    "findings": []
+  }
+]
