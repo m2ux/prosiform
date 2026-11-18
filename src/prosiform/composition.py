@@ -29,13 +29,12 @@ by complete comma-separated names. Their `subst`
 pairs, layered over the target's `default`, are the pairs in force for
 the links the contribution writes, since those are the target
 document's own and this directive places them: another reference
-reaching the target, composing or including, routes none of them, and
-this directive's presets route none of the target's group. Two
-contributions whose presets map one key to two substitutes, or pick
-two alternatives, therefore each resolve under their own. A
-dispatch's brief is composed the same way under the presets the
-dispatch selects. A `group` pair places a document where an ordinary
-reference bundles it, so it places no contribution.
+reaching the target, composing or including, routes none of them.
+What the target's group resolves under is `governing`'s, and the
+alternatives each copy needs are `resolved`'s. A dispatch's brief is
+composed the same way under the presets the dispatch selects. A
+`group` pair places a document where an ordinary reference bundles
+it, so it places no contribution.
 
 A directive a contribution carries composes as one its source writes
 anywhere: beneath the heading holding it there, which is the

@@ -1148,3 +1148,43 @@ def test_two_including_references_mapping_one_key_apart_are_refused(
     status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
     assert status == 2
     assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
+
+
+def test_a_copy_needs_no_alternative_that_states_only_a_group_pair(
+    tree: Path,
+) -> None:
+    """A group pair places no copy, so it changes nothing a copy compiles to."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n## Plan\n\nStart from the [↳ Given](stage.md#given).\n"
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n"
+        "  alpha:\n    choice: A.\n    group: {xs: 1}\n"
+        "  beta:\n    choice: B.\n    group: {ys: 1}\n---\n"
+        "# Stage\n\n## Given\n\nPlain.\n"
+    )
+    status, published = invoke(tree, "guide.md")
+    assert status == 0
+    assert "Plain." in published
+
+
+def test_a_copys_route_stays_quiet_beside_a_groups_standing_pair(tree: Path) -> None:
+    """The route a copy takes is its alternative's pair, not the group's stand-in."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "alpha").\n\n'
+        '## Read\n\nSee [the stage](stage.md#given "test, beta").\n'
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n"
+        "  test:\n    subst: [{rules.md: stand-in.md}]\n"
+        "  alpha:\n    choice: A.\n    subst: [{rules.md: other.md}]\n"
+        "  beta:\n    choice: B.\n    subst: [{notes.md: other.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 0
+    assert [one["resolved"] for one in said if one["code"] == "W_SUBST_USED"] == [
+        "stand-in.md"
+    ]

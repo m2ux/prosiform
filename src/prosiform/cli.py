@@ -892,18 +892,21 @@ def routed(
     tokens: Sequence[Token],
     references: Sequence[Reference],
     entries: Collection[Reference],
+    grouped: bool = True,
 ) -> bool:
     """Whether one document's alternatives change what its selected content compiles to.
 
     An alternative changes it where one of them states a `group` pair,
     which decides the group the selected content joins, or a `subst`
     pair whose key a link in the selected content names, which routes
-    that link. The selected content is what the references select, and
-    the title and introduction a folder's preamble group carries for
-    the document. Content none of them changes compiles under `default`
-    and the ordinary presets its references select.
+    that link. `grouped` is false for a composed copy's references,
+    which place no group, so a `group` pair changes nothing there. The
+    selected content is what the references select, and the title and
+    introduction a folder's preamble group carries for the document.
+    Content none of them changes compiles under `default` and the
+    ordinary presets its references select.
     """
-    if any(one.membership is not None for one in conversion.alternatives):
+    if grouped and any(one.membership is not None for one in conversion.alternatives):
         return True
     chosen = selection(path, tokens, references, entries)
     read_regions = tuple(regions(tokens)) if chosen is None else chosen.regions
@@ -949,18 +952,22 @@ def resolved(
             continue
         including = included(references, parsed, read)
         held = [
-            *([including] if including else []),
+            *([(including, True)] if including else []),
             *(
-                [one for one in references if one.composes and one.tags == tags]
+                (
+                    [one for one in references if one.composes and one.tags == tags],
+                    False,
+                )
                 for tags in dict.fromkeys(
                     one.tags for one in references if one.composes
                 )
             ),
         ]
-        for reaching in held:
+        for reaching, grouped in held:
             count = len(picked(conversion, reaching))
             if count > 1 or (
-                count == 0 and routed(path, conversion, parsed[path], reaching, entries)
+                count == 0
+                and routed(path, conversion, parsed[path], reaching, entries, grouped)
             ):
                 raise unresolved(path, conversion)
 
@@ -4022,7 +4029,8 @@ def resourced(bundled: str, budget: int) -> bool:
 
 
 def substituted(
-    mapping: Substitution, quiet: Collection[tuple[str, tuple[str, str | None]]]
+    mapping: Substitution,
+    quiet: Collection[tuple[str, tuple[str, str | None], str]],
 ) -> list[Diagnostic]:
     """One warning for each `subst` pair other than a routing pair a reference named.
 
@@ -4046,7 +4054,7 @@ def substituted(
             location=None if one.origin is None else located(one.origin),
         )
         for one in mapping.redirects.targets()
-        if one.pair not in quiet
+        if (*one.pair, one.declared) not in quiet
     ]
 
 
@@ -4581,17 +4589,20 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
     ]
 
 
-def routes(bundles: Iterable[Compiled]) -> set[tuple[str, tuple[str, str | None]]]:
+def routes(
+    bundles: Iterable[Compiled],
+) -> set[tuple[str, tuple[str, str | None], str]]:
     """The pairs, as declaring document and key, only alternatives put in force.
 
     A pair a `default` or an ordinary preset states in any bundle of the
     run stands in for material under test there, so it is no route.
     """
-    routing: set[tuple[str, tuple[str, str | None]]] = set()
-    standing: set[tuple[str, tuple[str, str | None]]] = set()
+    routing: set[tuple[str, tuple[str, str | None], str]] = set()
+    standing: set[tuple[str, tuple[str, str | None], str]] = set()
     for one in bundles:
         for path, key, pair in one.in_force():
-            (routing if pair.routing else standing).add((path, key))
+            named = (path, key, identity(pair.substitute))
+            (routing if pair.routing else standing).add(named)
     return routing - standing
 
 
@@ -4624,7 +4635,7 @@ def unused_pairs(
             + (
                 "no link its document writes"
                 if one.routing
-                else "no reference the run resolved"
+                else "no reference the run resolved where it is in force"
             )
             + ", so it substitutes nothing",
             code=SUBST_UNUSED,
