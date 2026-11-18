@@ -825,11 +825,11 @@ def picked(
 ) -> tuple[Preset, ...]:
     """The alternatives in force for one document, in declaration order.
 
-    They are the union the references given select: for every reference
-    reaching the document, the set its group's `subst` pairs resolve
-    through, and for one copy's composing references, that copy's. A
-    name the document does not declare, `?` and a diagram link carrying
-    no tooltip pick none.
+    They are the union the references given select: for the including
+    references reaching the document, the set its group's `subst` pairs
+    resolve through, and for one copy's composing references, that
+    copy's. A name the document does not declare, `?` and a diagram link
+    carrying no tooltip pick none.
     """
     names = {
         preset.name
@@ -842,9 +842,10 @@ def picked(
 def unresolved(path: str, conversion: Conversion) -> Failure:
     """A document compiled with several alternatives in force, or none it needs.
 
-    The document's links are written once, so they follow one kind's
-    routes. The message lists each alternative beside its choice line in
-    declaration order, so its reader reruns naming the one that fits.
+    The links one group or one composed copy writes are written once, so
+    they follow one kind's routes. The message lists each alternative
+    beside its choice line in declaration order, so its reader reruns
+    naming the one that fits.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -932,30 +933,34 @@ def resolved(
 ) -> None:
     """Hold every carried document declaring alternatives to the pick it needs.
 
-    Several alternatives in force fail wherever the document is
-    compiled, and none in force fails where an alternative would change
-    what its selected content compiles to. The count is taken on the
-    references one bundle carries, so a dispatched bundle counts the
+    The count is taken apart for the document's group, on the including
+    references `included` keeps, and for each composed copy, on the
+    composing references of one tag selection, since each resolves
+    under its own presets as the composition module states. Several
+    alternatives in force for one of them fail, and none in force fails
+    where an alternative would change what that one selects, so two
+    copies picking different alternatives publish. The count is taken on
+    the references one bundle carries, so a dispatched bundle counts the
     references reaching the document within it.
-
-    A composed copy resolves under its own presets, as the composition
-    module states, so the composing references of each tag selection
-    are held apart as well: a copy none of whose presets is an
-    alternative fails where one would change what it selects.
     """
     for path, references in selected.items():
         conversion = read[path].conversion
         if not conversion.alternatives:
             continue
-        count = len(picked(conversion, references))
-        if count > 1 or (
-            count == 0 and routed(path, conversion, parsed[path], references, entries)
-        ):
-            raise unresolved(path, conversion)
-        for tags in dict.fromkeys(one.tags for one in references if one.composes):
-            copy = [one for one in references if one.composes and one.tags == tags]
-            if not picked(conversion, copy) and routed(
-                path, conversion, parsed[path], copy, entries
+        including = included(references, parsed, read)
+        held = [
+            *([including] if including else []),
+            *(
+                [one for one in references if one.composes and one.tags == tags]
+                for tags in dict.fromkeys(
+                    one.tags for one in references if one.composes
+                )
+            ),
+        ]
+        for reaching in held:
+            count = len(picked(conversion, reaching))
+            if count > 1 or (
+                count == 0 and routed(path, conversion, parsed[path], reaching, entries)
             ):
                 raise unresolved(path, conversion)
 
@@ -969,21 +974,22 @@ def governing(
     """The `subst` pairs in force for the links each carried document's group writes.
 
     A composed copy of a document's section writes its links under the
-    pairs `copies` states. A document's `default` pairs are in force
-    wherever it is compiled, and every preset a reference reaching it
-    selects layers above them, so a selected preset's pair holds over
-    `default`'s for one key. The
-    presets one reference selects are held to agreeing first, and two
-    presets selected by different references reaching the document,
-    mapping one key to two substitutes, are refused the same way: the
-    group's links are written once, so the union would leave nothing
-    saying which substitute they resolve to.
+    pairs `copies` states, so the group's are those of the including
+    references `included` keeps. A document's `default` pairs are in
+    force wherever it is compiled, and every preset an including
+    reference selects layers above them, so a selected preset's pair
+    holds over `default`'s for one key. The presets one reference
+    selects, composing or including, are held to agreeing first, and
+    two presets selected by different including references, mapping one
+    key to two substitutes, are refused the same way: the group's links
+    are written once, so the union would leave nothing saying which
+    substitute they resolve to.
 
-    Several alternatives in force are refused before their pairs are
-    compared, since alternatives route one key to different kinds'
-    material by design: the references reaching a document only grow
-    across the traversal's rounds, so several in force in any round are
-    several at its fixed point.
+    Several alternatives the including references pick are refused
+    before their pairs are compared, since alternatives route one key to
+    different kinds' material by design: the references reaching a
+    document only grow across the traversal's rounds, so several in
+    force in any round are several at its fixed point.
 
     A pair an alternative and an ordinary preset both state, agreeing,
     stands in for material under test whichever the document declares
@@ -996,8 +1002,13 @@ def governing(
     table: dict[str, dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
         conversion = read[path].conversion
-        if len(picked(conversion, references)) > 1:
+        including = included(references, parsed, read)
+        if len(picked(conversion, including)) > 1:
             raise unresolved(path, conversion)
+        for reference in references:
+            if len(picked(conversion, [reference])) > 1:
+                raise unresolved(path, conversion)
+            agreed(conversion, reference.tags, reference, path)
         in_force = {
             subst_identity(pair.original, path): Governed(
                 DEFAULT, pair, subst_reference(pair.substitute, path)
@@ -1005,8 +1016,7 @@ def governing(
             for pair in conversion.default.substs
         }
         above: dict[tuple[str, str | None], Governed] = {}
-        for reference in references:
-            agreed(conversion, reference.tags, reference, path)
+        for reference in including:
             for preset in matching_presets(conversion, reference.tags):
                 for pair in preset.substs:
                     one = Governed(
@@ -1730,7 +1740,11 @@ def included(
     for one in found:
         if not one.composes or one.fragment is None:
             continue
-        chosen = section(parsed[one.path], one.fragment) or ()
+        try:
+            chosen = section(parsed[one.path], one.fragment) or ()
+        except (Ambiguous, Nested):
+            # `selection` refuses this reference with its own diagnostic.
+            continue
         if not chosen:
             continue
         low, high = spanned(one.path, chosen)
@@ -2840,8 +2854,8 @@ def later_needs_pick(
     marks ignored, selecting by the deferral's title and the run's names
     the bundle carries for the target, at the default budgets a link run
     as written holds. Its traversal is read here, and the alternatives in
-    force for the target are counted on every reference reaching it
-    there, as that run counts them.
+    force for the target's group are counted on the including references
+    reaching it there, as `resolved` counts them for that run.
 
     A traversal that fails with no alternative in force needs a pick
     where one alternative's traversal succeeds, since that pick is what
@@ -2884,7 +2898,7 @@ def later_needs_pick(
         )
     read, parsed, found = unpicked
     conversion = read[one.path].conversion
-    references = contributing(found)[one.path]
+    references = included(contributing(found)[one.path], parsed, read)
     return not picked(conversion, references) and routed(
         one.path, conversion, parsed[one.path], references, [entry]
     )

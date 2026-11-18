@@ -1,0 +1,41 @@
+description = "One briefed target is dispatched twice, by links selecting its first and second presets, which map rules.md to two different substitutes. Each brief copy resolves under its own dispatch's presets alone, so both publish, each with its own substitute beside it, each dispatched bundle under its own presets, and the run reports each substitution at the brief's source line."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Section composition — Presets and subst",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/investigate--p-72f1e703251fa57f8324cba88c4f7b009508daae368aa72e14651056588c24e7.bundle.md",
+  "expected/investigate--p-bd35bffa0b662a50ff50739a42ab07411bf492e3665a097206e9a05cdb9b8d98.bundle.md",
+]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "rules.md#tests"
+resolved = "first-rules.md#tests"
+
+[expected.diagnostics.location]
+file = "investigate.md"
+line = 14
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "rules.md#tests"
+resolved = "second-rules.md#tests"
+
+[expected.diagnostics.location]
+file = "investigate.md"
+line = 14
+column = 1

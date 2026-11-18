@@ -1057,7 +1057,10 @@ def test_a_copys_selection_leaves_another_documents_links_to_its_group() -> None
 def test_a_copy_routing_its_dispatches_apart_from_the_group_places_its_own(
     tmp_path: Path,
 ) -> None:
-    """Copies routed as the group is share its set; one routed apart takes its own."""
+    """A copy routed as the group is shares its set; one routed apart takes its own.
+
+    The group takes no copy's presets, so the untagged copy routes as it does.
+    """
     (tmp_path / "out").mkdir()
     (tmp_path / "guide.md").write_text(
         DECLARED + "# Guide\n\n"
@@ -1076,10 +1079,10 @@ def test_a_copy_routing_its_dispatches_apart_from_the_group_places_its_own(
     assert status == 0
     plan, review = published.split("## Review", 1)
     review, read = review.split("## Read", 1)
-    assert "[Run](#⫽-dispatch-set-1)" in plan
-    assert "[Run](#⫽-dispatch-set)" in review
-    assert "[⇉ Run](run.bundle.md)" in review
-    assert "[⇉ Run](task-run.bundle.md)" in read
+    assert "[Run](#⫽-dispatch-set)" in plan
+    assert "[⇉ Run](task-run.bundle.md)" in plan
+    assert "[Run](#⫽-dispatch-set-1)" in review
+    assert "[⇉ Run](run.bundle.md)" in read
 
 
 def test_a_default_pair_in_force_for_a_copy_alone_warns_where_unused(
@@ -1105,3 +1108,43 @@ def test_a_default_pair_in_force_for_a_copy_alone_warns_where_unused(
         ("W_SUBST_UNUSED", "rules.md"),
     ]
     assert "prosiform.default" in said[1]["message"]
+
+
+def test_a_copys_presets_clash_with_no_including_references(tree: Path) -> None:
+    """A group under one preset and a copy under another mapping its key apart."""
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nStart from the [↳ Given](stage.md#given "second").\n\n'
+        '## Read\n\nSee [the stage](stage.md#given "first").\n'
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n  first:\n    subst: [{rules.md: other.md}]\n"
+        "  second:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, published = invoke(tree, "guide.md")
+    assert status == 0
+    plan, read = published.split("## Read", 1)
+    assert "# Stand-in" in published and "# Other" in published
+    assert "(#stand-in)" in plan
+    assert "(#other)" in read
+
+
+def test_two_including_references_mapping_one_key_apart_are_refused(
+    tree: Path,
+) -> None:
+    (tree / "guide.md").write_text(
+        DECLARED + "# Guide\n\n"
+        '## Plan\n\nSee [the stage](stage.md#given "second").\n\n'
+        '## Read\n\nSee [the stage](stage.md#given "first").\n'
+    )
+    (tree / "stage.md").write_text(
+        "---\nprosiform:\n  first:\n    subst: [{rules.md: other.md}]\n"
+        "  second:\n    subst: [{rules.md: stand-in.md}]\n---\n"
+        "# Stage\n\n## Given\n\nRead [the rules](rules.md).\n"
+    )
+    (tree / "other.md").write_text(DECLARED + "# Other\n\nOther.\n")
+    status, said = voices(tree, "-c", "-o", str(tree / "out"), "guide.md")
+    assert status == 2
+    assert [one["code"] for one in said] == ["E_INVALID_USAGE"]
