@@ -1,0 +1,27 @@
+description = "A ⇉ link carrying the pick token names a target whose default declares one brief and whose Epic alternative declares another, so the brief the dispatch carries varies by the pick its agent has yet to make; the run fails with E_ALTERNATIVE_UNRESOLVED listing the alternatives, naming the dispatch stage.md as its reference at its link, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch briefs",
+  "Presets — Exactly one alternative",
+  "Adversarial acceptance fixtures — Dispatch briefs",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 2
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_ALTERNATIVE_UNRESOLVED"
+source = "stage.md"
+reference = "stage.md"
+chain = ["guide.md", "stage.md"]
+message_contains = ["stage.md needs one alternative in force:\n  Task  One pull request's worth of work.\n  Epic  Lists its tasks in a Work Breakdown table."]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 10
+column = 1
