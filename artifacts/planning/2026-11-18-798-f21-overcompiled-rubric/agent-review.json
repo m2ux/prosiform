@@ -1,0 +1,105 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/806",
+    "head": "e26733e3eab2e39c5fe6766fea8081bc54d30200",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-798-f21-overcompiled-rubric/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F21 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The F21 diff against main at e26733e3e: the RUNBOOK overcompiled row and the README overcompiled line, read beside _commands, pf_runs, _names, _held_to and compiles in score.py, with probes of pf_runs and _held_to for options with no entry, refused entries and options, informational calls, the bare guide run and unsplittable segments. Excluded observation: the README's Run checks intro splits commands at ;, &&, || and | while _commands also splits at a lone & and a newline; scope evidence: the intro sentence is unchanged on main at 4b0466803 and the change touches only the class line; arising issue https://github.com/m2ux/prosiform/issues/805.",
+    "criteria": "AC1: each pf call the overcompiled check counts is stated in both files. AC2: make check passes.",
+    "validation": "Probes of pf_runs and _held_to under the unit checkout's venv.",
+    "findings": [
+      {
+        "description": "The RUNBOOK row gave the unsplittable-command case no miss condition.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/272f64b845bf0593da8df4f2c22d444e8088ed86"
+      },
+      {
+        "description": "The RUNBOOK defect condition sent a stated invalid call to the tables, which cannot state one.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/272f64b845bf0593da8df4f2c22d444e8088ed86"
+      },
+      {
+        "description": "The README exempted every informational call, while the scorer counts one the compiler refuses, as pf --help --bogus.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/272f64b845bf0593da8df4f2c22d444e8088ed86"
+      },
+      {
+        "description": "The README row named the malformed call otherwise than its Run checks intro.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/272f64b845bf0593da8df4f2c22d444e8088ed86"
+      },
+      {
+        "description": "The README row's sentence left unclear what 'or a sub-agent did' attached to.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/272f64b845bf0593da8df4f2c22d444e8088ed86"
+      },
+      {
+        "description": "'Words but no entry' was looser than the scorer's test of options with no entry.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/272f64b845bf0593da8df4f2c22d444e8088ed86"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/806",
+    "head": "272f64b845bf0593da8df4f2c22d444e8088ed86",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-798-f21-overcompiled-rubric/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F21 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change e26733e3e..272f64b84 and the six findings it fixes.",
+    "criteria": "AC1: both files state each counted call; all six findings fixed.",
+    "validation": "make check exits 0 at 272f64b84.",
+    "findings": [
+      {
+        "description": "The RUNBOOK miss condition's three malformed calls had no separator before the second, so the refused call could read as describing pf -o .",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/fc9a56e7700b3d2e84a61ee86e187124d276443b"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/806",
+    "head": "fc9a56e7700b3d2e84a61ee86e187124d276443b",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-798-f21-overcompiled-rubric/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F21 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change 272f64b84..fc9a56e77 and the finding it fixes.",
+    "criteria": "AC1: the RUNBOOK miss condition reads its three malformed calls apart. AC2: make check exits 0 at fc9a56e77.",
+    "validation": "make check exits 0 at fc9a56e77.",
+    "findings": [
+      {
+        "description": "The semicolons inside the miss condition's call list read at the level of the break before it, so 'the form states no such call' seemed to cover only the unsplittable command.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/aebc17ade47e9ae733364cada0083d99a94c70a2"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/806",
+    "head": "aebc17ade47e9ae733364cada0083d99a94c70a2",
+    "base": "4b04668032b2d8ad709d7a3f738d9f2beef29552",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-798-f21-overcompiled-rubric/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F21 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The change fc9a56e77..aebc17ade and the finding it fixes.",
+    "criteria": "AC1: the miss condition leads its three malformed calls, and every counted call matches score.py. AC2: make check exits 0 at aebc17ade.",
+    "validation": "make check exits 0 at aebc17ade; make eval-harness 854 passed, 1 failed in the unchanged pick reading, arising issue https://github.com/m2ux/prosiform/issues/804.",
+    "findings": []
+  }
+]

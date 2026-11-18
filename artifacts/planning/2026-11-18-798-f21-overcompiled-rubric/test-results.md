@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F21 at `fc9a56e77` on `f21-overcompiled-rubric`, cut from `main` at `4b0466803`, run on 2026-11-18 in the unit checkout with its `src/.venv/bin` first on `PATH`.
+Results for F21 at `aebc17ade` on `f21-overcompiled-rubric`, cut from `main` at `4b0466803`, run on 2026-11-18 in the unit checkout with its `src/.venv/bin` first on `PATH`.
 
 ## T1 Rubric Beside the Scorer
 
