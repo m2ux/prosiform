@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F20 at `eb0e788ce` on `f20-ambiguous-deferred-targets`, run on 2026-11-18 in the unit checkout.
+Results for F20 at `5c310fbaf` on `f20-ambiguous-deferred-targets`, run on 2026-11-18 in the unit checkout.
 
 ## T1 Deferred Shared Fragment
 
@@ -8,7 +8,7 @@ Results for F20 at `eb0e788ce` on `f20-ambiguous-deferred-targets`, run on 2026-
 
 ## T2 Full Check
 
-`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lint, format, typecheck, `make test` (2245 passed), harness (1078 passed), corpus (639 fixtures, 639 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lint, format, typecheck, `make test` (2245 passed), harness (1079 passed), corpus (640 fixtures, 640 pass), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
 ## T3 Pick Remedy
 
@@ -23,3 +23,7 @@ In `test_selection.py`, `test_the_unresolved_failure_lists_each_alternative_besi
 ## T4 Deferred Container-Carried Target
 
 `fixtures/composition/a-deferred-directive-naming-a-heading-a-container-carries-is-refused`: `[¬↳ Inner](notes.md#inner)`, where `## Inner` stands in a block quote, fails with `E_NESTED_SECTION_TARGET` and exit status 1, naming the reference, the resolved document `notes.md`, the source `guide.md:8` and the chain, and publishes nothing. The build of `origin/main` at `97a462b5c` exits 4 with `E_UNEXPECTED_INTERNAL_ERROR`. Held.
+
+## T5 Fragment Before Pick
+
+`fixtures/composition/a-directive-naming-a-shared-fragment-and-two-alternatives-reports-the-fragment`: `[↳ Dup](stage.md#dup "alpha, beta")`, where two headings of `stage.md` take the slug `dup` and the title picks both of its alternatives, fails with `E_AMBIGUOUS_SOURCE_HEADING` and exit status 1, naming the reference, the resolved document `stage.md`, the source `guide.md:8` and the chain, and publishes nothing. The build of `origin/main` at `97a462b5c` exits 2 with `E_ALTERNATIVE_UNRESOLVED`. Held.

@@ -1,0 +1,93 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/797",
+    "head": "5cd6b7534966ce9694512a40186504d25200472d",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-795-f20-ambiguous-deferred-targets/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F20 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The full diff main..f20-ambiguous-deferred-targets at 5cd6b7534 and the design change 99d1c2997 on engineering. The review probed the new pf beside the base build: deferred directives at entry level, in composed content and under a copy's subst, naming shared and container-carried fragments; deferred links and dispatches; the selection refactor's resolved path; and the remedy for plain-path, titled and ? entries with and without --pick. Excluded as speculative, with no issue filed: whether each composed copy is counted on its own for alternatives (unverified, and F19's area).",
+    "criteria": "AC1, AC4: the deferred-target fixtures pass. AC2: make check. AC3: the remedy tests. AC3 failed under finding 1.",
+    "validation": "Targeted pytest over test_selection.py and test_cli.py passed; make check exited 0 at 5cd6b7534 (corpus 639 of 639).",
+    "findings": [
+      {
+        "description": "A ? entry run with --pick naming no alternative got the title remedy, because entry() removed ? from the tags, so the rerun the run accepts was not named.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/eb0e788ce15974eb96ca6ac20c52943993cb5eea"
+      },
+      {
+        "description": "The design's Activation bullet said a deferring run asserts only that the target exists, contradicting the new Deferred composition rule.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/676ddf95150f9e425f635e71578a08a360d86e2d"
+      },
+      {
+        "description": "The unresolved docstring restated the pick rule entry owns, and resolved did not state when the rerun remedy applies.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/eb0e788ce15974eb96ca6ac20c52943993cb5eea"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/797",
+    "head": "eb0e788ce15974eb96ca6ac20c52943993cb5eea",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-795-f20-ambiguous-deferred-targets/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F20 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fixes 5cd6b7534..eb0e788ce and the design commit 676ddf951, against the three findings they fix. 23 entry and --pick cases were compared byte for byte with the pre-fix build: bundle names and qualifiers, published deferral titles, ? dispatches, deferrals to stub targets, reselection and stated_pick. Only the two intended remedy cases differ. Excluded, with no issue filed: --pick 'epic, task' beside a ? entry keeps the title remedy, which the run accepts and which predates the branch; a --pick name reaching other documents' deferrals as a run name predates the branch.",
+    "criteria": "AC3 holds for the bad-pick case. AC1, AC2 and AC4 are unchanged.",
+    "validation": "Targeted pytest over test_cli, test_selection, test_entry_presets, test_deferred_presets, test_stub_presets and test_dispatch_variants passed; make check exited 0 at eb0e788ce.",
+    "findings": [
+      {
+        "description": "The design's The agent's pick bullet and three pick fixture descriptions said --pick stands where ? stands, while entry keeps ? beside the pick.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f634785a1be992f10ef6ca1dd36d9d6b2e8fbf00"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/797",
+    "head": "a4da59ae377fcb108caf65d7f569669d6bbf7575",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-795-f20-ambiguous-deferred-targets/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F20 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The folded #796 change eb0e788ce..a4da59ae3: selection ahead of governing in traverse, its fixture, the wording fixes and the documents. Probes against the eb0e788ce build covered a substituted reference in a later round, a missing fragment with two picks, a plain link with two picks, and a refusal in another document against a missing fragment. Accepted as the stated rule: a fragment's defect is reported ahead of preset failures and other documents' refusals, deterministic either way.",
+    "criteria": "AC5: the fragment-before-pick fixture passes. AC1-AC4 are unchanged.",
+    "validation": "make check exited 0 at a4da59ae3 (2245 tests, harness 1079, corpus 640 of 640).",
+    "findings": [
+      {
+        "description": "docs/references.md and the fixture description gave a wrong reason (a pick counted on the section the fragment names); the order is the reason.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/5c310fbaf3919b7d0d5047065ee7dddb5124be19"
+      },
+      {
+        "description": "The docs and the traverse docstring called ordinary presets picks, and the docstring's last clause narrowed the rule to the reference's own title.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/5c310fbaf3919b7d0d5047065ee7dddb5124be19"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/797",
+    "head": "5c310fbaf3919b7d0d5047065ee7dddb5124be19",
+    "base": "97a462b5cdad9bc4c8c8eef593f88a6c458afd24",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-795-f20-ambiguous-deferred-targets/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (independent reviewer for the F20 delivery session)",
+    "reviewed_at": "2026-11-18T00:00:00Z",
+    "scope": "The fixes a4da59ae3..5c310fbaf against the two wording findings. Excluded as not defects: docs/composition.md names the directive's own title, true and narrower than the general rule docs/references.md states; 'every document' means every carried document.",
+    "criteria": "AC1-AC5 hold.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf exited 0 at 5c310fbaf (2245 tests, harness 1079, corpus 640 of 640, lint, format, typecheck, smoke, layout, tables, links, vocabulary, invocation, conformance, independence). Results: https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-18-795-f20-ambiguous-deferred-targets/test-results.md",
+    "findings": []
+  }
+]
