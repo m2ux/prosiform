@@ -1640,6 +1640,44 @@ def included(found: Sequence[Reference]) -> list[Reference]:
     return [one for one in found if not one.composes]
 
 
+def rooted(
+    tokens: Sequence[Token], one: Reference, fragment: str
+) -> tuple[Token, ...] | None:
+    """The section one reference's fragment roots in its document's tokens.
+
+    `section` owns which section a fragment roots and the two refusals
+    it raises. Each is a reference that reached a document and could
+    not name one section of it, so each is reported as the input failure
+    the contract declares for it, naming that document as the identity
+    the reference resolved to and the chain that reached the reference.
+    A fragment naming no heading returns `None` for the caller to refuse.
+    """
+    try:
+        return section(tokens, fragment)
+    except Ambiguous as shared:
+        raise input_failure(
+            f"the reference {one.original!r} names {len(shared.lines)} headings "
+            f"of the document it selects from, which it cannot tell apart",
+            code=AMBIGUOUS_SOURCE_HEADING,
+            remedy="retitle one of the headings so each takes a slug of its own",
+            reference=one.original,
+            resolved=one.path,
+            source=one.origin,
+            chain=one.chain,
+        ) from shared
+    except Nested as nested:
+        raise input_failure(
+            f"the reference {one.original!r} names a heading a container "
+            f"carries, which is no selectable section root",
+            code=NESTED_SECTION_TARGET,
+            remedy="name a heading the document carries at its own level",
+            reference=one.original,
+            resolved=one.path,
+            source=one.origin,
+            chain=one.chain,
+        ) from nested
+
+
 def selection(
     path: str,
     tokens: Sequence[Token],
@@ -1675,30 +1713,7 @@ def selection(
             whole = True
             entered = entered or one in entries
             continue
-        try:
-            found = section(tokens, spelled)
-        except Ambiguous as shared:
-            raise input_failure(
-                f"the reference {one.original!r} names {len(shared.lines)} headings "
-                f"of the document it selects from, which it cannot tell apart",
-                code=AMBIGUOUS_SOURCE_HEADING,
-                remedy="retitle one of the headings so each takes a slug of its own",
-                reference=one.original,
-                resolved=path,
-                source=one.origin,
-                chain=one.chain,
-            ) from shared
-        except Nested as nested:
-            raise input_failure(
-                f"the reference {one.original!r} names a heading a container "
-                f"carries, which is no selectable section root",
-                code=NESTED_SECTION_TARGET,
-                remedy="name a heading the document carries at its own level",
-                reference=one.original,
-                resolved=path,
-                source=one.origin,
-                chain=one.chain,
-            ) from nested
+        found = rooted(tokens, one, spelled)
         if found is None:
             raise input_failure(
                 f"the reference {one.original!r} names no heading of the document "
@@ -2561,14 +2576,20 @@ def confirm(
     the index of every heading the profile recognizes. Which section a
     fragment roots, and whether two headings make it ambiguous, is what
     the run compiling the link decides; this run says only that the
-    target is there to be found.
+    target is there to be found. A deferred composition directive is the
+    exception: this run names its contribution by the heading its target
+    section opens with, so the fragment must root one section here, as
+    `rooted` holds it.
 
     The caller supplies the cached index from the source's captured read.
     A withheld-only source contributes no content to a group.
     """
     if one.fragment is None:
         return
-    if any(heading.fragment == one.fragment for heading in index(tokens)):
+    if one.composes:
+        if rooted(tokens, one, one.fragment) is not None:
+            return
+    elif any(heading.fragment == one.fragment for heading in index(tokens)):
         return
     raise input_failure(
         f"the reference {one.original!r} names no heading of the document it withholds",
