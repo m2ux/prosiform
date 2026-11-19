@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/816",
+    "head": "f6dc70c620291033f66207a0e6cd62fd01b0feba",
+    "base": "18ecf238779056bd1bf346c2c1cd4219b0cb0d12",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-815-f26-guide-answer/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F26 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The full diff main..f26-take-the-answer at f6dc70c62: GUIDE's dispatch entry in cli.py; the hand-over test in test_cli.py; the guide fixture; invocation.md, docs/dispatch.md and docs/glossary.md; and the design hunk of engineering e4140fbcc. The sentence was read against the guide's other rules: a brief's stated leaves and answers are already the sub-agent's work, which the sentence agrees with. Considered: a workflow drawing a step that checks a dispatched answer. That step is an instruction of the bundle, which the guide's opening says is followed as written, while the added sentence governs the hand-on itself, so the two do not meet; no specimen has yet drawn such a step.",
+    "criteria": "AC1: the guide fixture's lines and the hand-over test. AC2: 6 of 6 Haiku runs of the counting specimen dispatched every level against the branch's guide, and none recorded a count other than its answer. AC3: each make check target.",
+    "validation": "make check at f6dc70c62 with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2278 tests, 1122 harness tests, corpus 683 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": []
+  }
+]
