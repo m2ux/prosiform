@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/819",
+    "head": "24cd20729e2c4d7c579a22d83ec1687282353ba9",
+    "base": "eaa128e1a3fb55cd5473145b80950e6cbc51bcda",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-818-f27-bundle-relative-deferrals/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F27 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The full diff main..f27-link-from-bundle at 24cd20729: BundleFolder, rebased and the deferred-line check in closure.py and candidate.py; run_folder and the folder threaded through compiled, dispatched_set, compose and validate in cli.py, bundle.py, composition.py, grouping.py and rewrite.py; the unit tests; the 31 changed and 2 added fixtures; the guide's compile step; invocation.md, README.md and docs; and the design hunk of engineering 92c40dd91. Considered and left as they are: the WORKING_FOLDER default on the threaded parameters, which serves unit tests calling internals and which every published path in the corpus overrides; the derived name pf gives a link climbing out of its bundle folder (.._.._src_rules__counting), which names a bundle and is not a link; an agent compiling from a bundle folder with -o out writing beneath the run folder a recompile replaces, which the guide's examples name; and a deferral written in a folder-preamble item, which no fixture states and which the preamble keeps as its source wrote it.",
+    "criteria": "AC1: test_a_deferral_publishes_its_target_from_the_bundle_folder and the two new deferral fixtures. AC2: the guide fixture's compile-step lines. AC3: 5 of 5 Haiku runs of the deferred-composition specimen reached the rules without a file-system search against the branch build. AC4: each make check target.",
+    "validation": "make check at 24cd20729 with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2282 tests, 1124 harness tests, corpus 685 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": []
+  }
+]
