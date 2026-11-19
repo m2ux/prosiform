@@ -324,6 +324,28 @@ def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
     assert "Give each bundle's file path to its own sub-agent at once" in guide
 
 
+def test_the_guide_opens_on_following_a_bundle() -> None:
+    """Every reader follows a bundle as written, a sub-agent's dispatches too."""
+    assert GUIDE.startswith("Following a bundle:")
+    guide = " ".join(GUIDE.split())
+    assert "follow every instruction in it as written" in guide
+    assert (
+        "A sub-agent handed a bundle follows it the same way, "
+        "handing on each ⇉ and ⫽ link it meets." in guide
+    )
+    assert guide.index("Symbol grammar:") < guide.index("Usage:")
+
+
+def test_the_guide_leaves_a_briefs_stated_work_to_the_sub_agent() -> None:
+    """A brief's asks are the dispatcher's; the work it states is the bundle's."""
+    guide = " ".join(GUIDE.split())
+    assert "do what it asks of you before you hand the bundle on." in guide
+    assert (
+        "What it states the bundle takes is what you hand over; what it states "
+        "the bundle leaves or answers is the sub-agent's work" in guide
+    )
+
+
 def test_the_guide_states_a_sub_agents_inputs_are_the_dispatching_steps() -> None:
     """The inputs travelling with a bundle are those its dispatching step gives."""
     guide = " ".join(GUIDE.split())
