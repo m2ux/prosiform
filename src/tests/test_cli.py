@@ -321,6 +321,7 @@ def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
         "which it reads there," in guide
     )
     assert "Do not open the bundle yourself: hand on its link." in guide
+    assert "Do not check or redo its work: take its answer as given." in guide
     assert "Give each bundle's file path to its own sub-agent at once" in guide
 
 
