@@ -18,5 +18,18 @@
         "evidence": "https://github.com/m2ux/prosiform/commit/71658b5b58ce887d9d8ebfb11de01bf1cbaeffb6"
       }
     ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/810",
+    "head": "c04551cfcde5d0d2cb812edf1992d9ae06d61d97",
+    "base": "b0ae62e96545fe38ca979e8b3d1f45d063c25dce",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-809-f24-guide-dispatch-reading/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F24 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The change 4d8b496e6..c04551cfc and the design hunk of engineering 7f456305b: GUIDE's brief sentence, conditioned on a dispatch link pointing at a sub-section rather than at a bundle file, and its dispatch-set and dispatch-pick entries, which describe those sections by their lines and name no heading; the guide tests in test_cli.py; test_dispatch_publication.py, whose first test checked the guide for the Dispatch Set heading and checks the set's dispatch lines; the guide fixture; invocation.md and docs/dispatch.md. The generated headings stay stated in docs/dispatch.md and the glossary, where they describe the compiled bundle rather than the guide.",
+    "criteria": "AC1: the guide fixture's lines and the guide tests. AC2: 8 of 8 Haiku runs of the specimen's arm A dispatched against the branch build at c04551cfc. AC3: each make check target.",
+    "validation": "make check at c04551cfc with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2278 tests, 1122 harness tests, corpus 683 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": []
   }
 ]
