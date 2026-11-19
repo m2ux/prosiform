@@ -345,7 +345,8 @@ Symbol grammar:
      bundle whole, keep it in context, and follow it where the link stands
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
      which it reads there, with the inputs the dispatching step states as
-     given, and continue with its answer.
+     given, and continue with its answer. Do not open the bundle
+     yourself: hand on its link.
      Where a ⇉ link points at a sub-section rather than at a bundle
      file, the text above its ⇉ line there, and the sections beneath
      that line, are the bundle's brief: do what it asks of you before
