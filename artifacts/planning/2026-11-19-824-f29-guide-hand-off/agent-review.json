@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/825",
+    "head": "817d13db2bb8ef1759383c8578879561c54b536c",
+    "base": "45565aaa68064e9c97e915a85be164657d91d962",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-824-f29-guide-hand-off/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F29 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The full diff main..f29-guide-hand-off-alone at 817d13db2: GUIDE's dispatch entry in cli.py; the dispatch rules test in test_cli.py; the guide fixture's lines and description; invocation.md and docs/glossary.md; and the design hunk of engineering 5230157b8. The sentence was read against the guide's other rules: it bounds what the dispatcher writes into the hand-off, beside the path and the inputs the entry already names, and leaves the brief a sub-section carries, which the dispatcher acts on before it hands the bundle on, untouched.",
+    "criteria": "AC1: the guide fixture's lines and the dispatch rules test. AC2: 3 of 3 Haiku runs of the hand-off specimen handed over the path and the folder alone against the branch build. AC3: each make check target.",
+    "validation": "make check at 817d13db2 with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2282 tests, 1124 harness tests, corpus 685 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": []
+  }
+]
