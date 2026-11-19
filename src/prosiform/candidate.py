@@ -86,6 +86,8 @@ from prosiform.bundle import (
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    WORKING_FOLDER,
+    BundleFolder,
     Declarations,
     Reference,
     Substitution,
@@ -419,6 +421,7 @@ def intended(
     substitution: Substitution = UNSUBSTITUTED,
     contextual: bool = False,
     conversions: Mapping[str, Conversion] | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> Use:
     """The use the bundle must publish for one use its source wrote.
 
@@ -428,9 +431,9 @@ def intended(
     reference-style use at the inline form the definition it names
     gives it.
 
-    A deferred link naming a declaring document carries its target's
-    path from the invocation working directory, so where it points is
-    the destination the bundle rebased, and its title gains the run's
+    A deferred link naming a declaring document points at the
+    destination `rebased` publishes from `folder`, the folder the
+    bundle is written into, and its title gains the run's
     names its target's settings carry. A dispatched link points at the
     bundle file or dispatch-set sub-section its region carries for its
     target. A link
@@ -508,7 +511,7 @@ def intended(
         if names:
             title = deferred_title(one.title, names) or ""
             one = Use(one.kind, one.text, title, one.destination)
-        return withdrawn(one, rebased(withheld, one.destination))
+        return withdrawn(one, rebased(withheld, one.destination, folder))
     assigned = targets.get((found.path, found.fragment))
     if assigned is None:
         raise Invalid(
@@ -1259,6 +1262,7 @@ def references(
     composing: Mapping[Located, str] | None = None,
     contextual: bool = False,
     conversions: Mapping[str, Conversion] | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> None:
     """Hold one region's uses, diagram links among them, to those its source wrote.
 
@@ -1293,6 +1297,7 @@ def references(
                 substitution,
                 contextual,
                 conversions,
+                folder,
             )
             if anchor is None
             else withdrawn(one, f"{ANCHOR}{anchor}")
@@ -1559,17 +1564,23 @@ def contributions(
             )
 
 
-def activation(part: Instruction, span: Token, tokens: Sequence[Token]) -> None:
+def activation(
+    part: Instruction,
+    span: Token,
+    tokens: Sequence[Token],
+    folder: BundleFolder = WORKING_FOLDER,
+) -> None:
     """Hold a deferred directive's line to the one target a later run composes.
 
     The line is the bundle's own text and writes one link, whose
-    destination is the target's path from the invocation working
-    directory, the fragment naming its section and its requested presets.
+    destination is the path `rebased` publishes for the target from
+    `folder`, the folder the bundle is written into, the fragment naming
+    its section and its requested presets.
     """
     found = [use for inline in inlines(tokens, [span]) for _c, _a, use in uses(inline)]
     resolved = [resolve(use.destination) for use in found]
     selections = [
-        ((one.path, one.fragment), read_tags(use.title))
+        ((folder.rooted(one.path), one.fragment), read_tags(use.title))
         for one, use in zip(resolved, found, strict=True)
     ]
     if selections != [part.activates]:
@@ -1595,6 +1606,7 @@ def validate(
     *,
     bundle_file: Callable[[Reference], str],
     within: Mapping[Chain, Mapping[tuple[str, str | None], str]] | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> None:
     """Hold the completed candidate to the provenance its construction recorded.
 
@@ -1609,6 +1621,9 @@ def validate(
     the record, the boundaries between its parts first. A failure
     raises before anything is published, so a candidate that disagrees
     with its source provenance publishes nothing.
+
+    `folder` is the folder the bundle is written into, which its
+    deferrals' destinations are published from.
     """
     coverage(groups)
     for one in groups:
@@ -1647,7 +1662,7 @@ def validate(
             continue
         if isinstance(part, Instruction):
             if part.activates is not None:
-                activation(part, span, tokens)
+                activation(part, span, tokens, folder)
             continue
         if isinstance(part, Generated):
             continue
@@ -1671,6 +1686,7 @@ def validate(
             contributing.get(carried.placing, {}),
             record.preamble,
             {path: one.conversion for path, one in read.items()},
+            folder,
         )
         preserved(
             carried.path,

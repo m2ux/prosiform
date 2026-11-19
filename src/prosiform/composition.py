@@ -113,6 +113,8 @@ from prosiform.bundle import (
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    WORKING_FOLDER,
+    BundleFolder,
     Declarations,
     Reference,
     Substitution,
@@ -295,7 +297,8 @@ class Composing:
 
     `substitution` is the mapping the content being emitted resolves
     under: the run's for a group, and the composed copy's while `carry`
-    emits one.
+    emits one. `folder` is the folder the bundle is written into, which
+    a deferral's destination is published from.
     """
 
     def __init__(
@@ -311,6 +314,7 @@ class Composing:
         composing: Contributing | None = None,
         held: Held | None = None,
         within: Within | None = None,
+        folder: BundleFolder = WORKING_FOLDER,
     ) -> None:
         self.parsed = parsed
         self.read = read
@@ -324,6 +328,7 @@ class Composing:
         self.composing = {} if composing is None else composing
         self.held: Held = {} if held is None else held
         self.within: Within = {} if within is None else within
+        self.folder = folder
         self.outer: Placing = ()
         """The placing of the copy writing the dispatch whose brief is composed."""
         self.counted = 0
@@ -453,7 +458,7 @@ class Composing:
             suffix = f' "{title}"'
         text = (
             f"[{INLINE_MARK} {escaped(one.title)}]"
-            f"({rebased(one.target, one.written)}{suffix})"
+            f"({rebased(one.target, one.written, self.folder)}{suffix})"
         )
         self.emit(text, generated=True)
         self.parts.append(
@@ -590,6 +595,7 @@ class Composing:
                 self.composing.get(placed, {}),
                 placed,
                 conversions=self.conversions,
+                folder=self.folder,
             )
         )
         named = source_fragments(tokens)
@@ -772,6 +778,7 @@ def compositions(
     composing: Contributing | None = None,
     held: Held | None = None,
     within: Within | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> tuple[list[Group], Composed]:
     """Every group with the sections its directives compose, and each contribution.
 
@@ -793,6 +800,7 @@ def compositions(
         composing,
         held,
         within,
+        folder,
     )
     return [composer.group(one) for one in groups], composer.placed
 

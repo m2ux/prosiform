@@ -68,7 +68,9 @@ from prosiform.closure import (
     DRIVE,
     SEPARATOR,
     UNSUBSTITUTED,
+    WORKING_FOLDER,
     Briefs,
+    BundleFolder,
     BundleSelection,
     Declarations,
     Malformed,
@@ -385,9 +387,9 @@ Usage:
 Compiling a link:
 
   Run pf on a link in a bundle as written, quoted as one argument, from
-  the directory pf compiled that bundle in, never on a ⇉ or ⫽ link. When
-  its title carries ?, add --pick naming the alternative that fits your
-  task if you know it, or when pf lists the alternatives:
+  the folder that bundle is in, never on a ⇉ or ⫽ link. When its title
+  carries ?, add --pick naming the alternative that fits your task if
+  you know it, or when pf lists the alternatives:
 
     pf -o out '[¬ Review](modes/review.md#review "checks, final draft")'
     pf -o out 'click Intake "activities/intake.md" "?"' --pick Epic
@@ -3653,6 +3655,7 @@ def assembled(
     composing: Contributing | None = None,
     copies: Held | None = None,
     within: Within | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> tuple[list[Group], Composed]:
     """Each group the bundle carries, its links rewritten where a map says so.
 
@@ -3681,6 +3684,9 @@ def assembled(
     of the region writing it: the authored links' under none, which the
     groups are rewritten through, and every contribution's own beside
     them.
+
+    `folder` is the folder the bundle is written into, which a
+    deferral's destination is published from.
     """
     parent = parent_document(entries)
     inforce = group_depths(joins)
@@ -3718,6 +3724,7 @@ def assembled(
                 substitution,
                 authored,
                 conversions=conversions,
+                folder=folder,
             )
         for named, paths in merging.items():
             depth = inforce[named]
@@ -3740,6 +3747,7 @@ def assembled(
                         substitution,
                         authored,
                         conversions=conversions,
+                        folder=folder,
                     )
                     for path in paths
                 ],
@@ -3789,6 +3797,7 @@ def assembled(
             composing,
             copies,
             within,
+            folder,
         )
 
 
@@ -3972,6 +3981,7 @@ def compose(
     bundle_file: Callable[[Reference], str],
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> tuple[str, list[Diagnostic], list[Hop], list[Diagnostic]]:
     """The validated bundle, its heading warnings and its published handoffs.
 
@@ -4007,6 +4017,9 @@ def compose(
     as the input failure it is. A dispatch the bundle cannot place, and
     an authored heading equal to one pf emits, are refused as input
     failures too.
+
+    `folder` is the folder the bundle is written into, which its
+    deferrals' destinations are published from.
     """
     chains = reaching(contributing(found))
     selected, placers = placement(
@@ -4030,6 +4043,7 @@ def compose(
             declarations,
             substitution,
             copies=copies,
+            folder=folder,
         )
         briefs = Composing(
             parsed,
@@ -4039,6 +4053,7 @@ def compose(
             declarations=declarations,
             substitution=substitution,
             held=copies,
+            folder=folder,
         )
         with assembling(chains):
             headed, placed = subsections(
@@ -4084,6 +4099,7 @@ def compose(
         substitution,
         composing,
         within=within,
+        folder=folder,
     )
     briefs = Composing(
         parsed,
@@ -4096,6 +4112,7 @@ def compose(
         substitution,
         composing,
         within=within,
+        folder=folder,
     )
     with assembling(chains):
         groups, _ = subsections(
@@ -4124,6 +4141,7 @@ def compose(
             composing,
             bundle_file=bundle_file,
             within=within,
+            folder=folder,
         )
     except Unsafe as boundary:
         reached = chains.get(boundary.path or "", ())
@@ -4523,6 +4541,15 @@ def bundle_file(selection: BundleSelection) -> str:
     return selection_name(selection) + BUNDLE_SUFFIX
 
 
+def run_folder(output: Path, entry: BundleSelection) -> Path:
+    """The folder every bundle of a run is written into, under the `-o` folder.
+
+    It is named by the run's entry selection, so a dispatched bundle is
+    written beside the bundle of the entry that reached it.
+    """
+    return output / (selection_name(entry) + RUN_FOLDER_SUFFIX)
+
+
 @dataclass(frozen=True)
 class Compiled:
     """One bundle of a run, compiled from its own entry under its own budgets.
@@ -4577,6 +4604,7 @@ def compiled(
     options: argparse.Namespace,
     substitution: Substitution = UNSUBSTITUTED,
     run: frozenset[str] = frozenset(),
+    entry: BundleSelection | None = None,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
@@ -4590,6 +4618,10 @@ def compiled(
 
     `run` holds the run's names, which select the stubs of every
     document the bundle reads, a dispatched bundle's among them.
+
+    `entry` is the selection of the run's entry, which names the run
+    folder the bundle is written into, and is the bundle's own where
+    absent. The bundle's deferrals are published from that folder.
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
@@ -4604,6 +4636,10 @@ def compiled(
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
     named = {name: selected}
+    written = run_folder(
+        Path(options.output).resolve(), selected if entry is None else entry
+    )
+    folder = BundleFolder(root.as_posix(), written.as_posix())
 
     def dispatched_file(reference: Reference) -> str:
         effective = bundle_selection(reference, read[reference.path].conversion)
@@ -4625,6 +4661,7 @@ def compiled(
         dispatched_file,
         declarations,
         governed(substitution, pairs, copied),
+        folder,
     )
     dispatching: dict[BundleSelection, Hop] = {}
     own: list[Hop] = []
@@ -4833,7 +4870,7 @@ def dispatched_set(
         if selected in built or selected in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, substitution, run)
+        one = compiled(root, [target], options, substitution, run, entry.selection)
         built[selected] = one
         pending.extend(one.hops.items())
     return built
@@ -4916,7 +4953,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     output = Path(options.output).resolve()
     run = run_names(requested[0])
     first = compiled(root, requested, options, mapping, run)
-    folder = output / (first.name.removesuffix(BUNDLE_SUFFIX) + RUN_FOLDER_SUFFIX)
+    folder = run_folder(output, first.selection)
     single = {first.selection}
     built = dispatched_set(root, first, single, options, mapping, run)
 

@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from test_cli import DECLARED, invoke, written
+from test_cli import DECLARED, FROM_BUNDLE, invoke, written
 
 from prosiform.candidate import TARGET_INTEGRITY, Invalid, activation
 from prosiform.profile import parse
@@ -35,19 +35,21 @@ def test_generated_deferred_line_preserves_the_parsed_title(
     written(tmp_path, "entry.md", source)
     written(tmp_path, "rules.md", DECLARED + "# Rules\n\n## Steps\n\nBody.\n")
 
-    def titles(text: str) -> list[str | None]:
+    def titles(text: str, destination: str) -> list[str | None]:
         tokens = parse(text)
         return [
             None if child.attrGet("title") is None else str(child.attrGet("title"))
             for inline in inlines(tokens, list(regions(tokens)))
             for _children, _at, child in events(inline.children or [])
             if child.type == LINK_OPEN
-            and str(child.attrGet("href") or "") == "rules.md#steps"
+            and str(child.attrGet("href") or "") == destination
         ]
 
     result = invoke("entry.md", cwd=tmp_path)
     assert result.status == 0, result.stderr
-    assert titles(result.bundle) == titles(source.removeprefix(DECLARED))
+    assert titles(result.bundle, f"{FROM_BUNDLE}rules.md#steps") == titles(
+        source.removeprefix(DECLARED), "rules.md#steps"
+    )
     assert "Body." not in result.bundle
 
 

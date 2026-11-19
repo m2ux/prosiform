@@ -125,7 +125,9 @@ from markdown_it.token import Token
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    WORKING_FOLDER,
     Briefs,
+    BundleFolder,
     BundleSelection,
     Declarations,
     Reference,
@@ -609,6 +611,7 @@ def rewrite(
     placing: Placing = (),
     *,
     conversions: Mapping[str, Conversion] | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> list[str]:
     """The source's physical lines, as the bundle publishes the selected content.
 
@@ -648,7 +651,8 @@ def rewrite(
     absorbs, which is no section to compose beneath, and is refused.
 
     A deferral's title gains the run's names its target's settings
-    carry, a diagram link's tooltip among them.
+    carry, a diagram link's tooltip among them, and its destination is
+    the path `rebased` publishes from `folder`, the bundle's folder.
     """
     written = list(physical)
     served = {} if dispatching is None else dispatching
@@ -687,6 +691,7 @@ def rewrite(
                     substitution=substitution,
                     tags=tags,
                     conversions=conversions,
+                    folder=folder,
                 )
                 for at, (one, opening, tags) in enumerate(found)
             ]
@@ -715,6 +720,7 @@ def rewrite(
                         substitution=substitution,
                         tags=read_tags(click.title),
                         conversions=conversions,
+                        folder=folder,
                     )
                 )
                 if given is not None:
@@ -800,6 +806,7 @@ def target(
     *,
     tags: frozenset[str] = frozenset(),
     conversions: Mapping[str, Conversion] | None = None,
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> str | Titled | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
@@ -809,9 +816,9 @@ def target(
     that heading's slug behind the anchor spelling the link's form
     writes, `#` wherever the link is not a sequence diagram's menu entry.
 
-    A deferred link naming a declaring document takes its target's
-    path from the invocation working directory, so the run that
-    compiles it later, from that directory, follows it as written. A
+    A deferred link naming a declaring document takes the path
+    `rebased` publishes for its target from `folder`, the folder the
+    bundle is written into. A
     dispatched one takes the destination its section carries for its
     target, a bundle file or a dispatch-set sub-section, and a
     dispatch the map holds none for is refused rather than published:
@@ -843,7 +850,7 @@ def target(
             raise Unplaced(path, line, destination, opening, composing=False)
         return held[served]
     names = carried_names(withheld, conversions)
-    published = rebased(withheld, destination)
+    published = rebased(withheld, destination, folder)
     return Titled(published, names) if names else published
 
 
@@ -1150,6 +1157,7 @@ def group(
     composing: Mapping[Located, str] | None = None,
     *,
     conversions: Mapping[str, Conversion],
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> Group:
     """One file group: its generated heading, then the regions the run selected.
 
@@ -1257,6 +1265,7 @@ def group(
             substitution,
             composing,
             conversions=conversions,
+            folder=folder,
         )
     )
     for token in regions(tokens):

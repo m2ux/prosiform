@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from test_cli import DECLARED, invoke, written
+from test_cli import DECLARED, FROM_BUNDLE, invoke, written
 from test_metadata import parse
 
 from prosiform.diagnostics import Location
@@ -113,11 +113,20 @@ def test_a_used_stub_pair_warns_once_across_bundles(tmp_path: Path) -> None:
 @pytest.mark.parametrize(
     ("authored", "published"),
     [
-        ("[¬ Stage](stage.md)", '[Stage](stage.md "recorded")'),
-        ('[¬ Stage](stage.md "draft")', '[Stage](stage.md "draft, recorded")'),
-        ("[¬ Stage](stage.md 'recorded')", "[Stage](stage.md 'recorded')"),
-        ('[¬ Stage](stage.md "")', '[Stage](stage.md "recorded")'),
-        ("[¬ Stage][s]\n\n[s]: stage.md (x)", "[Stage](stage.md (x, recorded))"),
+        ("[¬ Stage](stage.md)", f'[Stage]({FROM_BUNDLE}stage.md "recorded")'),
+        (
+            '[¬ Stage](stage.md "draft")',
+            f'[Stage]({FROM_BUNDLE}stage.md "draft, recorded")',
+        ),
+        (
+            "[¬ Stage](stage.md 'recorded')",
+            f"[Stage]({FROM_BUNDLE}stage.md 'recorded')",
+        ),
+        ('[¬ Stage](stage.md "")', f'[Stage]({FROM_BUNDLE}stage.md "recorded")'),
+        (
+            "[¬ Stage][s]\n\n[s]: stage.md (x)",
+            f"[Stage]({FROM_BUNDLE}stage.md (x, recorded))",
+        ),
     ],
 )
 def test_a_deferral_carries_the_runs_names(
@@ -139,9 +148,9 @@ def test_a_deferring_click_carries_the_runs_names(tmp_path: Path) -> None:
     )
     run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert 'click A "stage.md" "recorded"\n' in run.bundle
-    assert 'click B "stage.md" "draft, recorded"\n' in run.bundle
-    assert 'click C href "stage.md" "recorded" _blank\n' in run.bundle
+    assert f'click A "{FROM_BUNDLE}stage.md" "recorded"\n' in run.bundle
+    assert f'click B "{FROM_BUNDLE}stage.md" "draft, recorded"\n' in run.bundle
+    assert f'click C href "{FROM_BUNDLE}stage.md" "recorded" _blank\n' in run.bundle
 
 
 def test_a_deferral_omits_a_name_its_target_declares_otherwise(
@@ -155,7 +164,7 @@ def test_a_deferral_omits_a_name_its_target_declares_otherwise(
     )
     run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert "[Stage](stage.md)" in run.bundle
+    assert f"[Stage]({FROM_BUNDLE}stage.md)" in run.bundle
 
 
 def test_a_deferred_directive_carries_the_runs_names(tmp_path: Path) -> None:
@@ -167,4 +176,4 @@ def test_a_deferred_directive_carries_the_runs_names(tmp_path: Path) -> None:
     )
     run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert '(stage.md#step "recorded")' in run.bundle
+    assert f'({FROM_BUNDLE}stage.md#step "recorded")' in run.bundle

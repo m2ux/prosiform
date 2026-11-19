@@ -16,6 +16,7 @@ kind declares rather than reaching a filesystem.
 import pytest
 
 from prosiform.closure import (
+    BundleFolder,
     Declarations,
     Malformed,
     OutsideRoot,
@@ -423,6 +424,26 @@ def test_a_withheld_destination_names_its_target_from_the_root(
     found = withholding_target(document, destination, opening)
     assert found is not None
     assert rebased(found, destination) == expected
+
+
+@pytest.mark.parametrize(
+    ("folder", "expected"),
+    [
+        ("/work/src/guide.bundles", "../shared/rules%20book.md#here"),
+        ("/work/out/guide.bundles", "../../src/shared/rules%20book.md#here"),
+        ("/work/src/shared/guide.bundles", "../rules%20book.md#here"),
+        ("/elsewhere/guide.bundles", "../../work/src/shared/rules%20book.md#here"),
+    ],
+)
+def test_a_deferral_publishes_its_target_from_the_bundle_folder(
+    folder: str, expected: str
+) -> None:
+    destination = "../shared/rules%20book.md#here"
+    found = withholding_target("topic/guide.md", destination, "¬ the rules")
+    assert found is not None
+    written = BundleFolder("/work/src", folder)
+    assert rebased(found, destination, written) == expected
+    assert written.rooted(written.published(found.path)) == "shared/rules book.md"
 
 
 def test_a_link_text_opening_with_a_guillemet_states_no_operator() -> None:

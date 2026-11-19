@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_cli import invoke, linked, opening, written
+from test_cli import FROM_BUNDLE, invoke, linked, opening, written
 
 from prosiform import cli
 from prosiform.access import read_source
@@ -99,7 +99,7 @@ def test_a_shared_target_cycle_is_captured_once(tmp_path: Path) -> None:
     assert run.bundle.count("Once.") == 1
 
 
-def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None:
+def test_deferred_target_is_bundle_relative_and_uri_escaped(tmp_path: Path) -> None:
     written(
         tmp_path,
         "entry/a.md",
@@ -108,7 +108,7 @@ def test_deferred_target_is_cwd_relative_and_uri_escaped(tmp_path: Path) -> None
     written(tmp_path, "library/b %#?.md", declared("# B\n\nHidden.\n"))
     run = invoke("entry/a.md", cwd=tmp_path)
     assert run.status == 0
-    assert "[Later](library/b%20%25%23%3F.md)" in run.bundle
+    assert f"[Later]({FROM_BUNDLE}library/b%20%25%23%3F.md)" in run.bundle
     assert "Hidden." not in run.bundle
 
 

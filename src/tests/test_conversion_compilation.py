@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pytest
-from test_cli import conversion, invoke, linked, written
+from test_cli import FROM_BUNDLE, conversion, invoke, linked, written
 
 DECLARED = "---\nprosiform: {}\n---\n"
 
@@ -85,7 +85,7 @@ def test_deferred_only_metadata_does_not_join_or_conflict(
         assert run.diagnostics()[0]["code"] == "E_GROUP_CONFLICT"
     else:
         assert "Later content." not in run.bundle
-        assert "[Later](b.md)" in run.bundle
+        assert f"[Later]({FROM_BUNDLE}b.md)" in run.bundle
 
 
 @pytest.mark.parametrize("mode", ["file", "check"])

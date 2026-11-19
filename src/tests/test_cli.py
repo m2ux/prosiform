@@ -155,6 +155,9 @@ RUN_PF = "Run `pf`, then follow the guidance it prints."
 INSTRUCTIONS = "\u00a7 Instructions"
 """The heading every bundle opens on."""
 
+FROM_BUNDLE = "../../"
+"""The walk from a bundle `invoke` writes back to the working directory it ran in."""
+
 
 def opening(heading: str) -> str:
     """The instruction heading and line, naming the first heading to follow."""
@@ -225,10 +228,18 @@ def linked(root: Path, *references: str) -> str:
 def invoke(
     *arguments: str, stdout: IO[str] | None = None, cwd: Path | None = None
 ) -> Run:
-    """One run writing into a fresh folder, unless its own -o names another."""
+    """One run writing into a fresh folder, unless its own -o names another.
+
+    The fresh folder stands inside the working directory a `cwd` names,
+    so a deferral the entry bundle publishes walks `FROM_BUNDLE` back to
+    that directory.
+    """
     out = StringIO() if stdout is None else stdout
     err = StringIO()
-    with TemporaryDirectory() as folder, chdir(Path.cwd() if cwd is None else cwd):
+    with (
+        TemporaryDirectory(dir=cwd) as folder,
+        chdir(Path.cwd() if cwd is None else cwd),
+    ):
         status = main(["-o", folder, *arguments], out, err)
         bundle, bundles = published(Path(folder))
     written = out.getvalue() if isinstance(out, StringIO) else ""
@@ -293,7 +304,7 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "1 a failure stopped the run: report its diagnostics and go no further",
         "2 invalid usage or option combination",
         "Run pf on a link in a bundle as written, quoted as one argument, "
-        "from the directory pf compiled that bundle in, never on a ⇉ or ⫽ link.",
+        "from the folder that bundle is in, never on a ⇉ or ⫽ link.",
         "When its title carries ?, add --pick naming the alternative that fits "
         "your task if you know it, or when pf lists the alternatives",
         "\u21b3 names a section to inline",
@@ -1743,7 +1754,7 @@ def test_a_preset_on_a_deferred_only_document_warns_nothing(root: Path) -> None:
     )
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "(noted.md#draft)" in run.bundle
+    assert f"({FROM_BUNDLE}noted.md#draft)" in run.bundle
     assert run.diagnostics() == []
 
 
@@ -2248,7 +2259,7 @@ def test_a_deferral_publishes_its_pick_token_as_authored(
     )
     run = invoke("-d", "json", "guide.md", cwd=kinds)
     assert run.status == SUCCESS, run.stderr
-    assert f'({destination} "{title}")' in run.bundle
+    assert f'({FROM_BUNDLE}{destination} "{title}")' in run.bundle
 
 
 @pytest.mark.parametrize("link", ["the body", "↳ the body", "⫽ the body"])
@@ -2320,7 +2331,7 @@ def test_a_deferral_naming_no_alternative_to_unrouted_content_publishes(
     )
     run = invoke("-d", "json", "guide.md", cwd=kinds)
     assert run.status == SUCCESS, run.stderr
-    assert f"(work-kind.md#populate{title})" in run.bundle
+    assert f"({FROM_BUNDLE}work-kind.md#populate{title})" in run.bundle
 
 
 def test_an_entry_title_naming_the_targets_alternative_is_no_deferrals_pick(
@@ -2354,7 +2365,7 @@ def test_a_deferral_whose_later_run_fails_otherwise_needs_no_pick(
     )
     run = invoke("-d", "json", "guide.md", cwd=kinds)
     assert run.status == SUCCESS, run.stderr
-    assert "(work-kind.md#populate)" in run.bundle
+    assert f"({FROM_BUNDLE}work-kind.md#populate)" in run.bundle
 
 
 def test_a_deferral_whose_later_run_fails_for_want_of_a_pick_is_refused(
@@ -2461,7 +2472,7 @@ def test_a_deferral_naming_one_pick_or_needing_none_publishes(
     )
     run = invoke("-d", "json", "guide.md", cwd=kinds)
     assert run.status == SUCCESS, run.stderr
-    assert f"({destination}{title})" in run.bundle
+    assert f"({FROM_BUNDLE}{destination}{title})" in run.bundle
 
 
 TWO_SECTIONS = DECLARED + (
@@ -3276,7 +3287,7 @@ def test_a_deferred_link_publishes_its_text_without_the_mark(root: Path) -> None
     written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [the rules](rules.md)." in run.bundle
+    assert f"See [the rules]({FROM_BUNDLE}rules.md)." in run.bundle
 
 
 @pytest.mark.parametrize(
@@ -3288,7 +3299,7 @@ def test_the_blanks_after_the_mark_go_with_it(root: Path, written_as: str) -> No
     written(root, "rules.md", DECLARED + "# Rules\n\nEvery rule.\n")
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [the rules](rules.md)." in run.bundle
+    assert f"See [the rules]({FROM_BUNDLE}rules.md)." in run.bundle
 
 
 @pytest.mark.parametrize("mark", ["\u00ac", "\u21c9"])
@@ -3316,7 +3327,7 @@ def test_a_deferred_composition_is_written_with_its_marks_together(
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "See [Rules](#rules)." in run.bundle
-    assert "[\u21b3 Detail](rules.md#detail)" in run.bundle
+    assert f"[\u21b3 Detail]({FROM_BUNDLE}rules.md#detail)" in run.bundle
     assert "Every rule." not in run.bundle
     assert run.diagnostics() == []
 
@@ -3391,7 +3402,7 @@ def test_a_deferral_stands_where_another_reference_carried_its_target(
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
     assert "# Rules" in run.bundle
-    assert "See [the rules](rules.md)" in run.bundle
+    assert f"See [the rules]({FROM_BUNDLE}rules.md)" in run.bundle
     assert "It requires [the rules](#rules)" in run.bundle
 
 
@@ -3982,7 +3993,7 @@ def test_a_deferred_fragment_of_its_own_document_is_not_compiled(root: Path) -> 
     )
     run = invoke("guide.md#alpha", cwd=root)
     assert run.status == SUCCESS
-    assert "See [B](guide.md#beta)." in run.bundle
+    assert f"See [B]({FROM_BUNDLE}guide.md#beta)." in run.bundle
     assert "Body." not in run.bundle
 
 
@@ -4014,7 +4025,9 @@ def test_a_deferred_reference_naming_no_heading_fails(root: Path) -> None:
     assert run.bundle == ""
 
 
-def test_a_deferred_destination_is_the_target_path_from_the_root(root: Path) -> None:
+def test_a_deferred_destination_is_the_target_path_from_the_bundle_folder(
+    root: Path,
+) -> None:
     written(
         root,
         "topic/guide.md",
@@ -4023,7 +4036,7 @@ def test_a_deferred_destination_is_the_target_path_from_the_root(root: Path) -> 
     written(root, "shared/rules.md", DECLARED + "# Rules\n\n## Here\n\nEvery rule.\n")
     run = invoke("topic/guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [the rules](shared/rules.md#here)." in run.bundle
+    assert f"See [the rules]({FROM_BUNDLE}shared/rules.md#here)." in run.bundle
 
 
 def test_a_document_only_a_deferral_names_contributes_nothing(root: Path) -> None:
@@ -4054,7 +4067,7 @@ def test_a_heading_a_container_carries_confirms_a_deferral(root: Path) -> None:
     )
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS
-    assert "See [the rules](rules.md#inner)." in run.bundle
+    assert f"See [the rules]({FROM_BUNDLE}rules.md#inner)." in run.bundle
 
 
 def test_a_link_to_the_section_carrying_it_resolves_to_that_section(
@@ -5344,7 +5357,7 @@ def test_a_deferring_click_points_at_its_target_s_path(root: Path) -> None:
     flow(root, "Review[¬ Review]", 'click Review "review.md"', name="topic/guide.md")
     run = invoke("topic/guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert '    click Review "topic/review.md"\n' in run.bundle
+    assert f'    click Review "{FROM_BUNDLE}topic/review.md"\n' in run.bundle
     assert "# Review" not in run.bundle
 
 
@@ -5358,7 +5371,7 @@ def test_a_deferring_click_carries_the_pick_token(root: Path) -> None:
     flow(root, "Kind[¬ Kind]", 'click Kind "kinds.md" "?"')
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert '    click Kind "kinds.md" "?"\n' in run.bundle
+    assert f'    click Kind "{FROM_BUNDLE}kinds.md" "?"\n' in run.bundle
 
 
 def test_a_dispatching_click_carrying_the_pick_token_points_at_its_pick(
@@ -5668,7 +5681,7 @@ def test_a_deferring_composing_click_carrying_no_tooltip_publishes_no_title(
     flow(root, "Plan[¬↳ Plan]", 'click Plan "plan.md#steps"')
     run = invoke("guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert "[↳ Steps](plan.md#steps)\n" in run.bundle
+    assert f"[↳ Steps]({FROM_BUNDLE}plan.md#steps)\n" in run.bundle
     assert '""' not in run.bundle
 
 
