@@ -1,0 +1,22 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/810",
+    "head": "4d8b496e644eec5dcd8332516706080c0a4df7bf",
+    "base": "b0ae62e96545fe38ca979e8b3d1f45d063c25dce",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-809-f24-guide-dispatch-reading/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F24 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The full diff main..f24-guide-dispatch-reading at 4d8b496e6: GUIDE in cli.py and its one caller, the bare-command branch of main; the guide tests in test_cli.py, including the two-count of the inputs sentence and the plain-text test; fixtures/cli/informational-guide-response; invocation.md, docs/dispatch.md and docs/glossary.md. A search of main for the guide's earlier wording found no other statement of it; the v1 design on engineering states the guide's contents. Rejected as speculative: a reader taking the brief's takes as inputs it must invent, since the guide keeps the inputs the dispatching step states as given.",
+    "criteria": "AC1: the guide fixture's lines and the two new guide tests. AC2: 7 of 8 Haiku runs of the specimen's arm A dispatched against the branch build. AC3: each make check target.",
+    "validation": "make check at 4d8b496e6 with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2278 tests, 1122 harness tests, corpus 683 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": [
+      {
+        "description": "The v1 design's Guide section, the clause the guide fixture cites, stated neither the guide's opening on following a bundle nor that a brief's stated leaves and answers are the sub-agent's work.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/71658b5b58ce887d9d8ebfb11de01bf1cbaeffb6"
+      }
+    ]
+  }
+]
