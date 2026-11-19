@@ -320,6 +320,7 @@ def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
         "⇉ names a bundle to hand on: give a sub-agent the path of its file, "
         "which it reads there," in guide
     )
+    assert "Do not open the bundle yourself: hand on its link." in guide
     assert "Give each bundle's file path to its own sub-agent at once" in guide
 
 
