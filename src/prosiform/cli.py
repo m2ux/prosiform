@@ -344,7 +344,8 @@ Following a bundle:
 Symbol grammar:
 
   ↳  names a section to inline: compile its destination with pf, read that
-     bundle whole, keep it in context, and follow it where the link stands
+     bundle whole, keep it in context, and follow it where the link stands.
+     Do not open its source yourself: read the bundle pf writes.
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
      which it reads there, with the inputs the dispatching step states as
      given, and continue with its answer. Do not open the bundle
