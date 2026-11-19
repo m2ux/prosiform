@@ -1,4 +1,4 @@
-description = "A command line holding no argument prints the guide: that a bundle's instructions are followed as written, a sub-agent handing on each ⇉ and ⫽ link it meets, how to run pf on a link in a bundle as written or on a document path, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, that a ↳ link's reader reads the bundle pf writes and not the source, that where a ⇉ link points at a sub-section rather than at a bundle file, the text above its ⇉ line there, and the sections beneath it, are a brief whose asks are done before the bundle is handed on, the work it states the bundle leaves or answers being the sub-agent's, that a ? among title tags is resolved with --pick, that a bundle is handed over by the path of its file with the inputs its dispatching step states as given, its dispatcher handing on the link without opening the bundle and taking its answer as given, and that failures return together. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
+description = "A command line holding no argument prints the guide: that a bundle's instructions are followed as written, a sub-agent handing on each ⇉ and ⫽ link it meets, how to run pf on a link in a bundle as written or on a document path, what a ↳ link, a ⇉ link and a ⫽ dispatch set mean, that a ↳ link's reader reads the bundle pf writes and not the source, that where a ⇉ link points at a sub-section rather than at a bundle file, the text above its ⇉ line there, and the sections beneath it, are a brief whose asks are done before the bundle is handed on, the work it states the bundle leaves or answers being the sub-agent's, that a ? among title tags is resolved with --pick, that a bundle is handed over by the path of its file with the inputs its dispatching step states as given, its dispatcher handing on the link and those inputs alone without opening the bundle and taking its answer as given, and that failures return together. The wording around them is the build's own, so the response is stated as the text it carries rather than as bytes, and the run writes no bundle."
 
 clauses = [
   "Guide",
@@ -44,7 +44,8 @@ stdout_contains = [
   "which it reads there, with the inputs the dispatching step states as",
   "given, and continue with its answer. Do not open the bundle",
   "yourself: hand on its link. Do not check or redo its work: take",
-  "its answer as given.",
+  "its answer as given. Hand over the path and those inputs alone:",
+  "add no instruction, framing or reply form.",
   "Give each bundle's file path to its own sub-agent at once, with the",
   "inputs the dispatching step states as given, one per value where",
   "A failure cancels nothing; all failures return together.",
