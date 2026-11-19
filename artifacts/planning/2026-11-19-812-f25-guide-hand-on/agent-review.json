@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/813",
+    "head": "982c333d11e21ea4579b7fe776cef759e5db68f8",
+    "base": "ffd5acf0df46d4b5a362c5345838957e55f705c6",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-812-f25-guide-hand-on/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F25 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The full diff main..f25-hand-on-unread at 982c333d1: GUIDE's dispatch entry in cli.py and its one caller, the bare-command branch of main; the hand-over test in test_cli.py; the guide fixture; invocation.md, docs/dispatch.md and docs/glossary.md; and the design hunk of engineering 34045e834. The sentence was read against the guide's other dispatch rules: a brief and a pick's choice lines stand in the dispatcher's own bundle, so neither asks it to open the bundle it hands on. Rejected as speculative: a reader taking the sentence to forbid reading a brief, which the brief's own sentence directs it to do in its own bundle.",
+    "criteria": "AC1: the guide fixture's lines and the hand-over test. AC2: 1 of 8 Haiku runs of the specimen's arm A pre-opened against the branch build. AC3: each make check target.",
+    "validation": "make check at 982c333d1 with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2278 tests, 1122 harness tests, corpus 683 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": []
+  }
+]
