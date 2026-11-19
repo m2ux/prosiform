@@ -346,21 +346,22 @@ Symbol grammar:
   ⇉  names a bundle to hand on: give a sub-agent the path of its file,
      which it reads there, with the inputs the dispatching step states as
      given, and continue with its answer.
-     The text above a ⇉ line in the sub-section a link points at, and
-     the sections beneath that line, are the bundle's brief: do what it
-     asks of you before you hand the bundle on. What it states the bundle
-     takes is what you hand over; what it states the bundle leaves or
-     answers is the sub-agent's work
+     Where a ⇉ link points at a sub-section rather than at a bundle
+     file, the text above its ⇉ line there, and the sections beneath
+     that line, are the bundle's brief: do what it asks of you before
+     you hand the bundle on. What it states the bundle takes is what
+     you hand over; what it states the bundle leaves or answers is the
+     sub-agent's work
   ⫽  marks a dispatch set: its section holds one set of bundles, listed as
-     ⇉ lines in the sub-section headed ⫽ Dispatch Set.
+     ⇉ lines.
      Give each bundle's file path to its own sub-agent at once, with the
      inputs the dispatching step states as given, one per value where
      that step applies to several.
      A failure cancels nothing; all failures return together.
   ?  among a link's title tags leaves the pick to you, made with --pick.
-     On a ⇉ link it points at the sub-section headed ⇉ Dispatch Pick,
-     which lists one ⇉ line for each alternative beside its choice line:
-     hand on the one bundle whose choice line fits your work
+     On a ⇉ link it points at a sub-section listing one ⇉ line for each
+     alternative beside its choice line: hand on the one bundle whose
+     choice line fits your work
 
 Usage:
 
