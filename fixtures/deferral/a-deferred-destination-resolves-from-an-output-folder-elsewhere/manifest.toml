@@ -1,0 +1,16 @@
+description = "A run whose output folder stands beside its source folder rather than within it publishes a deferred link's destination as its target's path from the folder the bundle is in: the bundle written two folders down from the output folder reaches back up and over into the source folder, so an agent holding only the bundle follows the link from that folder, and the document it names contributes no heading and no content."
+
+clauses = [
+  "Link classification and resource handling — A deferred link's destination",
+  "Link classification and resource handling — A withheld link's target",
+  "CLI contract — -o DIR, the folder each bundle is written to",
+]
+
+[invocation]
+cwd = "source/src"
+arguments = ["-o", "../out", "tally.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/tally.bundle.md"]
+diagnostics = []

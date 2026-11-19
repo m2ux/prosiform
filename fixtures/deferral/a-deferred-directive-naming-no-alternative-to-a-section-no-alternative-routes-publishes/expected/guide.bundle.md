@@ -12,4 +12,4 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 #### Stage
 
-[↳ Hand-off](stage.md#hand-off)
+[↳ Hand-off](../stage.md#hand-off)

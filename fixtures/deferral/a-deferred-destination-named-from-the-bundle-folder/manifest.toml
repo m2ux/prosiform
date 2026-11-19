@@ -1,4 +1,4 @@
-description = "A deferred link's destination is its target's path from the invocation working directory rather than the path its author wrote, so an agent holding the bundle in that directory follows it with nothing else, and the document it names contributes no heading and no content."
+description = "A deferred link's destination is its target's path from the folder the bundle is in rather than the path its author wrote, so an agent holding the bundle follows it from that folder with nothing else, and the document it names contributes no heading and no content."
 
 clauses = [
   "Link classification and resource handling — A deferred link's destination",

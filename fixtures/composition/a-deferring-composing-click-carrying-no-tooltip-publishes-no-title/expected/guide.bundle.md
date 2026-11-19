@@ -16,4 +16,4 @@ flowchart LR
 
 #### Plan
 
-[↳ Steps](plan.md#steps)
+[↳ Steps](../plan.md#steps)

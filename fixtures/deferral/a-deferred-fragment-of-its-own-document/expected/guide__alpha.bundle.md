@@ -6,4 +6,4 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ### Alpha
 
-The step defers [the detail](guide.md#beta) to a run of its own.
+The step defers [the detail](../guide.md#beta) to a run of its own.

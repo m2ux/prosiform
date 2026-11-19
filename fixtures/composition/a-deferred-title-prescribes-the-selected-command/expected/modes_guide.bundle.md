@@ -12,4 +12,4 @@ Read [Material](#material " release candidate,CAFÉ,unknown,café ").
 
 #### Material
 
-[↳ Instructions](library/material.md#instructions " release candidate,CAFÉ,unknown,café ")
+[↳ Instructions](../library/material.md#instructions " release candidate,CAFÉ,unknown,café ")

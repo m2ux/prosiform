@@ -6,4 +6,4 @@ Run `pf`, then follow the guidance it prints. Follow [Steps](#steps) next.
 
 ## Procedure
 
-1. Defer [the rules](rules.md) to a later run.
+1. Defer [the rules](../rules.md) to a later run.

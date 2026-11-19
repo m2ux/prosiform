@@ -6,4 +6,4 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Work
 
-Read [Material](library/material.md#instructions " release candidate,CAFÉ,unknown,café ").
+Read [Material](../library/material.md#instructions " release candidate,CAFÉ,unknown,café ").

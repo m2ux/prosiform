@@ -1,4 +1,4 @@
-description = "A Mermaid click on a node whose text opens with the deferral mark defers its destination: the document it names contributes nothing, the click's destination is rewritten to that document's path from the invocation working directory, and the node text is carried as written."
+description = "A Mermaid click on a node whose text opens with the deferral mark defers its destination: the document it names contributes nothing, the click's destination is rewritten to that document's path from the folder the bundle is in, and the node text is carried as written."
 
 clauses = [
   "Link classification and resource handling — Examples",
