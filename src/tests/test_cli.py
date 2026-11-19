@@ -300,16 +300,15 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "keep it in context",
         "\u21c9 names a bundle to hand on",
         "\u2afd marks a dispatch set",
-        "its section holds one set of bundles, listed as",
-        "\u21c9 lines in the sub-section headed \u2afd Dispatch Set.",
+        "its section holds one set of bundles, listed as \u21c9 lines.",
         "to its own sub-agent at once",
         "one per value where that step applies to several.",
         "A failure cancels nothing; all",
         "failures return together.",
         "? among a link's title tags leaves the pick to you, made with --pick.",
-        "On a ⇉ link it points at the sub-section headed ⇉ Dispatch Pick, "
-        "which lists one ⇉ line for each alternative beside its choice line: "
-        "hand on the one bundle whose choice line fits your work",
+        "On a ⇉ link it points at a sub-section listing one ⇉ line for each "
+        "alternative beside its choice line: hand on the one bundle whose "
+        "choice line fits your work",
     ):
         assert rule in " ".join(GUIDE.split())
 
@@ -322,6 +321,33 @@ def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
         "which it reads there," in guide
     )
     assert "Give each bundle's file path to its own sub-agent at once" in guide
+
+
+def test_the_guide_opens_on_following_a_bundle() -> None:
+    """Every reader follows a bundle as written, a sub-agent's dispatches too."""
+    assert GUIDE.startswith("Following a bundle:")
+    guide = " ".join(GUIDE.split())
+    assert "follow every instruction in it as written" in guide
+    assert (
+        "A sub-agent handed a bundle follows it the same way, "
+        "handing on each ⇉ and ⫽ link it meets." in guide
+    )
+    assert guide.index("Symbol grammar:") < guide.index("Usage:")
+
+
+def test_the_guide_leaves_a_briefs_stated_work_to_the_sub_agent() -> None:
+    """A brief's asks are the dispatcher's; the work it states is the bundle's."""
+    guide = " ".join(GUIDE.split())
+    assert (
+        "Where a ⇉ link points at a sub-section rather than at a bundle file, "
+        "the text above its ⇉ line there, and the sections beneath that line, "
+        "are the bundle's brief: do what it asks of you before you hand the "
+        "bundle on." in guide
+    )
+    assert (
+        "What it states the bundle takes is what you hand over; what it states "
+        "the bundle leaves or answers is the sub-agent's work" in guide
+    )
 
 
 def test_the_guide_states_a_sub_agents_inputs_are_the_dispatching_steps() -> None:
