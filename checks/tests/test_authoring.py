@@ -205,7 +205,7 @@ def test_focused_deferred_command_uses_the_current_grammar() -> None:
     text = (ROOT / "docs/composition.md").read_text()
     [command] = re.findall(r"`(pf [^`]*fetch.md#implementation\)')`", text)
     parsed = command_parser().parse_args(shlex.split(command)[1:])
-    generated = "[↳ Implementation](fetch.md#implementation)"
+    generated = "[↳ Implementation](../fetch.md#implementation)"
     assert parsed.entry == generated
     assert f"\n{generated}\n" in text
 

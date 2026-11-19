@@ -1048,7 +1048,7 @@ def withholding_target(
     granted, so what it withholds is a reference `resolvable` answers,
     and that is the reference answered here. The run stays responsible
     for it: the target is required to exist, and the destination the
-    bundle publishes names it from the working directory.
+    bundle publishes names it as `rebased` states.
 
     An operator on anything else states a compilation no run performs:
     a reference naming no Markdown document, one whose target declares

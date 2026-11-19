@@ -47,7 +47,7 @@ A source heading's own fragment is the slug its visible text produces. Nothing n
 
 A compiled reference is rewritten to the destination of the target it resolved to. A reference the run compiled is a reference the bundle carries, so each one has a destination.
 
-The rest keep the bytes their author wrote: a link to a document that declares nothing or to none, a link with a scheme, an image, a non-Markdown target. A deferred link points at a path from the invocation working directory, and a dispatched link at its target's bundle file, or at the dispatch-set sub-section of its set. Each is published without its operator mark but a dispatch to a file, which keeps its own. A composition directive, deferred or not, points at the contribution heading it places, as [Composition](composition.md#where-it-lands) states.
+The rest keep the bytes their author wrote: a link to a document that declares nothing or to none, a link with a scheme, an image, a non-Markdown target. A deferred link points at its target's path from the folder the bundle is in, and a dispatched link at its target's bundle file, or at the dispatch-set sub-section of its set. Each is published without its operator mark but a dispatch to a file, which keeps its own. A composition directive, deferred or not, points at the contribution heading it places, as [Composition](composition.md#where-it-lands) states.
 
 ```mermaid
 flowchart LR
