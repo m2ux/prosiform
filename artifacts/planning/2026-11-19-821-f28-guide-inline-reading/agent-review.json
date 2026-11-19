@@ -1,0 +1,15 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/822",
+    "head": "122f0fe0581579de0148053144fdd58c76c4b959",
+    "base": "8b7cf54cb1a0083abf17e24aaa00dbd77da88f53",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-19-821-f28-guide-inline-reading/agent-review.json",
+    "reviewer": "Claude Opus 5.5 (F28 delivery session)",
+    "reviewed_at": "2026-11-19T00:00:00Z",
+    "scope": "The full diff main..f28-read-the-compiled at 122f0fe05: GUIDE's inline entry in cli.py; the guide rules test in test_cli.py; the guide fixture's line and description; invocation.md and docs/glossary.md; and the design hunk of engineering 52476fcbf. The sentence was read against the guide's other rules: it concerns the bundle a reader compiles from a link, which the entry already says to read whole, and leaves the bundle the reader was handed untouched.",
+    "criteria": "AC1: the guide fixture's line and the guide rules test. AC2: 5 of 5 Haiku runs of the deferred-composition specimen read the bundle pf wrote against the branch build. AC3: each make check target.",
+    "validation": "make check at 122f0fe05 with PROSIFORM_BUILD naming the branch build: lint, format, typecheck, 2282 tests, 1124 harness tests, corpus 685 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence passed.",
+    "findings": []
+  }
+]
