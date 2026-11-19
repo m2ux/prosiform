@@ -309,6 +309,7 @@ def test_the_guide_states_each_rule_an_agent_follows_a_bundle_by() -> None:
         "your task if you know it, or when pf lists the alternatives",
         "\u21b3 names a section to inline",
         "keep it in context",
+        "Do not open its source yourself: read the bundle pf writes.",
         "\u21c9 names a bundle to hand on",
         "\u2afd marks a dispatch set",
         "its section holds one set of bundles, listed as \u21c9 lines.",
