@@ -18,4 +18,4 @@ Takes a URL and returns the page it names.
 
 #### Fetch
 
-[↳ Implementation](fetch.md#implementation)
+[↳ Implementation](../fetch.md#implementation)

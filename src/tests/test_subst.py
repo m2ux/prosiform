@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from test_cli import linked, opening
+from test_cli import FROM_BUNDLE, linked, opening
 
 from prosiform.bundle import shown_text
 from prosiform.candidate import carried, intended
@@ -690,7 +690,7 @@ def test_a_deferred_target_is_redirected_to_the_substitute(tmp_path: Path) -> No
     status, published, said = grouped(tree, "guide.md")
     assert status == 0
     assert [one["code"] for one in said] == ["W_SUBST_USED"]
-    assert "[the rules](stand-in.md#answers)" in published
+    assert f"[the rules]({FROM_BUNDLE}stand-in.md#answers)" in published
     assert "Every rule the tree under test holds." not in published
     assert "Ask the stand-in." not in published
     assert "# Stand-in" not in published
@@ -710,7 +710,7 @@ def test_a_deferred_destination_publishes_the_section_the_substitution_names(
     the_run = tree / "out" / "guide.bundles" / "guide.bundle.md"
     stating(tree / "guide.md", "[{rules.md#escalation: stand-in.md#answers}]")
     assert grouped(tree, "guide.md")[0] == 0
-    assert "[the rules](stand-in.md#answers)" in the_run.read_text()
+    assert f"[the rules]({FROM_BUNDLE}stand-in.md#answers)" in the_run.read_text()
     (tree / "later.md").write_text(
         DECLARED + "# Later\n\nFollow [the rules](stand-in.md#answers).\n"
     )

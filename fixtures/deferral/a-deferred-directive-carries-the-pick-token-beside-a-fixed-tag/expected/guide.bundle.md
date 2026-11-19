@@ -12,4 +12,4 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 #### Work Kind
 
-[↳ Populate](work-kind.md#populate "checks, ?")
+[↳ Populate](../work-kind.md#populate "checks, ?")

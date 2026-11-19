@@ -1,0 +1,14 @@
+description = "A deferred link a bundle publishes compiles when run as written from the folder that bundle is in, with nothing else: the bundle stands in an output folder beside the source folder, its link reaches back up and over to the document it defers, and a validation-only run from the bundle's folder resolves that document and its section and writes nothing into the folder it names."
+
+clauses = [
+  "Link classification and resource handling — A deferred link's destination",
+  "CLI contract — -c, accepts -o DIR and writes nothing into that folder",
+]
+
+[invocation]
+cwd = "source/out/tally.bundles"
+arguments = ["-c", "-o", "..", "[the counting rules](../../src/rules.md#counting)"]
+
+[expected]
+exit_status = 0
+diagnostics = []

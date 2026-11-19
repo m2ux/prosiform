@@ -6,7 +6,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 import pytest
-from test_cli import DECLARED, invoke, written
+from test_cli import DECLARED, FROM_BUNDLE, invoke, written
 
 from prosiform.profile import parse
 from prosiform.source import LINK_OPEN, events, inlines, regions
@@ -68,11 +68,13 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
             DECLARED + f"# {name.title()}\n\n## Details\n\n{name.title()} payload.\n",
         )
 
-    deferred = invoke("modes/guide.md", cwd=tmp_path)
+    deferred = invoke("-o", "out", "modes/guide.md", cwd=tmp_path)
     assert deferred.status == 0, deferred.stderr
-    assert "payload." not in deferred.bundle
-    expected_destination = f"library/task%20notes.md#{quote(fragment)}"
-    tokens = parse(deferred.bundle)
+    folder = tmp_path / "out" / "modes_guide.bundles"
+    bundle = (folder / "modes_guide.bundle.md").read_text()
+    assert "payload." not in bundle
+    expected_destination = f"{FROM_BUNDLE}library/task%20notes.md#{quote(fragment)}"
+    tokens = parse(bundle)
     [published] = [
         token
         for inline in inlines(tokens, list(regions(tokens)))
@@ -81,11 +83,11 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
     ]
     assert published.attrGet("title") == (title or None)
     [written_link] = re.findall(
-        r'\[[^\]]*\]\(library/task%20notes\.md#[^)\s]*(?: "[^"]*")?\)',
-        deferred.bundle,
+        r'\[[^\]]*\]\(\.\./\.\./library/task%20notes\.md#[^)\s]*(?: "[^"]*")?\)',
+        bundle,
     )
     command = shlex.join(["pf", written_link])
-    activated = invoke(*shlex.split(command)[1:], cwd=tmp_path)
+    activated = invoke(*shlex.split(command)[1:], cwd=folder)
     assert activated.status == 0, activated.stderr
 
     written(
@@ -105,7 +107,7 @@ def test_the_published_deferred_command_matches_immediate_selected_content(
     assert payloads(activated.bundle) == payloads(immediate.bundle) == expected
     assert ("--p-" in next(iter(activated.bundles))) is selected
 
-    default = invoke(expected_destination, cwd=tmp_path)
+    default = invoke(expected_destination, cwd=folder)
     assert default.status == 0, default.stderr
     assert payloads(default.bundle) == ("Live payload.", "Draft payload.")
     assert (payloads(default.bundle) != payloads(activated.bundle)) is selected

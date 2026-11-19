@@ -217,7 +217,7 @@ Design rule: *Presets and `subst`*. Fixtures:
 
 ## Deferred directives
 
-A deferred directive contributes no content, but keeps its place: the run emits its destination section and contribution heading, the directive's link points at that heading, and the contribution's body is one generated line, `[↳ <title>](<path>)`, naming the target's heading and its path from the invocation working directory.
+A deferred directive contributes no content, but keeps its place: the run emits its destination section and contribution heading, the directive's link points at that heading, and the contribution's body is one generated line, `[↳ <title>](<path>)`, naming the target's heading and its path from the folder the bundle is in.
 
 ```markdown
 ## Fetch the page
@@ -242,14 +242,14 @@ Takes a URL and returns the page it names.
 
 #### Fetch
 
-[↳ Implementation](fetch.md#implementation)
+[↳ Implementation](../fetch.md#implementation)
 ```
 
 *From [a-composed-contract-leaves-its-deferred-implementation-absent](../fixtures/composition/a-composed-contract-leaves-its-deferred-implementation-absent).*
 
 A scope composes a section or defers it: one scope holding an immediate and a deferred directive naming one section is refused.
 
-The `↳` line is the entry that activates the target, run as written: `pf '[↳ Implementation](fetch.md#implementation)'` compiles an untagged target, and a line carrying title tags selects the target's presets by them, its `↳` mark ignored. It compiles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
+The `↳` line is the entry that activates the target, run as written from the bundle's folder: `pf '[↳ Implementation](../fetch.md#implementation)'` compiles an untagged target, and a line carrying title tags selects the target's presets by them, its `↳` mark ignored. It compiles under every rule an entry is, composing its own immediate directives and deferring its deferred ones again. The guide `pf` prints, as [Invocation](../invocation.md) states, tells an agent to compile, read and follow each `↳` line. Every bundle opens with the run-pf line, so a sub-agent following a bundle carrying such a line has run `pf`, as [The run-pf line](dispatch.md#the-run-pf-line) states.
 
 Design rules: *Deferred composition* and *Activation*, and *The run-pf line*. Fixtures:
 

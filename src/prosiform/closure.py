@@ -1048,7 +1048,7 @@ def withholding_target(
     granted, so what it withholds is a reference `resolvable` answers,
     and that is the reference answered here. The run stays responsible
     for it: the target is required to exist, and the destination the
-    bundle publishes names it from the working directory.
+    bundle publishes names it as `rebased` states.
 
     An operator on anything else states a compilation no run performs:
     a reference naming no Markdown document, one whose target declares
@@ -1170,11 +1170,39 @@ def climb(path: str) -> int:
     return count
 
 
-def rebased(found: Reference, text: str) -> str:
-    """URI-escape a deferred target's canonical working-directory-relative path.
+@dataclass(frozen=True)
+class BundleFolder:
+    """The folder a bundle is written into, beside the invocation working directory.
+
+    `root` holds the working directory and `folder` the bundle's folder,
+    each as an absolute POSIX path, so the walk between them is read
+    from the two paths alone.
+    """
+
+    root: str
+    folder: str
+
+    def published(self, path: str) -> str:
+        """One canonical source path as the path from the bundle's folder to it."""
+        return posixpath.relpath(posixpath.join(self.root, path), self.folder)
+
+    def rooted(self, path: str) -> str:
+        """One path from the bundle's folder as the canonical source path it names."""
+        return posixpath.relpath(
+            posixpath.normpath(posixpath.join(self.folder, path)), self.root
+        )
+
+
+WORKING_FOLDER = BundleFolder(SEPARATOR, SEPARATOR)
+"""A bundle folder that is the invocation working directory itself."""
+
+
+def rebased(found: Reference, text: str, folder: BundleFolder = WORKING_FOLDER) -> str:
+    """URI-escape a deferred target's path from the folder its bundle is written into.
 
     A deferral publishes the path the run that compiles the material
-    follows from the working directory the bundle was compiled in, with
+    follows from the folder `folder` names, the one its bundle is
+    written into, so the bundle alone states where the target is, with
     the fragment the link resolved to retained. The path is the
     target's, so a target the substitution mapping redirected publishes
     the substitute's path, and so is the fragment: a section key
@@ -1183,7 +1211,8 @@ def rebased(found: Reference, text: str) -> str:
     section publishes the fragment its author wrote, which an empty one
     spells as the bare delimiter.
     """
-    path = SEPARATOR.join(quote(part, safe="") for part in found.path.split(SEPARATOR))
+    relative = folder.published(found.path)
+    path = SEPARATOR.join(quote(part, safe="") for part in relative.split(SEPARATOR))
     if found.fragment is not None:
         return f"{path}{FRAGMENT}{found.fragment}"
     fragment = components(text).fragment

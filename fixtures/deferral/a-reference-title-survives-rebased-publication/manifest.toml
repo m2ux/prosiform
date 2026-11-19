@@ -1,4 +1,4 @@
-description = "A reference-style deferred link keeps its decoded comma-separated preset names while its destination is rebased from the writing document to the invocation working directory."
+description = "A reference-style deferred link keeps its decoded comma-separated preset names while its destination is rebased from the writing document to the folder the bundle is in."
 
 clauses = [
   "Link classification and resource handling — A deferred link's destination",

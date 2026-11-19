@@ -57,7 +57,7 @@ pf guide.md#plan-report
 pf -c '[Plan Report](guide.md#plan-report "checks,draft")'
 ```
 
-Run a link in a bundle as written, from the directory `pf` compiled that bundle in, quoted as one shell argument. A plain path names a document, or a section as `document#section`, from the command's working directory, and selects no named preset. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
+Run a link in a bundle as written, from the folder that bundle is in, quoted as one shell argument: a deferral names its target from that folder, as [References](docs/references.md#operators) states. A plain path names a document, or a section as `document#section`, from the command's working directory, and selects no named preset. An entry reference beginning with `-` is read as an option, so it is invalid usage unless a `--` separates it from the options before it.
 
 The following commands use the checked source tree of a [preset fixture](fixtures/inclusion/a-link-title-selects-its-preset/manifest.toml):
 
@@ -67,18 +67,20 @@ pf guide.md
 pf -c guide.md
 ```
 
-A deferral carrying the pick token publishes the title tags its author wrote, followed by any names the run's entry title gives: the mode of the [kind router fixture](fixtures/deferral/the-pick-token-command-lists-the-kind-routers-alternatives/manifest.toml) writes `[¬ Populate the body](../work-kind.md#populate-body "?")`, and its bundle carries `[Populate the body](work-kind.md#populate-body "?")`. Run as written, that link lists the alternatives with their choice lines and exits `2`, and the rerun on the same link with `--pick` naming the one that fits compiles; an agent that knows its pick passes `--pick` on the first run:
+A deferral carrying the pick token publishes the title tags its author wrote, followed by any names the run's entry title gives: the mode of the [kind router fixture](fixtures/deferral/the-pick-token-command-lists-the-kind-routers-alternatives/manifest.toml) writes `[¬ Populate the body](../work-kind.md#populate-body "?")`, and its bundle, written into `modes_plan.bundles`, carries `[Populate the body](../work-kind.md#populate-body "?")`. Run as written, that link lists the alternatives with their choice lines and exits `2`, and the rerun on the same link with `--pick` naming the one that fits compiles; an agent that knows its pick passes `--pick` on the first run:
 
 ```text
 $ cd fixtures/deferral/the-pick-token-command-lists-the-kind-routers-alternatives/source
-$ pf '[Populate the body](work-kind.md#populate-body "?")'
-E_ALTERNATIVE_UNRESOLVED: work-kind.md needs one alternative in force:
+$ pf modes/plan.md
+$ cd modes_plan.bundles
+$ pf '[Populate the body](../work-kind.md#populate-body "?")'
+E_ALTERNATIVE_UNRESOLVED: ../work-kind.md needs one alternative in force:
   initiative  States a goal and lists its epics.
   epic        Lists its tasks in a Work Breakdown table.
   task        One pull request's worth of work.
-  source: work-kind.md
+  source: ../work-kind.md
   remedy: rerun with --pick naming the alternative that fits your task
-$ pf '[Populate the body](work-kind.md#populate-body "?")' --pick epic
+$ pf '[Populate the body](../work-kind.md#populate-body "?")' --pick epic
 ```
 
 ## Conversion metadata

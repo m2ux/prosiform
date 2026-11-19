@@ -9,5 +9,5 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 ```mermaid
 flowchart LR
     Plan[Plan] --> Review[¬ Review]
-    click Review "topic/review.md"
+    click Review "../topic/review.md"
 ```

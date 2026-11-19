@@ -6,4 +6,4 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-[Populate the body](work-kind.md "?").
+[Populate the body](../work-kind.md "?").

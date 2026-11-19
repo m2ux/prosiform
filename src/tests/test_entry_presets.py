@@ -5,7 +5,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 import pytest
-from test_cli import DECLARED, invoke, written
+from test_cli import DECLARED, FROM_BUNDLE, invoke, written
 
 from prosiform import cli, source
 from prosiform.closure import BundleSelection
@@ -332,7 +332,7 @@ def test_a_later_selection_confirms_only_the_effective_deferred_target(
     run = invoke("entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
     assert set(run.bundles) == {"entry.bundle.md"}
-    assert "[Job](new.md#steps)" in run.bundle
+    assert f"[Job]({FROM_BUNDLE}new.md#steps)" in run.bundle
     assert "Selected worker." not in run.bundle
 
 

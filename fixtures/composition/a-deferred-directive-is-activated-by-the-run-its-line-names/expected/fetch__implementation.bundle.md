@@ -19,4 +19,4 @@ Resolve the host and connect.
 
 ##### Net
 
-[↳ Retry](net.md#retry)
+[↳ Retry](../net.md#retry)

@@ -677,7 +677,7 @@ def edits(
 
     The destination arrives whole. Where a link points is the bundle's
     question, and this writes the answer, so a fragment of the bundle
-    and a path from the invocation working directory are published the
+    and a deferral's path from the bundle's folder are published the
     same way.
 
     A titled destination is a deferral's: the names its title gains are

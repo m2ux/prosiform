@@ -14,4 +14,4 @@ Run `pf`, then follow the guidance it prints. Follow [Steps](#steps) next.
 
 #### Rules
 
-[↳ Body](rules.md#body)
+[↳ Body](../rules.md#body)

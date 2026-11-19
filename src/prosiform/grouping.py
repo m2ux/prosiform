@@ -125,6 +125,8 @@ from prosiform.bundle import (
 from prosiform.closure import (
     DECLARING,
     UNSUBSTITUTED,
+    WORKING_FOLDER,
+    BundleFolder,
     Declarations,
     Substitution,
 )
@@ -286,6 +288,7 @@ def prepared(
     composing: Mapping[Located, str] | None = None,
     *,
     conversions: Mapping[str, Conversion],
+    folder: BundleFolder = WORKING_FOLDER,
 ) -> Member:
     """One member of a merged group, with what it contributes already decided.
 
@@ -339,6 +342,7 @@ def prepared(
             substitution,
             composing,
             conversions=conversions,
+            folder=folder,
         )
     )
     member = Member(
