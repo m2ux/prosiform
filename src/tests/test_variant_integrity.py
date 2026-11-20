@@ -5,7 +5,7 @@ from pathlib import Path
 from test_cli import DECLARED, invoke, written
 
 
-def test_variant_substitutions_to_distinct_sections_report_each_pair(
+def test_variant_substitutions_to_distinct_sections_route_each_pair(
     tmp_path: Path,
 ) -> None:
     written(
@@ -30,19 +30,16 @@ def test_variant_substitutions_to_distinct_sections_report_each_pair(
     )
     run = invoke("-d", "json", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    used = [one for one in run.diagnostics() if one["code"] == "W_SUBST_USED"]
-    assert [one["resolved"] for one in used] == [
-        "alternatives.md#checks",
-        "alternatives.md#draft",
-    ]
+    assert run.diagnostics() == []
     assert len(run.bundles) == 3
     assert sum("CHECKED_BODY" in body for body in run.bundles.values()) == 1
     assert sum("DRAFT_BODY" in body for body in run.bundles.values()) == 1
 
 
-def test_a_pair_used_by_one_variant_leaves_another_variants_pair_unused(
+def test_a_pair_used_by_one_variant_routes_another_variants_pair_alike(
     tmp_path: Path,
 ) -> None:
+    """Each variant's pair is a route the task's one link names."""
     written(
         tmp_path,
         "entry.md",
@@ -61,10 +58,7 @@ def test_a_pair_used_by_one_variant_leaves_another_variants_pair_unused(
     written(tmp_path, "drafted.md", DECLARED + "# Drafted\n")
     run = invoke("-d", "json", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    unused = [one for one in run.diagnostics() if one["code"] == "W_SUBST_UNUSED"]
-    assert len(unused) == 1
-    assert "prosiform.draft" in unused[0]["message"]
-    assert unused[0]["source"] == "rules.md"
+    assert run.diagnostics() == []
 
 
 def test_an_unselected_heading_with_parallel_links_needs_no_target_capture(

@@ -90,7 +90,7 @@ def test_an_entry_stub_holds_over_the_stage_s_own_pair(tmp_path: Path) -> None:
     assert run.status == 0, run.stderr
     (dispatched,) = (text for name, text in run.bundles.items() if "stage" in name)
     assert "RECORDED" in dispatched and "DRAFT" not in dispatched
-    assert codes(run.stderr) == ["W_SUBST_USED", "W_SUBST_UNUSED"]
+    assert codes(run.stderr) == ["W_SUBST_USED"]
 
 
 def test_a_run_naming_no_stub_is_silent(tmp_path: Path) -> None:

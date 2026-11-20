@@ -827,8 +827,9 @@ class Governed:
     `preset` names the preset stating it, `pair` the entry as written and
     `substitute` the reference the entry's substitute resolves to, as
     `subst_reference` reads it. `routing` holds for a pair that routes the
-    document's links to the picked kind's material, as `layer` decides,
-    and is false for one standing in for material under test.
+    document's links where its author declared, which every preset but a
+    stub states, and is false for a stub's pair, which stands in for
+    material under test.
     """
 
     preset: str
@@ -1141,7 +1142,7 @@ def governing(
         above: dict[tuple[str, str | None], Governed] = {}
         for reference in including:
             for preset in matching_presets(conversion, reference.tags):
-                clash = layer(above, preset, path, standing)
+                clash = layer(above, preset, path)
                 if clash is not None:
                     raise disagreeing(*clash, path, reference)
         in_force = {**standing, **above}
@@ -1156,7 +1157,7 @@ def defaults(
     """The `subst` pairs a document's `default` puts in force wherever it compiles."""
     return {
         subst_identity(pair.original, path): Governed(
-            DEFAULT, pair, subst_reference(pair, path)
+            DEFAULT, pair, subst_reference(pair, path), routing=True
         )
         for pair in conversion.default.substs
     }
@@ -1166,31 +1167,23 @@ def layer(
     above: dict[tuple[str, str | None], Governed],
     preset: Preset,
     path: str,
-    standing: Mapping[tuple[str, str | None], Governed],
 ) -> tuple[Governed, Governed] | None:
     """Layer one selected preset's `subst` pairs into those `above` holds.
 
-    `standing` holds the document's `default` pairs, as `defaults`
-    states them. A pair an alternative states stands in for material
-    under test where it agrees with `default`'s for its key, or with an
-    ordinary preset's, whichever of the alternative and that preset the
-    document declares first: it is a routing pair only where no `default` pair
-    agrees with it and every preset stating it is an alternative. A key
-    `above` already maps to another substitute is returned with that
-    earlier pair and the later one, which is left out, for the caller to
-    refuse.
+    A stub's pair stands in for material under test, and every other
+    preset's routes, as `Governed` states; a stub's pair holds over a
+    routing pair agreeing with it. A key `above` already maps to another
+    substitute is returned with that earlier pair and the later one,
+    which is left out, for the caller to refuse.
     """
     for pair in preset.substs:
-        key = subst_identity(pair.original, path)
-        substitute = subst_reference(pair, path)
-        held = standing.get(key)
         one = Governed(
             preset.name,
             pair,
-            substitute,
-            preset.choice is not None
-            and (held is None or identity(held.substitute) != identity(substitute)),
+            subst_reference(pair, path),
+            preset.stub is None,
         )
+        key = subst_identity(pair.original, path)
         first = above.setdefault(key, one)
         if identity(first.substitute) != identity(one.substitute):
             return first, one
@@ -1245,7 +1238,7 @@ def copies(
             standing = defaults(conversion, path)
             above: dict[tuple[str, str | None], Governed] = {}
             for preset in matching_presets(conversion, reference.tags):
-                layer(above, preset, path, standing)
+                layer(above, preset, path)
             pairs = {**standing, **above}
             if pairs:
                 table[copy] = pairs
@@ -2768,7 +2761,7 @@ def entry_stubs(
     pairs: dict[tuple[str, str | None], Governed] = {}
     for preset in conversion.presets:
         if preset.stub is not None and preset.name.casefold() in run_names(entry):
-            clash = layer(pairs, preset, entry.path, {})
+            clash = layer(pairs, preset, entry.path)
             if clash is not None:
                 raise disagreeing(*clash, entry.path, entry)
     return pairs
@@ -4980,12 +4973,12 @@ def unused_presets(bundles: Iterable[Compiled]) -> list[Diagnostic]:
 def routes(
     bundles: Iterable[Compiled],
 ) -> set[tuple[str, tuple[str, str | None], str]]:
-    """The pairs only alternatives put in force, by document, key and substitute.
+    """The routing pairs the run put in force, by document, key and substitute.
 
-    A pair `layer` holds standing in for material under test in any
-    bundle of the run is no route. It stands in only for the substitute
-    it names, so an alternative's pair naming another substitute for the
-    same key stays a route.
+    A pair a stub holds for one document, key and substitute in any
+    bundle of the run is no route there. It stands in only for the
+    substitute it names, so a routing pair naming another substitute for
+    the same key stays a route.
     """
     routing: set[tuple[str, tuple[str, str | None], str]] = set()
     standing: set[tuple[str, tuple[str, str | None], str]] = set()

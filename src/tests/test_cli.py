@@ -1954,10 +1954,10 @@ def test_a_picking_dispatch_s_brief_fails_at_the_picking_dispatch(
     assert diagnostic["location"] == {"file": "guide.md", "line": 9, "column": 1}
 
 
-def test_a_default_pair_an_alternative_agrees_with_warns_in_a_copy(
+def test_a_default_pair_an_alternative_agrees_with_routes_in_a_copy(
     tmp_path: Path,
 ) -> None:
-    """An agreeing `default` pair stands in, so the composed link warns."""
+    """An agreeing `default` pair routes, so the composed link raises nothing."""
     written(
         tmp_path,
         "stage.md",
@@ -1975,9 +1975,8 @@ def test_a_default_pair_an_alternative_agrees_with_warns_in_a_copy(
     )
     run = invoke("-d", "json", "guide.md", cwd=tmp_path)
     assert run.status == SUCCESS, run.stderr
-    assert [(one["code"], one["resolved"]) for one in run.diagnostics()] == [
-        ("W_SUBST_USED", "alpha-body.md#body")
-    ]
+    assert "A body." in run.bundle
+    assert run.diagnostics() == []
 
 
 def test_an_entry_picking_one_alternative_compiles_its_route(kinds: Path) -> None:
@@ -3834,29 +3833,26 @@ def test_a_subst_pair_the_reference_grammar_reads_is_admitted(root: Path) -> Non
     ]
 
 
-def routed(root: Path, pairs: str, fragment: str = "", ordinary: str = "") -> None:
+def routed(root: Path, pairs: str, fragment: str = "") -> None:
     """A work-kind document whose one alternative states the given pairs.
 
     The guide's link names the document, or its `fragment`, and picks
-    the alternative beside any `ordinary` preset, which stands `stub.md`
-    in for `checklist.md`. Every target a pair or a link names declares.
+    the alternative. The guide declares the stub `mock`, which stands
+    `stub.md` in for `checklist.md` in a run whose entry's title selects
+    it. Every target a pair or a link names declares.
     """
-    selection = ", ".join(["epic", *([ordinary] if ordinary else [])])
     written(
         root,
         "guide.md",
-        f'{DECLARED}# Guide\n\nSee [kind](work-kind.md{fragment} "{selection}").\n',
+        "---\nprosiform:\n  mock:\n    stub: The checklist is a stand-in.\n"
+        "    subst: [{checklist.md: stub.md}]\n---\n"
+        f'# Guide\n\nSee [kind](work-kind.md{fragment} "epic").\n',
     )
     written(
         root,
         "work-kind.md",
         "---\nprosiform:\n  epic:\n    choice: Lists its tasks.\n"
         f"    subst: [{pairs}]\n"
-        + (
-            f"  {ordinary}:\n    subst: [{{checklist.md: stub.md}}]\n"
-            if ordinary
-            else ""
-        )
         + "---\n# Work Kind\n\n## Populate\n\nPopulate [the body](body.md).\n\n"
         "## Review\n\nReview against [the checklist](checklist.md#steps).\n",
     )
@@ -3918,8 +3914,8 @@ def test_a_routing_pair_no_link_of_its_document_names_warns_unused(
 
 
 def test_a_stand_in_beside_a_routing_pair_still_warns(root: Path) -> None:
-    routed(root, "{body.md: epic-body.md}", ordinary="mock")
-    run = invoke("-d", "json", "guide.md", cwd=root)
+    routed(root, "{body.md: epic-body.md}")
+    run = invoke("-d", "json", '[Guide](guide.md "mock")', cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert [
         (one["code"], one["source"], one.get("resolved")) for one in run.diagnostics()
@@ -3927,10 +3923,10 @@ def test_a_stand_in_beside_a_routing_pair_still_warns(root: Path) -> None:
 
 
 @pytest.mark.parametrize("order", [("epic", "mock"), ("mock", "epic")])
-def test_a_pair_an_ordinary_preset_shares_warns_in_either_order(
+def test_a_pair_an_ordinary_preset_shares_routes_in_either_order(
     root: Path, order: tuple[str, str]
 ) -> None:
-    """An alternative and an ordinary preset stating one pair stand it in."""
+    """An alternative and an ordinary preset stating one pair both route it."""
     stated = {
         "epic": "  epic:\n    choice: Lists its tasks.\n",
         "mock": "  mock:\n",
@@ -3953,15 +3949,14 @@ def test_a_pair_an_ordinary_preset_shares_warns_in_either_order(
         written(root, f"{name}.md", f"{DECLARED}# {name.title()}\n\nText.\n")
     run = invoke("-d", "json", "guide.md", cwd=root)
     assert run.status == SUCCESS, run.stderr
-    assert [
-        (one["code"], one["source"], one.get("resolved")) for one in run.diagnostics()
-    ] == [(SUBST_USED, "body.md", "epic-body.md")]
+    assert "# Epic-Body" in run.bundle
+    assert run.diagnostics() == []
 
 
 def test_a_stand_in_no_selected_link_uses_still_warns_unused(root: Path) -> None:
     """A stand-in is weighed against the run's references, not the document's links."""
-    routed(root, "{body.md: epic-body.md}", "#populate", "mock")
-    run = invoke("-d", "json", "guide.md", cwd=root)
+    routed(root, "{body.md: epic-body.md}", "#populate")
+    run = invoke("-d", "json", '[Guide](guide.md "mock")', cwd=root)
     assert run.status == SUCCESS, run.stderr
     assert [(one["code"], one["source"]) for one in run.diagnostics()] == [
         (SUBST_UNUSED, "checklist.md")
