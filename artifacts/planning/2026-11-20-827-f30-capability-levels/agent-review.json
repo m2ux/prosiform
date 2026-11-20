@@ -1,0 +1,47 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/828",
+    "base": "9670582ee5129836148661b7351176fcf046cda9",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-827-f30-capability-levels/agent-review.json",
+    "head": "2df10345600ddba0dc62fa631d056460a5a7196b",
+    "reviewer": "Claude Opus 5.5 (independent review sub-agent of the F30 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The full diff main..f30-capability-levels at 2df103456 and the design hunk of engineering 7153f5dca: preset fields in metadata.py; level_of, level_map and model_of in closure.py; entry_models, levelled and checked_models in cli.py; listing, choices and the Placement model lookup in dispatch.py; target, emitted_visible and started_on in bundle.py; Followed in rewrite.py; the preservation call in candidate.py. Inputs tried: inline, multi-line, titled, emphasised, table and blockquote links; full, collapsed and shortcut reference links; preamble and heading dispatches; composed regions; lifted briefs; sets with and without briefs; sets of one; picks; deferrals; diagram clicks; model names holding Markdown specials. Two design questions were raised to the user rather than recorded as defects: a deferred target stating a level is refused as its own run's entry and a deferral carries no level map; and a diagram click dispatch publishes no model, as docs/dispatch.md states.",
+    "criteria": "AC1-AC8: the eight fixtures under fixtures/dispatch and fixtures/frontmatter. AC9: the guide fixture and test. AC10: the documents and the design. AC11: make check.",
+    "validation": "pytest passed; make check at 2df103456 passed (2282 tests, 1136 harness tests, 693 fixtures).",
+    "findings": [
+      {
+        "description": "A shortcut reference dispatch ([⇉ Gather] with a definition) to a levelled target failed with exit 4: the model was inserted at the same zero-width offset as the destination and could land before it.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/8249dfa7696e7baef4999e90bbf14357f211ce4e"
+      },
+      {
+        "description": "A dispatch link in a heading outside the selection whose level was unmapped, or whose presets disagreed on a level, failed with exit 4 when the heading was slugged, and masked E_UNSUPPORTED_CONSTRUCT for a structural ancestor.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/8249dfa7696e7baef4999e90bbf14357f211ce4e"
+      },
+      {
+        "description": "The published model's text was built in two places, and the glossary restated the rule's error codes, which docs/dispatch.md owns.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/8249dfa7696e7baef4999e90bbf14357f211ce4e"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/828",
+    "base": "9670582ee5129836148661b7351176fcf046cda9",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-827-f30-capability-levels/agent-review.json",
+    "head": "8249dfa7696e7baef4999e90bbf14357f211ce4e",
+    "reviewer": "Claude Opus 5.5 (F30 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The change 2df103456..8249dfa76 and the three findings it fixes: the shortcut reference's model joins the edit ending at the use's end; emitted_visible reads an unresolvable level as no model; started_on owns the model's text; the glossary names the rule's owner. Re-ran the reviewer's failing trees: the shortcut publishes [⇉ Gather](gather.bundle.md) on haiku, the unselected heading publishes, and the structural ancestor fails with E_UNSUPPORTED_CONSTRUCT.",
+    "criteria": "The fixtures dispatch/a-shortcut-reference-dispatch-names-its-model and dispatch/an-unmapped-level-in-an-unselected-heading-publishes, beside AC1-AC11's evidence.",
+    "validation": "make check at 8249dfa76 passed: 2282 tests, 1138 harness tests, 695 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence.",
+    "findings": []
+  }
+]

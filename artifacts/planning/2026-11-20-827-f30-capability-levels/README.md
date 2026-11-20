@@ -19,4 +19,4 @@ A sub-agent runs on whatever model starts it, so one model ran every stage of a 
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F30] Capability Levels](https://github.com/m2ux/prosiform/issues/827) |
-| Delivering pull request | [[F30] Capability Levels](https://github.com/m2ux/prosiform/pulls?q=head%3Af30-capability-levels) |
+| Delivering pull request | [[F30] Capability Levels](https://github.com/m2ux/prosiform/pull/828) |

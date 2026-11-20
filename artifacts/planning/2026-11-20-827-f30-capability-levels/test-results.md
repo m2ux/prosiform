@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F30 at `2df103456` on `f30-capability-levels`, run on 2026-11-20 in the unit checkout.
+Results for F30 at `8249dfa76` on `f30-capability-levels`, run on 2026-11-20 in the unit checkout.
 
 ## T1 Dispatch Link Model
 
@@ -34,6 +34,13 @@ Each publishes nothing. Held.
 
 `docs/sources.md` states `level` and `levels` in its field table; `docs/dispatch.md` owns the rule in its Models section and the guide paragraph; `docs/glossary.md` defines level and level map; `docs/validation.md` lists both codes; the design states both fields under Conversion metadata, the rule as Dispatch models, both codes under Metadata failures and the guide's sentence. Held.
 
+## T9 Regressions
+
+- `dispatch/a-shortcut-reference-dispatch-names-its-model`: `[⇉ Gather] and record.` with its definition publishes `[⇉ Gather](gather.bundle.md) on haiku and record.`.
+- `dispatch/an-unmapped-level-in-an-unselected-heading-publishes`: a heading outside the selection dispatching at an unmapped level leaves the run publishing, the selected dispatch reading `on opus`.
+
+Held.
+
 ## T8 Full Check
 
-`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lock, lint, format, typecheck, `make test` (2282 passed), harness (1136 passed), corpus (693 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lock, lint, format, typecheck, `make test` (2282 passed), harness (1138 passed), corpus (695 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
