@@ -19,4 +19,4 @@ A stub's `subst` pairs reached only the links of the document declaring it, so t
 | Resource | Link |
 | --- | --- |
 | Hot-fix issue | [[F32] Entry Stubs](https://github.com/m2ux/prosiform/issues/833) |
-| Delivering pull request | Pending |
+| Delivering pull request | [[F32] Entry Stubs](https://github.com/m2ux/prosiform/pull/834) |
