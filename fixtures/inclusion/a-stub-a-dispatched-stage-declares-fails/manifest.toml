@@ -1,0 +1,20 @@
+description = "stage.md, which the entry dispatches, declares a stub, and a stub is declared by the run's entry alone, so the run fails with E_STUB_OFF_ENTRY and publishes nothing."
+
+clauses = [
+  "Presets — Stubs",
+  "Exit status and JSON diagnostics — 1, input, dependency, policy, safety, or resource-limit failure",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Entry](entry.md \"recorded\")"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_STUB_OFF_ENTRY"
+message_contains = ["'recorded'"]
+resolved = "stage.md"
+reference = "stage.md"

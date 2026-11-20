@@ -262,6 +262,7 @@ SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_ACCESS = "E_SOURCE_ACCESS"
 SOURCE_OUTSIDE_ROOT = "E_SOURCE_OUTSIDE_ROOT"
 SOURCE_SYMLINK = "E_SOURCE_SYMLINK"
+STUB_OFF_ENTRY = "E_STUB_OFF_ENTRY"
 TARGET_NOT_FOUND = "E_TARGET_NOT_FOUND"
 UNEXPECTED_INTERNAL_ERROR = "E_UNEXPECTED_INTERNAL_ERROR"
 UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
@@ -295,6 +296,7 @@ CODES = tuple(
             SOURCE_ACCESS,
             SOURCE_OUTSIDE_ROOT,
             SOURCE_SYMLINK,
+            STUB_OFF_ENTRY,
             TARGET_NOT_FOUND,
             UNEXPECTED_INTERNAL_ERROR,
             UNSUPPORTED_ENTRY_SUFFIX,
@@ -2752,6 +2754,63 @@ def run_names(entry: Reference) -> frozenset[str]:
     return frozenset(name for name in entry.tags if name not in (PICK, DEFAULT))
 
 
+def entry_stubs(
+    entry: Reference, conversion: Conversion
+) -> dict[tuple[str, str | None], Governed]:
+    """The `subst` pairs of the stubs the run's entry declares and its names select.
+
+    Each key resolves from the entry and each substitute from its key, as
+    `subst_identity` and `subst_reference` read them, so the pairs name
+    one identity whichever document's link they redirect. Two selected
+    stubs mapping one key to two substitutes are refused as `layer`
+    returns them.
+    """
+    pairs: dict[tuple[str, str | None], Governed] = {}
+    for preset in conversion.presets:
+        if preset.stub is not None and preset.name.casefold() in run_names(entry):
+            clash = layer(pairs, preset, entry.path, {})
+            if clash is not None:
+                raise disagreeing(*clash, entry.path, entry)
+    return pairs
+
+
+def staked(
+    substitution: Substitution, entry: Reference, read: Mapping[str, Source]
+) -> Substitution:
+    """The run's mapping holding its entry's stubs, read from `entry` where absent.
+
+    A mapping already holding an entry is the run's, read when its first
+    bundle was compiled, so a dispatched bundle keeps it.
+    """
+    if substitution.entry is not None:
+        return substitution
+    pairs = entry_stubs(entry, read[entry.path].conversion)
+    return substitution.stubbed(
+        entry.path, {key: one.substitute for key, one in pairs.items()}
+    )
+
+
+def stub_off_entry(one: Reference, conversion: Conversion) -> None:
+    """Refuse a stub declared by a document other than the run's entry.
+
+    A stub binds trial material, and the run's entry is its one channel:
+    its pairs reach every document the run compiles, so a document under
+    test carries none.
+    """
+    stub = next((preset for preset in conversion.presets if preset.stub), None)
+    if stub is not None:
+        raise input_failure(
+            f"{one.path!r} declares the stub {stub.name!r}, and a stub is "
+            f"declared by the run's entry alone, whose pairs reach every "
+            f"document the run compiles",
+            code=STUB_OFF_ENTRY,
+            remedy="declare the stub in the run's entry",
+            reference=one.original,
+            resolved=one.path,
+            chain=one.chain,
+        )
+
+
 def traverse(
     root: Path,
     requested: Sequence[Reference],
@@ -2838,8 +2897,10 @@ def traverse(
     that round.
 
     Every source is held with the run's names, the names its entry
-    title gives, so each document's stubs they name are in force
-    wherever the run compiles it, whatever reference reaches it.
+    title gives. The stubs they select are the run's entry's, read into
+    the mapping once the entry is read, as `staked` states, so their
+    pairs redirect the links of every document the run compiles. A
+    document other than that entry declaring a stub fails the run.
 
     Each withheld reference's pick is held to its target's declaration
     where `picking` holds. A traversal standing in for the run that
@@ -2861,6 +2922,7 @@ def traverse(
     dispatching: dict[tuple[str, frozenset[str]], Hop] = {}
     composed_itself: dict[tuple[Location | None, str | None], Diagnostic] = {}
     total = 0
+    entry = substitution.entry or requested[0].path
 
     def load(one: Reference) -> None:
         nonlocal total
@@ -2869,6 +2931,8 @@ def traverse(
             return
         limits.hold(FILES, len(read) + 1)
         opened = read_document(root, one, limits, total)
+        if one.path != entry:
+            stub_off_entry(one, opened.source.conversion)
         source = stubbed(opened.source, run)
         environment: dict[str, Any] = {}
         try:
@@ -2890,6 +2954,7 @@ def traverse(
     while frontier:
         for one in frontier:
             load(one)
+        substitution = staked(substitution, requested[0], read)
         discovered: list[Reference] = []
         reselecting: list[Reference] = []
         carried = contributing(found)
@@ -4679,7 +4744,8 @@ class Compiled:
     composed copies, which the run weighs against every reference it
     resolved. The linked identities are those `linked` reads from each
     document a routing pair is in force for, which a routing pair is
-    weighed against.
+    weighed against. The substitution is the run's mapping, holding its
+    entry's stubs, which every dispatched bundle compiles under.
     """
 
     text: str
@@ -4696,6 +4762,7 @@ class Compiled:
     ]
     linked: Mapping[str, frozenset[tuple[str, str | None]]]
     models: tuple[tuple[str, str], ...] = ()
+    substitution: Substitution = UNSUBSTITUTED
 
     def in_force(self) -> Iterator[tuple[str, tuple[str, str | None], Governed]]:
         """Each pair in force for a document, its group's then its copies', by path."""
@@ -4727,11 +4794,14 @@ def compiled(
     counted from its own entry.
 
     Each document's links resolve under the `subst` pairs its own presets
-    put in force for the references this bundle carries, and every bundle
-    of the run records its substitutions in the run's one mapping.
+    put in force for the references this bundle carries, and under the
+    run's stubs, and every bundle of the run records its substitutions in
+    the run's one mapping. A mapping holding no entry is given the
+    bundle's own entry's stubs, as `staked` states, since that entry is
+    then the run's.
 
-    `run` holds the run's names, which select the stubs of every
-    document the bundle reads, a dispatched bundle's among them.
+    `run` holds the run's names, which select the stubs of the run's
+    entry.
 
     `entry` is the selection of the run's entry, which names the run
     folder the bundle is written into, and is the bundle's own where
@@ -4749,6 +4819,7 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    substitution = staked(substitution, requested[0], read)
     if models is None:
         models = entry_models(requested[0], read[requested[0].path].conversion)
     read = levelled(read, models)
@@ -4842,6 +4913,7 @@ def compiled(
             }
         },
         models,
+        substitution,
     )
 
 
@@ -4974,7 +5046,6 @@ def dispatched_set(
     entry: Compiled,
     single: Collection[BundleSelection],
     options: argparse.Namespace,
-    substitution: Substitution = UNSUBSTITUTED,
     run: frozenset[str] = frozenset(),
 ) -> dict[BundleSelection, Compiled]:
     """Every dispatched bundle, transitively, by its effective selection.
@@ -4982,8 +5053,8 @@ def dispatched_set(
     Each distinct selection is compiled once, as its own entry, in the
     order the dispatches reaching it were read. A dispatch naming the
     run's own single selection is the entry's bundle. Each is compiled
-    under the run's names, so the stubs they select are in force in
-    every bundle of the run.
+    under the entry bundle's mapping, so the stubs the run's names
+    select are in force in every bundle of the run.
     """
     built: dict[BundleSelection, Compiled] = {}
     pending = list(entry.hops.items())
@@ -4993,7 +5064,13 @@ def dispatched_set(
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
         one = compiled(
-            root, [target], options, substitution, run, entry.selection, entry.models
+            root,
+            [target],
+            options,
+            entry.substitution,
+            run,
+            entry.selection,
+            entry.models,
         )
         built[selected] = one
         pending.extend(one.hops.items())
@@ -5079,7 +5156,7 @@ def execute(arguments: Sequence[str], stdout: IO[str], reporter: Reporter) -> in
     first = compiled(root, requested, options, mapping, run)
     folder = run_folder(output, first.selection)
     single = {first.selection}
-    built = dispatched_set(root, first, single, options, mapping, run)
+    built = dispatched_set(root, first, single, options, run)
 
     def onward(target: BundleSelection) -> Mapping[BundleSelection, Hop]:
         return first.hops if target in single else built[target].hops

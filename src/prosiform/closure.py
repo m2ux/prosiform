@@ -190,7 +190,7 @@ def matching_presets(
     Tags hold normalized complete names. An unmatched name adds nothing,
     and the reserved default token supplies no named selection. A stub
     the run's own names select matches whatever the tags name, since
-    the run selects it wherever it compiles its document.
+    the run selects its entry's stubs wherever it compiles the entry.
     """
     return tuple(
         preset
@@ -282,9 +282,10 @@ class Redirects:
     substitution however many references named it — a document key
     serving the document and one of its sections included. A pair is its
     declaring document and its key, so two documents declaring one key
-    state two pairs, each recorded and served by the links its own
-    document writes. The first reference to reach one keeps the position
-    and destination the record carries. A pair is marked served by any
+    state two pairs, each recorded apart; a stub's pair is recorded under
+    the run's entry, whichever document's link it served. The first
+    reference to reach one keeps the position and destination the record
+    carries. A pair is marked served by any
     reference that named it, whether or not the record it wrote was the
     first. The position is the caller's to supply, because the lookup
     knows a reference was redirected and only the traversal knows where
@@ -342,9 +343,9 @@ class Substitution:
     and every fragment of it.
 
     A link is resolved through the mapping in force for the document that
-    wrote it, which `writing` reads, so a pair reaches the links its
-    declaring document writes and no other document's. A mapping naming
-    no `writer` redirects nothing.
+    wrote it, which `writing` reads, so a document's pair reaches the
+    links that document writes and no other document's; the run's stubs
+    alone reach further. A mapping naming no `writer` redirects nothing.
 
     `documents` holds the pairs in force for a document's own group, and
     `contributions` those for each composed copy of one of its sections,
@@ -353,6 +354,16 @@ class Substitution:
     selects a copy's pairs, and the selection names the document it was
     taken for, so a link another document writes while that copy is read
     resolves under its own document's group pairs.
+
+    `stubs` holds the pairs of the stubs the run's entry declares and
+    the run's names select, and `entry` that entry's path, which serves
+    them. They are in force for the links every document of the run
+    writes, and hold over a document's own pair for one key. A stand-in
+    is a source in every respect, so a pair naming it as the substitute
+    for another document leaves its links alone, and they reach the
+    material it stands in for. A mapping
+    naming no `entry` is one no run has read its entry into, and holds
+    no stub.
 
     A lookup returns the substitute's reference whole — its path, its
     section and its authored access walk — while the text the reference
@@ -376,6 +387,8 @@ class Substitution:
         tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Reference]
     ] = MappingProxyType({})
     selection: tuple[str, frozenset[str]] | None = None
+    entry: str | None = None
+    stubs: Mapping[tuple[str, str | None], Reference] = MappingProxyType({})
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -398,6 +411,13 @@ class Substitution:
                 }
             ),
         )
+        object.__setattr__(self, "stubs", MappingProxyType(dict(self.stubs)))
+
+    def stubbed(
+        self, entry: str, stubs: Mapping[tuple[str, str | None], Reference]
+    ) -> "Substitution":
+        """This mapping with the run's entry and its stubs' pairs, one record shared."""
+        return replace(self, entry=entry, stubs=stubs)
 
     def governed(
         self,
@@ -442,7 +462,11 @@ class Substitution:
         that document: the substitute's path is taken and the section
         stays the one the reference named. A key the first lookup finds
         states the section the run reads instead, so its section is the
-        substitute's whole.
+        substitute's whole. Each lookup asks the run's stubs before the
+        writer's pairs, so the entry's pair holds over the writer's for
+        one key, and a stub's pair is served by the entry declaring it. A
+        stub pair whose substitute is the writer, a stand-in apart from
+        the document its key names, is not asked.
 
         Requested tags and diagnostic context belong to the occurrence.
         They remain on the redirected reference; the destination's own
@@ -462,15 +486,25 @@ class Substitution:
             if self.selection is not None and self.selection[0] == self.writer
             else self.documents.get(self.writer or "", {})
         )
-        if found.external or not pairs:
+        if found.external or self.writer is None:
             return found
-        key: tuple[str, str | None] = (found.path, found.fragment)
-        named = pairs.get(key)
-        if named is None:
-            key = (found.path, None)
-            named = pairs.get(key)
-        if named is None or self.writer is None:
+        stubs = {
+            key: one
+            for key, one in self.stubs.items()
+            if one.path != self.writer or key[0] == self.writer
+        }
+        served = next(
+            (
+                (serving, key, held[key])
+                for key in ((found.path, found.fragment), (found.path, None))
+                for serving, held in ((self.entry, stubs), (self.writer, pairs))
+                if serving is not None and key in held
+            ),
+            None,
+        )
+        if served is None:
             return found
+        serving, key, named = served
         substituted = replace(
             found,
             path=named.path,
@@ -478,7 +512,7 @@ class Substitution:
             walk=named.walk,
             redirected=True,
         )
-        self.redirects.record((self.writer, key), named, substituted, found, origin)
+        self.redirects.record((serving, key), named, substituted, found, origin)
         return substituted
 
 

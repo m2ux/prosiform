@@ -1,0 +1,20 @@
+description = "Under an entry declaring and naming recorded, a deferral to stage.md titled checks publishes checks, recorded and no pair of the entry, so the entry's pair, which no link of this run uses, warns as unused."
+
+clauses = [
+  "Presets — A deferral carries the run's names",
+  "Presets — Stubs",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Entry](entry.md \"recorded\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry--p-d39dc21d7beb9d3b49138e616dc40270f2e7e38f8c4a1f06201d6e2a6cb1d52e.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "review.md"

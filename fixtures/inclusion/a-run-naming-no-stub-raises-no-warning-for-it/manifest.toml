@@ -1,4 +1,4 @@
-description = "A plain path names no stub, so the recorded stub of the dispatched stage.md stays unselected: the stage reads its live review, takes no preset qualifier, and the run raises no W_PRESET_UNUSED for the stub."
+description = "A plain path names no stub, so the recorded stub the entry declares stays unselected: the dispatched stage reads its live review and the run raises no W_PRESET_UNUSED for the stub."
 
 clauses = [
   "Presets — A preset nothing selected warns",

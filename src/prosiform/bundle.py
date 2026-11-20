@@ -899,8 +899,9 @@ def target(
 
     A deferral's destination is titled with the run's names its
     target's settings carry beyond those its title states, so the run
-    compiling it selects the same stubs. A dispatch to a bundle file is
-    followed by the model `model_of` gives its target, where it gives one.
+    compiling it selects its target's stubs of those names. A dispatch to
+    a bundle file is followed by the model `model_of` gives its target,
+    where it gives one.
     """
     found = bundled(path, destination, opening, declarations, substitution)
     if found is not None:

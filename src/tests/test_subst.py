@@ -846,6 +846,44 @@ def test_a_documents_pair_records_to_the_runs_record() -> None:
     assert mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
 
 
+RECORDED = Reference("recorded.md", "recorded.md", walk="recorded.md")
+STUBBED = GOVERNED.stubbed("entry.md", {("rules.md", None): RECORDED})
+
+
+def test_an_entry_stub_redirects_every_documents_links() -> None:
+    assert identity(inside("notes.md", "rules.md", STUBBED)) == "recorded.md"
+
+
+def test_an_entry_stub_holds_over_a_documents_pair_for_one_key() -> None:
+    assert identity(inside("guide.md", "rules.md", STUBBED)) == "recorded.md"
+    assert STUBBED.redirects.served(("entry.md", ("rules.md", None)), RECORDED)
+
+
+def test_a_stand_in_reaches_the_material_it_stands_in_for() -> None:
+    assert identity(inside("recorded.md", "rules.md#one", STUBBED)) == "rules.md#one"
+
+
+def test_a_section_substitute_in_its_keys_document_redirects_that_document() -> None:
+    lenient = Reference("#lenient", "rules.md", "lenient", walk="rules.md")
+    stubbed = Substitution().stubbed("entry.md", {("rules.md", "strict"): lenient})
+    assert identity(inside("rules.md", "#strict", stubbed)) == "rules.md#lenient"
+
+
+def test_a_stand_in_keeps_every_other_stub() -> None:
+    stubbed = Substitution().stubbed(
+        "entry.md",
+        {("rules.md", None): RECORDED, ("notes.md", None): SUBSTITUTE},
+    )
+    assert identity(inside("recorded.md", "notes.md", stubbed)) == "stand-in.md"
+
+
+def test_a_documents_section_key_holds_over_an_entry_stubs_document_key() -> None:
+    mapped = Substitution().governed({"guide.md": {("rules.md", "one"): SECTION}})
+    stubbed = mapped.stubbed("entry.md", {("rules.md", None): RECORDED})
+    assert identity(inside("guide.md", "rules.md#one", stubbed)) == "stand-in.md#one"
+    assert identity(inside("guide.md", "rules.md#two", stubbed)) == "recorded.md#two"
+
+
 def test_reading_what_a_heading_shows_records_no_substitution() -> None:
     """The heading-text path decides what a heading shows and serves no key."""
     mapped = writing({("rules.md", None): SUBSTITUTE})

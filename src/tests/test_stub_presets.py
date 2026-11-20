@@ -1,4 +1,4 @@
-"""Stub presets: trial material the run's entry names select in every bundle."""
+"""Stub presets: trial material the run's entry declares for every bundle."""
 
 from pathlib import Path
 
@@ -9,16 +9,17 @@ from test_metadata import parse
 from prosiform.diagnostics import Location
 from prosiform.metadata import InvalidMetadata
 
-STAGE = (
+STUB = (
     "---\nprosiform:\n  recorded:\n"
     "    stub: Reads the recorded reference.\n"
     "    subst: [{reference.md: stub.md}]\n---\n"
-    "# Stage\n\n1. Read the [Reference](reference.md).\n"
 )
+STAGE = DECLARED + "# Stage\n\n1. Read the [Reference](reference.md).\n"
 
 
-def tree(root: Path, entry: str) -> None:
-    written(root, "entry.md", DECLARED + "# Entry\n\n" + entry + "\n")
+def tree(root: Path, entry: str, stubbed: bool = True) -> None:
+    head = STUB if stubbed else DECLARED
+    written(root, "entry.md", head + "# Entry\n\n" + entry + "\n")
     written(root, "stage.md", STAGE)
     written(root, "reference.md", DECLARED + "# Reference\n\nLIVE\n")
     written(root, "stub.md", DECLARED + "# Reference\n\nRECORDED\n")
@@ -73,7 +74,23 @@ def test_the_entry_name_selects_a_stub_below_a_dispatch(tmp_path: Path) -> None:
     assert codes(run.stderr) == ["W_SUBST_USED"]
     (dispatched,) = (text for name, text in run.bundles.items() if "stage" in name)
     assert "RECORDED" in dispatched and "LIVE" not in dispatched
-    assert "stage--p-" in run.bundle
+    assert "[⇉ Stage](stage.bundle.md)" in run.bundle
+
+
+def test_an_entry_stub_holds_over_the_stage_s_own_pair(tmp_path: Path) -> None:
+    tree(tmp_path, "Hand over [⇉ Stage](stage.md).")
+    written(
+        tmp_path,
+        "stage.md",
+        "---\nprosiform:\n  default:\n    subst: [{reference.md: draft.md}]\n"
+        "---\n# Stage\n\n1. Read the [Reference](reference.md).\n",
+    )
+    written(tmp_path, "draft.md", DECLARED + "# Reference\n\nDRAFT\n")
+    run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
+    assert run.status == 0, run.stderr
+    (dispatched,) = (text for name, text in run.bundles.items() if "stage" in name)
+    assert "RECORDED" in dispatched and "DRAFT" not in dispatched
+    assert codes(run.stderr) == ["W_SUBST_USED", "W_SUBST_UNUSED"]
 
 
 def test_a_run_naming_no_stub_is_silent(tmp_path: Path) -> None:
@@ -84,19 +101,22 @@ def test_a_run_naming_no_stub_is_silent(tmp_path: Path) -> None:
     assert "[⇉ Stage](stage.bundle.md)" in run.bundle
 
 
-def test_a_link_title_naming_a_stub_selects_it(tmp_path: Path) -> None:
-    tree(tmp_path, '1. Read the [Stage](stage.md "recorded").')
-    run = invoke("entry.md", cwd=tmp_path)
-    assert run.status == 0, run.stderr
-    assert "RECORDED" in run.bundle and "LIVE" not in run.bundle
+def test_a_stub_below_the_entry_is_refused(tmp_path: Path) -> None:
+    tree(tmp_path, "Hand over [⇉ Stage](stage.md).", stubbed=False)
+    written(tmp_path, "stage.md", STUB + "# Stage\n\n1. Read [it](reference.md).\n")
+    run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
+    assert run.status == 1
+    assert codes(run.stderr) == ["E_STUB_OFF_ENTRY"]
+    assert run.bundles == {}
 
 
 def test_an_entry_name_leaves_an_ordinary_preset_unselected(tmp_path: Path) -> None:
-    tree(tmp_path, "Hand over [⇉ Stage](stage.md).")
+    tree(tmp_path, "Hand over [⇉ Stage](stage.md).", stubbed=False)
     written(
         tmp_path,
         "stage.md",
-        STAGE.replace("    stub: Reads the recorded reference.\n", ""),
+        STUB.replace("    stub: Reads the recorded reference.\n", "")
+        + "# Stage\n\n1. Read the [Reference](reference.md).\n",
     )
     run = invoke('[Entry](entry.md "recorded")', cwd=tmp_path)
     assert run.status == 0, run.stderr
