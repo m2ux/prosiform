@@ -1,4 +1,4 @@
-description = "A link written by a document whose default preset states subst: [{rules.md: stub.md}] compiles stub.md in place of rules.md, the substitute the pair rules.md=stub.md compiled on the command line, and the run states the substitution it performed."
+description = "A link written by a document whose default preset states subst: [{rules.md: stub.md}] compiles stub.md in place of rules.md, the substitute the pair rules.md=stub.md compiled on the command line, and the default pair is a route its author declared, so the run raises nothing."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -14,14 +14,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "rules.md"
-resolved = "stub.md"
-
-[expected.diagnostics.location]
-file = "guide.md"
-line = 10
-column = 1
+diagnostics = []

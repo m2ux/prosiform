@@ -1,4 +1,4 @@
-description = "A later incoming tag activates a substitution on a dispatched link. The run publishes only the entry and effective new target, with the final dispatch destination and one substitution warning; the transient old target produces no bundle."
+description = "A later incoming tag activates a substitution on a dispatched link. The run publishes only the entry and effective new target, with the final dispatch destination and no warning for the route; the transient old target produces no bundle."
 
 clauses = ["Link classification and resource handling — Dispatched bundles", "Link classification and resource handling — Dispatch links", "Presets — Selection by tags", "Presets — One document under several selections"]
 
@@ -9,9 +9,4 @@ arguments = ["entry.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/entry.bundle.md", "expected/new.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "old.md"
-resolved = "new.md"
+diagnostics = []

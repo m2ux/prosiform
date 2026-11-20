@@ -1,0 +1,17 @@
+description = "The link title epic, mock picks the one alternative of work-kind.md beside its ordinary mock preset, and both state the pair that routes body.md to epic-body.md, the alternative declared first. A pair an ordinary preset or an alternative states routes, so the link it redirected raises nothing, as with the ordinary preset declared first."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Presets — Selected presets union",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

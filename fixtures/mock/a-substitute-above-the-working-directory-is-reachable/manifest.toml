@@ -1,4 +1,4 @@
-description = "A subst substitute carrying a parent segment, resolved from its key's directory, reaches a substitute beside the source tree and above the working directory the run reads from, and the run states the substitution it performed."
+description = "A subst substitute carrying a parent segment, resolved from its key's directory, reaches a substitute beside the source tree and above the working directory the run reads from."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -13,14 +13,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "rules.md"
-resolved = "../stand-in.md"
-
-[expected.diagnostics.location]
-file = "guide.md"
-line = 7
-column = 1
+diagnostics = []

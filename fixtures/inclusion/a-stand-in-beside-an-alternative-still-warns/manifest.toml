@@ -1,19 +1,19 @@
-description = "The link title epic, mock picks the one alternative of work-kind.md beside its ordinary mock preset. The epic route to epic-body.md raises nothing, while mock's pair, which stands stub.md in for checklist.md, warns W_SUBST_USED at the link it redirected, so a build against stand-ins stays flagged."
+description = "The link title epic picks the one alternative of work-kind.md, while the entry's stub mock, which its title selects, stands stub.md in for checklist.md. The epic route to epic-body.md raises nothing, while the stub's pair warns W_SUBST_USED at the link it redirected, so a build against stand-ins stays flagged."
 
 clauses = [
   "Presets — Selection by tags",
-  "Presets — Selected presets union",
+  "Presets — Stubs",
   "Link classification and resource handling — The substitution mapping",
   "Exit status and JSON diagnostics — 0",
 ]
 
 [invocation]
 cwd = "source"
-arguments = ["guide.md"]
+arguments = ["[Guide](guide.md \"mock\")"]
 
 [expected]
 exit_status = 0
-bundles = ["expected/guide.bundle.md"]
+bundles = ["expected/guide--p-23fe63642f2f8c3bdcace82f3fe6ff2ec166e8b1e0310b7e250e97cf44d27878.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
@@ -23,5 +23,5 @@ resolved = "stub.md"
 
 [expected.diagnostics.location]
 file = "work-kind.md"
-line = 13
+line = 11
 column = 1

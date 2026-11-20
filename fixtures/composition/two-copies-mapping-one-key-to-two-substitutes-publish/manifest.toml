@@ -1,4 +1,4 @@
-description = "One section is composed twice, by directives selecting stage.md's first and second presets, which map body.md to two different substitutes. Each copy resolves under its own directive's presets alone, so the two publish each with its own substitute, and the run reports each substitution at the section's source line."
+description = "One section is composed twice, by directives selecting stage.md's first and second presets, which map body.md to two different substitutes. Each copy resolves under its own directive's presets alone, so the two publish each with its own substitute, and neither route raises a warning."
 
 clauses = [
   "Section composition — Presets and subst",
@@ -14,25 +14,4 @@ exit_status = 0
 bundles = [
   "expected/guide.bundle.md",
 ]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "body.md#body"
-resolved = "first-body.md#body"
-
-[expected.diagnostics.location]
-file = "stage.md"
-line = 12
-column = 1
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "body.md#body"
-resolved = "second-body.md#body"
-
-[expected.diagnostics.location]
-file = "stage.md"
-line = 12
-column = 1
+diagnostics = []

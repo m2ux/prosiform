@@ -1,4 +1,4 @@
-description = "The entry's recorded stub and stage.md's default both map review.md, so the stage's link resolves to the entry's substitute, and the stage's own pair, serving no link, warns as unused."
+description = "The entry's recorded stub and stage.md's default both map review.md, so the stage's link resolves to the entry's substitute and warns W_SUBST_USED as a stand-in, and the stage's own pair, a route its link names, raises nothing."
 
 clauses = [
   "Presets — Stubs",
@@ -24,8 +24,3 @@ resolved = "recorded-review.md"
 file = "stage.md"
 line = 10
 column = 1
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_UNUSED"
-source = "review.md"
