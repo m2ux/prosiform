@@ -130,8 +130,10 @@ from prosiform.closure import (
     BundleFolder,
     BundleSelection,
     Declarations,
+    Levels,
     Reference,
     Substitution,
+    Unmapped,
     Unresolvable,
     briefing,
     bundle_selection,
@@ -388,13 +390,16 @@ def escaped(text: str) -> str:
     return OPENER.sub(r"\\\1", text)
 
 
-def started_on(model: str | None) -> str:
+def started_on(model: str | None, *, visible: bool = False) -> str:
     """The text a published dispatch line or link carries after its link.
 
     It names the model the dispatch's sub-agent starts on, and is empty
-    where its target has no level.
+    where its target has no level. It is written as Markdown, or, where
+    `visible`, as the text a reader reads.
     """
-    return "" if model is None else f" {MODEL_LEAD} {escaped(model)}"
+    if model is None:
+        return ""
+    return f" {MODEL_LEAD} {model if visible else escaped(model)}"
 
 
 def is_atx(token: Token) -> bool:
@@ -528,7 +533,9 @@ def emitted_visible(
     selected content, where the link's position is known.
 
     A dispatch pointing at a bundle file is followed by the model
-    `model_of` gives its target, where the conversions read give one.
+    `started_on` writes. A link the run publishes no dispatch for, as
+    in a heading outside the selection, is read with none, since the
+    run refuses every level a published dispatch leaves unresolved.
     """
     substitution = substitution.unrecorded()
     children = inline.children or []
@@ -558,15 +565,18 @@ def emitted_visible(
                     briefs(target, conversions),
                 )
                 shown_label = published_text(child.content, file)
-                model = (
-                    model_of(target, conversions[target.path])
-                    if file
+                model = None
+                if (
+                    file
                     and dispatched(child.content)
                     and conversions is not None
                     and target.path in conversions
-                    else None
-                )
-                following = "" if model is None else f" {MODEL_LEAD} {model}"
+                ):
+                    try:
+                        model = model_of(target, conversions[target.path])
+                    except (Levels, Unmapped):
+                        pass
+                following = started_on(model, visible=True)
             elif directive(child.content):
                 shown_label = unmarked(child.content)
             else:

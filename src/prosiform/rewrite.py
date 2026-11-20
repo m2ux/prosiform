@@ -697,16 +697,18 @@ def edits(
     after the destination as a title of their own where the use writes
     none. Neither edit reaches a span another edit names.
 
-    A followed destination's text is written after the use's end, which
-    no other edit of the use reaches.
+    A followed destination's text is written at the use's end: after the
+    edit ending there, a shortcut use's destination, so the two stay in
+    order, and as an edit of its own otherwise.
     """
     names: tuple[str, ...] = ()
     found: list[tuple[int, int, str]] = []
+    after = ""
     if isinstance(destination, Titled):
         names = destination.names
         destination = destination.destination
     if isinstance(destination, Followed):
-        found.append((one.end, one.end, destination.after))
+        after = destination.after
         destination = destination.destination
     if one.definition is not None:
         found.append((*one.target, published(one.definition, destination, names)))
@@ -725,6 +727,13 @@ def edits(
         assert lead is not None
         prefix = shown[: len(shown) - (len(label) - lead.after)]
         found.append((one.label[0], one.label[0] + lead.after, prefix))
+    if after:
+        ending = next((at for at, edit in enumerate(found) if edit[1] == one.end), None)
+        if ending is None:
+            found.append((one.end, one.end, after))
+        else:
+            start, end, written = found[ending]
+            found[ending] = (start, end, written + after)
     return found
 
 
