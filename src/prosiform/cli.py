@@ -656,11 +656,11 @@ def substs(conversion: Conversion) -> None:
 
 
 def subst_identity(text: str, document: str) -> tuple[str, str | None]:
-    """The document and section one `subst` side names, read from its document.
+    """The document and section one `subst` key names, read from its document.
 
-    A side resolves from the declaring document's directory, as every
-    reference the document writes does, and a side naming a section
-    alone names a section of the declaring document.
+    A key resolves from the declaring document's directory, as every
+    reference the document writes does, so one declaration reads the
+    same wherever the run starts.
     """
     found = resolve(text, posixpath.dirname(document))
     return (found.path or document, found.fragment)
@@ -709,8 +709,8 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
     references it redirects, which a section alone does not. A
     substitute naming no Markdown document is refused the same way,
     because the reference it redirects could only be published as text.
-    Identities are read from the declaring document, the reference that
-    opened it being `found`.
+    Identities are read as `subst_identity` and `subst_reference` read
+    them, the reference that opened the declaring document being `found`.
     """
     for preset in conversion.presets:
         keys: dict[tuple[str, str | None], int] = {}
@@ -725,7 +725,8 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
                     pair.location,
                 )
             key = subst_identity(pair.original, found.path)
-            if not is_markdown(subst_identity(pair.substitute, found.path)[0]):
+            substitute = subst_reference(pair, found.path)
+            if not is_markdown(substitute.path):
                 raise preset_refusal(
                     f"{entry} maps {pair.original!r} to {pair.substitute!r}, which "
                     f"names no Markdown document, so the reference it redirects "
@@ -734,7 +735,7 @@ def stated_once(conversion: Conversion, found: Reference) -> None:
                     found,
                     pair.location,
                 )
-            if key == subst_identity(pair.substitute, found.path):
+            if key == (substitute.path, substitute.fragment):
                 raise preset_refusal(
                     f"{entry} maps {pair.original!r} to {pair.substitute!r}, which "
                     f"name one identity, so the substitute stands in for itself",
@@ -798,8 +799,8 @@ def agreed(
         for pair in preset.substs:
             key = subst_identity(pair.original, document)
             named_first, first_pair = substitutes.setdefault(key, (preset.name, pair))
-            if subst_identity(first_pair.substitute, document) != subst_identity(
-                pair.substitute, document
+            if identity(subst_reference(first_pair, document)) != identity(
+                subst_reference(pair, document)
             ):
                 raise preset_refusal(
                     f"prosiform.{named_first}.{SUBST} and "
@@ -822,8 +823,8 @@ class Governed:
     """One `subst` pair in force for the links a document writes.
 
     `preset` names the preset stating it, `pair` the entry as written and
-    `substitute` the reference the entry's substitute resolves to from the
-    declaring document. `routing` holds for a pair that routes the
+    `substitute` the reference the entry's substitute resolves to, as
+    `subst_reference` reads it. `routing` holds for a pair that routes the
     document's links to the picked kind's material, as `layer` decides,
     and is false for one standing in for material under test.
     """
@@ -834,18 +835,24 @@ class Governed:
     routing: bool = False
 
 
-def subst_reference(text: str, document: str) -> Reference:
-    """One `subst` substitute as the reference the run reads, from its document.
+def subst_reference(pair: Subst, document: str) -> Reference:
+    """One `subst` substitute as the reference the run reads.
 
-    It resolves as a link the document writes resolves: from the
-    document's directory, a section alone naming a section of the
-    document itself, and opened through the walk from that directory.
+    It resolves as a link written in its key's document resolves: from
+    that document's directory, a section alone naming a section of that
+    document, and opened through the walk from that directory. The key
+    resolves from the declaring document, `document`, as
+    `subst_identity` states, and its walk is the one the declaring
+    document's link to it takes.
     """
-    base = posixpath.dirname(document)
-    found = resolve(text, base)
-    if not components(text).path:
-        return replace(found, path=document, walk=document)
-    return replace(found, walk=posixpath.join(base, found.walk or found.path))
+    key = resolve(pair.original, posixpath.dirname(document))
+    walk = posixpath.join(posixpath.dirname(document), key.walk or key.path)
+    found = resolve(pair.substitute, posixpath.dirname(key.path))
+    if not components(pair.substitute).path:
+        return replace(found, path=key.path, walk=walk)
+    return replace(
+        found, walk=posixpath.join(posixpath.dirname(walk), found.walk or found.path)
+    )
 
 
 def picked(
@@ -1147,7 +1154,7 @@ def defaults(
     """The `subst` pairs a document's `default` puts in force wherever it compiles."""
     return {
         subst_identity(pair.original, path): Governed(
-            DEFAULT, pair, subst_reference(pair.substitute, path)
+            DEFAULT, pair, subst_reference(pair, path)
         )
         for pair in conversion.default.substs
     }
@@ -1173,7 +1180,7 @@ def layer(
     """
     for pair in preset.substs:
         key = subst_identity(pair.original, path)
-        substitute = subst_reference(pair.substitute, path)
+        substitute = subst_reference(pair, path)
         held = standing.get(key)
         one = Governed(
             preset.name,

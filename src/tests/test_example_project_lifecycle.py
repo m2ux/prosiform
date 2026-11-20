@@ -162,7 +162,7 @@ def test_an_adapter_binds_through_one_preset_and_one_link(tmp_path: Path) -> Non
     lifecycle.write_text(
         lifecycle.read_text().replace(
             "---\n\n# Project Lifecycle",
-            "  iterative:\n    subst:\n      - {sdlc/ad-hoc.md: sdlc/iterative.md}\n"
+            "  iterative:\n    subst:\n      - {sdlc/ad-hoc.md: iterative.md}\n"
             "---\n\n# Project Lifecycle",
         )
     )
