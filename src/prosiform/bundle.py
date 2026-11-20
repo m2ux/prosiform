@@ -130,8 +130,10 @@ from prosiform.closure import (
     BundleFolder,
     BundleSelection,
     Declarations,
+    Levels,
     Reference,
     Substitution,
+    Unmapped,
     Unresolvable,
     briefing,
     bundle_selection,
@@ -140,6 +142,7 @@ from prosiform.closure import (
     directive,
     dispatched,
     filed,
+    model_of,
     parallel,
     picking,
     published_text,
@@ -170,12 +173,13 @@ from prosiform.provenance import (
     click_at,
     link_at,
 )
-from prosiform.rewrite import Definition, Titled, destinations, rewritten
+from prosiform.rewrite import Definition, Followed, Titled, destinations, rewritten
 from prosiform.source import (
     ANCHOR,
     FENCE,
     HREF,
     LINE_FEED,
+    LINK_CLOSE,
     LINK_OPEN,
     QUOTE,
     TEXT,
@@ -215,6 +219,10 @@ SPACE = " "
 HEADING_OPEN = "heading_open"
 
 RUN_PF = "Run `pf`, then follow the guidance it prints."
+MODEL_LEAD = "on"
+MODEL_COMMENT = "%%"
+"""What opens the Mermaid comment line naming a diagram dispatch's model."""
+"""What stands between a published dispatch and the model its sub-agent starts on."""
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -384,6 +392,18 @@ def escaped(text: str) -> str:
     return OPENER.sub(r"\\\1", text)
 
 
+def started_on(model: str | None, *, visible: bool = False) -> str:
+    """The text a published dispatch line or link carries after its link.
+
+    It names the model the dispatch's sub-agent starts on, and is empty
+    where its target has no level. It is written as Markdown, or, where
+    `visible`, as the text a reader reads.
+    """
+    if model is None:
+        return ""
+    return f" {MODEL_LEAD} {model if visible else escaped(model)}"
+
+
 def is_atx(token: Token) -> bool:
     """Whether a heading is written with the heading syntax a shift edits."""
     return token.markup.startswith(ATX)
@@ -513,12 +533,22 @@ def emitted_visible(
     whether or not the run selected it, so the lookup records no
     substitution: a pair is used by a reference the bundle composes from
     selected content, where the link's position is known.
+
+    A dispatch pointing at a bundle file is followed by the model
+    `started_on` writes. A link the run publishes no dispatch for, as
+    in a heading outside the selection, is read with none, since the
+    run refuses every level a published dispatch leaves unresolved.
     """
     substitution = substitution.unrecorded()
     children = inline.children or []
     carried: list[str] = []
+    following = ""
     for at, child in enumerate(children):
         before = children[at - 1] if at else None
+        if child.type == LINK_CLOSE and following:
+            carried.extend((shown(child), following))
+            following = ""
+            continue
         if child.type == TEXT and before is not None and before.type == LINK_OPEN:
             target = withholding_target(
                 path,
@@ -529,16 +559,26 @@ def emitted_visible(
                 tags=read_tags(str(before.attrGet("title") or "")),
             )
             if target is not None:
-                shown_label = published_text(
+                file = pointing(
+                    target,
                     child.content,
-                    pointing(
-                        target,
-                        child.content,
-                        dispatched_to,
-                        alone,
-                        briefs(target, conversions),
-                    ),
+                    dispatched_to,
+                    alone,
+                    briefs(target, conversions),
                 )
+                shown_label = published_text(child.content, file)
+                model = None
+                if (
+                    file
+                    and dispatched(child.content)
+                    and conversions is not None
+                    and target.path in conversions
+                ):
+                    try:
+                        model = model_of(target, conversions[target.path])
+                    except (Levels, Unmapped):
+                        pass
+                following = started_on(model, visible=True)
             elif directive(child.content):
                 shown_label = unmarked(child.content)
             else:
@@ -763,7 +803,24 @@ def unplaced(
         raise Unplaced(path, start + first_line, destination, opening, composing=True)
 
 
-def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
+def model_comment(node: str, model: str) -> str:
+    """The Mermaid comment naming the model a diagram's dispatch starts on.
+
+    A diagram link's line holds a node, a destination and a tooltip
+    alone, so the model stands on a comment line of its own beneath it,
+    naming the node, which a renderer draws nothing for.
+    """
+    return f"{MODEL_COMMENT} {node} {MODEL_LEAD} {model}"
+
+
+def names_model(line: str, click: Click) -> bool:
+    """Whether one fence line is the comment `model_comment` writes for a click."""
+    return line.strip().startswith(f"{MODEL_COMMENT} {click.node} {MODEL_LEAD} ")
+
+
+def clicked(
+    physical: str, held: str, click: Click, given: str | Titled | Followed
+) -> str:
     """One physical line with one diagram link destination replaced.
 
     The fence holds the line without the container markers and indent
@@ -775,7 +832,8 @@ def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
     A titled destination is a deferring click's: the names its `source.Click`
     title gains are written before the tooltip's closing quote, after the
     title's tags, or as a tooltip of their own after the destination
-    where the click carries none.
+    where the click carries none. A followed destination is a dispatch's
+    naming a model, which `model_comment` writes on the line beneath.
     """
     after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
@@ -789,6 +847,14 @@ def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
             close = tip.end() - 1
             separator = ", " if click.title else ""
             rest = f"{rest[:close]}{separator}{names}{rest[close:]}"
+        given = given.destination
+    if isinstance(given, Followed):
+        # The comment opens with the markers and indent the link's line
+        # opens with, so it stays inside the fence and its container.
+        line = bare(physical)
+        lead = line[: len(line) - len(bare(held).lstrip())]
+        terminator = physical[len(line) :]
+        rest = f"{rest}{lead}{model_comment(click.node, given.model)}{terminator}"
         given = given.destination
     return f"{physical[: end - len(click.written)]}{given}{rest}"
 
@@ -807,7 +873,7 @@ def target(
     tags: frozenset[str] = frozenset(),
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
-) -> str | Titled | None:
+) -> str | Titled | Followed | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
@@ -833,7 +899,8 @@ def target(
 
     A deferral's destination is titled with the run's names its
     target's settings carry beyond those its title states, so the run
-    compiling it selects the same stubs.
+    compiling it selects the same stubs. A dispatch to a bundle file is
+    followed by the model `model_of` gives its target, where it gives one.
     """
     found = bundled(path, destination, opening, declarations, substitution)
     if found is not None:
@@ -848,7 +915,16 @@ def target(
         served = ((withheld.path, withheld.fragment), withheld.tags, parallel(opening))
         if served not in held:
             raise Unplaced(path, line, destination, opening, composing=False)
-        return held[served]
+        model = (
+            model_of(withheld, conversions[withheld.path])
+            if filed(held[served])
+            and conversions is not None
+            and withheld.path in conversions
+            else None
+        )
+        if model is None:
+            return held[served]
+        return Followed(held[served], started_on(model), model)
     names = carried_names(withheld, conversions)
     published = rebased(withheld, destination, folder)
     return Titled(published, names) if names else published

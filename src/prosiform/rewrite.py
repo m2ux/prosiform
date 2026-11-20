@@ -222,6 +222,20 @@ class Titled:
     names: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class Followed:
+    """A destination published with the model its dispatch starts on.
+
+    A dispatch to a bundle file whose target has a level names the model
+    its sub-agent starts on: `after` is the Markdown written after its
+    link, and `model` the name a diagram's comment line carries.
+    """
+
+    destination: str
+    after: str
+    model: str
+
+
 TITLE_ESCAPED = frozenset('\\"()&' + "'")
 """The characters a name written into a title is escaped in: every delimiter
 a title may close with, the escape itself and the one opening a character
@@ -658,7 +672,7 @@ def published(
 
 
 def edits(
-    one: Use, destination: str | Titled | None, label: str, text: str = ""
+    one: Use, destination: str | Titled | Followed | None, label: str, text: str = ""
 ) -> list[tuple[int, int, str]]:
     """The spans one use's emission replaces, and what it writes at each.
 
@@ -684,12 +698,20 @@ def edits(
     written before the authored title's close, which `text` holds, or
     after the destination as a title of their own where the use writes
     none. Neither edit reaches a span another edit names.
+
+    A followed destination's text is written at the use's end: after the
+    edit ending there, a shortcut use's destination, so the two stay in
+    order, and as an edit of its own otherwise.
     """
     names: tuple[str, ...] = ()
+    found: list[tuple[int, int, str]] = []
+    after = ""
     if isinstance(destination, Titled):
         names = destination.names
         destination = destination.destination
-    found: list[tuple[int, int, str]] = []
+    if isinstance(destination, Followed):
+        after = destination.after
+        destination = destination.destination
     if one.definition is not None:
         found.append((*one.target, published(one.definition, destination, names)))
     elif destination is not None:
@@ -707,6 +729,13 @@ def edits(
         assert lead is not None
         prefix = shown[: len(shown) - (len(label) - lead.after)]
         found.append((one.label[0], one.label[0] + lead.after, prefix))
+    if after:
+        ending = next((at for at, edit in enumerate(found) if edit[1] == one.end), None)
+        if ending is None:
+            found.append((one.end, one.end, after))
+        else:
+            start, end, written = found[ending]
+            found[ending] = (start, end, written + after)
     return found
 
 
@@ -894,7 +923,7 @@ def moved(at: int, start: int, end: int, width: int) -> int:
 def rewritten(
     physical: Sequence[str],
     inline: Token,
-    assigned: Sequence[str | Titled | None],
+    assigned: Sequence[str | Titled | Followed | None],
     defined: Mapping[str, Definition],
 ) -> list[str]:
     """The lines one run of inline text occupies, as the bundle publishes them.

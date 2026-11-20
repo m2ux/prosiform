@@ -742,6 +742,96 @@ def brief_of(tags: frozenset[str], conversion: Conversion) -> str | None:
     return conversion.default.brief
 
 
+class Levels(Exception):
+    """Two presets one reference selects, each stating a different level or model.
+
+    `level` names the level two `levels` maps give different models, and
+    is absent where the two presets state different `level`s.
+    """
+
+    def __init__(self, first: Preset, later: Preset, level: str | None) -> None:
+        field = "level" if level is None else f"levels.{level}"
+        stated = (
+            (first.level, later.level)
+            if level is None
+            else (dict(first.levels)[level], dict(later.levels)[level])
+        )
+        super().__init__(
+            f"prosiform.{first.name}.{field} and prosiform.{later.name}.{field} "
+            f"state {stated[0]!r} and {stated[1]!r}"
+        )
+        self.first = first
+        self.later = later
+
+
+class Unmapped(Exception):
+    """A level the run's level map names no model for."""
+
+    def __init__(self, level: str) -> None:
+        super().__init__(level)
+        self.level = level
+
+
+def level_of(tags: frozenset[str], conversion: Conversion) -> str | None:
+    """The capability level a reference selecting `tags` puts in force.
+
+    A named preset the tags select layers over `default`, so its level
+    holds over `default`'s. Two selected presets stating different
+    levels raise `Levels`. A document whose presets in force state none
+    has no level.
+    """
+    found: Preset | None = None
+    for preset in matching_presets(conversion, tags):
+        if preset.level is None:
+            continue
+        if found is not None and found.level != preset.level:
+            raise Levels(found, preset, None)
+        found = found or preset
+    if found is not None:
+        return found.level
+    return conversion.default.level
+
+
+def level_map(
+    tags: frozenset[str], conversion: Conversion
+) -> tuple[tuple[str, str], ...]:
+    """The level map a run entering a document with `tags` resolves every dispatch by.
+
+    Each named preset the tags select layers its `levels` over
+    `default`'s, level by level, and two selected presets giving one
+    level different models raise `Levels`. The map is read from the
+    run's entry alone, so `Conversion.models` carries it to every
+    document the run compiles.
+    """
+    held = dict(conversion.default.levels)
+    stated: dict[str, Preset] = {}
+    for preset in matching_presets(conversion, tags):
+        for level, model in preset.levels:
+            earlier = stated.get(level)
+            if earlier is not None and dict(earlier.levels)[level] != model:
+                raise Levels(earlier, preset, level)
+            stated.setdefault(level, preset)
+            held[level] = model
+    return tuple(held.items())
+
+
+def model_of(target: Reference, conversion: Conversion) -> str | None:
+    """The model a dispatch of `target` starts its sub-agent on, or none.
+
+    It is the model the run's level map gives the target's level, read
+    under the presets the dispatch selects, so a dispatch of a target
+    with no level names none. A level the map names no model for raises
+    `Unmapped`, since the run states no choice for it.
+    """
+    level = level_of(target.tags - {PICK}, conversion)
+    if level is None:
+        return None
+    model = dict(conversion.models).get(level)
+    if model is None:
+        raise Unmapped(level)
+    return model
+
+
 def briefing(target: Reference, conversion: Conversion) -> Reference | None:
     """The brief one dispatched target carries, as the composing reference it is.
 

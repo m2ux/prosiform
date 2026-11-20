@@ -1,0 +1,20 @@
+description = "A dispatch two levels below the entry resolves its target's level against the entry's levels, not the levels of the document writing it, which states none the run reads."
+
+clauses = [
+  "Link classification and resource handling — Dispatch models",
+  "Link classification and resource handling — Dispatched bundles",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/decide.bundle.md",
+  "expected/gather.bundle.md",
+  "expected/guide.bundle.md",
+]
+diagnostics = []

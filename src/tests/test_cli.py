@@ -66,6 +66,8 @@ from prosiform.cli import (
     INTERNAL_ERROR,
     INVALID_ENCODING,
     INVALID_USAGE,
+    LEVEL_ON_ENTRY,
+    LEVEL_UNMAPPED,
     PRESET_UNUSED,
     PUBLICATION_FAILED,
     PUBLICATION_FAILURE,
@@ -338,6 +340,12 @@ def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
         "Hand over the path and those inputs alone: "
         "add no instruction, framing or reply form." in guide
     )
+    assert (
+        "Where on <model> follows a ⇉ link, or a diagram's %% <node> on "
+        "<model> comment stands beneath its node's link, start its sub-agent "
+        "on that model; where neither does, start it as your harness does "
+        "by default." in guide
+    )
     assert "Give each bundle's file path to its own sub-agent at once" in guide
 
 
@@ -417,6 +425,8 @@ def test_the_codes_reported_are_the_codes_the_build_declares() -> None:
         GROUP_CONFLICT,
         INVALID_ENCODING,
         INVALID_USAGE,
+        LEVEL_ON_ENTRY,
+        LEVEL_UNMAPPED,
         PUBLICATION_FAILED,
         SOURCE_CHANGED,
         SOURCE_ACCESS,

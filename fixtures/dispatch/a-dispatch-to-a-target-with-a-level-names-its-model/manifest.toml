@@ -1,0 +1,22 @@
+description = "A ⇉ link to a target whose default preset states a level is published with on and the model the entry's levels give that level after the link, a ⇉ link to a target stating no level with nothing after it, and the dispatch line a lifted brief holds with its target's model."
+
+clauses = [
+  "Link classification and resource handling — Dispatch models",
+  "Conversion metadata — level and levels name a dispatch's model",
+  "Link classification and resource handling — Dispatch links",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/decide.bundle.md",
+  "expected/gather.bundle.md",
+  "expected/guide.bundle.md",
+  "expected/record.bundle.md",
+]
+diagnostics = []

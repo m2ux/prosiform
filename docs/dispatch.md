@@ -122,9 +122,50 @@ In a `⫽ Dispatch Set` sub-section holding a member that carries a brief, every
 
 Two `⇉` links in one section with the same text and effective selection share one sub-section, and so do two naming one target with the same title tags, under the first one's text, as they share one destination. A lifted sub-section, or a heading a brief emits, past H6 fails with `E_HEADING_DEPTH_OVERFLOW`, as a set's does. A lifted heading equal to an authored heading, to `⇉ Dispatch Pick`, or to another lifted heading naming a different selection fails with `E_HEADING_COLLISION`. A `brief` naming another document, or a fragment no reference decodes, fails with `E_INVALID_CONVERSION_METADATA`, and one naming a heading its document lacks with `E_TARGET_NOT_FOUND`. A `brief` in force for a link that is no dispatch has no effect.
 
+## Models
+
+A workflow's stages ask different things of the model that runs them: some read and record, others weigh evidence and judge. A stage declares the capability level its work needs, and the entry maps each level to a model, so each sub-agent starts on the model its stage needs:
+
+```yaml
+prosiform:
+  default:
+    level: judgement
+```
+
+```yaml
+prosiform:
+  default:
+    levels:
+      retrieval: haiku
+      judgement: opus
+  trial:
+    levels:
+      judgement: haiku
+```
+
+The run's **level map** is the `levels` the presets its entry puts in force state, as [Sources](sources.md#frontmatter) states the fields. It is read from the entry alone, and every dispatch the run compiles resolves against it, in every bundle, dispatched bundles included, as a [stub](selection.md#presets-in-force) is selected for the whole run. A selected named preset's map layers over `default`'s level by level, so a title tag on the entry changes it as it changes any setting: `pf '[Guide](guide.md "trial")'` runs every `judgement` stage on `haiku`. Two selected presets mapping one level to different models fail with `E_INVALID_USAGE`, naming both. The map follows from the presets the entry selects, so two maps are two entry selections, and each run writes its bundles into a run folder named by its own.
+
+A target's level is the `level` its dispatch's presets in force state, a selected named preset's holding over `default`'s, as a [brief](#briefs) does. Every `⇉` link pointing at a bundle file, every line of a `⫽ Dispatch Set` or `⇉ Dispatch Pick` sub-section and every dispatch line a lifted brief holds, whose target has a level, is published with `on` and the model the map gives that level after the link:
+
+```markdown
+[⇉ Gather the Facts](stages_gather-the-facts.bundle.md) on haiku
+[⇉ Decide the Folder](stages_decide-the-folder.bundle.md) on opus
+```
+
+A pick line carries its own alternative's model before the em dash and its choice line, so alternatives stating different levels name different models. A target with no level is published with nothing after its link. A [diagram link](references.md#diagram-links)'s line holds a node, a destination and a tooltip alone, so its model stands on a Mermaid comment line beneath it naming the node, which a renderer draws nothing for:
+
+```text
+click D "stages_decide.bundle.md"
+%% D on opus
+```
+
+ The model is a dispatch setting, not prompt text: the guide tells the dispatching agent to start the sub-agent on it, and the hand-over still carries the bundle's path and its inputs alone.
+
+A level the map names no model for fails the run with `E_LEVEL_UNMAPPED`, naming the level and the dispatch, so no dispatch is left to a default the run did not choose. The operator's own session follows the entry's bundle, so `pf` applies no model there, and a `level` in force for the entry fails the run with `E_LEVEL_ON_ENTRY`. A [deferral](references.md#operators) is compiled by a run of its own, whose entry is the deferred target, so a deferred stage runs on the operator's session and states no level, and that run reads its own entry's map.
+
 ## The guide
 
-The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: that a bundle's instructions are followed as written, by a sub-agent as by the agent first handed one, what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, that what a brief, the text above a `⇉` line in the sub-section a `⇉` link points at in place of a bundle file and the sections beneath that line, asks of the agent is done before that bundle is handed on, while the work it states the bundle leaves or answers is the sub-agent's, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there, and the dispatching agent hands on its link without opening it and takes its answer as given, neither checking nor redoing its work. Its inputs are those the dispatching step states as given. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
+The rules for following a bundle live in the guide `pf` prints with no arguments, as [Invocation](../invocation.md#guide) states, and in no bundle: that a bundle's instructions are followed as written, by a sub-agent as by the agent first handed one, what `↳`, `⇉` and `⫽` ask of an agent, what `?` on a `⇉` link asks of it, that what a brief, the text above a `⇉` line in the sub-section a `⇉` link points at in place of a bundle file and the sections beneath that line, asks of the agent is done before that bundle is handed on, while the work it states the bundle leaves or answers is the sub-agent's, and how a bundle is handed over. A bundle travels by its path: a sub-agent is given the path of the bundle file and reads it there, and the dispatching agent hands on its link without opening it and takes its answer as given, neither checking nor redoing its work. Its inputs are those the dispatching step states as given. Where `on <model>` follows a `⇉` link, or a diagram's `%% <node> on <model>` comment stands beneath its node's link, the dispatching agent starts the sub-agent on that [model](#models), and where neither does, as its harness does by default. How a sub-agent's question reaches the user is agent conversation rather than compiled form, so the guide states no marker and no protocol for it.
 
 ## The run-pf line
 

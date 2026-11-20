@@ -1,0 +1,20 @@
+description = "A diagram click dispatching to a target whose presets in force state a level is published with a Mermaid comment line beneath it, opening with the line's markers and indent, naming the node and the model the entry's levels give that level; a tooltip tag selecting the target's other preset selects its level, and a click to a target stating no level gains no comment."
+
+clauses = [
+  "Link classification and resource handling — Dispatch models",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/guide.bundle.md",
+  "expected/stages_decide--p-3bcbdbfeabe66919ef169526ed028d2172dda37348ee1e2e7ea3a45e7727d1b3.bundle.md",
+  "expected/stages_gather.bundle.md",
+  "expected/stages_plain.bundle.md",
+]
+diagnostics = []

@@ -96,6 +96,7 @@ from prosiform.bundle import (
     Group,
     carried_headings,
     escaped,
+    started_on,
 )
 from prosiform.closure import (
     DECLARING,
@@ -108,6 +109,7 @@ from prosiform.closure import (
     briefing,
     dispatched,
     identity,
+    model_of,
     parallel,
     picking,
     unmarked,
@@ -615,30 +617,33 @@ def file_destination(bundle_file: str) -> str:
     return quote(bundle_file, safe="")
 
 
-def listing(entries: Sequence[tuple[str, str]]) -> str:
+def listing(entries: Sequence[tuple[str, str, str | None]]) -> str:
     """The lines a set's sub-section carries, one `⇉` link to a bundle each.
 
     The mark stands where a bullet would: every line opens with `⇉`, so a
     reader meets the dispatch symbol first and no second list marker is
-    needed to tell the members apart.
+    needed to tell the members apart. Each entry is a bundle file, its
+    link text and the model its sub-agent starts on, which `started_on`
+    writes after the link.
     """
     return "\n".join(
         f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
-        for file, text in entries
+        f"{started_on(model)}"
+        for file, text, model in entries
     )
 
 
-def choices(entries: Sequence[tuple[str, str, str]]) -> str:
+def choices(entries: Sequence[tuple[str, str, str, str | None]]) -> str:
     """The lines a picking dispatch's sub-section carries, one per alternative.
 
     Each line is a `⇉` link to the alternative's bundle, as a set's member
-    is, followed by the alternative's choice line, so its reader picks the
-    bundle whose choice line fits its work.
+    is, with its model, followed by the alternative's choice line, so its
+    reader picks the bundle whose choice line fits its work.
     """
     return "\n".join(
-        f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)}) "
-        f"{CHOICE_SEPARATOR} {escaped(choice)}"
-        for file, text, choice in entries
+        f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
+        f"{started_on(model)} {CHOICE_SEPARATOR} {escaped(choice)}"
+        for file, text, choice, model in entries
     )
 
 
@@ -801,6 +806,10 @@ class Placing:
             self.place(nested, nesting, depth + 1)
         self.expanding.pop()
 
+    def model(self, target: Reference) -> str | None:
+        """The model a dispatch of `target` starts on, as `model_of` gives it."""
+        return model_of(target, self.read[target.path].conversion)
+
     def brief_of(self, link: Link) -> Reference | None:
         """The brief one dispatch carries, as `briefing` names it."""
         if link.served not in self.briefs:
@@ -915,7 +924,12 @@ class Placing:
         self.looping(link)
         fits(depth, link)
         at = self.heading(text, depth, BRIEF_SECTION)
-        self.briefed(link, depth, [Instruction(listing([(file, link.text)]))], outer)
+        self.briefed(
+            link,
+            depth,
+            [Instruction(listing([(file, link.text, self.model(link.reference))]))],
+            outer,
+        )
         return at
 
     def flush(self, following: int | None) -> None:
@@ -999,7 +1013,12 @@ class Placing:
             else:
                 self.say(
                     Instruction(
-                        listing([(file, link.text) for file, link in together.items()])
+                        listing(
+                            [
+                                (file, link.text, self.model(link.reference))
+                                for file, link in together.items()
+                            ]
+                        )
                     )
                 )
             serving.update(
@@ -1034,7 +1053,12 @@ class Placing:
         at = self.heading(PICKING, depth, PICK_SECTION)
         listed = choices(
             [
-                (self.bundle_file(one), link.text, alternative.choice or "")
+                (
+                    self.bundle_file(one),
+                    link.text,
+                    alternative.choice or "",
+                    model_of(one, conversion),
+                )
                 for one, alternative in alternatives_of(link.reference, conversion)
             ]
         )

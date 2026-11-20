@@ -1,0 +1,20 @@
+description = "A title tag on the entry selecting a preset whose levels maps a level layers it over default's, so every dispatch of that level is published with the trial's model and every other with default's."
+
+clauses = [
+  "Link classification and resource handling — Dispatch models",
+  "Presets — Selection by tags",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Guide](guide.md \"trial\")"]
+
+[expected]
+exit_status = 0
+bundles = [
+  "expected/decide.bundle.md",
+  "expected/gather.bundle.md",
+  "expected/guide--p-013b77c8836b5240e9b6825db2824425b43889b4735285f7e890721dc7ba227e.bundle.md",
+]
+diagnostics = []

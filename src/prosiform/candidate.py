@@ -81,6 +81,7 @@ from prosiform.bundle import (
     carried_headings,
     document_title,
     emitted_visible,
+    names_model,
     openings,
 )
 from prosiform.closure import (
@@ -546,7 +547,8 @@ def carrying(
 
     A line the bundle edits is a heading's line, a line of an inline
     token carrying a link or an image or standing as a command block,
-    or a line a diagram's link destination is written on:
+    or a line a diagram's link destination is written on, with the
+    comment beneath it naming its dispatch's model:
     reference-use conversion, destination rewriting and command block
     compaction reach nowhere else. Every other line of a selected region
     is bytes the bundle carries as its source wrote them, which is what
@@ -559,8 +561,15 @@ def carrying(
         ):
             held.update(range(*inline.map))
     for fence in within(tokens, [span]):
-        if fence.type == FENCE:
-            held.update(click.line - 1 for click in clicks(fence))
+        if fence.type != FENCE:
+            continue
+        content = lines(fence.content)
+        first = 0 if fence.map is None else fence.map[0] + 2
+        for click in clicks(fence):
+            held.add(click.line - 1)
+            beneath = click.line + 1 - first
+            if beneath < len(content) and names_model(content[beneath], click):
+                held.add(click.line)
     return held
 
 
@@ -624,12 +633,15 @@ def undestined(example: Token) -> str:
     last back, and each offset still names the characters it was read at.
     A tooltip is taken out with its destination, since a deferral's title
     gains the run's names, as a tooltip of its own where it carries none,
-    and the use comparison holds the tooltip.
+    and the use comparison holds the tooltip. The comment `names_model`
+    reads beneath a link's line is taken out with it.
     """
     held = lines(example.content)
     first = 0 if example.map is None else example.map[0] + 2
     for click in reversed(list(clicks(example))):
         at = click.line - first
+        if at + 1 < len(held) and names_model(held[at + 1], click):
+            del held[at + 1]
         line = held[at]
         rest = line[click.offset + len(click.written) :]
         tip = TOOLTIP.match(rest)
@@ -1331,6 +1343,7 @@ def preserved(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     dispatched_to: Mapping[Served, str] | None = None,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> None:
     """Hold one region's untouched bytes and code examples to its source.
 
@@ -1373,7 +1386,14 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        shown = emitted_visible(path, one, declarations, substitution, dispatched_to)
+        shown = emitted_visible(
+            path,
+            one,
+            declarations,
+            substitution,
+            dispatched_to,
+            conversions=conversions,
+        )
         compacted = id(each) in published.compacted
         if compacted:
             shown = content(shown)
@@ -1696,4 +1716,5 @@ def validate(
             declarations,
             reading,
             served.get((carried.path, carried.lines[0], carried.placing), {}),
+            {path: one.conversion for path, one in read.items()},
         )

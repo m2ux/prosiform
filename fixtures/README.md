@@ -131,7 +131,7 @@ The runner uses the working directory the manifest names and asks for diagnostic
 
 ## The clause form
 
-A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/d4a467ef4/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
+A clause is a heading of the [design](https://github.com/m2ux/prosiform/blob/ff49e03d1/artifacts/planning/2026-10-17-prosiform-v1/design.md), or an enumerated rule under one: a bold-led bullet, a step of a numbered sequence, or a row of a table. A heading names the rule its own prose states, and a rule under it is named by both, separated by an em dash:
 
 ```toml
 clauses = [
@@ -229,7 +229,7 @@ The marker lives in the manifest because the expectation is the fixture's own. A
 
 ## A fault the run performs on itself
 
-Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/d4a467ef4/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
+Three of the outcomes the contract declares are facts about the run rather than about any document it reads: a source that changes during compilation, a run that fails in itself, and an earlier set the run cannot remove once its own stands. A fixture declares a source tree, an invocation and a result, so none arises from that declaration. The contract's [Conformance faults](https://github.com/m2ux/prosiform/blob/ff49e03d1/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares how a conformance run asks the build to perform one, and the runner is what asks, so a fixture names the fault and no means of reaching it. A manifest names the fault its run meets:
 
 ```toml
 fault = "source-changed"
@@ -283,6 +283,8 @@ An error decides a failing run.
 | `E_INVALID_ENCODING` | Markdown and source-heading profile, Encoding — a source that is not valid UTF-8. |
 | `E_INVALID_FRONTMATTER` | Metadata failures — malformed or unsafe YAML or duplicate keys. |
 | `E_INVALID_USAGE` | CLI contract — a command line the contract's grammar does not admit. |
+| `E_LEVEL_ON_ENTRY` | Link classification and resource handling, Dispatch models — a `level` in force for the run's entry. |
+| `E_LEVEL_UNMAPPED` | Link classification and resource handling, Dispatch models — a dispatch whose target's level the entry's level map names no model for. |
 | `E_NESTED_SECTION_TARGET` | Section extraction, Nested target — a fragment naming a container-nested heading. |
 | `E_PARSER_REFERENCE_LIMIT` | Parser viability gates — a parser resource limit suppressing a reference lookup. |
 | `E_PUBLICATION_FAILED` | Validation and failure contract, Publication — an output destination that refuses the write, an output folder that cannot be made, a path at the run folder's own that is neither a folder nor a link, or two bundles of one run deriving one name. |
@@ -329,7 +331,7 @@ export PROSIFORM_BUILD=pf
 
 The value is a command line, split as a shell splits one, so a build reached through a wrapper is named in full. A run's working directory is the fixture's own, so a build named by path is named absolutely and one named by a bare name is found on `PATH`. There is no default and no fallback: with nothing configured the runner refuses to produce a verdict, because a fixture that never ran has not held.
 
-The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/d4a467ef4/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
+The runner uses `invocation.cwd`, appends `-d json`, then the manifest's `arguments`; a manifest declaring no argument runs the bare command with nothing appended. It asks for the fault a manifest names by the means the [Conformance faults](https://github.com/m2ux/prosiform/blob/ff49e03d1/artifacts/planning/2026-10-17-prosiform-v1/design.md#conformance-faults) section declares, and a manifest naming none runs a build asked for no fault. The bundles the run writes, its standard output, exit status and diagnostics are each compared with what the manifest declares, and a mismatch names the expectation that differed and locates the difference inside it.
 
 | Expectation | Compared | Located by |
 | --- | --- | --- |
