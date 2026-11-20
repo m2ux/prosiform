@@ -846,6 +846,26 @@ def test_a_documents_pair_records_to_the_runs_record() -> None:
     assert mapped.redirects.served(("guide.md", ("rules.md", None)), SUBSTITUTE)
 
 
+RECORDED = Reference("recorded.md", "recorded.md", walk="recorded.md")
+STUBBED = GOVERNED.stubbed("entry.md", {("rules.md", None): RECORDED})
+
+
+def test_an_entry_stub_redirects_every_documents_links() -> None:
+    assert identity(inside("notes.md", "rules.md", STUBBED)) == "recorded.md"
+
+
+def test_an_entry_stub_holds_over_a_documents_pair_for_one_key() -> None:
+    assert identity(inside("guide.md", "rules.md", STUBBED)) == "recorded.md"
+    assert STUBBED.redirects.served(("entry.md", ("rules.md", None)), RECORDED)
+
+
+def test_a_documents_section_key_holds_over_an_entry_stubs_document_key() -> None:
+    mapped = Substitution().governed({"guide.md": {("rules.md", "one"): SECTION}})
+    stubbed = mapped.stubbed("entry.md", {("rules.md", None): RECORDED})
+    assert identity(inside("guide.md", "rules.md#one", stubbed)) == "stand-in.md#one"
+    assert identity(inside("guide.md", "rules.md#two", stubbed)) == "recorded.md#two"
+
+
 def test_reading_what_a_heading_shows_records_no_substitution() -> None:
     """The heading-text path decides what a heading shows and serves no key."""
     mapped = writing({("rules.md", None): SUBSTITUTE})
