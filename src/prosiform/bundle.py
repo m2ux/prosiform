@@ -140,6 +140,7 @@ from prosiform.closure import (
     directive,
     dispatched,
     filed,
+    model_of,
     parallel,
     picking,
     published_text,
@@ -170,12 +171,13 @@ from prosiform.provenance import (
     click_at,
     link_at,
 )
-from prosiform.rewrite import Definition, Titled, destinations, rewritten
+from prosiform.rewrite import Definition, Followed, Titled, destinations, rewritten
 from prosiform.source import (
     ANCHOR,
     FENCE,
     HREF,
     LINE_FEED,
+    LINK_CLOSE,
     LINK_OPEN,
     QUOTE,
     TEXT,
@@ -215,6 +217,8 @@ SPACE = " "
 HEADING_OPEN = "heading_open"
 
 RUN_PF = "Run `pf`, then follow the guidance it prints."
+MODEL_LEAD = "on"
+"""What stands between a published dispatch and the model its sub-agent starts on."""
 
 OPENERS = "\\`*_[]<>&~!#"
 OPENER = re.compile(f"([{re.escape(OPENERS)}])")
@@ -384,6 +388,15 @@ def escaped(text: str) -> str:
     return OPENER.sub(r"\\\1", text)
 
 
+def started_on(model: str | None) -> str:
+    """The text a published dispatch line or link carries after its link.
+
+    It names the model the dispatch's sub-agent starts on, and is empty
+    where its target has no level.
+    """
+    return "" if model is None else f" {MODEL_LEAD} {escaped(model)}"
+
+
 def is_atx(token: Token) -> bool:
     """Whether a heading is written with the heading syntax a shift edits."""
     return token.markup.startswith(ATX)
@@ -513,12 +526,20 @@ def emitted_visible(
     whether or not the run selected it, so the lookup records no
     substitution: a pair is used by a reference the bundle composes from
     selected content, where the link's position is known.
+
+    A dispatch pointing at a bundle file is followed by the model
+    `model_of` gives its target, where the conversions read give one.
     """
     substitution = substitution.unrecorded()
     children = inline.children or []
     carried: list[str] = []
+    following = ""
     for at, child in enumerate(children):
         before = children[at - 1] if at else None
+        if child.type == LINK_CLOSE and following:
+            carried.extend((shown(child), following))
+            following = ""
+            continue
         if child.type == TEXT and before is not None and before.type == LINK_OPEN:
             target = withholding_target(
                 path,
@@ -529,16 +550,23 @@ def emitted_visible(
                 tags=read_tags(str(before.attrGet("title") or "")),
             )
             if target is not None:
-                shown_label = published_text(
+                file = pointing(
+                    target,
                     child.content,
-                    pointing(
-                        target,
-                        child.content,
-                        dispatched_to,
-                        alone,
-                        briefs(target, conversions),
-                    ),
+                    dispatched_to,
+                    alone,
+                    briefs(target, conversions),
                 )
+                shown_label = published_text(child.content, file)
+                model = (
+                    model_of(target, conversions[target.path])
+                    if file
+                    and dispatched(child.content)
+                    and conversions is not None
+                    and target.path in conversions
+                    else None
+                )
+                following = "" if model is None else f" {MODEL_LEAD} {model}"
             elif directive(child.content):
                 shown_label = unmarked(child.content)
             else:
@@ -723,6 +751,10 @@ def rewrite(
                         folder=folder,
                     )
                 )
+                if isinstance(given, Followed):
+                    # A diagram's click line holds a destination and a
+                    # tooltip alone, so no text follows the link there.
+                    given = given.destination
                 if given is not None:
                     at = click.line - 1
                     written[at] = clicked(written[at], held[at - first], click, given)
@@ -807,7 +839,7 @@ def target(
     tags: frozenset[str] = frozenset(),
     conversions: Mapping[str, Conversion] | None = None,
     folder: BundleFolder = WORKING_FOLDER,
-) -> str | Titled | None:
+) -> str | Titled | Followed | None:
     """The destination the bundle gave one link, or nothing where it gave none.
 
     A link the bundle compiled resolves to an identity the map holds,
@@ -833,7 +865,8 @@ def target(
 
     A deferral's destination is titled with the run's names its
     target's settings carry beyond those its title states, so the run
-    compiling it selects the same stubs.
+    compiling it selects the same stubs. A dispatch to a bundle file is
+    followed by the model `model_of` gives its target, where it gives one.
     """
     found = bundled(path, destination, opening, declarations, substitution)
     if found is not None:
@@ -848,7 +881,14 @@ def target(
         served = ((withheld.path, withheld.fragment), withheld.tags, parallel(opening))
         if served not in held:
             raise Unplaced(path, line, destination, opening, composing=False)
-        return held[served]
+        after = (
+            started_on(model_of(withheld, conversions[withheld.path]))
+            if filed(held[served])
+            and conversions is not None
+            and withheld.path in conversions
+            else ""
+        )
+        return Followed(held[served], after) if after else held[served]
     names = carried_names(withheld, conversions)
     published = rebased(withheld, destination, folder)
     return Titled(published, names) if names else published

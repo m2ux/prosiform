@@ -73,11 +73,13 @@ from prosiform.closure import (
     BundleFolder,
     BundleSelection,
     Declarations,
+    Levels,
     Malformed,
     OutsideRoot,
     Probed,
     Reference,
     Substitution,
+    Unmapped,
     Unresolvable,
     alternatives_of,
     arrowed,
@@ -93,7 +95,10 @@ from prosiform.closure import (
     gapped,
     identity,
     inside,
+    level_map,
+    level_of,
     matching_presets,
+    model_of,
     named,
     operators,
     resolve,
@@ -250,6 +255,8 @@ ALTERNATIVE_UNRESOLVED = "E_ALTERNATIVE_UNRESOLVED"
 INVALID_ENCODING = "E_INVALID_ENCODING"
 GROUP_CONFLICT = "E_GROUP_CONFLICT"
 INVALID_USAGE = "E_INVALID_USAGE"
+LEVEL_ON_ENTRY = "E_LEVEL_ON_ENTRY"
+LEVEL_UNMAPPED = "E_LEVEL_UNMAPPED"
 PUBLICATION_FAILED = "E_PUBLICATION_FAILED"
 SOURCE_CHANGED = "E_SOURCE_CHANGED"
 SOURCE_ACCESS = "E_SOURCE_ACCESS"
@@ -281,6 +288,8 @@ CODES = tuple(
             INVALID_ENCODING,
             GROUP_CONFLICT,
             INVALID_USAGE,
+            LEVEL_ON_ENTRY,
+            LEVEL_UNMAPPED,
             PUBLICATION_FAILED,
             SOURCE_CHANGED,
             SOURCE_ACCESS,
@@ -352,6 +361,9 @@ Symbol grammar:
      yourself: hand on its link. Do not check or redo its work: take
      its answer as given. Hand over the path and those inputs alone:
      add no instruction, framing or reply form.
+     Where on <model> follows a ⇉ link, start its sub-agent on that
+     model; where nothing follows, start it as your harness does by
+     default.
      Where a ⇉ link points at a sub-section rather than at a bundle
      file, the text above its ⇉ line there, and the sections beneath
      that line, are the bundle's brief: do what it asks of you before
@@ -2633,6 +2645,96 @@ def stubbed(source: Source, run: frozenset[str]) -> Source:
     return replace(source, conversion=replace(source.conversion, run=run))
 
 
+def levelled(
+    read: Mapping[str, Source], models: tuple[tuple[str, str], ...]
+) -> dict[str, Source]:
+    """Each source as a run reads it: its settings holding the run's level map."""
+    return {
+        path: replace(source, conversion=replace(source.conversion, models=models))
+        for path, source in read.items()
+    }
+
+
+def presets_disagreeing(two: Levels, reference: Reference, what: str) -> Failure:
+    """Two presets one reference selects stating different levels or models."""
+    return Failure(
+        USAGE_FAILURE,
+        Diagnostic(
+            ERROR,
+            f"{two}, both selected by {what} {reference.original!r}, so nothing "
+            f"says which holds",
+            code=INVALID_USAGE,
+            reference=reference.original,
+            chain=reference.chain or None,
+            remedy="select one preset stating the value",
+        ),
+    )
+
+
+def entry_models(
+    entry: Reference, conversion: Conversion
+) -> tuple[tuple[str, str], ...]:
+    """The run's level map, read from the presets its entry puts in force.
+
+    The operator's own session follows the entry's bundle, so no model is
+    applied there, and a level in the entry's selection is refused.
+    """
+    try:
+        level = level_of(entry.tags, conversion)
+        models = level_map(entry.tags, conversion)
+    except Levels as two:
+        raise presets_disagreeing(two, entry, "the entry") from two
+    if level is not None:
+        raise input_failure(
+            f"the entry {entry.original!r} puts the level {level!r} in force, "
+            f"and the operator's own session follows the entry's bundle, so no "
+            f"model is applied to it",
+            code=LEVEL_ON_ENTRY,
+            remedy="state the level in a document the entry dispatches, or "
+            "select no preset stating one",
+            reference=entry.original,
+            resolved=entry.path,
+        )
+    return models
+
+
+def checked_models(hops: Sequence[Hop], read: Mapping[str, Source]) -> None:
+    """Refuse a dispatch whose level the run's level map names no model for.
+
+    A dispatch carrying the pick token is checked for each alternative
+    its target declares, since each is a bundle of its own.
+    """
+    for hop in hops:
+        conversion = read[hop.target.path].conversion
+        targets = (
+            [one for one, _alternative in alternatives_of(hop.target, conversion)]
+            if picks(hop.target.tags)
+            else [hop.target]
+        )
+        for target in targets:
+            try:
+                model_of(target, conversion)
+            except Levels as two:
+                raise presets_disagreeing(two, target, "the dispatch") from two
+            except Unmapped as unmapped:
+                raise Failure(
+                    INPUT_FAILURE,
+                    Diagnostic(
+                        ERROR,
+                        f"the dispatch {target.original!r} starts {target.path!r} "
+                        f"at the level {unmapped.level!r}, which the run's level "
+                        f"map names no model for",
+                        code=LEVEL_UNMAPPED,
+                        reference=target.original,
+                        resolved=target.path,
+                        chain=target.chain or None,
+                        remedy=f"map {unmapped.level!r} to a model in the levels "
+                        f"of the entry's presets",
+                        location=hop.location,
+                    ),
+                ) from unmapped
+
+
 def run_names(entry: Reference) -> frozenset[str]:
     """The names a run selects stubs by: those its entry's title gives.
 
@@ -4585,6 +4687,7 @@ class Compiled:
         tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Governed]
     ]
     linked: Mapping[str, frozenset[tuple[str, str | None]]]
+    models: tuple[tuple[str, str], ...] = ()
 
     def in_force(self) -> Iterator[tuple[str, tuple[str, str | None], Governed]]:
         """Each pair in force for a document, its group's then its copies', by path."""
@@ -4607,6 +4710,7 @@ def compiled(
     substitution: Substitution = UNSUBSTITUTED,
     run: frozenset[str] = frozenset(),
     entry: BundleSelection | None = None,
+    models: tuple[tuple[str, str], ...] | None = None,
 ) -> Compiled:
     """One bundle compiled as its own entry, every budget counted from it alone.
 
@@ -4624,6 +4728,9 @@ def compiled(
     `entry` is the selection of the run's entry, which names the run
     folder the bundle is written into, and is the bundle's own where
     absent. The bundle's deferrals are published from that folder.
+
+    `models` is the run's level map, which `entry_models` reads from the
+    bundle's own entry where absent, since that entry is then the run's.
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
@@ -4634,6 +4741,10 @@ def compiled(
         )
     except Crossed as crossed:
         raise crossing(crossed) from crossed
+    if models is None:
+        models = entry_models(requested[0], read[requested[0].path].conversion)
+    read = levelled(read, models)
+    checked_models(hops, read)
     resolved(read, parsed, contributing(found), requested, hops)
     selected = bundle_selection(requested[0], read[requested[0].path].conversion)
     name = bundle_file(selected)
@@ -4722,6 +4833,7 @@ def compiled(
                 ),
             }
         },
+        models,
     )
 
 
@@ -4872,7 +4984,9 @@ def dispatched_set(
         if selected in built or selected in single:
             continue
         target = replace(hop.target, origin=None, chain=(hop.name,))
-        one = compiled(root, [target], options, substitution, run, entry.selection)
+        one = compiled(
+            root, [target], options, substitution, run, entry.selection, entry.models
+        )
         built[selected] = one
         pending.extend(one.hops.items())
     return built

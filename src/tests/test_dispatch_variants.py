@@ -75,8 +75,11 @@ def test_equivalent_requests_compile_once_under_the_contract_name(
         substitution: Substitution,
         run: frozenset[str],
         entry: BundleSelection | None = None,
+        models: tuple[tuple[str, str], ...] | None = None,
     ) -> cli.Compiled:
-        result = compile_bundle(root, requested, options, substitution, run, entry)
+        result = compile_bundle(
+            root, requested, options, substitution, run, entry, models
+        )
         observed.append(result.selection)
         return result
 

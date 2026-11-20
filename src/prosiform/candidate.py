@@ -1331,6 +1331,7 @@ def preserved(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
     dispatched_to: Mapping[Served, str] | None = None,
+    conversions: Mapping[str, Conversion] | None = None,
 ) -> None:
     """Hold one region's untouched bytes and code examples to its source.
 
@@ -1373,7 +1374,14 @@ def preserved(
             f"{len(shows)}",
         )
     for one, each in zip(written, shows, strict=True):
-        shown = emitted_visible(path, one, declarations, substitution, dispatched_to)
+        shown = emitted_visible(
+            path,
+            one,
+            declarations,
+            substitution,
+            dispatched_to,
+            conversions=conversions,
+        )
         compacted = id(each) in published.compacted
         if compacted:
             shown = content(shown)
@@ -1696,4 +1704,5 @@ def validate(
             declarations,
             reading,
             served.get((carried.path, carried.lines[0], carried.placing), {}),
+            {path: one.conversion for path, one in read.items()},
         )

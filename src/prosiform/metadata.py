@@ -38,7 +38,9 @@ SUBST = "subst"
 CHOICE = "choice"
 STUB = "stub"
 BRIEF = "brief"
-FIELDS = (GROUP, SUBST, CHOICE, STUB, BRIEF)
+LEVEL = "level"
+LEVELS = "levels"
+FIELDS = (GROUP, SUBST, CHOICE, STUB, BRIEF, LEVEL, LEVELS)
 """The fields a preset may hold; none is written directly under `prosiform`."""
 DEFAULT = "default"
 """The preset in force wherever its document is compiled."""
@@ -123,7 +125,9 @@ class Preset:
     when to pick it, and `stub` the line of a stub, stating what it
     stands in for; a preset holding neither is an ordinary preset.
     `brief` holds the fragment, `#` included, naming the section of the
-    declaring document a dispatch of it carries.
+    declaring document a dispatch of it carries. `level` holds the
+    capability level the declaring document's work needs, and `levels`
+    each level mapped to a model name, in written order.
     """
 
     name: str
@@ -132,6 +136,8 @@ class Preset:
     choice: str | None = None
     stub: str | None = None
     brief: str | None = None
+    level: str | None = None
+    levels: tuple[tuple[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
@@ -148,12 +154,15 @@ class Conversion:
     `run` holds the names the run's entry title gives, normalized as
     title tags are. They select this document's stubs wherever the run
     compiles it, so the run reading the document states them, and
-    settings no run read hold none.
+    settings no run read hold none. `models` holds the run's level map,
+    each level mapped to the model a dispatch of that level starts on,
+    stated the same way.
     """
 
     declared: bool = False
     presets: tuple[Preset, ...] = ()
     run: frozenset[str] = frozenset()
+    models: tuple[tuple[str, str], ...] = ()
 
     @property
     def default(self) -> Preset:
@@ -575,6 +584,20 @@ def _preset(preset: str, mapping: _Node) -> Preset:
                 "document a dispatch names",
                 value.location,
             )
+        if key.value == LEVEL and not _one_line(value):
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} must be a non-empty string holding no line break, "
+                "since it names one capability level",
+                value.location,
+            )
+        if key.value == LEVELS and not _models(value):
+            raise _fail(
+                INVALID_CONVERSION_METADATA,
+                f"{name} must be a mapping of each level to a model, each a "
+                "non-empty string holding no line break, as {judgement: opus}",
+                value.location,
+            )
         if {key.value, *fields} >= {CHOICE, STUB}:
             raise _fail(
                 INVALID_CONVERSION_METADATA,
@@ -594,6 +617,17 @@ def _preset(preset: str, mapping: _Node) -> Preset:
         fields[CHOICE].value if CHOICE in fields else None,
         fields[STUB].value if STUB in fields else None,
         fields[BRIEF].value if BRIEF in fields else None,
+        fields[LEVEL].value if LEVEL in fields else None,
+        tuple(
+            (level.value, model.value)
+            for level, model in zip(
+                fields[LEVELS].children[::2],
+                fields[LEVELS].children[1::2],
+                strict=True,
+            )
+        )
+        if LEVELS in fields
+        else (),
     )
 
 
@@ -605,6 +639,11 @@ def _fragment(node: _Node) -> bool:
         and len(node.value) > 1
         and "#" not in node.value[1:]
     )
+
+
+def _models(node: _Node) -> bool:
+    """Whether one value maps strings to strings, each non-empty on one line."""
+    return node.kind == "map" and all(_one_line(one) for one in node.children)
 
 
 def _one_line(node: _Node) -> bool:

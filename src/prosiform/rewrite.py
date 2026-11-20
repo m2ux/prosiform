@@ -222,6 +222,18 @@ class Titled:
     names: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class Followed:
+    """A destination published with text written after its link.
+
+    A dispatch to a bundle file whose target has a level is followed by
+    the model its sub-agent starts on, as the bundle writes it.
+    """
+
+    destination: str
+    after: str
+
+
 TITLE_ESCAPED = frozenset('\\"()&' + "'")
 """The characters a name written into a title is escaped in: every delimiter
 a title may close with, the escape itself and the one opening a character
@@ -658,7 +670,7 @@ def published(
 
 
 def edits(
-    one: Use, destination: str | Titled | None, label: str, text: str = ""
+    one: Use, destination: str | Titled | Followed | None, label: str, text: str = ""
 ) -> list[tuple[int, int, str]]:
     """The spans one use's emission replaces, and what it writes at each.
 
@@ -684,12 +696,18 @@ def edits(
     written before the authored title's close, which `text` holds, or
     after the destination as a title of their own where the use writes
     none. Neither edit reaches a span another edit names.
+
+    A followed destination's text is written after the use's end, which
+    no other edit of the use reaches.
     """
     names: tuple[str, ...] = ()
+    found: list[tuple[int, int, str]] = []
     if isinstance(destination, Titled):
         names = destination.names
         destination = destination.destination
-    found: list[tuple[int, int, str]] = []
+    if isinstance(destination, Followed):
+        found.append((one.end, one.end, destination.after))
+        destination = destination.destination
     if one.definition is not None:
         found.append((*one.target, published(one.definition, destination, names)))
     elif destination is not None:
@@ -894,7 +912,7 @@ def moved(at: int, start: int, end: int, width: int) -> int:
 def rewritten(
     physical: Sequence[str],
     inline: Token,
-    assigned: Sequence[str | Titled | None],
+    assigned: Sequence[str | Titled | Followed | None],
     defined: Mapping[str, Definition],
 ) -> list[str]:
     """The lines one run of inline text occupies, as the bundle publishes them.
