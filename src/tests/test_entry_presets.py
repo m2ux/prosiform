@@ -297,7 +297,7 @@ def test_a_later_occurrence_activates_substitution_at_the_reference_depth(
     assert run.status == 0, run.stderr
     assert "[Body](#new)" in run.bundle
     assert "Selected stand-in." in run.bundle
-    assert "W_SUBST_USED" in run.stderr
+    assert "W_SUBST_USED" not in run.stderr
 
 
 def late_withheld_tree(root: Path, mark: str, fragment: str = "") -> None:
@@ -322,7 +322,7 @@ def test_a_later_selection_schedules_only_the_effective_dispatch(
     assert "[⇉ Job](new.bundle.md)" in run.bundle
     assert "Selected worker." in run.bundles["new.bundle.md"]
     assert "Transient worker." not in "".join(run.bundles.values())
-    assert "W_SUBST_USED" in run.stderr
+    assert "W_SUBST_USED" not in run.stderr
 
 
 def test_a_later_selection_confirms_only_the_effective_deferred_target(
@@ -378,6 +378,6 @@ def test_a_body_absent_from_final_placement_emits_no_self_composition_warning(
     written(tmp_path, "new.md", DECLARED + "# New\n\nSelected body.\n")
     run = invoke("-d", "json", "entry.md", cwd=tmp_path)
     assert run.status == 0, run.stderr
-    assert [one["code"] for one in run.diagnostics()] == ["W_SUBST_USED"]
+    assert run.diagnostics() == []
     assert "Selected body." in run.bundle
     assert "Local content." not in run.bundle

@@ -1,4 +1,4 @@
-description = "A composition directive's own title supplies checks. The selected target preset redirects format.md to stub.md inside the contribution and reports that substitution at its source line."
+description = "A composition directive's own title supplies checks. The selected target preset redirects format.md to stub.md inside the contribution, a route its author declared, so the run raises nothing."
 
 clauses = [
   "Section composition — Presets and subst",
@@ -15,14 +15,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "format.md#paths"
-resolved = "stub.md#paths"
-
-[expected.diagnostics.location]
-file = "read.md"
-line = 10
-column = 1
+diagnostics = []

@@ -3,8 +3,6 @@ prosiform:
   epic:
     choice: Lists its tasks in a Work Breakdown table.
     subst: [{body.md: epic-body.md}]
-  mock:
-    subst: [{checklist.md: stub.md}]
 ---
 # Work Kind
 

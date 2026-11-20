@@ -1,4 +1,4 @@
-description = "A link naming an identity a subst key names compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry, and the run states the substitution it performed."
+description = "A link naming an identity a subst key names compiles the substitute's document in its place, under the substitute's own file heading, where the document the link names is what the run would otherwise carry."
 
 clauses = [
   "Link classification and resource handling — The substitution mapping",
@@ -13,14 +13,4 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "rules.md"
-resolved = "stand-in.md"
-
-[expected.diagnostics.location]
-file = "guide.md"
-line = 6
-column = 1
+diagnostics = []

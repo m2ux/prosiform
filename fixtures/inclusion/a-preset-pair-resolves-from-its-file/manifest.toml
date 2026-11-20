@@ -14,14 +14,4 @@ arguments = ["modes/plan.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/modes_plan.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "../rules.md"
-resolved = "stub.md"
-
-[expected.diagnostics.location]
-file = "modes/plan.md"
-line = 10
-column = 1
+diagnostics = []

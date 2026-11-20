@@ -1,6 +1,7 @@
-description = "A subst pair applies under -c, which publishes nothing and reports the substitution exactly as a publishing run does, because a check is how a substitution is exercised in continuous integration and a pair that quietly stopped applying there would quieten every substituted run without failing one."
+description = "A stub's pair applies under -c, which publishes nothing and reports the substitution exactly as a publishing run does, because a check is how a trial is exercised in continuous integration and a stub that quietly stopped applying there would quieten every trial without failing one."
 
 clauses = [
+  "Presets — Stubs",
   "Link classification and resource handling — The substitution mapping",
   "Exit status and JSON diagnostics — 0",
   "CLI contract — -c",
@@ -8,7 +9,7 @@ clauses = [
 
 [invocation]
 cwd = "source"
-arguments = ["-c", "guide.md"]
+arguments = ["-c", "[Guide](guide.md \"mock\")"]
 
 [expected]
 exit_status = 0

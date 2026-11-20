@@ -1,0 +1,16 @@
+description = "The link title alpha picks the alpha alternative of stage.md, whose pair maps body.md to alpha-body.md as stage.md's default pair does. A pair default or an alternative states routes, so the link the pair redirected raises nothing."
+
+clauses = [
+  "Presets — Exactly one alternative",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

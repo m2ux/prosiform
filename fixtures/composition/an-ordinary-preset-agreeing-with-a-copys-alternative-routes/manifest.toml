@@ -1,0 +1,15 @@
+description = "A directive selects stage.md's ordinary preset plain and its alternative alpha, which map body.md to one substitute, plain declared first. A pair an ordinary preset or an alternative states routes, whichever the document declares first, so the copy's redirect raises nothing."
+
+clauses = [
+  "Section composition — Presets and subst",
+  "Presets — Alternatives",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+diagnostics = []

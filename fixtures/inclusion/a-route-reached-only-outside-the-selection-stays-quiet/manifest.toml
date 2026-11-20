@@ -1,0 +1,16 @@
+description = "A default subst pair whose key rules.md is named only by the withheld link in the heading ## [¬ Rules](rules.md), while the run selects guide.md#keep, raises nothing: a route is weighed against every link its document writes, and that link names its key."
+
+clauses = [
+  "Link classification and resource handling — The substitution mapping",
+  "Conversion metadata — subst holds colon pairs",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md#keep"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide__keep.bundle.md"]
+diagnostics = []

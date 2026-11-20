@@ -35,7 +35,7 @@ Every session is given the same [instruction](instruction.md), naming only the e
 
 A top-level `entry` key names the reference every form of the workflow is compiled from, `workflow.md` when absent. `section-entry` names `workflow.md#onboarding`, so its bundle carries that section's workflow and none of the document's other sections, and its session still receives the bundle as `workflow.md`.
 
-A `scenarios.toml` may also declare, above its tables, `warnings`: the warning codes `pf` reports bundling the workflow. A feature such as `subst` warns wherever it is used, so a workflow built on one declares each code it raises, and its bundle is held to raising those and no other diagnostic.
+A `scenarios.toml` may also declare, above its tables, `warnings`: the warning codes `pf` reports bundling the workflow. A feature such as a self-composing directive warns wherever it is used, so a workflow built on one declares each code it raises, and its bundle is held to raising those and no other diagnostic.
 
 Every workflow document declares `prosiform` save those under an `undeclared/` directory, which declare nothing, so a link to one is left as written; `declared-inclusion` links one beside a declared state document `pf` follows. A skill's `SKILL.md` is the entry the agent CLI reads rather than a source `pf` compiles, so it may declare nothing too.
 

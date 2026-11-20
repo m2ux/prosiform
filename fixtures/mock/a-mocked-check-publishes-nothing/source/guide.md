@@ -1,5 +1,5 @@
 ---
-prosiform: {default: {subst: [{rules.md: stand-in.md}]}}
+prosiform: {mock: {stub: The rules are a stand-in., subst: [{rules.md: stand-in.md}]}}
 ---
 # Guide
 

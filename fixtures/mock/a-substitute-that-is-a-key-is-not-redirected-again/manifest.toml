@@ -15,16 +15,5 @@ bundles = ["expected/guide.bundle.md"]
 
 [[expected.diagnostics]]
 severity = "warning"
-code = "W_SUBST_USED"
-source = "a.md"
-resolved = "b.md"
-
-[expected.diagnostics.location]
-file = "guide.md"
-line = 6
-column = 1
-
-[[expected.diagnostics]]
-severity = "warning"
 code = "W_SUBST_UNUSED"
 source = "b.md"

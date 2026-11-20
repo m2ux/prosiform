@@ -4,9 +4,6 @@
 # Each substitute states the action and transition of the state it stands in
 # for, so the path is one walk whichever document a reader opens.
 
-# Every pair a link uses warns once.
-warnings = ["W_SUBST_USED"]
-
 # The entry's default redirects the diagram's Approve to another document.
 [[scenario]]
 name = "document-redirect"

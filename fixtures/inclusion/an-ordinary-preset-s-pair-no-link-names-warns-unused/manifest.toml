@@ -1,0 +1,20 @@
+description = "The link title strict selects stage.md's ordinary preset strict, which maps counting.md and retired.md to strict.md. The stage links counting.md, so that route raises nothing; no link the stage writes names retired.md, so that pair substitutes nothing and warns W_SUBST_UNUSED."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/guide.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "retired.md"

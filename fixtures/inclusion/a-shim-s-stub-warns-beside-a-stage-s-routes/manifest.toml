@@ -1,0 +1,32 @@
+description = "The shim shims/tally.md declares the stub recorded, which stands stand-ins/source.md in for rules/source.md, and dispatches stages/tally.md under its ordinary preset strict, picking the kind. The stub's pair warns W_SUBST_USED at the stage's link it redirected; the strict route the stage declares raises nothing; and lenient, which no reference of this run selected, warns W_PRESET_UNUSED."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Presets — Stubs",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Tally](shims/tally.md \"recorded\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/shims_tally--p-d39dc21d7beb9d3b49138e616dc40270f2e7e38f8c4a1f06201d6e2a6cb1d52e.bundle.md", "expected/stages_tally--p-2829ff28b838b7677c2f51a9fdc3c673dd603030e6009eda417f1e91809e90bc.bundle.md", "expected/stages_tally--p-af5ec6f26fe5b7094001c5367e5b8979928c7250f0d79c74001ff5725cb1280c.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "../rules/source.md"
+resolved = "stand-ins/source.md"
+
+[expected.diagnostics.location]
+file = "stages/tally.md"
+line = 39
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_PRESET_UNUSED"
+source = "stages/tally.md"

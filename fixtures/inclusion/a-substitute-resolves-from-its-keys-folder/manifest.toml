@@ -14,14 +14,4 @@ arguments = ["stages/check.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/stages_check.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "../references/rules.md"
-resolved = "references/strict-rules.md"
-
-[expected.diagnostics.location]
-file = "stages/check.md"
-line = 10
-column = 1
+diagnostics = []

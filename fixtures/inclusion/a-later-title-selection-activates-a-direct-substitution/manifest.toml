@@ -9,9 +9,4 @@ arguments = ["entry.md", "--budget", "depth=1"]
 [expected]
 exit_status = 0
 bundles = ["expected/entry.bundle.md"]
-
-[[expected.diagnostics]]
-severity = "warning"
-code = "W_SUBST_USED"
-source = "old.md"
-resolved = "new.md"
+diagnostics = []

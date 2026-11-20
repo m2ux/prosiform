@@ -92,7 +92,8 @@ for the whole document. A form that dispatches publishes one bundle per
 target beside the entry's, so its set is every bundle `pf` writes; a form
 that does not publishes the entry's alone. A run reports no diagnostic
 beyond the warning codes the workflow's `scenarios.toml` declares under
-`warnings`, which a feature such as `subst` raises wherever it is used.
+`warnings`, which a feature such as a self-composing directive raises
+wherever it is used.
 
 The diagram form's bundle states a path of its own: a state's section is
 the heading the previous section's link or the bundle's diagram names, a
@@ -1029,9 +1030,9 @@ def read_entry(path: Path) -> str:
 def read_warnings(path: Path) -> frozenset[str]:
     """The warning codes a workflow's `scenarios.toml` declares its bundle raises.
 
-    A feature such as `subst` warns wherever it is used, so a workflow built
-    on it declares each code it expects, and its bundle is held to raising
-    those and no other diagnostic.
+    A feature such as a self-composing directive warns wherever it is used,
+    so a workflow built on it declares each code it expects, and its bundle
+    is held to raising those and no other diagnostic.
     """
     with path.open("rb") as handle:
         return frozenset(tomllib.load(handle).get("warnings", ()))

@@ -1,0 +1,27 @@
+description = "The entry's recorded stub maps review.md, and the entry dispatches stage.md under its ordinary preset draft, which routes review.md to draft-review.md. The entry's stub holds, so the stage's link resolves to the recorded review and warns W_SUBST_USED as a stand-in; the stage's route, which its link names, raises nothing."
+
+clauses = [
+  "Presets — Selection by tags",
+  "Presets — Stubs",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Entry](entry.md \"recorded\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry--p-d39dc21d7beb9d3b49138e616dc40270f2e7e38f8c4a1f06201d6e2a6cb1d52e.bundle.md", "expected/stage--p-eef2db53f92cbf7f59c0c7f486b00da212facdba9204390d889a1790ea808a79.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "review.md"
+resolved = "recorded-review.md"
+
+[expected.diagnostics.location]
+file = "stage.md"
+line = 10
+column = 1

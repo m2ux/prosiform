@@ -52,9 +52,7 @@ SDLCS = presets(EXAMPLE / LIFECYCLE)
 
 CASES = {
     DEFAULT: ((LIFECYCLE,), {"W_PRESET_UNUSED"}),
-    **{
-        sdlc: ((f'[↳ SDLC]({LIFECYCLE} "{sdlc}")',), {"W_SUBST_USED"}) for sdlc in SDLCS
-    },
+    **{sdlc: ((f'[↳ SDLC]({LIFECYCLE} "{sdlc}")',), set()) for sdlc in SDLCS},
 }
 """Each SDLC's arguments, and the diagnostic codes its run reports."""
 
