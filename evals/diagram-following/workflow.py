@@ -92,7 +92,7 @@ for the whole document. A form that dispatches publishes one bundle per
 target beside the entry's, so its set is every bundle `pf` writes; a form
 that does not publishes the entry's alone. A run reports no diagnostic
 beyond the warning codes the workflow's `scenarios.toml` declares under
-`warnings`, which a feature such as `subst` raises wherever it is used.
+`warnings`, which a feature such as a self-composing directive raises wherever it is used.
 
 The diagram form's bundle states a path of its own: a state's section is
 the heading the previous section's link or the bundle's diagram names, a

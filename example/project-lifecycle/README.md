@@ -73,7 +73,7 @@ The skill follows the ports and adapters pattern, with prosiform's link operator
 | default binding | ad hoc | the entry's untagged link, `[↳ Ad Hoc](lifecycle.md)`, under the `default` preset |
 | the adapter's practice in the port | each practice's section | composition, `[↳ Practice](sdlc/ad-hoc.md#deliver)` |
 | an adapter missing a practice | a build failure | `E_TARGET_NOT_FOUND` on the composed section |
-| which adapter was bound | the run's diagnostics | `W_SUBST_USED` |
+| which adapter was bound | the bundle | each composed practice's heading, which names the adapter, as `##### Waterfall` |
 
 The SOLID principles follow from that shape:
 

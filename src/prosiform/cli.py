@@ -4377,7 +4377,7 @@ def substituted(
     mapping: Substitution,
     quiet: Collection[tuple[str, tuple[str, str | None], str]],
 ) -> list[Diagnostic]:
-    """One warning for each `subst` pair other than a routing pair a reference named.
+    """One warning for each stub's `subst` pair a reference named.
 
     A key names one substitution, so the references it served state one
     warning at the first of them. The warning names that link as

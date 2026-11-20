@@ -1,6 +1,6 @@
 # Glossary
 
-Every term the contract uses, defined once. A term defined here means this and nothing else in the [design](https://github.com/m2ux/prosiform/blob/30b8d24b2/artifacts/planning/2026-10-17-prosiform-v1/design.md), the acceptance criteria, the fixture corpus and the tool's own diagnostics. The design italicises a term where it first uses it, and the vocabulary check holds this file to defining each one.
+Every term the contract uses, defined once. A term defined here means this and nothing else in the [design](https://github.com/m2ux/prosiform/blob/d6b825c39/artifacts/planning/2026-10-17-prosiform-v1/design.md), the acceptance criteria, the fixture corpus and the tool's own diagnostics. The design italicises a term where it first uses it, and the vocabulary check holds this file to defining each one.
 
 The tool is `prosiform`. It bundles; what it produces is a bundle.
 
@@ -31,7 +31,7 @@ The tool is `prosiform`. It bundles; what it produces is a bundle.
 | **level map** | The `levels` the presets the run's entry puts in force state, each level mapped to a model name. Every dispatch the run compiles resolves its target's level against it, in every bundle, as [Dispatch](dispatch.md#models) states. |
 | **choice line** | The one-line string an alternative's `choice` holds, stating when to pick it. A run failing with `E_ALTERNATIVE_UNRESOLVED` lists each beside its choice line. [Sources](sources.md#frontmatter) states what it may hold. |
 | **pick** | The alternative a reference's title tags, or the `--pick` beside an entry carrying the pick token, name. A diagram link's tooltip names one as a link title does, as [Diagram links](references.md#diagram-links) states, and the pick token names none. [Selection](selection.md#presets-in-force) states how a pick is counted. |
-| **routing pair** | A `subst` pair an alternative states, where no pair of `default`, an ordinary preset or a stub maps the same key to the same substitute. It routes its document's links to the picked kind's material rather than standing in for material under test, so a link using it raises no report, as [the substitution mapping](selection.md#the-substitution-mapping) states. |
+| **routing pair** | A `subst` pair any preset but a stub states. It routes its document's links where its author declared rather than standing in for material under test, so a link using it raises no report, as [the substitution mapping](selection.md#the-substitution-mapping) states. |
 
 ## References
 

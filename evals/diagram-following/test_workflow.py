@@ -1795,12 +1795,12 @@ def test_a_substitute_stating_another_action_is_a_fault(tmp_path: Path) -> None:
 
 def test_a_warning_the_workflow_does_not_declare_is_a_fault(tmp_path: Path) -> None:
     workflow = broken(
-        tmp_path, "subst-redirect", "scenarios.toml", 'warnings = ["W_SUBST_USED"]', ""
+        tmp_path, "directive-labels", "scenarios.toml", 'warnings = ["W_COMPOSE_SELF"]', ""
     )
     output = tmp_path / "output"
     output.mkdir()
-    [fault] = bundle_faults(workflow, DIAGRAM, output)
-    assert fault.startswith('pf reported "W_SUBST_USED: the reference')
+    [fault] = bundle_faults(workflow, COMPILED_FORM, output)
+    assert fault.startswith('pf reported "W_COMPOSE_SELF: ')
 
 
 def test_a_declared_warning_the_bundle_does_not_raise_is_a_fault(

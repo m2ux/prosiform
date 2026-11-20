@@ -4,9 +4,6 @@
 # Each state the path reaches through a link is placed by the presets the
 # title of the section writing that link selects of the state's document.
 
-# The review preset's subst redirects the policy note Audit links.
-warnings = ["W_SUBST_USED"]
-
 # Edit's title selects nothing of proof.md, so its default alone places Proof.
 [[scenario]]
 name = "default-alone"
