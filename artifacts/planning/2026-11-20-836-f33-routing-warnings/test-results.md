@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F33 at `e1dd2f4ad` on `f33-routing-warnings`, run on 2026-11-20 in the unit checkout.
+Results for F33 at `39e540e34` on `f33-routing-warnings`, run on 2026-11-20 in the unit checkout.
 
 ## T1 Ordinary Presets
 
@@ -37,4 +37,4 @@ Every one of the 43 existing fixtures the rule touched failed on `expected.diagn
 
 `make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lint, format, typecheck, `make test` (2290 passed), harness (1152 passed), corpus (707 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
 
-`make eval-harness`, outside `make check`, fails 37 tests on `main` at `7419cfd9a` and the same 37 here; the three this change touched pass.
+`make eval-harness`, outside `make check`, fails 37 tests on `main` at `7419cfd9a` and the same 37 here, which [F02](https://github.com/m2ux/prosiform/issues/681) AC4 holds; the three this change touched pass.

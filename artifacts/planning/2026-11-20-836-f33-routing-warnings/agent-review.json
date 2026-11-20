@@ -1,0 +1,47 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/837",
+    "base": "7419cfd9af9e0baa0fbe30d1961051c046c7754a",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-836-f33-routing-warnings/agent-review.json",
+    "head": "e1dd2f4ad5f6798ed3cc93f17ec0548701f2758a",
+    "reviewer": "Claude Opus 5.5 (independent review sub-agent of the F33 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The full diff main..f33-routing-warnings at e1dd2f4ad and design commit d6b825c39: Governed, defaults, layer, governing, copies, entry_stubs, substituted, routes, unused_pairs and Compiled.linked in cli.py; matching_presets, Substitution.redirect and Redirects in closure.py; the unit tests, corpus fixtures, docs, example README and eval harness the diff changes. Inputs tried: an entry's own default and stub mapping one key to one substitute; an entry stub over a stage's default reached by a composed copy and a dispatch; a stub pair no link uses beside a copy's route linked only outside the selection; an entry stub over a copy's ordinary preset; the project-lifecycle example. Rejected as no defect: Compiled.linked computed for more documents, written.update across bundles, a route suppressing a stub's redirect, a default and a stub mapping one key apart, and Governed.routing's default value.",
+    "criteria": "AC1-AC8 of #836 against the fixtures, unit tests, documents and design the pull request's test plan names, and the probes above.",
+    "validation": "make check with PROSIFORM_BUILD naming the worktree's pf exits 0: 2290 tests, 1152 harness tests, 707 fixtures; make eval-harness fails the 37 tests it fails on main, none of them one this change touches.",
+    "findings": [
+      {
+        "description": "The eval README states that subst warns wherever it is used.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/39e540e3487414d80289da75f1703319a4ffc411"
+      },
+      {
+        "description": "The read_warnings docstring states that subst warns wherever it is used.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/39e540e3487414d80289da75f1703319a4ffc411"
+      },
+      {
+        "description": "A renamed test's docstring states that a copy's default pair is used, where no link uses it and its document's link names its key.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/39e540e3487414d80289da75f1703319a4ffc411"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/837",
+    "base": "7419cfd9af9e0baa0fbe30d1961051c046c7754a",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-836-f33-routing-warnings/agent-review.json",
+    "head": "39e540e3487414d80289da75f1703319a4ffc411",
+    "reviewer": "Claude Opus 5.5 (independent review sub-agent of the F33 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The change e1dd2f4ad..39e540e34, the one commit fixing the findings of the review of e1dd2f4ad: evals/diagram-following/README.md, the read_warnings docstring and one test docstring in test_subst.py, all prose. A repository-wide search for any surviving statement that a subst, default or ordinary-preset pair warns wherever it is used found none.",
+    "criteria": "The findings of the review of e1dd2f4ad, and AC1-AC8 held by the full suite.",
+    "validation": "make lint, format-check and links pass at 39e540e34, and the warning tests of test_subst.py and the eval harness pass; make check exits 0 at 39e540e34 with 2290 tests, 1152 harness tests and 707 fixtures.",
+    "findings": []
+  }
+]
