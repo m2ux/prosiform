@@ -354,6 +354,13 @@ class Substitution:
     taken for, so a link another document writes while that copy is read
     resolves under its own document's group pairs.
 
+    `stubs` holds the pairs of the stubs the run's entry declares and
+    the run's names select, and `entry` that entry's path, which serves
+    them. They are in force for the links every document of the run
+    writes, and hold over a document's own pair for one key. A mapping
+    naming no `entry` is one no run has read its entry into, and holds
+    no stub.
+
     A lookup returns the substitute's reference whole — its path, its
     section and its authored access walk — while the text the reference
     was written as stays the author's, because that is what a diagnostic
@@ -376,6 +383,8 @@ class Substitution:
         tuple[str, frozenset[str]], Mapping[tuple[str, str | None], Reference]
     ] = MappingProxyType({})
     selection: tuple[str, frozenset[str]] | None = None
+    entry: str | None = None
+    stubs: Mapping[tuple[str, str | None], Reference] = MappingProxyType({})
 
     def __post_init__(self) -> None:
         object.__setattr__(
@@ -398,6 +407,13 @@ class Substitution:
                 }
             ),
         )
+        object.__setattr__(self, "stubs", MappingProxyType(dict(self.stubs)))
+
+    def stubbed(
+        self, entry: str, stubs: Mapping[tuple[str, str | None], Reference]
+    ) -> "Substitution":
+        """This mapping with the run's entry and its stubs' pairs, sharing its record."""
+        return replace(self, entry=entry, stubs=stubs)
 
     def governed(
         self,
@@ -442,7 +458,9 @@ class Substitution:
         that document: the substitute's path is taken and the section
         stays the one the reference named. A key the first lookup finds
         states the section the run reads instead, so its section is the
-        substitute's whole.
+        substitute's whole. Each lookup asks the run's stubs before the
+        writer's pairs, so the entry's pair holds over the writer's for
+        one key, and a stub's pair is served by the entry declaring it.
 
         Requested tags and diagnostic context belong to the occurrence.
         They remain on the redirected reference; the destination's own
@@ -462,15 +480,20 @@ class Substitution:
             if self.selection is not None and self.selection[0] == self.writer
             else self.documents.get(self.writer or "", {})
         )
-        if found.external or not pairs:
+        if found.external or self.writer is None:
             return found
-        key: tuple[str, str | None] = (found.path, found.fragment)
-        named = pairs.get(key)
-        if named is None:
-            key = (found.path, None)
-            named = pairs.get(key)
-        if named is None or self.writer is None:
+        served = next(
+            (
+                (serving, key, held[key])
+                for key in ((found.path, found.fragment), (found.path, None))
+                for serving, held in ((self.entry, self.stubs), (self.writer, pairs))
+                if serving is not None and key in held
+            ),
+            None,
+        )
+        if served is None:
             return found
+        serving, key, named = served
         substituted = replace(
             found,
             path=named.path,
@@ -478,7 +501,7 @@ class Substitution:
             walk=named.walk,
             redirected=True,
         )
-        self.redirects.record((self.writer, key), named, substituted, found, origin)
+        self.redirects.record((serving, key), named, substituted, found, origin)
         return substituted
 
 

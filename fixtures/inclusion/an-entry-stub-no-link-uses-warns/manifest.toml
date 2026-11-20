@@ -1,0 +1,31 @@
+description = "The entry's recorded stub maps review.md, which the dispatched stage links, and notes.md, which no document links, so the first warns W_SUBST_USED and the second W_SUBST_UNUSED naming the entry."
+
+clauses = [
+  "Presets — Stubs",
+  "Link classification and resource handling — The substitution mapping",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["[Entry](entry.md \"recorded\")"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/entry--p-d39dc21d7beb9d3b49138e616dc40270f2e7e38f8c4a1f06201d6e2a6cb1d52e.bundle.md", "expected/stage.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "review.md"
+resolved = "recorded-review.md"
+
+[expected.diagnostics.location]
+file = "stage.md"
+line = 8
+column = 1
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_UNUSED"
+source = "notes.md"
