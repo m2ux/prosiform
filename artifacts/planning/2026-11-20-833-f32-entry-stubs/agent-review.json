@@ -1,0 +1,60 @@
+[
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/834",
+    "base": "d31add233f3588294ced5d7207bdf0ef63c55bcf",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-833-f32-entry-stubs/agent-review.json",
+    "head": "e335efe97b1b575395bdac6df4538a7a29b416c8",
+    "reviewer": "Claude Opus 5.5 (independent review sub-agent of the F32 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The full diff main..f32-entry-stubs at e335efe97 and the design hunk of engineering 30b8d24b2: Substitution and Redirects in closure.py; entry_stubs, staked, stub_off_entry, traverse with its postponed read, later_needs_pick, compiled, Compiled, dispatched_set, substituted, routes, unused_pairs in cli.py; carried in metadata.py. Inputs tried: an entry stub against a stage's section-key pair; a stand-in linking its key; a stage composing entry.md#shared from a dispatched bundle; a deferral to a document declaring a stub, in publish and -c runs; a substitute declaring a stub. One design question was raised to the user rather than recorded as a defect: a document's section key holds over an entry stub's whole-document key, as the per-key precedence states.",
+    "criteria": "AC1-AC8 of #833 against the corpus fixtures, unit tests, documents and design the pull request's test plan names.",
+    "validation": "uv run --frozen pytest -q passes; the scratch inputs behave as the issue states except the findings below.",
+    "findings": [
+      {
+        "description": "A stand-in's own link to the material it replaces was redirected by the entry's stub to the stand-in itself, failing E_TARGET_NOT_FOUND.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f504c8d30018015ef97dd44a2295ab5896ff3847"
+      },
+      {
+        "description": "The Substitution docstring stated that a pair reaches only its declaring document's links.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f504c8d30018015ef97dd44a2295ab5896ff3847"
+      },
+      {
+        "description": "The Redirects docstring stated that each pair is served by its own document's links.",
+        "severity": "nonblocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f504c8d30018015ef97dd44a2295ab5896ff3847"
+      }
+    ]
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/834",
+    "base": "d31add233f3588294ced5d7207bdf0ef63c55bcf",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-833-f32-entry-stubs/agent-review.json",
+    "head": "f504c8d30018015ef97dd44a2295ab5896ff3847",
+    "reviewer": "Claude Opus 5.5 (independent review sub-agent of the F32 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The change e335efe97..f504c8d30, the one commit fixing the findings of the review of e335efe97, re-checked through two intermediate heads (04531c1ea, c1639e17b) amended into it: the stub lookup in Substitution.redirect, its docstrings, test_subst.py and fixtures/inclusion/a-stand-in-links-the-material-it-stands-in-for. Inputs tried: a stand-in linking the document it replaces; a stand-in linking a second stubbed document; a section substitute in its key's own document.",
+    "criteria": "The findings of the review of e335efe97, and AC1-AC8 held by the full suite.",
+    "validation": "ruff check, ruff format --check and uv run --frozen pytest -q pass at f504c8d30; make check exits 0 with 2290 tests, 1148 harness tests and 703 fixtures.",
+    "findings": [
+      {
+        "description": "The first fix dropped every stub for a stand-in's links, so its link to a second stubbed document reached live material.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f504c8d30018015ef97dd44a2295ab5896ff3847"
+      },
+      {
+        "description": "The narrowed fix dropped a section substitute's pair for the links of its key's own document, so that document's link to the replaced section reached live material.",
+        "severity": "blocking",
+        "disposition": "fixed",
+        "evidence": "https://github.com/m2ux/prosiform/commit/f504c8d30018015ef97dd44a2295ab5896ff3847"
+      }
+    ]
+  }
+]

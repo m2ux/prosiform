@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F32 at `e335efe97` on `f32-entry-stubs`, run on 2026-11-20 in the unit checkout.
+Results for F32 at `f504c8d30` on `f32-entry-stubs`, run on 2026-11-20 in the unit checkout.
 
 ## T1 Two Dispatches Below
 
@@ -39,4 +39,8 @@ Held.
 
 ## T8 Full Check
 
-`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lint, format, typecheck, `make test` (2287 passed), harness (1147 passed), corpus (702 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lint, format, typecheck, `make test` (2290 passed), harness (1148 passed), corpus (703 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+
+## T9 Stand-ins
+
+`inclusion/a-stand-in-links-the-material-it-stands-in-for`: the entry's stub redirects the stage's review link to `recorded-review.md`, whose own link to `review.md#rules` reaches the live Rules section. `test_subst.py`: a stand-in keeps every other stub, and a section substitute in its key's own document redirects that document's links. Held.
