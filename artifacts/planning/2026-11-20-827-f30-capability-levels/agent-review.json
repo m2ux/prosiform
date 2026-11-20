@@ -43,5 +43,18 @@
     "criteria": "The fixtures dispatch/a-shortcut-reference-dispatch-names-its-model and dispatch/an-unmapped-level-in-an-unselected-heading-publishes, beside AC1-AC11's evidence.",
     "validation": "make check at 8249dfa76 passed: 2282 tests, 1138 harness tests, 695 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence.",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/828",
+    "base": "9670582ee5129836148661b7351176fcf046cda9",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-827-f30-capability-levels/agent-review.json",
+    "head": "332cd17aae9c494c27dd9c08a0784597b0f7fb08",
+    "reviewer": "Claude Opus 5.5 (F30 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The change 8249dfa76..332cd17aa: docs/dispatch.md's Models section states that a deferral is a run of its own whose entry is the deferred target, so a deferred stage runs on the operator's session and states no level; the design states the same at engineering 5000d0b63, and every design link is repinned to it. No source or fixture changed.",
+    "criteria": "AC10: the documents and the design.",
+    "validation": "make links, vocabulary, tables, harness (1138 passed) and conformance at 332cd17aa passed.",
+    "findings": []
   }
 ]
