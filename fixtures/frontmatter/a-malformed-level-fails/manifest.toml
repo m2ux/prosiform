@@ -1,0 +1,26 @@
+description = "A level that is not a non-empty string holding no line break fails with E_INVALID_CONVERSION_METADATA naming the field and publishes nothing."
+
+clauses = [
+  "Conversion metadata — level and levels name a dispatch's model",
+  "Metadata failures",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_INVALID_CONVERSION_METADATA"
+message_contains = ["prosiform.default.level "]
+reference = "guide.md"
+chain = ["guide.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 4
+column = 12

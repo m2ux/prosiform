@@ -1,0 +1,20 @@
+description = "A level in force for the run's entry fails with E_LEVEL_ON_ENTRY and publishes nothing, since the operator's own session follows the entry's bundle and no model is applied to it."
+
+clauses = [
+  "Link classification and resource handling — Dispatch models",
+  "Metadata failures",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_LEVEL_ON_ENTRY"
+message_contains = ["'judgement'"]
+reference = "guide.md"

@@ -1,0 +1,26 @@
+description = "A dispatch whose target's level the entry's levels name no model for fails with E_LEVEL_UNMAPPED, naming the level and the dispatch, and publishes nothing."
+
+clauses = [
+  "Link classification and resource handling — Dispatch models",
+  "Metadata failures",
+  "Adversarial acceptance fixtures — Dispatch models",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["guide.md"]
+
+[expected]
+exit_status = 1
+
+[[expected.diagnostics]]
+severity = "error"
+code = "E_LEVEL_UNMAPPED"
+message_contains = ["'deep'"]
+reference = "audit.md"
+chain = ["guide.md", "audit.md"]
+
+[expected.diagnostics.location]
+file = "guide.md"
+line = 11
+column = 1
