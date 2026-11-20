@@ -341,9 +341,10 @@ def test_the_guide_hands_a_bundle_over_by_the_path_of_its_file() -> None:
         "add no instruction, framing or reply form." in guide
     )
     assert (
-        "Where on <model> follows a ⇉ link, start its sub-agent on that "
-        "model; where nothing follows, start it as your harness does by "
-        "default." in guide
+        "Where on <model> follows a ⇉ link, or a diagram's %% <node> on "
+        "<model> comment stands beneath its node's link, start its sub-agent "
+        "on that model; where neither does, start it as your harness does "
+        "by default." in guide
     )
     assert "Give each bundle's file path to its own sub-agent at once" in guide
 

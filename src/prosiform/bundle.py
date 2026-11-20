@@ -220,6 +220,8 @@ HEADING_OPEN = "heading_open"
 
 RUN_PF = "Run `pf`, then follow the guidance it prints."
 MODEL_LEAD = "on"
+MODEL_COMMENT = "%%"
+"""What opens the Mermaid comment line naming a diagram dispatch's model."""
 """What stands between a published dispatch and the model its sub-agent starts on."""
 
 OPENERS = "\\`*_[]<>&~!#"
@@ -761,10 +763,6 @@ def rewrite(
                         folder=folder,
                     )
                 )
-                if isinstance(given, Followed):
-                    # A diagram's click line holds a destination and a
-                    # tooltip alone, so no text follows the link there.
-                    given = given.destination
                 if given is not None:
                     at = click.line - 1
                     written[at] = clicked(written[at], held[at - first], click, given)
@@ -805,7 +803,24 @@ def unplaced(
         raise Unplaced(path, start + first_line, destination, opening, composing=True)
 
 
-def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
+def model_comment(node: str, model: str) -> str:
+    """The Mermaid comment naming the model a diagram's dispatch starts on.
+
+    A diagram link's line holds a node, a destination and a tooltip
+    alone, so the model stands on a comment line of its own beneath it,
+    naming the node, which a renderer draws nothing for.
+    """
+    return f"{MODEL_COMMENT} {node} {MODEL_LEAD} {model}"
+
+
+def names_model(line: str, click: Click) -> bool:
+    """Whether one fence line is the comment `model_comment` writes for a click."""
+    return line.strip().startswith(f"{MODEL_COMMENT} {click.node} {MODEL_LEAD} ")
+
+
+def clicked(
+    physical: str, held: str, click: Click, given: str | Titled | Followed
+) -> str:
     """One physical line with one diagram link destination replaced.
 
     The fence holds the line without the container markers and indent
@@ -817,7 +832,8 @@ def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
     A titled destination is a deferring click's: the names its `source.Click`
     title gains are written before the tooltip's closing quote, after the
     title's tags, or as a tooltip of their own after the destination
-    where the click carries none.
+    where the click carries none. A followed destination is a dispatch's
+    naming a model, which `model_comment` writes on the line beneath.
     """
     after = len(bare(held)) - click.offset - len(click.written)
     end = len(bare(physical)) - after
@@ -831,6 +847,14 @@ def clicked(physical: str, held: str, click: Click, given: str | Titled) -> str:
             close = tip.end() - 1
             separator = ", " if click.title else ""
             rest = f"{rest[:close]}{separator}{names}{rest[close:]}"
+        given = given.destination
+    if isinstance(given, Followed):
+        # The comment opens with the markers and indent the link's line
+        # opens with, so it stays inside the fence and its container.
+        line = bare(physical)
+        lead = line[: len(line) - len(bare(held).lstrip())]
+        terminator = physical[len(line) :]
+        rest = f"{rest}{lead}{model_comment(click.node, given.model)}{terminator}"
         given = given.destination
     return f"{physical[: end - len(click.written)]}{given}{rest}"
 
@@ -891,14 +915,16 @@ def target(
         served = ((withheld.path, withheld.fragment), withheld.tags, parallel(opening))
         if served not in held:
             raise Unplaced(path, line, destination, opening, composing=False)
-        after = (
-            started_on(model_of(withheld, conversions[withheld.path]))
+        model = (
+            model_of(withheld, conversions[withheld.path])
             if filed(held[served])
             and conversions is not None
             and withheld.path in conversions
-            else ""
+            else None
         )
-        return Followed(held[served], after) if after else held[served]
+        if model is None:
+            return held[served]
+        return Followed(held[served], started_on(model), model)
     names = carried_names(withheld, conversions)
     published = rebased(withheld, destination, folder)
     return Titled(published, names) if names else published

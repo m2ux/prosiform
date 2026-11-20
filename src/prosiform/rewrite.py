@@ -224,14 +224,16 @@ class Titled:
 
 @dataclass(frozen=True)
 class Followed:
-    """A destination published with text written after its link.
+    """A destination published with the model its dispatch starts on.
 
-    A dispatch to a bundle file whose target has a level is followed by
-    the model its sub-agent starts on, as the bundle writes it.
+    A dispatch to a bundle file whose target has a level names the model
+    its sub-agent starts on: `after` is the Markdown written after its
+    link, and `model` the name a diagram's comment line carries.
     """
 
     destination: str
     after: str
+    model: str
 
 
 TITLE_ESCAPED = frozenset('\\"()&' + "'")

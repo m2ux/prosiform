@@ -361,9 +361,10 @@ Symbol grammar:
      yourself: hand on its link. Do not check or redo its work: take
      its answer as given. Hand over the path and those inputs alone:
      add no instruction, framing or reply form.
-     Where on <model> follows a ⇉ link, start its sub-agent on that
-     model; where nothing follows, start it as your harness does by
-     default.
+     Where on <model> follows a ⇉ link, or a diagram's %% <node> on
+     <model> comment stands beneath its node's link, start its sub-agent
+     on that model; where neither does, start it as your harness does
+     by default.
      Where a ⇉ link points at a sub-section rather than at a bundle
      file, the text above its ⇉ line there, and the sections beneath
      that line, are the bundle's brief: do what it asks of you before
