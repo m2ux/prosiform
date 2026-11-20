@@ -237,7 +237,7 @@ def stating(document: Path, subst: str) -> None:
 
 
 def stubbing(document: Path, subst: str) -> None:
-    """One entry whose stub `mock`, selected by `MOCKED`, states the `subst` list given."""
+    """One entry whose stub `mock`, which `MOCKED` selects, states `subst`."""
     text = document.read_text()
     assert text.startswith(DECLARED)
     document.write_text(

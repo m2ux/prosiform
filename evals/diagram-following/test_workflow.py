@@ -1795,7 +1795,11 @@ def test_a_substitute_stating_another_action_is_a_fault(tmp_path: Path) -> None:
 
 def test_a_warning_the_workflow_does_not_declare_is_a_fault(tmp_path: Path) -> None:
     workflow = broken(
-        tmp_path, "directive-labels", "scenarios.toml", 'warnings = ["W_COMPOSE_SELF"]', ""
+        tmp_path,
+        "directive-labels",
+        "scenarios.toml",
+        'warnings = ["W_COMPOSE_SELF"]',
+        "",
     )
     output = tmp_path / "output"
     output.mkdir()
