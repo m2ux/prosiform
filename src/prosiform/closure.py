@@ -190,7 +190,7 @@ def matching_presets(
     Tags hold normalized complete names. An unmatched name adds nothing,
     and the reserved default token supplies no named selection. A stub
     the run's own names select matches whatever the tags name, since
-    the run selects it wherever it compiles its document.
+    the run selects its entry's stubs wherever it compiles the entry.
     """
     return tuple(
         preset
@@ -412,7 +412,7 @@ class Substitution:
     def stubbed(
         self, entry: str, stubs: Mapping[tuple[str, str | None], Reference]
     ) -> "Substitution":
-        """This mapping with the run's entry and its stubs' pairs, sharing its record."""
+        """This mapping with the run's entry and its stubs' pairs, one record shared."""
         return replace(self, entry=entry, stubs=stubs)
 
     def governed(

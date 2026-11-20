@@ -152,7 +152,7 @@ class Conversion:
     the substitute's: none travels from the document its key named.
 
     `run` holds the names the run's entry title gives, normalized as
-    title tags are. They select this document's stubs wherever the run
+    title tags are. They select the entry's stubs wherever the run
     compiles it, so the run reading the document states them, and
     settings no run read hold none. `models` holds the run's level map,
     each level mapped to the model a dispatch of that level starts on,
@@ -183,7 +183,8 @@ class Conversion:
     def carried(self) -> frozenset[str]:
         """The run's names a deferral reaching this document publishes in its title.
 
-        The run compiling the deferral selects its stubs by them again.
+        The run compiling the deferral, whose entry is this document,
+        selects this document's stubs by them.
         A name naming a preset of this document other than a stub is
         left out, since the later run's entry title would select that
         preset where this run selected none.
