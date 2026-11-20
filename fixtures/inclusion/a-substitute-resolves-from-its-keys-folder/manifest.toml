@@ -1,0 +1,27 @@
+description = "A preset's subst pair declared in stages/check.md as {../references/rules.md: strict-rules.md} resolves its substitute from the key's directory, so the run compiles references/strict-rules.md in place of references/rules.md, and stages/strict-rules.md beside the declaring file is not read."
+
+clauses = [
+  "Conversion metadata — subst holds colon pairs",
+  "Link classification and resource handling — The substitution mapping",
+  "Reference normalization and path identity",
+  "Exit status and JSON diagnostics — 0",
+]
+
+[invocation]
+cwd = "source"
+arguments = ["stages/check.md"]
+
+[expected]
+exit_status = 0
+bundles = ["expected/stages_check.bundle.md"]
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_SUBST_USED"
+source = "../references/rules.md"
+resolved = "references/strict-rules.md"
+
+[expected.diagnostics.location]
+file = "stages/check.md"
+line = 10
+column = 1

@@ -1475,7 +1475,7 @@ def test_a_subst_rule_stated_twice_or_against_itself_is_refused(
     [
         ("{rules.md: a.md}", '{"rules.md#Checks": b.md}'),
         ("{rules.md: a.md}", "{notes/rules.md: b.md}"),
-        ('{"rules.md#Checks": "#Checks"}',),
+        ('{"rules.md#Checks": "#Other"}',),
     ],
 )
 def test_subst_keys_naming_distinct_identities_are_admitted(

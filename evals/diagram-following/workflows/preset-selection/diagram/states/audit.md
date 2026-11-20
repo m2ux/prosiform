@@ -4,7 +4,7 @@ prosiform:
     group: {audits: 1}
   review:
     subst:
-      - {../notes/policy.md: ../notes/strict-policy.md}
+      - {../notes/policy.md: strict-policy.md}
 ---
 # Audit
 

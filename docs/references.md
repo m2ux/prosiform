@@ -33,7 +33,7 @@ flowchart TD
   Ref["a reference in selected content"] --> Scheme{"carries a scheme<br/>or an authority?"}
   Scheme -- yes --> Text["text: carried as authored, never opened"]
   Scheme -- no --> Mapped{"a subst key of the writing<br/>document names its identity?"}
-  Mapped -- yes --> Sub["substitute: resolved from<br/>the declaring document"]
+  Mapped -- yes --> Sub["substitute: resolved from<br/>the key's document"]
   Mapped -- no --> Declares{"names a Markdown document<br/>that declares prosiform?"}
   Declares -- no --> Text
   Declares -- yes --> Dep["dependency: followed,<br/>bundled, rewritten"]

@@ -969,11 +969,11 @@ def test_a_pair_whose_substitute_names_no_markdown_document_is_refused(
 def test_a_preset_pair_reads_the_same_from_any_working_directory(
     tmp_path: Path,
 ) -> None:
-    """Both sides resolve from the declaring file, so the run's start plays no part."""
+    """The key resolves from the declaring file, so the run's start plays no part."""
     (tmp_path / "out").mkdir()
     (tmp_path / "modes").mkdir()
     (tmp_path / "modes" / "plan.md").write_text(
-        "---\nprosiform:\n  default:\n    subst: [{../rules.md: ../stand-in.md}]\n"
+        "---\nprosiform:\n  default:\n    subst: [{../rules.md: stand-in.md}]\n"
         "---\n# Plan\n\n## Keep\n\nSee [the rules](../rules.md).\n"
     )
     (tmp_path / "rules.md").write_text(DECLARED + "# Rules\n\nThe rules.\n")
@@ -986,6 +986,26 @@ def test_a_preset_pair_reads_the_same_from_any_working_directory(
     assert from_root.read_text() == from_modes.read_text()
     assert "# Stand-in" in from_root.read_text()
     assert "# Rules" not in from_root.read_text()
+
+
+def test_a_section_only_substitute_names_a_section_of_its_keys_document(
+    tmp_path: Path,
+) -> None:
+    """The substitute resolves as a link its key's document writes."""
+    (tmp_path / "out").mkdir()
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "guide.md").write_text(
+        "---\nprosiform:\n  default:\n"
+        '    subst: [{docs/rules.md#strict: "#lenient"}]\n'
+        "---\n# Guide\n\nSee [the rules](docs/rules.md#strict).\n"
+    )
+    (tmp_path / "docs" / "rules.md").write_text(
+        DECLARED + "# Rules\n\n## Strict\n\nRefuse.\n\n## Lenient\n\nAllow.\n"
+    )
+    status, published = invoke(tmp_path, "guide.md")
+    assert status == 0
+    assert "Allow." in published
+    assert "Refuse." not in published
 
 
 def test_a_substitutes_fragment_only_link_names_its_own_section() -> None:

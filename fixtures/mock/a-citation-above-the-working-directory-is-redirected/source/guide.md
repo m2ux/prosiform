@@ -1,5 +1,5 @@
 ---
-prosiform: {default: {subst: [{../notes.md: ../stand-in.md}]}}
+prosiform: {default: {subst: [{../notes.md: stand-in.md}]}}
 ---
 # Guide
 

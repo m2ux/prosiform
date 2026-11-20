@@ -68,7 +68,7 @@ The skill follows the ports and adapters pattern, with prosiform's link operator
 | port | the practices of [`lifecycle.md`](lifecycle.md), one section each | a document whose presets each name an adapter |
 | call through the port | a mode step applying a practice | a link to that practice's section of the lifecycle |
 | adapter | [`sdlc/ad-hoc.md`](sdlc/ad-hoc.md), [`sdlc/waterfall.md`](sdlc/waterfall.md) | documents carrying `## Plan`, `## Deliver` and `## Verify` |
-| binding an adapter | the lifecycle's `waterfall` preset | `subst: [{sdlc/ad-hoc.md: sdlc/waterfall.md}]` |
+| binding an adapter | the lifecycle's `waterfall` preset | `subst: [{sdlc/ad-hoc.md: waterfall.md}]` |
 | selecting a binding | the SDLC the user names, once, in the entry | the entry's link tagged with the preset, `[↳ Waterfall](lifecycle.md "waterfall")` |
 | default binding | ad hoc | the entry's untagged link, `[↳ Ad Hoc](lifecycle.md)`, under the `default` preset |
 | the adapter's practice in the port | each practice's section | composition, `[↳ Practice](sdlc/ad-hoc.md#deliver)` |
