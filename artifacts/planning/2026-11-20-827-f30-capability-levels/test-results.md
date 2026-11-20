@@ -1,6 +1,6 @@
 # Test Results
 
-Results for F30 at `8249dfa76` on `f30-capability-levels`, run on 2026-11-20 in the unit checkout.
+Results for F30 at `46d0f3047` on `f30-capability-levels`, run on 2026-11-20 in the unit checkout.
 
 ## T1 Dispatch Link Model
 
@@ -38,9 +38,23 @@ Each publishes nothing. Held.
 
 - `dispatch/a-shortcut-reference-dispatch-names-its-model`: `[⇉ Gather] and record.` with its definition publishes `[⇉ Gather](gather.bundle.md) on haiku and record.`.
 - `dispatch/an-unmapped-level-in-an-unselected-heading-publishes`: a heading outside the selection dispatching at an unmapped level leaves the run publishing, the selected dispatch reading `on opus`.
+- `dispatch/a-diagram-dispatch-names-its-model-in-a-comment`: each click to a levelled target gains `%% <node> on <model>` beneath it, at the click line's indent inside a list item too, a tooltip tag selecting the target's other level, and a click to a target with no level gains none.
 
 Held.
 
 ## T8 Full Check
 
-`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lock, lint, format, typecheck, `make test` (2282 passed), harness (1138 passed), corpus (695 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+`make check`, with `PROSIFORM_BUILD` naming the worktree's `pf`, exits 0: lock, lint, format, typecheck, `make test` (2282 passed), harness (1139 passed), corpus (696 fixtures), smoke, layout, tables, links, vocabulary, invocation, conformance and independence. Held.
+
+## T10 Model Specimen
+
+A survey entry mapping `retrieval` to `haiku` and `judgement` to `opus` dispatches Tally (`retrieval`) and Verdict (`judgement`), each writing one file under `actions/`; the `link` arm dispatches by `⇉` links, published with `on <model>` after each, and the `diagram` arm by a flowchart's clicks, published with `%% <node> on <model>` beneath each. Each run is one headless Claude Code session on `claude-opus-5-5`, in a workspace of its own with this branch's `pf` on its path, given `Follow the instructions in the bundle at survey.bundles/survey.bundle.md.`; the model each sub-agent started on is read from its `Agent` call in the session's transcript.
+
+| Arm | Runs | Starts naming the published model | Runs writing every action file |
+| --- | --- | --- | --- |
+| `link` | 3 | 6 of 6 | 3 of 3 |
+| `diagram` | 3 | 6 of 6 | 3 of 3 |
+
+Every Tally started on `haiku` and every Verdict on `opus`. Held.
+
+An earlier round under a restricted tool allowlist is not counted: the allowlist denied the agents' own `pf` invocations and every sub-agent's shell, so four of six runs stopped short. Its seven starts all named the published model.

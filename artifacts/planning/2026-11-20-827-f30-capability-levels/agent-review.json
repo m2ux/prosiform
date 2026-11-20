@@ -56,5 +56,18 @@
     "criteria": "AC10: the documents and the design.",
     "validation": "make links, vocabulary, tables, harness (1138 passed) and conformance at 332cd17aa passed.",
     "findings": []
+  },
+  {
+    "pull_request": "https://github.com/m2ux/prosiform/pull/828",
+    "base": "9670582ee5129836148661b7351176fcf046cda9",
+    "base_ref": "main",
+    "url": "https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-20-827-f30-capability-levels/agent-review.json",
+    "head": "46d0f3047c19e4d09c3abeefee9a0de3dc2cf536",
+    "reviewer": "Claude Opus 5.5 (F30 delivery session)",
+    "reviewed_at": "2026-11-20T00:00:00Z",
+    "scope": "The change 332cd17aa..46d0f3047: a diagram dispatch to a levelled target is published with a Mermaid comment line, model_comment's '%% <node> on <model>', beneath its link's line, opening with that line's markers and indent; Followed carries the raw model beside its Markdown; candidate.carrying and undestined set the comment aside on both sides, names_model reading it; the guide, docs/dispatch.md, invocation.md, docs/glossary.md and the design at ff49e03d1 state it. Checked a click inside a list item, a tooltip tag selecting another level, and a click to a target with no level. An authored comment of the same shape beneath a click is set aside on both sides of the comparison alike, so it compares equal; rejected as no defect.",
+    "criteria": "dispatch/a-diagram-dispatch-names-its-model-in-a-comment; T10, the model specimen: 12 of 12 sub-agent starts on the published model across the link and diagram arms.",
+    "validation": "make check at 46d0f3047 passed: 2282 tests, 1139 harness tests, 696 fixtures, smoke, layout, tables, links, vocabulary, invocation, conformance and independence.",
+    "findings": []
   }
 ]
