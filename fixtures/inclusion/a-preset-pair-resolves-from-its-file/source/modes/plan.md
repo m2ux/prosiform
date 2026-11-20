@@ -1,7 +1,7 @@
 ---
 prosiform:
   default:
-    subst: [{../rules.md: ../stub.md}]
+    subst: [{../rules.md: stub.md}]
 ---
 # Plan
 

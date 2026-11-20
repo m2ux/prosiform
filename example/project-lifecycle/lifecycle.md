@@ -3,7 +3,7 @@ prosiform:
   default: {}
   waterfall:
     subst:
-      - {sdlc/ad-hoc.md: sdlc/waterfall.md}
+      - {sdlc/ad-hoc.md: waterfall.md}
 ---
 
 # Project Lifecycle

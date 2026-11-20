@@ -2,7 +2,7 @@
 prosiform:
   default:
     subst:
-      - {states/approve.md: alternates/approve.md}
+      - {states/approve.md: ../alternates/approve.md}
 ---
 # Release
 
