@@ -1030,9 +1030,9 @@ def read_entry(path: Path) -> str:
 def read_warnings(path: Path) -> frozenset[str]:
     """The warning codes a workflow's `scenarios.toml` declares its bundle raises.
 
-    A feature such as `subst` warns wherever it is used, so a workflow built
-    on it declares each code it expects, and its bundle is held to raising
-    those and no other diagnostic.
+    A feature such as a self-composing directive warns wherever it is used,
+    so a workflow built on it declares each code it expects, and its bundle
+    is held to raising those and no other diagnostic.
     """
     with path.open("rb") as handle:
         return frozenset(tomllib.load(handle).get("warnings", ()))

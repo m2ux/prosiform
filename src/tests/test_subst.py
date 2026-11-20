@@ -1151,7 +1151,7 @@ def test_a_copy_routing_its_dispatches_apart_from_the_group_places_its_own(
 def test_a_default_pair_in_force_for_a_copy_alone_routes_quietly(
     tree: Path,
 ) -> None:
-    """A copy's default pair is a route its document's link names, so it is used."""
+    """A copy's default pair is a route a link its document writes names."""
     (tree / "guide.md").write_text(
         DECLARED + "# Guide\n\n"
         '## Plan\n\nStart from the [↳ Given](stage.md#given "task").\n\n'
