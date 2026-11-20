@@ -859,6 +859,24 @@ def test_an_entry_stub_holds_over_a_documents_pair_for_one_key() -> None:
     assert STUBBED.redirects.served(("entry.md", ("rules.md", None)), RECORDED)
 
 
+def test_a_stand_in_reaches_the_material_it_stands_in_for() -> None:
+    assert identity(inside("recorded.md", "rules.md#one", STUBBED)) == "rules.md#one"
+
+
+def test_a_section_substitute_in_its_keys_document_redirects_that_document() -> None:
+    lenient = Reference("#lenient", "rules.md", "lenient", walk="rules.md")
+    stubbed = Substitution().stubbed("entry.md", {("rules.md", "strict"): lenient})
+    assert identity(inside("rules.md", "#strict", stubbed)) == "rules.md#lenient"
+
+
+def test_a_stand_in_keeps_every_other_stub() -> None:
+    stubbed = Substitution().stubbed(
+        "entry.md",
+        {("rules.md", None): RECORDED, ("notes.md", None): SUBSTITUTE},
+    )
+    assert identity(inside("recorded.md", "notes.md", stubbed)) == "stand-in.md"
+
+
 def test_a_documents_section_key_holds_over_an_entry_stubs_document_key() -> None:
     mapped = Substitution().governed({"guide.md": {("rules.md", "one"): SECTION}})
     stubbed = mapped.stubbed("entry.md", {("rules.md", None): RECORDED})
