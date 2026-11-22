@@ -43,7 +43,11 @@ PREAMBLE_DEPTH = 2
 
 
 def selected(tokens: Sequence[Token]) -> Selection | None:
-    """The H1 title and content up to the first H2, where a document has a title."""
+    """Select the first document-level H1 and its content before the next H1/H2.
+
+    With no later H1/H2, select to end of file. Return None where
+    `source.regions` contains no H1.
+    """
     spans = list(regions(tokens))
     title = next(
         (token for token in spans if token.type == HEADING_OPEN and level(token) == 1),

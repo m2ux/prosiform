@@ -1234,12 +1234,7 @@ def assemble(groups: Sequence[Group]) -> str:
 
 
 INSTRUCTIONS = "\u00a7 Instructions"
-"""The heading every bundle opens on, holding the run-pf line.
-
-The section sign marks the heading as the run's own structure rather than a
-document's, and it survives slugging, so no author's heading can share the
-fragment it takes.
-"""
+"""The opening heading text used by `instruction_group`."""
 
 
 def opened(groups: Sequence[Group]) -> list[Group]:
