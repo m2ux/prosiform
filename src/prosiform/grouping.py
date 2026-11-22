@@ -1,98 +1,7 @@
-"""The merged group: one part of the source tree arranged by heading rather than file.
+"""Arrange selected document content into merged groups.
 
-Each contributing document declares its group name and source heading
-level in conversion metadata. Members of the same group merge at that
-level beneath its title-cased name. A document without conversion
-settings keeps its individual file group.
-
-A merged group emits its slug in title case as an H1, a subsection
-naming each member and holding what that member carries above the
-grouping depth, and then one H2 for each distinct source heading text at
-that depth. A group nested inside another division moves every one of
-those headings down one level for each division enclosing it. A
-member's heading at the grouping depth is replaced by the merged one
-and its content moves to sit beneath it, so the level a heading is
-emitted at is the level its author wrote under a shift the arrangement
-supplies rather than a single shift for the whole group.
-
-A name the group generates — its heading, a member's subsection and a
-variant heading — keeps every separator its source carries, as every
-heading the bundle generates does: a run of path segments keeps the
-slashes between them. A member whose name carries no word is named by
-its path text in title case.
-
-The members are read in placement order: the order in which the bundle
-first reaches each of them by a reference, reading the entry references
-and then each placed document's selected content. The overview
-subsections, the merged sections and the variants inside each follow
-that order, after what the parent contributes.
-
-A merged heading keeps its source text. Where that text occurs once in
-the group it is emitted alone, and where several documents contribute it
-the text is emitted once and each document's content hangs beneath it
-under a variant heading naming the document. The name a variant heading
-carries is the shortest run of that document's path which
-distinguishes it from the others, in title case, measured after the
-leading segments they all share are dropped, because those are the
-context the group heading already states.
-
-Every section with more than one contributing document splits into
-variants, whether those contributions hold body text, subheadings or
-only the section heading. A sole contributor keeps its own arrangement.
-Each member's name is measured once against the whole group and serves
-both its overview subsection and every variant, following the same
-qualification and group-word removal in both places.
-
-A member's subsection is named by the shortest run of that document's
-path which distinguishes it from the group's other
-members, in title case, measured after the leading segments they all
-share are dropped. A trailing word the group's heading states is
-omitted where qualification still distinguishes the displayed names. It
-carries the member's content above the grouping depth. A section above
-that depth whose selected content sits at the grouping depth, with
-nothing above it but headings, is no such content: the merged sections
-carry its body, its heading is not emitted, and a reference to it
-resolves to the first heading the group emits for a section it holds.
-An empty section, or one holding nothing selected, is content. That heading
-absorbs the member's own H1 where their slugs agree, as a file heading
-absorbs the title it carries, and it is where a whole-document reference
-to a member other than the parent resolves. A member whose H1 the
-heading absorbs takes a subsection, as does one the arrangement emits
-nothing else from, so the group names every member it merges; such a
-subsection is the heading alone. A member whose content all sits at the
-grouping depth is named by the merged sections it contributes to, and a
-reference to it resolves to the first heading the group emits from it
-that no other member shares:
-the variant heading naming the document where its contribution carries a
-heading text another member contributes too, and the merged heading
-itself where that text occurs once in the group. No two members of one
-group therefore reach one destination.
-
-The subsections sit beneath an `Overview` section where the group also
-emits merged sections and a member carries content above the grouping
-depth beneath its subsection, so that content is read as that member's
-rather than as one more of the group's own sections. Where every
-subsection is the heading alone, or the group emits no merged section,
-the subsections sit directly beneath the group's heading.
-
-The parent is the first entry document. Where that document is a member
-and carries a title, the title and the content above the grouping depth
-open the group at the levels the author wrote. A whole-document
-reference to a titled parent resolves to the heading carrying its title
-at every grouping depth: the H1 opening the group where the title sits
-above that depth, and the merged section or the variant naming the
-parent where it sits at that depth. The sections the parent carries at the grouping
-depth follow in the parent's order, with the parent's own contribution
-first where several members share one section. A section only another
-member contributes follows those, and the other members' subsections
-sit in the overview after them.
-
-Grouping is decided before ancestry. Conversion metadata fixes each document's
-membership, its grouping depth and the shift each of its contributions
-takes, and the chain of eligible ancestors is then read inside that
-arrangement: above the grouping depth the group's own structure supplies
-the chain, so only a heading at or below that depth is ever emitted as a
-structural ancestor.
+`prepared` records each member's selected content. `merged` combines those
+members into a `bundle.Group` with its heading targets and provenance.
 """
 
 from collections.abc import Mapping, Sequence
@@ -164,10 +73,8 @@ MARKDOWN_SPACE = " \t"
 def states(heading: str, word: str) -> bool:
     """Whether a group's heading already states one word of a member's stem.
 
-    A group name can state a kind shared by its members, so
-    `modes` states `Mode`. Both sides are slugged, so the capitalization
-    a filesystem carries decides nothing, and the plural the group
-    is named with is the one spelling a slug does not reconcile.
+    Compare `source.slug` values, accepting the member word alone or
+    followed by a plural s as the group's name.
     """
     one, other = slug(heading), slug(word)
     return one in (other, f"{other}s")
@@ -186,17 +93,13 @@ def without_stated(heading: str, named: str) -> str:
 
 
 def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
-    """The final displayed name distinguishing each member of a merged group.
+    """The shortest displayed path name distinguishing each group member.
 
-    Shared leading directories are omitted. Trailing path segments are
-    added until the title-cased names, with the group's trailing word
-    removed, distinguish the members. Where every segment is needed and
-    removing that word still joins names, the complete names retain it.
-    A run of segments keeps the slashes between them, as title case
-    keeps every separator a name carries. A member whose name carries
-    no word takes its path text in title case, which the Markdown suffix
-    always gives a word. Overview subsections and variants use this same
-    group-wide mapping.
+    Discard shared leading directories, then extend trailing path segments
+    until the displayed names differ. `without_stated` removes the group's
+    trailing word; retain complete names when removal leaves a collision.
+    Spelling uses `heading.title_cased` and the fallback from `worded_names`.
+    The mapping serves both overview subsections and variant headings.
     """
     spelled = {path: list(PurePosixPath(path).parts) for path in paths}
     shortest = min(len(one) for one in spelled.values())
@@ -226,7 +129,7 @@ def member_headings(paths: Sequence[str], named: str) -> dict[str, str]:
 
 
 def worded_names(headings: Mapping[str, str]) -> dict[str, str]:
-    """Each member's name, or its path text in title case where it carries no word."""
+    """Member names, with `heading.title_cased` paths for unworded names."""
     return {
         path: heading if worded(heading) else title_cased(path)
         for path, heading in headings.items()
@@ -235,7 +138,7 @@ def worded_names(headings: Mapping[str, str]) -> dict[str, str]:
 
 @dataclass(frozen=True)
 class Item:
-    """One thing a member contributes: a selected region, or an ancestor heading."""
+    """A member item: `token` holds its region or heading; `ancestor` marks outline."""
 
     token: Token
     ancestor: bool
@@ -243,7 +146,15 @@ class Item:
 
 @dataclass
 class Member:
-    """One document conversion metadata groups, read as the arrangement needs it."""
+    """The data one document contributes to a merged arrangement.
+
+    `path` names its source; `tokens` and `written` hold parsed and rewritten
+    content. `removed` identifies excluded lines. `text` maps heading identities
+    to published text, `named` to source fragments, and `chains` to ancestors.
+    `emitting` and `ancestors` identify selected and structural tokens. `title`
+    holds its source title; `absorbing` holds the title named by its subsection.
+    `first_line` locates content in its file; `items` holds its arranged items.
+    """
 
     path: str
     tokens: Sequence[Token]
@@ -290,17 +201,12 @@ def prepared(
     conversions: Mapping[str, Conversion],
     folder: BundleFolder = WORKING_FOLDER,
 ) -> Member:
-    """One member of a merged group, with what it contributes already decided.
+    """Prepare one merged member's selected items, headings and source records.
 
-    The regions the run selected and the eligible ancestors they need
-    are read here, as they are for a file group. The title the member's
-    overview subsection names is absorbed where the member's own H1
-    carries it, and is no structural ancestor either way, because the
-    subsection stands in its place. The parent keeps its title, so
-    nothing absorbs it.
-
-    The first line of the member's content is the line of the file it
-    stands on, which a refusal about a link names.
+    Use `bundle.required` for ancestors and `bundle.rewrite` for selected link
+    edits. `bundle.absorbed` identifies a title the member subsection names;
+    `keep_title` preserves the parent's title. `first_line` locates link errors
+    in the original file.
     """
     removed = {
         at for one in defined.values() for at in range(one.lines[0], one.lines[1])
@@ -442,9 +348,9 @@ def generated_part(
 ) -> tuple[str, Generated]:
     """One heading the arrangement writes itself, as the part it is emitted as.
 
-    A nested group's headings sit one level deeper for each division
-    enclosing it, so a generated heading can be pushed beyond the sixth
-    level; the path is the member the overflow is reported against.
+    The caller supplies the depth; a value above `bundle.MAX_LEVEL`
+    raises `Overflow` against `path`. The returned `Generated` records
+    the text, depth, kind and answers supplied by the caller.
     """
     if depth > MAX_LEVEL:
         raise Overflow(text, depth, path)
@@ -453,11 +359,10 @@ def generated_part(
 
 
 class Assembly:
-    """The parts, headings and targets one merged group accumulates as it is built.
+    """Accumulate emitted text, provenance parts and heading records.
 
-    The offset is the levels every heading of the group moves down by
-    where it nests inside another division: nothing at the top level of
-    the bundle, and one for each division enclosing it.
+    `offset` sets the section and member heading levels relative to the group's
+    top-level arrangement.
     """
 
     def __init__(self, offset: int = 0) -> None:
@@ -539,12 +444,9 @@ def merged_only(member: Member, token: Token, depth: int) -> bool:
 
 
 def overview_content(member: Member, depth: int) -> list[Item]:
-    """What one member carries beneath its overview subsection, in source order.
+    """Selected items above grouping depth that the overview carries.
 
-    That is its selected content above the grouping depth. A structural
-    ancestor is outline, not content, and so is a heading whose section
-    holds selected content at the grouping depth and none above it but
-    headings: the merged sections carry that section's body.
+    Exclude structural ancestors and headings recognized by `merged_only`.
     """
     return [
         one
@@ -626,14 +528,10 @@ def arranged(
 
 
 def direct(into: Assembly, member: Member) -> None:
-    """Point a whole-document reference to the parent at its own title heading.
+    """Assign the parent's whole-document target to its selected title heading.
 
-    The title heading is the one answering the parent's title, wherever
-    the merge placed it: the heading opening the group where the title
-    sits above the grouping depth, and the merged section or the variant
-    naming the parent where it sits at that depth. A parent with no
-    title, or whose title the selection left unselected, is answered as
-    any other member is.
+    Use `bundle.document_title` to identify the title. Leave the target alone
+    when that title is absent from the emitted headings.
     """
     title = document_title(member.tokens)
     if title is None:
@@ -652,18 +550,12 @@ def merged(
     parent: str | None = None,
     at: int = GROUP_LEVEL,
 ) -> Group:
-    """One merged group: its slug, the overview, and one section for each name.
+    """Assemble prepared members into one named group at the supplied level.
 
-    The members are in placement order, the order a reference first
-    names each of them in, which is the order every arrangement below
-    reads them in, so one selection always bundles to the same bytes.
-    The group stands where its first member is placed. The parent opens
-    the group on its own title where it carries one, and its sections
-    precede every section the merge adds.
-
-    The group's heading takes the level supplied: H1 at the top level of
-    the bundle, and the level below its holding division's heading where
-    it nests, every heading beneath it moving down with it.
+    Members must arrive in placement order. `situated` decides whether the
+    parent title opens the group, `arranged` orders its sections, and `overview`
+    and `sections` emit them. `direct`, `contributed` and `relocated` record the
+    targets answered by the resulting headings.
     """
     into = Assembly(at - GROUP_LEVEL)
     parent_member = next((one for one in members if one.path == parent), None)
@@ -700,15 +592,10 @@ def merged(
 
 
 def names_one(one: Emitted, path: str) -> bool:
-    """Whether one emitted heading names that member and no other.
+    """Whether a heading's origins or target answers identify only one member.
 
-    A carried heading answers to one source heading per contributing
-    document, so a merged heading several documents write names none of
-    them alone and a heading one document writes names that one. A
-    generated heading carries no source heading, and the targets it
-    answers are what it names: a variant heading answers one document's
-    heading, and the group's own heading answers nothing. A structural
-    ancestor answers nothing by construction and is no destination.
+    Inspect origins for `provenance.Carried` and answers for
+    `provenance.Generated`; a structural ancestor names no target.
     """
     if isinstance(one, Generated):
         return bool(one.answers) and all(target[0] == path for target in one.answers)
@@ -718,24 +605,11 @@ def names_one(one: Emitted, path: str) -> bool:
 
 
 def contributed(into: "Assembly", member: Member) -> None:
-    """Where a whole-document reference resolves for a member with no subsection.
+    """Assign a whole-document target for a member lacking a subsection.
 
-    A member with no overview content, its selected content above the
-    grouping depth at most headings of sections the merge carries, is
-    named by the merged sections it contributes to, so the document itself is
-    answered by the first heading the group emits from it that no other
-    member shares: the variant heading naming the document where its
-    contribution carries a heading text another member contributes too,
-    and the merged heading itself where that text occurs once in the
-    group. Two members contributing one heading text therefore reach
-    two destinations.
-
-    Where the group emits no heading naming the member alone, the first
-    heading it emits from the member answers, and the group's own
-    heading where it emits none carrying it. That destination is
-    therefore one the bundle has, whatever the member contributes, so a
-    reference the closure resolved into a merged group is rewritten
-    to a destination the bundle assigned.
+    Choose the first contributed heading `names_one` identifies as unique to
+    the member, otherwise its first contributed heading, otherwise the group's
+    opening. A target already answered by another heading is left alone.
     """
     answered = {target for one in into.headings for target in one.answers}
     whole: Target = (member.path, None)
@@ -769,28 +643,12 @@ def overview(
     pooled: bool,
     parent: str | None = None,
 ) -> None:
-    """The subsection each member is named by, and the `Overview` carrying them.
+    """Emit member subsections, optionally beneath an Overview heading.
 
-    A member takes a subsection where it carries overview content, where
-    its own H1 is absorbed into that heading, and where the arrangement
-    emits nothing else from it at all, so every member the group merges
-    is named by a heading the bundle carries. Overview content is the
-    selected content above the grouping depth less a heading whose
-    section holds selected content at that depth and none above it but
-    headings. A member meeting none of these takes no subsection: the
-    merged sections it contributes to name it.
-
-    The heading naming a member carries the run of its path that tells
-    it apart from the group's other members, measured against every
-    member the group merges rather than those taking a subsection, so
-    one answer to what a member is called serves the whole group.
-
-    The subsections sit beneath an `Overview` section where the group
-    also emits merged sections and a member carries content above the
-    grouping depth, so that content is read as that member's rather than
-    as one more of the group's own sections. Where every subsection is
-    the heading alone, or the group emits no merged section, the
-    subsections sit directly beneath the group's heading.
+    `overview_content` supplies each member's content. A member takes a
+    subsection when it carries that content, absorbs a selected title, or
+    has no selected items. `member_headings` supplies the names. Emit the Overview
+    heading only when merged sections and nonempty overview content coexist.
     """
     above = {member.path: overview_content(member, depth) for member in members}
     named_here = {
@@ -838,11 +696,9 @@ def overview(
 def contributions(
     depth: int, members: Sequence[Member]
 ) -> list[tuple[str, list[tuple[Member, Token]]]]:
-    """Each distinct heading text at the grouping depth, with what contributes it.
+    """Distinct section texts and their contributing members, in first-use order.
 
-    The order is first appearance across the members in placement
-    order, so a name enters the group where the first document carrying
-    it puts it.
+    Read members in their supplied placement order and headings in source order.
     """
     found: dict[str, list[tuple[Member, Token]]] = {}
     for member in members:

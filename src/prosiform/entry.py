@@ -1,18 +1,7 @@
-"""The link one command-line entry publishes, read as an authored link is read.
+"""Read one published link from a command-line entry argument.
 
-An agent compiles a link it meets in a bundle by running `pf` on the
-link as the bundle publishes it: a Markdown link, a Mermaid `click`
-line or a class diagram `link` line. Each is read by the reader that
-reads it in a source, so its destination and its title tags arrive as
-they would from an authored link, a Markdown escape decoded.
-
-Operator marks direct the agent reading the bundle, which has acted on
-them before it runs `pf`, and the run that compiled the link's source
-checked them. The entry therefore reads no operator: the marks opening
-a link's text are never read, whatever they combine to.
-
-Any other text is a plain path, the bootstrap entry a document names
-to start its own run, which carries no title.
+`markdown_link` uses `source.uses`, `diagram_link` uses the reader
+behind `source.Click`, and `published` distinguishes links from paths.
 """
 
 import re
@@ -47,10 +36,11 @@ class NotOneLink(ValueError):
 
 
 def markdown_link(text: str) -> Link | None:
-    """The one Markdown link a text holds and nothing else, where it holds one.
+    """Read exactly one standalone Markdown link, or return none.
 
-    A heading holding a link, and a text nested past the parser's ceiling,
-    read as no link.
+    The parse must hold one paragraph containing that link alone.
+    `profile.parse` owns parsing and suppression; `source.uses` supplies
+    the destination and preset tags.
     """
     try:
         tokens = parse(text.strip())
@@ -69,7 +59,11 @@ def markdown_link(text: str) -> Link | None:
 
 
 def diagram_link(text: str) -> Link | None:
-    """The one `click` or class diagram `link` statement a line holds."""
+    """Read one diagram statement using the reader behind `source.Click`.
+
+    Exactly one result from `source.linked` supplies the destination;
+    `tags.read` supplies the preset names from its title.
+    """
     found = linked(text, CLASS_DIAGRAM)
     if len(found) != 1:
         return None
@@ -78,11 +72,11 @@ def diagram_link(text: str) -> Link | None:
 
 
 def published(text: str) -> Link | None:
-    """The link one entry argument publishes, or none for a plain path.
+    """Read an entry argument as one published link or return none for a path.
 
-    A text holding a Markdown link, one carrying text beside it
-    included, or written as a diagram link line, that does not read as
-    exactly one link is refused, since no plain path holds `](`.
+    Markdown-link syntax must satisfy `markdown_link`; a quoted diagram
+    statement must satisfy `diagram_link`. A recognized form yielding no
+    single link raises `NotOneLink`.
     """
     if MARKDOWN_LINK.search(text):
         link = markdown_link(text)

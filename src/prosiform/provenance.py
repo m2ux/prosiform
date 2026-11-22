@@ -1,57 +1,7 @@
-"""Where the bundle's content came from: source ranges and generated structure.
+"""Records linking emitted bundle parts and headings to their source data.
 
-A reparse that agrees with itself establishes that the candidate parses.
-What it cannot establish is that a region came from the source it claims,
-or that a region the run selected is missing, because the candidate
-carries no record of either. This module is that record, written while
-the bundle is constructed and read while it is validated.
-
-Three kinds of record are kept, and they are kept apart. A *range* names
-a selected source region by the lines of its source's content it
-occupies, which is an identity two regions carrying the same prose do not
-share: a sentence repeated in two sections is two ranges, so repeated
-identical prose is not duplication and a count of occurrences is not a
-coverage test. A *generated* record names a heading the bundle wrote
-itself — the filename wrapper, and the group, overview and variant
-headings a metadata-declared group produces, each dispatch-set
-sub-section with the bare dispatch-link lines beneath it, and the
-destination section and contribution heading a composition directive
-places its target beneath — which carries
-no source range and so can never stand in for selected body content a
-group failed to emit. A
-*structural ancestor* names a heading the bundle emits to place a
-selected section in the outline its author gave it: it answers to a
-source heading, as a carried heading does, and carries no source range,
-as a generated heading does, which is why it is neither of them.
-
-A heading the bundle emits is exactly one of the three, and the record
-keeps them in emission order. A heading that answers to a source heading
-holds that heading's identity: the path, the line, the level its author
-wrote, the fragment a reference into that document resolved against, and
-the number of levels the arrangement moves it by. A merged heading
-several documents contribute one text to holds one identity for each of
-them, because it stands in the outline of every document it was drawn
-from.
-
-What a heading resolves is recorded beside it rather than derived from
-it. A target is a document and a fragment of it, or a document alone,
-and the headings that answer one are the filename wrapper, a carried
-heading, a variant heading and the subsection naming a member. A
-structural ancestor answers none: a displayed title is not the section it
-names, and a reference naming that section expands the closure to select
-it, so the heading emitted for it is a carried one.
-
-The emitted parts of a group are recorded in one sequence as well: the
-group's own heading, then one part for each selected source range, each
-structural ancestor and each heading the arrangement generates, in the
-order the group emits them. A part is therefore accounted for by one of
-the three and never by none, so a candidate holding a region more or a
-region less than the sequence names is a disagreement a count reports.
-
-The record travels with the group it describes. A record held in a
-structure beside the groups can be paired with the wrong group; one the
-group carries cannot be, and the group's emitted headings are read from
-it rather than written twice.
+Constructors retain source coordinates, generated structure and target
+answers. `Record` exposes those records to emission and validation callers.
 """
 
 from collections.abc import Mapping
@@ -84,15 +34,10 @@ Served = tuple[Target, frozenset[str], bool]
 """A dispatched occurrence's destination, requested tags and parallel operator."""
 
 Located = tuple[str, int, int, int]
-"""One link, as its document, the line of content its inline block opens on,
-the table column that block stands in, and its position among the links that
-block writes.
+"""A link identity: source path, content line, column and occurrence position.
 
-Every cell of a table row opens on the row's line, so the column is what
-tells two cells' links apart; inline content outside a table stands in
-column 0. A diagram link is located by the line of content it is written
-on, which no inline block opens on, column 0, and the offset of its
-destination in that line, which tells apart two links one line writes.
+`link_at` constructs inline identities; `click_at` constructs diagram
+identities from `source.Click`.
 """
 
 
@@ -102,17 +47,12 @@ def link_at(path: str, inline: Token, start: int, position: int) -> Located:
 
 
 def click_at(path: str, click: Click) -> Located:
-    """One diagram link's identity, from the line of its fence it is written on."""
+    """One `source.Click` identity from its path, content line and offset."""
     return (path, click.line - 1, 0, click.offset)
 
 
 Placing = tuple[Located, ...]
-"""The composing links whose compositions placed a region, outermost first.
-
-An authored region was placed by none. A composing link written inside a
-contribution places its own contribution beneath it, so one source link
-stands for as many contributions as there are chains reaching it.
-"""
+"""A region's composing-link identities in outermost-first order."""
 
 Contributing = dict[Placing, dict[Located, str]]
 """Each composing link's destination, by the placing of the region it is in."""
@@ -128,13 +68,11 @@ Dispatching = Mapping[Region, Mapping[Served, str]]
 
 @dataclass(frozen=True)
 class Origin:
-    """The source heading one emitted heading answers to.
+    """The source coordinates and shift of an emitted heading.
 
-    The level is the level the author wrote and the shift is the number
-    of levels the arrangement moves it by, so the two together are the
-    level the bundle emits it at. The fragment is the slug that author's
-    text produces, which is what a reference into the document resolved
-    against.
+    `path` names its document; `line` locates its source heading when present.
+    `level` is its source level, `fragment` its source fragment, and `shift`
+    its arranged level offset.
     """
 
     path: str
@@ -146,16 +84,11 @@ class Origin:
 
 @dataclass(frozen=True)
 class Carried:
-    """One source heading the bundle emits, and the headings it came from.
+    """A carried heading and the source headings recorded for it.
 
-    A heading one document contributes holds one origin. A merged
-    heading several documents contribute one text to holds one origin
-    for each of them, and is emitted once for all of them.
-
-    A composed heading is a subsection of a section a directive placed
-    beneath another: it answers no target, since the section's own
-    heading answers wherever the bundle carries it, and it stands in no
-    outline of its source's but the one its contribution places it in.
+    `text` and `level` describe the emitted heading; `origins` holds its source
+    coordinates. `answers` holds its target identities, and `composed` identifies
+    a heading inside a composition copy.
     """
 
     text: str
@@ -167,16 +100,7 @@ class Carried:
 
 @dataclass(frozen=True)
 class Generated:
-    """One heading the bundle wrote itself, which answers to no source heading.
-
-    A filename wrapper that absorbed a source heading answers to that
-    heading's fragment as well as to the document, because a reference
-    naming the absorbed title resolves to the wrapper's own destination.
-    The subsection naming a member answers the same way under a
-    declared grouping, and a variant heading answers to the heading of the document
-    it names. The heading is still generated structure: what it answers
-    names what resolves to it, not a region of body content it carries.
-    """
+    """A generated heading's text, level, kind and target answers."""
 
     text: str
     level: int
@@ -186,19 +110,9 @@ class Generated:
 
 @dataclass(frozen=True)
 class Ancestor:
-    """One heading the bundle emits for an unselected ancestor of selected content.
+    """An ancestor heading's text, level and source origins.
 
-    The text is the title its author wrote, as a reader reads it, and
-    the group emits it as literal text: an ancestor heading is
-    structure, so it carries no live link, image or HTML and no
-    reference is traversed from it. The origins are the source headings
-    the text came from, which is what the reconstructed outline is held
-    to, and a merged group draws one from each document that wrote the
-    text at the grouping depth.
-
-    It is not a target, and it answers nothing. A reference naming that
-    section expands the closure to select it, and the heading the group
-    then emits for it is a carried one.
+    `answers` holds the empty target tuple; `kind` identifies its record type.
     """
 
     text: str
@@ -218,24 +132,12 @@ Sourced = Carried | Ancestor
 
 @dataclass(frozen=True)
 class Range:
-    """One selected source region, as the lines of its source's content it holds.
+    """A recorded source region and its composition context.
 
-    The bounds are half-open and in the coordinates of the source's
-    content, which is the text the parse read. The removed lines are the
-    lines a link-reference definition occupies inside the range, which
-    the group drops, so the content the range stands for is the rest.
-
-    A composed range is a region of a section a directive placed beneath
-    the section writing it, and its placing names the directives whose
-    compositions placed it. Every directive contributes its own copy, so
-    a composed range stands outside the group's own coverage and its own
-    source order, and is held to its source's bytes alone. A preamble
-    likewise stands in a folder group's arrangement rather than its
-    source's outline.
-
-    `selecting` holds the tags of the directive or dispatch whose
-    composition placed the range, the key `Substitution.composed` reads
-    its links' pairs by, and is `None` for a range a group carries.
+    `path` names the document; `lines` holds its half-open content-line bounds,
+    and `removed` its excluded line indices. `placing` identifies the directive
+    chain. `selecting` holds its preset tags, or is absent for a group's own
+    selection.
     """
 
     path: str
@@ -256,17 +158,10 @@ class Range:
 
 @dataclass(frozen=True)
 class Instruction:
-    """One block the bundle wrote itself, with no source range.
+    """Generated block data with no source range.
 
-    The run-pf line that opens every bundle is one: a paragraph. A
-    dispatch-set sub-section carries the lines naming the bundles it
-    hands out together. It carries no
-    source range, so it can never stand in for selected body content a
-    group failed to emit.
-
-    A deferred directive's contribution heading carries one as well: the
-    line naming the target and requested preset tags a later run composes,
-    which `activates` holds.
+    `text` holds the block; `listed` identifies a dispatch-list entry.
+    `activates` holds a deferred composition target and tags when present.
     """
 
     text: str
@@ -289,18 +184,11 @@ Part = Range | Ancestor | Generated | Instruction
 
 @dataclass(frozen=True)
 class Record:
-    """One group's provenance: what it carried, and what it generated.
+    """One group's identity, arrangement and emitted provenance.
 
-    The path is the group's identity: a source document for a file
-    group, and the declared group name for a merged one. The depth is the
-    source heading level the group members declare, and is
-    nothing for a file group, so the record states which of the two
-    arrangements produced it.
-
-    The parts are what the group emits below its own heading, in
-    emission order: a range for each selected source region, an
-    ancestor for each heading the group emits to place one of them, and
-    a generated heading for each one the arrangement adds.
+    `path` names the source or declared group. `merged` holds its grouping
+    depth, or is absent for a file group. `headings` and `parts` hold their
+    records in emission order.
     """
 
     path: str
@@ -323,13 +211,7 @@ class Record:
         return [one for one in self.headings if isinstance(one, Carried)]
 
     def placed(self) -> list[Sourced]:
-        """Every heading the group emits that answers to a source heading.
-
-        A carried heading and a structural ancestor are both placed by
-        the source level their author wrote under the shift the
-        arrangement gives them, so the checks over that placement read
-        them together.
-        """
+        """Carried and ancestor heading records, in emission order."""
         return [one for one in self.headings if isinstance(one, Carried | Ancestor)]
 
     def ancestors(self) -> list[Ancestor]:

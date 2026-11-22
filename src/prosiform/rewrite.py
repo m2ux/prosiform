@@ -1,84 +1,7 @@
-"""Source-local reference interpretation: a definition environment and its edits.
+"""Locate source-local reference spans and apply inline publication edits.
 
-A bundle is assembled from the physical lines its sources wrote. The
-rewrite is an edit to spans of text rather than a re-rendering of the
-content around it: everything outside the spans one use occupies — the
-mark, the destination, and the label a reference-style use names — is
-the bytes the source wrote.
-
-A definition is a block and a use is a span, so a destination or title
-the author spelled across more than one line is published into a span
-that lies within one. The published text carries the line feeds the
-author wrote, and the rewrite reports its result as one entry for each
-line the source wrote, holding an inserted line feed inside the entry
-for the line that gained it. A caller slicing by the source's line
-count therefore slices the same lines whatever the spelling cost.
-
-A span is located in the lines an inline token occupies, because that is
-where the parser says inline content is. Every cell of a table row
-occupies that row's line, so a cell's span is located in the stretch of
-the line its column was split from. A code span is masked out
-first, so a dependency written as an example inside backticks is text
-the bundle carries as written, and a fenced block carries no inline
-token at all.
-
-The scan reads brackets the way the profile's parser reads them. A
-closing bracket pairs with the nearest bracket still open, a link whose
-own label holds a link is the literal text it is, and a bracketed
-run is a reference-style use only where this source's own definition
-environment holds its label. An image's alternative content is a run of
-its own, so a link written there is the image's and leaves an enclosing
-link the link it is. That environment is this source's and no
-other's, so a literal `[runner]` here stays literal however another
-source defines the same label.
-
-An autolink is a use among them, written between angle brackets rather
-than brackets: the scan reads one where it sits, so the reading and the
-parser agree on how many uses a run carries and in what order. The
-parser reads it beside an enclosing link rather than within it, so a
-link whose label holds one is the link it is. Its
-destination is its own text and carries a scheme or an authority, so the
-bundle assigns it none and the emission edits no span of it — every byte
-between the angle brackets, and the brackets themselves, are the bytes
-the source wrote.
-
-A resolved reference-style use is published inline. The label keeps the
-bytes the author wrote, so the visible text, an image's alternative
-content and the escaping the author chose are preserved by carrying
-them rather than by re-rendering them, and the destination and title
-come from the definition as it was authored. A link the bundle assigned
-a destination is published with that destination in place of the
-authored one; every other destination is emitted as authored.
-
-The scan is cross-checked against the parser. The uses one inline token
-carries are counted against the uses the parser read from the same
-token, and a count that disagrees is content the run resolved and
-cannot edit, which is an internal fault rather than a bundle.
-
-A mark survives the rewrite where it states who compiles the material. A
-dispatch pointing at a bundle file is the one thing in the bundle saying
-the material belongs to another agent, so its label reaches the bundle
-opening with the dispatch mark and one blank. A deferral states when, a
-composition where, and a dispatch-set or dispatch-pick sub-section who,
-which each destination already says, so their marks and the blanks
-following them are dropped from the label they open.
-A link the bundle took no destination for opens with no operator, because
-the run refuses an operator naming anything but a Markdown document or
-section under the root, and it is published as its author wrote it.
-
-A command block is published as its content. Its four wrapper tags go,
-and a line left holding nothing but a tag and the container markers
-opening it goes with them, so the block's first and last lines are its
-first and last content. A strong emphasis enclosing a link's whole text
-is unwrapped, and every character reference the parser decodes is
-written as the character it names. A reference in a code span, a link's
-target or an autolink is the parser's text rather than a reference, so
-it stays as written. A line left opening with a character the parser
-reads as a block of its own takes a backslash before it, so every line
-stays the text of the block's paragraph. The edits reach no span a
-link's own edits reach, because a tag stands outside every use, a
-strong delimiter inside a label, and a decoded reference outside every
-target.
+`definitions` captures authored definitions, `uses` locates reference spans,
+and `rewritten` applies edits without re-rendering surrounding source text.
 """
 
 import re
@@ -165,14 +88,10 @@ class Unrewritable(Exception):
 
 @dataclass(frozen=True)
 class Definition:
-    """One link-reference definition: what it names, and where it is written.
+    """An authored link-reference definition.
 
-    The destination and the title are the text the author wrote, angle
-    brackets and quotation marks included, because a use published
-    inline carries the destination its source spelled rather than one
-    the parser normalized. The lines are the lines of this source's
-    content the definition occupies, which are the lines the bundle
-    does not emit.
+    `destination` and `title` retain their written delimiters; `lines` holds
+    the half-open content-line span occupied by the definition.
     """
 
     destination: str
@@ -182,21 +101,13 @@ class Definition:
 
 @dataclass(frozen=True)
 class Use:
-    """One link or image use, as the spans of text its emission edits.
+    """The spans of one inline link or image.
 
-    The label is the content between the brackets, which holds the mark
-    where the author wrote one. The target is the span the destination
-    is written at: for an inline use it is the authored destination, and
-    for a reference-style use it is the `[label]` that follows the
-    label, which is empty where the use is written as a shortcut. An
-    autolink's destination is the text between its angle brackets, so
-    its target is the empty span at its close and its emission edits
-    nothing. It is a link the parser reads beside an enclosing link
-    rather than within it, so the one that carries it stays the link it
-    is, and the flag is what the scan reads that from.
-
-    The title is the span an inline use's title occupies, its delimiters
-    included; an inline use writing none, and every other use, has none.
+    `kind` classifies the use; `opening` and `end` bound its written extent.
+    `label` spans its visible content and `target` its destination syntax.
+    `definition` holds a resolved reference definition, `autolink` identifies
+    an angle-bracket use, and `title` spans an inline title with its delimiters,
+    or is absent when the use has none.
     """
 
     kind: str
@@ -211,12 +122,7 @@ class Use:
 
 @dataclass(frozen=True)
 class Titled:
-    """A destination published with names its link's title gains.
-
-    A deferral carries the run's names to the run compiling it, so its
-    title gains each name it does not already state, after the tags its
-    author wrote.
-    """
+    """A destination and the preset `names` to add to its link title."""
 
     destination: str
     names: tuple[str, ...]
@@ -224,11 +130,10 @@ class Titled:
 
 @dataclass(frozen=True)
 class Followed:
-    """A destination published with the model its dispatch starts on.
+    """A dispatch destination and its model annotations.
 
-    A dispatch to a bundle file whose target has a level names the model
-    its sub-agent starts on: `after` is the Markdown written after its
-    link, and `model` the name a diagram's comment line carries.
+    `after` holds the Markdown suffix; `model` holds the name
+    `bundle.model_comment` writes.
     """
 
     destination: str
@@ -237,13 +142,15 @@ class Followed:
 
 
 TITLE_ESCAPED = frozenset('\\"()&' + "'")
-"""The characters a name written into a title is escaped in: every delimiter
-a title may close with, the escape itself and the one opening a character
-reference, so the parser reads the name back as written."""
+"""The character escape set `title_names` uses for inserted preset names."""
 
 
 def title_names(names: Sequence[str]) -> str:
-    """Names joined into a title list, each written as the parser reads it back."""
+    """Join names into a comma-separated title list with literal text escaping.
+
+    Prefix title delimiters, backslashes and ampersands with a backslash so
+    the parser reads each inserted name as its original text.
+    """
     return ", ".join(
         "".join(ESCAPE + char if char in TITLE_ESCAPED else char for char in name)
         for name in names
@@ -272,12 +179,10 @@ def escaped(text: str, at: int) -> bool:
 
 
 def code_spans(text: str) -> list[tuple[int, int]]:
-    """Each code span one run of inline text carries, as the extent it occupies.
+    """The source extents of code spans in inline text.
 
-    A code span opens at a backtick string and closes at the next
-    backtick string of the same length, which is the profile's own rule.
-    An opener that never closes is the literal backticks it is written
-    as, and the scan carries on past it.
+    Pair each opening backtick run with the next run of the same length.
+    An unmatched opening is literal text and leaves later scanning available.
     """
     found: list[tuple[int, int]] = []
     at = 0
@@ -454,8 +359,8 @@ def formed(
 
     A pair followed by an inline target is an inline use. A pair
     followed by a label this source defines, or whose own text this
-    source defines, is a reference-style use the emission publishes
-    inline. Everything else is the literal text the author wrote.
+    source defines, is a reference-style use. Everything else is literal
+    text. `published` supplies the reference-style publication target.
     """
     kind = RESOURCE if image else LINK
     label = (opening + 1, closing)
@@ -497,30 +402,15 @@ def alternative(one: Use, found: Sequence[Use]) -> bool:
 def uses(
     text: str, defined: Mapping[str, Definition], marker: bool = False
 ) -> list[Use]:
-    """Every link and image use one run of inline text carries, in written order.
+    """Locate link and image spans in one inline text run, in written order.
 
-    An autolink is one of them. It opens at an unescaped angle bracket
-    outside a code span and closes at the next one, carrying an
-    absolute URI or an email address as CommonMark spells them, and a
-    bracketed run spelling neither is the text it is. The scan reads it
-    where it sits, among the bracketed uses in written order, and
-    passes over it whole. The parser reads it beside an enclosing link
-    rather than within it, so a link whose label holds one is the link
-    it is.
-
-    The scan reads brackets as the parser reads them: a closing bracket
-    pairs with the nearest bracket still open, a bracket an author
-    escaped or wrote inside a code span is text, and a link whose own
-    label holds a link is text as well, because a link holds no link.
-    A link an image inside that label carries belongs to the image's
-    alternative content, which is a run of its own, so it leaves the
-    enclosing link the link it is. A pair the scan reads as a use is
-    passed over whole, so a bracket inside a destination or a title
-    opens nothing.
-
-    A task marker the profile returned to literal text is the one
-    bracket pair a definition cannot make a link of, and it opens the
-    inline content that carries it.
+    Use `code_spans` to mask examples, `autolink_end` for angle-bracket uses,
+    and `formed` for bracket pairs. Escaped brackets are literal text. Pair
+    each closing bracket with its nearest open bracket; a link enclosing
+    another link is literal unless `alternative` places that use inside an
+    image's alternative content. Pass over each completed use whole.
+    The supplied marker flag identifies a task opening recognized by
+    `profile.linked_marker`.
     """
     spans = code_spans(text)
     stack: list[tuple[int, bool]] = []
@@ -579,18 +469,10 @@ def uses(
 
 
 def destinations(inline: Token) -> list[tuple[str, str, frozenset[str]]]:
-    """Each inline link's destination, opening and requested preset tags.
+    """Each inline link's destination, opening text and requested preset tags.
 
-    The opening is the literal text the link's content begins with,
-    which is what a deferral is written in, so a caller classifying the
-    link reads both halves of the question from one pass over the
-    token.
-
-    The order is written order, which is the order the emission reads
-    its spans in, and an image's alternative content is a run of its
-    own, so a link written inside one takes the destination assigned
-    to the span that spells it and carries the opening of the run it
-    was written in.
+    Read links through `source.events`, their text through `source.opening_text`,
+    and their tags through `tags.read`, retaining event order.
     """
     return [
         (
@@ -630,13 +512,11 @@ def authored(written: str) -> tuple[str, str]:
 def definitions(
     references: Mapping[str, Mapping[str, Any]], physical: Sequence[str]
 ) -> dict[str, Definition]:
-    """Every link-reference definition one source carries, by the label it answers to.
+    """Authored definitions keyed by the parser's reference labels.
 
-    The label is normalized as the profile normalizes one, so a use
-    naming it in another case or spacing resolves against it. The lines
-    are the lines of this source's content the definition occupies, and
-    a definition a container carries is read without the markers the
-    container opens its lines with.
+    Labels come from the supplied `profile.REFERENCES` environment. Remove each
+    line's `source.opening_markers` before `authored` captures its destination
+    and title; retain the definition's content-line span.
     """
     found: dict[str, Definition] = {}
     for label, held in references.items():
@@ -652,16 +532,12 @@ def definitions(
 def published(
     held: Definition, destination: str | None, names: Sequence[str] = ()
 ) -> str:
-    """The inline target a reference-style use is published with.
+    """The inline target for a reference definition and an optional destination.
 
-    The destination is the one the bundle assigned the use's target
-    where the bundle compiled that use, and the one its definition was
-    authored with where it did not. The title is the definition's own, carried as
-    the author spelled it, so a title the author broke across two lines
-    reaches the bundle broken in the same place: the title is the
-    author's text and the conversion moves it rather than reflowing it.
-    Names a deferral's title gains are written before its close, or as
-    the whole title of a definition stating none.
+    Use the supplied destination when present, otherwise the definition's
+    authored destination. Carry its authored title, extending it through
+    `gained` when names are supplied, or construct a new title through
+    `title_names` when absent.
     """
     target = held.destination if destination is None else destination
     title = held.title
@@ -674,34 +550,13 @@ def published(
 def edits(
     one: Use, destination: str | Titled | Followed | None, label: str, text: str = ""
 ) -> list[tuple[int, int, str]]:
-    """The spans one use's emission replaces, and what it writes at each.
+    """The replacement spans for one use and its supplied publication data.
 
-    A use's label is the author's, so the span a use edits is its
-    destination alone and no two spans one text produces overlap. A use
-    the bundle assigned no destination is published with the bytes its
-    author wrote.
-
-    The one exception is a withheld link's mark, which is authoring
-    syntax rather than content: the bundle took a destination for that
-    link, and the destination states the withholding, so the mark and
-    the blanks following it go, or become the dispatch mark and one
-    blank for a dispatch pointing at a bundle file. The edit reaches the
-    prefix of the label, which no nested use opens on, so it still
-    overlaps nothing.
-
-    The destination arrives whole. Where a link points is the bundle's
-    question, and this writes the answer, so a fragment of the bundle
-    and a deferral's path from the bundle's folder are published the
-    same way.
-
-    A titled destination is a deferral's: the names its title gains are
-    written before the authored title's close, which `text` holds, or
-    after the destination as a title of their own where the use writes
-    none. Neither edit reaches a span another edit names.
-
-    A followed destination's text is written at the use's end: after the
-    edit ending there, a shortcut use's destination, so the two stay in
-    order, and as an edit of its own otherwise.
+    `published` supplies reference-style targets. Inline targets receive their
+    destination and any `Titled` names through `gained` or `title_names`.
+    `closure.published_text` supplies the label prefix to edit. A `Followed`
+    suffix joins an edit already ending at the use's end, or occupies its own
+    empty span there. Keep these spans disjoint so nested uses remain editable.
     """
     names: tuple[str, ...] = ()
     found: list[tuple[int, int, str]] = []
@@ -926,24 +781,17 @@ def rewritten(
     assigned: Sequence[str | Titled | Followed | None],
     defined: Mapping[str, Definition],
 ) -> list[str]:
-    """The lines one run of inline text occupies, as the bundle publishes them.
+    """Apply publication edits to one inline token's original physical lines.
 
-    Each resolved reference-style use is published inline, and each
-    link the bundle compiled points at the destination it assigned that
-    link's target. One destination is supplied for each link the token
-    carries, in written order, and a link the bundle did not compile is
-    supplied none. A table cell's uses are read from its own stretch of
-    the row's line, so each cell of one row is rewritten by its own call
-    and the others' links are text to it. A command block's content is
-    published as well as its links. The spans are edited last to first,
-    so an earlier edit does not move the span the next one names.
+    Supply one destination per parsed link in written order; none leaves its
+    destination authored. `cell` limits a table token to its own row extent.
+    `uses` locates spans, `edits` supplies reference replacements, and
+    `compacted` supplies command-block edits. Apply them last to first so
+    earlier spans keep their coordinates.
 
-    The result holds one entry for each line given, so the published
-    text of a source line is found where that line was. A replacement
-    carrying a line feed — a definition the author spelled across more
-    than one line — makes its entry longer rather than making another
-    entry, and a line boundary the replacement swallowed lands at the
-    end of it.
+    The result has one entry per original physical line. Inserted line feeds
+    remain inside the entry receiving them; a line boundary swallowed by an
+    edit maps to that replacement's end.
     """
     text = "".join(physical)
     column = inline.meta.get(COLUMN)

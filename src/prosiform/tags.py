@@ -1,22 +1,15 @@
-"""The complete preset names a decoded comma-separated list supplies.
-
-A link's title, a diagram link's tooltip title and an entry's pick each
-supply a decoded string. Tokens are complete names, trimmed and
-case-folded, with empty tokens and repetition discarded. The set gives
-their order no meaning. Matching names to a destination's declarations
-and applying the implicit default belong to the consumer.
-
-The pick token `?` is one of the tokens and names no preset: it leaves
-the pick among a destination's alternatives to an agent, the one that
-compiles it or the one that hands on one of its alternatives' bundles,
-and no preset may be named for it, so it selects none.
-"""
+"""Read preset-name lists with `read` and identify agent picks with `picks`."""
 
 PICK = "?"
 
 
 def read(text: str | None) -> frozenset[str]:
-    """Normalize a list whose literal commas separate complete preset names."""
+    """Normalize a decoded list of complete preset names.
+
+    Literal commas separate names; whitespace is trimmed, case is folded,
+    and empty names and repetitions are discarded. The resulting set has
+    no selection order.
+    """
     if text is None:
         return frozenset()
     return frozenset(
@@ -25,5 +18,8 @@ def read(text: str | None) -> frozenset[str]:
 
 
 def picks(tags: frozenset[str]) -> bool:
-    """Whether a list leaves the pick among alternatives to the agent."""
+    """Whether a normalized list contains the agent-pick token `PICK`.
+
+    The token requests a choice among alternatives rather than a named preset.
+    """
     return PICK in tags

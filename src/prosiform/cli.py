@@ -1,12 +1,9 @@
-"""Compile captured Markdown sources, each link classified by its target's declaration.
+"""Coordinate an invocation from argument parsing through bundle publication.
 
-Entry files resolve from the invocation working directory, and every
-link resolves from the file carrying it. A link naming a Markdown document is
-a dependency when that document's frontmatter declares `prosiform`, which a
-frontmatter-only probe answers once per path. Bounded no-follow capture
-retains bytes, metadata and filesystem identities; publication rechecks every
-captured source and bound directory. Discovery, rewriting and candidate
-validation read one record of declarations."""
+`traverse` discovers the selected sources, `compose` constructs a
+validated bundle, and `publication` publishes the run. Their supporting
+units own reference, source, layout and diagnostic rules.
+"""
 
 import argparse
 import errno
@@ -458,12 +455,10 @@ def input_failure(
     source: str | None = None,
     chain: Sequence[str] = (),
 ) -> Failure:
-    """A command line that is well formed and names something the run refuses.
+    """An input refusal carrying the diagnostic evidence supplied by its caller.
 
-    The evidence a failure carries is the evidence it has: a reference
-    the run resolved far enough to name a document carries that
-    identity, and one the traversal reached through other references
-    carries the chain of them.
+    An empty chain or remedy is represented as None;
+    `diagnostics.Diagnostic.fields` owns omission from rendered data.
     """
     return Failure(
         INPUT_FAILURE,
@@ -481,24 +476,18 @@ def input_failure(
 
 
 def crossing(crossed: Crossed) -> Failure:
-    """One crossed budget, as the input failure the contract declares it.
+    """A crossed budget as an input failure with the resource-limit code.
 
-    Every budget takes one code, because whichever was crossed the
-    remedy is the same shape, and the message names the boundary and
-    the figure that crossed it so a caller knows which to act on.
+    `limits.Crossed` supplies the message and remedy.
     """
     return input_failure(str(crossed), code=RESOURCE_LIMIT, remedy=crossed.remedy)
 
 
 def unindexable(crossed: Crossed, path: str, chain: Sequence[str]) -> Failure:
-    """One budget crossed while indexing a source, as the failure to index it.
+    """A budget crossing reported against the source being indexed.
 
-    A parsing-safety budget is held over the complete opened source, so
-    the construct that crosses one sits wherever the author wrote it and
-    the run selected nothing by reading it. Reporting a dependency would
-    name a reference the run never followed and send an author to look
-    for one, so the diagnostic names the source that cannot be indexed
-    and the route the run took to open it.
+    The source path occupies both reference and source fields; `chain`
+    locates the route to it. `limits.Crossed` supplies the remedy.
     """
     return input_failure(
         f"the source {path!r} cannot be safely indexed: {crossed}",
@@ -513,15 +502,11 @@ def unindexable(crossed: Crossed, path: str, chain: Sequence[str]) -> Failure:
 def declined(
     suppressed: Suppressed, path: str, source: Source, chain: Sequence[str]
 ) -> Failure:
-    """One reference lookup the parser declined, as the failure to index its source.
+    """A parser lookup refusal reported against its source and route.
 
-    The diagnostic names the reference the declined lookup would have
-    made, together with the first span the parser was reading when it
-    declined, which is where an author finds the nesting to write the
-    reference out of. A span whose construct spells no destination
-    leaves the reference unnamed, and the diagnostic names the source
-    it could not index; a span the parser records no line for is
-    reported against the source alone.
+    `profile.Suppressed` supplies the reference, position and remedy.
+    An absent reference uses the source path; `source.Source.line`
+    converts the parser position to the file coordinate.
     """
     return input_failure(
         f"the source {path!r} cannot be safely indexed: {suppressed}",
@@ -556,12 +541,11 @@ def override(value: str) -> int:
 
 
 def budget_entry(value: str) -> tuple[Budget, int]:
-    """One `NAME=VALUE` budget entry: the budget it names and the figure it sets.
+    """One budget and override from a NAME=VALUE entry.
 
-    The entry splits at its first `=`. An entry carrying none, a name
-    outside the declared budgets and a figure below the budget's floor
-    are each a command line the grammar does not admit, refused before
-    any source is read.
+    The first equals sign separates a declared budget name from the
+    value `override` validates. A missing separator, unknown name or
+    figure below the budget's `least` value is invalid argument syntax.
     """
     name, separator, figure = value.partition("=")
     if not separator:
@@ -588,12 +572,7 @@ def budget_entry(value: str) -> tuple[Budget, int]:
 
 
 class BudgetEntries(argparse.Action):
-    """Each budget entry of the command line, one entry per budget.
-
-    A second entry naming a budget an earlier entry named is refused:
-    the two state one budget twice, and only one of the two orders
-    would make a run reproducible.
-    """
+    """An argument action collecting budget entries in the parser namespace."""
 
     def __call__(
         self,
@@ -602,6 +581,7 @@ class BudgetEntries(argparse.Action):
         values: Any,
         option_string: str | None = None,
     ) -> None:
+        """Record one parsed budget entry, refusing a repeated budget name."""
         budget, limit = values
         entries = dict(getattr(namespace, self.dest))
         if budget in entries:
@@ -613,22 +593,17 @@ class BudgetEntries(argparse.Action):
 
 
 def budgets(options: argparse.Namespace) -> Limits:
-    """Every budget in force: each the command line names, the rest at default."""
+    """The command-line budget settings, completed by `limits.in_force`."""
     return in_force(options.budgets)
 
 
 def substs(conversion: Conversion) -> None:
-    """Hold each `subst` side a document's presets state to the reference grammar.
+    """Validate the reference syntax of every substitution side.
 
-    A side is read as every other reference is, so a side the grammar
-    refuses, or one carrying a scheme or an authority and naming no
-    local document, fails as invalid conversion metadata at its entry.
-    A side whose path ends in a separator names a folder, and a pair
-    names one document or one section, so it fails the same way. The
-    separator is read from the side as written, because the grammar
-    drops an empty path segment and `rules/` normalises to `rules`.
-    The grammar's refusals hold whatever directory a side resolves
-    from, so no base is needed to decide them.
+    `closure.resolve` owns reference parsing. A malformed or external
+    side, or a path ending in a separator, is invalid conversion
+    metadata located at its entry. The trailing separator is checked
+    before normalization can discard it.
     """
     for preset in conversion.presets:
         for at, pair in enumerate(preset.substs):
@@ -766,13 +741,10 @@ def agreed(
 ) -> None:
     """Hold the selected presets to agreeing about every shared setting.
 
-    Selected presets union, so two stating one `group` pair, or mapping
-    one `subst` key to one substitute, state one setting. Two stating
-    different `group` pairs, or mapping one key to two substitutes,
-    leave nothing saying which would take effect, so the reference
-    selecting them is invalid usage naming both presets and the setting.
-    `default` lies beneath every selection rather than beside it, so it
-    disagrees with none. The declaring document is `document`.
+    For the presets `closure.matching_presets` selects, different group
+    pairs or substitutes for one key are invalid usage naming both
+    declarations. `subst_identity` and `subst_reference` own identity
+    resolution; `document` names the declaring document.
     """
     stated: Membership | None = None
     substitutes: dict[tuple[str, str | None], tuple[str, Subst]] = {}
@@ -822,14 +794,11 @@ def agreed(
 
 @dataclass(frozen=True)
 class Governed:
-    """One `subst` pair in force for the links a document writes.
+    """One substitution pair in force.
 
-    `preset` names the preset stating it, `pair` the entry as written and
-    `substitute` the reference the entry's substitute resolves to, as
-    `subst_reference` reads it. `routing` holds for a pair that routes the
-    document's links where its author declared, which every preset but a
-    stub states, and is false for a stub's pair, which stands in for
-    material under test.
+    `preset` names its declaration, `pair` holds the authored entry and
+    `substitute` its resolved reference. `routing` distinguishes an
+    authored route from a trial stand-in.
     """
 
     preset: str
@@ -861,13 +830,10 @@ def subst_reference(pair: Subst, document: str) -> Reference:
 def picked(
     conversion: Conversion, references: Iterable[Reference]
 ) -> tuple[Preset, ...]:
-    """The alternatives in force for one document, in declaration order.
+    """The selected alternatives in declaration order.
 
-    They are the union the references given select: for the including
-    references reaching the document, the set its group's `subst` pairs
-    resolve through, and for one copy's composing references, that
-    copy's. A name the document does not declare, `?` and a diagram link
-    carrying no tooltip pick none.
+    `closure.matching_presets` owns tag matching, and
+    `metadata.Conversion.alternatives` identifies alternatives.
     """
     names = {
         preset.name
@@ -885,25 +851,13 @@ def unresolved(
     carried: bool = False,
     varying: bool = False,
 ) -> Failure:
-    """A document compiled with several alternatives in force, or none it needs.
+    """The diagnostic for the alternative refusal `resolved` identifies.
 
-    The links one group or one composed copy writes are written once, so
-    they follow one kind's routes. The message lists each alternative
-    beside its choice line in declaration order, so its reader picks the
-    one that fits. The remedy is a rerun with `--pick` where `rerun`
-    holds, and otherwise one alternative named by the links reaching the
-    document, as the pick rule `entry` owns admits. `placing` is the
-    directive or dispatch placing a composed copy, which the diagnostic
-    names, with the position its link is written at, and whose title
-    alone the remedy points at, since the copy follows its presets alone.
-    `carried` states that the copy is the brief a dispatch carrying the
-    pick token places, which carries it with no alternative in force as
-    `briefed` states, so the remedy names that brief's section and states
-    that it must compile with none. `varying` states that `placing` is
-    a dispatch carrying the pick token to a target one of whose
-    alternatives names a brief, so the brief it carries turns on the pick
-    its agent has yet to make, and the remedy states that the brief must
-    not vary by alternative.
+    `placing` locates a composing reference or dispatch; an absent value
+    names the document alone. `rerun`, `carried` and `varying` choose
+    the remedy for an entry pick, a carried brief or an alternative
+    brief, respectively. Alternatives and their choice lines are listed
+    in declaration order.
     """
     width = max(len(one.name) for one in conversion.alternatives)
     rows = "".join(
@@ -975,17 +929,12 @@ def routed(
     entries: Collection[Reference],
     grouped: bool = True,
 ) -> bool:
-    """Whether one document's alternatives change what its selected content compiles to.
+    """Whether alternatives affect the selected content of one document.
 
-    An alternative changes it where one of them states a `group` pair,
-    which decides the group the selected content joins, or a `subst`
-    pair whose key a link in the selected content names, which routes
-    that link. `grouped` is false for a composed copy's references,
-    which place no group, so a `group` pair changes nothing there. The
-    selected content is what the references select, and the title and
-    introduction a folder's preamble group carries for the document.
-    Content none of them changes compiles under `default` and the
-    ordinary presets its references select.
+    A group pair matters where `grouped` is true; a substitution matters
+    where a selected link names its key. `selection` owns the selected
+    regions and `preambled` decides whether to add the introduction.
+    `linked`, `names` and `subst_identity` own link-key matching.
     """
     if grouped and any(one.membership is not None for one in conversion.alternatives):
         return True
@@ -1016,27 +965,15 @@ def resolved(
     entries: Collection[Reference],
     hops: Iterable[Hop],
 ) -> None:
-    """Hold every carried document declaring alternatives to the pick it needs.
+    """Hold each carried group or composed copy to its required alternative count.
 
-    The count is taken apart for the document's group, on the including
-    references `included` keeps, and for each composed copy, on the
-    composing references of one tag selection, since each resolves
-    under its own presets as `copies` states. Several
-    alternatives in force for one of them fail, and none in force fails
-    where an alternative would change what that one selects, so two
-    copies picking different alternatives publish. The count is taken on
-    the references one bundle carries, so a dispatched bundle counts the
-    references reaching the document within it.
-
-    The failure remedies a rerun with `--pick` only where none is in
-    force and an entry reaching the document carries the pick token,
-    which is where `entry` admits `--pick`. A copy none is in force for
-    is placed, for the failure, by a composing reference whose own
-    section an alternative changes. A brief one of the bundle's
-    dispatches `hops` holds carrying the pick token is taken first, as
-    that dispatch places it, so the failure names the picking dispatch
-    whichever dispatch of the same tags the bundle writes first, and is
-    remedied as `unresolved` states for a carried brief.
+    Each inclusion set `included` keeps and each composing tag selection
+    is checked separately. Several selected alternatives fail; none
+    fails where `routed` finds an effect. `picked` supplies the count,
+    `briefed` identifies carried briefs, and `unresolved` renders the
+    failure. A picking dispatch takes precedence when locating its
+    carried brief; an entry carrying the pick token permits the rerun
+    remedy `entry` supports.
     """
     carried: dict[tuple[str, str | None, frozenset[str]], Reference] = {}
     for hop in hops:
@@ -1100,29 +1037,14 @@ def governing(
     selected: Mapping[str, Sequence[Reference]],
     entries: Collection[Reference],
 ) -> dict[str, dict[tuple[str, str | None], Governed]]:
-    """The `subst` pairs in force for the links each carried document's group writes.
+    """The substitution pairs governing each carried document's group.
 
-    A composed copy of a document's section writes its links under the
-    pairs `copies` states, so the group's are those of the including
-    references `included` keeps. A document's `default` pairs are in
-    force wherever it is compiled, and every preset an including
-    reference selects layers above them, so a selected preset's pair
-    holds over `default`'s for one key. The presets one reference
-    selects, composing or including, are held to agreeing first, and
-    two presets selected by different including references, mapping one
-    key to two substitutes, are refused the same way: the group's links
-    are written once, so the union would leave nothing saying which
-    substitute they resolve to.
-
-    Several alternatives the including references pick are refused
-    before their pairs are compared, since alternatives route one key to
-    different kinds' material by design: the references reaching a
-    document only grow across the traversal's rounds, so several in
-    force in any round are several at its fixed point.
-
-    Each selected preset's pairs are layered as `layer` states. A key is
-    the identity its original names from the declaring document, and
-    only documents stating a pair in force appear.
+    `included` supplies the group's references. `defaults` supplies its
+    base pairs and `layer` combines the selected presets above them;
+    conflicts produce `disagreeing`. `agreed` checks each reference's
+    selection, and the alternative cardinality rule `resolved` owns
+    is checked before comparing those selections. Only documents with
+    pairs in force appear in the result.
     """
     table: dict[str, dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
@@ -1168,13 +1090,13 @@ def layer(
     preset: Preset,
     path: str,
 ) -> tuple[Governed, Governed] | None:
-    """Layer one selected preset's `subst` pairs into those `above` holds.
+    """Layer one selected preset's substitution pairs into `above`.
 
-    A stub's pair stands in for material under test, and every other
-    preset's routes, as `Governed` states; a stub's pair holds over a
-    routing pair agreeing with it. A key `above` already maps to another
-    substitute is returned with that earlier pair and the later one,
-    which is left out, for the caller to refuse.
+    A stub's pair is marked as a stand-in and other pairs as routes.
+    A stand-in takes precedence over an agreeing route. A different
+    substitute for an existing key is returned with the earlier pair
+    and left out of the mapping. `subst_identity` and `subst_reference`
+    own reference resolution.
     """
     for pair in preset.substs:
         one = Governed(
@@ -1215,18 +1137,12 @@ def copies(
     read: Mapping[str, Source],
     selected: Mapping[str, Sequence[Reference]],
 ) -> dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]]:
-    """The `subst` pairs in force for the links each composed copy writes.
+    """The substitution pairs governing each composed tag selection.
 
-    A copy is a contribution or a brief, placed by a composing reference.
-    Its links are the target document's own and that reference places
-    them, so they resolve under its document's `default` pairs, with each
-    preset that reference's tags select layered above them as `layer`
-    states, and under no other preset: another reference reaching the
-    document, composing or including, routes none of them, and the
-    copy's presets route none of the group's. Copies are keyed by the
-    document and those tags, and only copies stating a pair in force
-    appear. Agreement among the presets one reference selects is held by
-    `governing`.
+    The layering rule `governing` owns is applied separately to every
+    composing reference's tags, using `defaults` and `layer`. Results
+    are keyed by document and tag selection; an empty result is absent.
+    `governing` checks agreement before these pairs are read.
     """
     table: dict[tuple[str, frozenset[str]], dict[tuple[str, str | None], Governed]] = {}
     for path, references in selected.items():
@@ -1266,7 +1182,7 @@ def governed(
 
 
 class Once(argparse.Action):
-    """An option whose value is supplied at most once."""
+    """An argument action storing one option value in the parser namespace."""
 
     def __call__(
         self,
@@ -1275,6 +1191,7 @@ class Once(argparse.Action):
         values: str | Sequence[Any] | None,
         option_string: str | None = None,
     ) -> None:
+        """Store the option value, refusing a second supplied value."""
         if getattr(namespace, self.dest, None) is not None:
             raise usage_failure(f"{option_string} is supplied more than once")
         setattr(namespace, self.dest, values)
@@ -1390,23 +1307,14 @@ def diagnostic_format(arguments: Sequence[str]) -> str:
 
 
 def entry(text: str, pick: str | None) -> Reference:
-    """Normalize an entry, keeping the leading parents of a path above.
+    """Normalize one invocation entry and apply its optional pick.
 
-    A link entry is read as an authored link is, for its destination and
-    the tags its title states; the operator marks opening it are the
-    agent's and are not read. An entry whose title holds a tag
-    `profile.marked_tag` finds is refused, as `profile.inline_refusals`
-    and `profile.diagram_refusals` refuse one in a source: the run would
-    carry the tag into the titles of the deferrals it publishes. A plain
-    path carries no title. A
-    pick joins the tag list beside the pick token, so it is admitted only
-    beside an entry whose title carries that token. The token stays in
-    the list: it names no preset, and the entry still states that its
-    pick is the caller's.
-
-    An entry is written by no document, so no `subst` pair redirects it:
-    the run compiles the document it names and is named for the path the
-    caller wrote.
+    `entry.published` reads an authored link, `tags.read` reads its
+    title and `closure.resolve` owns destination normalization. A tag
+    `profile.marked_tag` rejects is invalid usage. `pick` is admitted
+    only beside the pick token and joins the entry's tags; the token
+    is retained. An external entry is refused as outside the source
+    root. `execute` owns selection of the invocation root.
     """
     try:
         link = published(text)
@@ -1477,15 +1385,7 @@ def location(name: str, at: int | None) -> str:
 
 @dataclass(frozen=True)
 class Opened:
-    """One source as the run opened it: its content, its size and what it was.
-
-    A byte budget is declared over what the file holds, frontmatter and
-    any byte-order mark included, so the figure is taken at the read
-    and not from the content the strip returned. The capture is taken
-    there too, over the same bytes and the path they came from, so the
-    recheck before publication compares a later read against the read
-    the bundle was built from.
-    """
+    """One captured read: `source` content, raw byte `size` and `capture` identity."""
 
     source: Source
     size: int
@@ -1579,12 +1479,15 @@ def delimiting(found: Reference) -> Iterator[None]:
 def read_document(
     root: Path, found: Reference, limits: Limits, total: int = 0
 ) -> Opened:
-    """Capture bounded bytes, typed settings and no-follow source identities.
+    """Capture one source and its settings within the supplied budgets.
 
-    Metadata resolves only after the source has been captured within the byte
-    and nesting limits. Every source is bounded by the invocation working
-    directory. Diagnostics retain physical coordinates and the referring
-    chain."""
+    `profile.is_markdown` owns suffix classification, `access.read_source`
+    owns bounded access, and `source.content` owns content extraction.
+    The capture records the bytes and identities from that read.
+    `limits.Limits.hold` enforces file and cumulative input sizes before
+    decoding; `substs` and `stated_once` validate the decoded settings.
+    `reading` and `delimiting` own refusal translation.
+    """
     name, chain = found.path, found.chain
     if not is_markdown(name):
         raise input_failure(
@@ -1631,25 +1534,13 @@ def read_document(
 
 
 def probe(root: Path, found: Reference, limits: Limits) -> Probed:
-    """Whether the document a reference names exists and declares, its body unread.
+    """Answer whether a target exists and declares, without retaining a capture.
 
-    The probe reads the document's head through the walk a capture
-    takes, within `file-bytes`, and decodes it as a capture would, so an invalid
-    declaration fails the probe with the diagnostic it fails a capture
-    with. Nothing it reads is counted against `input-bytes` or kept: answering
-    whether a document declares carries nothing into the bundle.
-
-    A head holding no opener declares nothing whatever the file's size,
-    so a document larger than `file-bytes` that declares nothing is answered
-    without crossing it. A head crossing `file-bytes` before its block closes
-    fails the run, since its declaration cannot be read within the
-    budget; a declaring document is captured afterwards, and the capture
-    holds `file-bytes` over the whole file.
-
-    A path naming no document is answered as absent, and the caller
-    reading the link decides what that is. A substitute naming no
-    document is refused here: the caller who named it stated the run is
-    answerable for it.
+    `access.read_head` reads up to `source.closes_head` within the file
+    byte budget; `source.declaration` owns decoding. Probe bytes do not
+    consume the cumulative input budget. An absent ordinary target
+    returns `closure.Probed.ABSENT`; an absent redirected target is
+    reported through `reading`. `delimiting` translates metadata faults.
     """
     with reading(found):
         try:
@@ -1680,14 +1571,11 @@ def probe(root: Path, found: Reference, limits: Limits) -> Probed:
 def declared_entries(
     requested: Sequence[Reference], declarations: Declarations
 ) -> None:
-    """Hold every entry reference to naming a document that declares `prosiform`.
+    """Require Markdown entry targets to declare prosiform.
 
-    An entry reference names the procedure the bundle carries out, so a
-    document declaring nothing is no procedure and one naming nothing
-    is nothing to carry out: each fails with the code a reference
-    naming nothing fails with, before any source is read. An entry
-    naming no Markdown document is refused by its suffix when it is
-    read, and is not asked.
+    `closure.Declarations.answer` supplies the declaration state. An
+    absent or silent target fails as not found; `read_document` owns
+    entry suffix refusal.
     """
     for asked in requested:
         if not is_markdown(asked.path):
@@ -1717,14 +1605,10 @@ def declared_entries(
 def refused(
     name: str, source: Source, refusal: Refusal, chain: Sequence[str]
 ) -> Failure:
-    """One construct the profile refuses, reported against the source carrying it.
+    """A profile refusal located in its original source with the supplied route.
 
-    The line the parser reports is a line of the content the strip
-    returned, and the line the diagnostic carries is the line that content
-    occupies in the file. The chain is the one that reached the source,
-    because the construct is where the run arrived rather than something
-    a further reference named. A refusal naming an earlier construct
-    beside its own names that construct's line of the file too.
+    `profile.Refusal` supplies the construct and related position;
+    `source.Source.line` owns coordinate conversion.
     """
     message = refusal.message
     if refusal.earlier is not None:
@@ -1741,7 +1625,7 @@ def refused(
 
 
 def changed(path: str, what: str, chain: Sequence[str]) -> Failure:
-    """One source that is no longer the source the run read."""
+    """Report a captured source that differs from the read used by the run."""
     return input_failure(
         f"the source {path!r} {what}, so the bundle would carry bytes the run "
         f"no longer reads",
@@ -1833,14 +1717,10 @@ def rewrite_sources(root: Path, captured: dict[str, Capture]) -> None:
 
 
 def contributing(requested: Sequence[Reference]) -> dict[str, list[Reference]]:
-    """Each file group the bundle carries, by the path that names it.
+    """References grouped by document path, in path order.
 
-    A reference selects from the document it names. The path
-    is the identity the reference normalized to, so two references
-    spelling one document name one group, which carries what each of
-    them selected. The documents are in path order, which is the order
-    each round of the traversal reads them in; `placement` decides the
-    order the bundle carries them in.
+    `closure.resolve` owns normalized identities; `placement` owns the
+    order in which these groups appear in a bundle.
     """
     selected: dict[str, list[Reference]] = {}
     for one in requested:
@@ -1849,13 +1729,9 @@ def contributing(requested: Sequence[Reference]) -> dict[str, list[Reference]]:
 
 
 def reaching(selected: dict[str, list[Reference]]) -> dict[str, tuple[str, ...]]:
-    """The inclusion chain that reached each document the bundle carries.
+    """The first recorded reference chain for each selected document.
 
-    A document several references select is reached by each of them,
-    and the one the chain names is the first the traversal discovered,
-    which is the shortest route to it. A diagnostic about the document
-    rather than about one reference into it — a construct the profile
-    refuses, a boundary two regions make unsafe — names that route.
+    `traverse` owns discovery and chain selection.
     """
     return {
         path: selecting[0].chain for path, selecting in selected.items() if selecting
@@ -1877,7 +1753,8 @@ def included(
 
     A link a composed section writes to one of its own subsections names
     a heading each copy of that section carries, where it points as
-    `Composing.carry` states, so it includes nothing, unless an inclusion
+    `composition.Composing.copy` and `composition.owned` assign it, so it
+    includes nothing, unless an inclusion
     carries the region writing it too: that group's copy of the link
     names the subsection as any link does. The same section linked from
     anywhere else is included as any is.
@@ -1961,14 +1838,11 @@ def included(
 def rooted(
     tokens: Sequence[Token], one: Reference, fragment: str
 ) -> tuple[Token, ...] | None:
-    """The section one reference's fragment roots in its document's tokens.
+    """Resolve a fragment through `source.section`, translating its refusals.
 
-    `section` owns which section a fragment roots and the two refusals
-    it raises. Each is a reference that reached a document and could
-    not name one section of it, so each is reported as the input failure
-    the contract declares for it, naming that document as the identity
-    the reference resolved to and the chain that reached the reference.
-    A fragment naming no heading returns `None` for the caller to refuse.
+    An ambiguous or nested heading is reported as an input failure with
+    the reference's resolved document and inclusion chain. An unmatched
+    fragment remains None for `selection` to refuse.
     """
     try:
         return section(tokens, fragment)
@@ -2002,25 +1876,13 @@ def selection(
     references: Sequence[Reference],
     entries: Collection[Reference],
 ) -> Selection | None:
-    """What one source contributes, as the references naming it select it.
+    """The union of regions the references select from one document.
 
-    A reference with no fragment selects every region the document
-    holds. A fragment is the section name the normalization decoded, so
-    the heading it is looked up against is the text the author wrote
-    however the reference spelled it. Every fragment is resolved
-    whatever else the run selected, because a fragment naming no
-    heading names nothing however much of its document reaches the
-    bundle.
-
-    A whole document an entry reference selected is the selection
-    `None`, which is what lets the parent, the first entry document,
-    open the bundle on its own title. A whole document only a
-    dependency selected is every region it holds.
-
-    A fragment the document does not yield is a reference that reached
-    a document and no section of it, so its diagnostic names that
-    document as the identity it resolved to and the chain that reached
-    the reference.
+    `rooted` owns fragment lookup. Every fragment is checked even when
+    a whole-document reference also selects the source; an unmatched
+    one fails with its reference and inclusion chain. Whole-document
+    entry selection returns None. Other selections return
+    `source.Selection` with regions in document order.
     """
     wanted: set[int] = set()
     whole = False
@@ -2058,50 +1920,14 @@ def required(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
-    """Every dependency the selected content of one source carries.
+    """Dependencies carried by the selected regions of one source.
 
-    A use naming a Markdown document whose frontmatter declares
-    `prosiform` is a reference the bundle carries, and every other use
-    is text: a document declaring nothing is probed and never captured,
-    a path naming no document states nothing the bundle answers for,
-    and the link reaches the bundle as its author wrote it. The target's declaration
-    is the whole of the question, so a document states that it travels
-    and every link reaching it agrees.
-
-    A withheld reference is not compiled: the run yields no dependency
-    for it, so nothing it names is bundled through that reference, and
-    the link reaches the bundle with its mark for the run that compiles
-    it. Its target is what `withheld` yields, because a reference naming
-    a declaring document is one the run stays responsible for whether
-    or not it carries what the reference names.
-
-    A resource is no local Markdown document and an image is a
-    resource whatever it points at, so neither is a dependency and both
-    reach the bundle as their author wrote them, wherever they resolve.
-    Only a Markdown document is bundleable, so nothing a resource
-    reference carries asks for one.
-
-    A reference whose form the grammar does not admit, and which names
-    a Markdown document, is a defect rather than a mention: an author
-    spelled a dependency the profile cannot resolve.
-
-    A reference naming the node that owns it, an including ancestor of
-    it, or the whole document a section sits in, names a destination the
-    bundle already carries, and the traversal reaches it as it reaches
-    any identity it has seen. Identity is what the frontier closes over,
-    so a reference pointing back adds nothing to it and expands nothing
-    twice.
-
-    A composition directive naming a section is a dependency like any
-    other, since the run reads what it composes, and it states that it
-    composes, so the bundle places its section beneath the directive's
-    scope rather than in a group of its own.
-
-    The chain passed in is the one that reached this source, and every
-    reference the source carries stands one hop beyond it. A reference
-    refused here therefore reports the route the run followed to the
-    link, which is what an author needs to find the document that wrote
-    it.
+    `source.uses` supplies occurrences, including diagram occurrences
+    under `source.Click`. Dependency eligibility follows `closure.bundled`,
+    using `closure.withholding` and `closure.Declarations.declares`.
+    `closure.directive` supplies composition classification. A malformed
+    Markdown destination fails with its source position and route.
+    Each yielded reference extends the supplied chain by its identity.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2149,29 +1975,15 @@ def refusals_of_operators(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
-    """Refuse a link whose operators state no one compilation the run can carry out.
+    """Report operator combinations or targets that cannot be compiled.
 
-    A blank between two symbols states no one operation. A link labelled
-    with an arrow states none either, composition having one mark. A
-    dispatch is compiled up front, so the deferral mark written against
-    one states a dispatch no bundle publishes, and a dispatch sends material
-    to a sub-agent while the composition mark places it inline, so the two
-    written together contradict. Two dispatch marks
-    say who, differently — one sub-agent, or one beside its section's
-    others — so a link stating both states two ways for one sub-agent to
-    run, and the run says so rather than choosing. An operator names the
-    compilation of a declaring Markdown document or section, so one
-    opening a link or an image naming anything else — a remote address,
-    a resource, a document declaring nothing — states a
-    compilation no run performs. Each is a source fault rather than a
-    metadata fault: what the author wrote states no compilation the run
-    can carry out, and the run reports the link rather than reading it
-    one way.
-
-    An operator states that a run or an agent compiles its target, so
-    one naming a Markdown path that holds no document names a target
-    that cannot be read, and fails as a reference naming nothing does.
-    The same link without its operator is text.
+    `closure.operators`, `closure.gapped`, `closure.arrowed`,
+    `closure.deferring_dispatch`, `closure.contradicting` and
+    `closure.conflicting` own operator recognition and contradictions.
+    `closure.Declarations.answer` supplies the target state. The refusal
+    names the authored use and its route; an operated absent target
+    fails as not found, and an operated nondeclaring or non-Markdown
+    target fails as an unsupported construct.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2297,16 +2109,10 @@ def refusals_of_picks(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
-    """Refuse the pick token on a link whose target this run compiles.
+    """Report the pick placements `closure.compiled_pick` refuses.
 
-    The pick token leaves the pick to the agent compiling a deferral in a
-    later run, or to the agent handing on a `⇉` dispatch, so an ordinary
-    link, a composition directive and a parallel dispatch naming a
-    declaring document each ask this run for a pick it cannot make. A
-    parallel dispatch's sub-agents all run, so no agent is left to pick
-    one of its bundles. A link naming anything else is text,
-    or is refused by the operator refusals before this is asked, so its
-    title selects nothing and the token stays the author's text.
+    Only a declaring target is checked. The diagnostic locates the
+    use, extends its chain and suggests a permitted placement.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2339,25 +2145,13 @@ def refusals_of_directives(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> None:
-    """Refuse a composition directive no section holds or no section answers.
+    """Require a composition directive to have a scope and a section target.
 
-    A directive places its target beneath the section containing it, so
-    one written in the preamble has no scope to place it in. A directive
-    names a section of a document that declares `prosiform`, so one naming
-    a whole document asks for a composition no such target can answer. The
-    operator refusals have already refused a directive naming a document
-    that is absent, declares nothing, or is a remote address or a
-    resource. Each asks for a placement the run cannot make, which is a
-    source fault: the run reports the link rather than reading it as an
-    ordinary one.
-
-    A section is composed in a scope or deferred from it, so a scope
-    holding an immediate and a deferred directive naming one section
-    states two placements for it, and the run refuses the later one,
-    naming both.
-
-    A reference whose form the grammar does not admit is left to the
-    refusal every dependency meets.
+    `closure.directive` identifies directives and `closure.deferred`
+    identifies their timing. A document-level directive or one naming
+    a whole document is unsupported. In one scope, immediate and
+    deferred directives naming one identity conflict, reported through
+    `placed_twice`. `refusals_of_operators` owns target-kind refusals.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     placed: dict[tuple[int | None, str, str | None, bool], tuple[str, str]] = {}
@@ -2433,13 +2227,12 @@ def composing_itself(
     chain: Sequence[str],
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Diagnostic]:
-    """One warning for each directive composing a section of the document writing it.
+    """Warnings for directives composing a section of their own document.
 
-    The section is material that document already carries, so its author
-    moves it to a document of its own or links it without the composition
-    mark. A directive composing the section holding it is a cycle, which
-    composition refuses, and a deferred directive composes nothing in the
-    run, so it warns of nothing.
+    `closure.directive` identifies composition and `closure.deferred`
+    identifies deferral. Deferred directives and a directive selecting
+    its own heading are excluded; `composition.Composing.cycle` owns cycle
+    refusal. Each warning locates the directive and its route.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2473,28 +2266,13 @@ def withheld(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Reference]:
-    """Every target the selected content of one source withholds.
+    """Targets withheld by the selected regions, with occurrence context.
 
-    A withheld reference naming a declaring Markdown document is one
-    this run does not carry and stays responsible for, so its target is
-    yielded here to be confirmed. An operator on a reference naming a
-    document that declares nothing, or on one naming no Markdown
-    document, withholds nothing, and the run refuses it before
-    reading the withheld targets.
-
-    What is yielded is a target and not a dependency. It joins no
-    frontier, so the document is not bundled through this reference,
-    contributes no content and no destination of its own, and heads no
-    file group.
-
-    The chain is the one a compiled reference in the same place would
-    carry, because a refusal reports the route the run followed to the
-    link whichever half of the rule the link falls under. Each target
-    retains the occurrence's tags, and a deferred directive states
-    that it composes, so its later entry compilation uses that selection.
-    A deferral's target states that it defers, so its title is checked
-    for the pick the later run compiles it with, as a dispatch's title
-    carrying the pick token is checked for the alternatives it compiles.
+    `closure.withholding_target` owns target classification. Each result
+    retains its tags and extends the source chain, with composition and
+    deferral flags supplied by `closure.directive` and `closure.deferred`.
+    These results are targets to confirm, separate from the dependencies
+    `required` yields.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for use in uses(tokens, selected):
@@ -2532,16 +2310,11 @@ def dispatches(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> Iterator[Hop]:
-    """Every dispatched link the selected content of one source carries.
+    """Dispatch hops in the selected regions, with source locations and routes.
 
-    A dispatch is a withheld link whose target the run compiles as a
-    bundle of its own, so what is yielded is the target the link names,
-    with the place the link is written: the hop a chain of dispatches
-    takes from here. The links are those the bundle points at a bundle
-    file or a dispatch-set sub-section, read by the one reader that
-    places them, so every hop the run follows has its file. A link with
-    no text after its mark names nothing for its reader, so it is
-    refused as the operator refusals are, naming the route.
+    `dispatch.written_in` supplies recognized dispatch occurrences. A
+    recognized dispatch with empty text is refused at its occurrence.
+    `source.Click` owns diagram-link text and title interpretation.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
     for region in selected:
@@ -2570,17 +2343,14 @@ def dispatches(
 
 
 def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
-    """The brief one dispatch carries into the bundle writing it, or none.
+    """The composing brief of one dispatch, or None where it has none.
 
-    The brief is the composing reference `briefing` states, one hop
-    beyond the document writing the dispatch, so its links are followed
-    into this bundle's closure as a directive's are. A dispatch carrying
-    the pick token carries the brief no alternative is in force for, so
-    an alternative naming a brief of its own changes the brief, and the
-    pick is left unresolved as `unresolved` reports. Two selected presets
-    naming different briefs are invalid usage naming both, and a brief
-    naming no fragment the reference grammar reads is invalid metadata
-    of the target, each named with the dispatch and its route.
+    `closure.brief_of` owns brief selection and `closure.briefing` constructs
+    its reference; conflicts and malformed references become located
+    invocation failures. A picking dispatch
+    whose alternative declares a brief produces `unresolved` with the
+    varying-brief remedy. A returned brief inherits the dispatch's
+    origin and replaces its final chain hop with the brief identity.
     """
     target = hop.target
     try:
@@ -2624,7 +2394,12 @@ def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
 
 
 def verify_cached(root: Path, one: Reference, captured: Mapping[str, Capture]) -> None:
-    """Every referring route must retain no-follow access to a cached identity."""
+    """Check one cached target's referring route and filesystem identity.
+
+    `access.opened` owns no-follow access. A refused route becomes an
+    input failure; an identity differing from the capture becomes
+    `changed`. A target without a capture needs no cache check.
+    """
     if one.path not in captured:
         return
     observed: list[tuple[str, int, int]] = []
@@ -2750,13 +2525,11 @@ def run_names(entry: Reference) -> frozenset[str]:
 def entry_stubs(
     entry: Reference, conversion: Conversion
 ) -> dict[tuple[str, str | None], Governed]:
-    """The `subst` pairs of the stubs the run's entry declares and its names select.
+    """The entry's selected stub pairs, layered by `layer`.
 
-    Each key resolves from the entry and each substitute from its key, as
-    `subst_identity` and `subst_reference` read them, so the pairs name
-    one identity whichever document's link they redirect. Two selected
-    stubs mapping one key to two substitutes are refused as `layer`
-    returns them.
+    `run_names` owns selectable names; `subst_identity` and
+    `subst_reference` own reference resolution. A conflict returned by
+    `layer` produces `disagreeing`.
     """
     pairs: dict[tuple[str, str | None], Governed] = {}
     for preset in conversion.presets:
@@ -2770,10 +2543,10 @@ def entry_stubs(
 def staked(
     substitution: Substitution, entry: Reference, read: Mapping[str, Source]
 ) -> Substitution:
-    """The run's mapping holding its entry's stubs, read from `entry` where absent.
+    """The mapping with its run entry and selected stub pairs.
 
-    A mapping already holding an entry is the run's, read when its first
-    bundle was compiled, so a dispatched bundle keeps it.
+    A mapping with an entry is retained. Otherwise `entry_stubs`
+    supplies the pairs and `closure.Substitution.stubbed` binds them.
     """
     if substitution.entry is not None:
         return substitution
@@ -2821,84 +2594,33 @@ def traverse(
     list[Hop],
     list[Diagnostic],
 ]:
-    """Every source the run reads and every reference it carries, at the fixed point.
+    """Captured sources and discovered occurrences at the dependency fixed point.
 
-    The entry references are the first frontier. Each round reads the
-    sources its frontier names, then reads every group's selected
-    content for the dependencies it marks; a dependency naming a
-    document and section the run already carries adds no target, and the
-    round that discovers no new target or selection is the fixed point. A reference
-    graph with a cycle therefore terminates on the identity each
-    reference normalized to rather than on a depth the traversal
-    refuses at.
+    Entry references start the frontier. Each round loads new source
+    paths, unions selecting occurrences and rechecks every growing
+    selection. A new document/fragment or selecting occurrence enters
+    the next frontier; no such addition ends traversal. Captures are
+    shared by source path, while occurrences retain heading, tags and
+    composition context. `verify_cached` checks every referring route.
 
-    References to one carried document and section retain their distinct
-    heading context, requested tags and inclusion or composition kind.
-    Each joins the references the run carries. Its destination enters
-    the frontier when it adds a target or selecting occurrence, since a
-    selection can activate substitutions. Physical capture belongs to the source path.
+    All selections are resolved before preset checks and selected-region
+    refusals, so an invalid fragment reports first. `selection`,
+    `governing`, `copies` and the operator refusal functions own those
+    checks. `read_document`, `profile.parse`, `source.nesting` and
+    `source.occurrences` supply the figures held by `limits.Limits.hold`.
+    Expansion depth counts reference-chain links independently of
+    fixed-point rounds; a shorter newly active route retains that depth.
 
-    The selection of a group grows as later content marks more of its
-    document, so every group is read again each round. What the
-    traversal returns is what the bundle is composed from, so the
-    bundle follows from the closure rather than from the order its
-    documents were discovered in.
+    Each round uses an unrecorded mapping: later selecting occurrences
+    can change routing, so substitutions are recorded during `compose`.
+    Withheld targets, dispatches and self-composition warnings reflect
+    the final round's mapping. `briefed` supplies dispatch briefs as
+    dependencies of the discovering round.
 
-    Each reference carries the shortest recorded chain to the document
-    writing it and its own identity after that. A newly active
-    substitution can reveal a short route in a later round; its depth
-    counts that route's links.
-
-    Reading a document and validating what it contributes are two
-    stages, and the selection divides them. Opening a source holds the
-    facts the whole file decides — its bytes, its nesting, what it
-    opens on, the definitions it declares — and a parsing-safety
-    budget crossed there is the source failing to index rather than a
-    dependency. The round then reads each group's selected regions for
-    the dependencies they mark and the constructs the profile refuses
-    there, so an unselected section is content the run parsed and
-    never asked for. A selection only grows, so a region a later round
-    adds is held to the same checks in the round that adds it. Each
-    round selects every carried document before it counts the presets
-    the references select or reads a selected region, so a fragment
-    naming no one section reports its own defect ahead of any failure of
-    the alternatives the references pick or the presets they select, and
-    of a refusal in another document's regions.
-
-    Expansion depth counts the reference chain from the nearest entry,
-    independently of the fixed-point rounds needed to activate presets. The
-    budgets over what the run opens, counts and reaches are held here
-    as each figure is reached, so a run crosses a boundary at the point
-    it crosses it rather than after building what it could not keep.
-
-    Each round reads every carried document's links under the `subst`
-    pairs its presets put in force, as the references found so far
-    select them, so a link is resolved under its own document's pairs:
-    what the including references select under the pairs `governing`
-    states, and what the composing references of each tag selection
-    select under the pairs `copies` states for it.
-    A round records no substitution: a reference a later round finds can
-    select a preset whose pair holds over the one an earlier round
-    resolved a link by, so the run's record is written as the bundle is
-    composed, under the pairs the fixed point puts in force.
-
-    Discovered dispatch occurrences and self-composition warnings describe
-    the current mapping. Final composition determines the published
-    handoffs from the source ranges its groups actually carry. Each
-    dispatched target is read in the round that discovers it, so the
-    brief its presets name, as `briefed` states it, is a dependency of
-    that round.
-
-    Every source is held with the run's names, the names its entry
-    title gives. The stubs they select are the run's entry's, read into
-    the mapping once the entry is read, as `staked` states, so their
-    pairs redirect the links of every document the run compiles. A
-    document other than that entry declaring a stub fails the run.
-
-    Each withheld reference's pick is held to its target's declaration
-    where `picking` holds. A traversal standing in for the run that
-    compiles a deferral later reads that run's references alone, and
-    holds no pick of its own withheld references.
+    `staked` binds the run mapping, `stubbed` attaches its names and
+    `stub_off_entry` checks declarations. `confirm` checks withheld
+    targets after closure. When `picking` is true, `stated_pick` checks
+    their picks, using `later_needs_pick` for a later run's requirement.
     """
     read: dict[str, Source] = {}
     parsed: dict[str, list[Token]] = {}
@@ -2960,8 +2682,7 @@ def traverse(
             governing(read, parsed, carried, requested),
             copies(read, carried),
         ).unrecorded()
-        # These answers describe the current mapping. Captures and selecting
-        # occurrences retain their monotonic union across rounds.
+        # A later preset can invalidate answers from the preceding mapping.
         postponed.clear()
         dispatching.clear()
         composed_itself.clear()
@@ -3138,27 +2859,12 @@ def confirm(
     tokens: Sequence[Token],
     one: Reference,
 ) -> None:
-    """Hold one withheld reference to naming a document and a heading that exist.
+    """Confirm the existence of a withheld target's heading.
 
-    A deferral says that the material is reached in a run of its own,
-    and a dispatch that a sub-agent reaches it, not that nobody is
-    answerable for it, so the document is read and
-    the fragment is looked up. A withheld target naming no document is
-    refused with the operator that withholds it, and one naming no
-    heading of the document it resolves to is refused here, each with
-    the code and the route a compiled reference naming nothing reports.
-
-    The question is whether the document carries the heading, asked of
-    the index of every heading the profile recognizes. Which section a
-    fragment roots, and whether two headings make it ambiguous, is what
-    the run compiling the link decides; this run says only that the
-    target is there to be found. A deferred composition directive is the
-    exception: this run names its contribution by the heading its target
-    section opens with, so the fragment must root one section here, as
-    `rooted` holds it.
-
-    The caller supplies the cached index from the source's captured read.
-    A withheld-only source contributes no content to a group.
+    `source.index` supplies all headings. An unmatched fragment is an input
+    failure with the target's route; a missing fragment needs no check.
+    A deferred directive also needs the selectable section `rooted`
+    validates. The caller supplies the captured source's token stream.
     """
     if one.fragment is None:
         return
@@ -3184,20 +2890,14 @@ def later_needs_pick(
     target: Conversion,
     declarations: Declarations,
 ) -> bool:
-    """Whether the run compiling a deferral later needs a pick the deferral makes.
+    """Whether a deferral's later run requires a pick.
 
-    That run's entry is the published link: its target, its operator
-    marks ignored, selecting by the deferral's title and the run's names
-    the bundle carries for the target, at the default budgets a link run
-    as written holds. Its traversal is read here, and the alternatives in
-    force for the target's group are counted on the including references
-    reaching it there, as `resolved` counts them for that run.
-
-    A traversal that fails with no alternative in force needs a pick
-    where one alternative's traversal succeeds, since that pick is what
-    the run lacks. Where every one fails too, the run fails whatever the
-    deferral picks, so the failure is that run's to report, as it is for
-    a deferral naming an alternative, and needs no pick here.
+    Simulate that target as an entry through `traverse`, using default
+    `limits.in_force` budgets and `metadata.Conversion.carried` names.
+    `included`, `picked` and `routed` supply the alternative test
+    `resolved` owns. A successful unpicked traversal needs a pick
+    where that test finds one missing. A failed unpicked traversal
+    needs a pick only where an alternative traversal succeeds.
     """
     entry = replace(
         one,
@@ -3245,20 +2945,14 @@ def stated_pick(
     one: Reference,
     needs_pick: Callable[[Reference], bool],
 ) -> None:
-    """Hold one deferral, or one dispatch carrying the pick token, to its pick.
+    """Require a deferral or picking dispatch to state a usable pick.
 
-    The later run compiles a deferral's target as its entry, with the
-    deferral's title as its selection. A document declaring alternatives
-    compiles there with at most one in force, and with exactly one where
-    an alternative changes what that run selects, so the title names one
-    of them or carries the pick token, never both, and names none only
-    where that run needs none, as `needs_pick` reads it. A dispatch
-    carrying the pick token compiles its target once for each
-    alternative, so it names none of them beside the token. The pick
-    token asks for a pick among alternatives, so a target declaring none
-    is refused with it. Every other title publishes a command or a
-    bundle a run refuses, so the defect is the source's and is reported
-    at the link.
+    `picked` supplies selected alternatives, `tags.picks` identifies the
+    pick token, and `needs_pick` supplies later-run need. A deferral
+    may name at most one alternative, and must name one or carry the
+    token where needed. A picking dispatch names no alternative beside
+    its token. The token is refused for a target with no alternatives.
+    A defect is located at the source link with its inclusion chain.
     """
     alternatives = conversion.alternatives
     pick = picks(one.tags)
@@ -3305,12 +2999,12 @@ def stated_pick(
 
 
 def pair(conversion: Conversion, tags: frozenset[str]) -> Membership | None:
-    """The `group` pair in force for content one tag selection selects.
+    """The group pair for one tag selection.
 
-    A selected preset's pair holds over the one `default` states, and the
-    selected presets are held to agreeing before it is read; `default`'s
-    pair is in force where no selected preset states one. None means no
-    pair is in force, and the content keeps its individual file group.
+    The first membership `closure.matching_presets` selects takes
+    precedence over `metadata.Conversion.default`'s membership; None
+    means neither supplies one. `agreed` checks selection agreement
+    before the caller reads the pair.
     """
     return next(
         (
@@ -3328,16 +3022,11 @@ def unselected(
     selected: Mapping[str, Sequence[Reference]],
     entries: Collection[Reference],
 ) -> dict[str, tuple[str, ...]]:
-    """The presets of each carried document that no reference reaching it selected.
+    """Ordinary named presets absent from the references' selections.
 
-    `default` is in force wherever its document is compiled, so it is
-    never among them. A set of alternatives leaves at least all but one
-    unpicked wherever its document is compiled, so no alternative is among them
-    either, and a stub stands in for material only a run selecting it
-    uses, so no stub is among them. The names keep the order the
-    document declares them in. A
-    document reached only through a deferral is carried by no bundle, so
-    its presets are weighed by none.
+    `closure.matching_presets` owns matching. Default, alternative and
+    stub presets are excluded, and names retain declaration order.
+    Only documents with references appear.
     """
     left: dict[str, tuple[str, ...]] = {}
     for path, references in selected.items():
@@ -3364,15 +3053,10 @@ def joined(
     selected: Mapping[str, Sequence[Reference]],
     entries: Collection[Reference],
 ) -> dict[str, tuple[Membership, ...]]:
-    """The `group` pairs in force for each document the bundle carries.
+    """Distinct group memberships selected by each document's inclusion references.
 
-    Each reference reaching a document selects that document's presets
-    by its own tags, so a document's presets
-    govern its content and no other document's. The presets one
-    reference selects are held to agreeing before their pair is read,
-    so one reference places the document under one pair at most. A
-    document carries every explicit pair its references put in force,
-    each once. It keeps an individual file group where that union is empty.
+    `agreed` validates each reference and `pair` reads its membership.
+    Memberships retain reference order, with duplicate values omitted.
     """
     joins: dict[str, tuple[Membership, ...]] = {}
     for path, references in selected.items():
@@ -3388,12 +3072,11 @@ def joined(
 
 
 def group_depths(joins: Mapping[str, Sequence[Membership]]) -> dict[str, int]:
-    """Consistent depths for named groups, ordered by source path.
+    """One consistent depth for every named group.
 
-    A document is a member of each group the pairs its references put in
-    force name, so one document two references place differently may
-    hold one depth in one group and another in a second; within one
-    group every membership must agree.
+    Memberships are checked in source-path order. A group with
+    different depths fails with the first declaration and the
+    conflicting declaration's coordinate. `joined` supplies memberships.
     """
     members: dict[str, list[tuple[str, Membership]]] = {}
     for path in sorted(joins):
@@ -3437,7 +3120,7 @@ def membership(joins: Sequence[Membership], named: str) -> Membership | None:
 
 @dataclass(frozen=True)
 class Named:
-    """One generated heading, and where the source it names is located."""
+    """A generated heading's `text` and its source `location`."""
 
     text: str
     location: Location
@@ -3453,20 +3136,12 @@ def file_named(
     *,
     conversions: Mapping[str, Conversion],
 ) -> Named | None:
-    """One document's file heading, located at the title it carries or at the document.
+    """A document's emitted file heading with its source coordinate.
 
-    A titled document is headed by its title, so the heading is located
-    on the line that title stands on. The parent opens the bundle on
-    that title rather than on a heading the bundle writes, and is headed
-    by it all the same. An untitled document is headed by its path,
-    which names the document as a whole, so the heading is located at
-    the document's first position; a parent the bundle opens without a
-    file heading and without a single title is headed by nothing.
-
-    The text is the one the group emits, so it is read under the same
-    mapping: a title carrying a withheld link whose target the mapping
-    redirected publishes without its mark, and the heading this warning
-    compares is the heading a reader meets.
+    `bundle.file_heading` owns heading text and `bundle.document_title`
+    owns title recognition. A title locates the heading at its source
+    line; a path heading uses the document's first coordinate. A parent
+    with neither a single title nor a file heading returns None.
     """
     title = document_title(tokens)
     if title is None and not wrapped:
@@ -3518,23 +3193,13 @@ def coincident(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Diagnostic]:
-    """One warning for each set of generated headings that coincide.
+    """Warnings for case-insensitive collisions among generated source headings.
 
-    The headings that name a source are its file headings, the parent's
-    own title among them where the bundle opens on it, and, within one
-    merged group, its member headings. Two of either
-    coincide where their texts are one text but for capitalization,
-    because a reader reads them as one name and the renderer slugs them
-    alike, so the bundle tells them apart by an ordinal alone. A member
-    is named by the shortest run of its path that distinguishes it from
-    the group's other members, so members whose paths differ only by
-    Markdown extension or capitalization take one name. The bundle is
-    published either way; the warning is what sends a reader to check
-    it. A heading an author wrote is the author's to repeat and warns of
-    nothing.
-
-    The warnings follow the bundle order of the first heading each set
-    holds, and each set's headings follow it too.
+    `file_named` supplies file headings and `grouping.member_headings`
+    supplies member text. Each file-heading set and each merged group's
+    member set is compared separately; authored headings are excluded.
+    Warnings and their member coordinates follow emitted order and are
+    rendered by `coincidence`.
     """
     files: dict[str, tuple[int, list[Named]]] = {}
     found: list[tuple[int, Diagnostic]] = []
@@ -3545,7 +3210,7 @@ def coincident(
             continue
         if one.record.merged is None:
             if named not in read:
-                # The `§ Instructions` group names no source document.
+                # Generated groups have no source coordinate to report.
                 continue
             heading = file_named(
                 named,
@@ -3599,7 +3264,7 @@ def coincident(
 
 
 def parent_document(entries: Collection[Reference]) -> str | None:
-    """The first entry document, which opens the bundle on its own title."""
+    """The first document of a nonempty entry sequence, or None."""
     if not isinstance(entries, Sequence) or not entries:
         return None
     return entries[0].path or None
@@ -3613,37 +3278,18 @@ def placement(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[dict[str, list[Reference]], dict[tuple[str, str], str]]:
-    """Each document the bundle includes, in the order a reference first names it.
+    """Included documents and their placing documents, in first-reference order.
 
-    The entry references are read first, in the order the invocation
-    gives them, and then the selected content of each placed document,
-    in the order the documents were placed, each in source order. A
-    document is placed at the first reference that names it, so the
-    parent leads and an author orders what follows by the order the
-    links are written in. Every document the bundle carries is reached
-    from an entry reference by a chain of the links read here, so the
-    order covers them all.
+    Entry order leads, followed by links read from placed selections.
+    A document is placed on its first visit. `required` supplies
+    dependencies and `included` identifies inclusions; composed
+    selections are walked at their directive, under
+    `closure.Substitution.composed`. `briefed` supplies dispatch briefs
+    after their source's own links.
 
-    A composition directive places nothing: the section it names is
-    content of the document whose group carries the directive, so that
-    section is read where the directive is written, once for each tag
-    selection reaching it and under the pairs that selection puts in
-    force, as `Substitution.composed` reads them, and a link it carries
-    places a document as one its scope's document writes, a directive
-    it carries reading its own section the same way. The brief a
-    dispatch carries, as `briefed` states it, is read the same way,
-    after the links its scope's document writes.
-
-    The first mapping holds the references including each document,
-    as `included` keeps them. The second names, for each document a
-    link placed under a `group` pair and each group that pair names,
-    the document whose group carries the first link placing it there,
-    so a document two references place under different pairs is placed
-    in each group by the reference that put that group's pair in force.
-    The pair a link puts in force is the one its tags
-    select, as `joined` reads it. An entry is placed by the invocation
-    rather than by a document, so a group an entry places a document in
-    is absent there.
+    `pair` owns membership selection. The second result records the
+    placing document for each document/group pair; invocation-placed
+    members have no placing document.
     """
     selected = contributing(included(found, parsed, read))
     order = list(dict.fromkeys(one.path for one in entries if one.path in selected))
@@ -3711,14 +3357,11 @@ def divisions(
     selected: Mapping[str, Sequence[Reference]],
     joins: Mapping[str, Sequence[Membership]],
 ) -> list[Division]:
-    """Each division of the bundle, in the order its first document is placed.
+    """File and merged divisions in first-member placement order.
 
-    A division is a file group, named by its document's path, or a
-    merged group, named by the group it is; the flag says which. A
-    document the pairs in force for it pair with no group is its own
-    file group, and every other document joins each merged group a
-    membership names. Merged groups sharing their first document stand
-    in the order its memberships name them.
+    `joins` supplies the memberships `joined` owns. A document with
+    none becomes a file division; a merged division is recorded once
+    at its first membership. The flag distinguishes the two kinds.
     """
     found: dict[Division, None] = {}
     for path in selected:
@@ -3827,36 +3470,17 @@ def assembled(
     within: Within | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> tuple[list[Group], Composed]:
-    """Each group the bundle carries, its links rewritten where a map says so.
+    """Construct placed divisions and their composition destinations.
 
-    The documents arrive in placement order, which `placement` decides,
-    with the document whose link placed each. A document the pairs in
-    force for it pair with no group is its own file group. Every other
-    document joins each merged group a membership names, once however
-    often it is named, and each group carries its members in placement
-    order, so the pairs in force for a document place its own sections
-    and no other document's.
+    `divisions` owns division order, `holders` owns nesting and `level`
+    owns heading depth. `composed` builds each tree from its leaves;
+    `grouping.prepared` and `grouping.merged` own merged-group layout,
+    and `bundle.group` owns file-group construction.
 
-    Composition runs from the leaves up. A merged group whose first
-    member a document's link placed nests inside that document's
-    division, after everything the division carries of its own, its
-    headings one level deeper for each division enclosing it; `composed`
-    finishes each nested group before its holder merges it. A file
-    group, and a merged group whose first member is an entry, stands at
-    the top level where its first document is placed, so the group
-    carrying the parent leads and one selection always bundles to the
-    same bytes.
-
-    The sections the bundle's directives compose are placed once every
-    group stands where it is emitted, and the contribution heading each
-    composing link points at is returned beside the groups. The
-    composing map holds each composing link's destination by the placing
-    of the region writing it: the authored links' under none, which the
-    groups are rewritten through, and every contribution's own beside
-    them.
-
-    `folder` is the folder the bundle is written into, which a
-    deferral's destination is published from.
+    `preambled` selects introductions for `preamble.grouped`. Once all
+    groups exist, `composition.compositions` places contributions and
+    returns their destinations. `folder` supplies the publication
+    context used by the builders.
     """
     parent = parent_document(entries)
     inforce = group_depths(joins)
@@ -3973,22 +3597,14 @@ def assembled(
 
 @contextmanager
 def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
-    """One assembly, a source fault it meets reported as the input it is.
+    """Translate construction refusals into located input failures.
 
-    A heading beyond the sixth level is a hierarchy the bundle cannot
-    emit, a dispatched link in a heading the bundle emits as text alone
-    is a handoff it cannot state, and a directive whose composition has no
-    section, parent or level to take, or a name its scope already
-    holds, is a placement it cannot make, and a composition reaching a
-    section that holds a directive on its own chain is one that would
-    not end. Each is a property of the sources the run was asked to
-    bundle rather than a fault in the tool, so each is reported with
-    the code the contract declares for it, and with the chain that
-    reached the document the fault was found in,
-    whichever member of a merged group that is. A composition fault
-    names the directive, where it is written, and the chain extended by
-    it; a cycle names each earlier directive on its chain as related. A
-    contribution crossing the output budget is the crossing it is.
+    `bundle.Overflow` and `bundle.Unplaced` identify file-group faults;
+    `composition`'s exception types identify contribution faults.
+    `chains` supplies each source's inclusion route. A composition
+    fault names its directive and extends that route; a cycle carries
+    earlier directives as related locations. `crossing` renders output
+    budget crossings.
     """
     try:
         yield
@@ -4103,16 +3719,11 @@ def assembling(chains: Mapping[str, Sequence[str]]) -> Iterator[None]:
 def destination_map(
     groups: Sequence[Group], assigned: Sequence[str]
 ) -> dict[tuple[str, str | None], str]:
-    """The destination each resolved target was given, by the identity naming it.
+    """The first destination assigned to each emitted target identity.
 
-    Each emitted heading records the targets it is where they resolve:
-    a file heading answers to its whole document and to the title it
-    absorbed, a carried heading to the fragment its author's text
-    produced, a merged heading to that fragment in every document that
-    contributed it, and a variant heading or the subsection
-    naming a member to the document it names. A destination is scoped to the
-    bundle, so the map is one map over every group rather than one map
-    for each.
+    Each group's recorded heading targets are paired with their
+    `assigned` fragments. `source.fragments` owns fragment allocation;
+    the group's builders own the targets their headings answer.
     """
     found: dict[tuple[str, str | None], str] = {}
     at = 0
@@ -4153,43 +3764,24 @@ def compose(
     substitution: Substitution = UNSUBSTITUTED,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> tuple[str, list[Diagnostic], list[Hop], list[Diagnostic]]:
-    """The validated bundle, its heading warnings and its published handoffs.
+    """The validated bundle, heading warnings and published dispatch hops.
 
-    The candidate holds the groups each included source takes, and it
-    opens on the first group's first part. A source only composition
-    directives reach takes none: its content stands in their
-    contributions. A diagnostic names the route the run followed to a
-    source, whichever kind of reference reached it. The warnings name
-    the generated headings that coincide, which accompany the bundle
-    rather than refuse it.
+    `placement` orders sources and `assembled` builds their groups.
+    Construction runs twice: the first pass discovers emitted headings,
+    then `source.fragments` and `destination_map` provide the map used
+    for the final rewrite. `dispatch.subsections` and `bundle.opened`
+    run in both passes so the map includes generated headings.
 
-    Handoffs and self-composition warnings come from the source ranges
-    the final groups carry, independently of traversal's retained captures.
+    `composition.contributions` and `composition.owned` provide the
+    contribution maps; `dispatch.anchors` supplies dispatch destinations.
+    `candidate.validate` checks the final result, with `unsafe`
+    translating boundary refusals to input failures. Dispatch placement
+    and heading collisions use `dispatch`'s located refusals.
 
-    A destination belongs to the bundle rather than to a group, so it
-    is known only once every group exists. The groups are therefore
-    built twice: once to learn the headings the bundle emits, and once
-    more with the map those headings produce, which is what each
-    compiled link is rewritten through. Each build carries the dispatch
-    sub-sections its sections need, with the briefs they hold composed as
-    a contribution is, inserted once the group exists, and the run-pf
-    line that opens the bundle, so the headings the map is built from
-    are every heading the bundle emits. The second pass emits the same
-    headings as the first, because a rewrite edits a link's destination
-    and its mark and nothing a heading is slugged from.
-
-    Candidate validation closes the pass. Every invariant it holds is
-    a property of the construction, which an author cannot reach, so a
-    disagreement is a fault in the tool. The boundary between two
-    emitted regions is the exception: it follows from the documents the
-    run was asked to bundle together, and an author closing a code
-    example or selecting other content resolves it, so it is reported
-    as the input failure it is. A dispatch the bundle cannot place, and
-    an authored heading equal to one pf emits, are refused as input
-    failures too.
-
-    `folder` is the folder the bundle is written into, which its
-    deferrals' destinations are published from.
+    Published hops and self-composition warnings are read from
+    `emitted_regions`, using `dispatches` and `composing_itself`.
+    `coincident` supplies heading warnings. `folder` is the publication
+    context passed to the builders.
     """
     chains = reaching(contributing(found))
     selected, placers = placement(
@@ -4239,8 +3831,7 @@ def compose(
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
-    # The instruction heading precedes every group, so each position the
-    # dispatch stage recorded moves down by the one heading it adds.
+    # `bundle.opened` adds a heading after dispatch positions are recorded.
     placed = {
         key: {
             link: at + 1 if isinstance(at, int) else at for link, at in served.items()
@@ -4340,15 +3931,12 @@ def compose(
 
 
 def resource(destination: str, embedded: bool) -> bool:
-    """Whether one reference use names a resource rather than a document or a section.
+    """Whether a destination requires the resource-portability warning.
 
-    A resource is what the bundle carries as text, which the use states
-    along with where it points. An image embeds rather than links, so it
-    names a resource whatever its destination spells, and a link names
-    one when its destination names no Markdown document. A fragment
-    names a place in the bundle itself, and a reference carrying a
-    scheme, an authority or a drive letter names something no directory
-    the bundle is read from decides, so neither is one under either use.
+    An absent path, scheme, authority or drive letter excludes a use.
+    Other uses qualify when embedded or when `profile.is_markdown`
+    rejects their suffix. `closure.components` owns splitting and
+    `source.external` owns scheme and authority detection.
     """
     written = components(destination).path
     if not written or external(written) or DRIVE.match(written) is not None:
@@ -4357,14 +3945,10 @@ def resource(destination: str, embedded: bool) -> bool:
 
 
 def resourced(bundled: str, budget: int) -> bool:
-    """Whether the published bundle's text names at least one resource.
+    """Whether the emitted bundle contains a resource use.
 
-    The bundle is read as a renderer reads it, so a resource a source
-    wrote as a reference-style use is counted at the inline form the
-    bundle publishes it as. The uses are the ones discovery reads, so an
-    image's alternative content is descended into where it sits and the
-    warning classifies a reference as emission classifies it. A bundle
-    whose text names none carries nothing to warn about.
+    `profile.parse` and `source.uses` read the emitted text; `resource`
+    owns classification. Diagram occurrences follow `source.Click`.
     """
     tokens = parse(bundled, budget)
     return any(
@@ -4379,8 +3963,8 @@ def substituted(
 ) -> list[Diagnostic]:
     """One warning for each stub's `subst` pair a reference named.
 
-    A key names one substitution, so the references it served state one
-    warning at the first of them. The warning names that link as
+    `closure.Redirects.record` owns occurrence recording and deduplication.
+    The warning names the recorded link as
     `location` where the reference stands in a source, the destination
     the author wrote as `source`, and the substitute's identity as
     `resolved`; its message states the identity the reference would have
@@ -4436,11 +4020,7 @@ def publish(text: str, stream: IO[str]) -> None:
 
 @dataclass(frozen=True)
 class Bundle:
-    """One composed bundle, the file name it is published under and its warnings.
-
-    The selection names what the bundle was compiled from, so a
-    diagnostic about the bundle can name its source.
-    """
+    """A publication unit's `text`, file `name`, `warnings` and source `selection`."""
 
     text: str
     name: str
@@ -4457,26 +4037,17 @@ def publication(
     retained: bool = False,
     notices: Sequence[Diagnostic] = (),
 ) -> None:
-    """Validate every bundle a run publishes, then publish the set whole or not at all.
+    """Validate the publication set, emit its warnings and optionally write it.
 
-    Each bundle is held to the output budget, every name is held to one
-    bundle, the output folder is made where absent, the path standing at
-    the run folder's own to being a folder or a link, and the run folder's
-    name and each bundle's are held to the length its filesystem allows,
-    before any is written, so a set publication would refuse ends the run with its
-    diagnostic and nothing written, whether or not the run only
-    validates. Every bundle's warnings follow, in turn, then the
-    warnings that are facts about the run rather than about one of its
-    bundles, and then the set is published into the run's folder, unless
-    the run only validates, which writes nothing. A run asked to retain
-    the earlier set stands an empty one at its folder where nothing
-    stands there, once every check has passed, and is refused its removal
-    once the new set stands.
+    Output byte limits, distinct bundle names and filesystem name
+    lengths are checked before warnings or bundle writes. The parent
+    folder is created where absent. `occupied` owns the run-path
+    check, and `publish_folder` owns replacement of the set.
 
-    A run's own warnings follow the bundle checks for the same reason
-    they hold under `-c`: what a run states of itself is stated by a run
-    that would otherwise have published, so a substituted check reports
-    its substitutions exactly as a substituted publication does.
+    Bundle warnings are emitted in bundle order, followed by `notices`.
+    When `check` is true, validation and warnings complete without
+    writing bundle files; otherwise the set and `retained` request are
+    passed to `publish_folder`.
     """
     for one in bundles:
         try:
@@ -4591,27 +4162,19 @@ def sibling(folder: Path, role: str) -> Path:
 def publish_folder(
     bundles: Sequence[Bundle], folder: Path, reporter: Reporter, retained: bool
 ) -> None:
-    """Write a run's set of bundles as one folder, swapped in whole.
+    """Publish a staged bundle folder, preserving the earlier set on failure.
 
-    Every bundle is written into a fresh folder beside the run's
-    folder, which is then renamed onto it, so a reader sees the whole
-    set the run produced or the whole set that was there before it,
-    never a mixture. Whatever already stands at the run folder's path
-    is renamed aside first and removed once the new folder is in place,
-    so for a moment nothing stands at that path. The path is never
-    followed: a symbolic link standing there is renamed and removed as
-    the link it is, and whatever it names is left as it was.
+    Bundles are written into a fresh sibling folder. The existing run
+    path is renamed aside, then the staged folder is renamed into
+    place; a reader sees a complete set or, between renames, no path.
+    Symbolic links are renamed and removed without following them.
 
-    A failure before the new folder is in place removes it and leaves
-    everything else as it was, the earlier set restored where it was
-    moved aside; one that cannot be restored is reported where it lies.
-    An earlier set that cannot be removed once the new folder stands
-    leaves the run published, and is reported where it lies. Nothing
-    else in the output folder is touched.
-
-    The run's folder is the entry's derived name with the `.bundles`
-    suffix, so the folder a run replaces is only ever one a run names,
-    never an author's folder named like the entry.
+    A failure before placement restores the earlier path and removes
+    staging. An unrestorable earlier set remains where `unrestored`
+    reports it. Failure to remove an earlier set after publication
+    leaves the new set published and reports its location. `retained`
+    keeps the earlier set, creating an empty one first where absent.
+    `sibling` owns staging names; `run_folder` owns the run path.
     """
     staged = sibling(folder, "new")
     try:
@@ -4707,38 +4270,26 @@ def selection_name(selection: BundleSelection) -> str:
 
 
 def bundle_file(selection: BundleSelection) -> str:
-    """The file one effective selection's bundle is published under."""
+    """The `selection_name` of one effective selection with the bundle suffix."""
     return selection_name(selection) + BUNDLE_SUFFIX
 
 
 def run_folder(output: Path, entry: BundleSelection) -> Path:
-    """The folder every bundle of a run is written into, under the `-o` folder.
-
-    It is named by the run's entry selection, so a dispatched bundle is
-    written beside the bundle of the entry that reached it.
-    """
+    """The run's output path, using its entry's `selection_name` and bundle suffix."""
     return output / (selection_name(entry) + RUN_FOLDER_SUFFIX)
 
 
 @dataclass(frozen=True)
 class Compiled:
-    """One bundle of a run, compiled from its own entry under its own budgets.
+    """One compiled bundle and its run evidence.
 
-    The dispatches are keyed by their effective bundle selections, at the
-    first link naming each; a `⇉` link carrying the pick token names one
-    selection for each alternative its target declares. The warnings are
-    held in two runs so a depth warning, which only the run's entry
-    raises and only once every
-    bundle is compiled, takes its place between them. The unselected
-    presets are those `unselected` returns for the documents the bundle
-    carries, which the run weighs against its other bundles'. The pairs
-    are those `governing` puts in force for the documents the bundle
-    carries, and the copied pairs those `copies` puts in force for its
-    composed copies, which the run weighs against every reference it
-    resolved. The linked identities are those `linked` reads from each
-    document a routing pair is in force for, which a routing pair is
-    weighed against. The substitution is the run's mapping, holding its
-    entry's stubs, which every dispatched bundle compiles under.
+    `text`, `name` and `selection` identify the bundle. `hops` maps
+    effective selections to dispatch occurrences. `leading` and
+    `trailing` hold warnings around the run's depth warning. `captured`
+    holds source captures and `unselected` unused preset names. `pairs`
+    and `copied` hold group and copy substitution pairs; `linked` holds
+    authored target identities by source. `models` is the run's level
+    map and `substitution` its reference mapping.
     """
 
     text: str
@@ -4780,28 +4331,19 @@ def compiled(
     entry: BundleSelection | None = None,
     models: tuple[tuple[str, str], ...] | None = None,
 ) -> Compiled:
-    """One bundle compiled as its own entry, every budget counted from it alone.
+    """Compile one effective entry selection and collect its evidence.
 
-    Each bundle is read by one agent, so each starts from a fresh count
-    of what it opens, reaches and publishes, and its expansion depth is
-    counted from its own entry.
+    `budgets` creates this bundle's counters. `traverse` discovers its
+    sources, `resolved` checks alternative selections, and `compose`
+    constructs its output. `staked` binds the supplied run mapping.
+    `run` supplies run names, `entry` the selection naming the run
+    folder, and `models` its level map. An absent entry uses this
+    bundle's own selection for `run_folder`. An absent model map
+    is read by `entry_models` from this bundle's own entry.
 
-    Each document's links resolve under the `subst` pairs its own presets
-    put in force for the references this bundle carries, and under the
-    run's stubs, and every bundle of the run records its substitutions in
-    the run's one mapping. A mapping holding no entry is given the
-    bundle's own entry's stubs, as `staked` states, since that entry is
-    then the run's.
-
-    `run` holds the run's names, which select the stubs of the run's
-    entry.
-
-    `entry` is the selection of the run's entry, which names the run
-    folder the bundle is written into, and is the bundle's own where
-    absent. The bundle's deferrals are published from that folder.
-
-    `models` is the run's level map, which `entry_models` reads from the
-    bundle's own entry where absent, since that entry is then the run's.
+    `closure.bundle_selection` identifies dispatched selections;
+    `closure.alternatives_of` expands a picking dispatch. `unselected`,
+    `governing`, `copies` and `linked` supply evidence for run warnings.
     """
     limits = budgets(options)
     declarations = Declarations(lambda found: probe(root, found, limits))
@@ -5041,13 +4583,11 @@ def dispatched_set(
     options: argparse.Namespace,
     run: frozenset[str] = frozenset(),
 ) -> dict[BundleSelection, Compiled]:
-    """Every dispatched bundle, transitively, by its effective selection.
+    """Compile each distinct dispatched selection once, transitively.
 
-    Each distinct selection is compiled once, as its own entry, in the
-    order the dispatches reaching it were read. A dispatch naming the
-    run's own single selection is the entry's bundle. Each is compiled
-    under the entry bundle's mapping, so the stubs the run's names
-    select are in force in every bundle of the run.
+    Selections are visited in occurrence order. A selection equal to
+    the run's entry reuses its bundle; other selections are passed to
+    `compiled` under the entry's mapping, names and model map.
     """
     built: dict[BundleSelection, Compiled] = {}
     pending = list(entry.hops.items())

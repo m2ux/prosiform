@@ -1,85 +1,9 @@
-"""Dispatch: the bundles a run's dispatches name, and where each is handed off.
+"""Inspect dispatch chains and place dispatch sections in built groups.
 
-A `⇉` link states that a sub-agent follows its target, and a `⫽` link
-that a sub-agent follows it together with the other `⫽` links of its
-section, so a run compiles every target either reaches, transitively,
-each distinct document, fragment and effective preset selection once as
-its own entry, and publishes each as a bundle beside the one that dispatches
-it. A *dispatch depth* is the number of dispatch hops along one chain
-of those bundles, counted from the run's entry: a dispatch the entry
-carries is the first hop, a dispatch that target's bundle carries is
-the second, and so on.
-
-A `⇉` link publishes where its author wrote it, with its mark, pointing
-at the file its target was compiled to. The `⫽` links in a section's own
-content are one *set*. A set of two or more distinct selections points at
-the section's one `⫽ Dispatch Set` sub-section: a heading one level below
-the section, after the section's own content and before its child
-sections, whose list holds each selection once as a `⇉` link to its file.
-A set of one selection publishes as that single `⇉` link and carries no
-sub-section. A set states no order. A set above the group's first
-heading takes that heading's level. Each section carrying a set
-carries its own sub-section. The sub-sections are inserted into a group
-once it is built, before the bundle's destinations are assigned, so the
-ordinal a renderer gives a repeated heading counts them as it counts
-every other heading.
-
-A `⇉` link carrying the pick token names one selection for each
-alternative its target declares, and points at a `Dispatch Pick`
-sub-section of its own, placed as a set's is and after it, whose lines
-list each alternative's bundle beside its choice line in declaration
-order, so the dispatching agent hands on one.
-
-A dispatch whose target's presets in force name a *brief* carries that
-section of its target into this bundle around the dispatch line, so the
-dispatching agent reads it before handing the bundle on. A `⇉`
-link carrying one, or a set of one, is lifted into a sub-section of its
-own, headed as lifted names it and placed as a set's is and after
-it, beside the section's pick sub-sections in the order their links are
-written; a picking dispatch's sub-section holds its brief around its
-pick lines; a set holding a briefed member lifts every member into a
-sub-section of its own one level below the set's, in the set's order, a
-member carrying no brief holding its line alone. A brief is published as
-its lead content, the content above its first heading, then the dispatch
-line, then its child sections and the sections its directives compose,
-each one level below the sub-section holding it, so the line stands under
-no heading the brief emits. A dispatch a brief writes is a dispatch of its own, never a
-member of a set around it: it publishes where the brief writes it, and
-takes its sub-sections one level below the sub-section holding the
-brief, after the brief. Each copy of a brief places its dispatches
-anew, as `Placing` states.
-
-A dispatch has to be one a sub-agent can finish and one the bundle can
-place, so four dispatches publish nothing:
-
-- A chain of bundles returning to one already on it is a cycle: its
-  sub-agents would dispatch one another without end. A dispatch naming
-  the run's own single selection closes the shortest one.
-- A set, a picking dispatch or a briefed one whose sub-section would
-  stand past the sixth level, in a level-6 section or nested in another
-  dispatch's sub-section, leaves no level for it.
-- A brief whose dispatches carry briefs leading back to it would be
-  lifted into itself without end, a cycle as a chain of bundles
-  returning to one already on it is.
-- An authored heading whose text equals `⫽ Dispatch Set`,
-  `Dispatch Pick` or a lifted sub-section's heading in a bundle that
-  emits one would give two sections one name, as would one lifted
-  heading naming two selections.
-
-A chain deeper than the limit still publishes, and warns: flattening it
-is the author's optimisation rather than a defect. A dispatch naming
-the document that writes it, which closes no cycle, hands a sub-agent
-material its own session compiles, so it warns as well. A target's
-shape is the corpus's convention, so a dispatch states no rule on it.
-
-A chain is deeper than the limit where it reaches a hop past it, and
-the search for one stops there. A target already on a chain is not
-followed again, so both searches terminate on any graph of dispatches.
-The dispatches a bundle carries name each effective selection once, at
-the first link naming it, so each search follows each selection once.
-
-A set member's link text is written with each run of whitespace, a line
-break among them, as one space.
+Chain searches return diagnostics or refusals. `Placing` rebuilds
+groups and records link destinations; `anchors` binds those records
+to assigned fragments. Link operations use `closure`, and diagram
+links use `source.Click`.
 """
 
 from collections.abc import Callable, Collection, Iterator, Mapping, Sequence
@@ -172,30 +96,16 @@ HEADING_COLLISION = "E_HEADING_COLLISION"
 CODES = (DISPATCH_DEPTH, DISPATCH_SELF, DISPATCH_CYCLE, HEADING_COLLISION)
 
 PARALLEL = "\u2afd Dispatch Set"
-"""The heading a set's sub-section takes.
-
-The mark leads, so a reader meets the symbol before the words, and the
-words name the structure rather than repeating the section the sub-section
-already stands under. A bundle's sets share this heading, so the renderer's
-ordinals keep them apart as it keeps any repeated heading apart.
-"""
+"""The heading of a parallel dispatch set's subsection."""
 
 PICKING = "Dispatch Pick"
-"""The heading a `⇉` link carrying the pick token takes for its sub-section.
-
-The heading names the structure: a listing of one bundle for each
-alternative, of which the dispatching agent hands on one.
-"""
+"""The heading of a dispatch-pick subsection."""
 
 CHOICE_SEPARATOR = "—"
 """What stands between a picking dispatch's line and its choice line."""
 
 TOGETHER = ""
-"""A set's sub-section states no instruction of its own.
-
-The guide holds what a `⫽` link means and how its members are handed over,
-so a bundle that restated it would be a second home of the same rule.
-"""
+"""The instruction text emitted with a dispatch set."""
 
 LINK_CLOSE = "link_close"
 
@@ -219,15 +129,7 @@ LIFT_REMEDY = (
 BRIEF_CYCLE_REMEDY = "dispatch one target of the cycle without a brief"
 
 Placed = dict[Region, dict[Served, int | str]]
-"""Where each dispatched link points, by the placed region and link it serves.
-
-A placed region is the document, the first line of content it opens on
-and the placing of the copy carrying it, so every link one copy of a
-region writes naming one target with the same requested tags and
-operator points at one place. The place is the position of a dispatch-set
-sub-section among every heading the bundle emits, or the destination of
-a bundle file.
-"""
+"""A heading position or bundle-file destination for each region and served link."""
 
 Anchors = Dispatching
 """The destination each placed region's dispatched links take, by link."""
@@ -366,10 +268,10 @@ def cycle(
     entries: Collection[BundleSelection],
     onward: Onward,
 ) -> None:
-    """Refuse the first chain of the run's dispatches returning to a target on it.
+    """Refuse the first dispatch whose `returning` search finds a cycle.
 
-    Each distinct selection the entry dispatches is followed from the first
-    link naming it, in the order the entry's bundle wrote them.
+    Search the supplied hops in their mapping order and report the first
+    cycle through `reported`.
     """
     for selection, first in hops.items():
         loop = returning(onward, selection, first, entries)
@@ -395,11 +297,9 @@ def analysed(
     entries: Collection[BundleSelection],
     onward: Onward,
 ) -> list[Diagnostic]:
-    """The depth warnings the dispatches the run's entry carries raise.
+    """Return depth warnings from a `deepest` search of each supplied hop.
 
-    Each distinct selection the entry dispatches is followed from the first
-    link naming it, and raises at most one warning: for the first chain
-    from it reaching a hop past the limit.
+    Each mapping entry yields at most one diagnostic through `reported`.
     """
     found: list[Diagnostic] = []
     for selection, first in hops.items():
@@ -462,7 +362,7 @@ class Link:
 
     @property
     def picking(self) -> bool:
-        """Whether the link is a `⇉` dispatch leaving its pick to its agent."""
+        """Whether `closure.picking` selects alternatives for this link."""
         return picking(self.opening, self.reference.tags)
 
 
@@ -510,7 +410,11 @@ def link_text(children: Sequence[Token], at: int) -> str:
 
 
 def element_text(click: Click) -> str:
-    """One diagram link's `source.Click` opening, its marks taken off, or its node."""
+    """Normalize an unmarked `source.Click` opening, using its node when empty.
+
+    Each whitespace run becomes one space. `closure.unmarked` owns
+    operator removal.
+    """
     return " ".join(unmarked(click.opening).split()) or click.node
 
 
@@ -522,10 +426,11 @@ def written_in(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> list[Link]:
-    """Every dispatched link one region writes, diagram links among them, in order.
+    """Collect dispatched links in one region, in source order.
 
-    A link's text is what its reader reads in it, its marks taken off,
-    as `element_text` reads a diagram link's.
+    Diagram uses follow `source.Click` and `element_text`; Markdown text
+    uses `link_text` and `closure.unmarked`, with whitespace runs joined
+    by one space. `dispatched_link` owns target classification.
     """
     found: list[Link] = []
     for block in within(tokens, [region]):
@@ -587,7 +492,12 @@ def dispatched_link(
     substitution: Substitution,
     at: Located,
 ) -> Link | None:
-    """The dispatched link one use states, where its operator dispatches a target."""
+    """Build a link for a target accepted by `closure.withholding_target`.
+
+    `closure.dispatched` selects its operation, `closure.parallel` its
+    parallel flag, and `tags.read` its requested presets. Other uses
+    yield none.
+    """
     if not dispatched(opening):
         return None
     target = withheld(
@@ -635,9 +545,8 @@ def listing(entries: Sequence[tuple[str, str, str | None]]) -> str:
 def choices(entries: Sequence[tuple[str, str, str, str | None]]) -> str:
     """The lines a picking dispatch's sub-section carries, one per alternative.
 
-    Each line is a `⇉` link to the alternative's bundle, as a set's member
-    is, with its model, followed by the alternative's choice line, so its
-    reader picks the bundle whose choice line fits its work.
+    Use the dispatch-member format `listing` owns, followed by
+    `CHOICE_SEPARATOR` and the escaped choice text.
     """
     return "\n".join(
         f"[{DISPATCH_MARK} {escaped(text)}]({file_destination(file)})"
@@ -652,22 +561,10 @@ def region_of(tokens: Sequence[Token], part: Range) -> Token:
 
 
 class Placing:
-    """One bundle's groups rebuilt with the dispatch sub-sections its sections take.
+    """Rebuild groups with dispatch sections and retain each link's placement.
 
-    The grouped regions are those a group carries as its own, by the
-    document and first line naming each. A dispatch a contribution
-    carries points where its source's own region is given where a group
-    carries that region. Where none does, the region's first contribution
-    gives the dispatch a place of its own: a set's sub-section sits
-    beneath the composed section holding the link and ahead of the next
-    composed heading, so a scope's own sub-sections still follow its
-    destination sections. Every later copy of the region shares that
-    place, and a copy shares the group's or the first copy's only where
-    its dispatched links, read under its own presets as
-    `Substitution.composed` reads them, name the same targets; one
-    naming others places its own as a first copy does. A brief is
-    lifted with the dispatch carrying it, so each copy of a brief places
-    the dispatches it writes beneath its own sub-section.
+    `group` owns source and composed-region placement, `place` owns section
+    contents, and `shared` binds repeated copies to their first placement.
     """
 
     def __init__(
@@ -733,17 +630,12 @@ class Placing:
         lines: Sequence[Instruction],
         outer: Chain,
     ) -> None:
-        """Emit the brief one dispatch carries around the lines handing it on.
+        """Emit a dispatch's brief around its hand-off lines.
 
-        The brief stands beneath a sub-section heading at `depth`, as the
-        briefer composes it: its lead content, the content above the
-        first heading it emits, then the lines, then its child sections
-        and the sections its directives compose, one level below. The
-        dispatches it writes then take their sub-sections one level below
-        as well, each section of the brief placing its own as a section of
-        a group does. A dispatch carrying no brief is followed by its lines
-        alone. `outer` is the placing of the copy writing the dispatch,
-        which the brief's own placing extends.
+        `Briefer` supplies the composed parts. Emit their lead content, the
+        lines, then their heading content. Each brief section's dispatches
+        take sections below it through `close` and `place`. A link with no
+        brief emits its lines alone. `outer` identifies the writing copy.
         """
         found = self.briefs.get(link.served)
         if found is None:
@@ -806,11 +698,11 @@ class Placing:
         self.expanding.pop()
 
     def model(self, target: Reference) -> str | None:
-        """The model a dispatch of `target` starts on, as `model_of` gives it."""
+        """Return the dispatch model selected by `closure.model_of`."""
         return model_of(target, self.read[target.path].conversion)
 
     def brief_of(self, link: Link) -> Reference | None:
-        """The brief one dispatch carries, as `briefing` names it."""
+        """Cache the brief reference selected by `closure.briefing`."""
         if link.served not in self.briefs:
             self.briefs[link.served] = briefing(
                 link.reference, self.read[link.reference.path].conversion
@@ -860,13 +752,10 @@ class Placing:
         walk(link)
 
     def cycling(self, link: Link, reaching: Sequence[Link] = ()) -> Refused:
-        """The refusal of a brief reached again through the briefs carrying it.
+        """Build a brief-cycle refusal from the expanding and reaching links.
 
-        It names the chain from the document writing the outermost
-        dispatch through each target whose brief is carried, or reached
-        through the dispatches the briefs write, to the location of the
-        dispatch closing the loop, with each earlier dispatch as related,
-        as a composition cycle is refused.
+        The chain starts with the outermost writer and includes each target,
+        the closing one last. Earlier dispatches supply related locations.
         """
         earlier = [*(each for _key, each in self.expanding), *reaching]
         names = tuple(identity(each.reference) for each in (*earlier, link))
@@ -894,15 +783,11 @@ class Placing:
         )
 
     def lifted(self, link: Link, file: str, depth: int, outer: Chain) -> int:
-        """Emit the sub-section a dispatch carrying a brief is lifted into.
+        """Emit a briefed dispatch's subsection and return its heading position.
 
-        Its heading is the link's text, its body
-        the brief and then the dispatch line naming the target's bundle
-        file, as `briefed` places them, and the sub-sections of the
-        dispatches the brief writes. A heading is held to one effective
-        selection across the bundle, so a second dispatch naming another
-        selection under the same heading, or one equal to the dispatch-pick
-        heading, is refused.
+        The link's text supplies the heading, which must name one bundle file
+        throughout the run and differ from `PICKING`. `looping` checks its
+        brief chain, `fits` its depth, and `briefed` places its contents.
         """
         text = link.text
         earlier = self.lifts.get(text)
@@ -932,19 +817,18 @@ class Placing:
         return at
 
     def flush(self, following: int | None) -> None:
-        """Emit the sub-section the section just closed carries.
+        """Place a closed section's dispatches through `place` and reset it.
 
-        The section's `⫽` set takes one where it holds two or more
-        targets. Content above the bundle's first heading takes that
-        heading's level, and the heading's title is the one the
-        sub-section derives its own from.
+        Use one level below its heading, or one below the following heading
+        for content preceding the group's first heading. With neither
+        heading present, use level two.
         """
         self.close()
         if not self.pending:
             return
         depth = (following or 1) if self.level is None else self.level + 1
         if self.level is None:
-            # Content above the bundle's first heading now stands inside the
+            # Content above the bundle's first heading stands inside the
             # instruction heading, so its set belongs one level below that.
             depth += 1
         self.place(self.pending, self.serving, depth, self.title)
@@ -968,21 +852,14 @@ class Placing:
     ) -> None:
         """Say where one section's dispatched links point, emitting its sub-sections.
 
-        A `⇉` link and every `⫽` link in a set of one effective selection
-        point at their target's bundle file. A set of two or more
-        selections points at the dispatch-set sub-section emitted here.
-        Equivalent requests share one member, retaining its first link's
-        label. Where any member carries a brief, every member is lifted
-        into a sub-section of its own one level below the set's, in the
-        set's order, so no member's line stands beneath another member's
-        headings; a member carrying none holds its line alone. Each
-        distinct `⇉` link carrying the pick token, and each link outside a
-        set of two or more carrying a brief, then points at a sub-section
-        of its own, in the order its first link is written: a
-        dispatch-pick sub-section holding its brief and listing its
-        target's alternatives in declaration order, or the one `lifted`
-        emits, which links sharing their text and effective selection
-        share.
+        Parallel links share a set when they name more than one bundle
+        file; each file retains its first member's label. The set takes
+        the supplied depth, and its links point at its heading. When any
+        member has a brief, `lifted` places every member below the set;
+        otherwise `listing` supplies its lines. Other links point at
+        their files, `picked` subsections, or `lifted` subsections as their
+        selections require. Matching text and bundle files share a lift.
+        Record every supplied occurrence's destination in `placed`.
         """
         writing: dict[Served, Chain] = {}
         for key, served in links:
@@ -1040,11 +917,11 @@ class Placing:
             self.placed.setdefault(key, {})[served] = serving[served]
 
     def picked(self, link: Link, depth: int, outer: Chain) -> int:
-        """Emit the dispatch-pick sub-section of one dispatch carrying the pick token.
+        """Emit one dispatch-pick subsection and return its heading position.
 
-        Its body is the brief the dispatch carries, where it carries one,
-        then one line for each alternative its target declares, as
-        `briefed` places them.
+        `closure.alternatives_of` supplies the choices, `choices` renders
+        them, and `briefed` places the brief around their lines. `looping`
+        checks the brief chain and `fits` the heading depth.
         """
         self.looping(link)
         fits(depth, link)
@@ -1065,7 +942,16 @@ class Placing:
         return at
 
     def group(self, one: Group) -> Group:
-        """One group with its sub-sections, the headings before it counted."""
+        """Rebuild one group and count its emitted headings.
+
+        A wrapped heading opens the group's first section; each later
+        authored heading flushes its preceding section through `flush`.
+        Composed headings open inner sections without closing their outer
+        scope. A composed region shares its grouped source's placement when
+        its dispatched selections agree; otherwise identical copies share
+        their first placement. `closure.Substitution.composed` supplies each
+        copy's mapping. Preambles pass through without dispatch placement.
+        """
         offset = 1 if one.wrapped else 0
         self.emitted = []
         self.parts = []
@@ -1188,19 +1074,7 @@ def subsections(
     declarations: Declarations = DECLARING,
     substitution: Substitution = UNSUBSTITUTED,
 ) -> tuple[list[Group], Placed]:
-    """Every group with its dispatch sub-sections, and where each link points.
-
-    A group's sections are read in the order it emits them: a heading
-    part closes the section above it, and the sub-section that section
-    collected is emitted ahead of the heading. A wrapped group's file
-    heading opens its first section; a group the parent's title opens
-    has no section above that title, so a set there takes the level of
-    the heading that follows it.
-
-    A destination section and the contributions beneath it are content
-    of the scope that composes them, so they close none of its sections,
-    and a dispatch a contribution carries points where `Placing` states.
-    """
+    """Rebuild groups through `Placing.group` and return its shared placements."""
     grouped = {
         (part.path, part.lines[0])
         for one in groups
