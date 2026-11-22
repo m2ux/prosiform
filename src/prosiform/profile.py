@@ -1,85 +1,7 @@
-"""The `prosiform-markdown` profile: the parser it configures and what it refuses.
+"""Configure Markdown parsing and report unsupported selected constructs.
 
-The profile is CommonMark with pipe tables and double-tilde strikethrough
-enabled, source task-list markers preserved as the text the source wrote,
-typographic substitution off, and raw HTML recognized so a run can refuse
-it. Every one of those is a property of the configuration below rather
-than of a plugin: the parser's `commonmark` preset supplies the core and
-holds the typographer off, `table` and `strikethrough` are core rules
-enabled by name, and leaving the task-list plugin out is what keeps a
-marker the three characters the source spelled.
-
-Raw HTML takes one form the profile accepts: the command block, a
-paragraph whose inline content opens with `<big><pre>` and closes with
-`</pre></big>`, spelled exactly so. The parser reads the four tags as
-inline HTML within the paragraph, so the links between them are uses
-like any paragraph's, and the bundle publishes the block as its content
-without the tags. A paragraph wrapped any other way, and every other
-piece of raw HTML, is refused.
-
-A link the parser produces is a use, and a code span or a code block
-carries none, with one exception the source model reads: a diagram link
-line in a fence whose info string opens with `mermaid` — a `click` line,
-a class diagram's `link` line, or a sequence diagram's `link` or `links`
-participant menu, its keywords in any letter case — names a destination
-a reader of the rendered diagram follows, so each such destination is a
-use although the parser reads the fence as text, read as
-`source.Click` holds it. A second `click` or class diagram `link` line
-naming one element, and a tooltip tag `marked_tag` finds,
-are each refused as an unsupported construct naming the line.
-
-Every cell of a table row shares that row's line, so the parse records
-on each cell's inline token the column it stands in, and a reader of
-the source text finds the stretch of the line that cell was read from.
-
-A reference definition can otherwise turn `[x]` at the head of a list item
-into a link, which would make a task marker a dependency. The parse
-recognizes those positions and returns the marker to the literal text it
-is, so the token stream every later stage reads carries no such link.
-
-The parser holds a nesting ceiling of its own, and a label scan that
-reaches it is abandoned at the end of the paragraph rather than resolved:
-the reference that label opens is read as literal text and its lookup
-never happens. The profile watches that scan, so a lookup the ceiling
-declined is reported rather than published as a bundle missing whatever
-the reference named. The watch keeps the span the scan stopped in, which
-runs from inside the label the parser had opened to the end of that
-inline content, and reading it names the reference the lookup would have
-made.
-
-A construct the profile does not support is not simply left unparsed. One
-that names a dependency or a section fails the run, because publishing it
-as literal text would drop that name without reporting it. Recognition is
-therefore deliberately narrow, and the two conditions below are what draw
-the line between a construct and prose that resembles one.
-
-- The spelling occurs in text the parser left as text, so a code span, a
-  code block, a link destination and raw HTML carry none of it.
-- The spelling occurs unescaped in the source the parser read, so a
-  deliberately escaped `\\[\\[page\\]\\]` is the literal text it asks to be.
-
-Recognition covers the constructs spelled in Markdown's own link and
-heading syntax: a wiki link, its transclusion form, a footnote reference,
-and a heading-attribute suffix at the end of a heading. A directive
-written in a templating language the profile does not read is ordinary
-prose, and so is a brace block anywhere but the end of a heading.
-
-A Mermaid sequence diagram's `links` line whose JSON object holds a value
-that is no string names a link Mermaid renders opening nothing, so it is
-refused as an unsupported construct naming its line rather than bundled
-around the gap. So is one whose value is a non-empty array, which
-Mermaid renders as a menu whose entries are named by their positions
-rather than by a label the author wrote.
-
-A Kanban ticket's link and an HTML anchor Mermaid draws in a label are
-links Mermaid renders that the diagram link reader does not follow. An
-anchor in a `click` tooltip, or in a diagram Mermaid draws as SVG text,
-such as a pie or sequence diagram, is drawn as no anchor and is carried
-as written. One naming
-a local Markdown document would ship a link to a file the bundle does not
-hold, so it is refused as an unsupported construct naming its line, as raw
-HTML is, and the author writes it as a `click` line. One naming a remote
-address is carried as written.
+`parser` configures the dialect, `parse` produces tokens, and `refusals`
+checks a caller's token selection. Diagram fields follow `source.Click`.
 """
 
 import re
@@ -153,11 +75,10 @@ NESTING_CEILING = "maxNesting"
 
 @dataclass(frozen=True)
 class Refusal:
-    """One construct in selected content the profile refuses, and where it sits.
+    """One unsupported construct's diagnostic fields.
 
-    The profile names the defect it refuses, so the refusal carries the
-    code the contract declares for it: raw HTML and a recognized
-    unsupported construct are two clauses with two remedies.
+    `code`, `message` and `remedy` describe the refusal; `line` and
+    `reference` locate it. `earlier` locates a related earlier construct.
     """
 
     code: str
@@ -170,14 +91,10 @@ class Refusal:
 
 
 class Suppressed(Exception):
-    """One reference lookup the parser's nesting ceiling declined to make.
+    """A reference lookup declined by `Watched.skipToken`.
 
-    The lookup never happened, so what the reference named is unknown
-    and no bundle can be published from the parse that abandoned it.
-    The line is the source line of the content the scan was reading,
-    where the parser records one, and the reference is the destination
-    the abandoned construct spells, where the span the scan stopped in
-    completes one.
+    `line` locates the abandoned inline content, and `reference` names
+    the destination `referenced` recovered, where available.
     """
 
     def __init__(self, line: int | None, reference: str | None = None) -> None:
@@ -197,21 +114,10 @@ class Suppressed(Exception):
 
 
 class Watched(ParserInline):
-    """The inline parser, watched for a reference lookup its ceiling declines.
+    """An inline parser recording active content and declined label scans.
 
-    A label scan reaching the ceiling is abandoned to the end of the
-    paragraph, which is the one event that tells a declined lookup from
-    the literal bracketed text it leaves behind: a scan over the source
-    sees the same brackets either way. The scan is watched rather than
-    the result compared against a second parse, because an event stream
-    that omits a suppressed reference agrees with another one that omits
-    it too.
-
-    The watch records the outermost content being parsed, which is the
-    inline token the declined lookup sits in, so the parse the caller
-    reads locates it by that content. It records the span the scan
-    stopped in beside it, which is what names the reference the lookup
-    would have made.
+    `parse` maintains the content stack and `skipToken` detects a declined
+    lookup, with its outermost content and abandoned span.
     """
 
     def __init__(self) -> None:
@@ -231,7 +137,12 @@ class Watched(ParserInline):
             self.reading.pop()
 
     def skipToken(self, state: StateInline) -> None:  # noqa: N802
-        """One token of a label scan, noting a scan the ceiling abandons."""
+        """Record the first uncached label scan at the parser's nesting ceiling.
+
+        The outermost inline content locates the refusal; the abandoned span
+        allows `referenced` to recover its destination. Watching the scan is
+        necessary because literal text alone does not reveal a declined lookup.
+        """
         ceiling = state.level >= state.md.options[NESTING_CEILING]
         if ceiling and state.pos not in state.cache and self.declined is None:
             self.declined = self.reading[0]
@@ -247,19 +158,13 @@ def watch(budget: int) -> Watched:
 
 @cache
 def parser(budget: int) -> MarkdownIt:
-    """The parser the profile configures: CommonMark and its two extensions.
+    """Configure CommonMark with tables and double-tilde strikethrough.
 
-    The parser carries a nesting ceiling of its own, and reaching it
-    makes it read the rest of a construct as text rather than refuse
-    it. The ceiling therefore sits above the nesting budget the run
-    declares, far enough that the inline structure of an ordinary
-    document is unaffected, so a source nested deeper than the budget
-    is counted past the boundary and refused rather than quietly read
-    as something else.
-
-    The ceiling is reachable all the same, because inline nesting is
-    counted into it and no budget is declared over that, so the parser
-    reads with the watch that reports a lookup the ceiling declines.
+    Typographic substitution is disabled by the preset. Task-list syntax
+    has no plugin and raw HTML remains visible to `refusals`. The parser's
+    nesting ceiling is `HEADROOM` above the declared block-nesting budget,
+    so source nesting can be counted before refusal; `Watched.skipToken`
+    detects an inline reference lookup the parser declines at its ceiling.
     """
     configured = MarkdownIt(PRESET, {NESTING_CEILING: budget + HEADROOM})
     configured.inline = watch(budget)
@@ -302,18 +207,11 @@ def parse(
     budget: int = NESTING.default,
     env: dict[str, Any] | None = None,
 ) -> list[Token]:
-    """One source, parsed under the profile, its task markers left as text.
+    """Parse source text and fill `env` with its reference definitions.
 
-    The environment the parse fills holds the link-reference definitions
-    the source declared, which is the definition environment its own
-    reference-style uses resolve against. A caller that reads them
-    supplies the mapping the parse writes them into.
-
-    A parse whose nesting ceiling declined a reference lookup raises
-    rather than returning tokens, so every caller reads a token stream
-    the parser resolved in full. The raise carries the reference that
-    lookup would have made, where the span the scan abandoned spells
-    one.
+    A declined lookup recorded by `Watched.skipToken` raises `Suppressed`.
+    `linked_marker` and `unlink_marker` preserve task markers as literal
+    text, and `cells` supplies table-column metadata for each cell token.
     """
     watched = watch(budget)
     watched.declined = None
@@ -451,7 +349,7 @@ def recognized(pattern: re.Pattern[str], inline: Token) -> re.Match[str] | None:
 
 
 def html_refusal(spelling: str, at: int | None) -> Refusal:
-    """Raw HTML the profile refuses: any but a command block's four tags."""
+    """Build the raw-HTML refusal for `spelling` at source line `at`."""
     return Refusal(
         code=RAW_HTML,
         message=(
@@ -464,7 +362,11 @@ def html_refusal(spelling: str, at: int | None) -> Refusal:
 
 
 def command_block(children: Sequence[Token]) -> bool:
-    """Whether a paragraph's inline content is wrapped as a command block."""
+    """Whether a paragraph opens with `COMMAND_OPEN` and closes with `COMMAND_CLOSE`.
+
+    The exact inline HTML tags delimit the command block; its enclosed
+    content may contain ordinary inline events.
+    """
     tags = [child.content if child.type == HTML_INLINE else None for child in children]
     return (
         len(tags) >= len(COMMAND_OPEN) + len(COMMAND_CLOSE)
@@ -474,12 +376,12 @@ def command_block(children: Sequence[Token]) -> bool:
 
 
 def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[Refusal]:
-    """Every construct one inline token carries that the profile refuses.
+    """Yield unsupported constructs in one inline token.
 
-    A paragraph wrapped as a command block carries its four tags, and
-    raw HTML is refused only between them. A local link whose title holds
-    a tag `marked_tag` finds is refused, so no title a run
-    publishes is one `cli.entry` refuses.
+    `command_block` identifies the outer tags exempted from raw-HTML refusal.
+    Local-link title tags recognized by `marked_tag`, wiki links, footnote
+    references and heading attributes produce located refusals. `recognized`
+    limits syntax detection to unescaped literal text.
     """
     at = line(inline)
     children = inline.children or []
@@ -554,40 +456,26 @@ def inline_refusals(inline: Token, heading: bool, paragraph: bool) -> Iterator[R
 
 
 def local_markdown(destination: str) -> bool:
-    """Whether a destination names a Markdown document by a local path.
+    """Whether the path before a destination's query or fragment is Markdown.
 
-    A local path carries no scheme and no authority, and the path is
-    what the destination writes before its query or fragment.
+    `source.external` classifies remote paths and `is_markdown` tests suffixes.
     """
     path = destination.partition("#")[0].partition("?")[0]
     return not external(path) and is_markdown(path)
 
 
 def marked_tag(tags: frozenset[str]) -> str | None:
-    """The first tag, in code point order, that `marks.marked` reads as marks.
-
-    The tags are the ones `tags.read` reads from a title, so a source and
-    the entry its published link becomes read one title alike.
-    """
+    """Return the first tag in code point order that `marks.marked` recognizes."""
     return next((one for one in sorted(tags) if marked(one)), None)
 
 
 def diagram_refusals(fence: Token) -> Iterator[Refusal]:
-    """Each line one diagram carries that the profile refuses, in written order.
+    """Yield refusals from the diagram read returned by `source.linking`.
 
-    A `links` line holding a value that is no string is refused, so is
-    one whose value is a non-empty array, and so is a link Mermaid
-    renders that the reader does not follow, where it names a local
-    Markdown document. A Gantt chart's click written in a form Mermaid's
-    gantt grammar does not parse, anything but a line of
-    `click <task> href "<destination>"` alone, is refused where it names a local
-    Markdown document, and carried as written otherwise. A `click` or
-    class diagram `link` naming an element an earlier one names is
-    refused beside that earlier line, wherever either points: Mermaid
-    keeps one link for each element, so a reader of the rendered diagram
-    reaches only the last. A `click` or class diagram `link` whose
-    tooltip holds a tag `marked_tag` finds is refused, its
-    operator being read as `source.Click` states.
+    Diagram-link fields follow `source.Click`. A tooltip tag recognized by
+    `marked_tag`, a repeated element link, or a malformed menu is refused.
+    Unfollowed rendered links and unparsed Gantt clicks are refused when
+    `local_markdown` identifies a local Markdown destination.
     """
     read = linking(fence)
     for click in read.clicks:
@@ -678,13 +566,11 @@ def diagram_refusals(fence: Token) -> Iterator[Refusal]:
 
 
 def refusals(tokens: Iterable[Token]) -> Iterator[Refusal]:
-    """Every construct the profile refuses, in the order the run carries them.
+    """Yield refusals in token order for the caller's selected content.
 
-    The tokens are whatever run a caller holds them to, and the caller
-    decides which: the profile says what it refuses, and the scope of
-    the refusal is a question about the bundling rather than about the
-    construct. A run narrowed to the regions one source contributes
-    therefore reports what that content carries and nothing else.
+    Block HTML is refused through `html_refusal`, fences are checked by
+    `diagram_refusals`, and inline content by `inline_refusals`. The caller
+    supplies the token scope to check.
     """
     heading = paragraph = False
     for token in tokens:

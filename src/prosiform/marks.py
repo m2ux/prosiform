@@ -1,10 +1,4 @@
-"""The operator marks a link opens with, read from its text.
-
-Four operators open a link's text, their marks written together and
-followed by a space. A mark followed directly by text is the author's
-text and opens nothing. What each operator states is the closure
-module's to say.
-"""
+"""Recognize operator marks in link text through `opened` and `marked`."""
 
 from dataclasses import dataclass
 
@@ -21,11 +15,7 @@ BLANKS = " \t"
 
 @dataclass(frozen=True)
 class Opened:
-    """The operator marks one link's text opens with, and where its text begins.
-
-    The marks are followed by a blank, and the text after the blanks
-    begins at `after`.
-    """
+    """One recognized opening: its `marks` and the text offset `after` them."""
 
     marks: str
     after: int

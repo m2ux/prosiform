@@ -1,111 +1,8 @@
-"""One source document: the content it carries, and the headings that name it.
+"""Model source content, headings, selections and reference occurrences.
 
-A file holds two things the author did not write as instructions: a
-leading byte-order mark, which is a text-file convention, and a leading
-frontmatter block, which is metadata for whatever reads the file. Neither
-is content, and both would otherwise be published as body. The scan below
-removes them before anything parses the document.
-
-The scan recognizes delimiters by exact physical-line comparison and
-decodes the enclosed YAML into immutable conversion settings. An indented
-delimiter, a delimiter
-carrying a trailing space, a TOML `+++` fence, JSON metadata, and a `---`
-under a blank line are each a line the comparison rejects, so each is
-body the bundle carries. A document meaning to open on a horizontal rule
-spells it another way, `***` among them; the leading `---` is reserved.
-
-A removal moves every line after it, so the content is returned with the
-line it began on. A location at line `n` of the content sits at line
-`n + first_line - 1` of the file, and that expression is the only place
-the shift is applied. A byte-order mark sits at the head of line 1, which
-stays line 1, so the mark shifts no coordinate; the block does.
-
-A heading is the only thing that names a section, so the index below is
-what a fragment resolves against. A heading's visible text is derived
-from the parser's own events rather than from the bytes that produced
-them: text and code content, the label a link shows and the character
-an entity decodes to are text a reader reads, a line break is the line
-break it is, and a formatting delimiter, a raw HTML tag and an image
-each direct what is read without being read. The derivation therefore
-reads the event stream and nothing else, which is why a heading written
-three ways with one appearance indexes once.
-
-A heading's fragment is the slug its own visible text produces: the text
-lowered, the characters the renderer discards removed, and each
-remaining space a hyphen. Nothing numbers two headings of one source
-apart, so a fragment names a heading by what its author wrote and not by
-how many similar headings precede it. A fragment no heading's text
-produces names nothing; a fragment two headings' text produces names
-neither, which is the refusal `Ambiguous` raises, and the author
-disambiguates by retitling.
-
-The renderer's own ordinal belongs to a bundle destination rather than to
-a source fragment, because the tool assigns it over a document it
-generated in one pass. `fragments` below is that rule, applied to the
-sequence of headings a bundle emits.
-
-Every heading the profile recognizes is indexed, a container-nested one
-included: eligibility to be selected is a later decision, and a heading
-a container carries is one a renderer reading the bundle indexes beside
-the rest.
-
-A source is also recorded as the file it was read from: the canonical
-path that read arrived at, and a hash of the bytes it held. The pair is
-a record of a read, which a later read of the same source can be
-compared against.
-
-A reference use is read from the same events. What a document requires
-is written in the marks its author wrote, and either a link or an image
-can carry one, so the model reports each link and each image a given
-run of regions carries: where it points, the literal text its content
-opens on, the line of its block, and whether it names a resource
-whatever it points at. An image names one, because a picture is carried
-as the text its author wrote rather than bundled, and the mark a caller
-finds on one is therefore a request the bundle cannot meet. An apparent
-link inside a code span or a code block is example content the parser
-produces no use for, so none reaches a caller asking what this content
-references.
-
-A Mermaid diagram is the one code block whose content links. In a fence
-whose info string opens with `mermaid`, a diagram link line names a
-destination a reader of the rendered diagram follows: a `click` line,
-a class diagram's `link` line, and a sequence diagram's participant
-menu, written one entry to a `link` line or several to a `links` line.
-Each form is read in the diagram that writes it, the diagram's type
-read as Mermaid detects it, and each is read where Mermaid's lexer
-ends it, so a line holding several `;`-ended statements names the
-destination of each. Each destination is a use, on the line it is
-written. A `click` line or a class diagram's `link` line is drawn on a
-diagram element, whose text is the use's text, so the marks opening it
-state the use's operator as a Markdown link's text does; an element
-drawn with no text opens with nothing. The quoted tooltip such a line
-may carry is the use's title alone. Mermaid keeps one link for each
-element, so a second link line naming an element is read as a
-repetition the profile refuses. A
-click naming a callback runs script rather than following a
-destination, and a line in any other fence is example text, so neither
-is a use.
-
-That later decision is the section below. A document is a run of
-maximal regions, each a block the document itself carries, and a
-container is one region whatever it holds. Only a heading that is such
-a region roots a section: it is the heading a reader finds at the
-document's own level, and the blocks following it belong to it until
-the document returns to that level or above. A heading a container
-carries is therefore neither a root nor a boundary — it sits inside one
-region, so the region it sits in is what the document holds there — and
-a fragment naming one names a section the model does not have.
-
-The content above a document's first eligible heading is the document's
-own, so a selection naming the whole document carries it. A link is read
-for the target it names and the position the source wrote it at, and the
-section it sits in enters neither: a reference names the same target
-wherever its author put it.
-
-The document also counts what a budget is declared over: the container
-blocks it nests at its deepest point, which is what a nesting budget
-bounds, and the link, image and diagram link occurrences a run of
-regions carries, each counted once where the source wrote it.
+`content` reads the document body and metadata, `index` records its
+headings, and `section` selects its regions. `uses` enumerates references;
+`Click` describes diagram-link fields and `linking` caches their read.
 """
 
 import hashlib
@@ -331,14 +228,11 @@ class Source:
 
 @dataclass(frozen=True)
 class Capture:
-    """What one source was at the moment the run read it.
+    """One source read's identity and evidence.
 
-    The identity is the canonical filesystem path that read arrived at
-    and the digest is taken over the bytes the file held, so comparing
-    a later read against both answers whether a document is still the
-    one the run read. It records a read rather than holding a file
-    still: a source can be written again after any comparison, and a
-    digest taken over one file says nothing about the others.
+    `identity` is its canonical path, `digest` its content hash, `chain`
+    the dependency chain, and `walk` its lexical path. `directories` records
+    directory identities; `file_identity` and `size` record the opened file.
     """
 
     identity: str
@@ -413,13 +307,10 @@ def frontmatter(text: str) -> tuple[tuple[int, int], int] | None:
 
 
 def closes_head(index: int, line: bytes) -> bool:
-    """Whether one physical line ends the head a declaration is read from.
+    """Whether a byte line completes the head needed by `frontmatter`.
 
-    The head is what `frontmatter` needs to answer: a first line that
-    opens no block ends it, and so does a later line that closes one.
-    The line is compared by the rules `frontmatter` applies, so a probe
-    and a capture delimit one file alike. A line that is not valid
-    UTF-8 ends the head too, and decoding what was read reports it.
+    Delimiter recognition follows `frontmatter`. Invalid UTF-8 also stops
+    the probe, so `decode` can report the captured text's encoding error.
     """
     try:
         text = line.decode(ENCODING)
@@ -437,11 +328,10 @@ def declaration(
     max_bytes: int = FILE_BYTES.default,
     max_depth: int = NESTING.default,
 ) -> Conversion:
-    """The conversion settings a document's head declares, its body unread.
+    """Decode conversion settings from a captured document head.
 
-    The head is the text up to and including the line `closes_head`
-    stopped at, so the span is found and decoded as a capture finds and
-    decodes it, and an invalid declaration is refused alike.
+    `frontmatter` supplies the payload span and `metadata.decode` validates
+    it within `max_bytes` and `max_depth`, using `file` in diagnostics.
     """
     found = frontmatter(text)
     return decode_metadata(
@@ -460,10 +350,11 @@ def content(
     max_bytes: int = FILE_BYTES.default,
     max_depth: int = NESTING.default,
 ) -> Source:
-    """One source's content, its leading transport metadata removed.
+    """Return the body, original starting line and conversion settings.
 
-    The opener, the metadata, the closer and the closer's terminator
-    go together, as `frontmatter` delimits them.
+    One leading byte-order mark is removed. Where `frontmatter` finds a
+    block, its delimiters, payload and closing line terminator are removed
+    together. `metadata.decode` validates the payload within the given bounds.
     """
     raw = text.encode(ENCODING)
     body = text.removeprefix(MARK)
@@ -487,16 +378,10 @@ def visible(inline: Token) -> str:
 
 
 def shown(child: Token) -> str:
-    """The part of one inline event a reader reads.
+    """Return the visible characters one inline event contributes.
 
-    Text and code content are read as the characters they carry, an
-    entity having already been decoded into the text that holds it. A
-    line break is the character that breaks the line, which the slug
-    then discards as the control character it is. Everything else
-    directs what is read without being read: an emphasis, link or
-    strikethrough delimiter, a raw HTML tag, and an image, whose
-    alternative text describes a picture to a reader who cannot see it
-    rather than appearing beside one who can.
+    Text and code supply their content, and a soft or hard break supplies
+    a line feed. Formatting events, HTML and images contribute no text.
     """
     if child.type in (TEXT, CODE_INLINE):
         return child.content
@@ -506,7 +391,9 @@ def shown(child: Token) -> str:
 
 
 def slug(text: str) -> str:
-    """The fragment a renderer generates for a heading carrying this text."""
+    """Derive a heading slug by lowercasing, discarding punctuation and controls,
+    then replacing each remaining space with a hyphen.
+    """
     return SLUG_DISCARDED.sub("", text.lower()).replace(SLUG_SPACE, SLUG_HYPHEN)
 
 
@@ -595,13 +482,10 @@ def regions(tokens: Sequence[Token]) -> Iterator[Token]:
 
 
 def runs(tokens: Sequence[Token]) -> dict[int, Sequence[Token]]:
-    """The tokens each region of the document carries, by its opening's identity.
+    """Map each `regions` opening's identity to its run of tokens.
 
-    A region's run begins at the token opening it and ends where the
-    next region opens, so it holds every token whose line falls inside
-    that region. A check reading one region of a long document reads its
-    run, which `within` narrows to the same tokens the whole document
-    gives it.
+    Each run ends where the next region opens. `within` selects tokens
+    when a caller holds the whole document rather than these indexed runs.
     """
     opening = {id(token) for token in regions(tokens)}
     opened = [at for at, token in enumerate(tokens) if id(token) in opening]
@@ -622,23 +506,13 @@ def opens(tokens: Sequence[Token], opening: Token) -> int | None:
 
 
 def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
-    """The document-level regions one fragment selects.
+    """Return the document regions selected by a source fragment.
 
-    The fragment names a heading of this document's index, and the
-    section it roots runs from that heading to the next document-level
-    heading of equal or higher level, or to the end of the document
-    where the document holds no such heading. A deeper document-level
-    heading and its content belong to the section, and a heading a
-    container carries neither roots nor ends one.
-
-    A fragment naming no heading of this document selects nothing and is
-    reported as the reference to nothing it is. A fragment two headings
-    produce names neither, and is refused as the ambiguity it is before
-    anything asks what either heading roots: the run cannot say which
-    heading was meant, so it cannot say that the one that was meant
-    roots no section. A fragment naming one heading a container carries
-    names a heading the document carries and a section it does not,
-    which is the refusal `Nested` raises.
+    The fragment must match exactly one heading produced by `index`.
+    Multiple matches raise `Ambiguous` before section eligibility is tested;
+    no match returns None. A match outside `regions` raises `Nested`.
+    The selected run ends at the next document-level heading of equal or
+    higher level, or at the end of the document.
     """
     carried = [opening for opening, _ in headings(tokens)]
     named = index(tokens)
@@ -664,40 +538,13 @@ def section(tokens: Sequence[Token], fragment: str) -> tuple[Token, ...] | None:
 
 @dataclass(frozen=True)
 class Use:
-    """One reference use a source carries, read from the parser's events.
+    """One reference occurrence and its source context.
 
-    The destination is the one the parser resolved, so a reference-style
-    use and an inline one arrive the same way and a Markdown escape has
-    already been read. The opening is the literal text the use's content
-    begins with, which is where a dependency's mark is written: content
-    opening on a code span, an emphasis or an image begins with no text
-    and opens with nothing.
-
-    A resource is a reference the bundle carries as the text its author
-    wrote rather than opening it, which an image is whatever file it
-    points at: the alternative content of an image describes a picture,
-    and no picture is a document the bundle can carry.
-
-    The title is the text of the heading whose section holds the use,
-    and the heading is the line that heading opens on; both are absent
-    for a use in the preamble, which lies in no section.
-
-    The tags are the complete preset names in a local link's parsed
-    title attribute, or in a diagram link's `Click` title.
-    Each occurrence carries its own immutable selection; an image and an
-    external link carry none.
-
-    The label is a link's whole text where that text is plain: text
-    events alone, entities and escapes already decoded. It is absent
-    where the text carries any other event — a code span, an emphasis,
-    a strikethrough, an image, a line break or raw HTML — and for an
-    autolink, an image and a diagram link, whose text no author wrote
-    as a label.
-
-    The name is how a diagnostic names the use to its reader: the
-    opening for a link or an image, where its marks are written, and a
-    diagram link's keyword and node, such as `click Plan`, which name
-    the line its author wrote.
+    `destination` is the parsed target; `opening` is its opening text;
+    `name` identifies the use in diagnostics, and `line` locates it.
+    `resource` identifies a resource occurrence. `title` and `heading`
+    record its containing section's text and line. `label` holds its plain
+    label where available, and `tags` holds its selected preset names.
     """
 
     destination: str
@@ -712,7 +559,11 @@ class Use:
 
 
 def opening_text(children: Sequence[Token], at: int) -> str:
-    """The literal text the link opened at one position begins with."""
+    """Return the text event immediately following a link opening, or empty text.
+
+    A code span, formatting delimiter or image at that position contributes
+    no opening text.
+    """
     following = children[at + 1] if at + 1 < len(children) else None
     if following is None or following.type != TEXT:
         return ""
@@ -720,7 +571,11 @@ def opening_text(children: Sequence[Token], at: int) -> str:
 
 
 def plain_label(children: Sequence[Token], at: int) -> str | None:
-    """The text of the link opened at one position, where that text is plain."""
+    """Return a link's complete label when it contains text events alone.
+
+    An autolink, an incomplete link or a label containing any other event
+    returns None. Entity and escape decoding belongs to `profile.parse`.
+    """
     opening = children[at]
     if opening.markup == AUTOLINK:
         return None
@@ -776,40 +631,16 @@ def inlines(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Toke
 
 @dataclass(frozen=True)
 class Click:
-    """One destination a diagram link line names.
+    """One diagram-link destination and its source fields.
 
-    The line is the line of this content the link is written on. The
-    offset is where the destination's first character sits in that line
-    as the fence carries it, and the written text is what the line holds
-    from there, so the link spans `offset` to `offset + len(written)`.
-    One line can name several, each at its own offset. A fence carries a
-    line without the container markers and the indent its document line
-    opens with, so the line the fence carries is the trailing text of
-    the line the document holds.
-
-    The destination is what the written text names. A sequence diagram's
-    menu entry writes `#35;` for the `#` a fragment opens with, since
-    Mermaid renders that entity as `#`, so each `#35;` it holds names a
-    `#`; every other form names its written text.
-
-    The anchor is how the line's form spells the `#` a heading anchor
-    opens with. A quoted destination writes `#`. A sequence diagram's
-    menu entry writes `#35;`, because its lexer reads a bare `#` on that
-    line as opening a comment, which takes the destination with it.
-
-    The node is the diagram element a `click` or class diagram `link`
-    line is drawn on, which names the link to its reader. The opening is
-    that element's text, which holds the link's operator marks as a
-    Markdown link's text does, and is empty for an element drawn with no
-    text. The title is the line's quoted tooltip as written, which holds
-    the link's preset tags, and is absent where the line carries none.
-    A sequence diagram's `link` and `links` are drawn on no element and
-    carry no tooltip, so they open with nothing and carry no title.
-
-    The name is how a diagnostic names the link to its reader: the
-    line's keyword as written and the node it is drawn on, such as
-    `click Plan`. A sequence diagram's entry, carrying no operator and
-    no title, has none.
+    `destination` is the decoded target; `written` is its source spelling,
+    `line` its source-content line and `offset` its first character in the
+    fence line. `anchor` is the fragment marker's spelling for that form.
+    `node` identifies the linked element. `opening` is that element's text,
+    which supplies its operator marks; an element with no text has an empty
+    opening. `title` is the quoted tooltip, which supplies preset tags,
+    or None where absent. A sequence menu has no element text or tooltip.
+    `name` is the diagnostic name: keyword and node, or empty for a menu.
     """
 
     destination: str
@@ -825,10 +656,11 @@ class Click:
 
 @dataclass(frozen=True)
 class ElementText:
-    """One diagram element's text and its source span within a statement.
+    """One diagram element's label and its position in a statement.
 
-    A scalar span holds a metadata mapping; label_span locates its label
-    value. Other spans hold the visible text inside its shape or quotes.
+    `node` identifies the element, `text` holds its decoded label, and
+    `offset` and `written` locate its source span. `scalar` identifies a
+    span containing metadata for `label_span` to read.
     """
 
     node: str
@@ -840,13 +672,10 @@ class ElementText:
 
 @dataclass(frozen=True)
 class Unfollowed:
-    """One link Mermaid renders from a form the diagram link reader does not follow.
+    """One rendered link outside the supported diagram-link forms.
 
-    The form names it: a Kanban ticket's link, which Mermaid builds by
-    putting the ticket in place of `#TICKET#` in the diagram's
-    `ticketBaseUrl`, or an HTML anchor Mermaid draws in a label. The destination
-    is the URL Mermaid renders, and the line is the line of this content
-    that writes the ticket or the anchor.
+    `form` names its kind, `destination` is its rendered URL, and `line`
+    locates its source content.
     """
 
     form: str
@@ -856,26 +685,12 @@ class Unfollowed:
 
 @dataclass(frozen=True)
 class Diagram:
-    """What one fence's diagram links to.
+    """The links and malformed constructs found in one diagram.
 
-    The clicks are its link destinations in written order. A broken line
-    is a line of this content holding a `links` object one of whose
-    values is no string, which Mermaid renders as a link opening
-    nothing; it names no destination. A listed line is a line of this
-    content holding a `links` value that is a non-empty array, which
-    Mermaid renders as a menu whose entries are named by their positions
-    in the array; it names no destination either. The unfollowed links
-    are the links Mermaid renders that no diagram link line writes, in
-    written order; none is a use. The unparsed clicks are a Gantt
-    chart's clicks written in a form Mermaid's gantt grammar does not
-    parse: anything but a line of `click <task> href "<destination>"`
-    alone, such as one carrying a tooltip, a link target or a `;`, or
-    naming its destination without `href`. Mermaid draws no chart from
-    it and the click opens nothing; none is a use. The repeated links
-    are each `click` or class diagram `link` naming an element an earlier
-    one already names, paired with that earlier one: Mermaid keeps the
-    last link it reads for an element, so a reader of the rendered
-    diagram reaches only one of them.
+    `clicks` holds `Click` records in source order; `broken` and `listed`
+    hold malformed-menu lines. `unfollowed` holds `Unfollowed` records;
+    `unparsed` holds unsupported Gantt clicks. `repeated` pairs the first
+    and each subsequent link to one element.
     """
 
     clicks: tuple[Click, ...] = ()
@@ -900,13 +715,10 @@ def diagram(fence: Token) -> bool:
 
 
 def diagram_type(content: str) -> str:
-    """The type one diagram declares, where it is a type whose links differ.
+    """Return the declared type where it has a distinct link grammar.
 
-    Mermaid sets aside a leading front matter block, every directive and
-    every comment line, and reads the type from the word the remaining
-    text opens on. Only a class diagram, a sequence diagram, a Kanban
-    diagram and a Gantt chart write a link form of their own, so every
-    other diagram is named by the empty string.
+    `diagram_opening` supplies the declaration text; types outside
+    `DIAGRAM_TYPES` return an empty string.
     """
     opening = diagram_opening(content)
     return next((one for one in DIAGRAM_TYPES if opening.startswith(one)), "")
@@ -935,7 +747,7 @@ def diagram_opening(content: str) -> str:
 
 
 def clicks(fence: Token) -> tuple[Click, ...]:
-    """Each destination one fence's diagram links to, in written order."""
+    """Return the `Click` records from the fence read cached by `linking`."""
     return linking(fence).clicks
 
 
@@ -954,41 +766,14 @@ def linking(fence: Token) -> Diagram:
 
 
 def read_diagram(fence: Token) -> Diagram:
-    """What one fence's diagram links to, read from its text.
+    """Build a diagram's `Click` records and collect malformed constructs.
 
-    A line links when it is one of these, its keywords in any letter case:
-
-    - in any diagram, `click <node> href "<destination>"`, and in any
-      diagram but a Gantt chart, `click <node> "<destination>"`;
-    - in a class diagram, `link <class> "<destination>"`;
-    - in a sequence diagram, `link <actor>: <label> @ <destination>`, the
-      destination being the trimmed text after the first `@`;
-    - in a sequence diagram, `links <actor>: {…}`, each string value of
-      the JSON object being one destination.
-
-    A quoted destination may be followed by a quoted tooltip and a link
-    target, which the line's `Click` holds with its element's text. A
-    line may
-    hold several statements, each ended by a `;` outside a quoted string,
-    and each `click` or class `link` statement among them names its own
-    destination. A click naming a callback, or
-    a `call` form, runs script and names no destination, so it yields
-    nothing, and neither does any line of a fence holding no diagram.
-
-    A Kanban ticket's link and an HTML anchor Mermaid draws in a label
-    are links Mermaid renders that the reader does not follow, so each
-    is read as unfollowed rather than as a click.
-
-    Mermaid's gantt grammar reads a click's destination after `href`
-    and nothing after it, so a Gantt chart's click written any other
-    way, carrying a tooltip, a link target or a `;`, or naming its
-    destination without `href`, draws no chart: it is read as unparsed
-    rather than as a click.
-
-    A node takes the last label element_texts yields for it.
-
-    A click or class `link` naming an element an earlier one names is
-    read as repeated, beside the earlier one, and is still a click.
+    `linked` reads destinations, `element_texts` supplies labels, and
+    `rendered` finds other rendered links. Each `#35;` in a sequence-menu
+    destination decodes to `#`. A node takes the last label `element_texts`
+    yields for it. Gantt forms outside `GANTT_CLICK` are recorded as
+    unparsed; subsequent links to one element are paired with its first.
+    Broken and listed menus are recorded at their source-content lines.
     """
     if fence.map is None or not diagram(fence):
         return Diagram()
@@ -1286,16 +1071,20 @@ def external(path: str) -> bool:
 def linked(
     line: str, form: str
 ) -> list[tuple[str, int, str, str, str | None, str, bool]]:
-    """Each destination one line of a diagram of one type names, in written order.
+    """Return one line's destinations in written order, with their source fields.
 
-    Each comes as written, with its offset, the anchor spelling its form
-    writes, the node its line is drawn on, the tooltip it carries, the
-    name a diagnostic gives it and whether the line is the one form
-    Mermaid's gantt grammar parses, `click <task> href "<destination>"`
-    and nothing more. A quoted destination is read from each statement
-    the line holds, with its node, its tooltip where it
-    writes one and its keyword and node as its name; a sequence
-    diagram's entry names no node, carries no tooltip and has no name.
+    Keywords match case-insensitively. A quoted destination follows
+    `click <node>`, with optional `href`, or a class diagram's `link <class>`.
+    It may be followed by a quoted tooltip and a link target. Callback
+    and `call` forms supply no destination. `statements` separates the
+    statements read from a line.
+
+    In sequence diagrams, `link <actor>: <label> @ <destination>` supplies
+    the trimmed text after its first `@`, and `links <actor>: {…}` supplies
+    the menu destinations `entries` reads.
+    Each result carries its offset, fragment-marker spelling, node, tooltip,
+    diagnostic name and whether the full line matches `GANTT_CLICK`.
+    The assembled diagram-link fields are described by `Click`.
     """
     found = []
     for statement, start in statements(line):
@@ -1465,29 +1254,14 @@ def skipped(line: str, at: int) -> int:
 
 
 def uses(tokens: Sequence[Token], selected: Sequence[Token]) -> Iterator[Use]:
-    """Every reference use the given regions of one source carry, in source order.
+    """Yield reference occurrences in selected regions, in source order.
 
-    A use is what the parser read as one, so an apparent link inside a
-    code span or a code block is text the document carries and is none
-    of these. A link names whatever its destination resolves to and an
-    image names a resource, and each carries the opening its own
-    content begins with, so a mark is read from the use that was
-    written. The line is the line of this content the use's own block
-    opens on, which is as near the use as the parser records a
-    position.
-
-    A diagram's link destination is written on its own line of the
-    fence, so it is located at that line, and opens with its `Click`
-    opening.
-
-    A local link's title attribute supplies its tags through the shared
-    list reader, and so does a diagram link's `Click` title.
-    Images and external links supply no tags; neither the visible label
-    nor a surrounding heading supplies them.
-
-    Each use carries the title of the section holding it, read against
-    the whole document, since the heading rooting a selected region's
-    section need not be selected with it.
+    `events` supplies inline uses, `opening_text` and `alternative_text`
+    read their openings, and `plain_label` reads labels. Images are resources.
+    Local link titles supply names through `tags.read`; images and external
+    links have no tags. `sections` supplies the containing section from the
+    whole document. Diagram references use `Click` fields from `clicks`.
+    Inline uses are located at their containing block's opening line.
     """
     held = sections(tokens)
     starts = [line for line, _ in held]
@@ -1587,16 +1361,10 @@ def events(
 
 
 def occurrences(tokens: Sequence[Token], selected: Sequence[Token]) -> int:
-    """How many link, image and diagram link uses the given regions of one source carry.
+    """Count the occurrences `uses` yields for the selected regions.
 
-    A budget over references is declared over what an author wrote, so
-    the count is of occurrences in the source rather than of the
-    documents they reach: one document named five times is five
-    occurrences, and an image is one of them because opening a resource
-    costs what opening a document costs. A use written inside an
-    image's alternative content is one the author wrote, so it is
-    counted where it sits, and so is each destination a diagram link
-    names.
+    The count is per written occurrence rather than per target identity,
+    so repeated references each contribute to the budget.
     """
     return sum(1 for _ in uses(tokens, selected))
 
@@ -1623,10 +1391,6 @@ def nesting(tokens: Sequence[Token]) -> int:
 
 @dataclass(frozen=True)
 class Selection:
-    """What one source contributes to the bundle.
-
-    The regions are the document-level blocks the run selected, in
-    source order.
-    """
+    """The document-level `regions` selected from one source, in source order."""
 
     regions: tuple[Token, ...]

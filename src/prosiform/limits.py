@@ -1,44 +1,7 @@
-"""The declared resource budgets, and what a run reports when it crosses one.
+"""Declare resource budgets and report crossings through `Limits.hold`.
 
-A compilation that is not bounded is discovered by exhausting memory rather
-than by a diagnostic, so the profile declares eight budgets and a run fails
-at the first boundary it crosses. A budget fails rather than truncates:
-nothing is dropped to fit, no bundle is published, and the figure the run
-reports is what tells an author whether to restructure the sources or to
-raise the number.
-
-Each budget carries the name a command line sets it by, the default it
-stands at, and the rule by which its figure is counted. The counting rule
-is the whole of a budget's meaning — a byte budget summed once per source
-identity and one summed per reference are different budgets — so it is
-written beside the number rather than left to whichever stage happens to
-count.
-
-One code names every crossing. Whichever budget it was, the remedy is the
-same shape, and the message says which boundary the run crossed and what
-it had counted when it crossed it, which is what distinguishes one
-crossing from another. `E_PARSER_REFERENCE_LIMIT` is a different thing
-entirely: an internal parser limit suppressing a reference lookup, which
-is a defect in indexing rather than a budget an author chose.
-
-Overrides are positive decimal integers. Zero is refused and does not mean
-unlimited, because a budget of nothing is a run that cannot open its first
-source, and a caller who wants a larger number says so. A budget may hold a
-higher floor: the nesting budget stands at 2 or more, because a `prosiform`
-declaration is a mapping inside the frontmatter mapping, two collection
-levels deep, and a lower ceiling refuses every document that declares.
-
-A byte budget bounds the work a run performs only where the work one byte
-can ask for is itself bounded. Canonicalising a numeric scalar costs time
-quadratic in its digits — a base-prefixed integer is converted through a
-binary value, and a float's exponent is accumulated a chunk at a time — so
-a source of a few hundred kilobytes can spend minutes inside a byte budget
-it never crosses. `SCALAR_DIGITS` is the ceiling that closes that gap: one
-numeric scalar carries at most that many characters, so the work a source
-of any size may ask for is linear in its bytes and the byte budget is the
-bound it reads as. The ceiling is a declared figure rather than an option,
-because it states what the byte budget means rather than a preference an
-author sets.
+`Budget` records each budget's command-line name, default, counting
+description and minimum. `in_force` supplies a complete configuration.
 """
 
 from collections.abc import Mapping
@@ -60,10 +23,10 @@ stays well inside the second, whatever size the source holding it is.
 
 @dataclass(frozen=True)
 class Budget:
-    """One declared budget: the name that sets it, its default, and its rule.
+    """One budget's declaration.
 
-    `least` is the smallest figure the budget admits, which is 1 unless
-    a lower figure would refuse every document a run could bundle.
+    `name` identifies its option, `default` is its default ceiling,
+    `counted` names the measured quantity, and `least` is its minimum.
     """
 
     name: str
@@ -107,11 +70,10 @@ NAMED = {budget.name: budget for budget in BUDGETS}
 
 
 class Crossed(Exception):
-    """One budget a run crossed, named with the figure it had counted.
+    """A budget crossing with its budget, configured limit and observed count.
 
-    The message is the whole diagnostic a caller reads: which boundary
-    the run crossed, what the budget counts, and the figure that crossed
-    it. One code covers every budget, so the message is what says which.
+    The exception message identifies the boundary, the measured quantity
+    and the count; `remedy` supplies the author's next action.
     """
 
     def __init__(self, budget: Budget, limit: int, counted: int) -> None:
@@ -131,12 +93,15 @@ class Crossed(Exception):
 
 @dataclass(frozen=True)
 class Limits:
-    """The budget in force for each declared limit, and the holding of it."""
+    """The `declared` budget ceilings, with access and enforcement methods."""
 
     declared: Mapping[Budget, int]
 
     def hold(self, budget: Budget, counted: int) -> None:
-        """Hold one budget against the figure counted so far."""
+        """Raise `Crossed` when `counted` exceeds this run's ceiling for `budget`.
+
+        A crossing refuses the run rather than truncating its input or output.
+        """
         limit = self.declared[budget]
         if counted > limit:
             raise Crossed(budget, limit, counted)
