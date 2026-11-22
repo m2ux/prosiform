@@ -1,92 +1,9 @@
-"""Composition: the sections composition directives place.
+"""Compose selected sections into built groups and record their placements.
 
-A composition directive is recognised as the closure module states. An
-immediate directive naming a section of a document the bundle
-compiles *composes* it. The section containing the directive is its
-*scope*, at the heading the bundle emits for it. When the scope's own
-content ends, each title its directives' targets carry takes a
-*destination section* one level below the scope, in the order its
-first directive is written, so directives in one scope naming sections
-of one title share one destination and sibling scopes each carry their
-own. Beneath it, each directive takes a *contribution*: a heading one
-level further down naming the target's immediate parent, then the
-target's body and subsections as the regions its source wrote, each
-heading moved so the target's own level becomes the contribution
-heading's. The directive's link points at its contribution heading.
-
-A contribution is its source's content: its regions are rewritten
-against the document that wrote them, so its links resolve from that
-document's directory, its fragments against that document's headings
-and its reference-style uses against that document's definitions,
-whatever the writing document defines. Every directive contributes, a
-repeated one and one naming a section another directive or an
-ordinary link names included, each in the scope that writes it.
-
-A directive is a reference. It resolves through the substitution in
-force for the document writing it, so that document's `subst` decides
-the section composed, and its link title selects the target's presets
-by complete comma-separated names. The contribution is a copy whose
-links resolve under the pairs its directive's presets put in force,
-which `Substitution.composed` selects, and a dispatch's brief is
-composed the same way under the presets the dispatch selects. A
-`group` pair places a document where an ordinary reference bundles
-it, so it places no contribution.
-
-A directive a contribution carries composes as one its source writes
-anywhere: beneath the heading holding it there, which is the
-contribution heading for one in the target's own body and a carried
-subsection's heading for one in a subsection. Its destination sections
-follow that heading's content, ahead of the subsections that follow
-it. A source link a contribution carries stands in every copy of that
-contribution, so a composition is identified by its *placing*: the
-directives whose compositions placed it, outermost first, its own last.
-
-A deferred directive keeps its place and contributes no content: it
-takes its destination section and contribution heading as an immediate
-one does, and the contribution carries one generated line naming the
-target by its heading text, the path the later run compiles and the
-link title carrying its requested presets. That run reads the target as an entry,
-so its body is
-validated there, its immediate directives compose and its deferred
-ones keep their own lines.
-
-A composition whose target section holds its own directive, or one
-on the placing that reached it, would compose that target again
-within itself without end, so it is refused, naming the closing
-directive and the chain. A target reached twice along distinct
-placings is no cycle: each composes once.
-
-Each contribution is bundle content, so its bytes count toward the
-output budget as it is composed, and a multiplying composition fails
-at the first emission crossing the budget rather than once it is
-whole. Without a destination map a link's published destination is
-not yet known, so that pass counts only the headings composition
-generates, which every pass emits alike; with one, every byte emitted
-counts.
-
-Composition runs on the built groups ahead of the dispatch pass, which
-reads what a destination section carries as the scope's own content:
-a scope's dispatch-set sub-sections follow its destination sections, and
-its child sections follow both. That pass composes each dispatch's
-brief through `Composing.brief`, beneath the sub-section it emits.
-
-Titles are matched exactly as their headings show them: no case
-folding, Unicode normalisation or trimming joins two titles, so one
-destination section holds only targets whose visible text is the same
-string. Destination sections take the order their first directive is
-written and contributions the order theirs are, so the source alone
-decides the order and two runs over it compose alike. Parents carrying
-one title keep a contribution each, told apart by the renderer's
-ordinal as any repeated heading is.
-
-Each composition failure names the directive that requested it, where
-it is written. A target with no heading above it names no parent, an
-authored child heading of the scope whose text equals a destination
-section's would give the scope two sections of one name, and a
-composed heading past the sixth level is beyond what Markdown emits,
-so each is refused. A directive in a heading emitted as text alone has
-no section to compose beneath, which the bundle refuses as it refuses
-a dispatch there.
+`Composing` emits contributions and dispatch briefs; `contributions`
+and `owned` bind their recorded headings to bundle destinations.
+Directive classification uses `closure.directive`, resolution uses
+`closure.resolvable`, and diagram links use `source.Click`.
 """
 
 from collections.abc import Iterator, Mapping, Sequence
@@ -263,12 +180,11 @@ class Cycling(Exception):
 
 @dataclass(frozen=True)
 class Directive:
-    """One composing link: the section it names and where it is written.
+    """One composing link and its target reference, source text and location.
 
-    The title is the target heading's visible text, which decides the
-    destination section the directive shares with others in its scope.
-    A deferred directive's target is composed by the run its
-    contribution names rather than by this one.
+    `title` holds the target's visible heading text, `deferred` the
+    deferral flag, `link_title` its authored title, and `kind` its
+    diagnostic category.
     """
 
     target: Reference
@@ -288,17 +204,12 @@ class Directive:
 
 
 class Composing:
-    """The bundle's groups rebuilt with the sections their directives compose.
+    """Emit composed groups and briefs while retaining contribution headings.
 
-    Without a destination map the composed regions carry the bytes
-    their source wrote, as an unmapped group's do; with one, their
-    links are rewritten through it, against the source they were
-    written in.
-
-    `substitution` is the mapping the content being emitted resolves
-    under: the run's for a group, and the composed copy's while `carry`
-    emits one. `folder` is the folder the bundle is written into, which
-    a deferral's destination is published from.
+    The source, parsed tokens, definitions and destination maps come from
+    the caller. `emit` owns budget accounting, `copy` owns section-body
+    emission, and `flush` owns destination-section emission. `substitution`
+    holds the active mapping; `carry` selects each composed copy's mapping.
     """
 
     def __init__(
@@ -341,7 +252,11 @@ class Composing:
         self.level: int | None = None
 
     def directives(self, path: str, token: Token) -> Iterator[Directive]:
-        """Every composing link one region writes, diagram links included, in order."""
+        """Collect composing links in a region through `directive`, in source order.
+
+        Diagram links follow `source.Click`; Markdown uses follow
+        `source.events` and `source.opening_text`.
+        """
         tokens = self.parsed[path]
         for block in within(tokens, [token]):
             if block.type == FENCE:
@@ -387,7 +302,13 @@ class Composing:
         opening: str,
         link_title: str | None,
     ) -> Iterator[Directive]:
-        """The directive one composing link states, where it names a section."""
+        """Read one composing section reference as a `Directive`.
+
+        `closure.resolvable` supplies its target, `tags.read` its preset names,
+        and `source.section` its selected regions. A missing fragment or
+        section yields nothing. `bundle.shown_text` supplies the target title
+        under the mapping `closure.Substitution.composed` selects.
+        """
         found = resolvable(
             path,
             written,
@@ -436,13 +357,12 @@ class Composing:
         self.headings.append(one)
 
     def activation(self, one: Directive) -> None:
-        """Emit the one line a deferred directive's contribution carries.
+        """Emit a deferred contribution's generated activation link.
 
-        The line names the target by its visible heading text and by the
-        path a later run compiles it from, as a deferred link's
-        destination names it, so that run composes the body this one
-        withholds. Every pass emits it alike. Its title gains the run's
-        names the target's settings carry, as a deferred link's does.
+        The target's title labels it with the composition mark.
+        `closure.rebased` supplies its path, `closure.carried_names` its run
+        names, and `closure.deferred_title` its title. Escape that title for
+        a quoted Markdown attribute and record the activated selection.
         """
         names = carried_names(one.target, self.conversions)
         link_title = deferred_title(one.link_title, names)
@@ -474,11 +394,12 @@ class Composing:
     def contribute(
         self, one: Directive, depth: int, chain: tuple[Directive, ...]
     ) -> None:
-        """Emit one directive's contribution at the depth its heading takes.
+        """Emit a contribution headed by the target's immediate parent's text.
 
-        The chain holds the directives whose compositions placed this
-        one, outermost first. The directives the contribution carries
-        compose beneath the heading holding each, as the scope's do.
+        The supplied depth must fit Markdown headings, and the selected
+        section must have a parent. Record the new placing, then emit its
+        `activation` when deferred or its `carry` result otherwise. `chain`
+        holds the enclosing directives, outermost first.
         """
         path = one.target.path
         tokens = self.parsed[path]
@@ -511,17 +432,10 @@ class Composing:
     def brief(
         self, link: Link, target: Reference, depth: int, outer: Placing
     ) -> tuple[list[str], list[Part], list[Emitted]]:
-        """One dispatch's brief, as the text, parts and headings it emits.
+        """Return one dispatch brief's emitted text, parts and headings.
 
-        The brief is its section's body and subsections composed beneath a
-        heading at depth the dispatch stage emits for it, so the section's
-        own heading gives way to that one and its subsections nest one
-        level below. Its links are rewritten against the document writing
-        them, as a contribution's are. Its placing is the dispatch's,
-        beneath the placing `outer` of the copy writing the dispatch, so
-        each copy of a brief, and each composition a directive it writes
-        places, is a copy of its own. A destination section the brief's
-        directives place is held to its child sections as a scope's is.
+        Build its directive under the supplied outer placing, emit it through
+        `carry`, and apply `collide` to its destination sections.
         """
         one = Directive(
             target, link.written, link.location.line, link.at, "", kind="dispatch"
@@ -537,11 +451,10 @@ class Composing:
         return self.emitted, self.parts, self.headings
 
     def carry(self, one: Directive, depth: int, placing: tuple[Directive, ...]) -> None:
-        """Emit one target section's body and subsections beneath a heading at `depth`.
+        """Emit a section through `copy` under its composed substitution mapping.
 
-        The copy's links, its directives among them, resolve under the
-        pairs `Substitution.composed` selects for the tags of `one`, and
-        each range it emits holds those tags.
+        `closure.Substitution.composed` selects the mapping using the
+        directive's tags. Restore the caller's mapping after emission.
         """
         outer = self.substitution
         self.substitution = outer.composed(one.target.path, one.target.tags)
@@ -551,14 +464,15 @@ class Composing:
             self.substitution = outer
 
     def copy(self, one: Directive, depth: int, placing: tuple[Directive, ...]) -> None:
-        """Emit the copy `carry` places, under the mapping it puts in force.
+        """Emit a selected section's body and subsections at the supplied depth.
 
-        The directives the body carries compose beneath the heading
-        holding each, as the scope's do. A link the body writes to one of
-        the section's own subsections points at this copy's heading for
-        it, which `within` holds by the copy's placing, so each copy reads
-        as the section does; each heading the copy carries is recorded in
-        `held` for that map.
+        The source heading's level determines each carried heading's shift;
+        an overflowing heading raises the directive's refusal. `rewrite.rewrite`
+        owns reference rewriting when destinations are assigned; `bundle.region`
+        owns region emission. Record each copied heading under its placing
+        for `owned`, and retain its selection tags on each range. Each body
+        heading flushes the preceding section's directives through `flush`;
+        `directives` supplies those written in each emitted region.
         """
         path = one.target.path
         tokens = self.parsed[path]
@@ -780,14 +694,7 @@ def compositions(
     within: Within | None = None,
     folder: BundleFolder = WORKING_FOLDER,
 ) -> tuple[list[Group], Composed]:
-    """Every group with the sections its directives compose, and each contribution.
-
-    The contributions are the headings each composing link points at,
-    held by the composition's placing, so the destinations they take
-    are read once every heading of the bundle is known. A destination
-    map comes with the composing links' destinations, which a
-    contribution's own directives are rewritten through.
-    """
+    """Rebuild groups through `Composing.group` and return the contribution headings."""
     composer = Composing(
         parsed,
         read,

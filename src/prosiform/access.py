@@ -1,4 +1,9 @@
-"""Bounded source reads through verified no-follow directory walks."""
+"""Read source files and declaration heads through verified directory walks.
+
+`opened` supplies regular-file descriptors and `walked_directory`
+records directory identities. The module requires the platform flags
+named by `REQUIRED`.
+"""
 
 import errno
 import os
@@ -63,7 +68,7 @@ def refusal(parent: int, name: str, raised: OSError) -> BaseException:
 
 
 def descend(parent: int, name: str, flags: int) -> int:
-    """One segment opened against the directory above it, following no link."""
+    """Open one segment with `flags`, classifying any failure through `refusal`."""
     try:
         return os.open(name, flags, dir_fd=parent)
     except OSError as raised:
@@ -97,7 +102,7 @@ def walked_directory(
 
 
 def directory(root: Path, path: str) -> tuple[tuple[str, int, int], ...]:
-    """Verify every component of a directory declaration without following links."""
+    """Return the directory identities verified by `walked_directory`."""
     observed: list[tuple[str, int, int]] = []
     os.close(walked_directory(root, path, observed))
     return tuple(observed)
@@ -106,7 +111,13 @@ def directory(root: Path, path: str) -> tuple[tuple[str, int, int], ...]:
 def opened(
     root: Path, path: str, observed: list[tuple[str, int, int]] | None = None
 ) -> int:
-    """Open one regular source after verifying its authored component walk."""
+    """Open a regular source after its `walked_directory` component walk.
+
+    Absolute paths raise `Outside`; reserved final names raise `Absent`.
+    `descend` opens the final name with `FILE` flags, and a nonregular
+    descriptor raises `Absent`. Append the file identity to `observed`
+    when supplied, and close every descriptor a refusal leaves open.
+    """
     if path.startswith("/"):
         raise Outside(path)
     identities = [] if observed is None else observed
@@ -138,7 +149,10 @@ def read_source(
     limit: int | None = None,
     observed: list[tuple[str, int, int]] | None = None,
 ) -> bytes:
-    """Read at most the supplied byte budget plus one byte to detect overflow."""
+    """Read a source through `opened`, at most its byte budget plus one byte.
+
+    The extra byte detects overflow. A missing limit reads the whole file.
+    """
     with os.fdopen(opened(root, path, observed), "rb") as handle:
         return handle.read() if limit is None else handle.read(limit + 1)
 
@@ -151,14 +165,11 @@ def read_head(
     ended: Callable[[int, bytes], bool],
     observed: list[tuple[str, int, int]] | None = None,
 ) -> bytes:
-    """Read whole lines until one ends the head, the budget is crossed or the file ends.
+    """Read physical lines until `ended`, overflow, or end of file.
 
-    The walk is the one `read_source` takes, so a head is read from no
-    file a capture would refuse. `ended` is asked of each physical line
-    by its index, a line ending at a line feed as `source.lines` ends
-    one, and the line it answers for is the last one read. At most the
-    budget plus one byte is read, so a head crossing the budget is told
-    from one that fills it.
+    `opened` owns the verified file access. `ended` receives each line's
+    zero-based index and bytes; its first true answer ends the read.
+    Apply the overflow-read bound `read_source` owns.
     """
     head = bytearray()
     with os.fdopen(opened(root, path, observed), "rb") as handle:
