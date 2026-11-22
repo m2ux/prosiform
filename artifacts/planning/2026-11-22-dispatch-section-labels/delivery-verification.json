@@ -1,0 +1,27 @@
+{
+  "issue": "https://github.com/m2ux/prosiform/issues/839",
+  "pull_request": "https://github.com/m2ux/prosiform/pull/841",
+  "head": "1ea933b7b213e2032f700b5bb18d5dd10b02b731",
+  "merge": "e2dde5e569800e5584797bb194bb989f8fb2843b",
+  "tested_revision": "e2dde5e569800e5584797bb194bb989f8fb2843b",
+  "instrument": "make check",
+  "exit_code": 0,
+  "criteria": {
+    "AC1": "Plain named briefs and Dispatch Pick headings: display regressions and full corpus.",
+    "AC2": "Contained marked handoff links: display regressions and full corpus.",
+    "AC3": "Mixed local/direct destination fixture and diagram display regressions.",
+    "AC4": "Geometry, quoting, Markdown, metadata, class and shared-line display regressions.",
+    "AC5": "Rewritten local anchor assertions and full validated corpus.",
+    "AC6": "Plain lifted-heading collision and reserved Dispatch Pick regressions.",
+    "AC7": "Pinned design and shipped docs inspected; corpus, links, vocabulary and conformance guards pass.",
+    "AC8": "Full make check at the exact merge revision exits zero."
+  },
+  "repository_auto_close_confirmation": {
+    "repository": "m2ux/prosiform",
+    "auto_close_issues_with_merged_linked_pull_requests": false,
+    "source": "Explicit user confirmation in this session",
+    "confirmed_date": "2026-11-22",
+    "answer": "Disabled"
+  },
+  "closure": "pending fresh Development gate and tracker readback"
+}
