@@ -1,0 +1,349 @@
+{
+  "modules": [
+    {
+      "module": "__init__.py",
+      "docstrings_and_attribute_docs": 2,
+      "comments": 0,
+      "references": []
+    },
+    {
+      "module": "access.py",
+      "docstrings_and_attribute_docs": 12,
+      "comments": 0,
+      "references": []
+    },
+    {
+      "module": "bundle.py",
+      "docstrings_and_attribute_docs": 54,
+      "comments": 4,
+      "references": [
+        "candidate.validate",
+        "closure.briefing",
+        "closure.bundle_selection",
+        "closure.bundled",
+        "closure.deferred_title",
+        "closure.directive",
+        "closure.dispatched",
+        "closure.model_of",
+        "closure.published_text",
+        "closure.rebased",
+        "closure.resolvable",
+        "closure.unmarked",
+        "closure.withholding_target",
+        "grouping.merged",
+        "heading.title_cased",
+        "profile.SUFFIXES",
+        "provenance.link_at",
+        "rewrite.Followed",
+        "rewrite.Titled",
+        "rewrite.definitions",
+        "rewrite.gained",
+        "rewrite.rewritten",
+        "source.Click",
+        "source.element_texts",
+        "source.label_span",
+        "source.regions",
+        "source.slug"
+      ]
+    },
+    {
+      "module": "candidate.py",
+      "docstrings_and_attribute_docs": 49,
+      "comments": 0,
+      "references": [
+        "bundle.MAX_LEVEL",
+        "bundle.absorbed",
+        "bundle.blank",
+        "bundle.clicked",
+        "bundle.diagram_labels",
+        "bundle.document_title",
+        "bundle.emitted_visible",
+        "bundle.group",
+        "bundle.names_model",
+        "bundle.openings",
+        "closure.BundleFolder.rooted",
+        "closure.Substitution.composed",
+        "closure.bundled",
+        "closure.deferred_title",
+        "closure.filed",
+        "closure.published_text",
+        "closure.rebased",
+        "closure.resolve",
+        "closure.unmarked",
+        "closure.withholding_target",
+        "grouping.contributed",
+        "grouping.overview",
+        "profile.REFERENCES",
+        "profile.command_block",
+        "profile.parse",
+        "provenance.Instruction.activates",
+        "provenance.Record",
+        "provenance.click_at",
+        "provenance.link_at",
+        "source.Click",
+        "source.clicks",
+        "source.events",
+        "source.fragments",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "cli.py",
+      "docstrings_and_attribute_docs": 133,
+      "comments": 7,
+      "references": [
+        "access.opened",
+        "access.read_head",
+        "access.read_source",
+        "bundle.Overflow",
+        "bundle.Unplaced",
+        "bundle.document_title",
+        "bundle.file_heading",
+        "bundle.group",
+        "bundle.opened",
+        "candidate.validate",
+        "closure.Declarations.answer",
+        "closure.Declarations.declares",
+        "closure.Probed.ABSENT",
+        "closure.Redirects.record",
+        "closure.Substitution.composed",
+        "closure.Substitution.stubbed",
+        "closure.alternatives_of",
+        "closure.arrowed",
+        "closure.brief_of",
+        "closure.briefing",
+        "closure.bundle_selection",
+        "closure.bundled",
+        "closure.compiled_pick",
+        "closure.components",
+        "closure.conflicting",
+        "closure.contradicting",
+        "closure.deferred",
+        "closure.deferring_dispatch",
+        "closure.directive",
+        "closure.gapped",
+        "closure.matching_presets",
+        "closure.operators",
+        "closure.resolve",
+        "closure.withholding",
+        "closure.withholding_target",
+        "composition.Composing.copy",
+        "composition.Composing.cycle",
+        "composition.compositions",
+        "composition.contributions",
+        "composition.owned",
+        "diagnostics.Diagnostic.fields",
+        "dispatch.anchors",
+        "dispatch.subsections",
+        "dispatch.written_in",
+        "entry.published",
+        "grouping.member_headings",
+        "grouping.merged",
+        "grouping.prepared",
+        "limits.Crossed",
+        "limits.Limits.hold",
+        "limits.in_force",
+        "metadata.Conversion.alternatives",
+        "metadata.Conversion.carried",
+        "metadata.Conversion.default",
+        "preamble.grouped",
+        "profile.Refusal",
+        "profile.Suppressed",
+        "profile.is_markdown",
+        "profile.marked_tag",
+        "profile.parse",
+        "source.Click",
+        "source.Selection",
+        "source.Source.line",
+        "source.closes_head",
+        "source.content",
+        "source.declaration",
+        "source.external",
+        "source.fragments",
+        "source.index",
+        "source.nesting",
+        "source.occurrences",
+        "source.section",
+        "source.uses",
+        "tags.picks",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "closure.py",
+      "docstrings_and_attribute_docs": 76,
+      "comments": 0,
+      "references": [
+        "marks.opened",
+        "metadata.Conversion.carried",
+        "profile.is_markdown",
+        "source.Click",
+        "source.external",
+        "source.uses",
+        "tags.picks"
+      ]
+    },
+    {
+      "module": "composition.py",
+      "docstrings_and_attribute_docs": 29,
+      "comments": 0,
+      "references": [
+        "bundle.region",
+        "bundle.rewrite",
+        "bundle.shown_text",
+        "closure.Substitution.composed",
+        "closure.carried_names",
+        "closure.deferred_title",
+        "closure.directive",
+        "closure.rebased",
+        "closure.resolvable",
+        "source.Click",
+        "source.events",
+        "source.opening_text",
+        "source.section",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "diagnostics.py",
+      "docstrings_and_attribute_docs": 9,
+      "comments": 0,
+      "references": []
+    },
+    {
+      "module": "dispatch.py",
+      "docstrings_and_attribute_docs": 56,
+      "comments": 7,
+      "references": [
+        "closure.Substitution.composed",
+        "closure.alternatives_of",
+        "closure.briefing",
+        "closure.dispatched",
+        "closure.model_of",
+        "closure.parallel",
+        "closure.picking",
+        "closure.unmarked",
+        "closure.withholding_target",
+        "source.Click",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "entry.py",
+      "docstrings_and_attribute_docs": 6,
+      "comments": 0,
+      "references": [
+        "profile.parse",
+        "source.Click",
+        "source.linked",
+        "source.uses",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "grouping.py",
+      "docstrings_and_attribute_docs": 38,
+      "comments": 0,
+      "references": [
+        "bundle.Group",
+        "bundle.MAX_LEVEL",
+        "bundle.absorbed",
+        "bundle.document_title",
+        "bundle.required",
+        "bundle.rewrite",
+        "heading.title_cased",
+        "provenance.Carried",
+        "provenance.Generated",
+        "source.slug"
+      ]
+    },
+    {
+      "module": "heading.py",
+      "docstrings_and_attribute_docs": 3,
+      "comments": 0,
+      "references": []
+    },
+    {
+      "module": "limits.py",
+      "docstrings_and_attribute_docs": 10,
+      "comments": 0,
+      "references": []
+    },
+    {
+      "module": "marks.py",
+      "docstrings_and_attribute_docs": 4,
+      "comments": 0,
+      "references": []
+    },
+    {
+      "module": "metadata.py",
+      "docstrings_and_attribute_docs": 29,
+      "comments": 0,
+      "references": [
+        "cli.entry_stubs",
+        "cli.substs",
+        "heading.worded",
+        "limits.SCALAR_DIGITS"
+      ]
+    },
+    {
+      "module": "preamble.py",
+      "docstrings_and_attribute_docs": 5,
+      "comments": 0,
+      "references": [
+        "source.regions"
+      ]
+    },
+    {
+      "module": "profile.py",
+      "docstrings_and_attribute_docs": 29,
+      "comments": 1,
+      "references": [
+        "marks.marked",
+        "source.Click",
+        "source.external",
+        "source.linking"
+      ]
+    },
+    {
+      "module": "provenance.py",
+      "docstrings_and_attribute_docs": 28,
+      "comments": 0,
+      "references": [
+        "source.Click"
+      ]
+    },
+    {
+      "module": "rewrite.py",
+      "docstrings_and_attribute_docs": 38,
+      "comments": 0,
+      "references": [
+        "bundle.model_comment",
+        "closure.published_text",
+        "profile.REFERENCES",
+        "profile.linked_marker",
+        "source.events",
+        "source.opening_markers",
+        "source.opening_text",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "source.py",
+      "docstrings_and_attribute_docs": 74,
+      "comments": 0,
+      "references": [
+        "metadata.decode",
+        "profile.parse",
+        "tags.read"
+      ]
+    },
+    {
+      "module": "tags.py",
+      "docstrings_and_attribute_docs": 3,
+      "comments": 0,
+      "references": []
+    }
+  ],
+  "unresolved_references": []
+}
