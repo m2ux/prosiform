@@ -1,0 +1,36 @@
+{
+  "pull_request": {
+    "baseRefName": "main",
+    "headRefName": "f35-empty-sections",
+    "headRefOid": "9232c012dd2ee3a893a7066812bc55a3577d25a2",
+    "isDraft": true,
+    "number": 842,
+    "state": "OPEN",
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-11-22T09:32:49Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/m2ux/prosiform/actions/runs/45007961946/job/137163676922",
+        "name": "Checks",
+        "startedAt": "2026-11-22T09:31:32Z",
+        "status": "COMPLETED",
+        "workflowName": "Checks"
+      }
+    ],
+    "url": "https://github.com/m2ux/prosiform/pull/842"
+  },
+  "hotfix_issue": 840,
+  "board_status": "In Progress",
+  "development_link_verified_both_ends": true,
+  "development_verification": "Work Planner development-link.py add returned exit 0 and verified the issue and pull-request relations.",
+  "repository_auto_close_confirmation": {
+    "repository": "m2ux/prosiform",
+    "auto_close_issues_with_merged_linked_pull_requests": false,
+    "source": "Explicit user confirmation in this session",
+    "confirmed_date": "2026-11-22",
+    "answer": "Disabled"
+  },
+  "retrospective": true,
+  "merge": "not performed"
+}

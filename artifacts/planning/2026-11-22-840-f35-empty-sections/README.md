@@ -21,3 +21,5 @@ One corpus expectation omits an empty generated Beta heading and records W_EMPTY
 ## Delivery State
 
 The operator authorizes retrospective draft PR publication. Implementation and checks are complete; agent review and merge remain open. Draft status keeps the hotfix In Progress. The saved [hotfix body](proposed-hotfix.md) reflects the selected narrow scope; criteria remain unticked pending delivery verification.
+
+[Draft PR #842](https://github.com/m2ux/prosiform/pull/842) targets main and is linked to #840 through Development. CI passes at the recorded head; the hotfix remains In Progress. The [publication receipt](publication.json) records both directions of the link and the operator-confirmed disabled auto-close setting.

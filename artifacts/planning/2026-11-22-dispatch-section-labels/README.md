@@ -12,7 +12,7 @@ The isolated delivery branch is f34-dispatch-display, based on main at bf42862ef
 - [x] Align contract/fixtures and complete compiler checks.
 - [x] Register retrospective hot-fix F34, issue #839, and verify In Progress on board 18.
 - [x] Revalidate the exact standalone PR head and prepare retrospective publication.
-- [ ] Register the draft delivering PR and its verified Development link.
+- [x] Register the draft delivering PR and its verified Development link.
 
 ## Artifacts
 
@@ -27,4 +27,4 @@ The isolated delivery branch is f34-dispatch-display, based on main at bf42862ef
 
 ## Local Candidate
 
-Compiler commit 1ea933b7b213e2032f700b5bb18d5dd10b02b731 passes a fresh full make check on f34-dispatch-display, based on main. The operator explicitly requests retrospective Prosiform PR publication. The source, public contract and validation record are prepared for that publication; review and merge remain open.
+Compiler commit 1ea933b7b213e2032f700b5bb18d5dd10b02b731 passes a fresh full make check on f34-dispatch-display, based on main. The operator explicitly requests retrospective Prosiform PR publication. The source, public contract and validation record are published. [Draft PR #841](https://github.com/m2ux/prosiform/pull/841) targets main and is linked to #839 through Development. CI passes at the recorded head; the hotfix remains In Progress. Review and merge remain open.
