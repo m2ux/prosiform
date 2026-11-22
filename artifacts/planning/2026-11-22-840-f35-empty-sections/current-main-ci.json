@@ -1,0 +1,20 @@
+{
+  "headRefOid": "4737171c6db91e4c9735fcfcbb1f775e6d39382c",
+  "isDraft": true,
+  "mergeStateStatus": "BLOCKED",
+  "mergeable": "MERGEABLE",
+  "number": 842,
+  "state": "OPEN",
+  "statusCheckRollup": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-11-22T09:48:39Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/m2ux/prosiform/actions/runs/45009250882/job/137167664498",
+      "name": "Checks",
+      "startedAt": "2026-11-22T09:47:33Z",
+      "status": "COMPLETED",
+      "workflowName": "Checks"
+    }
+  ]
+}
