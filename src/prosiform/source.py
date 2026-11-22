@@ -261,7 +261,7 @@ def lines(text: str) -> list[str]:
 
 
 def bare(physical: str) -> str:
-    """One physical line without the LF or CRLF that terminates it."""
+    """Remove one trailing LF, then one trailing CR, from a physical line."""
     stripped = physical.removesuffix(LINE_FEED)
     return stripped.removesuffix(CARRIAGE_RETURN)
 
@@ -400,12 +400,11 @@ def slug(text: str) -> str:
 def fragments(shown_texts: Sequence[str]) -> list[str]:
     """The fragment a renderer generates for each heading of one sequence.
 
-    The first heading to carry a slug takes it, and a later one takes
-    the slug and an ordinal, counting from one. An ordinal something
-    already carries is passed over, so a heading whose own text spells
-    one keeps it and the heading that would have been numbered into it
-    takes the next free ordinal instead. Two headings therefore never
-    share a fragment.
+    Each heading takes its slug where no earlier output has taken it.
+    A taken slug gains the next free ordinal, counting from one and
+    passing over fragments already assigned. Assignment proceeds in
+    heading order, so a later heading's own slug may already be taken
+    by an earlier heading's numbered fragment.
 
     This is the renderer's own rule, reproduced so a destination and the
     document it names agree. The sequence it runs over is the headings
