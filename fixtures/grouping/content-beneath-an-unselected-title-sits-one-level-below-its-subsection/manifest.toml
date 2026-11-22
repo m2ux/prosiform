@@ -3,6 +3,7 @@ description = "A member whose title no reference selects, and whose selected sec
 clauses = [
   "Grouping — A heading for every member",
   "Grouping — The overview section",
+  "Grouping — Empty Generated Wrappers",
   "Grouping — Document content above the grouping depth",
 ]
 
@@ -13,4 +14,7 @@ arguments = ["guide.md"]
 [expected]
 exit_status = 0
 bundles = ["expected/guide.bundle.md"]
-diagnostics = []
+
+[[expected.diagnostics]]
+severity = "warning"
+code = "W_EMPTY_SECTION"

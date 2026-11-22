@@ -198,7 +198,8 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Contributing, Range
+from prosiform.provenance import Ancestor, Carried, Contributing, Range
+from prosiform.pruning import Removed, prune
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
     AMBIGUOUS_SOURCE_HEADING,
@@ -266,6 +267,7 @@ UNSUPPORTED_ENTRY_SUFFIX = "E_UNSUPPORTED_ENTRY_SUFFIX"
 
 RESOURCE_PORTABILITY = "W_RESOURCE_PORTABILITY"
 COINCIDENT_HEADING = "W_COINCIDENT_HEADING"
+EMPTY_SECTION = "W_EMPTY_SECTION"
 EARLIER_SET_RETAINED = "W_EARLIER_SET_RETAINED"
 SUBST_USED = "W_SUBST_USED"
 SUBST_UNUSED = "W_SUBST_UNUSED"
@@ -299,6 +301,7 @@ CODES = tuple(
             UNSUPPORTED_ENTRY_SUFFIX,
             RESOURCE_PORTABILITY,
             COINCIDENT_HEADING,
+            EMPTY_SECTION,
             EARLIER_SET_RETAINED,
             SUBST_USED,
             SUBST_UNUSED,
@@ -3752,6 +3755,95 @@ def emitted_regions(
                 yield part, region_of(parsed[part.path], part)
 
 
+def protected_headings(
+    groups: Sequence[Group],
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    entries: Collection[Reference],
+    chains: Mapping[str, Sequence[str]],
+    declarations: Declarations,
+    substitution: Substitution,
+) -> set[int]:
+    """The first destination headings used by entries and included references.
+
+    A source target resolves to its first recorded destination, as
+    `destination_map` states. A composition addresses its own contribution
+    rather than a source group's heading. Its contribution and the
+    dispatch headings are retained by `pruning.prune` independently.
+    """
+    requested = {(entry.path, entry.fragment) for entry in entries}
+    for part, region in emitted_regions(groups, parsed):
+        requested.update(
+            (found.path, found.fragment)
+            for found in required(
+                part.path,
+                read[part.path],
+                parsed[part.path],
+                Selection((region,)),
+                chains.get(part.path, ()),
+                declarations,
+                substitution.composed(part.path, part.selecting),
+            )
+            if not found.composes
+        )
+    owners: dict[tuple[str, str | None], int] = {}
+    for grouped in groups:
+        for heading in grouped.record.headings:
+            for target in heading.answers:
+                owners.setdefault(target, id(heading))
+    return {owners[target] for target in requested if target in owners}
+
+
+def empty_sections(
+    removed: Sequence[Removed],
+    read: Mapping[str, Source],
+    parsed: Mapping[str, Sequence[Token]],
+    chains: Mapping[str, Sequence[str]],
+) -> list[Diagnostic]:
+    """Warn for `pruning.prune` removals in their original bundle order.
+
+    A generated heading locates the title of the first source it answers
+    or its group carries.
+    Where the generated structure supplies no source, its heading and
+    group name still identify what the bundle omitted.
+    """
+    warnings = []
+    for one in removed:
+        heading = one.heading
+        origins = heading.origins if isinstance(heading, Carried | Ancestor) else ()
+        candidates = [
+            *(origin.path for origin in origins),
+            *(path for path, _fragment in heading.answers),
+            one.record.path,
+            *(path for each in one.record.headings for path, _fragment in each.answers),
+            *one.record.paths(),
+        ]
+        path = next((path for path in candidates if path in read), None)
+        at = None
+        if path is not None:
+            title = document_title(parsed[path])
+            line = (
+                origins[0].line
+                if origins
+                else None
+                if title is None or title.map is None
+                else title.map[0] + 1
+            )
+            at = Location(path, read[path].line(line) or 1, 1)
+        warnings.append(
+            Diagnostic(
+                WARNING,
+                f"the empty section {heading.text!r} in {one.record.path!r} "
+                "was pruned from the bundle",
+                code=EMPTY_SECTION,
+                source=path,
+                chain=None if path is None else tuple(chains.get(path, ())) or None,
+                location=at,
+            )
+        )
+    return warnings
+
+
 def compose(
     read: dict[str, Source],
     parsed: dict[str, list[Token]],
@@ -3770,7 +3862,9 @@ def compose(
     Construction runs twice: the first pass discovers emitted headings,
     then `source.fragments` and `destination_map` provide the map used
     for the final rewrite. `dispatch.subsections` and `bundle.opened`
-    run in both passes so the map includes generated headings.
+    run in both passes so the map includes generated headings, and
+    `pruning.prune` follows `dispatch.subsections` in each pass, with
+    `protected_headings` naming the headings it keeps.
 
     `composition.contributions` and `composition.owned` provide the
     contribution maps; `dispatch.anchors` supplies dispatch destinations.
@@ -3780,8 +3874,8 @@ def compose(
 
     Published hops and self-composition warnings are read from
     `emitted_regions`, using `dispatches` and `composing_itself`.
-    `coincident` supplies heading warnings. `folder` is the publication
-    context passed to the builders.
+    `empty_sections` and `coincident` supply heading warnings. `folder`
+    is the publication context passed to the builders.
     """
     chains = reaching(contributing(found))
     selected, placers = placement(
@@ -3828,13 +3922,18 @@ def compose(
                 substitution,
             )
         contributed.update(briefs.placed)
+        protected = protected_headings(
+            headed, read, parsed, entries, chains, declarations, substitution
+        )
+        headed, removed, positions = prune(headed, parsed, protected)
         collisions(headed, read)
     except Refused as refusal:
         raise Failure(INPUT_FAILURE, refusal.diagnostic) from refusal
     # `bundle.opened` adds a heading after dispatch positions are recorded.
     placed = {
         key: {
-            link: at + 1 if isinstance(at, int) else at for link, at in served.items()
+            link: positions[at] + 1 if isinstance(at, int) else at
+            for link, at in served.items()
         }
         for key, served in placed.items()
     }
@@ -3885,6 +3984,10 @@ def compose(
             declarations,
             substitution,
         )
+    protected = protected_headings(
+        groups, read, parsed, entries, chains, declarations, substitution
+    )
+    groups, _removed, _positions = prune(groups, parsed, protected)
     groups = opened(groups)
     bundled = assemble(groups)
     try:
@@ -3924,7 +4027,8 @@ def compose(
             itself.setdefault((warning.location, warning.reference), warning)
     return (
         bundled,
-        coincident(groups, selected, joins, read, parsed, declarations, substitution),
+        empty_sections(removed, read, parsed, chains)
+        + coincident(groups, selected, joins, read, parsed, declarations, substitution),
         list(hops.values()),
         list(itself.values()),
     )

@@ -189,6 +189,7 @@ The build in `src/prosiform` carries a run through the modules below beside the 
 | `rewrite` | Rewrites each compiled link to its destination, turns reference-style uses into inline links, and drops definitions. |
 | `heading` | Title-cases every heading the bundle generates. |
 | `provenance` | Records the source range or generated heading each part of the candidate came from. |
+| `pruning` | Omits empty generated wrappers while retaining authored and addressed structure. |
 | `candidate` | Reparses the candidate and holds it to its provenance before anything is published. |
 | `limits` | Declares the eight budgets and counts each against its boundary. |
 | `diagnostics` | Writes the diagnostic stream as text or JSON. |
