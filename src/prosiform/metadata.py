@@ -58,11 +58,12 @@ PREFIXED = ("0o", "0x")
 
 
 class _MarkedScanner(Scanner):
-    """Preserve a malformed escape's mark before parser cleanup resets it."""
+    """A YAML scanner retaining diagnostic coordinates for scalar escapes."""
 
     def scan_flow_scalar_non_spaces(
         self, double: bool, start_mark: StreamMark
     ) -> list[str]:
+        """Preserve a malformed escape's mark before parser cleanup resets it."""
         try:
             return cast(
                 list[str], super().scan_flow_scalar_non_spaces(double, start_mark)
@@ -236,9 +237,9 @@ def costly(kind: str, value: str) -> bool:
 def _kind(value: str, tag: str | None, plain: bool, location: Location) -> str:
     """The YAML 1.2 Core type of a scalar, without constructing its value.
 
-    An explicit tag determines the type; an untagged plain scalar uses
-    `PATTERNS`, and other untagged scalars are strings. A tag outside
-    the Core scalar types is invalid frontmatter.
+    An explicit Core tag determines the type and validates its literal.
+    An untagged plain scalar uses `PATTERNS`; other scalars and the
+    non-specific ! tag are strings. Other tags are invalid frontmatter.
     """
     if tag in (None, "!"):
         return next(

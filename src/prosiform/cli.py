@@ -1182,7 +1182,7 @@ def governed(
 
 
 class Once(argparse.Action):
-    """An option whose value is supplied at most once."""
+    """An argument action storing one option value in the parser namespace."""
 
     def __call__(
         self,
@@ -1191,6 +1191,7 @@ class Once(argparse.Action):
         values: str | Sequence[Any] | None,
         option_string: str | None = None,
     ) -> None:
+        """Store the option value, refusing a second supplied value."""
         if getattr(namespace, self.dest, None) is not None:
             raise usage_failure(f"{option_string} is supplied more than once")
         setattr(namespace, self.dest, values)
@@ -2888,7 +2889,7 @@ def later_needs_pick(
     target: Conversion,
     declarations: Declarations,
 ) -> bool:
-    """Whether one alternative enables a deferral's otherwise unresolved later run.
+    """Whether a deferral's later run requires a pick.
 
     Simulate that target as an entry through `traverse`, using default
     `limits.in_force` budgets and `metadata.Conversion.carried` names.

@@ -467,7 +467,7 @@ class Composing:
         """Emit a selected section's body and subsections at the supplied depth.
 
         The source heading's level determines each carried heading's shift;
-        an overflowing heading raises the directive's refusal. `rewrite.rewrite`
+        an overflowing heading raises the directive's refusal. `bundle.rewrite`
         owns reference rewriting when destinations are assigned; `bundle.region`
         owns region emission. Record each copied heading under its placing
         for `owned`, and retain its selection tags on each range. Each body
