@@ -23,3 +23,7 @@ One corpus expectation omits an empty generated Beta heading and records W_EMPTY
 The operator authorizes retrospective draft PR publication. Implementation and checks are complete; agent review and merge remain open. Draft status keeps the hotfix In Progress. The saved [hotfix body](proposed-hotfix.md) reflects the selected narrow scope; criteria remain unticked pending delivery verification.
 
 [Draft PR #842](https://github.com/m2ux/prosiform/pull/842) targets main and is linked to #840 through Development. CI passes at the recorded head; the hotfix remains In Progress. The [publication receipt](publication.json) records both directions of the link and the operator-confirmed disabled auto-close setting.
+
+## Current Main Integration
+
+F34 merges while F35 is open. Merge commit 4737171c6db91e4c9735fcfcbb1f775e6d39382c incorporates main at e2dde5e569800e5584797bb194bb989f8fb2843b and keeps the F35 canonical contract pin in README and references. The PR diff against main remains scoped to F35. [Fresh full make check](current-main-make-check.txt) passes: 2,318 compiler tests, 1,155 harness tests and all 708 corpus fixtures, plus the remaining guards and smoke checks. The combined consumer-evaluation checkout remains at c956908d9 throughout its native cohort.
