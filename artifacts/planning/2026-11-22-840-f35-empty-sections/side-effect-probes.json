@@ -1,0 +1,41 @@
+[
+  {
+    "case": "explicit-title-inline",
+    "status": "pass",
+    "warnings": []
+  },
+  {
+    "case": "explicit-title-reference",
+    "status": "pass",
+    "warnings": []
+  },
+  {
+    "case": "explicit-title-diagram",
+    "status": "pass",
+    "warnings": []
+  },
+  {
+    "case": "composed-document-reference",
+    "status": "pass",
+    "warnings": []
+  },
+  {
+    "case": "internal-link-preservation-with-pruned-sibling",
+    "status": "pass",
+    "before_link": "See [later](#beta-1).",
+    "after_link": "See [later](#beta-1).",
+    "warnings": [
+      "{\"severity\": \"warning\", \"message\": \"the empty section 'Beta' in 'docs' was pruned from the bundle\", \"code\": \"W_EMPTY_SECTION\", \"source\": \"docs/beta.md\", \"chain\": [\"guide.md\", \"docs/beta.md#steps\"], \"location\": {\"file\": \"docs/beta.md\", \"line\": 6, \"column\": 1}}"
+    ]
+  },
+  {
+    "case": "duplicate-anchor-reassignment-at-outline-stage",
+    "status": "pass",
+    "before_anchor": "beta-1",
+    "after_anchor": "beta",
+    "retained_position_map": {
+      "0": 0,
+      "2": 1
+    }
+  }
+]
