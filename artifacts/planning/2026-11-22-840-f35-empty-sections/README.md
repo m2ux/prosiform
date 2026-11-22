@@ -4,7 +4,7 @@
 
 [Issue #840](https://github.com/m2ux/prosiform/issues/840) records the implemented pruning correction. The selected boundary removes empty, unreferenced generated group, overview and preamble wrappers. Authored headings, referenced identities, meaningful descendants, code examples, containers and dispatch/composition structure remain.
 
-The standalone delivering branch is f35-empty-sections at 9232c012dd2ee3a893a7066812bc55a3577d25a2, based on main at bf42862ef3757c8f62b0b8522481d27c4518dd0d. It contains the F35 delta alone. F34 is separately registered under issue #839 and is not part of this PR's code diff. The combined local build c956908d9 includes both corrections for consumer validation.
+The delivering branch is f35-empty-sections at 5c1917343080bb0f8328ac119571049b41abee0d, based on main at a38b065114f3f4d7f5d61b9d5ae52d393da3ec5f. It contains the F35 delta alone. F34 is separately registered under issue #839 and is not part of this PR's code diff. The combined local build c956908d9 includes both corrections for consumer validation.
 
 ## Validation
 
@@ -26,7 +26,7 @@ The operator authorizes retrospective draft PR publication. Implementation and c
 
 ## Current Main Integration
 
-F34 merges while F35 is open. Merge commit 4737171c6db91e4c9735fcfcbb1f775e6d39382c incorporates main at e2dde5e569800e5584797bb194bb989f8fb2843b and keeps the F35 canonical contract pin in README and references. The PR diff against main remains scoped to F35. [Fresh full make check](current-main-make-check.txt) passes: 2,318 compiler tests, 1,155 harness tests and all 708 corpus fixtures, plus the remaining guards and smoke checks. The [current CI readback](current-main-ci.json) confirms passing checks, a mergeable branch and draft state at this head. The combined consumer-evaluation checkout remains at c956908d9 throughout its native cohort.
+F34 and the comment cleanup (#843) merge while F35 is open. The branch is rebased onto main at a38b065114f3f4d7f5d61b9d5ae52d393da3ec5f as a1d6a6039, which keeps the F35 canonical contract pin and main's F34 dispatch-label sentence in references. 5c1917343 names each pruned heading's generated kind in W_EMPTY_SECTION. The PR diff against main remains scoped to F35. [Fresh full make check](current-main-make-check.txt) passes at 5c1917343: 2,318 compiler tests, 1,155 harness tests and all corpus fixtures, plus the remaining guards and smoke checks. The [current CI readback](current-main-ci.json) records the checks, mergeability and draft state at this head. The combined consumer-evaluation checkout remains at c956908d9 throughout its native cohort.
 
 ## Side-Effect Review
 

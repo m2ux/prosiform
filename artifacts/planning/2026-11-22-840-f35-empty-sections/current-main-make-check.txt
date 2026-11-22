@@ -1,5 +1,5 @@
 cd src && uv lock --check
-Resolved 24 packages in 0.79ms
+Resolved 24 packages in 2ms
 uv run --project src --frozen ruff check --config src/pyproject.toml src/prosiform src/tests checks evals
 All checks passed!
 uv run --project src --frozen ruff format --check --config src/pyproject.toml src/prosiform src/tests checks evals
@@ -40,7 +40,7 @@ cd src && uv run --frozen pytest
 ........................................................................ [ 96%]
 ........................................................................ [ 99%]
 ..............                                                           [100%]
-2318 passed in 8.12s
+2318 passed in 13.80s
 uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir . checks/tests
 ........................................................................ [  6%]
 ........................................................................ [ 12%]
@@ -59,7 +59,7 @@ uv run --project src --frozen pytest --config-file src/pyproject.toml --rootdir 
 ........................................................................ [ 93%]
 ........................................................................ [ 99%]
 ...                                                                      [100%]
-1155 passed in 10.18s
+1155 passed in 12.13s
 uv run --project src --frozen python checks/corpus.py
 absorbed-title/a-reference-naming-a-title-no-heading-absorbed: pass
 absorbed-title/a-reference-naming-an-absorbed-title: pass
@@ -772,10 +772,10 @@ validation-scope/the-sibling-once-closure-includes-it: pass
 corpus check: 708 fixture(s), 708 pass, 0 fail, 0 awaited, 0 unexpected pass
 python3 checks/smoke.py
 ok   wheel        prosiform-0.33.0-py3-none-any.whl
-ok   installed    /tmp/pf-smoke-y81yog38/environment
-ok   resolved     pf — /tmp/pf-smoke-y81yog38/environment/bin/pf, outside the repository
+ok   installed    /tmp/pf-smoke-gfix5eq4/environment
+ok   resolved     pf — /tmp/pf-smoke-gfix5eq4/environment/bin/pf, outside the repository
 ok   version      pf 0.33.0 (prosiform-markdown)
-ok   bundled      guide.md from /tmp/pf-smoke-y81yog38/sources, run from /tmp/pf-smoke-y81yog38/elsewhere
+ok   bundled      guide.md from /tmp/pf-smoke-gfix5eq4/sources, run from /tmp/pf-smoke-gfix5eq4/elsewhere
 ok   glossary     glossary.md, shipped
 
 smoke check: the installed command is named on the path, independent of the working directory, independent of this repository
@@ -1080,6 +1080,7 @@ ok   repository https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138a
 ok   repository https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling
 ok   local      #operators
 ok   local      #selection-by-reference
+ok   local      dispatch.md#briefs
 ok   local      hierarchy.md#preamble-groups
 ok   local      images/sections.svg
 ok   local      references.md#operators
@@ -1438,7 +1439,7 @@ ok   remote     https://pypi.org/project/jsonschema/
 ok   remote     https://pypi.org/project/types-jsonschema/
 
 link check: every reference in 445 document(s) resolved
-read engineering at 90abbdf68878
+read engineering at 7788b355728a
 read d6b825c39 at d6b825c3959b
 python3 checks/vocabulary.py
 vocabulary check: 53 contract term(s) marked in artifacts/planning/2026-10-17-prosiform-v1/design.md on ef1faf4c9dc6d9bc1367e138adbb51283456e500, every one defined in docs/glossary.md, and every definition carried by the contract across 28 source(s)
