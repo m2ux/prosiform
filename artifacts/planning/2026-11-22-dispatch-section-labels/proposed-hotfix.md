@@ -34,5 +34,5 @@ Target: `main`
 ## References
 
 - **R1.** [Released dispatch behavior](https://github.com/m2ux/prosiform/blob/bf42862ef3757c8f62b0b8522481d27c4518dd0d/docs/dispatch.md) — The pf 0.33.0 baseline for briefs and dispatch picks.
-- **R2.** Local implementation commit `1ea933b7b213e2032f700b5bb18d5dd10b02b731`, based on `bf42862ef3757c8f62b0b8522481d27c4518dd0d` — Unpublished compiler candidate; no delivering pull request exists yet.
-- **R3.** Local validation at that candidate — Full `make check` passes: 2,303 compiler tests, 1,153 harness tests and 708 corpus fixtures, including 13 focused display regressions. Paired bundles preserve hand-off targets and model selections. This is compiler validation, not fresh native agent performance evidence. Criteria remain unticked pending delivery verification.
+- **R2.** [Implemented F34 Revision](https://github.com/m2ux/prosiform/commit/1ea933b7b213e2032f700b5bb18d5dd10b02b731) — The retrospectively registered implementation, based on main at bf42862ef.
+- **R3.** [Retrospective Validation](https://github.com/m2ux/prosiform/blob/engineering/artifacts/planning/2026-11-22-dispatch-section-labels/validation.md) — Full `make check` passes: 2,303 compiler tests, 1,153 harness tests and 708 corpus fixtures, including 13 focused display regressions. Paired bundles preserve hand-off targets and model selections. This is compiler validation, not fresh native agent performance evidence. Criteria remain unticked pending delivery verification.
