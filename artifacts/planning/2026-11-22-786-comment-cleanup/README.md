@@ -13,7 +13,9 @@ The isolated branch is 786-comment-cleanup, based on main at e2dde5e569800e55847
 - [x] Establish the baseline, prerequisite and isolated worktree.
 - [x] Revise and review every module's comments and docstrings.
 - [x] Compare behavior and fixture bundles, and run make check.
-- [ ] Publish the delivery PR and synchronize the tracker.
+- [x] Publish the delivery PR and synchronize verified criteria and board status.
+- [ ] Confirm the repository auto-close setting and add the Development link.
+- [ ] Complete the required human review and merge, then close the issue and read back the board.
 
 ## Artifacts
 
@@ -35,3 +37,9 @@ The isolated branch is 786-comment-cleanup, based on main at e2dde5e569800e55847
 
 - [Issue #786](https://github.com/m2ux/prosiform/issues/786)
 - [Convention #788](https://github.com/m2ux/prosiform/issues/788)
+
+## Delivery Readback
+
+[PR #843](https://github.com/m2ux/prosiform/pull/843) is open and ready for review at aa1baf2f97720a94854fbeabdf66e3abdb407a48, targeting main. The branch is published and the unit worktree is clean. All local required checks and final baseline comparisons pass. Issue #786 remains open with all three verified criteria checked; Project 18 item 308674355 is In Review.
+
+Applied tracker updates: the convention citation names AGENTS.md, the verified criterion checkboxes are checked, and the issue's existing board item is In Review. No acceptance scope is added. The Development link is held pending this session's explicit confirmation that repository auto-close is disabled. Main's live rules require one approving review, so merge and issue closure remain with the human review boundary.
