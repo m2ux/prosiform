@@ -1,8 +1,7 @@
-"""Bounded YAML Core metadata from one captured source byte span.
+"""Decode captured YAML metadata into conversion settings.
 
-Events supply grammar and marks. An iterative stack bounds collection depth;
-interned node identities preserve YAML tag and value equality for complex keys.
-No YAML objects or aliases are constructed.
+`decode` owns payload validation; `_preset` validates each preset,
+and the scalar readers own Core type resolution and equality.
 """
 
 import re
@@ -41,9 +40,9 @@ BRIEF = "brief"
 LEVEL = "level"
 LEVELS = "levels"
 FIELDS = (GROUP, SUBST, CHOICE, STUB, BRIEF, LEVEL, LEVELS)
-"""The fields a preset may hold; none is written directly under `prosiform`."""
+"""Preset field names recognized by `_preset`."""
 DEFAULT = "default"
-"""The preset in force wherever its document is compiled."""
+"""The name read by `Conversion.default`."""
 ROOT = "root"
 PREFIX = "tag:yaml.org,2002:"
 PATTERNS = {
@@ -55,13 +54,6 @@ PATTERNS = {
         r"|[-+]?\.(?:inf|Inf|INF)|\.(?:nan|NaN|NAN))"
     ),
 }
-"""The two notations whose canonical form costs more than a pass over the literal.
-
-A decimal integer is already its own decimal value, and a float without an
-exponent is read in one pass. A base-prefixed integer is exact only through
-a binary value, and a float's exponent is accumulated digit by digit, so
-both cost quadratic time in their digits.
-"""
 PREFIXED = ("0o", "0x")
 
 
@@ -86,12 +78,11 @@ class _MarkedScanner(Scanner):
 
 @dataclass(frozen=True)
 class Membership:
-    """A preset's `group` pair: a merged group and the depth its document joins at.
+    """A preset's group membership and the coordinates of its declaration.
 
-    The depth is held to the one every contributing member of the group
-    declares. Each location is where its half of the entry is written,
-    and the preset is the one stating the entry, which a diagnostic
-    about it names.
+    `preset` names the declaring preset, `group` the group and `depth`
+    its heading depth. `group_location` and `depth_location` locate
+    the two values.
     """
 
     preset: str
@@ -103,10 +94,10 @@ class Membership:
 
 @dataclass(frozen=True)
 class Subst:
-    """One `subst` entry: an original reference mapped to its substitute.
+    """One substitution entry as written, with its source coordinate.
 
-    Each side is held as written, a reference the reference grammar
-    reads. The location is the entry's.
+    `original` and `substitute` hold the two references; `location`
+    locates their entry.
     """
 
     original: str
@@ -116,18 +107,13 @@ class Subst:
 
 @dataclass(frozen=True)
 class Preset:
-    """One named preset's settings.
+    """One named preset's values.
 
-    `membership` holds the `group` pair, the one group the declaring
-    document joins; a preset stating none leaves the document its
-    individual file group. `substs` holds each `subst` entry in written
-    order. `choice` holds the choice line of an alternative, stating
-    when to pick it, and `stub` the line of a stub, stating what it
-    stands in for; a preset holding neither is an ordinary preset.
-    `brief` holds the fragment, `#` included, naming the section of the
-    declaring document a dispatch of it carries. `level` holds the
-    capability level the declaring document's work needs, and `levels`
-    each level mapped to a model name, in written order.
+    `name` identifies the preset. `membership` holds its group pair,
+    and `substs` its substitution entries in declaration order.
+    `choice` holds an alternative's choice line, `stub` a stand-in's
+    line and `brief` a section fragment. `level` holds a capability
+    level and `levels` the declared level-to-model pairs in order.
     """
 
     name: str
@@ -142,21 +128,11 @@ class Preset:
 
 @dataclass(frozen=True)
 class Conversion:
-    """Immutable source settings: every preset one document declares.
+    """One source's immutable settings and the run context attached to them.
 
-    The settings belong to the bytes they were decoded from. `declared`
-    holds where the frontmatter carries a `prosiform` mapping, an empty
-    one included, and is false for a document carrying none. `presets`
-    holds each preset in written order. A source the substitution mapping
-    redirected is read as the substitute, so the settings decoded here are
-    the substitute's: none travels from the document its key named.
-
-    `run` holds the names the run's entry title gives, normalized as
-    title tags are. They select the entry's stubs wherever the run
-    compiles it, so the run reading the document states them, and
-    settings no run read hold none. `models` holds the run's level map,
-    each level mapped to the model a dispatch of that level starts on,
-    stated the same way.
+    `declared` records the presence of a prosiform mapping. `presets`
+    holds the presets in declaration order. `run` holds the run's names
+    and `models` its level-to-model pairs.
     """
 
     declared: bool = False
@@ -166,10 +142,7 @@ class Conversion:
 
     @property
     def default(self) -> Preset:
-        """The `default` preset, in force wherever the document is compiled.
-
-        A document declaring no `default` is compiled under an empty one.
-        """
+        """The declared `default` preset, or an empty preset where it is absent."""
         return next(
             (preset for preset in self.presets if preset.name == DEFAULT),
             Preset(DEFAULT),
@@ -181,13 +154,11 @@ class Conversion:
         return tuple(preset for preset in self.presets if preset.choice is not None)
 
     def carried(self) -> frozenset[str]:
-        """The run's names a deferral reaching this document publishes in its title.
+        """The run names eligible for a deferral's title.
 
-        The run compiling the deferral, whose entry is this document,
-        selects this document's stubs by them.
-        A name naming a preset of this document other than a stub is
-        left out, since the later run's entry title would select that
-        preset where this run selected none.
+        A name matching a non-stub preset of this document is excluded,
+        because publishing it would select a preset the current reference
+        did not select. `cli.entry_stubs` owns run stub selection.
         """
         declared = {
             preset.name.casefold() for preset in self.presets if preset.stub is None
@@ -232,6 +203,13 @@ def _fail(
 def _scalar(
     value: str, tag: str | None, plain: bool, location: Location
 ) -> tuple[str, Hashable]:
+    """A scalar's Core type and equality value, within the work bound.
+
+    Surrogate code points are invalid frontmatter. A notation `costly`
+    identifies is limited to `limits.SCALAR_DIGITS` before `_canonical`
+    constructs its value, because conversion costs quadratic time in
+    its digits.
+    """
     if any(0xD800 <= ord(char) <= 0xDFFF for char in value):
         raise _fail(INVALID_FRONTMATTER, "invalid Unicode scalar value", location)
     kind = _kind(value, tag, plain, location)
@@ -256,12 +234,11 @@ def costly(kind: str, value: str) -> bool:
 
 
 def _kind(value: str, tag: str | None, plain: bool, location: Location) -> str:
-    """The YAML 1.2 Core type one scalar resolves to, and nothing built from it.
+    """The YAML 1.2 Core type of a scalar, without constructing its value.
 
-    Resolution reads the tag where the source wrote one and the implicit
-    rule otherwise, so a base-prefixed integer and a float's exponent are
-    classified here without being converted. That is what lets the caller
-    hold the work ceiling before the work is asked for.
+    An explicit tag determines the type; an untagged plain scalar uses
+    `PATTERNS`, and other untagged scalars are strings. A tag outside
+    the Core scalar types is invalid frontmatter.
     """
     if tag in (None, "!"):
         return next(
@@ -296,12 +273,10 @@ def _canonical(value: str, kind: str) -> Hashable:
 
 
 def _decimal_integer(value: str) -> Decimal:
-    """A Core integer's exact value, from any of the three notations it admits.
+    """The exact decimal value of a bounded Core integer literal.
 
-    A base-prefixed literal is exact only through a binary value, and
-    converting a binary value to a decimal one is the cost the caller's
-    ceiling bounds. A decimal literal is its own decimal value, which
-    costs one pass over the digits.
+    Decimal text is normalized directly; base-prefixed text is converted
+    through its integer value. `_scalar` owns the work bound.
     """
     if not value.startswith(("0o", "0x")):
         return Decimal(value)
@@ -341,6 +316,12 @@ def decode(
 
     None means absent frontmatter. The caller supplies captured bytes and budgets.
     The raw limit includes body and BOM and is checked before UTF-8 decoding.
+
+    Parse one YAML 1.2 mapping with an iterative collection stack bounded
+    by max_depth. Aliases, custom tags and merge keys are refused. Interned
+    tag-aware identities detect duplicate keys, including collection keys.
+    A prosiform mapping is decoded through `_preset`; `_scalar` owns scalar
+    validation and canonical equality.
     """
     if len(raw) > max_bytes:
         raise _fail(
@@ -643,7 +624,7 @@ def _fragment(node: _Node) -> bool:
 
 
 def _models(node: _Node) -> bool:
-    """Whether one value maps strings to strings, each non-empty on one line."""
+    """Whether a mapping has string keys and values accepted by `_one_line`."""
     return node.kind == "map" and all(_one_line(one) for one in node.children)
 
 
@@ -697,7 +678,12 @@ def _pair(name: str, entry: _Node, shape: str, noun: str) -> tuple[_Node, _Node]
 
 
 def _membership(preset: str, name: str, entry: _Node) -> Membership:
-    """A preset's `group` pair, a single string key mapped to a depth."""
+    """A named group membership validated from one preset entry.
+
+    `_pair` owns entry shape, `_single_line` owns printable names,
+    `heading.worded` identifies a word and `_level` validates depth.
+    A group name carrying a colon or slash is invalid metadata.
+    """
     group, depth = _pair(
         name,
         entry,
@@ -730,11 +716,9 @@ def _membership(preset: str, name: str, entry: _Node) -> Membership:
 
 
 def _subst(name: str, entry: _Node) -> Subst:
-    """One `subst` entry, a single string key mapped to a string.
+    """One nonempty string-to-string substitution from an entry.
 
-    YAML splits a plain key at a colon followed by a space, so a side
-    holding one is quoted; the reference grammar reads each side as
-    YAML delivers it.
+    `_pair` owns the entry shape; `cli.substs` owns reference validation.
     """
     shape = (
         "a mapping holding one original reference and its substitute, "
