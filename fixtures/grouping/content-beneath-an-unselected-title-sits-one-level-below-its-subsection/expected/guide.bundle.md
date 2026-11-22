@@ -31,5 +31,3 @@ Beta steps.
 ### Alpha
 
 Alpha intro.
-
-### Beta

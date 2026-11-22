@@ -300,6 +300,7 @@
         "W_DISPATCH_DEPTH",
         "W_DISPATCH_SELF",
         "W_EARLIER_SET_RETAINED",
+        "W_EMPTY_SECTION",
         "W_PRESET_UNUSED",
         "W_RESOURCE_PORTABILITY",
         "W_SUBST_UNUSED",

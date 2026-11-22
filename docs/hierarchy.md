@@ -14,6 +14,8 @@ A merged group is where this shows most: several files declaring one name share 
 
 *One heading for the group, one subsection naming each member, and the `Tests` both files declare pooled into one section split by document.*
 
+Generated grouping scaffolding follows [Empty Generated Wrappers](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping).
+
 ## File headings
 
 Each contributing source becomes a **file heading**, an H1. Its text is the document's title where it has one: the document's first heading, if that is its only H1 and sits at the document level. A document with no title is headed by its path relative to the working directory, without the Markdown suffix, in title case. The heading is written as literal text, so punctuation in a title or a path opens no link, image or HTML.
@@ -61,7 +63,7 @@ A pair places its own document's sections and no other's. A linked document is p
 
 ## Where a group stands
 
-A merged group stands inside the division holding the document whose link placed its first member in that group, after everything that division carries of its own, so a document two links place under different pairs has each group standing where its own link was written. A group an entry places its first member in stands at the top level, and so does a group whose first member is placed by a document standing inside that group. A later member joins the group where it stands. The design's [Grouping](https://github.com/m2ux/prosiform/blob/d6b825c39/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) carries the rule in full.
+A merged group stands inside the division holding the document whose link placed its first member in that group, after everything that division carries of its own, so a document two links place under different pairs has each group standing where its own link was written. A group an entry places its first member in stands at the top level, and so does a group whose first member is placed by a document standing inside that group. A later member joins the group where it stands. The design's [Grouping](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#grouping) carries the rule in full.
 
 Each division enclosing a group moves every heading of the group one level deeper, so the group's heading takes the level below the heading of the division holding it:
 

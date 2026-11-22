@@ -1,7 +1,7 @@
 # <img src="docs/images/prosiform-mark.svg" alt="" height="32"> Prosiform
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/d0974474df48c12c54d185e924bf2ff3e77584ec/artifacts/planning/2026-10-17-prosiform-v1/design.md)
+[![Profile: prosiform-markdown](https://img.shields.io/badge/profile-prosiform--markdown-blue.svg)](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md)
 [![CommonMark](https://img.shields.io/badge/CommonMark-based-lightgrey.svg)](https://commonmark.org/)
 
 A deterministic compiler for instruction sets written as linked Markdown. Give it a document or a section; it returns that content and the linked sources it reaches as validated bundles.

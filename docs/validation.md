@@ -73,7 +73,7 @@ Diagnostics go to standard error. `-d json` emits one JSON object per line, and 
 
 ## What a run refuses
 
-Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/d6b825c39/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
+Each check below ends the run before anything is written, under the code it names. The fixture corpus's [catalogues](../fixtures/README.md#the-catalogues) state the [design](https://github.com/m2ux/prosiform/blob/ef1faf4c9dc6d9bc1367e138adbb51283456e500/artifacts/planning/2026-10-17-prosiform-v1/design.md#exit-status-and-json-diagnostics) clause behind each code.
 
 | Check | Code | Exit |
 | --- | --- | --- |
@@ -104,7 +104,7 @@ Each check below ends the run before anything is written, under the code it name
 | A bundle that cannot be written | `E_PUBLICATION_FAILED` | `3` |
 | A failure of the run itself | `E_UNEXPECTED_INTERNAL_ERROR` | `4` |
 
-A run that publishes may warn: `W_COINCIDENT_HEADING`, `W_COMPOSE_SELF`, `W_DISPATCH_DEPTH`, `W_DISPATCH_SELF`, `W_EARLIER_SET_RETAINED`, `W_PRESET_UNUSED`, `W_RESOURCE_PORTABILITY`, `W_SUBST_UNUSED` and `W_SUBST_USED`, each stating the condition the catalogue names. `W_SUBST_USED` names a stub's pair alone, since every other pair routes, as [the substitution mapping](selection.md#the-substitution-mapping) states.
+A run that publishes may warn: `W_COINCIDENT_HEADING`, `W_COMPOSE_SELF`, `W_DISPATCH_DEPTH`, `W_DISPATCH_SELF`, `W_EARLIER_SET_RETAINED`, `W_EMPTY_SECTION`, `W_PRESET_UNUSED`, `W_RESOURCE_PORTABILITY`, `W_SUBST_UNUSED` and `W_SUBST_USED`, each stating the condition the catalogue names. `W_SUBST_USED` names a stub's pair alone, since every other pair routes, as [the substitution mapping](selection.md#the-substitution-mapping) states.
 
 ## Budgets
 
