@@ -55,6 +55,8 @@ AC3: `make check` exits 0 at the candidate revision. [make-check.log](make-check
 PROSIFORM_BUILD=/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform-786/src/.venv/bin/pf make check
 ```
 
+[GitHub Actions Checks](https://github.com/m2ux/prosiform/actions/runs/45009844790) also passes at the candidate revision. Its optional eval-harness step is skipped by the workflow.
+
 `git diff --check` passes. New runtime tests are unnecessary because executable syntax and fixture bytes are identical.
 
 ## Delivery Boundary
