@@ -348,9 +348,9 @@ def generated_part(
 ) -> tuple[str, Generated]:
     """One heading the arrangement writes itself, as the part it is emitted as.
 
-    A nested group's headings sit one level deeper for each division
-    enclosing it, so a generated heading can be pushed beyond the sixth
-    level; the path is the member the overflow is reported against.
+    The caller supplies the depth; a value above `bundle.MAX_LEVEL`
+    raises `Overflow` against `path`. The returned `Generated` records
+    the text, depth, kind and answers supplied by the caller.
     """
     if depth > MAX_LEVEL:
         raise Overflow(text, depth, path)

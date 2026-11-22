@@ -1753,7 +1753,8 @@ def included(
 
     A link a composed section writes to one of its own subsections names
     a heading each copy of that section carries, where it points as
-    `Composing.carry` states, so it includes nothing, unless an inclusion
+    `composition.Composing.copy` and `composition.owned` assign it, so it
+    includes nothing, unless an inclusion
     carries the region writing it too: that group's copy of the link
     names the subsection as any link does. The same section linked from
     anywhere else is included as any is.
@@ -1922,9 +1923,8 @@ def required(
     """Dependencies carried by the selected regions of one source.
 
     `source.uses` supplies occurrences, including diagram occurrences
-    under `source.Click`. A non-withheld use naming a declaring Markdown
-    target yields a dependency; `closure.withholding` owns withholding
-    and `closure.Declarations.declares` owns declaration lookup.
+    under `source.Click`. Dependency eligibility follows `closure.bundled`,
+    using `closure.withholding` and `closure.Declarations.declares`.
     `closure.directive` supplies composition classification. A malformed
     Markdown destination fails with its source position and route.
     Each yielded reference extends the supplied chain by its identity.
@@ -2231,7 +2231,7 @@ def composing_itself(
 
     `closure.directive` identifies composition and `closure.deferred`
     identifies deferral. Deferred directives and a directive selecting
-    its own heading are excluded; `composition.Composing` owns cycle
+    its own heading are excluded; `composition.Composing.cycle` owns cycle
     refusal. Each warning locates the directive and its route.
     """
     selected = tuple(regions(tokens)) if chosen is None else chosen.regions
@@ -2312,7 +2312,7 @@ def dispatches(
 ) -> Iterator[Hop]:
     """Dispatch hops in the selected regions, with source locations and routes.
 
-    `dispatch.written_in` owns dispatch recognition and placement. A
+    `dispatch.written_in` supplies recognized dispatch occurrences. A
     recognized dispatch with empty text is refused at its occurrence.
     `source.Click` owns diagram-link text and title interpretation.
     """
@@ -2345,8 +2345,9 @@ def dispatches(
 def briefed(hop: Hop, conversion: Conversion) -> Reference | None:
     """The composing brief of one dispatch, or None where it has none.
 
-    `closure.briefing` owns brief selection; its conflicts and malformed
-    references become located invocation failures. A picking dispatch
+    `closure.brief_of` owns brief selection and `closure.briefing` constructs
+    its reference; conflicts and malformed references become located
+    invocation failures. A picking dispatch
     whose alternative declares a brief produces `unresolved` with the
     varying-brief remedy. A returned brief inherits the dispatch's
     origin and replaces its final chain hop with the brief identity.
@@ -2860,10 +2861,10 @@ def confirm(
 ) -> None:
     """Confirm the existence of a withheld target's heading.
 
-    `source.index` supplies all headings; an absent fragment is an input
-    failure with the target's route. A deferred directive also needs
-    the selectable section `rooted` validates. The caller supplies the
-    index from the captured read.
+    `source.index` supplies all headings. An unmatched fragment is an input
+    failure with the target's route; a missing fragment needs no check.
+    A deferred directive also needs the selectable section `rooted`
+    validates. The caller supplies the captured source's token stream.
     """
     if one.fragment is None:
         return
@@ -3358,7 +3359,7 @@ def divisions(
 ) -> list[Division]:
     """File and merged divisions in first-member placement order.
 
-    `joining` supplies the memberships `joined` owns. A document with
+    `joins` supplies the memberships `joined` owns. A document with
     none becomes a file division; a merged division is recorded once
     at its first membership. The flag distinguishes the two kinds.
     """
@@ -3962,8 +3963,8 @@ def substituted(
 ) -> list[Diagnostic]:
     """One warning for each stub's `subst` pair a reference named.
 
-    A key names one substitution, so the references it served state one
-    warning at the first of them. The warning names that link as
+    `closure.Redirects.record` owns occurrence recording and deduplication.
+    The warning names the recorded link as
     `location` where the reference stands in a source, the destination
     the author wrote as `source`, and the substitute's identity as
     `resolved`; its message states the identity the reference would have

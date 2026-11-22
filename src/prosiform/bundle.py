@@ -916,13 +916,9 @@ def carried_headings(tokens: Sequence[Token], token: Token) -> list[Token]:
 def ancestry(tokens: Sequence[Token]) -> dict[int, tuple[Token, ...]]:
     """The chain of eligible ancestor headings above each region, by its identity.
 
-    Only a heading the document carries at its own level roots a
-    section, so the chain is read from the document-level regions
-    alone: each heading closes every open heading of its level or
-    deeper and then stands open itself, and what is open above a region
-    is the chain that placed it. A heading a container carries roots
-    nothing, and the region holding that container is where the
-    document puts its content.
+    `source.regions` supplies the eligible regions. Each heading closes
+    every open heading of its level or deeper and then stands open
+    itself; the headings open above a region form its ancestor chain.
 
     The chain is the document's own structure rather than the run's, so
     a region is placed the same way whether it was selected on its own

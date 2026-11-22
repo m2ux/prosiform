@@ -1429,8 +1429,8 @@ def validate(
 ) -> None:
     """Validate provenance and the completed candidate against their sources.
 
-    Run the record checks first, then reparse through `profile.parse` in
-    candidate mode and run the boundary, structure, reference and preservation
+    Run the record checks first, then reparse through `profile.parse`
+    and run the boundary, structure, reference and preservation
     checks. `within` supplies each composition copy's target map and
     `closure.Substitution.composed` its substitutions. `folder` is the
     publication folder used by `closure.rebased`. A failure raises before the
