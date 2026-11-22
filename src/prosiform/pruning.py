@@ -22,10 +22,10 @@ from prosiform.source import HEADING_OPEN, regions
 
 @dataclass(frozen=True)
 class Removed:
-    """One omitted section heading and the group that supplied it."""
+    """One omitted generated heading and the group that supplied it."""
 
     record: Record
-    heading: Emitted
+    heading: Generated
 
 
 @dataclass(frozen=True)
@@ -129,6 +129,7 @@ def prune(
     all_headings = [heading for group in groups for heading in group.record.headings]
     for block in flattened:
         if block.heading is not None and block.first not in occupied:
+            assert isinstance(block.heading, Generated)
             removed.append(Removed(groups[block.group].record, block.heading))
             continue
         kept.setdefault(block.group, []).append(block.part)

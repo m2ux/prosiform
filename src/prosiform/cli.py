@@ -198,7 +198,7 @@ from prosiform.profile import (
     parse,
     refusals,
 )
-from prosiform.provenance import Ancestor, Carried, Contributing, Range
+from prosiform.provenance import Contributing, Range
 from prosiform.pruning import Removed, prune
 from prosiform.rewrite import Definition, definitions
 from prosiform.source import (
@@ -3810,9 +3810,7 @@ def empty_sections(
     warnings = []
     for one in removed:
         heading = one.heading
-        origins = heading.origins if isinstance(heading, Carried | Ancestor) else ()
         candidates = [
-            *(origin.path for origin in origins),
             *(path for path, _fragment in heading.answers),
             one.record.path,
             *(path for each in one.record.headings for path, _fragment in each.answers),
@@ -3822,18 +3820,12 @@ def empty_sections(
         at = None
         if path is not None:
             title = document_title(parsed[path])
-            line = (
-                origins[0].line
-                if origins
-                else None
-                if title is None or title.map is None
-                else title.map[0] + 1
-            )
+            line = None if title is None or title.map is None else title.map[0] + 1
             at = Location(path, read[path].line(line) or 1, 1)
         warnings.append(
             Diagnostic(
                 WARNING,
-                f"the empty section {heading.text!r} in {one.record.path!r} "
+                f"the empty {heading.kind} {heading.text!r} in {one.record.path!r} "
                 "was pruned from the bundle",
                 code=EMPTY_SECTION,
                 source=path,

@@ -36,6 +36,12 @@ def test_empty_generated_preamble_subtrees_warn_and_disappear(tmp_path: Path) ->
     assert "## Contracts\n\n### Rules\n\nAnswer alone." in run.bundle
     warnings = [json.loads(line) for line in run.stderr.splitlines()]
     assert [d["code"] for d in warnings] == ["W_EMPTY_SECTION", "W_EMPTY_SECTION"]
+    assert [d["message"] for d in warnings] == [
+        "the empty group heading 'References' in 'references' was pruned from the "
+        "bundle",
+        "the empty preamble subsection 'Contract' in 'references' was pruned from the "
+        "bundle",
+    ]
     assert all(
         d["location"] == {"file": "references/contract.md", "line": 6, "column": 1}
         for d in warnings
