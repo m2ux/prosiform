@@ -61,4 +61,4 @@ PROSIFORM_BUILD=/home/mike1/projects/dev/ghsa-classifier/.worktrees/prosiform-78
 
 ## Delivery Boundary
 
-The target is main. Its live rules require one approving review. The PR is handed to its human reviewer for approval and merge; the issue remains open until merge and closure readback. The repository's auto-close setting is unexposed by the API and is awaiting this session's user confirmation before adding a Development link. No repository setting is changed.
+The target is main. Its live rules require one approving review. The PR is handed to its human reviewer for approval and merge; the issue remains open until merge and closure readback. The user confirmed repository auto-close is disabled on 2026-11-22. PR #843 is linked to issue #786 through Development; development-link.py read both ends back and verified the relation. No repository setting is changed.
