@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Alpha](#alpha) next.
 
 ## Given
 
-First [Beta](#⇉-beta).
+First [Beta](#beta).
 
-### ⇉ Beta
+### Beta
 
 Use [Tests](#rules), then run [C](#⫽-dispatch-set) and [D](#⫽-dispatch-set).
 

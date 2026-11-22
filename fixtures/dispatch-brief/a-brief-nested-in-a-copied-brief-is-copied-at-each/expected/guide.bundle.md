@@ -6,15 +6,15 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## One
 
-1. [Alpha](#⇉-alpha)
+1. [Alpha](#alpha)
 
-### ⇉ Alpha
+### Alpha
 
-First [Beta](#⇉-beta).
+First [Beta](#beta).
 
 [⇉ Alpha](a.bundle.md)
 
-#### ⇉ Beta
+#### Beta
 
 Use [Tests](#rules), then run [C](#⫽-dispatch-set) and [D](#⫽-dispatch-set).
 
@@ -33,15 +33,15 @@ Run the tests.
 
 ## Two
 
-1. [Alpha again](#⇉-alpha-again)
+1. [Alpha again](#alpha-again)
 
-### ⇉ Alpha again
+### Alpha again
 
-First [Beta](#⇉-beta-1).
+First [Beta](#beta-1).
 
 [⇉ Alpha again](a.bundle.md)
 
-#### ⇉ Beta
+#### Beta
 
 Use [Tests](#rules-1), then run [C](#⫽-dispatch-set-1) and [D](#⫽-dispatch-set-1).
 

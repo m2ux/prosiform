@@ -79,6 +79,7 @@ from prosiform.bundle import (
     ancestry,
     blank,
     carried_headings,
+    diagram_labels,
     document_title,
     emitted_visible,
     names_model,
@@ -146,6 +147,8 @@ from prosiform.source import (
     Source,
     bare,
     clicks,
+    diagram_type,
+    element_texts,
     events,
     fragments,
     headings,
@@ -456,9 +459,9 @@ def intended(
     image's alternative content where the use was written there, so
     the opening is read from the event the author wrote it on.
 
-    A diagram link opens with its `source.Click` opening, which the bundle
-    carries as written, so only its destination changes, and a
-    deferral's tooltip. The anchor it takes is the one the bundle writes
+    A diagram link's opening follows diagram_labels for local dispatches;
+    its other text follows its source.Click opening. A deferral's tooltip
+    follows deferred_title. The anchor it takes is the one the bundle writes
     in the line, which no parser normalizes, read as the destination it
     names:
     `#<slug>`, whichever spelling the line's form writes.
@@ -503,7 +506,7 @@ def intended(
             return Use(
                 one.kind,
                 one.text
-                if one.kind == CLICK
+                if one.kind == CLICK and filed(given)
                 else published_text(one.text, filed(given)),
                 one.title,
                 given if one.kind == CLICK else normalizeLink(given),
@@ -547,8 +550,8 @@ def carrying(
 
     A line the bundle edits is a heading's line, a line of an inline
     token carrying a link or an image or standing as a command block,
-    or a line a diagram's link destination is written on, with the
-    comment beneath it naming its dispatch's model:
+    or a line a diagram's link destination or element label is written on,
+    with the comment beneath a link naming its dispatch's model:
     reference-use conversion, destination rewriting and command block
     compaction reach nowhere else. Every other line of a selected region
     is bytes the bundle carries as its source wrote them, which is what
@@ -565,6 +568,10 @@ def carrying(
             continue
         content = lines(fence.content)
         first = 0 if fence.map is None else fence.map[0] + 2
+        named = {click.node for click in clicks(fence)}
+        for line, text in element_texts(fence.content, diagram_type(fence.content)):
+            if text.node in named:
+                held.add(first + line - 1)
         for click in clicks(fence):
             held.add(click.line - 1)
             beneath = click.line + 1 - first
@@ -608,22 +615,33 @@ def body(
     ]
 
 
-def code(tokens: Sequence[Token], span: Token) -> list[tuple[str, str, str]]:
+def code(
+    tokens: Sequence[Token],
+    span: Token,
+    local: Mapping[int, Collection[str]] | None = None,
+) -> list[tuple[str, str, str]]:
     """Each code example one region holds, as the parser read it.
 
     A code block's content carries the blank lines inside it, which the
     line comparison passes over, so the example is compared whole. A
-    diagram's link destinations are the characters of it the bundle
-    rewrites, so the example is compared without them.
+    diagram's labels follow diagram_labels for the supplied local nodes;
+    undestined sets aside the destinations its use comparison holds.
     """
     start, end = span.map or (0, 0)
-    return [
-        (token.type, token.info, undestined(token))
-        for token in tokens
-        if token.type in CODE_BLOCKS
-        and token.map is not None
-        and start <= token.map[0] < end
-    ]
+    examples = []
+    for token in tokens:
+        if (
+            token.type not in CODE_BLOCKS
+            or token.map is None
+            or not start <= token.map[0] < end
+        ):
+            continue
+        nodes = () if local is None else local.get(id(token), ())
+        if nodes:
+            text, _ = diagram_labels(token, nodes)
+            token = replace(token, content="".join(text), meta={})
+        examples.append((token.type, token.info, undestined(token)))
+    return examples
 
 
 def undestined(example: Token) -> str:
@@ -1367,7 +1385,27 @@ def preserved(
             f"the region at lines {source.span.map} of {path!r} wrote {wrote!r} "
             f"and the candidate carries {carries!r}",
         )
-    examples = code(source.tokens, source.span)
+    local: dict[int, set[str]] = {}
+    for fence in within(source.tokens, [source.span]):
+        if fence.type != FENCE:
+            continue
+        for click in clicks(fence):
+            if not dispatched(click.opening):
+                continue
+            expected = intended(
+                path,
+                Use(CLICK, click.opening, click.title or "", click.destination),
+                0,
+                (),
+                {},
+                declarations,
+                dispatched_to,
+                substitution,
+                conversions=conversions,
+            )
+            if not filed(expected.destination):
+                local.setdefault(id(fence), set()).add(click.node)
+    examples = code(source.tokens, source.span, local)
     published_examples = code(published.tokens, published.span)
     if examples != published_examples:
         raise Invalid(

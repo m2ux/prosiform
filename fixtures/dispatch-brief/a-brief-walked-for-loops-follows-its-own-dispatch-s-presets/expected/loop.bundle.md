@@ -6,13 +6,13 @@ Run `pf`, then follow the guidance it prints. Follow [Loop](#loop) next.
 
 ## Given
 
-Hand on [Inv](#⇉-inv).
+Hand on [Recheck](#recheck).
 
-### ⇉ Inv
+### Recheck
 
 Hand on [⇉ Safe](safe.bundle.md).
 
-[⇉ Inv](inv.bundle.md)
+[⇉ Recheck](inv.bundle.md)
 
 ## Steps
 

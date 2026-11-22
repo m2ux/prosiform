@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 1. [⇉ Gather the Facts](gather.bundle.md) on haiku, then
 2. [⇉ Record](record.bundle.md).
-3. [Decide](#⇉-decide)
+3. [Decide](#decide)
 
-## ⇉ Decide
+## Decide
 
 Write the case down first.
 

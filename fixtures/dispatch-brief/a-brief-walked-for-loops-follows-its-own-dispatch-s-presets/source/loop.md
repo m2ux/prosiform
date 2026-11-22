@@ -7,7 +7,7 @@ prosiform:
 
 ## Given
 
-Hand on [⇉ Inv](inv.md).
+Hand on [⇉ Recheck](inv.md).
 
 ## Steps
 

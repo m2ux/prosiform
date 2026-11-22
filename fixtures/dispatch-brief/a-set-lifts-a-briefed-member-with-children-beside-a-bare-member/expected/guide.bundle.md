@@ -13,7 +13,7 @@ Start both.
 
 ### ⫽ Dispatch Set
 
-#### ⇉ Investigate
+#### Investigate
 
 Write the case number to the case file, then [Tests](#rules).
 
@@ -29,6 +29,6 @@ Run the tests.
 
 The case number is on the ticket.
 
-#### ⇉ Review
+#### Review
 
 [⇉ Review](review.bundle.md)

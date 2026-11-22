@@ -8,9 +8,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ```mermaid
 flowchart LR
-    Intake[⫽ Intake]
+    Intake[Intake]
     click Intake href "#⫽-dispatch-set"
-    Review[⫽ Review]
+    Review[Review]
     click Review "#⫽-dispatch-set"
 ```
 

@@ -25,7 +25,7 @@ ordinal a renderer gives a repeated heading counts them as it counts
 every other heading.
 
 A `⇉` link carrying the pick token names one selection for each
-alternative its target declares, and points at a `⇉ Dispatch Pick`
+alternative its target declares, and points at a `Dispatch Pick`
 sub-section of its own, placed as a set's is and after it, whose lines
 list each alternative's bundle beside its choice line in declaration
 order, so the dispatching agent hands on one.
@@ -34,7 +34,7 @@ A dispatch whose target's presets in force name a *brief* carries that
 section of its target into this bundle around the dispatch line, so the
 dispatching agent reads it before handing the bundle on. A `⇉`
 link carrying one, or a set of one, is lifted into a sub-section of its
-own, headed by its mark and its text and placed as a set's is and after
+own, headed as lifted names it and placed as a set's is and after
 it, beside the section's pick sub-sections in the order their links are
 written; a picking dispatch's sub-section holds its brief around its
 pick lines; a set holding a briefed member lifts every member into a
@@ -62,7 +62,7 @@ place, so four dispatches publish nothing:
   lifted into itself without end, a cycle as a chain of bundles
   returning to one already on it is.
 - An authored heading whose text equals `⫽ Dispatch Set`,
-  `⇉ Dispatch Pick` or a lifted sub-section's heading in a bundle that
+  `Dispatch Pick` or a lifted sub-section's heading in a bundle that
   emits one would give two sections one name, as would one lifted
   heading naming two selections.
 
@@ -180,12 +180,11 @@ already stands under. A bundle's sets share this heading, so the renderer's
 ordinals keep them apart as it keeps any repeated heading apart.
 """
 
-PICKING = "⇉ Dispatch Pick"
+PICKING = "Dispatch Pick"
 """The heading a `⇉` link carrying the pick token takes for its sub-section.
 
-The mark leads, as the set's does, and the words name the structure: a
-listing of one bundle for each alternative, of which the dispatching
-agent hands on one.
+The heading names the structure: a listing of one bundle for each
+alternative, of which the dispatching agent hands on one.
 """
 
 CHOICE_SEPARATOR = "—"
@@ -897,7 +896,7 @@ class Placing:
     def lifted(self, link: Link, file: str, depth: int, outer: Chain) -> int:
         """Emit the sub-section a dispatch carrying a brief is lifted into.
 
-        Its heading is the dispatch mark and the link's text, its body
+        Its heading is the link's text, its body
         the brief and then the dispatch line naming the target's bundle
         file, as `briefed` places them, and the sub-sections of the
         dispatches the brief writes. A heading is held to one effective
@@ -905,7 +904,7 @@ class Placing:
         selection under the same heading, or one equal to the dispatch-pick
         heading, is refused.
         """
-        text = f"{DISPATCH_MARK} {link.text}"
+        text = link.text
         earlier = self.lifts.get(text)
         if text == PICKING or (earlier is not None and earlier != file):
             raise Refused(

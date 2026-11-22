@@ -1,4 +1,4 @@
-description = "A set of one target declaring a brief is a single dispatch, so it is lifted into a sub-section headed by the dispatch mark and its text, holding the brief and then the dispatch link, as a ⇉ link is."
+description = "A set of one target declaring a brief is a single dispatch, so it is lifted into a sub-section headed by its link text, holding the brief and then the dispatch link, as a ⇉ link is."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",

@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-1. [Investigate](#⇉-investigate)
+1. [Investigate](#investigate)
 
-### ⇉ Investigate
+### Investigate
 
 Before you dispatch, act on [Given](#given) and [Leaves](#leaves).
 
@@ -24,9 +24,9 @@ The finding file.
 
 ## Review
 
-1. [Look again](#⇉-look-again)
+1. [Look again](#look-again)
 
-### ⇉ Look again
+### Look again
 
 Before you dispatch, act on [Given](#given-1) and [Leaves](#leaves-1).
 

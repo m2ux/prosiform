@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Guide](#guide) next.
 
 ## Plan
 
-1. [Investigate](#⇉-investigate "first")
+1. [Investigate](#investigate "first")
 
-### ⇉ Investigate
+### Investigate
 
 Write the case number as [the rules](#tests) say.
 
@@ -16,9 +16,9 @@ Write the case number as [the rules](#tests) say.
 
 ## Review
 
-1. [Recheck](#⇉-recheck "second")
+1. [Recheck](#recheck "second")
 
-### ⇉ Recheck
+### Recheck
 
 Write the case number as [the rules](#tests-1) say.
 

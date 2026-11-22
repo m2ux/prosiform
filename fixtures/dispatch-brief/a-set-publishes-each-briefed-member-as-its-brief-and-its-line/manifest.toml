@@ -1,4 +1,4 @@
-description = "A set of two targets, one declaring a brief, lifts each member into a sub-section one level below the set's, headed by its mark and text, in written order: the briefed member's holds its brief and then its own dispatch line, and the other member's its line alone."
+description = "A set of two targets, one declaring a brief, lifts each member into a sub-section one level below the set's, headed by its link text, in written order: the briefed member's holds its brief and then its own dispatch line, and the other member's its line alone."
 
 clauses = [
   "Link classification and resource handling — Dispatch briefs",

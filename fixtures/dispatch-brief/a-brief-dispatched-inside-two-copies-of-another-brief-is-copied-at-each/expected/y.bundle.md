@@ -6,9 +6,9 @@ Run `pf`, then follow the guidance it prints. Follow [Y](#y) next.
 
 ## Given
 
-Then [X](#⇉-x).
+Then [X](#x).
 
-### ⇉ X
+### X
 
 See [the detail](#detail).
 
