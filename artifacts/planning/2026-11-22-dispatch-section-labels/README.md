@@ -9,8 +9,8 @@ The isolated implementation is dispatch-section-labels, based on main at bf42862
 ## Tasks
 
 - [x] Implement the heading and conditional label rule with focused regressions.
-- [ ] **In progress:** Align contract/fixtures and complete compiler checks.
-- [ ] Publish the compiler change and review evidence.
+- [x] Align contract/fixtures and complete compiler checks.
+- [ ] Public publication is held for explicit authorization; local review evidence is complete.
 
 ## Artifacts
 
@@ -22,3 +22,7 @@ The isolated implementation is dispatch-section-labels, based on main at bf42862
 ## Links
 
 - [Canonical dispatch contract](../2026-10-17-prosiform-v1/design.md#link-classification-and-resource-handling)
+
+## Local Candidate
+
+Compiler commit 1ea933b7b213e2032f700b5bb18d5dd10b02b731 passes full make check. Its public branch and this engineering record remain unpublished: automatic approval review rejected the public engineering push because the destination and payload were not explicitly authorized. The installed released compiler remains unchanged.

@@ -1,8 +1,10 @@
 # Validation
 
-- Thirteen focused dispatch-display regressions pass on the candidate source. They exercise plain headings, local versus direct graph links, quoted and metadata forms, class labels, shared-line offsets, picks and collisions.
-- Strict mypy passes for all 21 compiler source files; the changed source and tests pass Ruff checks.
-- Existing unit and corpus expectations are aligned with the new headings and anchors. One loop fixture uses the display label Recheck to distinguish its generated section from its authored Inv title; its selected targets and diagnostic remain the same.
-- Full compiler checks and classifier integration remain in progress.
+The local compiler candidate is 1ea933b7b213e2032f700b5bb18d5dd10b02b731 on dispatch-section-labels, based on main at bf42862ef3757c8f62b0b8522481d27c4518dd0d (0.33.0).
 
-The installed released pf remains 0.33.0. This record describes an unreleased compiler change; no global tool installation or native agent evaluation is asserted.
+- **Full make check passes:** 2,303 compiler tests, 1,153 harness tests, 708 corpus fixtures, lint, formatting, strict typing, wheel/install smoke, layout, tables, links, vocabulary, invocation, conformance and independence.
+- **Thirteen focused display regressions pass:** local versus direct destinations, named and pick headings, geometry, quoted and Markdown labels, escaped/aliased metadata, class labels, shared statement lines and plain-name collisions.
+- **Classifier integration:** all 52 harness/seam selections pass with the candidate. Paired source-bound bundles retain their dispatch targets/model maps. The production bundles expose eight local graph labels, the route seven; an independent mixed-destination fixture checks two local labels and one direct label.
+- **Fixture migration:** displayed headings/anchors and conditional graph labels are updated. One loop fixture uses Recheck to distinguish its generated section from its authored Inv title, preserving selected targets and diagnostics. The plain collision diagnostic expectation follows the new heading name.
+
+Public compiler/design publication is blocked by automatic approval review pending explicit destination/payload authorization. The source and canonical design are committed locally for review. No global tool installation, paid model run or native agent evaluation is asserted.
